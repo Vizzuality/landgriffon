@@ -1,5 +1,5 @@
 import cx from 'classnames';
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   flip,
   offset,
@@ -8,6 +8,7 @@ import {
   useDismiss,
   useFloating,
   useInteractions,
+  FloatingPortal,
 } from '@floating-ui/react-dom-interactions';
 import { Transition } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/solid';
@@ -95,13 +96,13 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
     <div>
       <button
         type="button"
+        className="relative w-full py-2.5 leading-5 text-sm pl-3 pr-10 text-left bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer focus:outline-none focus:border-navy-400 focus:ring-0"
         {...getReferenceProps({
           ref: reference,
         })}
-        className="relative w-full py-2 pl-3 pr-10 text-left bg-white border min-h-[2.5rem] border-gray-300 rounded-md shadow-sm cursor-pointer focus:outline-none focus:ring-1 focus:ring-navy-400 focus:border-navy-400 sm:text-sm"
       >
         <span className="block h-5 truncate">
-          <span className="mr-1 text-gray-600">from</span>
+          <span className="mr-2 text-gray-400">from</span>
           <span>
             {startYearOption?.label} - {endYearOption?.label}
           </span>
@@ -115,27 +116,28 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
           />
         </span>
       </button>
-      <Transition
-        show={isOpen}
-        as={Fragment}
-        enter="transition ease-out duration-200"
-        enterFrom="opacity-0 translate-y-1"
-        enterTo="opacity-100 translate-y-0"
-        leave="transition ease-in duration-150"
-        leaveFrom="opacity-100 translate-y-0"
-        leaveTo="opacity-0 translate-y-1"
-        {...getFloatingProps({
-          ref: floating,
-          style: {
-            top: y ?? '',
-            left: x ?? '',
-            position: strategy,
-          },
-        })}
-      >
-        <div className="absolute z-20 mt-1 w-60">
-          <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-            <div className="relative p-4 bg-white rounded-lg">
+      <FloatingPortal>
+        <Transition
+          as="div"
+          show={isOpen}
+          enter="transition ease-out duration-200"
+          enterFrom="opacity-0 translate-y-1"
+          enterTo="opacity-100 translate-y-0"
+          leave="transition ease-in duration-150"
+          leaveFrom="opacity-100 translate-y-0"
+          leaveTo="opacity-0 translate-y-1"
+          className="z-10"
+          {...getFloatingProps({
+            ref: floating,
+            style: {
+              top: y ?? '',
+              left: x ?? '',
+              position: strategy,
+            },
+          })}
+        >
+          <div className="mt-1 w-60">
+            <div className="p-4 bg-white rounded-md shadow-md ring-1 ring-gray-200">
               <div className="grid grid-cols-1 gap-2">
                 <div>From</div>
                 <Select
@@ -174,8 +176,8 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
               </div>
             </div>
           </div>
-        </div>
-      </Transition>
+        </Transition>
+      </FloatingPortal>
     </div>
   );
 };

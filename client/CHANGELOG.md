@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Bigger table page size [LANDGRIF-922](https://vizzuality.atlassian.net/browse/LANDGRIF-922)
 - `ACTUAL_DATA` was removed and a null scenario id is used in it's place
 - Send `scenarioId` param alongside analysis filters [LANDGRIF-891](https://vizzuality.atlassian.net/browse/LANDGRIF-891)
 - Same input for city, address and coordinates for intervention form [LANDGRIF-821](https://vizzuality.atlassian.net/browse/LANDGRIF-821)

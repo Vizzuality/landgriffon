@@ -2,6 +2,7 @@ import { useMemo, useCallback } from 'react';
 import { XCircleIcon, PlusIcon } from '@heroicons/react/solid';
 import { RadioGroup } from '@headlessui/react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import {
@@ -31,6 +32,8 @@ const ACTUAL_DATA: Scenario = {
 const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement> }> = ({
   scrollref,
 }) => {
+  const { query } = useRouter();
+  const { scenarioId } = query || {};
   const { currentScenario, sort, searchTerm } = useAppSelector(scenarios);
   const dispatch = useAppDispatch();
   const { fetchNextPage, hasNextPage, data, isLoading, error } = useInfiniteScenarios({
@@ -89,7 +92,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
                   <ul className="relative grid grid-cols-1 gap-5 my-2 overflow-auto sm:gap-2 sm:grid-cols-2 lg:grid-cols-1">
                     {scenariosList?.map((item) => (
                       <li key={item.id} className="last-of-type:mb-12">
-                        <ScenarioItem scenario={item} isSelected={currentScenario === item.id} />
+                        <ScenarioItem scenario={item} isSelected={scenarioId === item.id} />
                       </li>
                     ))}
                   </ul>

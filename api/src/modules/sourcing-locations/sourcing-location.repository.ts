@@ -61,16 +61,16 @@ export class SourcingLocationRepository extends AppBaseRepository<SourcingLocati
             qb.where('sl.scenarioInterventionId is null').orWhere(
               new Brackets((qbInterv: WhereExpressionBuilder) => {
                 qbInterv
-                  .where('scenarioIntervention.scenarioId = :scenarioId')
-                  .andWhere(`scenarioIntervention.status = :status`);
+                  .where('scenarioIntervention.scenarioId = :scenarioId', {
+                    scenarioId: locationTypesOptions.scenarioId,
+                  })
+                  .andWhere(`scenarioIntervention.status = :status`, {
+                    status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+                  });
               }),
             );
           }),
-        )
-        .setParameters({
-          scenarioId: locationTypesOptions.scenarioId,
-          status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
-        });
+        );
     } else {
       queryBuilder.andWhere('sl.scenarioInterventionId is null');
       queryBuilder.andWhere('sl.interventionType is null');

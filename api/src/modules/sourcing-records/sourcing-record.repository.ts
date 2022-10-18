@@ -138,22 +138,21 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       'scenarioIntervention',
       'sourcingLocation.scenarioInterventionId = scenarioIntervention.id',
     );
-    impactDataQueryBuilder
-      .andWhere(
-        new Brackets((qb: WhereExpressionBuilder) => {
-          qb.where('sourcingLocation.scenarioInterventionId is null').orWhere(
-            new Brackets((qbInterv: WhereExpressionBuilder) => {
-              qbInterv
-                .where('scenarioIntervention.scenarioId = :scenarioId')
-                .andWhere(`scenarioIntervention.status = :status`);
-            }),
-          );
-        }),
-      )
-      .setParameters({
-        scenarioId: getActualVsScenarioImpactTable.scenarioId,
-        status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
-      });
+    impactDataQueryBuilder.andWhere(
+      new Brackets((qb: WhereExpressionBuilder) => {
+        qb.where('sourcingLocation.scenarioInterventionId is null').orWhere(
+          new Brackets((qbInterv: WhereExpressionBuilder) => {
+            qbInterv
+              .where('scenarioIntervention.scenarioId = :scenarioId', {
+                scenarioId: getActualVsScenarioImpactTable.scenarioId,
+              })
+              .andWhere(`scenarioIntervention.status = :status`, {
+                status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+              });
+          }),
+        );
+      }),
+    );
 
     this.addEntityFiltersToQuery(
       impactDataQueryBuilder,
@@ -359,16 +358,16 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
             qb.where('sourcingLocation.scenarioInterventionId is null').orWhere(
               new Brackets((qbInterv: WhereExpressionBuilder) => {
                 qbInterv
-                  .where('scenarioIntervention.scenarioId = :scenarioId')
-                  .andWhere(`scenarioIntervention.status = :status`);
+                  .where('scenarioIntervention.scenarioId = :scenarioId', {
+                    scenarioId: dto.scenarioId,
+                  })
+                  .andWhere(`scenarioIntervention.status = :status`, {
+                    status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+                  });
               }),
             );
           }),
-        )
-        .setParameters({
-          scenarioId: dto.scenarioId,
-          status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
-        });
+        );
     } else {
       queryBuilder.andWhere('sourcingLocation.scenarioInterventionId is null');
       queryBuilder.andWhere('sourcingLocation.interventionType is null');

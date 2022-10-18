@@ -214,22 +214,21 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
         'scenarioIntervention',
         'sl.scenarioInterventionId = scenarioIntervention.id',
       );
-      queryBuilder
-        .andWhere(
-          new Brackets((qb: WhereExpressionBuilder) => {
-            qb.where('sl.scenarioInterventionId is null').orWhere(
-              new Brackets((qbInterv: WhereExpressionBuilder) => {
-                qbInterv
-                  .where('scenarioIntervention.scenarioId IN (:...scenarioIds)')
-                  .andWhere(`scenarioIntervention.status = :status`);
-              }),
-            );
-          }),
-        )
-        .setParameters({
-          scenarioIds: adminRegionTreeOptions.scenarioIds,
-          status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
-        });
+      queryBuilder.andWhere(
+        new Brackets((qb: WhereExpressionBuilder) => {
+          qb.where('sl.scenarioInterventionId is null').orWhere(
+            new Brackets((qbInterv: WhereExpressionBuilder) => {
+              qbInterv
+                .where('scenarioIntervention.scenarioId IN (:...scenarioIds)', {
+                  scenarioIds: adminRegionTreeOptions.scenarioIds,
+                })
+                .andWhere(`scenarioIntervention.status = :status`, {
+                  status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+                });
+            }),
+          );
+        }),
+      );
     } else {
       queryBuilder.andWhere('sl.scenarioInterventionId is null');
       queryBuilder.andWhere('sl.interventionType is null');

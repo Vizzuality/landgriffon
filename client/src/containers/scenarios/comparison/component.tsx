@@ -55,7 +55,6 @@ const ScenariosComparison: FC = () => {
       setComparisonEnabled(false);
 
       const queryParams = { ...router.query, compareScenarioId: null, scenarioId: selected?.value };
-      delete queryParams?.compareScenarioId;
       router.replace({
         pathname: router.pathname,
         query: queryParams,

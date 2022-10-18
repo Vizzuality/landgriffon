@@ -55,7 +55,6 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
       dispatch(setComparisonEnabled(false));
 
       const queryParams = { ...router.query, compareScenarioId: null, scenarioId: id };
-      delete queryParams?.compareScenarioId;
       router.replace({
         pathname: router.pathname,
         query: queryParams,

@@ -104,7 +104,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
                         className={({ active }) =>
                           classnames(
                             active && 'bg-navy-50',
-                            'relative cursor-default select-none py-2 pl-3 pr-9 hover:cursor-pointer',
+                            'relative cursor-default text-sm select-none py-2 pl-3 pr-9 hover:cursor-pointer',
                           )
                         }
                         value={option}

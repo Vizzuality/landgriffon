@@ -1,4 +1,5 @@
-import type { ImpactData, ImpactTableData, TableComparisonMode } from 'types';
+import type { ComparisonMode as TableComparisonMode } from 'containers/analysis-visualization/analysis-table/types';
+import type { ImpactData, ImpactTableData } from 'types';
 
 export type ImpactDataApiResponse<Mode extends TableComparisonMode> = Omit<
   ImpactData<Mode>,

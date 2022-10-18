@@ -6,6 +6,8 @@ import { useDebounce } from '@react-hook/debounce';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 
+import { PAGE_SIZES } from './constants';
+
 import useModal from 'hooks/modals';
 import { useSourcingLocations, useSourcingLocationsMaterials } from 'hooks/sourcing-locations';
 import { useTasks } from 'hooks/tasks';
@@ -27,7 +29,7 @@ import type { SourcingLocation, Task } from 'types';
 const AdminDataPage: React.FC = () => {
   const [searchText, setSearchText] = useDebounce<string>('', 250);
   const [pagination, setPagination] = useState<PaginationState>({
-    pageSize: 10,
+    pageSize: PAGE_SIZES[0],
     pageIndex: 1,
   });
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -266,6 +268,7 @@ const AdminDataPage: React.FC = () => {
                 sorting,
               }}
               paginationProps={{
+                pageSizes: PAGE_SIZES,
                 itemNumber: data.length,
                 totalItems: sourcingMetadata.totalItems,
                 pageCount: sourcingMetadata.totalPages,

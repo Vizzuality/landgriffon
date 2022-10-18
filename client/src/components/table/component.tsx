@@ -27,6 +27,7 @@ export interface TableProps<T>
     itemNumber: number;
     showSummary?: boolean;
     pageCount?: number;
+    pageSizes?: number[];
   };
 }
 
@@ -160,7 +161,11 @@ const Table = <T,>({
       <div className="flex flex-row">
         <div className="flex items-center space-x-2 basis-1/2">
           <span className="text-sm text-gray-500">Rows per page</span>
-          <PageSizeSelector onChange={onChangePageSize} pageSize={pagination.pageSize} />
+          <PageSizeSelector
+            availableSizes={pagination.pageSizes}
+            onChange={onChangePageSize}
+            pageSize={pagination.pageSize}
+          />
         </div>
 
         <div className="flex-1">

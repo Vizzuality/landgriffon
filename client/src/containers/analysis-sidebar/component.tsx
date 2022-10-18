@@ -59,10 +59,13 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
       const queryParams = omit(router.query, ['compareScenarioId', 'scenarioId']);
       if (id) queryParams['scenarioId'] = id;
 
-      router.replace({
-        pathname: router.pathname,
-        query: queryParams,
-      });
+      router.replace(
+        {
+          query: queryParams,
+        },
+        null,
+        { shallow: true },
+      );
     },
     [dispatch, router],
   );

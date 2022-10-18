@@ -39,10 +39,14 @@ const ScenariosComparison: FC = () => {
       dispatch(setScenarioToCompare(current?.value || null));
 
       const queryParams = { ...router.query, compareScenarioId: current?.value };
-      router.replace({
-        pathname: router.pathname,
-        query: queryParams,
-      });
+      router.replace(
+        {
+          pathname: router.pathname,
+          query: queryParams,
+        },
+        null,
+        { shallow: true },
+      );
     },
     [dispatch, router],
   );
@@ -55,10 +59,14 @@ const ScenariosComparison: FC = () => {
       setComparisonEnabled(false);
 
       const queryParams = { ...router.query, compareScenarioId: null, scenarioId: selected?.value };
-      router.replace({
-        pathname: router.pathname,
-        query: queryParams,
-      });
+      router.replace(
+        {
+          pathname: router.pathname,
+          query: queryParams,
+        },
+        null,
+        { shallow: true },
+      );
     }
   }, [selected, dispatch, options, compareScenarioId, router]);
 

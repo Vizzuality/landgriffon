@@ -34,10 +34,17 @@ const ScenariosComparison: FC = () => {
 
   const handleOnChange = useCallback<Dispatch<SelectOption>>(
     (current) => {
+      // TO-DO: deprecated, we'll keep only for retro-compatibility
       dispatch(setComparisonEnabled(!!current));
       dispatch(setScenarioToCompare(current?.value || null));
+
+      const queryParams = { ...router.query, compareScenarioId: current?.value };
+      router.replace({
+        pathname: router.pathname,
+        query: queryParams,
+      });
     },
-    [dispatch],
+    [dispatch, router],
   );
 
   // Reset comparison when options changes

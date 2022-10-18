@@ -146,16 +146,16 @@ export class H3DataMapRepository extends Repository<H3Data> {
               qb.where('sl.scenarioInterventionId IS NULL').orWhere(
                 new Brackets((qbInterv: WhereExpressionBuilder) => {
                   qbInterv
-                    .where('si.scenarioId = :scenarioId')
-                    .andWhere(`si.status = :status`);
+                    .where('si.scenarioId = :scenarioId', {
+                      scenarioId: dto.scenarioId,
+                    })
+                    .andWhere(`si.status = :status`, {
+                      status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+                    });
                 }),
               );
             }),
-          )
-          .setParameters({
-            scenarioId: dto.scenarioId,
-            status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
-          });
+          );
       } else {
         baseQuery.andWhere('sl.scenarioInterventionId IS NULL');
       }
@@ -192,16 +192,16 @@ export class H3DataMapRepository extends Repository<H3Data> {
             qb.where('sl.scenarioInterventionId IS NULL').orWhere(
               new Brackets((qbInterv: WhereExpressionBuilder) => {
                 qbInterv
-                  .where('si.scenarioId = :scenarioId')
-                  .andWhere(`si.status = :status`);
+                  .where('si.scenarioId = :scenarioId', {
+                    scenarioId: dto.comparedScenarioId,
+                  })
+                  .andWhere(`si.status = :status`, {
+                    status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+                  });
               }),
             );
           }),
-        )
-        .setParameters({
-          scenarioId: dto.comparedScenarioId,
-          status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
-        });
+        );
 
       // Add the aggregation formula
       // Absolute: ((compared - actual)  / scaler
@@ -250,16 +250,16 @@ export class H3DataMapRepository extends Repository<H3Data> {
             qb.where('sl.scenarioInterventionId IS NULL').orWhere(
               new Brackets((qbInterv: WhereExpressionBuilder) => {
                 qbInterv
-                  .where('si.scenarioId IN (:...scenarioIds)')
-                  .andWhere(`si.status = :status`);
+                  .where('si.scenarioId IN (:...scenarioIds)', {
+                    scenarioIds: [dto.baseScenarioId, dto.comparedScenarioId],
+                  })
+                  .andWhere(`si.status = :status`, {
+                    status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+                  });
               }),
             );
           }),
-        )
-        .setParameters({
-          scenarioIds: [dto.baseScenarioId, dto.comparedScenarioId],
-          status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
-        });
+        );
 
       // Add the aggregation formula
       // Absolute: ((compared - base)  / scaler

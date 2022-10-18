@@ -29,7 +29,7 @@ export const Search: React.FC<SearchProps> = (props: SearchProps) => {
     <div className={classNames('relative', props.className)}>
       <Input
         icon={<SearchIcon />}
-        {...omit(props, 'onChange')}
+        {...omit(props, ['defaultValue', 'onChange'])}
         unit="&nbsp;"
         type="search"
         className="w-full"

@@ -1,23 +1,21 @@
 import { useCallback, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 import { useScenarios } from 'hooks/scenarios';
-import { useAppDispatch, useAppSelector } from 'store/hooks';
-import {
-  scenarios as scenariosSelector,
-  setComparisonEnabled,
-  setScenarioToCompare,
-} from 'store/features/analysis/scenarios';
+import { useAppDispatch } from 'store/hooks';
+import { setComparisonEnabled, setScenarioToCompare } from 'store/features/analysis/scenarios';
 import Select from 'components/select';
 
 import type { Dispatch, FC } from 'react';
 import type { SelectOption } from 'components/select/types';
 
 const ScenariosComparison: FC = () => {
+  const router = useRouter();
+  const { scenarioId, compareScenarioId } = router.query || {};
   const dispatch = useAppDispatch();
-  const { currentScenario, scenarioToCompare } = useAppSelector(scenariosSelector);
 
   const { data: scenarios } = useScenarios({
-    params: { disablePagination: true, include: 'scenarioInterventions', currentScenario },
+    params: { disablePagination: true, include: 'scenarioInterventions', scenarioId },
     options: {
       select: (data) => data.data,
     },
@@ -25,14 +23,13 @@ const ScenariosComparison: FC = () => {
 
   const options = useMemo<SelectOption[]>(() => {
     const filteredData = scenarios.filter(
-      ({ id, scenarioInterventions }) =>
-        id !== currentScenario && scenarioInterventions?.length > 0,
+      ({ id, scenarioInterventions }) => id !== scenarioId && scenarioInterventions?.length > 0,
     );
     return filteredData.map(({ id, title }) => ({ label: title, value: id }));
-  }, [currentScenario, scenarios]);
+  }, [scenarioId, scenarios]);
   const selected = useMemo(
-    () => options.find(({ value }) => value === scenarioToCompare),
-    [scenarioToCompare, options],
+    () => options.find(({ value }) => value === compareScenarioId),
+    [compareScenarioId, options],
   );
 
   const handleOnChange = useCallback<Dispatch<SelectOption>>(
@@ -45,11 +42,19 @@ const ScenariosComparison: FC = () => {
 
   // Reset comparison when options changes
   useEffect(() => {
-    if (selected?.value && scenarioToCompare !== selected?.value) {
+    if (selected?.value && compareScenarioId !== selected?.value) {
+      // TO-DO: deprecated, we'll keep only for retro-compatibility
       dispatch(setScenarioToCompare(null));
       setComparisonEnabled(false);
+
+      const queryParams = { ...router.query, compareScenarioId: null, scenarioId: selected?.value };
+      delete queryParams?.compareScenarioId;
+      router.replace({
+        pathname: router.pathname,
+        query: queryParams,
+      });
     }
-  }, [selected, dispatch, options, scenarioToCompare]);
+  }, [selected, dispatch, options, compareScenarioId, router]);
 
   return (
     <div>

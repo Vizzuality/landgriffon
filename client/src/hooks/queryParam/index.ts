@@ -22,7 +22,11 @@ const serialize = <T>(value: T): string => {
 const parse = <T>(value: string): T => {
   if (value === undefined) return undefined;
 
-  return JSON.parse(value);
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value as T;
+  }
 };
 
 const window = typeof global.window === 'undefined' ? null : global.window;
@@ -49,10 +53,10 @@ const useQueryParam = <T, F = T>(
   const [isDoneSettingInitialState, setIsDoneSettingInitialState] = useState(false);
   useEffectOnceWhen(() => {
     const newValue = parse<T>(query[name] as string);
-    if (typeof defaultValue === 'object' || typeof newValue === 'object') {
-      setValue((value) => ({ ...value, ...newValue }));
-    } else {
+    if (!!newValue) {
       setValue(newValue);
+    } else if (!!defaultValue && typeof defaultValue === 'object' && typeof newValue === 'object') {
+      setValue((value) => ({ ...value, ...newValue }));
     }
     setIsDoneSettingInitialState(true);
   }, isReady);

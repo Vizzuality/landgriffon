@@ -3,6 +3,7 @@ import { XCircleIcon, PlusIcon } from '@heroicons/react/solid';
 import { RadioGroup } from '@headlessui/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import omit from 'lodash/omit';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import {
@@ -34,6 +35,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
 }) => {
   const router = useRouter();
   const { scenarioId = null } = router.query || {};
+
   const { sort, searchTerm } = useAppSelector(scenarios);
   const dispatch = useAppDispatch();
   const { fetchNextPage, hasNextPage, data, isLoading, error } = useInfiniteScenarios({
@@ -54,7 +56,9 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
       dispatch(setScenarioToCompare(null));
       dispatch(setComparisonEnabled(false));
 
-      const queryParams = { ...router.query, compareScenarioId: null, scenarioId: id };
+      const queryParams = omit(router.query, ['compareScenarioId', 'scenarioId']);
+      if (id) queryParams['scenarioId'] = id;
+
       router.replace({
         pathname: router.pathname,
         query: queryParams,

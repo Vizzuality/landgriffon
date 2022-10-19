@@ -99,7 +99,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
                   <ScenariosFilters />
                 </div>
                 <div className="relative z-10 flex-1 overflow-hidden">
-                  <ul className="relative grid grid-cols-1 gap-5 my-2 overflow-auto sm:gap-2 sm:grid-cols-2 lg:grid-cols-1">
+                  <ul className="relative grid grid-cols-1 gap-5 my-2 overflow-auto">
                     {scenariosList?.map((item) => (
                       <li key={item.id} className="last-of-type:mb-12">
                         <ScenarioItem scenario={item} isSelected={scenarioId === item.id} />

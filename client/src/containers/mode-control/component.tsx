@@ -18,6 +18,7 @@ const ModeControl: React.FC = () => {
           key={mode}
           active={visualizationMode === mode}
           href={{ pathname: `/analysis/${mode}`, query }}
+          data-testid={`mode-control-${mode}`}
         >
           {mode === 'map' && <MapIcon className="w-6 h-6" aria-hidden="true" />}
           {mode === 'table' && <TableIcon className="w-6 h-6" aria-hidden="true" />}

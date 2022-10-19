@@ -15,16 +15,14 @@ const ScenariosComparison: FC = () => {
   const dispatch = useAppDispatch();
 
   const { data: scenarios } = useScenarios({
-    params: { disablePagination: true, include: 'scenarioInterventions', scenarioId },
+    params: { disablePagination: true },
     options: {
       select: (data) => data.data,
     },
   });
 
   const options = useMemo<SelectOption[]>(() => {
-    const filteredData = scenarios.filter(
-      ({ id, scenarioInterventions }) => id !== scenarioId && scenarioInterventions?.length > 0,
-    );
+    const filteredData = scenarios.filter(({ id }) => id !== scenarioId);
     return filteredData.map(({ id, title }) => ({ label: title, value: id }));
   }, [scenarioId, scenarios]);
   const selected = useMemo(
@@ -71,7 +69,7 @@ const ScenariosComparison: FC = () => {
   }, [selected, dispatch, options, compareScenarioId, router]);
 
   return (
-    <div>
+    <div data-testid="comparison-select">
       <label className="block mb-1 text-sm text-gray-500">Compare with:</label>
       <Select
         showSearch

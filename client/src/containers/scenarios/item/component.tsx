@@ -45,7 +45,7 @@ const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
   );
 
   return (
-    <div>
+    <div data-testid={`scenario-item-${scenario.id || 'null'}`}>
       <div
         className={classNames(
           'rounded-lg shadow-sm border p-4 space-y-2',
@@ -57,6 +57,7 @@ const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
             key={scenario.id}
             value={scenario.id}
             className="flex justify-between flex-1 gap-2 truncate items-top"
+            data-testid="scenario-item-radio"
           >
             {({ checked }) => (
               <>

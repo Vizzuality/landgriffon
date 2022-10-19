@@ -2404,13 +2404,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@headlessui/react@npm:1.6.6":
-  version: 1.6.6
-  resolution: "@headlessui/react@npm:1.6.6"
+"@headlessui/react@npm:1.7.3":
+  version: 1.7.3
+  resolution: "@headlessui/react@npm:1.7.3"
   peerDependencies:
     react: ^16 || ^17 || ^18
     react-dom: ^16 || ^17 || ^18
-  checksum: 6ebb34bde0bd2a5045ae29a2bac1dc166f7163c9ad98aabe5abb580c3c770d0b3040d5992045f9e68b6c8e8eca5bf7eca71276ff9b1696a9fb88a9380d8fcf96
+  checksum: c9391e15e63dc7e459d42125a94e22f964419c440d9f37fd85f6f501612aad42b3e30e79f712e8097c66e08891c26dcd662863e572ff21cc6cf34a3185ae4aa5
   languageName: node
   linkType: hard
 
@@ -15200,7 +15200,7 @@ __metadata:
     "@floating-ui/core": 1.0.0
     "@floating-ui/react-dom": 1.0.0
     "@floating-ui/react-dom-interactions": 0.9.0
-    "@headlessui/react": 1.6.6
+    "@headlessui/react": 1.7.3
     "@heroicons/react": 1.0.6
     "@hookform/resolvers": 2.8.8
     "@loaders.gl/core": 3.2.5

@@ -27,6 +27,10 @@ export default {
       defaultValue: false,
       control: { type: 'boolean' },
     },
+    loading: {
+      defaultValue: false,
+      control: { type: 'boolean' },
+    },
     disabled: {
       defaultValue: false,
       control: { type: 'boolean' },

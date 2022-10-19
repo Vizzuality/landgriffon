@@ -25,7 +25,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
   }) => {
     const { onChange, value, ...selectProps } = props;
 
-    const [selected, setSelected] = useState<Option>(defaultValue);
+    const [selected, setSelected] = useState<Option>(defaultValue || value);
     const { x, y, reference, floating, strategy } = useFloating({
       middleware: [flip()],
       placement: 'bottom-start',
@@ -44,6 +44,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
 
     return (
       <Listbox
+        by="value"
         value={selected}
         onChange={handleChange}
         {...selectProps}
@@ -103,7 +104,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
                   <Listbox.Options className="mt-2 overflow-auto text-base bg-white rounded-md shadow-sm max-h-60 ring-1 ring-gray-200 focus:outline-none">
                     {options.map((option) => (
                       <Listbox.Option
-                        key={option.value}
+                        key={`option-item-${option.value}`}
                         className={({ active }) =>
                           classnames(
                             active && 'bg-navy-50',
@@ -113,14 +114,14 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
                         value={option}
                       >
                         {({ selected }) => (
-                          <span
+                          <div
                             className={classnames(
                               selected ? 'text-navy-400' : 'text-gray-900',
                               'block truncate',
                             )}
                           >
                             {option.label}
-                          </span>
+                          </div>
                         )}
                       </Listbox.Option>
                     ))}

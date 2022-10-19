@@ -6,7 +6,7 @@ import type { ToasterProps } from 'react-hot-toast';
 
 export const ALERT_CLASSES = {
   success: {
-    iconColor: 'fill-green-600',
+    iconColor: 'fill-green-400',
     backgroundColor: 'bg-green-50',
     messagesColor: 'text-green-800',
   },

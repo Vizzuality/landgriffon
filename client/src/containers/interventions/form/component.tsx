@@ -89,23 +89,23 @@ const schemaValidation = yup.object({
     otherwise: (schema) => schema.nullable(),
   }),
 
-  cityAddressCoordinates: yup
-    .string()
-    .test('is-coordinates', 'Coordinates should be valid (-90/90, -180/180)', (value) => {
-      if (!isCoordinates(value)) {
-        return false;
-      }
-      const [lat, lng] = value.split(',').map((coordinate) => parseFloat(coordinate));
-      return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
-    })
-    .when('newLocationType', {
-      is: (newLocationType) =>
-        [LocationTypes.aggregationPoint, LocationTypes.pointOfProduction].includes(
-          newLocationType?.value,
-        ),
-      then: (schema) => schema.required('Coordinates are required'),
-      otherwise: (schema) => schema.nullable(),
-    }),
+  cityAddressCoordinates: yup.string().when('newLocationType', {
+    is: (newLocationType) =>
+      [LocationTypes.aggregationPoint, LocationTypes.pointOfProduction].includes(
+        newLocationType?.value,
+      ),
+    then: (schema) =>
+      schema
+        .test('is-coordinates', 'Coordinates should be valid (-90/90, -180/180)', (value) => {
+          if (!isCoordinates(value)) {
+            return false;
+          }
+          const [lat, lng] = value.split(',').map((coordinate) => parseFloat(coordinate));
+          return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+        })
+        .required('Coordinates are required'),
+    otherwise: (schema) => schema.nullable(),
+  }),
 
   // New material
   newMaterialId: yup

@@ -31,6 +31,8 @@ describe('Analysis', () => {
       .find('input:visible')
       .type('Test{enter}');
     cy.url().should('contain', 'compareScenarioId=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7');
+
+    cy.get('[data-testid="comparison-cell"]').should('have.length.above', 1);
   });
 
   it('should be able to select a scenario vs scenario in the comparison select', () => {
@@ -48,6 +50,8 @@ describe('Analysis', () => {
       .find('input:visible')
       .type('Example{enter}');
     cy.url().should('contain', 'compareScenarioId=7646039e-b2e0-4bd5-90fd-925e5868f9af');
+
+    cy.get('[data-testid="comparison-cell"]').should('have.length.above', 1);
   });
 
   it('should be able to navigate to map, table, and chart', () => {

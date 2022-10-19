@@ -621,3 +621,185 @@ export const impactTableWithScenario = {
   ],
   purchasedTonnes: [],
 };
+
+export const rankingTableWithScenario = {
+  impactTable: [
+    {
+      indicatorShortName: null,
+      indicatorId: '1b111521-5904-4e09-a7b1-7beeef3e0d2f',
+      groupBy: 'material',
+      rows: [
+        {
+          name: 'Textile',
+          children: [
+            {
+              name: 'Cotton',
+              children: [],
+              values: [
+                {
+                  year: 2019,
+                  value: 0,
+                  isProjected: true,
+                },
+                {
+                  year: 2020,
+                  value: 400,
+                  isProjected: false,
+                },
+                {
+                  year: 2021,
+                  value: 406,
+                  isProjected: true,
+                },
+                {
+                  year: 2022,
+                  value: 412.09,
+                  isProjected: true,
+                },
+              ],
+            },
+            {
+              name: 'Linen',
+              children: [],
+              values: [
+                {
+                  year: 2019,
+                  value: 0,
+                  isProjected: true,
+                },
+                {
+                  year: 2020,
+                  value: 750,
+                  isProjected: false,
+                },
+                {
+                  year: 2021,
+                  value: 761.25,
+                  isProjected: true,
+                },
+                {
+                  year: 2022,
+                  value: 772.66875,
+                  isProjected: true,
+                },
+              ],
+            },
+            {
+              name: 'Wool',
+              children: [],
+              values: [
+                {
+                  year: 2019,
+                  value: 0,
+                  isProjected: true,
+                },
+                {
+                  year: 2020,
+                  value: 500,
+                  isProjected: false,
+                },
+                {
+                  year: 2021,
+                  value: 507.5,
+                  isProjected: true,
+                },
+                {
+                  year: 2022,
+                  value: 515.1125,
+                  isProjected: true,
+                },
+              ],
+            },
+          ],
+          values: [
+            {
+              year: 2019,
+              value: 0,
+              isProjected: true,
+            },
+            {
+              year: 2020,
+              value: 1650,
+              isProjected: false,
+            },
+            {
+              year: 2021,
+              value: 1674.75,
+              isProjected: true,
+            },
+            {
+              year: 2022,
+              value: 1699.87125,
+              isProjected: true,
+            },
+          ],
+        },
+      ],
+      yearSum: [
+        {
+          year: 2019,
+          value: 0,
+        },
+        {
+          year: 2020,
+          value: 1650,
+        },
+        {
+          year: 2021,
+          value: 1674.75,
+        },
+        {
+          year: 2022,
+          value: 1699.87125,
+        },
+      ],
+      metadata: {
+        unit: 'm3/year',
+      },
+      others: {
+        aggregatedValues: [
+          {
+            year: 2019,
+            value: 0,
+          },
+          {
+            year: 2020,
+            value: 0,
+          },
+          {
+            year: 2021,
+            value: 0,
+          },
+          {
+            year: 2022,
+            value: 0,
+          },
+        ],
+        numberOfAggregatedEntities: 0,
+        sort: 'DES',
+      },
+    },
+  ],
+  purchasedTonnes: [
+    {
+      year: 2019,
+      value: 0,
+      isProjected: true,
+    },
+    {
+      year: 2020,
+      value: 3007.68,
+      isProjected: false,
+    },
+    {
+      year: 2021,
+      value: 3052.7952,
+      isProjected: true,
+    },
+    {
+      year: 2022,
+      value: 3098.587128,
+      isProjected: true,
+    },
+  ],
+};

@@ -43,6 +43,7 @@ import {
 import { range } from 'lodash';
 import { createNewMaterialInterventionPreconditions } from './actual-vs-scenario-preconditions/new-material-intervention.preconditions';
 import { Scenario } from '../../../src/modules/scenarios/scenario.entity';
+import { rankingTableWithScenario } from './response-mocks.impact';
 
 describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
   let app: INestApplication;
@@ -481,11 +482,13 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
         expect(
           response.body.impactTable[0].rows[0].values.some(
             (value: ImpactTableRowsValues) =>
-              value.value === -1050 &&
-              !value.isProjected &&
-              value.year === 2020,
+              value.value === 1650 && !value.isProjected && value.year === 2020,
           ),
         ).toBeTruthy();
+
+        expect(response.body.impactTable[0].rows).toEqual(
+          rankingTableWithScenario.impactTable[0].rows,
+        );
       },
     );
   });

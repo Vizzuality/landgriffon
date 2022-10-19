@@ -220,12 +220,6 @@ const AnalysisTable = () => {
   const isComparison = useIsComparison(tableData);
   const isScenarioComparison = useIsScenarioComparison(tableData);
 
-  const valueIsComparison = (
-    value: ImpactTableValueItem<ComparisonMode>,
-  ): value is ImpactTableValueItem<true | 'scenario'> => {
-    return !isScenarioComparison && isComparison;
-  };
-
   const valueIsScenarioComparison = useCallback(
     (value: ImpactTableValueItem<ComparisonMode>): value is ImpactTableValueItem<'scenario'> => {
       return isScenarioComparison && isComparison;
@@ -235,6 +229,12 @@ const AnalysisTable = () => {
 
   const comparisonColumn = useCallback(
     <Mode extends ComparisonMode>(year: number): ColumnDefinition<ImpactRowType<Mode>> => {
+      const valueIsComparison = (
+        value: ImpactTableValueItem<ComparisonMode>,
+      ): value is ImpactTableValueItem<true | 'scenario'> => {
+        return !isScenarioComparison && isComparison;
+      };
+
       return {
         id: `${year}`,
         size: 170,
@@ -278,7 +278,7 @@ const AnalysisTable = () => {
         },
       };
     },
-    [isComparison, valueIsScenarioComparison],
+    [isComparison, isScenarioComparison, valueIsScenarioComparison],
   );
 
   const baseColumns = useMemo(

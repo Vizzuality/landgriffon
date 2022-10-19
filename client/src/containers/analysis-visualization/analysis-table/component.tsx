@@ -254,7 +254,7 @@ const AnalysisTable = () => {
           const isComparison = valueIsComparison(value);
           const isScenarioComparison = valueIsScenarioComparison(value);
 
-          if (!isComparison) {
+          if (!isComparison && !isScenarioComparison) {
             if (unit) {
               return `${NUMBER_FORMATTER(value.value)} ${unit}`;
             }

@@ -436,17 +436,20 @@ download-satDeforestation:
 preprocess-satDeforestation: download-satDeforestation
 	mkdir -p $(WORKDIR_SATDEFORESTATION)/mask
 	mkdir -p $(WORKDIR_SATDEFORESTATION)/risk
-	gdal_calc.py --calc "A==2021" --format GTiff --type Int16 --NoDataValue 0 \
+	gdal_calc.py --calc "A" --format GTiff --type Int16 --NoDataValue 0 \
 		-A $(WORKDIR_SATDEFORESTATION)/Deforestation_Masked_2016-2022-10-01.tif \
 		--outfile $(WORKDIR_SATDEFORESTATION)/mask/Deforestation_Masked_2021.tif
 
 	gdal_calc.py --calc "numpy.where(A>0, A, 0)" --format GTiff --type Float32 --NoData 0 \
 		-A $(WORKDIR_SATDEFORESTATION)/DeforestationRisk_2016-2022-10-01.tif \
 		--outfile $(WORKDIR_SATDEFORESTATION)/risk/DeforestationRisk_2016-2022.tif
+	gdalwarp -q -s_srs EPSG:4326 -t_srs EPSG:4326 -r average -tr 0.0005 0.0005 -multi -of GTiff -overwrite \
+		$(WORKDIR_SATDEFORESTATION)/risk/DeforestationRisk_2016-2022.tif \
+		$(WORKDIR_SATDEFORESTATION)/risk/DeforestationRisk_2016-2022.tif
 
 convert-satDeforestation: preprocess-satDeforestation
-	python tiff_folder_to_h3_table.py $(WORKDIR_SATDEFORESTATION)/mask h3_grid_sat_deforestation indicator SAT_DF 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
-	python tiff_folder_to_h3_table.py $(WORKDIR_SATDEFORESTATION)/risk h3_grid_sat_deforestation_risk indicator SAT_DF_R 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python tiff_folder_to_h3_table.py $(WORKDIR_SATDEFORESTATION)/mask h3_grid_sat_deforestation indicator SAT_DF 2021 --h3-res=12 --thread-count=$(PARALLELIZATION_FACTOR)
+	python tiff_folder_to_h3_table.py $(WORKDIR_SATDEFORESTATION)/risk h3_grid_sat_deforestation_risk indicator SAT_DF_R 2021 --h3-res=11 --thread-count=$(PARALLELIZATION_FACTOR)
 
 ###################
 # Contextual data #

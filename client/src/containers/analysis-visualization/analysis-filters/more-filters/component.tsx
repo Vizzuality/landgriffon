@@ -66,6 +66,7 @@ const DEFAULT_QUERY_OPTIONS = {
 const MoreFilters = () => {
   const { query } = useRouter();
   const scenarioId = query.scenarioId as string;
+  const compareScenarioId = query.compareScenarioId as string;
   const dispatch = useAppDispatch();
   const { materials, origins, suppliers, locationTypes } = useAppSelector(analysisFilters);
 
@@ -159,7 +160,7 @@ const MoreFilters = () => {
     {
       depth: 1,
       withSourcingLocations: true,
-      scenarioId,
+      scenarioIds: [scenarioId, ...(compareScenarioId ? [compareScenarioId] : [])],
     },
     DEFAULT_QUERY_OPTIONS,
   );
@@ -170,7 +171,7 @@ const MoreFilters = () => {
       materialIds,
       supplierIds,
       locationTypes: locationTypesIds,
-      scenarioId,
+      scenarioIds: [scenarioId, ...(compareScenarioId ? [compareScenarioId] : [])],
     },
     DEFAULT_QUERY_OPTIONS,
   );
@@ -181,7 +182,7 @@ const MoreFilters = () => {
       materialIds,
       originIds,
       locationTypes: locationTypesIds,
-      scenarioId,
+      scenarioIds: [scenarioId, ...(compareScenarioId ? [compareScenarioId] : [])],
     },
     DEFAULT_QUERY_OPTIONS,
   );
@@ -191,7 +192,7 @@ const MoreFilters = () => {
       materialIds,
       originIds,
       supplierIds,
-      scenarioId,
+      scenarioIds: [scenarioId, ...(compareScenarioId ? [compareScenarioId] : [])],
     },
     {
       ...DEFAULT_QUERY_OPTIONS,

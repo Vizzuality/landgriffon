@@ -4,4 +4,5 @@ export interface BaseTreeSearchParams {
   businessUnitIds?: string[];
   originIds?: string[];
   scenarioId?: string;
+  scenarioIds?: string[];
 }

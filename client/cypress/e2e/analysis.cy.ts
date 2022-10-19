@@ -14,6 +14,16 @@ describe('Analysis', () => {
       },
     ).as('scenariosList');
 
+    cy.intercept('GET', '/api/v1/impact/compare/scenario/vs/actual?*', {
+      statusCode: 200,
+      fixture: 'scenario/scenario-vs-actual',
+    }).as('scenarioVsActual');
+
+    cy.intercept('GET', '/api/v1/impact/compare/scenario/vs/scenario?*', {
+      statusCode: 200,
+      fixture: 'scenario/scenario-vs-scenario',
+    }).as('scenarioVsScenario');
+
     cy.login();
   });
 
@@ -32,6 +42,7 @@ describe('Analysis', () => {
       .type('Test{enter}');
     cy.url().should('contain', 'compareScenarioId=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7');
 
+    cy.wait('@scenarioVsActual');
     cy.get('[data-testid="comparison-cell"]').should('have.length.above', 1);
   });
 
@@ -51,6 +62,7 @@ describe('Analysis', () => {
       .type('Example{enter}');
     cy.url().should('contain', 'compareScenarioId=7646039e-b2e0-4bd5-90fd-925e5868f9af');
 
+    cy.wait('@scenarioVsScenario');
     cy.get('[data-testid="comparison-cell"]').should('have.length.above', 1);
   });
 

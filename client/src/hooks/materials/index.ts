@@ -21,6 +21,7 @@ export type MaterialsTreesParams = {
   originIds?: string[];
   locationTypes?: string[];
   scenarioId?: string;
+  scenarioIds?: string[];
 };
 
 interface MaterialApiResponse {

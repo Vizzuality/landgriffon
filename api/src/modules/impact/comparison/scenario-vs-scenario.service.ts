@@ -315,34 +315,34 @@ export class ScenarioVsScenarioImpactService {
           if (dataForYear) {
             calculatedData[namesByIndicatorIndex].values.push({
               year: dataForYear.year,
-              scenarioOneValue: dataForYear.scenarioOneImpact,
-              scenarioTwoValue: dataForYear.scenarioTwoImpact,
+              baseScenarioValue: dataForYear.scenarioOneImpact,
+              comparingScenarioValue: dataForYear.scenarioTwoImpact,
               isProjected: false,
             });
             // If the year requested does no exist in the raw data, project its value getting the latest value (previous year which comes in ascendant order)
           } else {
-            const lastYearsScenarioOneValue: number =
+            const lastYearsBaseScenarioValue: number =
               rowValuesIndex > 0
                 ? calculatedData[namesByIndicatorIndex].values[
                     rowValuesIndex - 1
-                  ].scenarioOneValue || 0
+                  ].baseScenarioValue || 0
                 : 0;
-            const lastYearsScenarioTwoValue: number =
+            const lastYearsComparingScenarioValue: number =
               rowValuesIndex > 0
                 ? calculatedData[namesByIndicatorIndex].values[
                     rowValuesIndex - 1
-                  ].scenarioTwoValue || 0
+                  ].comparingScenarioValue || 0
                 : 0;
             const isProjected: boolean = year > lastYearWithData;
             calculatedData[namesByIndicatorIndex].values.push({
               year: year,
-              scenarioOneValue:
-                lastYearsScenarioOneValue +
-                (lastYearsScenarioOneValue * this.growthRate) / 100,
-              scenarioTwoValue:
-                lastYearsScenarioTwoValue +
-                (lastYearsScenarioTwoValue * this.growthRate) / 100,
-              isProjected,
+              baseScenarioValue:
+                lastYearsBaseScenarioValue +
+                (lastYearsBaseScenarioValue * this.growthRate) / 100,
+              comparingScenarioValue:
+                lastYearsComparingScenarioValue +
+                (lastYearsComparingScenarioValue * this.growthRate) / 100,
+              isProjected: true,
             });
           }
           ++rowValuesIndex;
@@ -351,32 +351,32 @@ export class ScenarioVsScenarioImpactService {
 
       // Once we have all data, projected or not, append the total sum of impact by year and indicator
       rangeOfYears.forEach((year: number, indexOfYear: number) => {
-        const scenarioOneTotalSumByYear: number = calculatedData.reduce(
+        const baseScenarioTotalSumByYear: number = calculatedData.reduce(
           (
             accumulator: number,
             currentValue: ScenarioVsScenarioImpactTableRows,
           ): number => {
             if (currentValue.values[indexOfYear].year === year)
               accumulator += Number.isFinite(
-                currentValue.values[indexOfYear].scenarioOneValue || 0,
+                currentValue.values[indexOfYear].baseScenarioValue || 0,
               )
-                ? currentValue.values[indexOfYear].scenarioOneValue || 0
+                ? currentValue.values[indexOfYear].baseScenarioValue || 0
                 : 0;
             return accumulator;
           },
           0,
         );
 
-        const scenarioTwoTotalSumByYear: number = calculatedData.reduce(
+        const comparingScenarioTotalSumByYear: number = calculatedData.reduce(
           (
             accumulator: number,
             currentValue: ScenarioVsScenarioImpactTableRows,
           ): number => {
             if (currentValue.values[indexOfYear].year === year)
               accumulator += Number.isFinite(
-                currentValue.values[indexOfYear].scenarioTwoValue,
+                currentValue.values[indexOfYear].comparingScenarioValue,
               )
-                ? currentValue.values[indexOfYear].scenarioTwoValue || 0
+                ? currentValue.values[indexOfYear].comparingScenarioValue || 0
                 : 0;
             return accumulator;
           },
@@ -392,13 +392,15 @@ export class ScenarioVsScenarioImpactService {
 
         scenarioVsScenarioImpactTable[indicatorValuesIndex].yearSum.push({
           year,
-          scenarioOneValue: scenarioOneTotalSumByYear,
-          scenarioTwoValue: scenarioTwoTotalSumByYear,
+          baseScenarioValue: baseScenarioTotalSumByYear,
+          comparingScenarioValue: comparingScenarioTotalSumByYear,
           absoluteDifference:
-            (scenarioOneTotalSumByYear || 0) - scenarioTwoTotalSumByYear,
+            (baseScenarioTotalSumByYear || 0) - comparingScenarioTotalSumByYear,
           percentageDifference:
-            (((scenarioOneTotalSumByYear || 0) - scenarioTwoTotalSumByYear) /
-              (((scenarioOneTotalSumByYear || 0) + scenarioTwoTotalSumByYear) /
+            (((baseScenarioTotalSumByYear || 0) -
+              comparingScenarioTotalSumByYear) /
+              (((baseScenarioTotalSumByYear || 0) +
+                comparingScenarioTotalSumByYear) /
                 2)) *
             100,
           isProjected: yearData?.isProjected,
@@ -422,7 +424,7 @@ export class ScenarioVsScenarioImpactService {
       );
     this.logger.log('Impact Table built');
 
-    return { scenarioVsScenarioImpactTable, purchasedTonnes };
+    return { impactTable: scenarioVsScenarioImpactTable, purchasedTonnes };
   }
 
   private getTotalPurchasedVolumeByYear(
@@ -485,8 +487,8 @@ export class ScenarioVsScenarioImpactService {
     for (const year of rangeOfYears) {
       entity.values.push({
         year: year,
-        scenarioOneValue: 0,
-        scenarioTwoValue: 0,
+        baseScenarioValue: 0,
+        comparingScenarioValue: 0,
         isProjected: false,
       });
     }
@@ -518,24 +520,24 @@ export class ScenarioVsScenarioImpactService {
     ] of entity.values.entries()) {
       valuesToAggregate.forEach(
         (item: ScenarioVsScenarioImpactTableRowsValues[]) => {
-          entity.values[valueIndex].scenarioOneValue =
-            (ScenarioVsScenarioImpactTableRowsValues.scenarioOneValue ?? 0) +
-            (item[valueIndex].scenarioOneValue || 0);
+          entity.values[valueIndex].baseScenarioValue =
+            (ScenarioVsScenarioImpactTableRowsValues.baseScenarioValue ?? 0) +
+            (item[valueIndex].baseScenarioValue || 0);
           entity.values[valueIndex].isProjected =
             item[valueIndex].isProjected ||
             entity.values[valueIndex].isProjected;
 
-          entity.values[valueIndex].scenarioTwoValue =
-            (ScenarioVsScenarioImpactTableRowsValues.scenarioTwoValue ?? 0) +
-            (item[valueIndex].scenarioTwoValue || 0);
+          entity.values[valueIndex].comparingScenarioValue =
+            (ScenarioVsScenarioImpactTableRowsValues.comparingScenarioValue ??
+              0) + (item[valueIndex].comparingScenarioValue || 0);
           entity.values[valueIndex].absoluteDifference =
-            (entity.values[valueIndex].scenarioOneValue || 0) -
-            (entity.values[valueIndex].scenarioTwoValue || 0);
+            (entity.values[valueIndex].baseScenarioValue || 0) -
+            (entity.values[valueIndex].comparingScenarioValue || 0);
           entity.values[valueIndex].percentageDifference =
-            (((entity.values[valueIndex].scenarioOneValue || 0) -
-              (entity.values[valueIndex].scenarioTwoValue || 0)) /
-              (((entity.values[valueIndex].scenarioOneValue || 0) +
-                (entity.values[valueIndex].scenarioTwoValue || 0)) /
+            (((entity.values[valueIndex].baseScenarioValue || 0) -
+              (entity.values[valueIndex].comparingScenarioValue || 0)) /
+              (((entity.values[valueIndex].baseScenarioValue || 0) +
+                (entity.values[valueIndex].comparingScenarioValue || 0)) /
                 2)) *
             100;
         },

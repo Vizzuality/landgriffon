@@ -69,7 +69,7 @@ const AnalysisMap = () => {
                 ...object,
                 coordinate,
                 name: layerInfo.metadata?.name || layerInfo.metadata?.legend.name,
-                unit: layerInfo.metadata?.unit,
+                unit: layerInfo.metadata?.legend?.unit,
               },
             });
           },

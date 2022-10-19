@@ -60,7 +60,13 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
   );
 
   const chartData = useMemo(() => {
-    const { indicatorShortName, rows, yearSum, metadata, others } = data?.impactTable?.[0] || {};
+    const {
+      indicatorShortName,
+      rows,
+      yearSum,
+      metadata,
+      others = {},
+    } = data?.impactTable?.[0] || {};
     const { numberOfAggregatedEntities, aggregatedValues } = others;
     const result = [];
     const keys = [];
@@ -74,7 +80,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
           items[`projected-${row.name}`] = yearValues?.value;
         }
       });
-      if (numberOfAggregatedEntities > 0) {
+      if (numberOfAggregatedEntities && numberOfAggregatedEntities > 0) {
         items['Others'] = aggregatedValues?.find(
           (aggregatedValue) => aggregatedValue?.year === year,
         )?.value;
@@ -82,9 +88,9 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
       result.push({ date: year, ...items });
     });
 
-    Object.keys(result[0]).forEach((key) => {
-      key !== 'date' && keys.push(key);
-    });
+    if (result.length > 0) {
+      Object.keys(result[0]).forEach((key) => key !== 'date' && keys.push(key));
+    }
 
     const colorScale = COLOR_SCALE.colors(keys.length);
 

@@ -31,7 +31,7 @@ const AnalysisLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
           leave="transform transition ease-in duration-100"
           leaveFrom="opacity-100"
           leaveTo="opacity-10"
-          className="h-full px-12 overflow-x-hidden overflow-y-auto w-[405px]"
+          className="h-full px-12 overflow-x-hidden overflow-y-auto w-[410px]"
           ref={scrollRef}
         >
           <AnalysisSidebar scrollref={scrollRef} />

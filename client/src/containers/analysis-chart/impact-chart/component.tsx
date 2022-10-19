@@ -69,6 +69,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
       rows?.forEach((row) => {
         const yearValues = row?.values.find((rowValues) => rowValues?.year === year);
         items[row.name] = yearValues?.value;
+        if (!keys.find((k) => k === row.name)) keys.push(row.name);
         if (yearValues.isProjected) {
           items[`projected-${row.name}`] = yearValues?.value;
         }
@@ -76,15 +77,11 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
       result.push({ date: year, ...items });
     });
 
-    if (result?.[0]) {
-      Object.keys(result[0]).forEach((key) => key !== 'date' && keys.push(key));
-    }
-
     const colorScale = COLOR_SCALE.colors(keys.length);
 
     return {
       values: result,
-      keys,
+      keys: keys.filter((key) => key !== 'date' && !key.startsWith('projected-')),
       name: indicatorShortName,
       unit: metadata?.unit,
       colors: keys.reduce(

@@ -6,7 +6,7 @@ export class ScenarioVsScenarioImpactTable {
     type: () => ScenarioVsScenarioImpactTableDataByIndicator,
     isArray: true,
   })
-  scenarioVsScenarioImpactTable: ScenarioVsScenarioImpactTableDataByIndicator[];
+  impactTable: ScenarioVsScenarioImpactTableDataByIndicator[];
   @ApiProperty({
     type: () => ScenarioVsScenarioImpactTablePurchasedTonnes,
     isArray: true,
@@ -86,9 +86,9 @@ export class ScenarioVsScenarioYearSumData {
   @ApiProperty()
   year: number;
   @ApiPropertyOptional()
-  scenarioOneValue: number;
+  baseScenarioValue: number;
   @ApiPropertyOptional()
-  scenarioTwoValue: number;
+  comparingScenarioValue: number;
   @ApiPropertyOptional()
   absoluteDifference?: number;
   @ApiPropertyOptional()
@@ -101,9 +101,9 @@ export class ScenarioVsScenarioImpactTableRowsValues {
   @ApiProperty()
   year: number;
   @ApiPropertyOptional()
-  scenarioOneValue?: number;
+  baseScenarioValue?: number;
   @ApiPropertyOptional()
-  scenarioTwoValue?: number;
+  comparingScenarioValue?: number;
   @ApiPropertyOptional()
   absoluteDifference?: number;
   @ApiPropertyOptional()

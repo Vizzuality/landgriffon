@@ -88,20 +88,14 @@ describe('Scenario comparison test suite (e2e)', () => {
     const expectedScenariosTableMByMaterial =
       getSameMaterialScenarioComparisonResponse(preconditions.indicator.id);
 
-    expect(
-      responseGroupByMaterial.body.data.scenarioVsScenarioImpactTable[0].rows,
-    ).toEqual(
+    expect(responseGroupByMaterial.body.data.impactTable[0].rows).toEqual(
       expect.arrayContaining(
-        expectedScenariosTableMByMaterial.scenarioVsScenarioImpactTable[0].rows,
+        expectedScenariosTableMByMaterial.impactTable[0].rows,
       ),
     );
-    expect(
-      responseGroupByMaterial.body.data.scenarioVsScenarioImpactTable[0]
-        .yearSum,
-    ).toEqual(
+    expect(responseGroupByMaterial.body.data.impactTable[0].yearSum).toEqual(
       expect.arrayContaining(
-        expectedScenariosTableMByMaterial.scenarioVsScenarioImpactTable[0]
-          .yearSum,
+        expectedScenariosTableMByMaterial.impactTable[0].yearSum,
       ),
     );
     expect(responseGroupByMaterial.body.data.purchasedTonnes).toEqual(
@@ -125,11 +119,9 @@ describe('Scenario comparison test suite (e2e)', () => {
     const expectedScenariosTableBySupplier =
       getScenarioComparisonResponseBySupplier(preconditions.indicator.id);
 
-    expect(
-      responseGroupBySupplier.body.data.scenarioVsScenarioImpactTable[0].rows,
-    ).toEqual(
+    expect(responseGroupBySupplier.body.data.impactTable[0].rows).toEqual(
       expect.arrayContaining(
-        expectedScenariosTableBySupplier.scenarioVsScenarioImpactTable[0].rows,
+        expectedScenariosTableBySupplier.impactTable[0].rows,
       ),
     );
     expect(responseGroupBySupplier.body.data.purchasedTonnes).toEqual(

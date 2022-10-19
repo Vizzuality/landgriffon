@@ -13,9 +13,12 @@ afterEach(() => {
 
 describe('Scenario creation', () => {
   it('a user populates all fields and creates a scenario successfully', () => {
+    const scenarioName = 'scenario mockup name';
+    const scenarioDescription = 'scenario mockup description';
+
     cy.url().should('contain', '/data/scenarios/new');
-    cy.get('[data-testid="scenario-name-input"]').type('scenario mockup name');
-    cy.get('[data-testid="scenario-description-input"]').type('scenario mockup description');
+    cy.get('[data-testid="scenario-name-input"]').type(scenarioName);
+    cy.get('[data-testid="scenario-description-input"]').type(scenarioDescription);
     cy.get('[data-testid="create-scenario-button"]').click();
 
     cy.wait('@scenarioCreation').then((interception) => {
@@ -25,6 +28,8 @@ describe('Scenario creation', () => {
 
       expect(statusCode).to.equal(201);
       expect(body.data.id).to.equal('some-random-id');
+      expect(body.data.attributes.title).to.equal(scenarioName);
+      expect(body.data.attributes.description).to.equal(scenarioDescription);
 
       // checks the toast message triggered after scenario creation
       cy.get('[data-testid="toast-message"]').should(

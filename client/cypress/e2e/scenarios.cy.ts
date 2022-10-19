@@ -26,7 +26,7 @@ describe('Scenarios', () => {
   });
 
   it('should show same scenarios cards length than API', () => {
-    cy.get('[data-testid="scenario-card"]').should('have.length', 4);
+    cy.get('[data-testid="scenario-card"]').should('have.length', 10);
   });
 
   it('should every scenario have interventions', () => {

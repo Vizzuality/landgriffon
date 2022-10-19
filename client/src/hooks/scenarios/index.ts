@@ -86,8 +86,8 @@ export const useScenarios = <T = ResponseData>({
   return query;
 };
 
-export function useInfiniteScenarios(QueryParams: QueryParams): ResponseInfiniteData {
-  const { searchTerm, ...restParams } = QueryParams;
+export function useInfiniteScenarios(queryParams: QueryParams): ResponseInfiniteData {
+  const { searchTerm, ...restParams } = queryParams;
   const fetchScenarios = ({ pageParam = 1 }) =>
     apiService.request({
       method: 'GET',
@@ -100,7 +100,7 @@ export function useInfiniteScenarios(QueryParams: QueryParams): ResponseInfinite
       },
     });
 
-  const query = useInfiniteQuery(['scenariosList', QueryParams], fetchScenarios, {
+  const query = useInfiniteQuery(['scenariosList', queryParams], fetchScenarios, {
     ...DEFAULT_INFINITE_QUERY_OPTIONS,
     getNextPageParam: (lastPage) => {
       const { meta } = lastPage?.data;

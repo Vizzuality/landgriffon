@@ -160,7 +160,7 @@ const MoreFilters = () => {
     {
       depth: 1,
       withSourcingLocations: true,
-      scenarioIds: [scenarioId, ...(compareScenarioId ? [compareScenarioId] : [])],
+      scenarioIds: compareScenarioId ? [scenarioId, compareScenarioId] : [scenarioId],
     },
     DEFAULT_QUERY_OPTIONS,
   );
@@ -171,7 +171,7 @@ const MoreFilters = () => {
       materialIds,
       supplierIds,
       locationTypes: locationTypesIds,
-      scenarioIds: [scenarioId, ...(compareScenarioId ? [compareScenarioId] : [])],
+      scenarioIds: compareScenarioId ? [scenarioId, compareScenarioId] : [scenarioId],
     },
     DEFAULT_QUERY_OPTIONS,
   );
@@ -182,7 +182,7 @@ const MoreFilters = () => {
       materialIds,
       originIds,
       locationTypes: locationTypesIds,
-      scenarioIds: [scenarioId, ...(compareScenarioId ? [compareScenarioId] : [])],
+      scenarioIds: compareScenarioId ? [scenarioId, compareScenarioId] : [scenarioId],
     },
     DEFAULT_QUERY_OPTIONS,
   );
@@ -192,7 +192,7 @@ const MoreFilters = () => {
       materialIds,
       originIds,
       supplierIds,
-      scenarioIds: [scenarioId, ...(compareScenarioId ? [compareScenarioId] : [])],
+      scenarioIds: compareScenarioId ? [scenarioId, compareScenarioId] : [scenarioId],
     },
     {
       ...DEFAULT_QUERY_OPTIONS,

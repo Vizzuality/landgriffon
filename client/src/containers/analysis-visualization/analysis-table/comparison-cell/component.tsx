@@ -40,7 +40,7 @@ const ComparisonCell: React.FC<ComparisonCellProps> = ({
   if (isNaN(scenarioValue)) return <>{formatter(value)}</>;
 
   return (
-    <div className="mr-auto w-fit">
+    <div className="mr-auto w-fit" data-testid="comparison-cell">
       <div className="flex flex-row gap-1">
         <div className="my-auto text-sm text-gray-900 whitespace-nowrap">
           {formatWithUnit(scenarioValue, unit)}
@@ -67,7 +67,7 @@ const ComparisonCell: React.FC<ComparisonCellProps> = ({
           )}
         </div>
       </div>
-      <div className="my-auto text-xs text-left text-gray-300 whitespace-nowrap line-through">
+      <div className="my-auto text-xs text-left text-gray-300 line-through whitespace-nowrap">
         {formatWithUnit(value, unit)}
       </div>
     </div>

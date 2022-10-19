@@ -11,6 +11,7 @@ import {
 } from '@floating-ui/react-dom-interactions';
 import { Transition } from '@headlessui/react';
 import sortBy from 'lodash/sortBy';
+import { useRouter } from 'next/router';
 
 import Materials from '../materials/component';
 import OriginRegions from '../origin-regions/component';
@@ -19,7 +20,7 @@ import LocationTypes from '../location-types/component';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters, setFilters } from 'store/features/analysis/filters';
-import { scenarios, setFilter } from 'store/features/analysis';
+import { setFilter } from 'store/features/analysis';
 import { useMaterialsTrees } from 'hooks/materials';
 import { useAdminRegionsTrees } from 'hooks/admin-regions';
 import { useSuppliersTrees } from 'hooks/suppliers';
@@ -63,10 +64,10 @@ const DEFAULT_QUERY_OPTIONS = {
 };
 
 const MoreFilters = () => {
+  const { query } = useRouter();
+  const scenarioId = query.scenarioId as string;
   const dispatch = useAppDispatch();
   const { materials, origins, suppliers, locationTypes } = useAppSelector(analysisFilters);
-
-  const { currentScenario: scenarioId } = useAppSelector(scenarios);
 
   const moreFilters: MoreFiltersState = useMemo(
     () => ({ materials, origins, suppliers, locationTypes }),

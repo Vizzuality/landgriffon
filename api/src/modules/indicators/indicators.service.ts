@@ -39,7 +39,15 @@ export class IndicatorsService extends AppBaseService<
 
   get serializerConfig(): JSONAPISerializerConfig<Indicator> {
     return {
-      attributes: ['id', 'name', 'description', 'unit', 'status', 'metadata'],
+      attributes: [
+        'id',
+        'name',
+        'description',
+        'unit',
+        'status',
+        'metadata',
+        'nameCode',
+      ],
       keyForAttribute: 'camelCase',
     };
   }

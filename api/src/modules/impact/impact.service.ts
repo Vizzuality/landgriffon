@@ -136,6 +136,23 @@ export class ImpactService {
     const dataForImpactTable: ImpactTableData[] =
       await this.getDataForImpactTable(rankedImpactTableDto, entities);
 
+    if (rankedImpactTableDto.scenarioId) {
+      const dataForImpactTableWithScenario: ImpactTableData[] =
+        ImpactService.processImpactDataWithScenario(dataForImpactTable);
+
+      const impactTableWithScenario: ImpactTable = this.buildImpactTable(
+        rankedImpactTableDto,
+        indicators,
+        dataForImpactTableWithScenario,
+        this.buildImpactTableRowsSkeleton(entities),
+      );
+
+      return await this.applyRankingProcessing(
+        rankedImpactTableDto,
+        impactTableWithScenario,
+      );
+    }
+
     const impactTable: ImpactTable = this.buildImpactTable(
       rankedImpactTableDto,
       indicators,

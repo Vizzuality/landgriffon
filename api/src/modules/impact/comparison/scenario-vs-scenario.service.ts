@@ -79,16 +79,16 @@ export class ScenarioVsScenarioImpactService {
 
     // Getting and proceesing impact data separetely for each scenario for further merge
 
-    const { scenarioOneId, scenarioTwoId, ...generalDto } =
+    const { baseScenarioId, comparedScenarioId, ...generalDto } =
       scenarioVsScenarioImpactTableDto;
 
     const scenarioOneDto: GetActualVsScenarioImpactTableDto = {
-      scenarioId: scenarioOneId,
+      scenarioId: baseScenarioId,
       ...generalDto,
     };
 
     const scenarioTwoDto: GetActualVsScenarioImpactTableDto = {
-      scenarioId: scenarioTwoId,
+      scenarioId: comparedScenarioId,
       ...generalDto,
     };
 
@@ -175,8 +175,8 @@ export class ScenarioVsScenarioImpactService {
       }),
 
       scenarioIds: [
-        getScenarioVsScenarioImpactTableDto.scenarioOneId,
-        getScenarioVsScenarioImpactTableDto.scenarioTwoId,
+        getScenarioVsScenarioImpactTableDto.baseScenarioId,
+        getScenarioVsScenarioImpactTableDto.comparedScenarioId,
       ],
     };
     switch (getScenarioVsScenarioImpactTableDto.groupBy) {
@@ -316,7 +316,7 @@ export class ScenarioVsScenarioImpactService {
             calculatedData[namesByIndicatorIndex].values.push({
               year: dataForYear.year,
               baseScenarioValue: dataForYear.scenarioOneImpact,
-              comparingScenarioValue: dataForYear.scenarioTwoImpact,
+              comparedScenarioValue: dataForYear.scenarioTwoImpact,
               isProjected: false,
             });
             // If the year requested does no exist in the raw data, project its value getting the latest value (previous year which comes in ascendant order)
@@ -327,11 +327,11 @@ export class ScenarioVsScenarioImpactService {
                     rowValuesIndex - 1
                   ].baseScenarioValue || 0
                 : 0;
-            const lastYearsComparingScenarioValue: number =
+            const lastYearsComparedScenarioValue: number =
               rowValuesIndex > 0
                 ? calculatedData[namesByIndicatorIndex].values[
                     rowValuesIndex - 1
-                  ].comparingScenarioValue || 0
+                  ].comparedScenarioValue || 0
                 : 0;
             const isProjected: boolean = year > lastYearWithData;
             calculatedData[namesByIndicatorIndex].values.push({
@@ -339,9 +339,9 @@ export class ScenarioVsScenarioImpactService {
               baseScenarioValue:
                 lastYearsBaseScenarioValue +
                 (lastYearsBaseScenarioValue * this.growthRate) / 100,
-              comparingScenarioValue:
-                lastYearsComparingScenarioValue +
-                (lastYearsComparingScenarioValue * this.growthRate) / 100,
+              comparedScenarioValue:
+                lastYearsComparedScenarioValue +
+                (lastYearsComparedScenarioValue * this.growthRate) / 100,
               isProjected: true,
             });
           }
@@ -367,16 +367,16 @@ export class ScenarioVsScenarioImpactService {
           0,
         );
 
-        const comparingScenarioTotalSumByYear: number = calculatedData.reduce(
+        const comparedScenarioTotalSumByYear: number = calculatedData.reduce(
           (
             accumulator: number,
             currentValue: ScenarioVsScenarioImpactTableRows,
           ): number => {
             if (currentValue.values[indexOfYear].year === year)
               accumulator += Number.isFinite(
-                currentValue.values[indexOfYear].comparingScenarioValue,
+                currentValue.values[indexOfYear].comparedScenarioValue,
               )
-                ? currentValue.values[indexOfYear].comparingScenarioValue || 0
+                ? currentValue.values[indexOfYear].comparedScenarioValue || 0
                 : 0;
             return accumulator;
           },
@@ -393,14 +393,14 @@ export class ScenarioVsScenarioImpactService {
         scenarioVsScenarioImpactTable[indicatorValuesIndex].yearSum.push({
           year,
           baseScenarioValue: baseScenarioTotalSumByYear,
-          comparingScenarioValue: comparingScenarioTotalSumByYear,
+          comparedScenarioValue: comparedScenarioTotalSumByYear,
           absoluteDifference:
-            (baseScenarioTotalSumByYear || 0) - comparingScenarioTotalSumByYear,
+            (baseScenarioTotalSumByYear || 0) - comparedScenarioTotalSumByYear,
           percentageDifference:
             (((baseScenarioTotalSumByYear || 0) -
-              comparingScenarioTotalSumByYear) /
+              comparedScenarioTotalSumByYear) /
               (((baseScenarioTotalSumByYear || 0) +
-                comparingScenarioTotalSumByYear) /
+                comparedScenarioTotalSumByYear) /
                 2)) *
             100,
           isProjected: yearData?.isProjected,
@@ -488,7 +488,7 @@ export class ScenarioVsScenarioImpactService {
       entity.values.push({
         year: year,
         baseScenarioValue: 0,
-        comparingScenarioValue: 0,
+        comparedScenarioValue: 0,
         isProjected: false,
       });
     }
@@ -527,17 +527,17 @@ export class ScenarioVsScenarioImpactService {
             item[valueIndex].isProjected ||
             entity.values[valueIndex].isProjected;
 
-          entity.values[valueIndex].comparingScenarioValue =
-            (ScenarioVsScenarioImpactTableRowsValues.comparingScenarioValue ??
-              0) + (item[valueIndex].comparingScenarioValue || 0);
+          entity.values[valueIndex].comparedScenarioValue =
+            (ScenarioVsScenarioImpactTableRowsValues.comparedScenarioValue ??
+              0) + (item[valueIndex].comparedScenarioValue || 0);
           entity.values[valueIndex].absoluteDifference =
             (entity.values[valueIndex].baseScenarioValue || 0) -
-            (entity.values[valueIndex].comparingScenarioValue || 0);
+            (entity.values[valueIndex].comparedScenarioValue || 0);
           entity.values[valueIndex].percentageDifference =
             (((entity.values[valueIndex].baseScenarioValue || 0) -
-              (entity.values[valueIndex].comparingScenarioValue || 0)) /
+              (entity.values[valueIndex].comparedScenarioValue || 0)) /
               (((entity.values[valueIndex].baseScenarioValue || 0) +
-                (entity.values[valueIndex].comparingScenarioValue || 0)) /
+                (entity.values[valueIndex].comparedScenarioValue || 0)) /
                 2)) *
             100;
         },

@@ -79,8 +79,8 @@ describe('Scenario comparison test suite (e2e)', () => {
         endYear: 2021,
         startYear: 2020,
         groupBy: 'material',
-        scenarioOneId: preconditions.newScenarioChangeSupplier.id,
-        scenarioTwoId: preconditions.newScenarioChangeMaterial.id,
+        baseScenarioId: preconditions.newScenarioChangeSupplier.id,
+        comparedScenarioId: preconditions.newScenarioChangeMaterial.id,
       });
 
     expect(responseGroupByMaterial.status).toBe(HttpStatus.OK);
@@ -110,8 +110,8 @@ describe('Scenario comparison test suite (e2e)', () => {
         endYear: 2021,
         startYear: 2020,
         groupBy: 'supplier',
-        scenarioOneId: preconditions.newScenarioChangeSupplier.id,
-        scenarioTwoId: preconditions.newScenarioChangeMaterial.id,
+        baseScenarioId: preconditions.newScenarioChangeSupplier.id,
+        comparedScenarioId: preconditions.newScenarioChangeMaterial.id,
       });
 
     expect(responseGroupBySupplier.status).toBe(HttpStatus.OK);

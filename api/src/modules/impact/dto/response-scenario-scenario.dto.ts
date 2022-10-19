@@ -88,7 +88,7 @@ export class ScenarioVsScenarioYearSumData {
   @ApiPropertyOptional()
   baseScenarioValue: number;
   @ApiPropertyOptional()
-  comparingScenarioValue: number;
+  comparedScenarioValue: number;
   @ApiPropertyOptional()
   absoluteDifference?: number;
   @ApiPropertyOptional()
@@ -103,7 +103,7 @@ export class ScenarioVsScenarioImpactTableRowsValues {
   @ApiPropertyOptional()
   baseScenarioValue?: number;
   @ApiPropertyOptional()
-  comparingScenarioValue?: number;
+  comparedScenarioValue?: number;
   @ApiPropertyOptional()
   absoluteDifference?: number;
   @ApiPropertyOptional()

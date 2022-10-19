@@ -116,12 +116,12 @@ export class GetScenarioVsScenarioImpactTableDto extends GetImpactTableDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsUUID(4)
-  scenarioOneId: string;
+  baseScenarioId: string;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsUUID(4)
-  scenarioTwoId: string;
+  comparedScenarioId: string;
 
   // Property for internal api use (entity filters)
   @IsOptional()

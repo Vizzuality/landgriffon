@@ -443,9 +443,10 @@ preprocess-satDeforestation: download-satDeforestation
 	gdal_calc.py --calc "numpy.where(A>0, A, 0)" --format GTiff --type Float32 --NoData 0 \
 		-A $(WORKDIR_SATDEFORESTATION)/DeforestationRisk_2016-2022-10-01.tif \
 		--outfile $(WORKDIR_SATDEFORESTATION)/risk/DeforestationRisk_2016-2022.tif
-	gdalwarp -q -s_srs EPSG:4326 -t_srs EPSG:4326 -r average -tr 0.0005 0.0005 -multi -of GTiff -overwrite \
+	gdalwarp -q -s_srs EPSG:4326 -t_srs EPSG:4326 -r sum -tr 0.0005 0.0005 -multi -of GTiff \
 		$(WORKDIR_SATDEFORESTATION)/risk/DeforestationRisk_2016-2022.tif \
-		$(WORKDIR_SATDEFORESTATION)/risk/DeforestationRisk_2016-2022.tif
+		$(WORKDIR_SATDEFORESTATION)/risk/DeforestationRisk_2016-2022_res.tif
+	rm $(WORKDIR_SATDEFORESTATION)/risk/DeforestationRisk_2016-2022.tif
 
 convert-satDeforestation: preprocess-satDeforestation
 	python tiff_folder_to_h3_table.py $(WORKDIR_SATDEFORESTATION)/mask h3_grid_sat_deforestation indicator SAT_DF 2021 --h3-res=12 --thread-count=$(PARALLELIZATION_FACTOR)

@@ -37,7 +37,7 @@ const ComparisonCell: React.FC<ComparisonCellProps> = ({
     [formatter],
   );
 
-  if (isNaN(scenarioValue)) return <>{formatter(value)}</>;
+  if (isNaN(scenarioValue)) return <div data-testid="comparison-cell">{formatter(value)}</div>;
 
   return (
     <div className="mr-auto w-fit" data-testid="comparison-cell">

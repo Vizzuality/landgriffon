@@ -151,7 +151,7 @@ export const Anchor = forwardRef<HTMLAnchorElement, AnchorProps>(
       ref={ref}
     >
       <ButtonTemplate {...{ danger, icon, size, variant }} />
-      <div>{children}</div>
+      <div className="whitespace-nowrap">{children}</div>
     </a>
   ),
 );
@@ -176,7 +176,7 @@ export const Button: React.FC<ButtonProps> = ({
     {...restProps}
   >
     <ButtonTemplate {...{ danger, icon, loading, size, variant }} />
-    <div>{children}</div>
+    <div className="whitespace-nowrap">{children}</div>
   </button>
 );
 

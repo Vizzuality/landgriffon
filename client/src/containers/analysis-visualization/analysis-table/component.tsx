@@ -13,7 +13,7 @@ import { useIndicators } from 'hooks/indicators';
 import { useImpactData } from 'hooks/impact';
 import { useImpactComparison, useImpactScenarioComparison } from 'hooks/impact/comparison';
 import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
-import LinkButton from 'components/button';
+import { Anchor } from 'components/button';
 import Table from 'components/table/component';
 import LineChart from 'components/chart/line';
 import { NUMBER_FORMAT } from 'utils/number-format';
@@ -33,12 +33,6 @@ const isParentRow = <Mode extends ComparisonMode>(
   row: ImpactRowType<Mode, true | false>,
 ): row is ImpactRowType<Mode, true> => {
   return 'metadata' in row;
-};
-
-const valueIsComparison = (
-  value: ImpactTableValueItem<ComparisonMode>,
-): value is ImpactTableValueItem<true | 'scenario'> => {
-  return !('value' in value);
 };
 
 const dataToCsv = <Mode extends ComparisonMode>(tableData: AnalysisTableProps<Mode>): string => {
@@ -226,6 +220,12 @@ const AnalysisTable = () => {
   const isComparison = useIsComparison(tableData);
   const isScenarioComparison = useIsScenarioComparison(tableData);
 
+  const valueIsComparison = (
+    value: ImpactTableValueItem<ComparisonMode>,
+  ): value is ImpactTableValueItem<true | 'scenario'> => {
+    return !isScenarioComparison && isComparison;
+  };
+
   const valueIsScenarioComparison = useCallback(
     (value: ImpactTableValueItem<ComparisonMode>): value is ImpactTableValueItem<'scenario'> => {
       return isScenarioComparison && isComparison;
@@ -253,6 +253,7 @@ const AnalysisTable = () => {
           const value = data.values.find((value) => value.year === year);
           const isComparison = valueIsComparison(value);
           const isScenarioComparison = valueIsScenarioComparison(value);
+
           if (!isComparison) {
             if (unit) {
               return `${NUMBER_FORMATTER(value.value)} ${unit}`;
@@ -396,7 +397,7 @@ const AnalysisTable = () => {
         <div className="flex items-end justify-between w-full">
           <AnalysisDynamicMetadata />
           <div>
-            <LinkButton
+            <Anchor
               href={csv}
               variant="secondary"
               size="base"
@@ -406,7 +407,7 @@ const AnalysisTable = () => {
               icon={<DownloadIcon />}
             >
               Download Data
-            </LinkButton>
+            </Anchor>
             <div className="mt-3 font-sans text-xs font-bold leading-4 text-right text-gray-500 uppercase">
               Total {totalRows} {totalRows === 1 ? 'row' : 'rows'}
             </div>

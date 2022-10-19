@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - In chart view, when a comparison is enabled the chart changes to line chart [LANDGRIF-807](https://vizzuality.atlassian.net/browse/LANDGRIF-807)
 - Scenario creation link from analysis [LANDGRIF-805](https://vizzuality.atlassian.net/browse/LANDGRIF-805)
 - Scenario comparison in the chart view [LANDGRIF-945](https://vizzuality.atlassian.net/browse/LANDGRIF-945)
+- Added comparison e2e tests
+- Added mode control e2e tests
 
 ### Changed
 
@@ -44,6 +46,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added loading in the data section before load the table
 - An issue where scenario description was not updated correctly
 - An issue where canceling the intervention creation was redirecting to the wrong page [LANDGRIF-926](https://vizzuality.atlassian.net/browse/LANDGRIF-926)
+- Fixed UI issues in the scenario card list
+- Fixed an issue where compare was not working on scenario vs scenario
+- Fixed an issue where the chart was not showing correctly the projected data
+- Fixed an issue where more filters were not including the compare scenario ID [LANDGRIF-976](https://vizzuality.atlassian.net/browse/LANDGRIF-976)
 
 ## [2022.08.03]
 

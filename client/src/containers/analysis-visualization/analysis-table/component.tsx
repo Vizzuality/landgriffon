@@ -17,7 +17,7 @@ import { Anchor } from 'components/button';
 import Table from 'components/table/component';
 import LineChart from 'components/chart/line';
 import { NUMBER_FORMAT } from 'utils/number-format';
-import { DEFAULT_PAGE_SIZES } from 'components/pagination/constants';
+import { DEFAULT_PAGE_SIZES } from 'components/table/pagination/constants';
 
 import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type { TableProps } from 'components/table/component';
@@ -374,9 +374,10 @@ const AnalysisTable = () => {
   const tableProps = useMemo(
     <Mode extends ComparisonMode>(): TableProps<ImpactRowType<Mode>> => ({
       paginationProps: {
-        totalItems: totalRows,
-        itemNumber: tableData.length,
-        pageCount: metadata.totalPages,
+        totalItems: metadata.totalItems,
+        totalPages: metadata.totalPages,
+        currentPage: metadata.page,
+        pageSize: metadata.size,
       },
       getSubRows: (row) => row.children,
       state: tableState,
@@ -387,13 +388,23 @@ const AnalysisTable = () => {
       columns: baseColumns as ColumnDefinition<ImpactRowType<Mode>>[],
       manualSorting: false,
     }),
-    [baseColumns, isFetching, metadata.totalPages, tableData, tableState, totalRows],
+    [
+      baseColumns,
+      isFetching,
+      metadata.page,
+      metadata.size,
+      metadata.totalItems,
+      metadata.totalPages,
+      tableData,
+      tableState,
+    ],
   );
+
   const csv = useMemo<string | null>(() => encodeURI(dataToCsv(tableProps)), [tableProps]);
 
   return (
     <>
-      <div className="flex justify-between px-6 xl:pl-12">
+      <div className="flex justify-between px-6">
         <div className="flex items-end justify-between w-full">
           <AnalysisDynamicMetadata />
           <div>
@@ -414,7 +425,7 @@ const AnalysisTable = () => {
           </div>
         </div>
       </div>
-      <div className="relative px-6 mt-5 xl:pl-12">
+      <div className="relative px-6 my-6">
         <Table {...tableProps} />
       </div>
     </>

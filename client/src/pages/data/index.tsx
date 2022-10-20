@@ -19,7 +19,7 @@ import Search from 'components/search';
 import Modal from 'components/modal';
 import Table from 'components/table';
 import Loading from 'components/loading';
-import { DEFAULT_PAGE_SIZES } from 'components/pagination/constants';
+import { DEFAULT_PAGE_SIZES } from 'components/table/pagination/constants';
 
 import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type { ColumnDefinition } from 'components/table/column';
@@ -267,9 +267,10 @@ const AdminDataPage: React.FC = () => {
                 sorting,
               }}
               paginationProps={{
-                itemNumber: data.length,
                 totalItems: sourcingMetadata.totalItems,
-                pageCount: sourcingMetadata.totalPages,
+                totalPages: sourcingMetadata.totalPages,
+                currentPage: sourcingMetadata.page,
+                pageSize: sourcingMetadata.size,
               }}
               onPaginationChange={setPagination}
             />

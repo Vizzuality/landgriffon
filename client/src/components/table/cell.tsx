@@ -46,7 +46,7 @@ const CellWrapper = <T, C>({ children, context }: React.PropsWithChildren<CellPr
       style={style}
       className={classNames(
         getAlignmentClasses(align),
-        'pr-5 relative flex items-center justify-start w-full h-20',
+        'pr-5 relative flex items-center justify-start w-full h-20 text-sm',
         { 'cursor-pointer': isExpandible },
       )}
     >
@@ -85,7 +85,7 @@ export const HeaderCell = <T, C>({
 
   return (
     <div
-      className={classNames('py-2 my-auto text-sm text-left text-gray-500 uppercase', {
+      className={classNames('py-2 my-auto text-sm text-left text-gray-400 uppercase font-normal', {
         'pl-[25px]': isFirstColumn,
       })}
     >

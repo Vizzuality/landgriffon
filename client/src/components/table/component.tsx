@@ -11,8 +11,7 @@ import React, { useCallback, useMemo } from 'react';
 import TableRow, { TableHeaderRow } from './row';
 
 import Loading from 'components/loading';
-import Pagination from 'components/pagination';
-import PageSizeSelector from 'components/pagination/pageSizeSelector';
+import Pagination from 'components/table/pagination';
 
 import type { ColumnDefinition } from './column';
 import type { ColumnHelper, Row, TableOptions } from '@tanstack/react-table';
@@ -24,9 +23,9 @@ export interface TableProps<T>
   theme?: 'default' | 'striped';
   paginationProps?: {
     totalItems: number;
-    itemNumber: number;
-    showSummary?: boolean;
-    pageCount?: number;
+    totalPages: number;
+    currentPage: number;
+    pageSize: number;
     pageSizes?: number[];
   };
 }
@@ -158,28 +157,18 @@ const Table = <T,>({
         </div>
       </div>
 
-      <div className="flex flex-row">
-        <div className="flex items-center space-x-2 basis-1/2">
-          <span className="text-sm text-gray-500">Rows per page</span>
-          <PageSizeSelector
-            availableSizes={pagination.pageSizes}
-            onChange={onChangePageSize}
-            pageSize={pagination.pageSize}
-          />
-        </div>
-
-        <div className="flex-1">
-          <Pagination
-            showSummary={pagination.showSummary ?? true}
-            totalPages={pagination.pageCount}
-            totalItems={pagination.totalItems}
-            numItems={pagination.itemNumber ?? pagination.pageSize}
-            currentPage={pagination.pageIndex}
-            onPageClick={(newPage) => {
-              table.setPageIndex(newPage);
-            }}
-          />
-        </div>
+      <div>
+        <Pagination
+          availableSizes={pagination.pageSizes}
+          pageSize={pagination.pageSize}
+          onChangePageSize={onChangePageSize}
+          totalItems={pagination.totalItems}
+          totalPages={pagination.totalPages}
+          currentPage={pagination.currentPage}
+          onPageChange={(nextPage) => {
+            table.setPageIndex(nextPage);
+          }}
+        />
       </div>
     </div>
   );

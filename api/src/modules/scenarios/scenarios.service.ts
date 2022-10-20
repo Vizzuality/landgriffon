@@ -11,6 +11,7 @@ import { CreateScenarioDto } from 'modules/scenarios/dto/create.scenario.dto';
 import { UpdateScenarioDto } from 'modules/scenarios/dto/update.scenario.dto';
 import { ScenarioInterventionsService } from 'modules/scenario-interventions/scenario-interventions.service';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { SelectQueryBuilder } from 'typeorm';
 
 @Injectable()
 export class ScenariosService extends AppBaseService<
@@ -70,5 +71,20 @@ export class ScenariosService extends AppBaseService<
 
   async clearTable(): Promise<void> {
     await this.scenarioRepository.delete({});
+  }
+
+  extendFindAllQuery(
+    query: SelectQueryBuilder<Scenario>,
+    fetchSpecification: Record<string, unknown>,
+    info: AppInfoDTO,
+  ): Promise<SelectQueryBuilder<Scenario>> {
+    console.log(JSON.stringify(fetchSpecification));
+    console.log(JSON.stringify(info));
+    if (fetchSpecification.hasInterventions) {
+      query.andWhere(
+        'exists (select from "scenario_intervention" si where si."scenarioId" = "scenario".id)',
+      );
+    }
+    return Promise.resolve(query);
   }
 }

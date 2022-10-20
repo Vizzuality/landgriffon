@@ -215,6 +215,55 @@ describe('ScenariosModule (e2e)', () => {
       expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
     });
 
+    test('Get scenarios that have at least one intervention', async () => {
+      const scenarioOne: Scenario = await createScenario({
+        title: 'scenario one',
+        status: SCENARIO_STATUS.ACTIVE,
+        description: 'ignored',
+      });
+      await createScenarioIntervention({
+        scenario: scenarioOne,
+        title: 'intervention 1-1',
+      });
+
+      const scenarioTwo: Scenario = await createScenario({
+        title: 'scenario two',
+        status: SCENARIO_STATUS.ACTIVE,
+        description: 'selected',
+      });
+      await createScenarioIntervention({
+        scenario: scenarioTwo,
+        title: 'intervention 2-1',
+      });
+      await createScenarioIntervention({
+        scenario: scenarioTwo,
+        title: 'intervention 2-2',
+      });
+
+      await createScenario({
+        title: 'scenario three',
+        status: SCENARIO_STATUS.ACTIVE,
+        description: 'selected',
+      });
+
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/scenarios`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          hasInterventions: true,
+          filter: {
+            description: 'selected',
+          },
+        })
+        .send()
+        .expect(HttpStatus.OK);
+
+      expect(response.body.data.length).toEqual(1);
+      expect(response.body.data[0].attributes.title).toEqual('scenario two');
+
+      expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
+    });
+
     test('Get scenarios filtered by some criteria should only return the scenarios that match said criteria', async () => {
       const scenarioOne: Scenario = await createScenario({
         title: 'scenario one',

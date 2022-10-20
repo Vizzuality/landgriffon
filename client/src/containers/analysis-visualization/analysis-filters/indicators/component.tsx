@@ -12,6 +12,7 @@ import type { SelectProps, Option } from 'components/forms/select/types';
 const ALL = {
   id: 'all',
   name: 'All indicators',
+  nameCode: 'all',
 };
 
 const IndicatorsFilter = () => {
@@ -26,9 +27,12 @@ const IndicatorsFilter = () => {
     data = [],
     isFetching,
     error,
-  } = useIndicators({
-    select: (data) => data.data,
-  });
+  } = useIndicators(
+    {},
+    {
+      select: (data) => data.data,
+    },
+  );
 
   const options: SelectProps['options'] = useMemo(() => {
     let d = data || [];

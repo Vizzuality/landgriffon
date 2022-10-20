@@ -13,6 +13,7 @@ import { InterventionTypes, LocationTypes, InfoTooltip } from '../enums';
 
 import InterventionTypeIcon from './intervention-type-icon';
 
+import { useIndicators } from 'hooks/indicators';
 import { useSuppliersTypes } from 'hooks/suppliers';
 import { useLocationTypes } from 'hooks/location-types';
 import { useAdminRegionsTrees } from 'hooks/admin-regions';
@@ -123,10 +124,20 @@ const schemaValidation = yup.object({
   newLocationLatitude: yup.number().min(-90).max(90),
 
   // Coefficients
-  DF_LUC_T: yup.number(),
-  UWU_T: yup.number(),
-  BL_LUC_T: yup.number(),
-  GHG_LUC_T: yup.number(),
+  coefficients: yup.lazy((coefficientObject) => {
+    const schema = Object.keys(coefficientObject).reduce(
+      (prevValue, currentValue) => ({
+        ...prevValue,
+        [currentValue]: yup.lazy((v) => {
+          if (v === '') return yup.string().required('This coefficient is required.');
+
+          return yup.number();
+        }),
+      }),
+      {},
+    );
+    return yup.object(schema);
+  }),
 });
 
 const LABEL_CLASSNAMES = 'text-sm';
@@ -147,6 +158,13 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     query: { scenarioId },
   } = useRouter();
 
+  const { data: indicators } = useIndicators({ include: 'unit' }, { select: (data) => data.data });
+
+  const indicatorNameCodes = useMemo(
+    () => indicators?.map(({ nameCode }) => nameCode),
+    [indicators],
+  );
+
   const {
     register,
     control,
@@ -158,76 +176,83 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     clearErrors,
   } = useForm<SubSchema>({
     resolver: yupResolver(schemaValidation),
-    ...(intervention && {
-      defaultValues: {
-        title: intervention?.title,
-        scenarioId: '',
-        percentage: intervention.percentage,
-        startYear: {
-          label: intervention.startYear.toString(),
-          value: intervention.startYear,
-        },
-        materialIds: intervention.replacedMaterials.map(({ id, name }) => ({
-          label: name,
-          value: id,
-        })),
-        businessUnitIds: intervention.replacedBusinessUnits.map(({ id, name }) => ({
-          label: name,
-          value: id,
-        })),
-        adminRegionIds: intervention.replacedAdminRegions.map(({ id, name }) => ({
-          label: name,
-          value: id,
-        })),
-        supplierIds: intervention.replacedSuppliers.map(({ id, name }) => ({
-          label: name,
-          value: id,
-        })),
-        interventionType: intervention.type,
-        newMaterialId: [
-          {
-            label: intervention.newMaterial?.name,
-            value: intervention.newMaterial?.id,
+    ...(intervention &&
+      indicatorNameCodes && {
+        defaultValues: {
+          title: intervention?.title,
+          scenarioId: '',
+          percentage: intervention.percentage,
+          startYear: {
+            label: intervention.startYear.toString(),
+            value: intervention.startYear,
           },
-        ],
-        newLocationType: {
-          label: intervention.newLocationType,
-          value: intervention.newLocationType,
+          materialIds: intervention.replacedMaterials.map(({ id, name }) => ({
+            label: name,
+            value: id,
+          })),
+          businessUnitIds: intervention.replacedBusinessUnits.map(({ id, name }) => ({
+            label: name,
+            value: id,
+          })),
+          adminRegionIds: intervention.replacedAdminRegions.map(({ id, name }) => ({
+            label: name,
+            value: id,
+          })),
+          supplierIds: intervention.replacedSuppliers.map(({ id, name }) => ({
+            label: name,
+            value: id,
+          })),
+          interventionType: intervention.type,
+          newMaterialId: [
+            {
+              label: intervention.newMaterial?.name,
+              value: intervention.newMaterial?.id,
+            },
+          ],
+          newLocationType: {
+            label: intervention.newLocationType,
+            value: intervention.newLocationType,
+          },
+          // New location
+          newLocationCountryInput: intervention.newLocationCountryInput
+            ? {
+                label: intervention.newLocationCountryInput,
+                value: intervention.newLocationCountryInput,
+              }
+            : {},
+          cityAddressCoordinates:
+            intervention.newLocationAddressInput ||
+            (intervention.newLocationLatitudeInput &&
+              intervention.newLocationLongitudeInput &&
+              `${intervention.newLocationLatitudeInput},${intervention.newLocationLongitudeInput}`) ||
+            '',
+          newLocationAddressInput: intervention?.newLocationAddressInput || null,
+          // New supplier/producer
+          newT1SupplierId: intervention?.newT1Supplier
+            ? {
+                label: intervention.newT1Supplier.name,
+                value: intervention.newT1Supplier.id,
+              }
+            : null,
+          newProducerId: intervention?.newProducer
+            ? {
+                label: intervention.newProducer.name,
+                value: intervention.newProducer.id,
+              }
+            : null,
+          // coefficients
+          coefficients: {
+            ...(Object.keys(intervention?.newIndicatorCoefficients || {}).length &&
+              Object.keys(intervention.newIndicatorCoefficients).reduce(
+                (prev, current) => ({
+                  ...prev,
+                  [current]: intervention.newIndicatorCoefficients[current],
+                }),
+                {},
+              )),
+          },
         },
-        // New location
-        newLocationCountryInput: intervention.newLocationCountryInput
-          ? {
-              label: intervention.newLocationCountryInput,
-              value: intervention.newLocationCountryInput,
-            }
-          : {},
-        cityAddressCoordinates:
-          intervention.newLocationAddressInput ||
-          (intervention.newLocationLatitudeInput &&
-            intervention.newLocationLongitudeInput &&
-            `${intervention.newLocationLatitudeInput},${intervention.newLocationLongitudeInput}`) ||
-          '',
-        newLocationAddressInput: intervention?.newLocationAddressInput || null,
-        // New supplier/producer
-        newT1SupplierId: intervention?.newT1Supplier
-          ? {
-              label: intervention.newT1Supplier.name,
-              value: intervention.newT1Supplier.id,
-            }
-          : null,
-        newProducerId: intervention?.newProducer
-          ? {
-              label: intervention.newProducer.name,
-              value: intervention.newProducer.id,
-            }
-          : null,
-        // coefficients
-        DF_LUC_T: intervention?.newIndicatorCoefficients?.DF_LUC_T || 0,
-        UWU_T: intervention?.newIndicatorCoefficients?.UWU_T || 0,
-        BL_LUC_T: intervention?.newIndicatorCoefficients?.BL_LUC_T || 0,
-        GHG_LUC_T: intervention?.newIndicatorCoefficients?.GHG_LUC_T || 0,
-      },
-    }),
+      }),
     shouldFocusError: true,
   });
 
@@ -243,10 +268,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     newLocationType: locationType,
     newT1SupplierId: currentT1SupplierId,
     newProducerId: currentProducerId,
-    DF_LUC_T,
-    UWU_T,
-    BL_LUC_T,
-    GHG_LUC_T,
+    coefficients = {},
   } = watch();
 
   // Suppliers
@@ -338,10 +360,10 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
 
     // * resets "impacts per ton" coefficients whenever the intervention type changes
     if (!intervention) {
-      resetField('DF_LUC_T', { defaultValue: 0 });
-      resetField('UWU_T', { defaultValue: 0 });
-      resetField('BL_LUC_T', { defaultValue: 0 });
-      resetField('GHG_LUC_T', { defaultValue: 0 });
+      Object.values(indicatorNameCodes).forEach((indicatorKey) => {
+        // @ts-expect-error not sure how to solve this dynamic typing
+        resetField(`coefficients.${indicatorKey}`, { defaultValue: 0 });
+      });
     }
 
     // * resets supplier and producer info whenever the intervention type changes
@@ -357,7 +379,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     if (closeImpactsRef.current !== null) {
       closeImpactsRef.current();
     }
-  }, [currentInterventionType, resetField, closeSupplierRef, intervention]);
+  }, [currentInterventionType, resetField, closeSupplierRef, intervention, indicatorNameCodes]);
 
   useEffect(() => {
     clearErrors([
@@ -403,10 +425,14 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     return () => subscription.unsubscribe();
   }, [resetField, setValue, watch]);
 
-  const areCoefficientsEdited = useMemo(
-    () => DF_LUC_T !== 0 || GHG_LUC_T !== 0 || UWU_T !== 0 || BL_LUC_T !== 0,
-    [DF_LUC_T, GHG_LUC_T, UWU_T, BL_LUC_T],
-  );
+  // ? I had to put this variable out of useMemo because it looks like
+  // ? the form mutates the coefficients object and the below useMemo doesn't trigger after a second change.
+  const cofficientValues = Object.values(coefficients);
+
+  const areCoefficientsEdited = useMemo(() => {
+    if (!cofficientValues) return false;
+    return cofficientValues.some((v) => +v !== 0);
+  }, [cofficientValues]);
 
   const areSupplierEdited = useMemo(
     () => Boolean(currentT1SupplierId || currentProducerId),
@@ -915,58 +941,22 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                       }
                     >
                       <div className="space-y-4">
-                        <div>
-                          <label className={LABEL_CLASSNAMES}>Carbon emission</label>
-                          <Input
-                            {...register('GHG_LUC_T')}
-                            type="number"
-                            step={0.001}
-                            min={0}
-                            defaultValue={0}
-                            error={errors?.GHG_LUC_T?.message}
-                            unit="tC02e"
-                            data-testid="GHG_LUC_T-input"
-                          />
-                        </div>
-                        <div>
-                          <label className={LABEL_CLASSNAMES}>Deforestation risk</label>
-                          <Input
-                            {...register('DF_LUC_T')}
-                            type="number"
-                            step={0.001}
-                            min={0}
-                            defaultValue={0}
-                            error={errors?.DF_LUC_T?.message}
-                            unit="Ha"
-                            data-testid="DF_LUC_T-input"
-                          />
-                        </div>
-                        <div>
-                          <label className={LABEL_CLASSNAMES}>Water withdrawal</label>
-                          <Input
-                            {...register('UWU_T')}
-                            type="number"
-                            step={0.001}
-                            min={0}
-                            defaultValue={0}
-                            error={errors?.UWU_T?.message}
-                            unit="100m3"
-                            data-testid="UWU_T-input"
-                          />
-                        </div>
-                        <div>
-                          <label className={LABEL_CLASSNAMES}>Biodiversity impact</label>
-                          <Input
-                            {...register('BL_LUC_T')}
-                            type="number"
-                            step={0.001}
-                            min={0}
-                            defaultValue={0}
-                            error={errors?.BL_LUC_T?.message}
-                            unit="PDF"
-                            data-testid="BL_LUC_T-input"
-                          />
-                        </div>
+                        {indicators.map((indicator) => (
+                          <div key={indicator.id}>
+                            <label className={LABEL_CLASSNAMES}>{indicator.name}</label>
+                            <Input
+                              // @ts-expect-error not sure how to solve this dynamic typing
+                              {...register(`coefficients.${indicator.nameCode}`)}
+                              type="number"
+                              step={0.001}
+                              min={0}
+                              defaultValue={0}
+                              error={errors?.coefficients?.[indicator.nameCode]?.message}
+                              unit={indicator.unit.symbol}
+                              data-testid={`${indicator.nameCode}-input`}
+                            />
+                          </div>
+                        ))}
                       </div>
                     </Disclosure.Panel>
                   </>

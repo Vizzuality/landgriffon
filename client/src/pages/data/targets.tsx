@@ -14,7 +14,7 @@ import AdminLayout from 'layouts/data';
 import type { Target } from 'types';
 
 const AdminTargetsPage: React.FC = () => {
-  const { data: indicators } = useIndicators({ select: (data) => data.data });
+  const { data: indicators } = useIndicators({}, { select: (data) => data.data });
   const { isLoading } = useTargets();
   const hasData = indicators?.length > 0;
 

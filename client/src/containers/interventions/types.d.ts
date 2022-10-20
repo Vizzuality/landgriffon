@@ -1,12 +1,7 @@
 import type { InterventionTypes, LocationStatus, LocationTypes } from './enums';
 import type { SelectOption } from 'components/select/types';
 
-export type IndicatorCoefficients = {
-  DF_LUC_T: number;
-  UWU_T: number;
-  BL_LUC_T: number;
-  GHG_LUC_T: number;
-};
+export type IndicatorCoefficients = Record<string, number>;
 
 export type T1Supplier = {
   id: string;
@@ -70,10 +65,7 @@ export type InterventionFormData = {
 
   newMaterialId?: SelectOption[];
 
-  DF_LUC_T?: IndicatorCoefficients['DF_LUC_T'];
-  UWU_T?: IndicatorCoefficients['UWU_T'];
-  BL_LUC_T?: IndicatorCoefficients['BL_LUC_T'];
-  GHG_LUC_T?: IndicatorCoefficients['GHG_LUC_T'];
+  coefficients: IndicatorCoefficients;
 };
 
 export type InterventionDto = {

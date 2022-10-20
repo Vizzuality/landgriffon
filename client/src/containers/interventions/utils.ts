@@ -30,12 +30,11 @@ export function parseInterventionFormDataToDto(
     newLocationType,
     newLocationCountryInput,
     newLocationAddressInput,
-    DF_LUC_T,
-    UWU_T,
-    BL_LUC_T,
-    GHG_LUC_T,
+    coefficients,
     ...rest
   } = interventionFormData;
+
+  const areCoefficientsSet = Object.values(coefficients).some((v) => +v !== 0);
 
   const result: InterventionDto = {
     ...rest,
@@ -72,21 +71,11 @@ export function parseInterventionFormDataToDto(
     // * for other intervention types, coeficients are sent only if the user has filled any of them.
     ...(interventionType === InterventionTypes.Efficiency
       ? {
-          newIndicatorCoefficients: {
-            DF_LUC_T: DF_LUC_T || 0,
-            UWU_T: UWU_T || 0,
-            BL_LUC_T: BL_LUC_T || 0,
-            GHG_LUC_T: GHG_LUC_T || 0,
-          },
+          newIndicatorCoefficients: coefficients,
         }
       : {
-          ...((DF_LUC_T || UWU_T || BL_LUC_T || GHG_LUC_T) && {
-            newIndicatorCoefficients: {
-              DF_LUC_T: DF_LUC_T || 0,
-              UWU_T: UWU_T || 0,
-              BL_LUC_T: BL_LUC_T || 0,
-              GHG_LUC_T: GHG_LUC_T || 0,
-            },
+          ...(areCoefficientsSet && {
+            newIndicatorCoefficients: coefficients,
           }),
         }),
   };

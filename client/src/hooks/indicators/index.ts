@@ -14,6 +14,7 @@ const DEFAULT_QUERY_OPTIONS = {
 type ResponseData = { data: Indicator[]; meta: PaginationMetadata };
 
 export const useIndicators = <T = ResponseData>(
+  queryParams: Record<string, unknown> = {},
   options: UseQueryOptions<ResponseData, unknown, T, ['indicators']> = {},
 ) => {
   const query = useQuery(
@@ -23,6 +24,7 @@ export const useIndicators = <T = ResponseData>(
         .request<ResponseData>({
           method: 'GET',
           url: '/indicators',
+          params: queryParams,
         })
         .then(({ data }) => data),
     {

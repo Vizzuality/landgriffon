@@ -80,6 +80,7 @@ type Unit = {
 export type Indicator = {
   id: string;
   name: string;
+  nameCode: string;
   value?: number;
   unit?: Unit;
 };

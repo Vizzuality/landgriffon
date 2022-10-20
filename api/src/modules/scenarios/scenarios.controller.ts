@@ -17,6 +17,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -43,6 +44,12 @@ export class ScenariosController {
 
   @ApiOperation({
     description: 'Find all scenarios',
+  })
+  @ApiQuery({
+    name: 'hasInterventions',
+    type: 'boolean',
+    description:
+      'If true, only scenarios that have interventions will be selected',
   })
   @ApiOkResponse({
     type: Scenario,

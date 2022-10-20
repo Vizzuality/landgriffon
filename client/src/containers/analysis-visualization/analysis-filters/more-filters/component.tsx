@@ -156,11 +156,16 @@ const MoreFilters = () => {
     useDismiss(context),
   ]);
 
+  const scenarioIds = useMemo(
+    () => [scenarioId, compareScenarioId].filter((id) => id) as string[],
+    [scenarioId, compareScenarioId],
+  );
+
   const { data: materialOptions } = useMaterialsTrees(
     {
       depth: 1,
       withSourcingLocations: true,
-      scenarioIds: compareScenarioId ? [scenarioId, compareScenarioId] : [scenarioId],
+      scenarioIds,
     },
     DEFAULT_QUERY_OPTIONS,
   );
@@ -171,7 +176,7 @@ const MoreFilters = () => {
       materialIds,
       supplierIds,
       locationTypes: locationTypesIds,
-      scenarioIds: compareScenarioId ? [scenarioId, compareScenarioId] : [scenarioId],
+      scenarioIds,
     },
     DEFAULT_QUERY_OPTIONS,
   );
@@ -182,7 +187,7 @@ const MoreFilters = () => {
       materialIds,
       originIds,
       locationTypes: locationTypesIds,
-      scenarioIds: compareScenarioId ? [scenarioId, compareScenarioId] : [scenarioId],
+      scenarioIds,
     },
     DEFAULT_QUERY_OPTIONS,
   );
@@ -192,7 +197,7 @@ const MoreFilters = () => {
       materialIds,
       originIds,
       supplierIds,
-      scenarioIds: compareScenarioId ? [scenarioId, compareScenarioId] : [scenarioId],
+      scenarioIds,
     },
     {
       ...DEFAULT_QUERY_OPTIONS,

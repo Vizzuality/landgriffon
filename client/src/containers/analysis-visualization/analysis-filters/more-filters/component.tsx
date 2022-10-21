@@ -166,6 +166,8 @@ const MoreFilters = () => {
       depth: 1,
       withSourcingLocations: true,
       scenarioIds,
+      originIds,
+      supplierIds,
     },
     DEFAULT_QUERY_OPTIONS,
   );
@@ -241,6 +243,7 @@ const MoreFilters = () => {
         {...getReferenceProps({
           ref: reference,
         })}
+        data-testid="more-filters-button"
       >
         <FilterIcon className="block w-5 h-5 mx-1 text-gray-900" aria-hidden="true" />
         {counter > 0 && (
@@ -286,6 +289,7 @@ const MoreFilters = () => {
                   current={selectedFilters.materials}
                   fitContent
                   onChange={(values) => handleChangeFilter('materials', values)}
+                  id="materials-filter"
                 />
               </div>
               <div>
@@ -296,6 +300,7 @@ const MoreFilters = () => {
                   current={selectedFilters.origins}
                   fitContent
                   onChange={(values) => handleChangeFilter('origins', values)}
+                  id="origins-filter"
                 />
               </div>
               <div>
@@ -306,6 +311,7 @@ const MoreFilters = () => {
                   current={selectedFilters.suppliers}
                   fitContent
                   onChange={(values) => handleChangeFilter('suppliers', values)}
+                  id="suppliers-filter"
                 />
               </div>
               <div>

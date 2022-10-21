@@ -69,6 +69,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
     checkedStrategy = 'PARENT', // by default show child
     label,
     autoFocus = false,
+    id,
   }: TreeSelectProps<IsMulti>,
   ref: Ref<HTMLInputElement>,
 ) => {
@@ -324,7 +325,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
   ]);
 
   return (
-    <div className="min-w-0 ">
+    <div className="min-w-0 " data-testid={`tree-select-${id}`}>
       <div
         {...getReferenceProps({
           ref: reference,

@@ -53,6 +53,6 @@ apiService.interceptors.request.use(authorizedRequest, onResponseError);
 export const apiRawService = axios.create(defaultConfig);
 
 apiRawService.interceptors.response.use((response) => response, onResponseError);
-apiRawService.interceptors.request.use(authorizedRequest, onResponseError);
+apiRawService.interceptors.request.use(authorizedRequest, (error) => Promise.reject(error));
 
 export default apiService;

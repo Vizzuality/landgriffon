@@ -1,6 +1,4 @@
 beforeEach(() => {
-  cy.viewport(1200, 800);
-
   cy.intercept('POST', '/api/v1/scenarios', {
     statusCode: 201,
     fixture: 'scenario/scenario-creation',

@@ -7,5 +7,7 @@ export default defineConfig({
     video: false,
     videoUploadOnPasses: false,
     experimentalSessionAndOrigin: true,
+    viewportWidth: 1280,
+    viewportHeight: 920,
   },
 });

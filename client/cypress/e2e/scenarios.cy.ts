@@ -1,6 +1,4 @@
 beforeEach(() => {
-  cy.viewport(1200, 800);
-
   cy.intercept('GET', '/api/v1/scenarios/**/interventions', {
     statusCode: 200,
     fixture: 'scenario/scenario-interventions',

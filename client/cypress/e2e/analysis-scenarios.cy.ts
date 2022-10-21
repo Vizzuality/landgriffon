@@ -1,5 +1,7 @@
-describe('Analysis', () => {
+describe('Analysis and scenarios', () => {
   beforeEach(() => {
+    cy.viewport(1200, 800);
+
     cy.intercept('GET', '/api/v1/scenarios?sort=-updatedAt&disablePagination=true', {
       statusCode: 200,
       fixture: 'scenario/scenarios',

@@ -1,4 +1,6 @@
 beforeEach(() => {
+  cy.viewport(1200, 800);
+
   cy.login().visit('/data/scenarios/new');
 
   cy.intercept('POST', '/api/v1/scenarios', {

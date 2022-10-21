@@ -69,6 +69,7 @@ const IndicatorsFilter = () => {
 
   return (
     <Select
+      id="indicators-selector"
       value={current}
       onChange={handleChange}
       options={options}

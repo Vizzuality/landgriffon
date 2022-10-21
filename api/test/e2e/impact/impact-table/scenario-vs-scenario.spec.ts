@@ -4,10 +4,10 @@ import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { ImpactModule } from 'modules/impact/impact.module';
 import { Indicator } from 'modules/indicators/indicator.entity';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetToken } from '../../../utils/userAuth';
+import { getApp } from '../../../utils/getApp';
 import { Scenario } from 'modules/scenarios/scenario.entity';
-import { clearEntityTables } from '../../utils/database-test-helper';
+import { clearEntityTables } from '../../../utils/database-test-helper';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
@@ -23,8 +23,8 @@ import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing
 import {
   getSameMaterialScenarioComparisonResponse,
   getScenarioComparisonResponseBySupplier,
-} from './scenario-vs-scenario-responses/same-materials-scenarios.reponse';
-import { createSameMaterialScenariosPreconditions } from './scenario-vs-scenario-preconditions/same-materials-scenarios.preconditions';
+} from '../mocks/scenario-vs-scenario-responses/same-materials-scenarios.reponse';
+import { createSameMaterialScenariosPreconditions } from '../mocks/scenario-vs-scenario-preconditions/same-materials-scenarios.preconditions';
 
 describe('Scenario comparison test suite (e2e)', () => {
   let app: INestApplication;

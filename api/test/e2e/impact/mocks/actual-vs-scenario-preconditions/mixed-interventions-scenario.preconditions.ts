@@ -27,8 +27,8 @@ import {
   createSourcingRecord,
   createSupplier,
   createUnit,
-} from '../../../entity-mocks';
-import { INDICATOR_TYPES } from '../../../../src/modules/indicators/indicator.entity';
+} from '../../../../entity-mocks';
+import { INDICATOR_TYPES } from '../../../../../src/modules/indicators/indicator.entity';
 
 export async function createMultipleInterventionsPreconditions(): Promise<{
   indicator: Indicator;

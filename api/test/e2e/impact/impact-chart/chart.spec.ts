@@ -2,27 +2,27 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { v4 as uuidv4 } from 'uuid';
-import { AppModule } from '../../../src/app.module';
-import { ImpactModule } from '../../../src/modules/impact/impact.module';
-import { getApp } from '../../utils/getApp';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { clearEntityTables } from '../../utils/database-test-helper';
-import { IndicatorRecord } from '../../../src/modules/indicator-records/indicator-record.entity';
-import { MaterialToH3 } from '../../../src/modules/materials/material-to-h3.entity';
-import { H3Data } from '../../../src/modules/h3-data/h3-data.entity';
-import { Material } from '../../../src/modules/materials/material.entity';
+import { AppModule } from '../../../../src/app.module';
+import { ImpactModule } from '../../../../src/modules/impact/impact.module';
+import { getApp } from '../../../utils/getApp';
+import { saveUserAndGetToken } from '../../../utils/userAuth';
+import { clearEntityTables } from '../../../utils/database-test-helper';
+import { IndicatorRecord } from '../../../../src/modules/indicator-records/indicator-record.entity';
+import { MaterialToH3 } from '../../../../src/modules/materials/material-to-h3.entity';
+import { H3Data } from '../../../../src/modules/h3-data/h3-data.entity';
+import { Material } from '../../../../src/modules/materials/material.entity';
 import {
   Indicator,
   INDICATOR_TYPES,
-} from '../../../src/modules/indicators/indicator.entity';
-import { Unit } from '../../../src/modules/units/unit.entity';
-import { BusinessUnit } from '../../../src/modules/business-units/business-unit.entity';
-import { AdminRegion } from '../../../src/modules/admin-regions/admin-region.entity';
-import { GeoRegion } from '../../../src/modules/geo-regions/geo-region.entity';
-import { Supplier } from '../../../src/modules/suppliers/supplier.entity';
-import { SourcingRecord } from '../../../src/modules/sourcing-records/sourcing-record.entity';
-import { SourcingLocation } from '../../../src/modules/sourcing-locations/sourcing-location.entity';
-import { SourcingLocationGroup } from '../../../src/modules/sourcing-location-groups/sourcing-location-group.entity';
+} from '../../../../src/modules/indicators/indicator.entity';
+import { Unit } from '../../../../src/modules/units/unit.entity';
+import { BusinessUnit } from '../../../../src/modules/business-units/business-unit.entity';
+import { AdminRegion } from '../../../../src/modules/admin-regions/admin-region.entity';
+import { GeoRegion } from '../../../../src/modules/geo-regions/geo-region.entity';
+import { Supplier } from '../../../../src/modules/suppliers/supplier.entity';
+import { SourcingRecord } from '../../../../src/modules/sourcing-records/sourcing-record.entity';
+import { SourcingLocation } from '../../../../src/modules/sourcing-locations/sourcing-location.entity';
+import { SourcingLocationGroup } from '../../../../src/modules/sourcing-location-groups/sourcing-location-group.entity';
 import {
   ImpactTableDataAggregatedValue,
   ImpactTableDataAggregationInfo,
@@ -39,11 +39,12 @@ import {
   createSourcingRecord,
   createSupplier,
   createUnit,
-} from '../../entity-mocks';
+} from '../../../entity-mocks';
 import { range } from 'lodash';
-import { createNewMaterialInterventionPreconditions } from './actual-vs-scenario-preconditions/new-material-intervention.preconditions';
-import { Scenario } from '../../../src/modules/scenarios/scenario.entity';
-import { rankingTableWithScenario } from './response-mocks.impact';
+
+import { createNewMaterialInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-material-intervention.preconditions';
+import { Scenario } from 'modules/scenarios/scenario.entity';
+import { rankingTableWithScenario } from '../mocks/response-mocks.impact';
 
 describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
   let app: INestApplication;

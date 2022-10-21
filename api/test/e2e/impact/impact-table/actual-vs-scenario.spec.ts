@@ -4,22 +4,22 @@ import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { ImpactModule } from 'modules/impact/impact.module';
 import { Indicator } from 'modules/indicators/indicator.entity';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetToken } from '../../../utils/userAuth';
+import { getApp } from '../../../utils/getApp';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
-import { createNewMaterialInterventionPreconditions } from './actual-vs-scenario-preconditions/new-material-intervention.preconditions';
-import { createNewCoefficientsInterventionPreconditions } from './actual-vs-scenario-preconditions/new-coefficients-intervention.preconditions';
-import { newCoefficientsScenarioInterventionTable } from './actual-vs-scenario-responses/new-coefficients-intervention.response';
-import { newMaterialScenarioInterventionTable } from './actual-vs-scenario-responses/new-materials-intervention.response';
-import { createNewSupplierInterventionPreconditions } from './actual-vs-scenario-preconditions/new-supplier-intervention.preconditions';
-import { newSupplierScenarioInterventionTable } from './actual-vs-scenario-responses/new-supplier-intervention.response';
-import { createMultipleInterventionsPreconditions } from './actual-vs-scenario-preconditions/mixed-interventions-scenario.preconditions';
+import { createNewMaterialInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-material-intervention.preconditions';
+import { createNewCoefficientsInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-coefficients-intervention.preconditions';
+import { newCoefficientsScenarioInterventionTable } from '../mocks/actual-vs-scenario-responses/new-coefficients-intervention.response';
+import { newMaterialScenarioInterventionTable } from '../mocks/actual-vs-scenario-responses/new-materials-intervention.response';
+import { createNewSupplierInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-supplier-intervention.preconditions';
+import { newSupplierScenarioInterventionTable } from '../mocks/actual-vs-scenario-responses/new-supplier-intervention.response';
+import { createMultipleInterventionsPreconditions } from '../mocks/actual-vs-scenario-preconditions/mixed-interventions-scenario.preconditions';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import {
   mixedInterventionsScenarioTable,
   mixedInterventionsScenarioTable2019,
-} from './actual-vs-scenario-responses/mixed-interventions-scenario.response';
-import { clearEntityTables } from '../../utils/database-test-helper';
+} from '../mocks/actual-vs-scenario-responses/mixed-interventions-scenario.response';
+import { clearEntityTables } from '../../../utils/database-test-helper';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
@@ -32,7 +32,7 @@ import { Supplier } from 'modules/suppliers/supplier.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
-import { createScenario } from '../../entity-mocks';
+import { createScenario } from '../../../entity-mocks';
 
 describe('Impact Table and Charts test suite (e2e)', () => {
   let app: INestApplication;

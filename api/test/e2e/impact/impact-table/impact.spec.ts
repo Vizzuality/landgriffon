@@ -13,7 +13,7 @@ import {
   createSourcingRecord,
   createSupplier,
   createUnit,
-} from '../../entity-mocks';
+} from '../../../entity-mocks';
 import { v4 as uuidv4 } from 'uuid';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { ImpactModule } from 'modules/impact/impact.module';
@@ -31,8 +31,8 @@ import {
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetToken } from '../../../utils/userAuth';
+import { getApp } from '../../../utils/getApp';
 import {
   filteredByLocationTypeResponseData,
   groupByBusinessUnitResponseData,
@@ -43,16 +43,16 @@ import {
   groupByOriginResponseData,
   groupBySupplierResponseData,
   impactTableWithScenario,
-} from './response-mocks.impact';
+} from '../mocks/response-mocks.impact';
 import { PaginationMeta } from 'utils/app-base.service';
 import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
-import { clearEntityTables } from '../../utils/database-test-helper';
+import { clearEntityTables } from '../../../utils/database-test-helper';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
-import { createNewMaterialInterventionPreconditions } from './actual-vs-scenario-preconditions/new-material-intervention.preconditions';
-import { Scenario } from '../../../src/modules/scenarios/scenario.entity';
+import { createNewMaterialInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-material-intervention.preconditions';
+import { Scenario } from '../../../../src/modules/scenarios/scenario.entity';
 
 describe('Impact Table and Charts test suite (e2e)', () => {
   let app: INestApplication;
@@ -703,7 +703,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       );
     });
 
-    test('Impact table grouped by Supplier should be successful', async () => {
+    test('When I query the API for a Impact table grouped by Supplier Then I should get the correct data', async () => {
       const adminRegion: AdminRegion = await createAdminRegion({
         name: 'Fake AdminRegion',
       });
@@ -717,6 +717,10 @@ describe('Impact Table and Charts test suite (e2e)', () => {
 
       const material: Material = await createMaterial({
         name: 'Fake Material',
+      });
+
+      const material2: Material = await createMaterial({
+        name: 'Fake Material 2',
       });
 
       const businessUnit: BusinessUnit = await createBusinessUnit({
@@ -739,7 +743,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       });
 
       const sourcingLocation2: SourcingLocation = await createSourcingLocation({
-        material: material,
+        material: material2,
         businessUnit,
         t1Supplier: supplier2,
         adminRegion: adminRegion,
@@ -784,12 +788,29 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         })
         .expect(HttpStatus.OK);
 
+      const response2 = await request(app.getHttpServer())
+        .get('/api/v1/impact/table')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [indicator.id],
+          endYear: 2013,
+          startYear: 2010,
+          groupBy: 'supplier',
+          'materialIds[]': [material2.id],
+        })
+        .expect(HttpStatus.OK);
+
       expect(response.body.data.impactTable[0].rows).toHaveLength(2);
       expect(response.body.data.impactTable[0].rows).toEqual(
         expect.arrayContaining(groupBySupplierResponseData.rows),
       );
       expect(response.body.data.impactTable[0].yearSum).toEqual(
         expect.arrayContaining(groupBySupplierResponseData.yearSum),
+      );
+
+      expect(response2.body.data.impactTable[0].rows).toHaveLength(1);
+      expect(response2.body.data.impactTable[0].rows[0]).toEqual(
+        groupBySupplierResponseData.rows[1],
       );
     });
 

@@ -7,6 +7,7 @@ export type TreeSelectOption = {
 };
 
 interface CommonTreeProps {
+  id?: string; // for testing purposes
   maxBadges?: number;
   placeholder?: string;
   showSearch?: boolean;

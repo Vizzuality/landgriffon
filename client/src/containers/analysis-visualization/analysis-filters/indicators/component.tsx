@@ -69,7 +69,7 @@ const IndicatorsFilter = () => {
 
   return (
     <Select
-      id="indicators-selector"
+      data-testid="indicators-filter"
       value={current}
       onChange={handleChange}
       options={options}

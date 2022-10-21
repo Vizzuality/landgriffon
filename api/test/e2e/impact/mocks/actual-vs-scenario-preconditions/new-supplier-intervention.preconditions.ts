@@ -8,8 +8,8 @@ import {
   ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 import {
-  SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
+  SOURCING_LOCATION_TYPE_BY_INTERVENTION,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { Unit } from 'modules/units/unit.entity';
@@ -24,62 +24,63 @@ import {
   createSourcingRecord,
   createSupplier,
   createUnit,
-} from '../../../entity-mocks';
-import { INDICATOR_TYPES } from '../../../../src/modules/indicators/indicator.entity';
-import { Scenario } from '../../../../src/modules/scenarios/scenario.entity';
+} from '../../../../entity-mocks';
+import { INDICATOR_TYPES } from '../../../../../src/modules/indicators/indicator.entity';
+import { Scenario } from 'modules/scenarios/scenario.entity';
 
-export async function createNewCoefficientsInterventionPreconditions(
+export async function createNewSupplierInterventionPreconditions(
   customScenario?: Scenario,
+  customIndicator?: Indicator,
+  customMaterials?: Record<string, Material>,
 ): Promise<{
   indicator: Indicator;
   scenarioIntervention: ScenarioIntervention;
 }> {
-  // Creating Admin Regions
   const adminRegion: AdminRegion = await createAdminRegion({
     name: 'India',
   });
-  const adminRegionBrazil: AdminRegion = await createAdminRegion({
-    name: 'Brazil',
+  const unit: Unit = await createUnit({
+    name: 'defFakeUnit',
+    shortName: 'fakeUnitDef',
   });
+  const indicator: Indicator = customIndicator
+    ? customIndicator
+    : await createIndicator({
+        name: 'Deforestation',
+        unit,
+        nameCode: INDICATOR_TYPES.DEFORESTATION,
+      });
 
-  // Creating Indicator
-  const unit: Unit = await createUnit({ shortName: 'fakeUnit' });
-  const indicator: Indicator = await createIndicator({
-    name: 'Deforestation',
-    unit,
-    nameCode: INDICATOR_TYPES.DEFORESTATION,
-  });
+  const textile: Material = customMaterials
+    ? customMaterials.textile
+    : await createMaterial({ name: 'Textile' });
 
-  // Creating Materials
-  const textile: Material = await createMaterial({ name: 'Textile' });
-
-  const wool: Material = await createMaterial({
-    name: 'Wool',
-    parent: textile,
-  });
-  const cotton: Material = await createMaterial({
-    name: 'Cotton',
-    parent: textile,
-  });
-
-  const rubber: Material = await createMaterial({
-    name: 'Rubber',
-  });
-
-  // Creating Business Unit
+  const wool: Material = customMaterials
+    ? customMaterials.wool
+    : await createMaterial({
+        name: 'Wool',
+        parent: textile,
+      });
+  const cotton: Material = customMaterials
+    ? customMaterials.cotton
+    : await createMaterial({
+        name: 'Cotton',
+        parent: textile,
+      });
 
   const businessUnit: BusinessUnit = await createBusinessUnit({
     name: 'Fake Business Unit',
   });
 
-  // Creating Supplier
+  const supplierA: Supplier = await createSupplier({
+    name: 'Supplier A',
+  });
 
-  const supplier: Supplier = await createSupplier({
-    name: 'Fake Supplier',
+  const supplierB: Supplier = await createSupplier({
+    name: 'Supplier B',
   });
 
   // Scenario pre-conditions
-
   const scenarioIntervention: ScenarioIntervention = customScenario
     ? await createScenarioIntervention({ scenario: customScenario })
     : await createScenarioIntervention();
@@ -97,20 +98,11 @@ export async function createNewCoefficientsInterventionPreconditions(
 
   // Sourcing Locations - real ones
 
-  const rubberSourcingLocation: SourcingLocation = await createSourcingLocation(
-    {
-      material: rubber,
-      businessUnit,
-      t1Supplier: supplier,
-      adminRegion: adminRegionBrazil,
-    },
-  );
-
   const cottonSourcingLocation: SourcingLocation = await createSourcingLocation(
     {
       material: cotton,
       businessUnit,
-      t1Supplier: supplier,
+      t1Supplier: supplierA,
       adminRegion,
     },
   );
@@ -118,92 +110,75 @@ export async function createNewCoefficientsInterventionPreconditions(
   const woolSourcingLocation: SourcingLocation = await createSourcingLocation({
     material: wool,
     businessUnit,
-    t1Supplier: supplier,
+    t1Supplier: supplierA,
     adminRegion,
   });
 
-  // Sourcing Locations belonging to Intervention - Cotton
+  // Sourcing Locations of Type cancelled (the one that will be replaced by Linen)
 
   const cottonSourcingLocationCancelled: SourcingLocation =
     await createSourcingLocation({
       material: cotton,
       businessUnit,
-      t1Supplier: supplier,
+      t1Supplier: supplierA,
       adminRegion,
       scenarioInterventionId: scenarioIntervention.id,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
+    });
+
+  const woolSourcingLocationCancelled: SourcingLocation =
+    await createSourcingLocation({
+      material: wool,
+      businessUnit,
+      t1Supplier: supplierA,
+      adminRegion,
+      scenarioInterventionId: scenarioIntervention.id,
+      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
+    });
+
+  const woolSourcingLocationCancelledInactive: SourcingLocation =
+    await createSourcingLocation({
+      material: wool,
+      businessUnit,
+      t1Supplier: supplierA,
+      adminRegion,
+      scenarioInterventionId: scenarioInterventionInactive.id,
+      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
+    });
+
+  // Sourcing location for the Replacing Supplier
+
+  const woolSourcingLocationReplacing: SourcingLocation =
+    await createSourcingLocation({
+      material: wool,
+      businessUnit,
+      t1Supplier: supplierB,
+      adminRegion,
+      scenarioInterventionId: scenarioIntervention.id,
+      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
     });
 
   const cottonSourcingLocationReplacing: SourcingLocation =
     await createSourcingLocation({
       material: cotton,
       businessUnit,
-      t1Supplier: supplier,
+      t1Supplier: supplierB,
       adminRegion,
       scenarioInterventionId: scenarioIntervention.id,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
     });
 
-  // Sourcing Locations belonging to Intervention - Wool
-
-  const woolSourcingLocationCancelled: SourcingLocation =
+  const cottonSourcingLocationReplacingInactive: SourcingLocation =
     await createSourcingLocation({
-      material: wool,
+      material: cotton,
       businessUnit,
-      t1Supplier: supplier,
-      adminRegion,
-      scenarioInterventionId: scenarioIntervention.id,
-      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
-    });
-
-  const woolSourcingLocationReplacing: SourcingLocation =
-    await createSourcingLocation({
-      material: wool,
-      businessUnit,
-      t1Supplier: supplier,
-      adminRegion,
-      scenarioInterventionId: scenarioIntervention.id,
-      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
-    });
-
-  // Sourcing Locations belonging to Inactive Intervention
-  const woolSourcingLocationCancelledInactive: SourcingLocation =
-    await createSourcingLocation({
-      material: wool,
-      businessUnit,
-      t1Supplier: supplier,
-      adminRegion,
-      scenarioInterventionId: scenarioInterventionInactive.id,
-      interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
-    });
-
-  const woolSourcingLocationReplacingInactive: SourcingLocation =
-    await createSourcingLocation({
-      material: wool,
-      businessUnit,
-      t1Supplier: supplier,
+      t1Supplier: supplierB,
       adminRegion,
       scenarioInterventionId: scenarioInterventionInactive.id,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
     });
 
   // Creating Sourcing Records and Indicator Records for the Sourcing Locations
-
-  const indicatorRecordCottonReplacing: IndicatorRecord =
-    await createIndicatorRecord({
-      indicator,
-      value: 400,
-    });
-  const indicatorRecordWoolReplacing: IndicatorRecord =
-    await createIndicatorRecord({
-      indicator,
-      value: 500,
-    });
-  const indicatorRecordWoolReplacingInactive: IndicatorRecord =
-    await createIndicatorRecord({
-      indicator,
-      value: 200,
-    });
 
   const indicatorRecordCotton: IndicatorRecord = await createIndicatorRecord({
     indicator,
@@ -212,31 +187,44 @@ export async function createNewCoefficientsInterventionPreconditions(
 
   const indicatorRecordWool: IndicatorRecord = await createIndicatorRecord({
     indicator,
-    value: 1500,
+    value: 1200,
   });
 
   const indicatorRecordCottonCancelled: IndicatorRecord =
     await createIndicatorRecord({
       indicator,
-      value: -600,
+      value: -1200,
     });
 
   const indicatorRecordWoolCancelled: IndicatorRecord =
     await createIndicatorRecord({
       indicator,
-      value: -750,
+      value: -1200,
     });
 
   const indicatorRecordWoolCancelledInactive: IndicatorRecord =
     await createIndicatorRecord({
       indicator,
-      value: -234,
+      value: -123,
     });
 
-  const indicatorRecordRubber: IndicatorRecord = await createIndicatorRecord({
-    indicator,
-    value: 3000,
-  });
+  const indicatorRecordWoolReplacing: IndicatorRecord =
+    await createIndicatorRecord({
+      indicator,
+      value: 1000,
+    });
+
+  const indicatorRecordCottonReplacing: IndicatorRecord =
+    await createIndicatorRecord({
+      indicator,
+      value: 900,
+    });
+
+  const indicatorRecordCottonReplacingInactive: IndicatorRecord =
+    await createIndicatorRecord({
+      indicator,
+      value: 567,
+    });
 
   // Sourcing Records + Indicator Records for Real Sourcing Locations
 
@@ -250,12 +238,6 @@ export async function createNewCoefficientsInterventionPreconditions(
     year: 2020,
     indicatorRecords: [indicatorRecordWool],
     sourcingLocation: woolSourcingLocation,
-  });
-
-  await createSourcingRecord({
-    year: 2020,
-    indicatorRecords: [indicatorRecordRubber],
-    sourcingLocation: rubberSourcingLocation,
   });
 
   // Sourcing Records + Indicator Records for Canceled Sourcing Locations
@@ -278,13 +260,7 @@ export async function createNewCoefficientsInterventionPreconditions(
     sourcingLocation: woolSourcingLocationCancelledInactive,
   });
 
-  // Sourcing Records + Indicator Records for Replacing Sourcing Locations
-
-  await createSourcingRecord({
-    year: 2020,
-    indicatorRecords: [indicatorRecordCottonReplacing],
-    sourcingLocation: cottonSourcingLocationReplacing,
-  });
+  // Sourcing Records + Indicator Records for Replacing Sourcing Location
 
   await createSourcingRecord({
     year: 2020,
@@ -294,8 +270,14 @@ export async function createNewCoefficientsInterventionPreconditions(
 
   await createSourcingRecord({
     year: 2020,
-    indicatorRecords: [indicatorRecordWoolReplacingInactive],
-    sourcingLocation: woolSourcingLocationReplacingInactive,
+    indicatorRecords: [indicatorRecordCottonReplacing],
+    sourcingLocation: cottonSourcingLocationReplacing,
+  });
+
+  await createSourcingRecord({
+    year: 2020,
+    indicatorRecords: [indicatorRecordCottonReplacingInactive],
+    sourcingLocation: cottonSourcingLocationReplacingInactive,
   });
 
   return { indicator, scenarioIntervention };

@@ -55,7 +55,6 @@ export class ImpactService {
     this.logger.log('Retrieving data from DB to build Impact Table...');
 
     //Getting Descendants Ids for the filters, in case Parent Ids were received
-    // GET IDS IF THERE ARE FILTERS SENT
     await this.loadDescendantEntityIds(impactTableDto);
 
     // Get full entity tree in cate ids are not passed, otherwise get trees based on
@@ -68,7 +67,6 @@ export class ImpactService {
     const paginatedEntities: PaginatedEntitiesDto =
       ImpactService.paginateRootEntities(entities, fetchSpecification);
 
-    // GET ELEMENTS OF THE GROUP BY TO SHOW THE NAMES
     this.updateGroupByCriteriaFromEntityTree(
       impactTableDto,
       paginatedEntities.entities,

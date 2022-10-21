@@ -4,7 +4,7 @@ import {
   createMaterial,
   createScenario,
   createUnit,
-} from '../../../entity-mocks';
+} from '../../../../entity-mocks';
 import { createNewSupplierInterventionPreconditions } from './new-supplier-intervention.preconditions';
 import { createNewMaterialInterventionPreconditions } from './new-material-intervention.preconditions';
 import {

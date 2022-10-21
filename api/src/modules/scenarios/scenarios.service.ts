@@ -78,8 +78,6 @@ export class ScenariosService extends AppBaseService<
     fetchSpecification: Record<string, unknown>,
     info: AppInfoDTO,
   ): Promise<SelectQueryBuilder<Scenario>> {
-    console.log(JSON.stringify(fetchSpecification));
-    console.log(JSON.stringify(info));
     if (fetchSpecification.hasInterventions) {
       query.andWhere(
         'exists (select from "scenario_intervention" si where si."scenarioId" = "scenario".id)',

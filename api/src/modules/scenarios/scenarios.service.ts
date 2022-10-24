@@ -83,6 +83,16 @@ export class ScenariosService extends AppBaseService<
         'exists (select from "scenario_intervention" si where si."scenarioId" = "scenario".id)',
       );
     }
+    if (fetchSpecification.search) {
+      const titlePartialMatch: string = (
+        fetchSpecification.search as Record<string, string>
+      ).title;
+      if (titlePartialMatch) {
+        query.andWhere(`"scenario"."title" ILIKE :titlePartialMatch`, {
+          titlePartialMatch: `%${titlePartialMatch}%`,
+        });
+      }
+    }
     return Promise.resolve(query);
   }
 }

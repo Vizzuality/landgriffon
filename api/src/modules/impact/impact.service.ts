@@ -373,6 +373,9 @@ export class ImpactService {
     const impactTable: ImpactTableDataByIndicator[] = [];
     // Create a range of years by start and endYears
     const rangeOfYears: number[] = range(startYear, endYear + 1);
+    const lastAvailableDataYear: number = Math.max(
+      ...dataForImpactTable.map((el: ImpactTableData) => el.year),
+    );
     // Append data by indicator and add its unit.symbol as metadata. We need awareness of this loop during the whole process
     indicators.forEach((indicator: Indicator, indicatorValuesIndex: number) => {
       const calculatedData: ImpactTableRows[] = [];
@@ -419,7 +422,8 @@ export class ImpactService {
                     rowValuesIndex - 1
                   ].value
                 : 0;
-            const isProjected: boolean = lastYearsValue === 0 ? false : true;
+            const isProjected: boolean =
+              year > lastAvailableDataYear ? true : false;
 
             calculatedData[namesByIndicatorIndex].values.push({
               year: year,
@@ -432,6 +436,7 @@ export class ImpactService {
       }
 
       // Once we have all data, projected or not, append the total sum of impact by year and indicator
+
       rangeOfYears.forEach((year: number, indexOfYear: number) => {
         const totalSumByYear: number = calculatedData.reduce(
           (accumulator: number, currentValue: ImpactTableRows): number => {
@@ -471,6 +476,9 @@ export class ImpactService {
     dataForImpactTable: ImpactTableData[],
     scenarioId?: string,
   ): ImpactTablePurchasedTonnes[] {
+    const lastAvailableDataYear: number = Math.max(
+      ...dataForImpactTable.map((el: ImpactTableData) => el.year),
+    );
     const purchasedTonnes: ImpactTablePurchasedTonnes[] = [];
     rangeOfYears.forEach((year: number) => {
       const valueOfPurchasedTonnesByYear: number = dataForImpactTable.reduce(
@@ -498,7 +506,8 @@ export class ImpactService {
           purchasedTonnes.length > 0
             ? purchasedTonnes[purchasedTonnes.length - 1].value
             : 0;
-        const isProjected: boolean = previousYearTonnage === 0 ? false : true;
+        const isProjected: boolean =
+          year > lastAvailableDataYear ? true : false;
         const tonnesToProject: number =
           dataForImpactTable.length > 0 ? previousYearTonnage : 0;
         purchasedTonnes.push({

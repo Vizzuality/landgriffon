@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Fixed an issue where the chart was not showing correctly the projected data
 - Fixed an issue where more filters were not including the compare scenario ID [LANDGRIF-976](https://vizzuality.atlassian.net/browse/LANDGRIF-976)
 - Fixed an issue where unit was not showing correctly in the tooltip map
+- Comparison colors for the impact layer when is enabled [LANDGRIF-979](https://vizzuality.atlassian.net/browse/LANDGRIF-979)
 
 ## [2022.08.03]
 

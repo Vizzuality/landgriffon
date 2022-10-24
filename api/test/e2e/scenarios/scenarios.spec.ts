@@ -264,6 +264,42 @@ describe('ScenariosModule (e2e)', () => {
       expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
     });
 
+    test('When I search for scenarios via title partial matching, I get correct results', async () => {
+      //ARRANGE
+      const scenarioOne: Scenario = await createScenario({
+        title: 'Scenario Jedi Training',
+        status: SCENARIO_STATUS.ACTIVE,
+      });
+      const scenarioTwo: Scenario = await createScenario({
+        title: 'Scenario Jedi Deployment',
+        status: SCENARIO_STATUS.ACTIVE,
+      });
+
+      await createScenario({
+        title: 'Scenario Order 66',
+        status: SCENARIO_STATUS.ACTIVE,
+      });
+
+      //ACT
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/scenarios`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          search: {
+            title: 'JEDI',
+          },
+        })
+        .send()
+        .expect(HttpStatus.OK);
+
+      //ASSERT
+      expect(response.body.data.length).toEqual(2);
+      expect(response.body.data[0].attributes.title).toEqual(scenarioOne.title);
+      expect(response.body.data[1].attributes.title).toEqual(scenarioTwo.title);
+
+      expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
+    });
+
     test('Get scenarios filtered by some criteria should only return the scenarios that match said criteria', async () => {
       const scenarioOne: Scenario = await createScenario({
         title: 'scenario one',

@@ -51,6 +51,13 @@ export class ScenariosController {
     description:
       'If true, only scenarios that have interventions will be selected',
   })
+  @ApiQuery({
+    //TODO wile a more generic way to approach this is pending to be developed on the nestjs-base-service, only title is supported for now
+    name: 'search',
+    type: 'Map<string, string>',
+    description:
+      'Must be provided when searching with partial matching. Each key of the map corresponds to a field that is to be matched partially, and its value, the string that will be partially matched against',
+  })
   @ApiOkResponse({
     type: Scenario,
   })

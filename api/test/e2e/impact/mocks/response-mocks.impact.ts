@@ -498,9 +498,19 @@ export const impactTableWithScenario = {
               children: [],
               values: [
                 {
+                  year: 2017,
+                  value: 0,
+                  isProjected: false,
+                },
+                {
+                  year: 2018,
+                  value: 0,
+                  isProjected: false,
+                },
+                {
                   year: 2019,
                   value: 0,
-                  isProjected: true,
+                  isProjected: false,
                 },
                 {
                   year: 2020,
@@ -524,9 +534,19 @@ export const impactTableWithScenario = {
               children: [],
               values: [
                 {
+                  year: 2017,
+                  value: 0,
+                  isProjected: false,
+                },
+                {
+                  year: 2018,
+                  value: 0,
+                  isProjected: false,
+                },
+                {
                   year: 2019,
                   value: 0,
-                  isProjected: true,
+                  isProjected: false,
                 },
                 {
                   year: 2020,
@@ -550,9 +570,19 @@ export const impactTableWithScenario = {
               children: [],
               values: [
                 {
+                  year: 2017,
+                  value: 0,
+                  isProjected: false,
+                },
+                {
+                  year: 2018,
+                  value: 0,
+                  isProjected: false,
+                },
+                {
                   year: 2019,
                   value: 0,
-                  isProjected: true,
+                  isProjected: false,
                 },
                 {
                   year: 2020,
@@ -574,9 +604,19 @@ export const impactTableWithScenario = {
           ],
           values: [
             {
+              year: 2017,
+              value: 0,
+              isProjected: false,
+            },
+            {
+              year: 2018,
+              value: 0,
+              isProjected: false,
+            },
+            {
               year: 2019,
               value: 0,
-              isProjected: true,
+              isProjected: false,
             },
             {
               year: 2020,
@@ -597,6 +637,14 @@ export const impactTableWithScenario = {
         },
       ],
       yearSum: [
+        {
+          year: 2017,
+          value: 0,
+        },
+        {
+          year: 2018,
+          value: 0,
+        },
         {
           year: 2019,
           value: 0,
@@ -637,9 +685,14 @@ export const rankingTableWithScenario = {
               children: [],
               values: [
                 {
+                  year: 2018,
+                  value: 0,
+                  isProjected: false,
+                },
+                {
                   year: 2019,
                   value: 0,
-                  isProjected: true,
+                  isProjected: false,
                 },
                 {
                   year: 2020,
@@ -663,9 +716,14 @@ export const rankingTableWithScenario = {
               children: [],
               values: [
                 {
+                  year: 2018,
+                  value: 0,
+                  isProjected: false,
+                },
+                {
                   year: 2019,
                   value: 0,
-                  isProjected: true,
+                  isProjected: false,
                 },
                 {
                   year: 2020,
@@ -689,9 +747,14 @@ export const rankingTableWithScenario = {
               children: [],
               values: [
                 {
+                  year: 2018,
+                  value: 0,
+                  isProjected: false,
+                },
+                {
                   year: 2019,
                   value: 0,
-                  isProjected: true,
+                  isProjected: false,
                 },
                 {
                   year: 2020,
@@ -713,9 +776,14 @@ export const rankingTableWithScenario = {
           ],
           values: [
             {
+              year: 2018,
+              value: 0,
+              isProjected: false,
+            },
+            {
               year: 2019,
               value: 0,
-              isProjected: true,
+              isProjected: false,
             },
             {
               year: 2020,
@@ -736,6 +804,10 @@ export const rankingTableWithScenario = {
         },
       ],
       yearSum: [
+        {
+          year: 2019,
+          value: 0,
+        },
         {
           year: 2019,
           value: 0,
@@ -763,6 +835,10 @@ export const rankingTableWithScenario = {
             value: 0,
           },
           {
+            year: 2019,
+            value: 0,
+          },
+          {
             year: 2020,
             value: 0,
           },
@@ -782,9 +858,14 @@ export const rankingTableWithScenario = {
   ],
   purchasedTonnes: [
     {
+      year: 2018,
+      value: 0,
+      isProjected: false,
+    },
+    {
       year: 2019,
       value: 0,
-      isProjected: true,
+      isProjected: false,
     },
     {
       year: 2020,

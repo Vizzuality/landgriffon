@@ -12,16 +12,15 @@ import { storeToQueryParams } from 'hooks/h3-data/utils';
 
 import type { LegendItem as LegendItemProp } from 'types';
 
-const LAYER_ID = 'impact'; // should match with redux
-
 export const useImpactLayer = () => {
   const dispatch = useAppDispatch();
   const filters = useAppSelector(analysisFilters);
   const { currentScenario, scenarioToCompare, isComparisonEnabled, comparisonMode } =
     useAppSelector(scenarios);
+  const colorKey = scenarioToCompare ? 'compare' : 'impact';
 
   const {
-    layers: { [LAYER_ID]: impactLayer },
+    layers: { impact: impactLayer },
   } = useAppSelector(analysisMap);
 
   const params = useMemo(
@@ -58,12 +57,12 @@ export const useImpactLayer = () => {
     if (data && isSuccess && indicator) {
       dispatch(
         setLayer({
-          id: LAYER_ID,
+          id: 'impact',
           layer: {
             loading: query.isFetching,
             metadata: {
               legend: {
-                id: `${LAYER_ID}-${indicator.value}`,
+                id: `impact-${indicator.value}-${isComparisonEnabled || 'compare'}`,
                 type: 'basic',
                 name: `${indicator.label} in ${year}`,
                 unit: data.metadata.unit,
@@ -71,7 +70,7 @@ export const useImpactLayer = () => {
                 items: data.metadata.quantiles.slice(1).map(
                   (v, index): LegendItemProp => ({
                     value: NUMBER_FORMAT(v),
-                    color: COLOR_RAMPS[LAYER_ID][index],
+                    color: COLOR_RAMPS[colorKey][index],
                   }),
                 ),
               },
@@ -80,16 +79,16 @@ export const useImpactLayer = () => {
         }),
       );
     }
-  }, [data, isSuccess, dispatch, indicator, query.isFetching, year]);
+  }, [data, isSuccess, dispatch, indicator, query.isFetching, year, isComparisonEnabled, colorKey]);
 
   useEffect(() => {
     if (!isFetched) return;
 
     dispatch(
       setLayerDeckGLProps({
-        id: LAYER_ID,
+        id: 'impact',
         props: {
-          id: LAYER_ID,
+          id: 'impact',
           opacity: impactLayer.opacity,
           visible: impactLayer.active,
         },

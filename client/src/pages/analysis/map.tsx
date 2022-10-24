@@ -18,7 +18,7 @@ const MapPage: NextPageWithLayout = () => {
 
   return (
     <>
-      <TitleTemplate title="Map View" />
+      <TitleTemplate title="Analysis Map" />
       <AnalysisMap />
     </>
   );

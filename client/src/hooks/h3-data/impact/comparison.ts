@@ -21,7 +21,7 @@ const useH3ComparisonData = <T = H3ImpactResponse>(
   options: UseQueryOptions<H3ImpactResponse, unknown, T>,
 ) => {
   const vsActual = !baseScenarioId;
-  const colors = useColors('impact', COLOR_RAMPS);
+  const colors = useColors('compare', COLOR_RAMPS);
   const params = { ...rawParams, ...(vsActual ? {} : { baseScenarioId }) };
 
   const url = `/h3/map/impact/compare/${vsActual ? 'actual' : 'scenario'}/vs/scenario`;

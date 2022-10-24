@@ -21,7 +21,7 @@ const TablePage: NextPageWithLayout = () => {
   });
   return (
     <>
-      <TitleTemplate title="Table View" />
+      <TitleTemplate title="Analysis Table" />
       <AnalysisTable />
     </>
   );

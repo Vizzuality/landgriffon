@@ -438,10 +438,11 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
 
   describe('Chart Table including Scenario Tests', () => {
     test(
-      'When I query a Impact Chart' +
-        'And I include a Scenario Id' +
+      'When I query a Impact Chart ' +
+        'And I include a Scenario Id ' +
         'Then I should see the elements included in that Scenario among the actual data ' +
-        'ignoring INACTIVE interventions',
+        'ignoring INACTIVE interventions. ' +
+        'Past years with 0 values should have property isProjected false',
       async () => {
         const newScenario: Scenario = await createScenario();
 
@@ -454,7 +455,7 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
           .query({
             'indicatorIds[]': [indicator.id],
             endYear: 2022,
-            startYear: 2019,
+            startYear: 2018,
             groupBy: 'material',
             scenarioId: newScenario.id,
             maxRankingEntities: 5,

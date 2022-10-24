@@ -419,11 +419,12 @@ export class ImpactService {
                     rowValuesIndex - 1
                   ].value
                 : 0;
+            const isProjected: boolean = lastYearsValue === 0 ? false : true;
 
             calculatedData[namesByIndicatorIndex].values.push({
               year: year,
               value: lastYearsValue + (lastYearsValue * this.growthRate) / 100,
-              isProjected: true,
+              isProjected,
             });
           }
           ++rowValuesIndex;
@@ -497,12 +498,13 @@ export class ImpactService {
           purchasedTonnes.length > 0
             ? purchasedTonnes[purchasedTonnes.length - 1].value
             : 0;
+        const isProjected: boolean = previousYearTonnage === 0 ? false : true;
         const tonnesToProject: number =
           dataForImpactTable.length > 0 ? previousYearTonnage : 0;
         purchasedTonnes.push({
           year,
           value: tonnesToProject + (tonnesToProject * this.growthRate) / 100,
-          isProjected: true,
+          isProjected,
         });
       }
     });

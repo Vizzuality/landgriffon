@@ -1215,10 +1215,11 @@ describe('Impact Table and Charts test suite (e2e)', () => {
 
   describe('Impact Table including Scenario Tests', () => {
     test(
-      'When I query a Impact Table' +
-        'And I include a Scenario Id' +
+      'When I query a Impact Table ' +
+        'And I include a Scenario Id ' +
         'Then I should see the elements included in that Scenario among the actual data ' +
-        'ignoring interventions with status INACTIVE',
+        'ignoring interventions with status INACTIVE.' +
+        ' Past years with no values should have property isProjected false',
       async () => {
         const scenario: Scenario = await createScenario();
         const { replacedMaterials, replacingMaterials, indicator } =
@@ -1230,7 +1231,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           .query({
             'indicatorIds[]': [indicator.id],
             endYear: 2022,
-            startYear: 2019,
+            startYear: 2017,
             groupBy: 'material',
             scenarioId: scenario.id,
           });
@@ -1249,6 +1250,9 @@ describe('Impact Table and Charts test suite (e2e)', () => {
 
         expect(response.body.data.impactTable[0].rows).toEqual(
           impactTableWithScenario.impactTable[0].rows,
+        );
+        expect(response.body.data.impactTable[0].yearSum).toEqual(
+          impactTableWithScenario.impactTable[0].yearSum,
         );
       },
     );

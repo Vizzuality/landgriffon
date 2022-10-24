@@ -5,6 +5,7 @@ import { useScenarios } from 'hooks/scenarios';
 import { useAppDispatch } from 'store/hooks';
 import { setComparisonEnabled, setScenarioToCompare } from 'store/features/analysis/scenarios';
 import Select from 'components/select';
+import useEffectOnce from 'hooks/once';
 
 import type { Dispatch, FC } from 'react';
 import type { SelectOption } from 'components/select/types';
@@ -54,7 +55,7 @@ const ScenariosComparison: FC = () => {
     if (selected?.value && compareScenarioId !== selected?.value) {
       // TO-DO: deprecated, we'll keep only for retro-compatibility
       dispatch(setScenarioToCompare(null));
-      setComparisonEnabled(false);
+      dispatch(setComparisonEnabled(false));
 
       const queryParams = { ...router.query, compareScenarioId: null, scenarioId: selected?.value };
       router.replace(
@@ -67,6 +68,11 @@ const ScenariosComparison: FC = () => {
       );
     }
   }, [selected, dispatch, options, compareScenarioId, router]);
+
+  // We consider comparison is enabled when compareScenarioId is present
+  useEffectOnce(() => {
+    if (compareScenarioId) dispatch(setComparisonEnabled(true));
+  });
 
   return (
     <div data-testid="comparison-select">

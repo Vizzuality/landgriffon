@@ -46,10 +46,11 @@ export class ScenariosController {
     description: 'Find all scenarios',
   })
   @ApiQuery({
+    required: false,
     name: 'hasInterventions',
     type: 'boolean',
     description:
-      'If true, only scenarios that have interventions will be selected',
+      'If true, only scenarios that have interventions will be selected.',
   })
   @ApiOkResponse({
     type: Scenario,

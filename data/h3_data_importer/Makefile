@@ -23,7 +23,7 @@ all:
 	make -j 2 crop indicators
 
 crop:
-	make -j 2 convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock
+	make -j 2 convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock convert-woodpulp
 
 # NOTE: The ingestion below is commented in order to avoid ingesting data, we don't have indicator for in the database yet
 # once the new indicators have been defined and ingested we will need to update the indicator code in for each on the indicator commented below and allow the ingestion.
@@ -34,6 +34,7 @@ indicators:
 	# There is probably a better way to do this, that future me will learn about - in the future.
 	make convert-deforestation
 	make convert-forestGHG
+	make convert-satDeforestation
 contextual-layers:
 	make convert-hdi-contextual
 

@@ -25,6 +25,9 @@ export type LegendItemProps = {
   main?: boolean;
   comparison?: ScenarioComparisonMode;
 };
+const COMMON_MODE_BUTTON_CLASSNAMES = 'border px-1 p-0.5';
+const ACTIVE_BUTTON_CLASSNAMES = 'text-navy-400 border-navy-400 bg-navy-50';
+const DISABLED_BUTTON_CLASSNAMES = 'text-gray-400 border-gray-400';
 
 export const LegendItem = ({
   name,
@@ -75,11 +78,33 @@ export const LegendItem = ({
           </div>
         )}
         {comparison && (
-          <div className="flex flex-row text-xs">
-            <button type="button" onClick={handleChangeComparison('absolute')}>
+          <div className="flex flex-row text-sm w-fit">
+            <button
+              className={classNames(
+                COMMON_MODE_BUTTON_CLASSNAMES,
+                'rounded-l-md',
+                comparison === 'absolute' ? ACTIVE_BUTTON_CLASSNAMES : DISABLED_BUTTON_CLASSNAMES,
+                {
+                  'border-r-0': comparison !== 'absolute',
+                },
+              )}
+              type="button"
+              onClick={handleChangeComparison('absolute')}
+            >
               absolute
             </button>
-            <button type="submit" onClick={handleChangeComparison('relative')}>
+            <button
+              type="submit"
+              className={classNames(
+                COMMON_MODE_BUTTON_CLASSNAMES,
+                'rounded-r-md',
+                comparison === 'relative' ? ACTIVE_BUTTON_CLASSNAMES : DISABLED_BUTTON_CLASSNAMES,
+                {
+                  'border-l-0': comparison !== 'relative',
+                },
+              )}
+              onClick={handleChangeComparison('relative')}
+            >
               relative
             </button>
           </div>

@@ -118,7 +118,7 @@ export const useAllContextualLayersData = <T = { layerId: Layer['id'] } & H3APIR
         return (
           apiRawService
             .get<H3APIResponse>(`/contextual-layers/${id}/h3data`, {
-              params,
+              params: { ...params, relative: layer.comparisonMode === 'relative' },
             })
             // Adding color to the response
             .then((response) => {

@@ -427,38 +427,19 @@ convert-aboveGroundBiomass: preprocess-aboveGroundBiomass
 #Download satelligence deforestation
 download-satDeforestation:
 	mkdir -p $(WORKDIR_SATDEFORESTATION)
+	
 	aws configure set awc_acces_key_id $$AWS_ACCESS_KEY_ID; \
 	aws configure set aws_secret_access_key $$AWS_SECRET_ACCESS_KEY; \
-	aws s3 sync s3://landgriffon-raw-data/raw/satelligence_deforestation $(WORKDIR_SATDEFORESTATION);
+	aws s3 sync s3://landgriffon-raw-data/processed/satelligence $(WORKDIR_SATDEFORESTATION);
+	
+	mkdir $(WORKDIR_SATDEFORESTATION)/mask
+	mkdir $(WORKDIR_SATDEFORESTATION)/risk
+	mv $(WORKDIR_SATDEFORESTATION)/Deforestation_2021_ha.tif $(WORKDIR_SATDEFORESTATION)/mask
+	mv $(WORKDIR_SATDEFORESTATION)/Deforestation_risk.tif $(WORKDIR_SATDEFORESTATION)/risk
 
-# Risk should be resample to larger resolution because it results in a large number of h3 hexes if not.
-# Deforestation Mask for year 2021
-preprocess-satDeforestation: download-satDeforestation
-	mkdir -p $(WORKDIR_SATDEFORESTATION)/mask
-	mkdir -p $(WORKDIR_SATDEFORESTATION)/risk
-	gdal_calc.py --quiet --calc "A==2021" --format GTiff --type Int16 --NoDataValue 0 \
-		-A $(WORKDIR_SATDEFORESTATION)/Deforestation_Masked_2016-2022-10-01.tif \
-		--outfile $(WORKDIR_SATDEFORESTATION)/mask/Deforestation_Masked_2021.tif
-
-	gdalwarp -q -s_srs EPSG:4326 -t_srs EPSG:4326 -r sum -tr 0.0005 0.0005 -multi -of GTiff \
-		$(WORKDIR_SATDEFORESTATION)/mask/Deforestation_Masked_2021.tif \
-		$(WORKDIR_SATDEFORESTATION)/mask/Deforestation_Masked_2021_res.tif
-
-	rm $(WORKDIR_SATDEFORESTATION)/mask/Deforestation_Masked_2021.tif
-	mv $(WORKDIR_SATDEFORESTATION)/mask/Deforestation_Masked_2021_res.tif $(WORKDIR_SATDEFORESTATION)/mask/Deforestation_Masked_2021.tif
-
-	gdal_calc.py --quiet --calc "numpy.where(A>0, A, 0)" --format GTiff --type Float32 --NoData 0 \
-		-A $(WORKDIR_SATDEFORESTATION)/DeforestationRisk_2016-2022-10-01.tif \
-		--outfile $(WORKDIR_SATDEFORESTATION)/risk/DeforestationRisk_2016-2022.tif
-	gdalwarp -q -s_srs EPSG:4326 -t_srs EPSG:4326 -r sum -tr 0.0005 0.0005 -multi -of GTiff \
-		$(WORKDIR_SATDEFORESTATION)/risk/DeforestationRisk_2016-2022.tif \
-		$(WORKDIR_SATDEFORESTATION)/risk/DeforestationRisk_2016-2022_res.tif
-	rm $(WORKDIR_SATDEFORESTATION)/risk/DeforestationRisk_2016-2022.tif
-	mv $(WORKDIR_SATDEFORESTATION)/risk/DeforestationRisk_2016-2022_res.tif $(WORKDIR_SATDEFORESTATION)/risk/DeforestationRisk_2016-2022.tif
-
-convert-satDeforestation: preprocess-satDeforestation
-	python tiff_folder_to_h3_table.py $(WORKDIR_SATDEFORESTATION)/mask h3_grid_sat_deforestation indicator SAT_DF 2021 --h3-res=11 --thread-count=$(PARALLELIZATION_FACTOR)
-	python tiff_folder_to_h3_table.py $(WORKDIR_SATDEFORESTATION)/risk h3_grid_sat_deforestation_risk indicator SAT_DF_R 2021 --h3-res=11 --thread-count=$(PARALLELIZATION_FACTOR)
+convert-satDeforestation: download-satDeforestation
+	python	tiff_folder_to_h3_table.py	$(WORKDIR_SATDEFORESTATION)/mask	h3_grid_sat_deforestation		indicator	SAT_DF		2021	--h3-res=11	--thread-count=$(PARALLELIZATION_FACTOR)
+	python	tiff_folder_to_h3_table.py	$(WORKDIR_SATDEFORESTATION)/risk	h3_grid_sat_deforestation_risk	indicator	SAT_DF_R	2021	--h3-res=11	--thread-count=$(PARALLELIZATION_FACTOR)
 
 
 ####################
@@ -473,13 +454,13 @@ download-woodpulp:
 	aws configure set aws_secret_access_key $$AWS_SECRET_ACCESS_KEY; \
 	aws s3 sync s3://landgriffon-raw-data/processed/woodpulp/ $(WORKDIR_WOODPULP);
 	
-	mv $(WORKDIR_WOODPULP)/gfw_plantations_woodpulp_harvest_ha_res.tif $(WORKDIR_WOODPULP)/ha/gfw_plantations_woodpulp_harvest_ha.tif
-	mv $(WORKDIR_WOODPULP)/gfw_plantations_woodpulp_prod_t_nd_res.tif $(WORKDIR_WOODPULP)/prod/gfw_plantations_woodpulp_prod_t_nd.tif
+	mv	$(WORKDIR_WOODPULP)/gfw_plantations_woodpulp_harvest_ha_res.tif	$(WORKDIR_WOODPULP)/ha/gfw_plantations_woodpulp_harvest_ha.tif
+	mv	$(WORKDIR_WOODPULP)/gfw_plantations_woodpulp_prod_t_nd_res.tif	$(WORKDIR_WOODPULP)/prod/gfw_plantations_woodpulp_prod_t_nd.tif
 
 
 convert-woodpulp: download-woodpulp
-	python tiff_folder_to_h3_table.py $(WORKDIR_WOODPULP)/ha h3_grid_woodpulp_ha harvest_area gfw_plantations_woodpulp 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
-	python tiff_folder_to_h3_table.py $(WORKDIR_WOODPULP)/ha h3_grid_woodpulp_prod production gfw_plantations_woodpulp 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python	tiff_folder_to_h3_table.py	$(WORKDIR_WOODPULP)/ha h3_grid_woodpulp_ha		harvest_area	gfw_plantations_woodpulp	2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR)
+	python	tiff_folder_to_h3_table.py	$(WORKDIR_WOODPULP)/ha h3_grid_woodpulp_prod	production		gfw_plantations_woodpulp	2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR)
 
 ###################
 # Contextual data #	

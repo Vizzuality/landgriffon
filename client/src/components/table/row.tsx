@@ -30,15 +30,11 @@ const TableRow = <T,>({ row, theme, isLast, ...props }: TableRowProps<T>) => {
               'bg-white': theme === 'default',
 
               'group-odd:bg-white group-even:bg-gray-50': theme === 'striped',
-              'sticky z-[1]': !!cell.column.columnDef.meta.isSticky,
+              'sticky z-[1]': !!cell.column.columnDef.meta?.isSticky,
               [theme === 'striped' ? 'shadow-lg' : 'shadow-sm']:
-                !!cell.column.columnDef.meta.isSticky,
-              'left-0':
-                cell.column.columnDef.meta.isSticky ||
-                cell.column.columnDef.meta.isSticky === 'left',
-              'right-0':
-                cell.column.columnDef.meta.isSticky ||
-                cell.column.columnDef.meta.isSticky === 'right',
+                !!cell.column.columnDef.meta?.isSticky,
+              'left-0': cell.column.columnDef.meta?.isSticky === 'left',
+              'right-0': cell.column.columnDef.meta?.isSticky === 'right',
             })}
           >
             <CellWrapper context={cell.getContext()}>
@@ -62,10 +58,8 @@ export const TableHeaderRow = <T,>({ headerGroup }: TableHeaderRowProps<T>) => {
       {headerGroup.headers.map((header) => (
         <th
           className={classNames('sticky z-[2] top-0 border-b-4 border-b-gray-100 bg-gray-50', {
-            'left-0 z-[3]':
-              header.column.columnDef.meta.isSticky ||
-              header.column.columnDef.meta.isSticky === 'left',
-            'right-0 z-[3]': header.column.columnDef.meta.isSticky === 'right',
+            'left-0 z-[3]': header.column.columnDef.meta?.isSticky === 'left',
+            'right-0 z-[3]': header.column.columnDef.meta?.isSticky === 'right',
           })}
           key={header.id}
           style={{ width: header.column.getSize() }}

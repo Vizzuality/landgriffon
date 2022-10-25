@@ -14,7 +14,7 @@ import Loading from 'components/loading';
 import Pagination from 'components/table/pagination';
 
 import type { ColumnDefinition } from './column';
-import type { ColumnHelper, Row, TableOptions } from '@tanstack/react-table';
+import type { ColumnHelper, Row, TableOptions, DeepValue, DeepKeys } from '@tanstack/react-table';
 
 export interface TableProps<T>
   extends Omit<TableOptions<T>, 'columns' | 'getCoreRowModel' | 'pageCount'> {
@@ -28,30 +28,38 @@ export interface TableProps<T>
     pageSize: number;
     pageSizes?: number[];
   };
+  noDataMessage?: React.ReactNode;
 }
 
 const columnToColumnDef = <T,>(
-  { align, isSticky = false, ...column }: ColumnDefinition<T>,
+  { align = 'center', isSticky = false, id, className: ignored, ...column }: ColumnDefinition<T>,
   columnHelper: ColumnHelper<T>,
 ) => {
-  const cell = column.cell ?? (({ row: { original } }) => original[column.id]);
-  return columnHelper.display({
-    ...column,
-    cell,
-    meta: {
-      isSticky,
-      align: align ?? 'center',
-    },
-    enableSorting: !!column.enableSorting,
-  });
+  const cell =
+    column.cell ??
+    (({ row: { original } }) => original[id as keyof typeof original] as DeepValue<T, typeof id>);
+
+  return columnHelper.accessor<DeepKeys<T>, DeepValue<T, DeepKeys<T>>>(
+    id as DeepKeys<T>,
+    {
+      ...column,
+      cell,
+      meta: {
+        isSticky,
+        align,
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any,
+  );
 };
 
-const Table = <T,>({
+const ComposedTable = <T,>({
   paginationProps,
   data,
   columns,
   theme = 'default',
   isLoading,
+  noDataMessage = 'No data',
   ...options
 }: TableProps<T>) => {
   const columnHelper = useMemo(() => createColumnHelper<T>(), []);
@@ -65,6 +73,7 @@ const Table = <T,>({
     data,
     manualPagination: true,
     manualSorting: true,
+    enableSorting: true,
     enableMultiSort: false,
     enableRowSelection: true,
     enableSubRowSelection: true,
@@ -85,6 +94,13 @@ const Table = <T,>({
   const onChangePageSize = useCallback(
     (newSize: number) => {
       table.setPageSize(newSize);
+    },
+    [table],
+  );
+
+  const handlePageChange = useCallback(
+    (nextPage) => {
+      table.setPageIndex(nextPage);
     },
     [table],
   );
@@ -114,11 +130,11 @@ const Table = <T,>({
       <div className="relative shadow-xl rounded-2xl">
         {isLoading && (
           <div className="absolute z-40 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
-            <Loading className="w-12 h-12" />
+            <Loading className="w-5 h-5 text-navy-400" />
           </div>
         )}
         <div
-          className={classNames('overflow-auto', {
+          className={classNames('overflow-x-auto', {
             'blur-sm pointer-events-none': isLoading,
           })}
         >
@@ -130,8 +146,11 @@ const Table = <T,>({
             </thead>
             <tbody>
               {bodyRows.length === 0 && (
-                // TODO: no data message?
-                <tr className="h-20" />
+                <tr className="">
+                  <td colSpan={table.getAllColumns().length}>
+                    <p className="py-16 text-sm text-center">{noDataMessage}</p>
+                  </td>
+                </tr>
               )}
               {bodyRows.map((row) => {
                 const groupRows = expandModel.rows.filter(
@@ -165,13 +184,11 @@ const Table = <T,>({
           totalItems={pagination.totalItems}
           totalPages={pagination.totalPages}
           currentPage={pagination.currentPage}
-          onPageChange={(nextPage) => {
-            table.setPageIndex(nextPage);
-          }}
+          onPageChange={handlePageChange}
         />
       </div>
     </div>
   );
 };
 
-export default Table;
+export default ComposedTable;

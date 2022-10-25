@@ -41,6 +41,7 @@ export function useYearsRange({
       return;
     }
   }, [startYear, endYear, firstYear, lastYear, years]);
+
   useEffect(() => {
     // If we don't have a years array there's nothing to set
     if (!years) return;

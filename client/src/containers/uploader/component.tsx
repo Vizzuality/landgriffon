@@ -6,11 +6,10 @@ import { useUploadDataSource } from 'hooks/sourcing-data';
 import FileDropzone from 'components/file-dropzone';
 
 import type { FileDropZoneProps } from 'components/file-dropzone/types';
-import type { Task } from 'types';
 
 type DataUploaderProps = {
-  inline?: boolean; // Visually it removes a shadow when it's true
-  task?: Task;
+  variant?: 'default' | 'inline'; // Visually it removes a shadow when it's true
+  isProcessing?: boolean; // Overriding the processing state
 };
 
 const MAX_SIZE = Number(process.env.NEXT_PUBLIC_FILE_UPLOADER_MAX_SIZE || '10000000');
@@ -23,7 +22,10 @@ const uploadOptions = {
   maxSize: MAX_SIZE,
 };
 
-const DataUploader: React.FC<DataUploaderProps> = ({ inline = false, task }) => {
+const DataUploader: React.FC<DataUploaderProps> = ({
+  variant = 'default',
+  isProcessing = false,
+}) => {
   const uploadDataSource = useUploadDataSource();
 
   const handleOnDrop: FileDropZoneProps['onDrop'] = useCallback(
@@ -53,28 +55,31 @@ const DataUploader: React.FC<DataUploaderProps> = ({ inline = false, task }) => 
     });
   }, []);
 
-  const isUploadingAndProcessing = uploadDataSource.isLoading || task?.status === 'processing';
+  const isUploadingOrProcessing = uploadDataSource.isLoading || isProcessing;
 
   return (
     <div className="relative w-[640px]">
       <div
-        className={classNames('relative z-10 bg-white rounded-xl', { 'p-4 shadow-lg': !inline })}
+        className={classNames('relative z-10 bg-white rounded-xl', {
+          'p-4 shadow-lg': variant === 'default',
+        })}
       >
         <FileDropzone
           {...uploadOptions}
           onDrop={handleOnDrop}
           onDropRejected={handleFileRejected}
-          disabled={isUploadingAndProcessing}
+          disabled={isUploadingOrProcessing}
+          isUploading={isUploadingOrProcessing}
         />
       </div>
 
-      {isUploadingAndProcessing && (
+      {isUploadingOrProcessing && (
         <div className="absolute w-full px-20">
           <div className="px-10 py-4 bg-white rounded-b-xl">
             <div className="w-full h-[4px] rounded bg-gradient-to-r from-[#5FCFF9] via-[#42A56A] to-[#F5CA7D]" />
-            <p className="text-xs text-left text-gray-500">
+            <p className="mt-1 text-xs text-left text-gray-500">
               {uploadDataSource.isLoading && 'Uploading file...'}
-              {task?.status === 'processing' && 'Processing file...'}
+              {isProcessing && 'Processing file...'}
             </p>
           </div>
         </div>

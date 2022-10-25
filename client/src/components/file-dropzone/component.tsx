@@ -1,4 +1,8 @@
 import { useDropzone } from 'react-dropzone';
+import { useLottie } from 'lottie-react';
+import classNames from 'classnames';
+
+import uploaderAnimation from './icon-animation.json';
 
 import UploadIcon from 'components/icons/upload-icon';
 import { bytesToMegabytes } from 'utils/units';
@@ -11,37 +15,47 @@ const defaultDropzoneProps: FileDropZoneProps = {
   maxSize: 10000000,
 };
 
-const FileDropZone: React.FC<FileDropZoneProps> = (dropZoneOptions) => {
+const FileDropZone: React.FC<FileDropZoneProps> = ({ isUploading, ...dropZoneOptions }) => {
   const options = {
     ...defaultDropzoneProps,
     ...dropZoneOptions,
   };
   const { getRootProps, getInputProps, isDragActive } = useDropzone(options);
+  const { View } = useLottie({ animationData: uploaderAnimation, loop: true, autoplay: true });
 
   return (
     <div
       {...getRootProps({
-        className:
-          'bg-navy-400/5 px-4 py-10 text-sm text-center border-2 border-gray-200 border-dashed rounded-md',
+        className: classNames(
+          'h-[320px] flex items-center justify-center bg-white px-4 py-10 text-sm text-center border-2 border-gray-200 border-dashed rounded-md',
+          {
+            'bg-navy-50': isDragActive,
+          },
+        ),
       })}
     >
       <input {...getInputProps()} />
 
       <div className="space-y-1">
-        <div className="flex justify-center w-full mb-4">
-          <UploadIcon />
-        </div>
+        <div className="flex justify-center w-full mb-4">{isUploading ? View : <UploadIcon />}</div>
 
-        {isDragActive ? (
-          <p className="text-navy-400">Drop the file here</p>
-        ) : (
-          <p>
-            <strong className="text-navy-400">Upload a file</strong> or drag and drop
-          </p>
+        {!isUploading && (
+          <>
+            {isDragActive ? (
+              <p className="text-navy-400">Drop the file here</p>
+            ) : (
+              <p>
+                <strong className="font-semibold">
+                  <span className="text-navy-400">Upload a file</span> or drag and drop
+                </strong>
+              </p>
+            )}
+
+            <p className="text-xs text-gray-500">
+              Max supported file: XLS {Number(bytesToMegabytes(options.maxSize)).toFixed(2)} MB
+            </p>
+          </>
         )}
-        <p className="text-xs">
-          Max supported file: XLS {Number(bytesToMegabytes(options.maxSize)).toFixed(2)} MB
-        </p>
       </div>
     </div>
   );

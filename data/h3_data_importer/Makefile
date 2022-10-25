@@ -428,11 +428,11 @@ convert-aboveGroundBiomass: preprocess-aboveGroundBiomass
 #Download satelligence deforestation
 download-satDeforestation:
 	mkdir -p $(WORKDIR_SATDEFORESTATION)
-	
+
 	aws configure set awc_acces_key_id $$AWS_ACCESS_KEY_ID; \
 	aws configure set aws_secret_access_key $$AWS_SECRET_ACCESS_KEY; \
 	aws s3 sync s3://landgriffon-raw-data/processed/satelligence $(WORKDIR_SATDEFORESTATION);
-	
+
 	mkdir $(WORKDIR_SATDEFORESTATION)/mask
 	mkdir $(WORKDIR_SATDEFORESTATION)/risk
 	mv $(WORKDIR_SATDEFORESTATION)/Deforestation_2021_ha.tif $(WORKDIR_SATDEFORESTATION)/mask
@@ -450,21 +450,20 @@ download-woodpulp:
 	mkdir -p $(WORKDIR_WOODPULP)
 	mkdir -p $(WORKDIR_WOODPULP)/ha
 	mkdir -p $(WORKDIR_WOODPULP)/prod
-	
+
 	aws configure set awc_acces_key_id $$AWS_ACCESS_KEY_ID; \
 	aws configure set aws_secret_access_key $$AWS_SECRET_ACCESS_KEY; \
 	aws s3 sync s3://landgriffon-raw-data/processed/woodpulp/ $(WORKDIR_WOODPULP);
-	
-	mv	$(WORKDIR_WOODPULP)/gfw_plantations_woodpulp_harvest_ha_res.tif	$(WORKDIR_WOODPULP)/ha/gfw_plantations_woodpulp_harvest_ha.tif
-	mv	$(WORKDIR_WOODPULP)/gfw_plantations_woodpulp_prod_t_nd_res.tif	$(WORKDIR_WOODPULP)/prod/gfw_plantations_woodpulp_prod_t_nd.tif
 
+	mv	$(WORKDIR_WOODPULP)/gfw_plantations_woodpulp_harvest_ha_res.tif	$(WORKDIR_WOODPULP)/ha/gfw_plantations_woodpulp_ha.tif
+	mv	$(WORKDIR_WOODPULP)/gfw_plantations_woodpulp_prod_t_nd_res.tif	$(WORKDIR_WOODPULP)/prod/gfw_plantations_woodpulp_prod.tif
 
 convert-woodpulp: download-woodpulp
-	python	tiff_folder_to_h3_table.py	$(WORKDIR_WOODPULP)/ha h3_grid_woodpulp_ha		harvest_area	gfw_plantations_woodpulp	2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR)
-	python	tiff_folder_to_h3_table.py	$(WORKDIR_WOODPULP)/ha h3_grid_woodpulp_prod	production		gfw_plantations_woodpulp	2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR)
+	python	tiff_folder_to_h3_table.py	$(WORKDIR_WOODPULP)/ha		h3_grid_woodpulp_ha		harvest_area	gfw_plantations		2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR)
+	python	tiff_folder_to_h3_table.py	$(WORKDIR_WOODPULP)/prod	h3_grid_woodpulp_prod	production		gfw_plantations		2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR)
 
 ###################
-# Contextual data #	
+# Contextual data #
 ###################
 
 # Aqueduct Global water risk contextual data

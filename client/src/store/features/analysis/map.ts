@@ -10,6 +10,7 @@ const DEFAULT_LAYER_ATTRIBUTES = {
   opacity: 0.7,
   loading: false,
   isContextual: false,
+  comparisonMode: 'relative' as const,
 };
 
 const DEFAULT_DECKGL_PROPS = {
@@ -61,7 +62,6 @@ export const initialState: AnalysisMapState = {
     impact: {
       ...DEFAULT_LAYER_ATTRIBUTES,
       id: 'impact',
-      ...DEFAULT_LAYER_ATTRIBUTES,
       order: 0,
       active: true,
       isContextual: false,

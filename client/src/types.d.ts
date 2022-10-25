@@ -1,3 +1,4 @@
+import type { ScenarioComparisonMode } from 'store/features/analysis/scenarios';
 import type { Scenario } from 'containers/scenarios/types';
 
 export type RGBColor = [number, number, number];
@@ -56,6 +57,10 @@ export type ImpactH3APIParams = CommonH3APIParams & {
   scenarioId?: Scenario['id'];
   locationTypes?: string[];
 };
+
+export interface ContextualH3APIParams extends ImpactH3APIParams {
+  relative: boolean;
+}
 
 export type ImpactTabularAPIParams = {
   groupBy: string;
@@ -219,6 +224,7 @@ export type Layer = {
   active: boolean;
   opacity: number;
   metadata?: WithRequiredProperty<Partial<LayerMetadata>, 'legend'>;
+  comparisonMode: ScenarioComparisonMode;
   loading?: boolean;
 };
 

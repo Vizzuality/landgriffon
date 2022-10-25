@@ -39,6 +39,13 @@ const AnalysisMap = () => {
   });
 
   const contextualData = useAllContextualLayersData();
+  const contextualDataById = useMemo(() => {
+    return Object.fromEntries(
+      contextualData
+        .filter((d) => d.isSuccess)
+        .map(({ data: { layerId, ...rest } }) => [layerId, rest]),
+    );
+  }, [contextualData]);
 
   const layers = useMemo(() => {
     const legends = Object.values(layerDeckGLProps)
@@ -49,7 +56,7 @@ const AnalysisMap = () => {
         }
 
         const data = layerInfo.isContextual
-          ? contextualData.get(props.id)?.data
+          ? contextualDataById[props.id]?.data
           : layerInfo.id === 'material'
           ? materialData?.data
           : impactData;
@@ -77,7 +84,7 @@ const AnalysisMap = () => {
       })
       .filter((l) => !!l);
     return sortBy(legends, (l) => layersMetadata[l.id].order).reverse();
-  }, [contextualData, impactData, layerDeckGLProps, layersMetadata, materialData?.data]);
+  }, [contextualDataById, impactData, layerDeckGLProps, layersMetadata, materialData?.data]);
 
   const handleMapStyleChange = useCallback((newStyle: BasemapValue) => {
     setMapStyle(newStyle);

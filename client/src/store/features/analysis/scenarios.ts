@@ -28,7 +28,7 @@ export type ScenariosState = {
 // Define the initial state using that type
 export const initialState: ScenariosState = {
   isComparisonEnabled: false,
-  comparisonMode: 'relative',
+  comparisonMode: 'absolute',
   currentScenario: null,
   scenarioToCompare: null,
   searchTerm: null,

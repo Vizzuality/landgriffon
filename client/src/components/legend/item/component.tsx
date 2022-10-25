@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { useCallback } from 'react';
 
 import OpacityControl from './opacityControl';
 import DragHandle from './dragHandle';
@@ -6,8 +7,11 @@ import DragHandle from './dragHandle';
 import InfoToolTip from 'components/info-tooltip/component';
 import Loading from 'components/loading';
 
+import type { Dispatch } from 'react';
+import type { ScenarioComparisonMode } from 'store/features/analysis/scenarios';
+
 export type LegendItemProps = {
-  name: string | JSX.Element;
+  name: React.ReactNode;
   info?: string;
   unit?: string;
   id: string;
@@ -16,8 +20,10 @@ export type LegendItemProps = {
   showToolbar?: boolean;
   children?: React.ReactNode;
   opacity: number;
-  onChangeOpacity: (opacity: number) => void;
+  onChangeOpacity: Dispatch<number>;
+  onChangeComparisonMode?: Dispatch<ScenarioComparisonMode>;
   main?: boolean;
+  comparison?: ScenarioComparisonMode;
 };
 
 export const LegendItem = ({
@@ -28,9 +34,16 @@ export const LegendItem = ({
   showToolbar = true,
   children,
   opacity,
+  comparison,
   onChangeOpacity,
+  onChangeComparisonMode,
   main = false,
 }: LegendItemProps) => {
+  const handleChangeComparison = useCallback(
+    (mode: ScenarioComparisonMode) => () => onChangeComparisonMode?.(mode),
+    [onChangeComparisonMode],
+  );
+
   return (
     <div
       className={classNames('flex flex-row gap-1 relative group py-3 pl-1 pr-2', {
@@ -59,6 +72,16 @@ export const LegendItem = ({
                 </div>
               </div>
             )}
+          </div>
+        )}
+        {comparison && (
+          <div className="flex flex-row text-xs">
+            <button type="button" onClick={handleChangeComparison('absolute')}>
+              absolute
+            </button>
+            <button type="submit" onClick={handleChangeComparison('relative')}>
+              relative
+            </button>
           </div>
         )}
         {!isLoading && children && (

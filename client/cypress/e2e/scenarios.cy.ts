@@ -65,10 +65,12 @@ describe('Scenarios', () => {
     cy.intercept('GET', '/api/v1/scenarios?sort=-updatedAt&disablePagination=true', {
       statusCode: 200,
       fixture: 'scenario/scenarios-delete',
-    });
+    }).as('fetchScenariosAfterDeletion');
 
     // ? In the dialog: clicks on "Delete" button
     cy.get('[data-testid="dialog-delete-confirmation-btn"').click();
+
+    cy.wait('@fetchScenariosAfterDeletion');
 
     // ? check there are 9 scenarios available after deletion
     cy.get('[data-testid="scenario-card"]').should('have.length', 9);

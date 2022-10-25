@@ -168,6 +168,7 @@ const MoreFilters = () => {
       scenarioIds,
       originIds,
       supplierIds,
+      locationTypes: locationTypesIds,
     },
     DEFAULT_QUERY_OPTIONS,
   );

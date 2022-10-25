@@ -51,7 +51,9 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data }) => {
           Modified: {format(new Date(data.updatedAt), 'yyyy/MM/dd')}
         </div>
         <div>
-          <h2 className="text-lg">{data.title}</h2>
+          <h2 className="text-lg" data-testid="scenario-title">
+            {data.title}
+          </h2>
           {data.description && (
             <p className="mt-4 text-xs leading-5 text-gray-500">{data.description}</p>
           )}

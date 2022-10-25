@@ -41,7 +41,7 @@ describe('Scenarios', () => {
   });
 
   it('should allow create new scenarios and come back', () => {
-    cy.get('[data-testid="scenario-add-button"]').should('have.text', 'Add new scenario').click();
+    cy.get('[data-testid="scenario-add-button"]').should('have.text', 'Add scenario').click();
 
     cy.url().should('contain', '/data/scenarios/new');
 
@@ -77,5 +77,70 @@ describe('Scenarios', () => {
 
     // ? checks the toast message triggered after deletion
     cy.get('[data-testid="toast-message"]').should('contain', 'Scenario deleted successfully');
+  });
+
+  it('a user sorts scenarios alphabetically', () => {
+    // ? selects the "Sort by name" option and click on it
+    cy.get('[data-testid="select-sort-scenario"]').click();
+    cy.get('[role="listbox"]').type('{downArrow}').type('{enter}');
+
+    // ? waits to give time to update the URL
+    cy.wait(5);
+
+    // ? checks the user updates acording to the sort selection
+    cy.url().should('contain', 'sortBy=title');
+
+    // ? checks the first scenario displayed contains is titled "BE_TESTS" which is,
+    // ? according to our mockup, the first matchup alphabetically speaking
+    cy.get('[data-testid="scenario-card"]')
+      .first()
+      .find('[data-testid="scenario-title"]')
+      .should('have.text', 'BE_TESTS');
+  });
+
+  it('a user sorts scenarios by most recent', () => {
+    // ? selects the "Sort by most recent" option and click on it
+    cy.get('[data-testid="select-sort-scenario"]').click();
+    cy.get('[role="listbox"]').type('{downArrow}').type('{upArrow}').type('{enter}');
+
+    // ? waits to give time to update the URL
+    cy.wait(100);
+
+    // ? checks the user updates acording to the sort selection
+    cy.url().should('contain', 'sortBy=-updatedAt');
+
+    // ? checks the first scenario displayed contains is titled "Test: Change Rubber Location Cambodia" which is,
+    // ? according to our mockup, the most recent scenario updated
+    cy.get('[data-testid="scenario-card"]')
+      .first()
+      .find('[data-testid="scenario-title"]')
+      .should('have.text', 'Test: Change Rubber Location Cambodia');
+  });
+
+  it('after setting a sort option, refreshing the page keeps the option set', () => {
+    // ? selects the "Sort by name" option and click it
+    cy.get(`[data-testid="select-sort-scenario"]`).click();
+    cy.get('[role="listbox"]').type('{downArrow}').type('{enter}');
+
+    // ? waits to give time to update the URL
+    cy.wait(5);
+
+    // ? checks the user updates acording to the sort selection
+    cy.url().should('contain', 'sortBy=title');
+
+    // ? reloads the page
+    cy.reload();
+
+    // ? checks the selector is set according to the URL params
+    cy.get(`[data-testid="select-sort-scenario"]`)
+      .find('button')
+      .should('have.text', 'Sort by name');
+
+    // ? checks the first scenario displayed contains is titled "BE_TESTS" which is,
+    // ? according to our mockup, the first matchup alphabetically speaking
+    cy.get('[data-testid="scenario-card"]')
+      .first()
+      .find('[data-testid="scenario-title"]')
+      .should('have.text', 'BE_TESTS');
   });
 });

@@ -267,7 +267,7 @@ export class ScenarioVsScenarioImpactService {
       [];
     // Create a range of years by start and endYears
     const rangeOfYears: number[] = range(startYear, endYear + 1);
-    const lastAvailableDataYear: number = Math.max(
+    const lastYearWithData: number = Math.max(
       ...dataForScenarioVsScenarioImpactTable.map(
         (el: ImpactTableData) => el.year,
       ),
@@ -333,8 +333,7 @@ export class ScenarioVsScenarioImpactService {
                     rowValuesIndex - 1
                   ].scenarioTwoValue || 0
                 : 0;
-            const isProjected: boolean =
-              year > lastAvailableDataYear ? true : false;
+            const isProjected: boolean = year > lastYearWithData;
             calculatedData[namesByIndicatorIndex].values.push({
               year: year,
               scenarioOneValue:
@@ -419,7 +418,7 @@ export class ScenarioVsScenarioImpactService {
       this.getTotalPurchasedVolumeByYear(
         rangeOfYears,
         dataForScenarioVsScenarioImpactTable,
-        lastAvailableDataYear,
+        lastYearWithData,
       );
     this.logger.log('Impact Table built');
 
@@ -429,7 +428,7 @@ export class ScenarioVsScenarioImpactService {
   private getTotalPurchasedVolumeByYear(
     rangeOfYears: number[],
     dataForImpactTable: ImpactTableData[],
-    lastAvailableDataYear: number,
+    lastYearWithData: number,
   ): ScenarioVsScenarioImpactTablePurchasedTonnes[] {
     const purchasedTonnes: ScenarioVsScenarioImpactTablePurchasedTonnes[] = [];
 
@@ -461,8 +460,7 @@ export class ScenarioVsScenarioImpactService {
             : 0;
         const tonnesToProject: number =
           dataForImpactTable.length > 0 ? previousYearTonnage : 0;
-        const isProjected: boolean =
-          year > lastAvailableDataYear ? true : false;
+        const isProjected: boolean = year > lastYearWithData;
         purchasedTonnes.push({
           year,
           value: tonnesToProject + (tonnesToProject * this.growthRate) / 100,

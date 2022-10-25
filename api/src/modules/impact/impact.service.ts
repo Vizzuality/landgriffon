@@ -373,7 +373,7 @@ export class ImpactService {
     const impactTable: ImpactTableDataByIndicator[] = [];
     // Create a range of years by start and endYears
     const rangeOfYears: number[] = range(startYear, endYear + 1);
-    const lastAvailableDataYear: number = Math.max(
+    const lastYearWithData: number = Math.max(
       ...dataForImpactTable.map((el: ImpactTableData) => el.year),
     );
     // Append data by indicator and add its unit.symbol as metadata. We need awareness of this loop during the whole process
@@ -422,8 +422,7 @@ export class ImpactService {
                     rowValuesIndex - 1
                   ].value
                 : 0;
-            const isProjected: boolean =
-              year > lastAvailableDataYear ? true : false;
+            const isProjected: boolean = year > lastYearWithData;
 
             calculatedData[namesByIndicatorIndex].values.push({
               year: year,
@@ -468,7 +467,7 @@ export class ImpactService {
       this.getTotalPurchasedVolumeByYear(
         rangeOfYears,
         dataForImpactTable,
-        lastAvailableDataYear,
+        lastYearWithData,
       );
     this.logger.log('Impact Table built');
 
@@ -478,7 +477,7 @@ export class ImpactService {
   private getTotalPurchasedVolumeByYear(
     rangeOfYears: number[],
     dataForImpactTable: ImpactTableData[],
-    lastAvailableDataYear: number,
+    lastYearWithData: number,
     scenarioId?: string,
   ): ImpactTablePurchasedTonnes[] {
     const purchasedTonnes: ImpactTablePurchasedTonnes[] = [];
@@ -508,8 +507,7 @@ export class ImpactService {
           purchasedTonnes.length > 0
             ? purchasedTonnes[purchasedTonnes.length - 1].value
             : 0;
-        const isProjected: boolean =
-          year > lastAvailableDataYear ? true : false;
+        const isProjected: boolean = year > lastYearWithData;
         const tonnesToProject: number =
           dataForImpactTable.length > 0 ? previousYearTonnage : 0;
         purchasedTonnes.push({

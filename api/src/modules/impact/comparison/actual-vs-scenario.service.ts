@@ -238,7 +238,7 @@ export class ActualVsScenarioImpactService {
     const impactTable: ImpactTableDataByIndicator[] = [];
     // Create a range of years by start and endYears
     const rangeOfYears: number[] = range(startYear, endYear + 1);
-    const lastAvailableDataYear: number = Math.max(
+    const lastYearWithData: number = Math.max(
       ...dataForActualVsScenarioImpactTable.map(
         (el: ImpactTableData) => el.year,
       ),
@@ -303,8 +303,7 @@ export class ActualVsScenarioImpactService {
                   ].scenarioValue || 0
                 : 0;
 
-            const isProjected: boolean =
-              year > lastAvailableDataYear ? true : false;
+            const isProjected: boolean = year > lastYearWithData;
             calculatedData[namesByIndicatorIndex].values.push({
               year: year,
               value: lastYearsValue + (lastYearsValue * this.growthRate) / 100,
@@ -384,7 +383,7 @@ export class ActualVsScenarioImpactService {
       this.getTotalPurchasedVolumeByYear(
         rangeOfYears,
         dataForActualVsScenarioImpactTable,
-        lastAvailableDataYear,
+        lastYearWithData,
       );
     this.logger.log('Impact Table built');
 
@@ -394,7 +393,7 @@ export class ActualVsScenarioImpactService {
   private getTotalPurchasedVolumeByYear(
     rangeOfYears: number[],
     dataForImpactTable: ImpactTableData[],
-    lastAvailableDataYear: number,
+    lastYearWithData: number,
   ): ImpactTablePurchasedTonnes[] {
     const purchasedTonnes: ImpactTablePurchasedTonnes[] = [];
     rangeOfYears.forEach((year: number) => {
@@ -425,8 +424,7 @@ export class ActualVsScenarioImpactService {
             : 0;
         const tonnesToProject: number =
           dataForImpactTable.length > 0 ? previousYearTonnage : 0;
-        const isProjected: boolean =
-          year > lastAvailableDataYear ? true : false;
+        const isProjected: boolean = year > lastYearWithData;
         purchasedTonnes.push({
           year,
           value: tonnesToProject + (tonnesToProject * this.growthRate) / 100,

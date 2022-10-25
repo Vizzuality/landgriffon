@@ -25,6 +25,7 @@ import {
 } from 'modules/scenario-interventions/intermediate-table-names/intermediate.table.names';
 import { chunk } from 'lodash';
 import * as config from 'config';
+import { IMPACT_VIEW_NAME } from 'modules/impact/views/impact.materialized-view.entity';
 
 @EntityRepository(ScenarioIntervention)
 export class ScenarioInterventionRepository extends Repository<ScenarioIntervention> {
@@ -249,10 +250,10 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
         .values(replacedBusinessUnitsToSave)
         .execute();
       this.logger.log('Committing transaction...');
-
       await queryRunner.commitTransaction();
+      this.logger.warn(`REFRESHING ${IMPACT_VIEW_NAME} ON THE BACKGROUND...`);
+      IndicatorRecord.updateImpactView();
       this.logger.log('New Intervention Saving Finished');
-
       return intervention;
     } catch (err) {
       // rollback changes before throwing error

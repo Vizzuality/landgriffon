@@ -9,12 +9,24 @@ import { useAppSelector } from 'store/hooks';
 import { analysisFilters, scenarios } from 'store/features/analysis';
 
 import type { UseQueryOptions } from '@tanstack/react-query';
-import type { H3APIResponse, MaterialH3APIParams, ImpactH3APIParams, Layer } from 'types';
+import type {
+  H3APIResponse,
+  MaterialH3APIParams,
+  ImpactH3APIParams,
+  Layer,
+  ContextualH3APIParams,
+  ErrorResponse,
+} from 'types';
 
 interface UseH3DataProps<T> {
   id: Layer['id'];
   params?: Partial<MaterialH3APIParams & ImpactH3APIParams>;
-  options?: UseQueryOptions<H3APIResponse, unknown, T>;
+  options?: UseQueryOptions<
+    H3APIResponse,
+    ErrorResponse,
+    T
+    // ['h3-data-contextual', string, ContextualH3APIParams]
+  >;
 }
 
 export const useH3Data = <T = H3APIResponse>({
@@ -56,7 +68,15 @@ export const useH3Data = <T = H3APIResponse>({
   const impactQuery = useH3ImpactData(impactParams, impactOptions);
 
   const contextualOptions = useMemo(
-    () => ({ ...options, enabled: enabled && isContextual }),
+    () => ({
+      ...(options as UseQueryOptions<
+        H3APIResponse,
+        ErrorResponse,
+        T,
+        ['h3-data-contextual', string, ContextualH3APIParams]
+      >),
+      enabled: enabled && isContextual,
+    }),
     [enabled, isContextual, options],
   );
   const contextualQuery = useH3ContextualData(id, contextualOptions);

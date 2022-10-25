@@ -4,9 +4,11 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from 'store';
 import type { Scenario } from 'containers/scenarios/types';
 
+export type ScenarioComparisonMode = 'relative' | 'absolute';
+
 export type ScenariosState = {
   isComparisonEnabled: boolean;
-  comparisonMode: 'relative' | 'absolute';
+  comparisonMode: ScenarioComparisonMode;
   /**
    * The current scenario id
    * If the current scenario is the actual data, the id will be null

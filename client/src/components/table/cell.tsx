@@ -28,7 +28,7 @@ const getAlignmentClasses = (align: 'left' | 'center' | 'right') => {
 const CellWrapper = <T, C>({ children, context }: React.PropsWithChildren<CellProps<T, C>>) => {
   const isFirstColumn = context.table.getAllColumns()[0].id === context.column.id;
 
-  const { align } = context.column.columnDef.meta;
+  const { align } = context.column.columnDef?.meta || {};
   const style = useMemo(
     () => ({
       paddingLeft: isFirstColumn ? `${context.row.depth * 20 + 25}px` : '25px',
@@ -81,11 +81,11 @@ export const HeaderCell = <T, C>({
   const isFirstColumn = context.table.getAllColumns()[0].id === context.column.id;
   const isSorted = context.column.getIsSorted();
 
-  const { align } = context.column.columnDef.meta;
+  const { align } = context.column.columnDef?.meta || {};
 
   return (
     <div
-      className={classNames('py-2 my-auto text-sm text-left text-gray-400 uppercase font-normal', {
+      className={classNames('py-2 my-auto text-xs text-left text-gray-400 uppercase font-normal', {
         'pl-[25px]': isFirstColumn,
       })}
     >

@@ -1,6 +1,7 @@
-import type { ColumnDef, ColumnMeta, RequiredKeys, RowData } from '@tanstack/react-table';
+import type { ColumnMeta, RowData, ColumnDef } from '@tanstack/react-table';
 import type { HTMLAttributes } from 'react';
 import type { TableProps } from './component';
+
 declare module '@tanstack/table-core' {
   interface TableMeta<TData extends RowData> {
     theme: TableProps<TData>['theme'];
@@ -13,11 +14,6 @@ declare module '@tanstack/table-core' {
   }
 }
 
-export type DisplayColumnDefProps<T, C> = RequiredKeys<
-  Omit<ColumnDef<T, C>, 'accessorKey' | 'accessorFn'>,
-  'id'
->;
-
-export type ColumnDefinition<T> = DisplayColumnDefProps<T, T> &
+export type ColumnDefinition<T> = ColumnDef<T> &
   ColumnMeta<T, T> &
   Pick<HTMLAttributes<HTMLDivElement>, 'className'>;

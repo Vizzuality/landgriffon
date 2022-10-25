@@ -149,42 +149,46 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     );
   });
 
-  test('When I request data for Impact table for a Scenario with various Interventions of different types I should get the expected results ignoring INACTIVE interventions', async () => {
-    const preconditions: {
-      indicator: Indicator;
-      newScenario: Scenario;
-    } = await createMultipleInterventionsPreconditions();
+  test(
+    'When I request data for Impact table for a Scenario with various Interventions of different types I should get the expected results ignoring INACTIVE interventions. ' +
+      'Past years with no data should ahve isProjected property as false',
+    async () => {
+      const preconditions: {
+        indicator: Indicator;
+        newScenario: Scenario;
+      } = await createMultipleInterventionsPreconditions();
 
-    const response1 = await request(app.getHttpServer())
-      .get('/api/v1/impact/compare/scenario/vs/actual')
-      .set('Authorization', `Bearer ${jwtToken}`)
-      .query({
-        'indicatorIds[]': [preconditions.indicator.id],
-        endYear: 2023,
-        startYear: 2020,
-        groupBy: 'material',
-        scenarioId: preconditions.newScenario.id,
-      })
-      .expect(HttpStatus.OK);
+      const response1 = await request(app.getHttpServer())
+        .get('/api/v1/impact/compare/scenario/vs/actual')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [preconditions.indicator.id],
+          endYear: 2023,
+          startYear: 2020,
+          groupBy: 'material',
+          scenarioId: preconditions.newScenario.id,
+        })
+        .expect(HttpStatus.OK);
 
-    expect(response1.body.data.impactTable[0].rows).toEqual(
-      mixedInterventionsScenarioTable.impactTable[0].rows,
-    );
+      expect(response1.body.data.impactTable[0].rows).toEqual(
+        mixedInterventionsScenarioTable.impactTable[0].rows,
+      );
 
-    const response2 = await request(app.getHttpServer())
-      .get('/api/v1/impact/compare/scenario/vs/actual')
-      .set('Authorization', `Bearer ${jwtToken}`)
-      .query({
-        'indicatorIds[]': [preconditions.indicator.id],
-        endYear: 2023,
-        startYear: 2019,
-        groupBy: 'material',
-        scenarioId: preconditions.newScenario.id,
-      })
-      .expect(HttpStatus.OK);
+      const response2 = await request(app.getHttpServer())
+        .get('/api/v1/impact/compare/scenario/vs/actual')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [preconditions.indicator.id],
+          endYear: 2023,
+          startYear: 2019,
+          groupBy: 'material',
+          scenarioId: preconditions.newScenario.id,
+        })
+        .expect(HttpStatus.OK);
 
-    expect(response2.body.data.impactTable[0].rows).toEqual(
-      mixedInterventionsScenarioTable2019.impactTable[0].rows,
-    );
-  });
+      expect(response2.body.data.impactTable[0].rows).toEqual(
+        mixedInterventionsScenarioTable2019.impactTable[0].rows,
+      );
+    },
+  );
 });

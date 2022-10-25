@@ -21,6 +21,7 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import {
+  getComparisonResponseWithProjectedYears,
   getSameMaterialScenarioComparisonResponse,
   getScenarioComparisonResponseBySupplier,
 } from '../mocks/scenario-vs-scenario-responses/same-materials-scenarios.reponse';
@@ -135,4 +136,53 @@ describe('Scenario comparison test suite (e2e)', () => {
       expect.arrayContaining(expectedScenariosTableBySupplier.purchasedTonnes),
     );
   });
+
+  test(
+    'When I request scenario comparison for 2 Scenarios choosing start year and end year for which tehre is no actual data. ' +
+      'Then int he result past years with no data should have 0 value and isProjected:false, while future year should have projected values and isProjected: false',
+    async () => {
+      const preconditions: {
+        newScenarioChangeSupplier: Scenario;
+        newScenarioChangeMaterial: Scenario;
+        indicator: Indicator;
+      } = await createSameMaterialScenariosPreconditions();
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/impact/compare/scenario/vs/scenario')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [preconditions.indicator.id],
+          endYear: 2022,
+          startYear: 2018,
+          groupBy: 'material',
+          scenarioOneId: preconditions.newScenarioChangeSupplier.id,
+          scenarioTwoId: preconditions.newScenarioChangeMaterial.id,
+        });
+
+      expect(response.status).toBe(HttpStatus.OK);
+
+      const expectedScenariosTableMByMaterial =
+        getComparisonResponseWithProjectedYears(preconditions.indicator.id);
+
+      expect(response.body.data.scenarioVsScenarioImpactTable[0].rows).toEqual(
+        expect.arrayContaining(
+          expectedScenariosTableMByMaterial.scenarioVsScenarioImpactTable[0]
+            .rows,
+        ),
+      );
+      expect(
+        response.body.data.scenarioVsScenarioImpactTable[0].yearSum,
+      ).toEqual(
+        expect.arrayContaining(
+          expectedScenariosTableMByMaterial.scenarioVsScenarioImpactTable[0]
+            .yearSum,
+        ),
+      );
+      expect(response.body.data.purchasedTonnes).toEqual(
+        expect.arrayContaining(
+          expectedScenariosTableMByMaterial.purchasedTonnes,
+        ),
+      );
+    },
+  );
 });

@@ -465,7 +465,11 @@ export class ImpactService {
       impactTable[indicatorValuesIndex].rows = skeleton;
     });
     const purchasedTonnes: ImpactTablePurchasedTonnes[] =
-      this.getTotalPurchasedVolumeByYear(rangeOfYears, dataForImpactTable);
+      this.getTotalPurchasedVolumeByYear(
+        rangeOfYears,
+        dataForImpactTable,
+        lastAvailableDataYear,
+      );
     this.logger.log('Impact Table built');
 
     return { impactTable, purchasedTonnes };
@@ -474,11 +478,9 @@ export class ImpactService {
   private getTotalPurchasedVolumeByYear(
     rangeOfYears: number[],
     dataForImpactTable: ImpactTableData[],
+    lastAvailableDataYear: number,
     scenarioId?: string,
   ): ImpactTablePurchasedTonnes[] {
-    const lastAvailableDataYear: number = Math.max(
-      ...dataForImpactTable.map((el: ImpactTableData) => el.year),
-    );
     const purchasedTonnes: ImpactTablePurchasedTonnes[] = [];
     rangeOfYears.forEach((year: number) => {
       const valueOfPurchasedTonnesByYear: number = dataForImpactTable.reduce(

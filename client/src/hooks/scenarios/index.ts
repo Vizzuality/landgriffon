@@ -151,11 +151,11 @@ export function useDeleteScenario() {
     (id: Scenario['id']) =>
       apiService.request({
         method: 'DELETE',
-        url: `/scenarios/${decodeURIComponent(id as string)}`,
+        url: `/scenarios/${decodeURIComponent(id)}`,
       }),
     {
       mutationKey: ['deleteScenario'],
-      onSuccess: () => {
+      onSettled: () => {
         queryClient.invalidateQueries(['scenariosList']);
       },
     },

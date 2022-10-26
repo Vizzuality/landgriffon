@@ -39,7 +39,9 @@ export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
       <ul className="flex w-full m-0 text-xs">
         {(!!min || min === 0) && (
           <li className="relative flex justify-start w-0">
-            <span className="absolute w-4 truncate left">{min}</span>
+            <span className="absolute w-4 truncate left" title={`${min}`}>
+              {min}
+            </span>
           </li>
         )}
         {items.map(({ label, value }, i) => (

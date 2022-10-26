@@ -64,7 +64,6 @@ export const initialState: AnalysisMapState = {
       order: 0,
       active: true,
       isContextual: false,
-      comparisonMode: 'relative',
     },
     material: {
       ...DEFAULT_LAYER_ATTRIBUTES,

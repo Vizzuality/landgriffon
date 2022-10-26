@@ -10,7 +10,6 @@ import LegendTypeGradient from 'components/legend/types/gradient';
 import { useContextualLayer } from 'hooks/layers/contextual';
 import useContextualLayers from 'hooks/layers/getContextualLayers';
 
-import type { ScenarioComparisonMode } from 'store/features/analysis/scenarios';
 import type { Layer } from 'types';
 
 interface ContextualLegendItemProps {
@@ -29,14 +28,6 @@ const ContextualLegendItem = ({ layer }: ContextualLegendItemProps) => {
       dispatch(setLayer({ id: layer.id, layer: { opacity } }));
     },
     [dispatch, layer],
-  );
-
-  const handleComparison = useCallback(
-    (mode: ScenarioComparisonMode) => {
-      if (mode === layer.comparisonMode) return;
-      dispatch(setLayer({ id: layer.id, layer: { comparisonMode: mode } }));
-    },
-    [dispatch, layer.comparisonMode, layer.id],
   );
 
   const Legend = useMemo(() => {
@@ -72,7 +63,6 @@ const ContextualLegendItem = ({ layer }: ContextualLegendItemProps) => {
       opacity={layer.opacity}
       {...layer.metadata?.legend}
       onChangeOpacity={handleOpacity}
-      onChangeComparisonMode={handleComparison}
     >
       {Legend}
     </LegendItem>

@@ -6,9 +6,10 @@ import { ComparisonToggle } from './comparisonModeToggle';
 
 import InfoToolTip from 'components/info-tooltip/component';
 import Loading from 'components/loading';
+import { useAppSelector } from 'store/hooks';
+import { scenarios } from 'store/features/analysis';
 
 import type { Dispatch } from 'react';
-import type { ScenarioComparisonMode } from 'store/features/analysis/scenarios';
 
 export type LegendItemProps = {
   name: React.ReactNode;
@@ -22,8 +23,7 @@ export type LegendItemProps = {
   opacity: number;
   onChangeOpacity: Dispatch<number>;
   main?: boolean;
-  comparison?: ScenarioComparisonMode;
-  onChangeComparisonMode?: Dispatch<ScenarioComparisonMode>;
+  showComparisonModeToggle?: boolean;
 };
 
 export const LegendItem = ({
@@ -34,11 +34,12 @@ export const LegendItem = ({
   showToolbar = true,
   children,
   opacity,
-  comparison,
   onChangeOpacity,
-  onChangeComparisonMode,
   main = false,
+  showComparisonModeToggle = false,
 }: LegendItemProps) => {
+  const { isComparisonEnabled } = useAppSelector(scenarios);
+
   return (
     <div
       className={classNames('flex flex-row gap-1 relative group py-3 pl-1 pr-2', {
@@ -69,9 +70,7 @@ export const LegendItem = ({
             )}
           </div>
         )}
-        {comparison && (
-          <ComparisonToggle comparisonMode={comparison} onChange={onChangeComparisonMode} />
-        )}
+        {showComparisonModeToggle && isComparisonEnabled && <ComparisonToggle />}
         {!isLoading && children && (
           <div className="flex flex-row gap-2 text-gray-500">
             <div className="flex-grow min-w-0">{children}</div>

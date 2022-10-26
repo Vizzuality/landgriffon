@@ -1,4 +1,3 @@
-import type { ScenarioComparisonMode } from 'store/features/analysis/scenarios';
 import type { Scenario } from 'containers/scenarios/types';
 
 export type RGBColor = [number, number, number];
@@ -222,7 +221,6 @@ export type Layer = {
   active: boolean;
   opacity: number;
   metadata?: WithRequiredProperty<Partial<LayerMetadata>, 'legend'>;
-  comparisonMode?: ScenarioComparisonMode;
   loading?: boolean;
 };
 

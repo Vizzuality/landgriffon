@@ -1,22 +1,22 @@
 import classNames from 'classnames';
 import { useCallback } from 'react';
 
-import type { Dispatch } from 'react';
-import type { ScenarioComparisonMode } from 'store/features/analysis/scenarios';
+import { scenarios, setComparisonMode } from 'store/features/analysis';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
 
-interface ComaprisonToggleProps {
-  comparisonMode: ScenarioComparisonMode;
-  onChange: Dispatch<ScenarioComparisonMode>;
-}
+import type { ScenarioComparisonMode } from 'store/features/analysis/scenarios';
 
 const COMMON_MODE_BUTTON_CLASSNAMES = 'border px-1 p-0.5';
 const ACTIVE_BUTTON_CLASSNAMES = 'text-navy-400 border-navy-400 bg-navy-50';
 const DISABLED_BUTTON_CLASSNAMES = 'text-gray-400 border-gray-400';
 
-export const ComparisonToggle = ({ comparisonMode, onChange }: ComaprisonToggleProps) => {
+export const ComparisonToggle = () => {
+  const dispatch = useAppDispatch();
+  const { comparisonMode } = useAppSelector(scenarios);
+
   const getHandleChangeComparison = useCallback(
-    (mode: ScenarioComparisonMode) => () => onChange?.(mode),
-    [onChange],
+    (mode: ScenarioComparisonMode) => () => dispatch(setComparisonMode(mode)),
+    [dispatch],
   );
 
   return (

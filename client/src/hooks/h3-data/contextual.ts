@@ -115,12 +115,12 @@ export const useAllContextualLayersData = <T = { layerId: Layer['id'] } & H3APIR
   const queryList = Object.values(layers)
     .filter((layer) => layer.isContextual)
     .map((layer) => ({
-      queryKey: ['h3-data-contextual-all', layer.id, urlParams, layer.comparisonMode] as const,
-      queryFn: (({ queryKey: [, id, params, comparisonMode] }) => {
+      queryKey: ['h3-data-contextual-all', layer.id, urlParams] as const,
+      queryFn: (({ queryKey: [, id, params] }) => {
         return (
           apiRawService
             .get<H3APIResponse>(`/contextual-layers/${id}/h3data`, {
-              params: { ...params, relative: comparisonMode === 'relative' },
+              params,
             })
             // Adding color to the response
             .then((response) => {
@@ -132,12 +132,7 @@ export const useAllContextualLayersData = <T = { layerId: Layer['id'] } & H3APIR
         );
       }) as QueryFunction<
         H3APIResponse & { layerId: Layer['id'] },
-        [
-          'h3-data-contextual',
-          Layer['id'],
-          ContextualH3APIParams,
-          ScenarioComparisonMode | undefined,
-        ]
+        ['h3-data-contextual', Layer['id'], ContextualH3APIParams]
       >,
       keepPreviousData: true,
       refetchOnMount: false,

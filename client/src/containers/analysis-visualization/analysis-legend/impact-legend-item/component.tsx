@@ -2,12 +2,10 @@ import { useCallback, useMemo } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap, setLayer } from 'store/features/analysis/map';
-import { analysisFilters, scenarios } from 'store/features/analysis';
+import { analysisFilters } from 'store/features/analysis';
 import LegendTypeChoropleth from 'components/legend/types/choropleth';
 import LegendItem from 'components/legend/item';
-import { setComparisonMode } from 'store/features/analysis/scenarios';
 
-import type { ScenarioComparisonMode } from 'store/features/analysis/scenarios';
 import type { Legend } from 'types';
 
 const LAYER_ID = 'impact';
@@ -31,7 +29,7 @@ const ImpactLayer = () => {
   const {
     layers: { [LAYER_ID]: layer },
   } = useAppSelector(analysisMap);
-  const { comparisonMode } = useAppSelector(scenarios);
+
   const handleOpacity = useCallback(
     (opacity: number) => {
       dispatch(setLayer({ id: LAYER_ID, layer: { opacity } }));
@@ -48,13 +46,6 @@ const ImpactLayer = () => {
     [layer.metadata?.legend.items],
   );
 
-  const handleChangeComparison = useCallback(
-    (comparisonMode: ScenarioComparisonMode) => {
-      dispatch(setComparisonMode(comparisonMode));
-    },
-    [dispatch],
-  );
-
   if (!layer.metadata) return null;
   // TO-DO: add Loading component
   return (
@@ -63,8 +54,7 @@ const ImpactLayer = () => {
       {...layer.metadata.legend}
       opacity={layer.opacity}
       onChangeOpacity={handleOpacity}
-      comparison={comparisonMode}
-      onChangeComparisonMode={handleChangeComparison}
+      showComparisonModeToggle
       isLoading={layer.loading}
       main
     >

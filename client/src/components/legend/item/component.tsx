@@ -1,8 +1,8 @@
 import classNames from 'classnames';
-import { useCallback } from 'react';
 
 import OpacityControl from './opacityControl';
 import DragHandle from './dragHandle';
+import { ComparisonToggle } from './comparisonModeToggle';
 
 import InfoToolTip from 'components/info-tooltip/component';
 import Loading from 'components/loading';
@@ -21,13 +21,10 @@ export type LegendItemProps = {
   children?: React.ReactNode;
   opacity: number;
   onChangeOpacity: Dispatch<number>;
-  onChangeComparisonMode?: Dispatch<ScenarioComparisonMode>;
   main?: boolean;
   comparison?: ScenarioComparisonMode;
+  onChangeComparisonMode?: Dispatch<ScenarioComparisonMode>;
 };
-const COMMON_MODE_BUTTON_CLASSNAMES = 'border px-1 p-0.5';
-const ACTIVE_BUTTON_CLASSNAMES = 'text-navy-400 border-navy-400 bg-navy-50';
-const DISABLED_BUTTON_CLASSNAMES = 'text-gray-400 border-gray-400';
 
 export const LegendItem = ({
   name,
@@ -42,11 +39,6 @@ export const LegendItem = ({
   onChangeComparisonMode,
   main = false,
 }: LegendItemProps) => {
-  const handleChangeComparison = useCallback(
-    (mode: ScenarioComparisonMode) => () => onChangeComparisonMode?.(mode),
-    [onChangeComparisonMode],
-  );
-
   return (
     <div
       className={classNames('flex flex-row gap-1 relative group py-3 pl-1 pr-2', {
@@ -78,36 +70,7 @@ export const LegendItem = ({
           </div>
         )}
         {comparison && (
-          <div className="flex flex-row text-sm w-fit">
-            <button
-              className={classNames(
-                COMMON_MODE_BUTTON_CLASSNAMES,
-                'rounded-l-md',
-                comparison === 'absolute' ? ACTIVE_BUTTON_CLASSNAMES : DISABLED_BUTTON_CLASSNAMES,
-                {
-                  'border-r-0': comparison !== 'absolute',
-                },
-              )}
-              type="button"
-              onClick={handleChangeComparison('absolute')}
-            >
-              absolute
-            </button>
-            <button
-              type="submit"
-              className={classNames(
-                COMMON_MODE_BUTTON_CLASSNAMES,
-                'rounded-r-md',
-                comparison === 'relative' ? ACTIVE_BUTTON_CLASSNAMES : DISABLED_BUTTON_CLASSNAMES,
-                {
-                  'border-l-0': comparison !== 'relative',
-                },
-              )}
-              onClick={handleChangeComparison('relative')}
-            >
-              relative
-            </button>
-          </div>
+          <ComparisonToggle comparisonMode={comparison} onChange={onChangeComparisonMode} />
         )}
         {!isLoading && children && (
           <div className="flex flex-row gap-2 text-gray-500">

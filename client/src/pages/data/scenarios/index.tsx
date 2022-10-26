@@ -3,8 +3,11 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { PlusIcon, SortDescendingIcon } from '@heroicons/react/solid';
+import { useDebounceCallback } from '@react-hook/debounce';
+import omit from 'lodash/omit';
 
 import Select from 'components/forms/select';
+import Search from 'components/search';
 import { useScenarios } from 'hooks/scenarios';
 import AdminLayout from 'layouts/data';
 import ScenarioCard from 'containers/scenarios/card';
@@ -43,13 +46,29 @@ const ScenariosAdminPage: React.FC = () => {
     [router, query],
   );
 
+  const handleSearchByTerm = useDebounceCallback((value) => {
+    router.replace(
+      {
+        pathname: router.pathname,
+        query: {
+          ...omit(query, 'search'),
+          ...(value !== '' && { search: value }),
+        },
+      },
+      null,
+      { shallow: true },
+    );
+  }, 250);
+
   const currentSort = useMemo(
     () => SORT_OPTIONS.find(({ value }) => value === query.sortBy) || SORT_OPTIONS[0],
     [query.sortBy],
   );
 
+  const searchTerm = useMemo(() => query.search || null, [query.search]);
+
   const { data, isLoading } = useScenarios({
-    params: { disablePagination: true, sort: currentSort.value },
+    params: { disablePagination: true, sort: currentSort.value, 'search[title]': searchTerm },
     options: { select: (data) => data.data },
   });
 
@@ -58,8 +77,14 @@ const ScenariosAdminPage: React.FC = () => {
       <Head>
         <title>Admin scenarios | Landgriffon</title>
       </Head>
-      <div className="flex justify-end mb-6">
-        <div className="flex space-x-4">
+      <div className="flex justify-between mb-6">
+        <Search
+          placeholder="Search by scenario name"
+          defaultValue={searchTerm}
+          onChange={handleSearchByTerm}
+          data-testid="search-name-scenario"
+        />
+        <div className="flex justify-end space-x-4">
           <Select
             value={currentSort}
             options={SORT_OPTIONS}

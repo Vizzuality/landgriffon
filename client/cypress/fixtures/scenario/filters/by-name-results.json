@@ -1,0 +1,211 @@
+{
+  "data": [
+    {
+      "type": "scenarios",
+      "id": "8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7",
+      "attributes": {
+        "title": "Scenario A",
+        "description": "",
+        "status": "inactive",
+        "metadata": null,
+        "createdAt": "2022-07-14T14:28:25.552Z",
+        "updatedAt": "2022-07-01T17:37:23.505Z",
+        "scenarioInterventions": [
+          [
+            {
+              "createdAt": "2022-10-19T07:20:04.330Z",
+              "updatedAt": "2022-10-19T07:20:04.330Z",
+              "id": "98141026-e722-465b-b037-e72d36eeecc8",
+              "title": "Testing intervention FE",
+              "description": null,
+              "status": "active",
+              "type": "Switch to a new material",
+              "startYear": 2020,
+              "endYear": null,
+              "percentage": 50,
+              "newIndicatorCoefficients": null,
+              "createDto": {
+                "type": "Switch to a new material",
+                "title": "Testing intervention FE",
+                "startYear": 2020,
+                "percentage": 50,
+                "scenarioId": "8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7",
+                "materialIds": [
+                  "80d52237-bb4a-4f25-9133-cbbebaa68734"
+                ],
+                "newMaterialId": "ed626334-1a6a-43c2-b52f-a61e94e756b4",
+                "newLocationType": "country of production",
+                "newLocationCountryInput": "Botswana"
+              },
+              "scenarioId": "8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7",
+              "newLocationType": "country of production",
+              "newLocationCountryInput": "Botswana",
+              "newLocationAddressInput": null,
+              "newLocationLatitudeInput": null,
+              "newLocationLongitudeInput": null,
+              "newMaterialTonnageRatio": null,
+              "updatedById": null
+            },
+            {
+              "createdAt": "2022-10-18T11:52:21.235Z",
+              "updatedAt": "2022-10-19T07:22:32.938Z",
+              "id": "e3fb164d-d4cb-452d-8ad9-bd3736b98d14",
+              "title": "test",
+              "description": null,
+              "status": "active",
+              "type": "Switch to a new material",
+              "startYear": 2018,
+              "endYear": null,
+              "percentage": 100,
+              "newIndicatorCoefficients": null,
+              "createDto": {
+                "type": "Switch to a new material",
+                "title": "test",
+                "startYear": 2018,
+                "percentage": 100,
+                "scenarioId": "f8b37929-29eb-4efc-9c2f-27fa8b2af561",
+                "materialIds": [
+                  "67f6906f-400c-4d22-95e9-ae4074ee6d1f"
+                ],
+                "newMaterialId": "33a20a3d-be8f-4baa-a0bf-db1084422719",
+                "newLocationType": "country of production",
+                "newLocationCountryInput": "Russia"
+              },
+              "scenarioId": "f8b37929-29eb-4efc-9c2f-27fa8b2af561",
+              "newLocationType": "country of production",
+              "newLocationCountryInput": "Russia",
+              "newLocationAddressInput": null,
+              "newLocationLatitudeInput": null,
+              "newLocationLongitudeInput": null,
+              "newMaterialTonnageRatio": null,
+              "updatedById": "5a99743f-627d-4ba4-91bd-b8331e3785dd"
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "type": "scenarios",
+      "id": "7646039e-b2e0-4bd5-90fd-925e5868f9af",
+      "attributes": {
+        "title": "Scenario B",
+        "description": "",
+        "status": "inactive",
+        "metadata": null,
+        "createdAt": "2022-07-21T09:42:00.862Z",
+        "updatedAt": "2022-07-02T17:37:23.505Z",
+        "scenarioInterventions": []
+      }
+    },
+    {
+      "type": "scenarios",
+      "id": "be640e30-b00b-4f9a-a964-f2fc3fe72bad",
+      "attributes": {
+        "title": "Scenario C",
+        "description": "change rubber to leather",
+        "status": "inactive",
+        "metadata": null,
+        "createdAt": "2022-07-22T15:29:55.390Z",
+        "updatedAt": "2022-07-03T17:37:23.505Z",
+        "scenarioInterventions": []
+      }
+    },
+    {
+      "type": "scenarios",
+      "id": "4",
+      "attributes": {
+        "title": "Scenario D",
+        "description": "",
+        "status": "inactive",
+        "metadata": null,
+        "createdAt": "2022-07-12T09:38:37.169Z",
+        "updatedAt": "2022-07-04T17:37:23.505Z",
+        "scenarioInterventions": []
+      }
+    },
+    {
+      "type": "scenarios",
+      "id": "5",
+      "attributes": {
+        "title": "Scenario E",
+        "description": "",
+        "status": "inactive",
+        "metadata": null,
+        "createdAt": "2022-07-21T09:42:00.862Z",
+        "updatedAt": "2022-07-22T16:06:05.291Z",
+        "scenarioInterventions": []
+      }
+    },
+    {
+      "type": "scenarios",
+      "id": "6",
+      "attributes": {
+        "title": "Scenario F",
+        "description": "change rubber to leather",
+        "status": "inactive",
+        "metadata": null,
+        "createdAt": "2022-07-22T15:29:55.390Z",
+        "updatedAt": "2022-07-05T17:37:23.505Z",
+        "scenarioInterventions": []
+      }
+    },
+    {
+      "type": "scenarios",
+      "id": "7",
+      "attributes": {
+        "title": "Scenario with interventions",
+        "description": "",
+        "status": "inactive",
+        "metadata": null,
+        "createdAt": "2022-07-12T09:38:37.169Z",
+        "updatedAt": "2022-07-06T17:37:23.505Z",
+        "scenarioInterventions": []
+      }
+    },
+    {
+      "type": "scenarios",
+      "id": "8",
+      "attributes": {
+        "title": "Scenario G",
+        "description": "",
+        "status": "inactive",
+        "metadata": null,
+        "createdAt": "2022-07-21T09:42:00.862Z",
+        "updatedAt": "2022-07-07T17:37:23.505Z",
+        "scenarioInterventions": []
+      }
+    },
+    {
+      "type": "scenarios",
+      "id": "9",
+      "attributes": {
+        "title": "Scenario H",
+        "description": "change rubber to leather",
+        "status": "inactive",
+        "metadata": null,
+        "createdAt": "2022-07-22T15:29:55.390Z",
+        "updatedAt": "2022-07-09T17:37:23.505Z",
+        "scenarioInterventions": []
+      }
+    },
+    {
+      "type": "scenarios",
+      "id": "10",
+      "attributes": {
+        "title": "Scenario I",
+        "description": "",
+        "status": "inactive",
+        "metadata": null,
+        "createdAt": "2022-07-12T09:38:37.169Z",
+        "updatedAt": "2022-07-09T17:37:23.505Z",
+        "scenarioInterventions": []
+      }
+    }
+  ],
+  "meta": {
+    "totalItems": 9,
+    "totalPages": 1,
+    "size": 10,
+    "page": 1
+  }
+}

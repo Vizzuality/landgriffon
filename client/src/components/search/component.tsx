@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { SearchIcon, XIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
 import omit from 'lodash/omit';
@@ -24,6 +24,11 @@ export const Search: React.FC<SearchProps> = (props: SearchProps) => {
     setValue('');
     if (onChange) onChange('');
   }, [onChange]);
+
+  // ? allows setting a default value not only in the very first render
+  useEffect(() => {
+    if (props.defaultValue) setValue(props.defaultValue as string);
+  }, [props.defaultValue]);
 
   return (
     <div className={classNames('relative', props.className)}>

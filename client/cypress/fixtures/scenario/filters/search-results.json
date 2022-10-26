@@ -1,0 +1,75 @@
+{
+  "data": [
+    {
+      "type": "scenarios",
+      "id": "4",
+      "attributes": {
+        "title": "Scenario with interventions",
+        "description": "",
+        "status": "inactive",
+        "metadata": null,
+        "createdAt": "2022-07-12T09:38:37.169Z",
+        "updatedAt": "2022-07-15T07:46:21.730Z",
+        "scenarioInterventions": []
+      }
+    },
+    {
+      "type": "scenarios",
+      "id": "5",
+      "attributes": {
+        "title": "multiple interventions",
+        "description": "",
+        "status": "inactive",
+        "metadata": null,
+        "createdAt": "2022-07-21T09:42:00.862Z",
+        "updatedAt": "2022-07-22T16:06:05.291Z",
+        "scenarioInterventions": []
+      }
+    },
+    {
+      "type": "scenarios",
+      "id": "7",
+      "attributes": {
+        "title": "Scenario with interventions",
+        "description": "",
+        "status": "inactive",
+        "metadata": null,
+        "createdAt": "2022-07-12T09:38:37.169Z",
+        "updatedAt": "2022-07-15T07:46:21.730Z",
+        "scenarioInterventions": []
+      }
+    },
+    {
+      "type": "scenarios",
+      "id": "8",
+      "attributes": {
+        "title": "multiple interventions",
+        "description": "",
+        "status": "inactive",
+        "metadata": null,
+        "createdAt": "2022-07-21T09:42:00.862Z",
+        "updatedAt": "2022-07-22T16:06:05.291Z",
+        "scenarioInterventions": []
+      }
+    },
+    {
+      "type": "scenarios",
+      "id": "10",
+      "attributes": {
+        "title": "Scenario with interventions",
+        "description": "",
+        "status": "inactive",
+        "metadata": null,
+        "createdAt": "2022-07-12T09:38:37.169Z",
+        "updatedAt": "2022-07-15T07:46:21.730Z",
+        "scenarioInterventions": []
+      }
+    }
+  ],
+  "meta": {
+    "totalItems": 5,
+    "totalPages": 1,
+    "size": 10,
+    "page": 1
+  }
+}

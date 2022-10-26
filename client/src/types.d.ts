@@ -58,9 +58,7 @@ export type ImpactH3APIParams = CommonH3APIParams & {
   locationTypes?: string[];
 };
 
-export interface ContextualH3APIParams extends ImpactH3APIParams {
-  relative: boolean;
-}
+export type ContextualH3APIParams = ImpactH3APIParams;
 
 export type ImpactTabularAPIParams = {
   groupBy: string;
@@ -224,7 +222,7 @@ export type Layer = {
   active: boolean;
   opacity: number;
   metadata?: WithRequiredProperty<Partial<LayerMetadata>, 'legend'>;
-  comparisonMode: ScenarioComparisonMode;
+  comparisonMode?: ScenarioComparisonMode;
   loading?: boolean;
 };
 

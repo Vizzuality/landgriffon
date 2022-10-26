@@ -70,7 +70,6 @@ const ContextualLegendItem = ({ layer }: ContextualLegendItemProps) => {
       name={layer.metadata!.legend.name}
       info={layer.metadata?.description}
       opacity={layer.opacity}
-      comparison={layer.comparisonMode}
       {...layer.metadata?.legend}
       onChangeOpacity={handleOpacity}
       onChangeComparisonMode={handleComparison}

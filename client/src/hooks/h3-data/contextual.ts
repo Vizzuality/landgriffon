@@ -4,9 +4,10 @@ import chroma from 'chroma-js';
 import { DEFAULT_QUERY_OPTIONS, scaleByLegendType } from './utils';
 
 import { apiRawService } from 'services/api';
-import { analysisFilters, analysisMap, scenarios } from 'store/features/analysis';
+import { analysisFilters, analysisMap } from 'store/features/analysis';
 import { useAppSelector } from 'store/hooks';
 
+import type { ScenarioComparisonMode } from 'store/features/analysis/scenarios';
 import type { ContextualH3APIParams, ErrorResponse, H3APIResponse, H3Item, Layer } from 'types';
 import type { AxiosResponse } from 'axios';
 import type { UseQueryOptions, UseQueryResult, QueryFunction } from '@tanstack/react-query';
@@ -41,7 +42,6 @@ const useH3ContextualData = <T = H3APIResponse>(
 ) => {
   const filters = useAppSelector(analysisFilters);
   const { startYear, materials, indicator, suppliers, origins, locationTypes } = filters;
-  const { comparisonMode } = useAppSelector(scenarios);
 
   const params = {
     year: startYear,
@@ -50,7 +50,6 @@ const useH3ContextualData = <T = H3APIResponse>(
     ...(suppliers?.length ? { supplierIds: suppliers?.map(({ value }) => value) } : {}),
     ...(origins?.length ? { originIds: origins?.map(({ value }) => value) } : {}),
     ...(locationTypes?.length ? { locationTypes: locationTypes?.map(({ value }) => value) } : {}),
-    relative: comparisonMode === 'relative',
     resolution: origins?.length ? 6 : 4,
   };
 
@@ -89,7 +88,12 @@ export const useAllContextualLayersData = <T = { layerId: Layer['id'] } & H3APIR
       { layerId: Layer['id'] } & H3APIResponse,
       ErrorResponse,
       T,
-      ['h3-data-contextual-all', Layer['id'], ContextualH3APIParams]
+      [
+        'h3-data-contextual-all',
+        Layer['id'],
+        ContextualH3APIParams,
+        ScenarioComparisonMode | undefined,
+      ]
     >,
     'context' | 'queryKey' | 'queryFn'
   >,
@@ -97,28 +101,26 @@ export const useAllContextualLayersData = <T = { layerId: Layer['id'] } & H3APIR
   const { layers } = useAppSelector(analysisMap);
   const { startYear, materials, indicator, suppliers, origins, locationTypes } =
     useAppSelector(analysisFilters);
-  const { comparisonMode } = useAppSelector(scenarios);
 
-  const urlParams: ContextualH3APIParams = {
+  const urlParams: Omit<ContextualH3APIParams, 'relative'> = {
     year: startYear,
     indicatorId: indicator?.value && indicator?.value === 'all' ? null : indicator?.value,
     ...(materials?.length ? { materialIds: materials?.map(({ value }) => value) } : {}),
     ...(suppliers?.length ? { supplierIds: suppliers?.map(({ value }) => value) } : {}),
     ...(origins?.length ? { originIds: origins?.map(({ value }) => value) } : {}),
     ...(locationTypes?.length ? { locationTypes: locationTypes?.map(({ value }) => value) } : {}),
-    relative: comparisonMode === 'relative',
     resolution: origins?.length ? 6 : 4,
   };
 
   const queryList = Object.values(layers)
     .filter((layer) => layer.isContextual)
     .map((layer) => ({
-      queryKey: ['h3-data-contextual-all', layer.id, urlParams] as const,
-      queryFn: (({ queryKey: [, id, params] }) => {
+      queryKey: ['h3-data-contextual-all', layer.id, urlParams, layer.comparisonMode] as const,
+      queryFn: (({ queryKey: [, id, params, comparisonMode] }) => {
         return (
           apiRawService
             .get<H3APIResponse>(`/contextual-layers/${id}/h3data`, {
-              params: { ...params, relative: layer.comparisonMode === 'relative' },
+              params: { ...params, relative: comparisonMode === 'relative' },
             })
             // Adding color to the response
             .then((response) => {
@@ -130,7 +132,12 @@ export const useAllContextualLayersData = <T = { layerId: Layer['id'] } & H3APIR
         );
       }) as QueryFunction<
         H3APIResponse & { layerId: Layer['id'] },
-        ['h3-data-contextual', Layer['id'], ContextualH3APIParams]
+        [
+          'h3-data-contextual',
+          Layer['id'],
+          ContextualH3APIParams,
+          ScenarioComparisonMode | undefined,
+        ]
       >,
       keepPreviousData: true,
       refetchOnMount: false,

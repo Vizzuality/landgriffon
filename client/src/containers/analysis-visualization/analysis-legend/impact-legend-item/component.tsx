@@ -2,10 +2,12 @@ import { useCallback, useMemo } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap, setLayer } from 'store/features/analysis/map';
-import { analysisFilters } from 'store/features/analysis';
+import { analysisFilters, scenarios } from 'store/features/analysis';
 import LegendTypeChoropleth from 'components/legend/types/choropleth';
 import LegendItem from 'components/legend/item';
+import { setComparisonMode } from 'store/features/analysis/scenarios';
 
+import type { ScenarioComparisonMode } from 'store/features/analysis/scenarios';
 import type { Legend } from 'types';
 
 const LAYER_ID = 'impact';
@@ -27,8 +29,9 @@ const ImpactLayer = () => {
   const dispatch = useAppDispatch();
   const { indicator } = useAppSelector(analysisFilters);
   const {
-    layers: { [LAYER_ID]: impactLayer },
+    layers: { [LAYER_ID]: layer },
   } = useAppSelector(analysisMap);
+  const { comparisonMode } = useAppSelector(scenarios);
   const handleOpacity = useCallback(
     (opacity: number) => {
       dispatch(setLayer({ id: LAYER_ID, layer: { opacity } }));
@@ -38,27 +41,36 @@ const ImpactLayer = () => {
 
   const legendItems = useMemo<Legend['items']>(
     () =>
-      impactLayer.metadata?.legend?.items?.map((item) => ({
+      layer.metadata?.legend?.items?.map((item) => ({
         ...item,
         label: item.label || `${item.value}`,
       })) || [],
-    [impactLayer.metadata?.legend.items],
+    [layer.metadata?.legend.items],
   );
 
-  if (!impactLayer.metadata) return null;
+  const handleChangeComparison = useCallback(
+    (comparisonMode: ScenarioComparisonMode) => {
+      dispatch(setComparisonMode(comparisonMode));
+    },
+    [dispatch],
+  );
+
+  if (!layer.metadata) return null;
   // TO-DO: add Loading component
   return (
     <LegendItem
       info={INFO_METADATA[`impact-${indicator?.value}`]}
-      {...impactLayer.metadata.legend}
-      opacity={impactLayer.opacity}
+      {...layer.metadata.legend}
+      opacity={layer.opacity}
       onChangeOpacity={handleOpacity}
-      isLoading={impactLayer.loading}
+      comparison={comparisonMode}
+      onChangeComparisonMode={handleChangeComparison}
+      isLoading={layer.loading}
       main
     >
       <LegendTypeChoropleth
         className="flex-1 text-sm text-gray-500"
-        min={impactLayer.metadata.legend.min}
+        min={layer.metadata.legend.min}
         items={legendItems}
       />
     </LegendItem>

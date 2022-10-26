@@ -339,6 +339,9 @@ const InnerSelect = <OptionValue, IsMulti extends boolean = false>(
   );
 };
 
+/**
+ * @deprecated use `src/components/forms/select` instead
+ */
 const Select = React.forwardRef(InnerSelect) as <T, IsMulti extends boolean = false>(
   props: SelectProps<T> & {
     ref?: SelectRef<T, IsMulti>;

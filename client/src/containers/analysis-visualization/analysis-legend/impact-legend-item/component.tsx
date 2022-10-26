@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { analysisMap, setLayer } from 'store/features/analysis/map';
-import { analysisFilters } from 'store/features/analysis';
+import { analysisFilters, scenarios } from 'store/features/analysis';
 import LegendTypeChoropleth from 'components/legend/types/choropleth';
 import LegendItem from 'components/legend/item';
 
@@ -46,12 +46,25 @@ const ImpactLayer = () => {
     [layer.metadata?.legend.items],
   );
 
+  const { isComparisonEnabled } = useAppSelector(scenarios);
+
+  const name = useMemo(() => {
+    if (!layer.metadata?.legend?.name) return null;
+
+    if (isComparisonEnabled) {
+      return `Difference in ${layer.metadata.legend.name}`;
+    }
+
+    return layer.metadata.legend.name;
+  }, [isComparisonEnabled, layer.metadata?.legend]);
+
   if (!layer.metadata) return null;
   // TO-DO: add Loading component
   return (
     <LegendItem
       info={INFO_METADATA[`impact-${indicator?.value}`]}
       {...layer.metadata.legend}
+      name={name}
       opacity={layer.opacity}
       onChangeOpacity={handleOpacity}
       showComparisonModeToggle

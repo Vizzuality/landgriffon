@@ -80,6 +80,11 @@ describe('Scenarios', () => {
   });
 
   it('a user sorts scenarios alphabetically', () => {
+    cy.intercept('GET', '/api/v1/scenarios?disablePagination=true&sort=title', {
+      statusCode: 200,
+      fixture: 'scenario/filters/by-name-results',
+    });
+
     // ? selects the "Sort by name" option and click on it
     cy.get('[data-testid="select-sort-scenario"]').click();
     cy.get('[role="listbox"]').type('{downArrow}').type('{enter}');
@@ -90,15 +95,22 @@ describe('Scenarios', () => {
     // ? checks the user updates acording to the sort selection
     cy.url().should('contain', 'sortBy=title');
 
+    cy.get('[data-testid="scenario-card"]').should('have.length', 9);
+
     // ? checks the first scenario displayed contains is titled "BE_TESTS" which is,
     // ? according to our mockup, the first matchup alphabetically speaking
     cy.get('[data-testid="scenario-card"]')
       .first()
       .find('[data-testid="scenario-title"]')
-      .should('have.text', 'BE_TESTS');
+      .should('have.text', 'Scenario A');
   });
 
   it('a user sorts scenarios by most recent', () => {
+    cy.intercept('GET', '/api/v1/scenarios?sort=-updatedAt&disablePagination=true', {
+      statusCode: 200,
+      fixture: 'scenario/filters/most-recent-results',
+    });
+
     // ? selects the "Sort by most recent" option and click on it
     cy.get('[data-testid="select-sort-scenario"]').click();
     cy.get('[role="listbox"]').type('{downArrow}').type('{upArrow}').type('{enter}');
@@ -109,6 +121,8 @@ describe('Scenarios', () => {
     // ? checks the user updates acording to the sort selection
     cy.url().should('contain', 'sortBy=-updatedAt');
 
+    cy.get('[data-testid="scenario-card"]').should('have.length', 9);
+
     // ? checks the first scenario displayed contains is titled "Test: Change Rubber Location Cambodia" which is,
     // ? according to our mockup, the most recent scenario updated
     cy.get('[data-testid="scenario-card"]')
@@ -118,8 +132,17 @@ describe('Scenarios', () => {
   });
 
   it('after setting a sort option, refreshing the page keeps the option set', () => {
+    cy.intercept(
+      'GET',
+      '/api/v1/scenarios?sort=-updatedAt&disablePagination=true&sort=-updatedAt',
+      {
+        statusCode: 200,
+        fixture: 'scenario/filters/most-recent-results',
+      },
+    );
+
     // ? selects the "Sort by name" option and click it
-    cy.get(`[data-testid="select-sort-scenario"]`).click();
+    cy.get('[data-testid="select-sort-scenario"]').click();
     cy.get('[role="listbox"]').type('{downArrow}').type('{enter}');
 
     // ? waits to give time to update the URL
@@ -132,7 +155,7 @@ describe('Scenarios', () => {
     cy.reload();
 
     // ? checks the selector is set according to the URL params
-    cy.get(`[data-testid="select-sort-scenario"]`)
+    cy.get('[data-testid="select-sort-scenario"]')
       .find('button')
       .should('have.text', 'Sort by name');
 
@@ -141,6 +164,53 @@ describe('Scenarios', () => {
     cy.get('[data-testid="scenario-card"]')
       .first()
       .find('[data-testid="scenario-title"]')
-      .should('have.text', 'BE_TESTS');
+      .should('have.text', 'Test: Change Rubber Location Cambodia');
+  });
+
+  it('a user looks up scenario using the search', () => {
+    cy.intercept(
+      'GET',
+      '/api/v1/scenarios?sort=-updatedAt&disablePagination=true&search[title]=interventions',
+      {
+        statusCode: 200,
+        fixture: 'scenario/filters/search-results',
+      },
+    ).as('fetchScenariosAfterSearch');
+
+    cy.get('[data-testid="search-name-scenario"]').type('interventions');
+
+    cy.url().should('contain', 'search=interventions');
+
+    cy.wait('@fetchScenariosAfterSearch');
+
+    cy.get('[data-testid="scenario-card"]').should('have.length', 5);
+    cy.get('[data-testid="scenario-card"]')
+      .first()
+      .find('[data-testid="scenario-title"]')
+      .should('have.text', 'Scenario with interventions');
+  });
+
+  it('reloading the page with the search query param should filter the list automatically', () => {
+    cy.intercept(
+      'GET',
+      '/api/v1/scenarios?sort=-updatedAt&disablePagination=true&search[title]=interventions',
+      {
+        statusCode: 200,
+        fixture: 'scenario/filters/search-results',
+      },
+    ).as('fetchScenariosAfterSearch');
+
+    cy.visit('/data/scenarios?search=interventions');
+
+    cy.get('[data-testid="search-name-scenario"]').should('have.value', 'interventions');
+
+    cy.wait('@fetchScenariosAfterSearch');
+
+    cy.get('[data-testid="scenario-card"]').should('have.length', 5);
+
+    cy.get('[data-testid="scenario-card"]')
+      .first()
+      .find('[data-testid="scenario-title"]')
+      .should('have.text', 'Scenario with interventions');
   });
 });

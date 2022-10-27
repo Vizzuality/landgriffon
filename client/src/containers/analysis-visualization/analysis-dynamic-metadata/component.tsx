@@ -73,7 +73,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
     () =>
       !!materials.length && (
         <span>
-          {materialArticle}
+          {materialArticle}{' '}
           <ul className="inline-flex text-xs">
             {materials.map((material) => (
               <li key={material.value} className="pr-1">
@@ -96,7 +96,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
     () =>
       !!origins.length && (
         <span>
-          {originArticle}
+          {originArticle}{' '}
           <ul className="inline-flex">
             {origins.map((origin) => (
               <li key={origin.value}>
@@ -119,7 +119,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
     () =>
       !!suppliers.length && (
         <span>
-          {supplierArticle}
+          {supplierArticle}{' '}
           <ul className="inline-flex">
             {suppliers.map((supplier) => (
               <li key={supplier.value}>
@@ -142,7 +142,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
     () =>
       !!locationTypes.length && (
         <span>
-          {locationTypeArticle}
+          {locationTypeArticle}{' '}
           <ul className="inline-flex">
             {locationTypes.map((locationType) => (
               <li key={locationType.value}>

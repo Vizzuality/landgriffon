@@ -53,104 +53,131 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
   );
 
   const { data: unit } = useIndicator(indicator?.value, { select: (data) => data?.unit });
-  const indicatorsTemplate = <span className="font-bold">{unit?.symbol}</span>;
-  const compareTemplate = <span className="font-bold whitespace-nowrap">{scenario2}</span>;
-  const materialTemplate = !!materials.length && (
-    <ul className="inline-flex pl-1 text-xs">
-      {materials.map((material) => (
-        <li key={material.value} className="pr-1">
-          <Badge
-            key={material.value}
-            data={material}
-            onClick={() => handleRemoveBadge('materials', materials, material)}
-            removable
-          >
-            {material.label}
-          </Badge>
-        </li>
-      ))}
-    </ul>
-  );
-  const originTemplate = !!origins.length && (
-    <ul className="inline-flex pl-1">
-      {origins.map((origin) => (
-        <li key={origin.value}>
-          <Badge
-            key={origin.value}
-            data={origin}
-            onClick={() => handleRemoveBadge('origins', origins, origin)}
-            removable
-          >
-            {origin.label}
-          </Badge>
-        </li>
-      ))}
-    </ul>
-  );
-  const supplierTemplate = !!suppliers.length && (
-    <ul className="inline-flex pl-1">
-      {suppliers.map((supplier) => (
-        <li key={supplier.value}>
-          <Badge
-            key={supplier.value}
-            data={supplier}
-            onClick={() => handleRemoveBadge('suppliers', suppliers, supplier)}
-            removable
-          >
-            {supplier.label}
-          </Badge>
-        </li>
-      ))}
-    </ul>
-  );
-  const locationTypeTemplate = !!locationTypes.length && (
-    <ul className="inline-flex pl-1">
-      {locationTypes.map((locationType) => (
-        <li key={locationType.value}>
-          <Badge
-            key={locationType.value}
-            data={locationType}
-            onClick={() => handleRemoveBadge('locationTypes', locationTypes, locationType)}
-            removable
-          >
-            {locationType.label}
-          </Badge>
-        </li>
-      ))}
-    </ul>
+
+  const indicatorsTemplate = useMemo(
+    () => indicator?.value !== 'all' && <span className="font-bold">({unit?.symbol})</span>,
+    [indicator?.value, unit?.symbol],
   );
 
-  const shouldDisplayComparePhrase = useMemo(
-    () => isComparisonEnabled && scenarioToCompare,
-    [isComparisonEnabled, scenarioToCompare],
+  const comparisonTemplate = useMemo(
+    () =>
+      !!isComparisonEnabled && (
+        <span>
+          compared to <span className="font-bold whitespace-nowrap">{scenario2}</span>
+        </span>
+      ),
+    [isComparisonEnabled, scenario2],
+  );
+
+  const materialTemplate = useMemo(
+    () =>
+      !!materials.length && (
+        <span>
+          {materialArticle}
+          <ul className="inline-flex text-xs">
+            {materials.map((material) => (
+              <li key={material.value} className="pr-1">
+                <Badge
+                  key={material.value}
+                  data={material}
+                  onClick={() => handleRemoveBadge('materials', materials, material)}
+                  removable
+                >
+                  {material.label}
+                </Badge>
+              </li>
+            ))}
+          </ul>
+        </span>
+      ),
+    [handleRemoveBadge, materials],
+  );
+  const originTemplate = useMemo(
+    () =>
+      !!origins.length && (
+        <span>
+          {originArticle}
+          <ul className="inline-flex">
+            {origins.map((origin) => (
+              <li key={origin.value}>
+                <Badge
+                  key={origin.value}
+                  data={origin}
+                  onClick={() => handleRemoveBadge('origins', origins, origin)}
+                  removable
+                >
+                  {origin.label}
+                </Badge>
+              </li>
+            ))}
+          </ul>
+        </span>
+      ),
+    [handleRemoveBadge, origins],
+  );
+  const supplierTemplate = useMemo(
+    () =>
+      !!suppliers.length && (
+        <span>
+          {supplierArticle}
+          <ul className="inline-flex">
+            {suppliers.map((supplier) => (
+              <li key={supplier.value}>
+                <Badge
+                  key={supplier.value}
+                  data={supplier}
+                  onClick={() => handleRemoveBadge('suppliers', suppliers, supplier)}
+                  removable
+                >
+                  {supplier.label}
+                </Badge>
+              </li>
+            ))}
+          </ul>
+        </span>
+      ),
+    [handleRemoveBadge, suppliers],
+  );
+  const locationTypeTemplate = useMemo(
+    () =>
+      !!locationTypes.length && (
+        <span>
+          {locationTypeArticle}
+          <ul className="inline-flex">
+            {locationTypes.map((locationType) => (
+              <li key={locationType.value}>
+                <Badge
+                  key={locationType.value}
+                  data={locationType}
+                  onClick={() => handleRemoveBadge('locationTypes', locationTypes, locationType)}
+                  removable
+                >
+                  {locationType.label}
+                </Badge>
+              </li>
+            ))}
+          </ul>
+        </span>
+      ),
+    [handleRemoveBadge, locationTypes],
   );
 
   return (
-    <div className={classNames('flex items-center justify-start text-xs space-x-1', className)}>
-      <div className="items-start -translate-y-[3px]">
-        <InformationCircleIcon className="w-4 h-4 text-gray-900 shrink-0" />
-      </div>
-      {shouldDisplayComparePhrase && (
-        <div className="flex items-baseline space-x-0.5">
-          <span>Viewing</span>
-          <ComparisonToggle />
-          <span>Impact values for </span>
-          <span className="font-bold">{scenario1}</span>
-          <span className="font-bold">
-            {!!compareTemplate && ' compared to'} {compareTemplate}
-          </span>
-        </div>
-      )}
-      {!shouldDisplayComparePhrase && (
-        <p className="flex-wrap items-center">
-          Viewing {values} <span className="whitespace-nowrap">Impact values for</span>
-          <span className="font-bold whitespace-nowrap"> {scenario1} </span>
-          {indicator?.value !== 'all' && indicatorsTemplate} {!!materials.length && materialArticle}
-          {materialTemplate} {!!origins.length && originArticle} {originTemplate}
-          {!!suppliers.length && supplierArticle} {supplierTemplate}
-          {!!locationTypes.length && locationTypeArticle} {locationTypeTemplate}
-        </p>
-      )}
+    <div
+      className={classNames('flex items-center justify-start text-xs gap-x-1 flex-wrap', className)}
+    >
+      <InformationCircleIcon className="w-4 h-4 text-gray-900 shrink-0" />
+      Viewing {isComparisonEnabled ? <ComparisonToggle /> : values}
+      <span>
+        <span className="whitespace-nowrap">Impact values for</span>
+        <span className="font-bold whitespace-nowrap"> {scenario1} </span>
+      </span>
+      {comparisonTemplate}
+      {indicatorsTemplate}
+      {materialTemplate}
+      {originTemplate}
+      {supplierTemplate}
+      {locationTypeTemplate}
     </div>
   );
 };

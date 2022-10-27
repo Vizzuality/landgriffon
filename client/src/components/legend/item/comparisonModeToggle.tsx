@@ -36,7 +36,7 @@ export const ComparisonToggle = () => {
         absolute
       </button>
       <button
-        type="submit"
+        type="button"
         className={classNames(
           COMMON_MODE_BUTTON_CLASSNAMES,
           'rounded-r-md',

@@ -5,12 +5,11 @@ import { InformationCircleIcon } from '@heroicons/react/solid';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { useScenario } from 'hooks/scenarios';
 import { useIndicator } from 'hooks/indicators';
-import { scenarios, setComparisonMode } from 'store/features/analysis/scenarios';
+import { scenarios } from 'store/features/analysis/scenarios';
 import { analysisFilters, setFilters } from 'store/features/analysis/filters';
 import Badge from 'components/badge/component';
-import Select from 'components/select';
+import { ComparisonToggle } from 'components/legend/item/comparisonModeToggle';
 
-import type { ScenariosState } from 'store/features/analysis/scenarios';
 import type { SelectOption } from 'components/select';
 import type { FC } from 'react';
 
@@ -20,11 +19,6 @@ const originArticle = 'in';
 const supplierArticle = 'from';
 const locationTypeArticle = 'aggregated by';
 
-const DATA_VIEW_OPTIONS: SelectOption<ScenariosState['comparisonMode']>[] = [
-  { label: 'absolute', value: 'absolute' },
-  { label: 'relative', value: 'relative' },
-];
-
 type AnalysisDynamicMetadataTypes = {
   className?: string;
 };
@@ -33,8 +27,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
   className,
 }: AnalysisDynamicMetadataTypes) => {
   const dispatch = useAppDispatch();
-  const { currentScenario, scenarioToCompare, comparisonMode, isComparisonEnabled } =
-    useAppSelector(scenarios);
+  const { currentScenario, scenarioToCompare, isComparisonEnabled } = useAppSelector(scenarios);
   const { data: scenario } = useScenario(currentScenario);
   const { data: scenarioB } = useScenario(scenarioToCompare);
 
@@ -57,18 +50,6 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
       dispatch(setFilters({ [id]: filteredKeys }));
     },
     [dispatch],
-  );
-
-  const handleDataViewChange = useCallback(
-    ({ value }: typeof DATA_VIEW_OPTIONS[0]) => {
-      dispatch(setComparisonMode(value));
-    },
-    [dispatch],
-  );
-
-  const currentDataViewOption = useMemo(
-    () => DATA_VIEW_OPTIONS.find(({ value }) => value === comparisonMode),
-    [comparisonMode],
   );
 
   const { data: unit } = useIndicator(indicator?.value, { select: (data) => data?.unit });
@@ -152,12 +133,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
       {shouldDisplayComparePhrase && (
         <div className="flex items-baseline space-x-0.5">
           <span>Viewing</span>
-          <Select
-            theme="inline-primary"
-            current={currentDataViewOption}
-            options={DATA_VIEW_OPTIONS}
-            onChange={handleDataViewChange}
-          />
+          <ComparisonToggle />
           <span>Impact values for </span>
           <span className="font-bold">{scenario1}</span>
           <span className="font-bold">

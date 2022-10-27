@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Scenario comparison in the chart view [LANDGRIF-945](https://vizzuality.atlassian.net/browse/LANDGRIF-945)
 - Added comparison e2e tests
 - Added mode control e2e tests
+- Added icon animation when a file on upload or progress in the actual data page
 
 ### Changed
 
@@ -29,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Updated scenarios list according new design
 - Changed the background of the authentication pages
 - Updated styles for the menu in the new "Data" (before Admin) section
+- Refactored actual data page to avoid strange renders and extra calls to the API
 
 ### Fixed
 
@@ -53,6 +55,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Fixed an issue where unit was not showing correctly in the tooltip map
 - Comparison colors for the impact layer when is enabled [LANDGRIF-979](https://vizzuality.atlassian.net/browse/LANDGRIF-979)
 - Fixed an issue where smart filers in more filters were not passing all params required [LANDGRIF-978](https://vizzuality.atlassian.net/browse/LANDGRIF-978)
+- Recovering download template file in the upload modal [LANDGRIF-964](https://vizzuality.atlassian.net/browse/LANDGRIF-964)
+- Solved an issue where years was not filtering the actual data table (LANDGRIF-969)[https://vizzuality.atlassian.net/browse/LANDGRIF-969]
+- Recovering sorting by column in the actual data table [LANDGRIF-965](https://vizzuality.atlassian.net/browse/LANDGRIF-965)
 
 ## [2022.08.03]
 

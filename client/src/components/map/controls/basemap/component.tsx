@@ -12,7 +12,7 @@ interface BasemapControlProps {
   onChange: (value: BasemapValue) => void;
 }
 
-const BasemapControl: React.FC<BasemapControlProps> = ({ value, onChange }) => {
+const BasemapControl = ({ value, onChange }: BasemapControlProps) => {
   const basemapToToggleTo = value === 'terrain' ? 'satellite' : 'terrain';
 
   const handleClick = useCallback(() => {

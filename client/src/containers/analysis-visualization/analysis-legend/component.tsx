@@ -165,19 +165,18 @@ export const Legend: React.FC = () => {
   );
 };
 
-const ToggleShowLegendButton = ({
-  showLegend,
-  toggleLegend,
-}: {
+interface ToggleShowLegendButtonProps {
   showLegend: boolean;
   toggleLegend: () => void;
-}) => {
+}
+
+const ToggleShowLegendButton = ({ showLegend, toggleLegend }: ToggleShowLegendButtonProps) => {
   return (
     <button
       type="button"
       className={classNames(
         'transition-colors relative flex items-center justify-center w-10 h-10 rounded-lg p-1.5 ',
-        showLegend ? 'text-white bg-navy-400 hover:bg-navy-900' : 'bg-white hover:text-navy-400',
+        showLegend ? 'text-white bg-navy-400 hover:bg-navy-600' : 'bg-white hover:text-navy-400',
       )}
       onClick={toggleLegend}
     >

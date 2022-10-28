@@ -7,6 +7,7 @@ import { useMemo } from 'react';
 
 import ScenariosComparison from 'containers/scenarios/comparison';
 import { Anchor } from 'components/button';
+import Pill from 'components/pill';
 
 import type { Scenario } from '../types';
 
@@ -84,11 +85,13 @@ const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
                   <div className="flex items-center justify-between mt-2 space-x-1 text-xs font-medium text-gray-900">
                     <div>Show</div>
                     <div className="flex space-x-1">
-                      <div className="px-2 py-px leading-4 bg-blue-200 rounded-sm whitespace-nowrap">
-                        {scenario.scenarioInterventions.length} growth rates
-                      </div>
-                      <div className="px-2 py-px leading-4 bg-orange-100 rounded-sm whitespace-nowrap">
-                        {scenario.scenarioInterventions.length} interventions
+                      <div className="inline-flex">
+                        <Pill className="inline-flex bg-blue-200 rounded-tr-none rounded-br-none whitespace-nowrap">
+                          {scenario.scenarioInterventions.length} growth rates
+                        </Pill>
+                        <Pill className="inline-flex bg-orange-100 rounded-tl-none rounded-bl-none whitespace-nowrap">
+                          {scenario.scenarioInterventions.length} interventions
+                        </Pill>
                       </div>
                     </div>
                   </div>

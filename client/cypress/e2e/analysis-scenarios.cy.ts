@@ -1,13 +1,30 @@
 describe('Analysis and scenarios', () => {
   beforeEach(() => {
-    cy.intercept('GET', '/api/v1/scenarios?sort=-updatedAt&disablePagination=true', {
-      statusCode: 200,
-      fixture: 'scenario/scenarios',
-    }).as('scenariosNoPaginated');
+    cy.intercept(
+      {
+        method: 'GET',
+        pathname: '/api/v1/scenarios',
+        query: {
+          disablePagination: 'true',
+        },
+      },
+      {
+        statusCode: 200,
+        fixture: 'scenario/scenarios',
+      },
+    ).as('scenariosNoPaginated');
 
     cy.intercept(
-      'GET',
-      '/api/v1/scenarios?page[number]=1&page[size]=10&sort=-updatedAt&include=scenarioInterventions',
+      {
+        method: 'GET',
+        pathname: '/api/v1/scenarios',
+        query: {
+          include: 'scenarioInterventions',
+          'page[number]': '1',
+          'page[size]': '10',
+          sort: '-updatedAt',
+        },
+      },
       {
         statusCode: 200,
         fixture: 'scenario/scenarios',

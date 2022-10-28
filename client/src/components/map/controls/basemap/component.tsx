@@ -33,7 +33,7 @@ const BasemapControl = ({ value, onChange }: BasemapControlProps) => {
   return (
     <Tooltip hoverTrigger placement="left" theme="dark" content={TooltipContent}>
       <div
-        className="bg-white cursor-pointer aspect-square shadow-lg rounded-lg transition-colors duration-200 ease-in-out border-white border hover:border-black"
+        className="bg-white cursor-pointer aspect-square shadow-lg rounded-lg transition-colors duration-200 ease-in-out border-white border hover:bg-green-50 hover:border-navy-400"
         onClick={handleClick}
       >
         <div className="p-px w-full h-full pointer-events-none">

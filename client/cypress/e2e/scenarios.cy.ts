@@ -1,5 +1,5 @@
 beforeEach(() => {
-  cy.intercept('GET', '/api/v1/scenarios/**/interventions', {
+  cy.intercept('GET', '/api/v1/scenarios/**/interventions*', {
     statusCode: 200,
     fixture: 'scenario/scenario-interventions',
   });

@@ -2,16 +2,16 @@ beforeEach(() => {
   cy.intercept('GET', '/api/v1/scenarios/**/interventions*', {
     statusCode: 200,
     fixture: 'scenario/scenario-interventions',
-  });
+  }).as('fetchScenarioInterventions');
 
-  cy.intercept('GET', '/api/v1/scenarios?sort=-updatedAt&disablePagination=true', {
+  cy.intercept('GET', '/api/v1/scenarios?scenarios?disablePagination=true&sort=-updatedAt', {
     statusCode: 200,
     fixture: 'scenario/scenarios',
-  });
+  }).as('fetchScenarios');
 
   cy.intercept('DELETE', '/api/v1/scenarios/**', {
     statusCode: 200,
-  });
+  }).as('deleteScenario');
 
   cy.login();
   cy.visit('/data/scenarios');
@@ -29,7 +29,7 @@ describe('Scenarios', () => {
     cy.get('[data-testisactive="true"]').should('have.text', 'Scenarios');
   });
 
-  it('should show same scenarios cards length than API', () => {
+  it('should be the same scenarios cards length than API', () => {
     cy.get('[data-testid="scenario-card"]').should('have.length', 10);
   });
 
@@ -62,7 +62,7 @@ describe('Scenarios', () => {
       .click();
 
     // ? intercepts again the same request to retrieve one scenarios less
-    cy.intercept('GET', '/api/v1/scenarios?sort=-updatedAt&disablePagination=true', {
+    cy.intercept('GET', '/api/v1/scenarios?*', {
       statusCode: 200,
       fixture: 'scenario/scenarios-delete',
     }).as('fetchScenariosAfterDeletion');
@@ -80,7 +80,7 @@ describe('Scenarios', () => {
   });
 
   it('a user sorts scenarios alphabetically', () => {
-    cy.intercept('GET', '/api/v1/scenarios?sort=title&disablePagination=true', {
+    cy.intercept('GET', '/api/v1/scenarios?*sort=title*', {
       statusCode: 200,
       fixture: 'scenario/filters/by-name-results',
     });
@@ -103,7 +103,7 @@ describe('Scenarios', () => {
   });
 
   it('a user sorts scenarios by most recent', () => {
-    cy.intercept('GET', '/api/v1/scenarios?sort=-updatedAt&disablePagination=true', {
+    cy.intercept('GET', '/api/v1/scenarios?*sort=-updatedA*', {
       statusCode: 200,
       fixture: 'scenario/filters/most-recent-results',
     });
@@ -126,7 +126,7 @@ describe('Scenarios', () => {
   });
 
   it('after setting a sort option, refreshing the page keeps the option set', () => {
-    cy.intercept('GET', '/api/v1/scenarios?sort=-updatedAt&disablePagination=true', {
+    cy.intercept('GET', '/api/v1/scenarios?*sort=-updatedAt*', {
       statusCode: 200,
       fixture: 'scenario/filters/most-recent-results',
     });
@@ -150,15 +150,17 @@ describe('Scenarios', () => {
   it('a user looks up scenario using the search', () => {
     cy.intercept(
       'GET',
-      '/api/v1/scenarios?sort=-updatedAt&disablePagination=true&search[title]=interventions',
+      '/api/v1/scenarios?disablePagination=true&sort=-updatedAt&search[title]=interventions',
       {
         statusCode: 200,
         fixture: 'scenario/filters/search-results',
       },
-    );
+    ).as('fetchScenariosAfterSearch');
 
     // ? types "intervention" in the search filter
     cy.get('[data-testid="search-name-scenario"]').type('interventions');
+
+    cy.wait('@fetchScenariosAfterSearch');
 
     // ? the URL should update according to what was written in the search filter
     cy.url().should('contain', 'search=interventions');
@@ -176,7 +178,7 @@ describe('Scenarios', () => {
   it('reloading the page with the search query param should filter the list automatically', () => {
     cy.intercept(
       'GET',
-      '/api/v1/scenarios?sort=-updatedAt&disablePagination=true&search[title]=interventions',
+      '/api/v1/scenarios?disablePagination=true&sort=-updatedAt&search[title]=interventions',
       {
         statusCode: 200,
         fixture: 'scenario/filters/search-results',

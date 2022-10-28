@@ -31,8 +31,8 @@ type QueryParams = {
   include?: string;
   'page[size]'?: number;
   'search[title]'?: string;
-  hasInterventions?: boolean;
   disablePagination?: boolean;
+  hasInterventions?: boolean;
 };
 
 const DEFAULT_QUERY_OPTIONS = {

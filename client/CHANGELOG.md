@@ -74,6 +74,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Redesign of new intervention creation [LANDGRIF-783](https://vizzuality.atlassian.net/browse/LANDGRIF-783)
 - Read contextual layers and their data from the API[LANDGRIF-792](https://vizzuality.atlassian.net/browse/LANDGRIF-792)
 - Page titles with templates
+- Pagination to users data table [LANDGRIF-924](https://vizzuality.atlassian.net/browse/LANDGRIF-924)
 
 ### Changed
 

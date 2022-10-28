@@ -321,5 +321,7 @@ export type UserPayload = {
   meta: {
     pageSize: number;
     pageNumber: number;
+    totalPages: number;
+    totalItems: number;
   };
 };

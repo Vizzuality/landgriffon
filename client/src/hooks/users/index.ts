@@ -15,6 +15,8 @@ export const useUsers = (
       meta: {
         pageNumber: 1,
         pageSize: 10,
+        totalItems: 1,
+        totalPages: 1,
       },
     },
     retry: false,

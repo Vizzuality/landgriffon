@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import Head from 'next/head';
-import { useDebounce } from '@react-hook/debounce';
+import { useDebounceCallback } from '@react-hook/debounce';
 import { PlusIcon } from '@heroicons/react/solid';
 
 import { useUsers } from 'hooks/users';
@@ -15,26 +15,27 @@ import type { PaginationState } from '@tanstack/react-table';
 import type { User } from 'types';
 
 const AdminUsersPage: React.FC = () => {
-  const [paginationState, setPaginationState] = useState<PaginationState>({
+  const [search, setSearch] = useState<string>('');
+  const [sorting, setSorting] = useState([]);
+  const [pagination, setPaginationState] = useState<PaginationState>({
     pageIndex: 1,
     pageSize: DEFAULT_PAGE_SIZES[0],
   });
-  const { data, isLoading } = useUsers({
-    'page[size]': paginationState.pageSize,
-    'page[number]': paginationState.pageIndex,
-  });
-  const [searchText, setSearchText] = useDebounce('', 250);
 
-  const tableData: User[] = data?.data?.map((user) => ({
-    displayName: user.displayName,
-    email: user.email,
-    isActive: user.isActive,
-  }));
+  const { data, isLoading } = useUsers({
+    'page[size]': pagination.pageSize,
+    'page[number]': pagination.pageIndex,
+    ...(sorting[0] && {
+      orderBy: sorting[0].id,
+      order: sorting[0].desc ? 'desc' : 'asc',
+    }),
+  });
+
+  const handleOnSearch = useDebounceCallback((searchTerm: string) => setSearch(searchTerm), 250);
 
   const tableProps = useMemo<TableProps<User>>(
     () => ({
-      onPaginationChange: setPaginationState,
-      state: { pagination: paginationState },
+      state: { pagination, sorting },
       columns: [
         { id: 'displayName', header: 'Name', size: 110 },
         { id: 'email', header: 'Email' },
@@ -44,10 +45,19 @@ const AdminUsersPage: React.FC = () => {
           cell: ({ row }) => (row.original.isActive ? 'Yes' : 'No'),
         },
       ].map((column) => ({ align: 'left', ...column })),
-      data: tableData,
+      data: data?.data ?? [],
       theme: 'striped',
+      onPaginationChange: setPaginationState,
+      onSortingChange: setSorting,
+      paginationProps: {
+        pageSizes: DEFAULT_PAGE_SIZES,
+        pageSize: pagination.pageSize,
+        currentPage: pagination.pageIndex,
+        totalPages: data?.meta?.totalPages,
+        totalItems: data?.meta?.totalItems,
+      },
     }),
-    [paginationState, tableData],
+    [data, pagination, sorting],
   );
 
   return (
@@ -57,7 +67,7 @@ const AdminUsersPage: React.FC = () => {
       </Head>
       <div className="flex flex-col-reverse items-center justify-between mb-5 md:flex-row">
         <div className="flex w-full gap-2 md:w-auto">
-          <Search placeholder="Search table" value={searchText} onChange={setSearchText} />
+          <Search placeholder="Search table" defaultValue={search} onChange={handleOnSearch} />
         </div>
         <div className="flex items-center">
           <Button
@@ -76,7 +86,7 @@ const AdminUsersPage: React.FC = () => {
           </Button>
         </div>
       </div>
-      {!isLoading && tableData?.length > 0 && <Table {...tableProps} />}
+      <Table {...tableProps} isLoading={isLoading} />
     </AdminLayout>
   );
 };

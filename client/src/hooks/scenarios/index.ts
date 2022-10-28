@@ -2,8 +2,6 @@ import { useMemo } from 'react';
 import { useQuery, useQueryClient, useInfiniteQuery, useMutation } from '@tanstack/react-query';
 
 import { apiService } from 'services/api';
-import { useAppSelector } from 'store/hooks';
-import { scenarios } from 'store/features/analysis/scenarios';
 
 // types
 import type {
@@ -30,9 +28,11 @@ type ResponseDataScenario = UseQueryResult<Scenario>;
 type ResponseInterventionsData = UseQueryResult<Intervention[]>;
 type QueryParams = {
   sort?: string;
-  pageParam?: number;
-  searchTerm?: string;
   include?: string;
+  'page[size]'?: number;
+  'search[title]'?: string;
+  hasInterventions?: boolean;
+  disablePagination?: boolean;
 };
 
 const DEFAULT_QUERY_OPTIONS = {
@@ -51,29 +51,17 @@ export const useScenarios = <T = ResponseData>({
   params = {},
   options = {},
 }: {
-  params: Record<string, unknown>;
+  params: QueryParams;
   options?: UseQueryOptions<ResponseData, unknown, T>;
 }) => {
-  const { sort, filter, searchTerm } = useAppSelector(scenarios);
-
-  //this should come from API
-  const userId = '94757458-343444';
-  const paramsResult = {
-    ...(!!sort && { sort }),
-    ...(filter === 'private' && { 'filter[userId]': userId }),
-    ...(filter === 'public' && { 'filter[status]': filter }),
-    ...(!!searchTerm && { 'filter[title]': searchTerm }),
-    ...params,
-  };
-
   const query = useQuery(
-    ['scenariosList', sort, paramsResult],
+    ['scenariosList', params],
     () =>
       apiService
         .request<ResponseData>({
           method: 'GET',
           url: '/scenarios',
-          params: paramsResult,
+          params,
         })
         .then(({ data }) => data),
     {
@@ -87,16 +75,13 @@ export const useScenarios = <T = ResponseData>({
 };
 
 export function useInfiniteScenarios(queryParams: QueryParams): ResponseInfiniteData {
-  const { searchTerm, ...restParams } = queryParams;
   const fetchScenarios = ({ pageParam = 1 }) =>
     apiService.request({
       method: 'GET',
       url: '/scenarios',
       params: {
+        ...queryParams,
         'page[number]': pageParam,
-        'page[size]': 10,
-        ...(!!searchTerm && { 'filter[title]': searchTerm }),
-        ...restParams,
       },
     });
 

@@ -2,15 +2,17 @@ import classNames from 'classnames';
 
 import type { PropsWithChildren } from 'react';
 
-export interface PillProps {
+export type PillProps = React.HTMLAttributes<HTMLSpanElement> & {
   className?: string;
-}
+};
 
-const Pill: React.FC<PropsWithChildren<PillProps>> = ({
+const Pill: React.FC<PillProps> = ({
   className,
   children,
+  ...props
 }: PropsWithChildren<PillProps>) => (
   <span
+    {...props}
     className={classNames('px-2 py-1 text-xs rounded', {
       [className]: !!className,
     })}

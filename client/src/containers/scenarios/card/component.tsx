@@ -11,11 +11,9 @@ import { useScenarioInterventions } from 'hooks/interventions';
 import Loading from 'components/loading';
 import { Anchor, Button } from 'components/button';
 import DeleteDialog from 'components/dialogs/delete';
+import Pill from 'components/pill';
 
 import type { ScenarioCardProps } from './types';
-
-const growthRateTagClasses = 'rounded px-2 py-1 bg-blue-200 text-xs';
-const interventionTagClasses = 'rounded px-2 py-1 bg-orange-100 text-xs';
 
 const ScenarioCard: React.FC<ScenarioCardProps> = ({ data, display = 'grid' }) => {
   const [isDeleteVisible, setDeleteVisibility] = useState(false);
@@ -75,7 +73,7 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data, display = 'grid' }) =
               'flex mt-2 space-x-4': display === 'grid',
             })}
           >
-            <div className={growthRateTagClasses}>Entire company +1.5%/yr</div>
+            <Pill className="bg-blue-200">Entire company +1.5%/yr</Pill>
           </div>
         </div>
         <div
@@ -89,26 +87,26 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data, display = 'grid' }) =
             <>
               <div className="flex flex-wrap gap-2">
                 {interventions.slice(0, 2).map((intervention) => (
-                  <div
-                    data-testid="scenario-interventions-item"
+                  <Pill
                     key={intervention.id}
-                    className={interventionTagClasses}
+                    className="bg-orange-100"
+                    data-testid="scenario-interventions-item"
                   >
                     {intervention.title}
-                  </div>
+                  </Pill>
                 ))}
               </div>
               {interventions.length > 2 && (
                 <Popover className="relative mt-2 text-xs">
                   Show{' '}
-                  <Popover.Button className={`${interventionTagClasses} mr-2 mb-2`}>
-                    +{interventions.length - 2} more
+                  <Popover.Button>
+                    <Pill className="bg-orange-100">+{interventions.length - 2} more</Pill>
                   </Popover.Button>
-                  <Popover.Panel className="absolute p-4 space-y-2 bg-white border border-gray-100 rounded-md shadow-md">
+                  <Popover.Panel className="absolute flex flex-col p-4 space-y-2 bg-white border border-gray-100 rounded-md shadow-md">
                     {interventions.slice(2, interventions.length).map((intervention) => (
-                      <div key={intervention.id} className={interventionTagClasses}>
+                      <Pill key={intervention.id} className="bg-orange-100">
                         {intervention.title}
-                      </div>
+                      </Pill>
                     ))}
                   </Popover.Panel>
                 </Popover>

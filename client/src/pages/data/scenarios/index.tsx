@@ -87,7 +87,11 @@ const ScenariosAdminPage: React.FC = () => {
   const searchTerm = useMemo(() => query.search || null, [query.search]);
 
   const { data, isLoading } = useScenarios({
-    params: { disablePagination: true, sort: currentSort.value, 'search[title]': searchTerm },
+    params: {
+      disablePagination: true,
+      sort: currentSort.value,
+      'search[title]': searchTerm as string,
+    },
     options: { select: (data) => data.data },
   });
 

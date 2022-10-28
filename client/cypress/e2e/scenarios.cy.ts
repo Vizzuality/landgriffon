@@ -70,7 +70,7 @@ describe('Scenarios', () => {
     // ? In the dialog: clicks on "Delete" button
     cy.get('[data-testid="dialog-delete-confirmation-btn"').click();
 
-    // cy.wait('@fetchScenariosAfterDeletion');
+    cy.wait('@fetchScenariosAfterDeletion');
 
     // ? check there are 9 scenarios available after deletion
     cy.get('[data-testid="scenario-card"]').should('have.length', 9);

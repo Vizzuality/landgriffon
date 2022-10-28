@@ -40,7 +40,8 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
   const dispatch = useAppDispatch();
   const { fetchNextPage, hasNextPage, data, isLoading, error } = useInfiniteScenarios({
     sort: sort as string,
-    searchTerm,
+    'page[size]': 10,
+    'search[title]': searchTerm,
     include: 'scenarioInterventions',
   });
 

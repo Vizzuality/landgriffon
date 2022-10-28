@@ -18,7 +18,7 @@ export const useIndicators = <T = ResponseData>(
   options: UseQueryOptions<ResponseData, unknown, T, ['indicators']> = {},
 ) => {
   const query = useQuery(
-    ['indicators'],
+    ['indicators', queryParams],
     () =>
       apiService
         .request<ResponseData>({

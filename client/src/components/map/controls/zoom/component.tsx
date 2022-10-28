@@ -11,7 +11,7 @@ export interface ZoomControlProps {
   onZoomChange: (zoom: number) => void;
 }
 
-const ENABLED_CLASSES = 'hover:bg-gray-300 active:bg-gray-200 cursor-pointer';
+const ENABLED_CLASSES = 'bg-white hover:bg-gray-200 active:bg-gray-300 cursor-pointer';
 const DISABLED_CLASSES = 'opacity-50 cursor-default';
 
 export const ZoomControl: React.FC<ZoomControlProps> = ({
@@ -19,28 +19,18 @@ export const ZoomControl: React.FC<ZoomControlProps> = ({
   viewport: { zoom, maxZoom, minZoom },
   onZoomChange,
 }) => {
-  const increaseZoom = useCallback<MouseEventHandler<HTMLButtonElement>>(
-    (e) => {
-      e.stopPropagation();
+  const increaseZoom = useCallback<MouseEventHandler<HTMLButtonElement>>(() => {
+    onZoomChange(zoom + 1 > maxZoom ? maxZoom : zoom + 1);
+  }, [zoom, maxZoom, onZoomChange]);
 
-      onZoomChange(zoom + 1 > maxZoom ? maxZoom : zoom + 1);
-    },
-    [zoom, maxZoom, onZoomChange],
-  );
-
-  const decreaseZoom = useCallback<MouseEventHandler<HTMLButtonElement>>(
-    (e) => {
-      e.stopPropagation();
-
-      onZoomChange(zoom - 1 < minZoom ? minZoom : zoom - 1);
-    },
-    [zoom, minZoom, onZoomChange],
-  );
+  const decreaseZoom = useCallback<MouseEventHandler<HTMLButtonElement>>(() => {
+    onZoomChange(zoom - 1 < minZoom ? minZoom : zoom - 1);
+  }, [zoom, minZoom, onZoomChange]);
 
   return (
     <div
       className={cx(
-        'bg-white text-gray-900 ml-auto text-4xl flex flex-col justify-center select-none divide-y-[1.5px] rounded-lg border border-gray-200 overflow-hidden',
+        'text-gray-900 ml-auto text-4xl flex flex-col justify-center select-none gap-[1.5px] rounded-lg border border-gray-200 overflow-hidden',
         className,
       )}
     >

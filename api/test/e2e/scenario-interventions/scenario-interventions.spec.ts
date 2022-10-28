@@ -142,6 +142,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     },
   };
 
+  jest.spyOn(IndicatorRecord, 'updateImpactView').mockResolvedValue('' as any);
+
   let app: INestApplication;
   let scenarioInterventionRepository: ScenarioInterventionRepository;
   let scenarioRepository: ScenarioRepository;

@@ -48,10 +48,7 @@ export class IndicatorRecord extends TimestampedBaseEntity {
   @Column({ type: 'float', nullable: true })
   value!: number;
 
-  @ApiProperty({
-    enum: INDICATOR_RECORD_STATUS,
-    enumName: 'INDICATOR_RECORD_STATUS',
-  })
+  @ApiProperty()
   @Column({
     type: 'enum',
     enum: INDICATOR_RECORD_STATUS,

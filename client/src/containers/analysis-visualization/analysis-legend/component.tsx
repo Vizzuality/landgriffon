@@ -140,12 +140,11 @@ export const Legend: React.FC = () => {
           </div>
         )}
         <div className="relative">
-          <ToggleShowLegendButton showLegend={showLegend} toggleLegend={handleShowLegend} />
-          {activeLayerNumber && (
-            <div className="box-content absolute bottom-0 right-0 w-4 h-4 m-auto text-xs font-semibold text-center text-white border border-white rounded-full translate-x-1/3 translate-y-1/3 bg-navy-400">
-              {activeLayerNumber}
-            </div>
-          )}
+          <ToggleShowLegendButton
+            showLegend={showLegend}
+            toggleLegend={handleShowLegend}
+            activeLayerNumber={activeLayerNumber}
+          />
         </div>
       </div>
       <Modal
@@ -168,15 +167,24 @@ export const Legend: React.FC = () => {
 interface ToggleShowLegendButtonProps {
   showLegend: boolean;
   toggleLegend: () => void;
+  activeLayerNumber: number;
 }
 
-const ToggleShowLegendButton = ({ showLegend, toggleLegend }: ToggleShowLegendButtonProps) => {
+const ToggleShowLegendButton = ({
+  showLegend,
+  toggleLegend,
+  activeLayerNumber,
+}: ToggleShowLegendButtonProps) => {
+  const bgColorClassnames = showLegend ? 'bg-navy-400 hover:bg-navy-600' : 'bg-white';
+  const textColorClassnames = showLegend ? 'text-white' : 'text-black hover:text-navy-400';
+
   return (
     <button
       type="button"
       className={classNames(
+        bgColorClassnames,
+        textColorClassnames,
         'transition-colors relative flex items-center justify-center w-10 h-10 rounded-lg p-1.5 ',
-        showLegend ? 'text-white bg-navy-400 hover:bg-navy-600' : 'bg-white hover:text-navy-400',
       )}
       onClick={toggleLegend}
     >
@@ -188,6 +196,16 @@ const ToggleShowLegendButton = ({ showLegend, toggleLegend }: ToggleShowLegendBu
       <div className="group-hover:hidden">
         <SandwichIcon />
       </div>
+      {activeLayerNumber && (
+        <div
+          className={classNames(
+            showLegend ? 'bg-inherit' : 'bg-navy-400',
+            'box-content absolute bottom-0 right-0 w-4 h-4 m-auto text-xs font-semibold text-center text-white border border-white rounded-full translate-x-1/3 translate-y-1/3',
+          )}
+        >
+          {activeLayerNumber}
+        </div>
+      )}
     </button>
   );
 };

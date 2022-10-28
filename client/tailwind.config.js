@@ -36,6 +36,7 @@ module.exports = {
       black: colors.black,
       white: colors.white,
       transparent: colors.transparent,
+      inherit: colors.inherit,
       gray: {
         900: '#15181F',
         600: '#40424B',

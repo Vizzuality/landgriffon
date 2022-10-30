@@ -1,29 +1,53 @@
+import { useCallback } from 'react';
+import classNames from 'classnames';
+
 import ProjectedDataIcon from 'components/icons/projected-data';
 
 import type { Props as LegendProps } from 'recharts/types/component/Legend';
+import type { Payload } from 'recharts/types/component/DefaultLegendContent';
 
-const LegendChart = ({ payload }: LegendProps) => (
-  <div className="flex justify-between">
-    <ul className="flex flex-wrap">
-      {payload
-        .filter(({ type }) => type !== 'none')
-        .map((item) => (
-          <li key={item.value} className="flex items-center mr-2 space-x-1">
-            <div
-              className="w-2 h-3 rounded shrink-0 grow-0"
-              style={{ backgroundColor: `${item.color}` }}
-            />
-            <div className="overflow-hidden text-xs whitespace-nowrap text-ellipsis max-w-[100px]">
-              {item.value}
-            </div>
-          </li>
-        ))}
-    </ul>
-    <div className="flex items-center space-x-1">
-      <ProjectedDataIcon />
-      <div className="text-xs whitespace-nowrap">Projected data</div>
+interface ExtendedPayload extends Payload {
+  payload?: Payload['payload'] & {
+    fillOpacity?: number;
+  };
+}
+
+export interface ExtendedLegendProps extends LegendProps {
+  payload: ExtendedPayload[];
+}
+
+const LegendChart: React.FC<ExtendedLegendProps> = ({ payload, onClick = () => null }) => {
+  const handleClick = useCallback(onClick, [onClick]);
+
+  return (
+    <div className="flex justify-between">
+      <ul className="flex flex-wrap">
+        {payload
+          .filter(({ type }) => type !== 'none')
+          .map((item, index) => (
+            <li
+              key={item.value}
+              className={classNames('flex items-center mr-2 space-x-1 cursor-pointer', {
+                'opacity-50': item.payload.fillOpacity === 0.1,
+              })}
+              onClick={handleClick.bind(null, item, index)}
+            >
+              <div
+                className="w-2 h-3 rounded shrink-0 grow-0"
+                style={{ backgroundColor: `${item.color}` }}
+              />
+              <div className="overflow-hidden text-xs whitespace-nowrap text-ellipsis max-w-[100px]">
+                {item.value}
+              </div>
+            </li>
+          ))}
+      </ul>
+      <div className="flex items-center space-x-1">
+        <ProjectedDataIcon />
+        <div className="text-xs whitespace-nowrap">Projected data</div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default LegendChart;

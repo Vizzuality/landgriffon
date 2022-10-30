@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import omit from 'lodash/omit';
 import chroma from 'chroma-js';
 import {
@@ -22,6 +22,7 @@ import { scenarios } from 'store/features/analysis';
 import Loading from 'components/loading';
 import { NUMBER_FORMAT } from 'utils/number-format';
 
+import type { ExtendedLegendProps } from './legend/component';
 import type { Indicator } from 'types';
 
 type StackedAreaChartProps = {
@@ -30,7 +31,11 @@ type StackedAreaChartProps = {
 
 const COLOR_SCALE = chroma.scale(['#2E34B0', '#5462D8', '#828EF5', '#B9C0FF', '#E3EEFF']);
 
+const defaultOpacity = 0.9;
+const alternativeOpacity = 0.1;
+
 const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
+  const [itemOpacity, setItemOpacity] = useState<Record<string, number>>({});
   const filters = useAppSelector(filtersForTabularAPI);
   const { currentScenario: scenarioId } = useAppSelector(scenarios);
 
@@ -48,7 +53,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
     !!filters.endYear &&
     filters.endYear !== filters.startYear;
 
-  const { data, isFetched, isLoading } = useImpactRanking(
+  const { data, isFetched, isFetching } = useImpactRanking(
     {
       maxRankingEntities: 5,
       sort: 'DES',
@@ -70,12 +75,14 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
     const { numberOfAggregatedEntities, aggregatedValues } = others;
     const result = [];
     const keys = [];
+    let opacities = {};
 
     yearSum?.forEach(({ year }) => {
       const items = {};
       rows?.forEach((row) => {
         const yearValues = row?.values.find((rowValues) => rowValues?.year === year);
         items[row.name] = yearValues?.value;
+        opacities = { ...opacities, [row.name]: 0.9 };
         if (yearValues.isProjected) {
           items[`projected-${row.name}`] = yearValues?.value;
         }
@@ -84,6 +91,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
         items['Others'] = aggregatedValues?.find(
           (aggregatedValue) => aggregatedValue?.year === year,
         )?.value;
+        opacities = { ...opacities, Others: 0.9 };
       }
       result.push({ date: year, ...items });
     });
@@ -93,6 +101,9 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
     }
 
     const colorScale = COLOR_SCALE.colors(keys.length);
+
+    // Setting default item opacity
+    setItemOpacity(opacities);
 
     return {
       values: result,
@@ -106,10 +117,34 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
         }),
         {},
       ),
+      opacities,
     };
   }, [data]);
 
-  const renderLegend = useCallback((props) => <CustomLegend {...props} />, []);
+  /**
+   * Toggle legend opacity
+   */
+  const handleLegendClick = useCallback(
+    (obj) => {
+      const { dataKey } = obj;
+      const newOpacities = {
+        ...itemOpacity,
+        [dataKey]: defaultOpacity,
+      };
+      Object.keys(newOpacities).forEach((key) => {
+        if (key !== dataKey && itemOpacity[dataKey] === alternativeOpacity) {
+          newOpacities[key] = alternativeOpacity;
+        } else if (key !== dataKey) {
+          newOpacities[key] =
+            newOpacities[key] === defaultOpacity ? alternativeOpacity : defaultOpacity;
+        }
+      });
+      setItemOpacity(newOpacities);
+    },
+    [itemOpacity],
+  );
+
+  const renderLegend = useCallback((props: ExtendedLegendProps) => <CustomLegend {...props} />, []);
 
   const renderTooltip = useCallback((props) => {
     if (props && props.active && props.payload && props.payload.length) {
@@ -119,8 +154,8 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
 
   return (
     <div className="p-6 bg-white rounded-md shadow-sm">
-      {isLoading && <Loading className="w-5 h-5 m-auto text-navy-400" />}
-      {!isLoading && isFetched && data && (
+      {isFetching && <Loading className="w-5 h-5 m-auto text-navy-400" />}
+      {!isFetching && isFetched && data && (
         <div>
           <h2 className="flex-shrink-0 text-base">
             {chartData.name} ({chartData.unit})
@@ -154,7 +189,12 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                       ></rect>
                     </pattern>
                   </defs>
-                  <Legend verticalAlign="top" content={renderLegend} height={70} />
+                  <Legend
+                    verticalAlign="top"
+                    content={renderLegend}
+                    height={70}
+                    onClick={handleLegendClick}
+                  />
                   <CartesianGrid
                     vertical={false}
                     stroke="#15181F"
@@ -189,9 +229,10 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                       stroke={chartData.colors[key]}
                       strokeWidth={0}
                       fill={chartData.colors[key]}
-                      fillOpacity={0.9}
+                      fillOpacity={itemOpacity[key] || defaultOpacity}
                       animationEasing="ease"
                       animationDuration={500}
+                      opacity={itemOpacity[key] || defaultOpacity}
                     />
                   ))}
                   {chartData.keys.map((key) => (

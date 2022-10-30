@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import omit from 'lodash/omit';
 import {
@@ -41,9 +41,14 @@ type ChartData = {
   }[];
 };
 
+const defaultOpacity = 0.9;
+const alternativeOpacity = 0.4;
+
 const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
   const router = useRouter();
   const { scenarioId, compareScenarioId } = router.query || {};
+
+  const [itemOpacity, setItemOpacity] = useState<Record<string, number>>({});
 
   const filters = useAppSelector(filtersForTabularAPI);
   const isScenarioVsScenario = scenarioId && compareScenarioId;
@@ -68,7 +73,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
     !!filters.endYear &&
     filters.endYear !== filters.startYear;
 
-  const { data, isFetched, isLoading } = useImpactComparison(params, { enabled });
+  const { data, isFetched, isFetching } = useImpactComparison(params, { enabled });
 
   const chartData = useMemo<ChartData>(() => {
     const { indicatorShortName, yearSum, metadata } = data?.data?.impactTable?.[0] || {};
@@ -101,6 +106,12 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
             : null,
       })) || [];
 
+    setItemOpacity({
+      value: defaultOpacity,
+      scenarioOneValue: defaultOpacity,
+      scenarioTwoValue: defaultOpacity,
+    });
+
     return {
       values,
       name: indicatorShortName,
@@ -108,7 +119,33 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
     };
   }, [data]);
 
-  const renderLegend = useCallback((props) => <CustomLegend {...props} />, []);
+  /**
+   * Toggle legend opacity
+   */
+  const handleLegendClick = useCallback(
+    (obj) => {
+      const { dataKey } = obj;
+      const newOpacities = {
+        ...itemOpacity,
+        [dataKey]: defaultOpacity,
+      };
+      Object.keys(newOpacities).forEach((key) => {
+        if (key !== dataKey && itemOpacity[dataKey] === alternativeOpacity) {
+          newOpacities[key] = alternativeOpacity;
+        } else if (key !== dataKey) {
+          newOpacities[key] =
+            newOpacities[key] === defaultOpacity ? alternativeOpacity : defaultOpacity;
+        }
+      });
+      setItemOpacity(newOpacities);
+    },
+    [itemOpacity],
+  );
+
+  const renderLegend = useCallback(
+    (props) => <CustomLegend {...props} onClick={handleLegendClick} />,
+    [handleLegendClick],
+  );
 
   const renderTooltip = useCallback((props) => {
     if (props && props.active && props.payload && props.payload.length) {
@@ -118,8 +155,8 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
 
   return (
     <div className="p-6 bg-white rounded-md shadow-sm">
-      {isLoading && <Loading className="w-5 h-5 m-auto text-navy-400" />}
-      {!isLoading && isFetched && data && (
+      {isFetching && <Loading className="w-5 h-5 m-auto text-navy-400" />}
+      {!isFetching && isFetched && data && (
         <div>
           <h2 className="flex-shrink-0 text-base">
             {chartData.name} ({chartData.unit})
@@ -168,6 +205,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                         animationDuration={500}
                         dataKey="value"
                         stroke="#AEB1B5"
+                        strokeOpacity={itemOpacity.value || defaultOpacity}
                         strokeWidth={2}
                         type="linear"
                       />
@@ -178,6 +216,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                         dot={{ strokeDasharray: 0, strokeWidth: 2 }}
                         stroke="#AEB1B5"
                         strokeDasharray="4 3"
+                        strokeOpacity={itemOpacity.value || defaultOpacity}
                         strokeWidth={2}
                         type="linear"
                         legendType="none"
@@ -190,8 +229,8 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                     animationEasing="ease"
                     animationDuration={500}
                     dataKey="scenarioOneValue"
-                    fillOpacity={0.9}
                     stroke="#3F59E0"
+                    strokeOpacity={itemOpacity.scenarioOneValue || defaultOpacity}
                     strokeWidth={2}
                     type="linear"
                   />
@@ -202,6 +241,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                     dot={{ strokeDasharray: 0, strokeWidth: 2 }}
                     stroke="#3F59E0"
                     strokeDasharray="4 3"
+                    strokeOpacity={itemOpacity.scenarioOneValue || defaultOpacity}
                     strokeWidth={2}
                     type="linear"
                     legendType="none"
@@ -214,8 +254,8 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                         animationEasing="ease"
                         animationDuration={500}
                         dataKey="scenarioTwoValue"
-                        fillOpacity={0.9}
                         stroke="#4AB7F3"
+                        strokeOpacity={itemOpacity.scenarioTwoValue || defaultOpacity}
                         strokeWidth={2}
                         type="linear"
                       />
@@ -226,6 +266,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                         dot={{ strokeDasharray: 0, strokeWidth: 2 }}
                         stroke="#4AB7F3"
                         strokeDasharray="4 3"
+                        strokeOpacity={itemOpacity.scenarioTwoValue || defaultOpacity}
                         strokeWidth={2}
                         type="linear"
                         legendType="none"

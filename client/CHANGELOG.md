@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added comparison e2e tests
 - Added mode control e2e tests
 - Added icon animation when a file on upload or progress in the actual data page
+- Added interaction in the charts clicking on the legend [LANDGRIF-772](https://vizzuality.atlassian.net/browse/LANDGRIF-772)
 
 ### Changed
 

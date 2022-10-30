@@ -8,7 +8,7 @@ on:
       - 'test'
       - 'vcf'
       - 'tetrapack'
-      - 'diageo'
+      - 'dev'
     paths:
       - 'api/**'
       - 'client/**'

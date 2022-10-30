@@ -9,8 +9,8 @@ data_import_arguments_staging = ["seed-data"]
 repo_name                     = "landgriffon"
 
 environments = {
+  dev : {},
   test : {},
   vcf : {},
   tetrapack : {},
-  diageo : {},
 }

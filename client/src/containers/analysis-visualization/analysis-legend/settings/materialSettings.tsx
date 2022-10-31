@@ -8,18 +8,16 @@ import Toggle from 'components/toggle';
 import ToolTip from 'components/tooltip';
 import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
 import { useMaterial } from 'hooks/materials';
+import Loading from 'components/loading';
 
+import type { LayerSettingsProps } from './component';
 import type { SelectOption } from 'components/select';
 import type { Dispatch } from 'react';
-import type { Layer, Material } from 'types';
+import type { Material } from 'types';
 
-interface MaterialEntryProps {
-  layer: Layer;
-  onChange: (id: string, layer: Partial<Layer>) => void;
+interface MaterialEntryProps extends LayerSettingsProps {
   materialId?: Material['id'];
   onChangeMaterial: Dispatch<Material['id']>;
-  onPreviewChange: (id: Layer['id'], active: boolean) => void;
-  isPreview: boolean;
 }
 const MaterialSettings = ({
   layer,
@@ -27,7 +25,8 @@ const MaterialSettings = ({
   onChange,
   materialId,
   onPreviewChange,
-  isPreview,
+  isPreviewActive,
+  previewStatus,
 }: MaterialEntryProps) => {
   const { data: material } = useMaterial(materialId);
 
@@ -83,11 +82,15 @@ const MaterialSettings = ({
                 </div>
               }
             >
-              <TogglePreview
-                disabled={!canPreview}
-                isPreviewActive={isPreview}
-                onPreviewChange={handleTogglePreview}
-              />
+              {isPreviewActive && previewStatus === 'loading' ? (
+                <Loading />
+              ) : (
+                <TogglePreview
+                  disabled={!canPreview}
+                  isPreviewActive={isPreviewActive}
+                  onPreviewChange={handleTogglePreview}
+                />
+              )}
             </ToolTip>
 
             <Toggle active={!!layer.active} onChange={handleToggleActive} />

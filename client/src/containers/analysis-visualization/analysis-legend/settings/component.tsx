@@ -15,7 +15,9 @@ import useFuse from 'hooks/fuse';
 import { analysisMap, setFilter, setLayer } from 'store/features/analysis';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
+import Loading from 'components/loading';
 
+import type { UseQueryResult } from '@tanstack/react-query';
 import type { UseFuseOptions } from 'hooks/fuse';
 import type { CategoryWithLayers } from 'hooks/layers/getContextualLayers';
 import type { Dispatch } from 'react';
@@ -27,11 +29,14 @@ interface LegendSettingsProps {
   onDismiss?: () => void;
 }
 
-interface LayerSettingsProps {
+type PreviewStatus = UseQueryResult['status'];
+
+export interface LayerSettingsProps {
   layer: Layer;
   onChange: (id: Layer['id'], layer: Partial<Layer>) => void;
   onPreviewChange: (id: Layer['id'], active: boolean) => void;
   isPreviewActive: boolean;
+  previewStatus: PreviewStatus;
 }
 
 const LayerSettings = ({
@@ -39,6 +44,7 @@ const LayerSettings = ({
   onChange,
   onPreviewChange,
   isPreviewActive,
+  previewStatus,
 }: LayerSettingsProps) => {
   const onToggleActive = useCallback(
     (active: boolean) => {
@@ -59,7 +65,12 @@ const LayerSettings = ({
       <div className="flex-grow text-sm">{layer.metadata?.name}</div>
       <div className="flex flex-row gap-2 place-items-center">
         <InfoToolTip icon="solid" info={layer.metadata?.description} />
-        <TogglePreview isPreviewActive={isPreviewActive} onPreviewChange={handlePreviewToggle} />
+        {previewStatus === 'loading' && isPreviewActive ? (
+          <Loading />
+        ) : (
+          <TogglePreview isPreviewActive={isPreviewActive} onPreviewChange={handlePreviewToggle} />
+        )}
+
         <Toggle onChange={onToggleActive} active={!!layer.active} />
       </div>
     </div>
@@ -85,7 +96,8 @@ const CategoryHeader: React.FC<{
   );
 };
 
-interface CategorySettingsProps extends Pick<LayerSettingsProps, 'onPreviewChange'> {
+interface CategorySettingsProps
+  extends Pick<LayerSettingsProps, 'onPreviewChange' | 'previewStatus'> {
   category: CategoryWithLayers['category'];
   layers: Layer[];
   activeLayers: number;
@@ -104,8 +116,8 @@ const CategorySettings = ({
   layers,
   onLayerStateChange,
   activeLayers,
-  onPreviewChange,
   activePreviewLayerId,
+  ...rest
 }: CategorySettingsProps) => {
   return (
     <Accordion.Entry header={<CategoryHeader activeLayers={activeLayers} category={category} />}>
@@ -113,10 +125,10 @@ const CategorySettings = ({
         layers.map((layer) => (
           <LayerSettings
             isPreviewActive={layer.id === activePreviewLayerId}
-            onPreviewChange={onPreviewChange}
             onChange={onLayerStateChange}
             layer={layer}
             key={layer.id}
+            {...rest}
           />
         ))
       ) : (
@@ -187,6 +199,8 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
 
   const filteredLayersIds = useMemo(() => result.map((item) => item.id), [result]);
 
+  const [previewStatus, setPreviewStatus] = useState<PreviewStatus>('loading');
+
   const layerStateByCategory = useMemo(() => {
     return Object.fromEntries(
       categories.map(({ category, layers }) => {
@@ -204,6 +218,7 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
     () =>
       categories.map((cat) => (
         <CategorySettings
+          previewStatus={previewStatus}
           activePreviewLayerId={selectedLayerForPreview}
           activeLayers={cat.layers.filter((layer) => localLayerState[layer.id].active).length}
           layers={layerStateByCategory[cat.category]}
@@ -219,6 +234,7 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
       handleTogglePreview,
       layerStateByCategory,
       localLayerState,
+      previewStatus,
       selectedLayerForPreview,
     ],
   );
@@ -245,12 +261,13 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
         <div className="max-h-full p-0.5 overflow-y-auto flex-grow">
           <Accordion>
             <MaterialSettings
+              previewStatus={previewStatus}
               layer={localLayerState.material}
               materialId={localMaterial}
               onChange={handleLayerStateChange}
               onChangeMaterial={setLocalMaterial}
               onPreviewChange={handleTogglePreview}
-              isPreview={localLayerState.material.id === selectedLayerForPreview}
+              isPreviewActive={localLayerState.material.id === selectedLayerForPreview}
             />
             {contextualAccordionEntries}
           </Accordion>
@@ -273,6 +290,7 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
           <PreviewMap
             selectedMaterialId={localMaterial}
             selectedLayerId={selectedLayerForPreview}
+            onStatusChange={setPreviewStatus}
           />
           <div className="absolute flex flex-row text-sm text-white bg-black rounded-md top-3 left-3 h-fit">
             <div className="p-3 font-bold">Preview layers</div>

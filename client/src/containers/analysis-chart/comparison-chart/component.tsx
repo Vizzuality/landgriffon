@@ -64,7 +64,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
     params.baseScenarioId = scenarioId as string;
     params.comparedScenarioId = compareScenarioId as string;
   } else {
-    params.scenarioId = compareScenarioId as string;
+    params.comparedScenarioId = compareScenarioId as string;
   }
 
   const enabled =
@@ -154,7 +154,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
   }, []);
 
   return (
-    <div className="p-6 bg-white rounded-md shadow-sm">
+    <div className="p-6 bg-white rounded-md shadow-sm" data-testid="analysis-chart">
       {isFetching && <Loading className="w-5 h-5 m-auto text-navy-400" />}
       {!isFetching && isFetched && data && (
         <div>

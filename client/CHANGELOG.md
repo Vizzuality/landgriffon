@@ -83,6 +83,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Applied new design for the targets section in the admin page.
 - Scenarios selection disabled temporarily in map visualization mode [LANDGRIF-744](https://vizzuality.atlassian.net/browse/LANDGRIF-744)
 - Replaced excel file to download in the Data page.
+- Updated params for scenario comparison endpoint
 
 ### Fixed
 

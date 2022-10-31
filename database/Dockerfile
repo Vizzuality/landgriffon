@@ -10,6 +10,7 @@ RUN apt-get install -y pgxnclient cmake make gcc libtool git postgresql-client-1
 ARG PG_H3_VERSION=3.7.2
 ENV PG_H3_VERSION $PG_H3_VERSION
 
+
 RUN pgxn install "h3==${PG_H3_VERSION}"
 
 COPY entrypoint.sh /usr/local/bin/

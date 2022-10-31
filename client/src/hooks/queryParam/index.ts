@@ -53,11 +53,15 @@ const useQueryParam = <T, F = T>(
   const [isDoneSettingInitialState, setIsDoneSettingInitialState] = useState(false);
   useEffectOnceWhen(() => {
     const newValue = parse<T>(query[name] as string);
-    if (!!newValue) {
-      setValue(newValue);
-    } else if (!!defaultValue && typeof defaultValue === 'object' && typeof newValue === 'object') {
-      setValue((value) => ({ ...value, ...newValue }));
+
+    if (newValue) {
+      if (!value || typeof value !== 'object' || typeof newValue !== 'object') {
+        setValue(newValue);
+      } else {
+        setValue((value) => ({ ...value, ...newValue }));
+      }
     }
+
     setIsDoneSettingInitialState(true);
   }, isReady);
 

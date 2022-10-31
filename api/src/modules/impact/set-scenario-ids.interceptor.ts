@@ -10,6 +10,9 @@ export class SetScenarioIdsInterceptor implements NestInterceptor {
       request.query.scenarioIds = [request.query.scenarioId];
     }
 
+    if (request.query.comparedScenarioId) {
+      request.query.scenarioIds = [request.query.comparedScenarioId];
+    }
     // For dto of scenario vs scenario
     if (request.query.baseScenarioId && request.query.comparedScenarioId) {
       request.query.scenarioIds = [

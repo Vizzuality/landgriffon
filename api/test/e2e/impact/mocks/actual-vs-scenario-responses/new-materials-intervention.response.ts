@@ -15,7 +15,7 @@ export const newMaterialScenarioInterventionTable = {
                 {
                   year: 2020,
                   value: 1200,
-                  scenarioValue: 400,
+                  comparedScenarioValue: 400,
                   isProjected: false,
                   absoluteDifference: -800,
                   percentageDifference: -100,
@@ -23,7 +23,7 @@ export const newMaterialScenarioInterventionTable = {
                 {
                   year: 2021,
                   value: 1218,
-                  scenarioValue: 406,
+                  comparedScenarioValue: 406,
                   isProjected: true,
                   absoluteDifference: -812,
                   percentageDifference: -100,
@@ -31,7 +31,7 @@ export const newMaterialScenarioInterventionTable = {
                 {
                   year: 2022,
                   value: 1236.27,
-                  scenarioValue: 412.09,
+                  comparedScenarioValue: 412.09,
                   isProjected: true,
                   absoluteDifference: -824.1800000000001,
                   percentageDifference: -100.00000000000003,
@@ -39,7 +39,7 @@ export const newMaterialScenarioInterventionTable = {
                 {
                   year: 2023,
                   value: 1254.81405,
-                  scenarioValue: 418.27135,
+                  comparedScenarioValue: 418.27135,
                   isProjected: true,
                   absoluteDifference: -836.5427,
                   percentageDifference: -100,
@@ -53,7 +53,7 @@ export const newMaterialScenarioInterventionTable = {
                 {
                   year: 2020,
                   value: 0,
-                  scenarioValue: 750,
+                  comparedScenarioValue: 750,
                   isProjected: false,
                   absoluteDifference: 750,
                   percentageDifference: 200,
@@ -61,7 +61,7 @@ export const newMaterialScenarioInterventionTable = {
                 {
                   year: 2021,
                   value: 0,
-                  scenarioValue: 761.25,
+                  comparedScenarioValue: 761.25,
                   isProjected: true,
                   absoluteDifference: 761.25,
                   percentageDifference: 200,
@@ -69,7 +69,7 @@ export const newMaterialScenarioInterventionTable = {
                 {
                   year: 2022,
                   value: 0,
-                  scenarioValue: 772.66875,
+                  comparedScenarioValue: 772.66875,
                   isProjected: true,
                   absoluteDifference: 772.66875,
                   percentageDifference: 200,
@@ -77,7 +77,7 @@ export const newMaterialScenarioInterventionTable = {
                 {
                   year: 2023,
                   value: 0,
-                  scenarioValue: 784.2587812500001,
+                  comparedScenarioValue: 784.2587812500001,
                   isProjected: true,
                   absoluteDifference: 784.2587812500001,
                   percentageDifference: 200,
@@ -91,7 +91,7 @@ export const newMaterialScenarioInterventionTable = {
                 {
                   year: 2020,
                   value: 1500,
-                  scenarioValue: 500,
+                  comparedScenarioValue: 500,
                   isProjected: false,
                   absoluteDifference: -1000,
                   percentageDifference: -100,
@@ -99,7 +99,7 @@ export const newMaterialScenarioInterventionTable = {
                 {
                   year: 2021,
                   value: 1522.5,
-                  scenarioValue: 507.5,
+                  comparedScenarioValue: 507.5,
                   isProjected: true,
                   absoluteDifference: -1015,
                   percentageDifference: -100,
@@ -107,7 +107,7 @@ export const newMaterialScenarioInterventionTable = {
                 {
                   year: 2022,
                   value: 1545.3375,
-                  scenarioValue: 515.1125,
+                  comparedScenarioValue: 515.1125,
                   isProjected: true,
                   absoluteDifference: -1030.2250000000001,
                   percentageDifference: -100.00000000000003,
@@ -115,7 +115,7 @@ export const newMaterialScenarioInterventionTable = {
                 {
                   year: 2023,
                   value: 1568.5175625000002,
-                  scenarioValue: 522.8391875,
+                  comparedScenarioValue: 522.8391875,
                   isProjected: true,
                   absoluteDifference: -1045.6783750000002,
                   percentageDifference: -100.00000000000003,
@@ -127,7 +127,7 @@ export const newMaterialScenarioInterventionTable = {
             {
               year: 2020,
               value: 2700,
-              scenarioValue: 1650,
+              comparedScenarioValue: 1650,
               isProjected: false,
               absoluteDifference: -1050,
               percentageDifference: -48.275862068965516,
@@ -135,7 +135,7 @@ export const newMaterialScenarioInterventionTable = {
             {
               year: 2021,
               value: 2740.5,
-              scenarioValue: 1674.75,
+              comparedScenarioValue: 1674.75,
               isProjected: true,
               absoluteDifference: -1065.75,
               percentageDifference: -48.275862068965516,
@@ -143,7 +143,7 @@ export const newMaterialScenarioInterventionTable = {
             {
               year: 2022,
               value: 2781.6075,
-              scenarioValue: 1699.87125,
+              comparedScenarioValue: 1699.87125,
               isProjected: true,
               absoluteDifference: -1081.7362500000002,
               percentageDifference: -48.275862068965516,
@@ -151,7 +151,7 @@ export const newMaterialScenarioInterventionTable = {
             {
               year: 2023,
               value: 2823.3316125,
-              scenarioValue: 1725.36931875,
+              comparedScenarioValue: 1725.36931875,
               isProjected: true,
               absoluteDifference: -1097.96229375,
               percentageDifference: -48.275862068965516,
@@ -163,28 +163,28 @@ export const newMaterialScenarioInterventionTable = {
         {
           year: 2020,
           value: 2700,
-          scenarioValue: 1650,
+          comparedScenarioValue: 1650,
           absoluteDifference: -1050,
           percentageDifference: 61.111111111111114,
         },
         {
           year: 2021,
           value: 2740.5,
-          scenarioValue: 1674.75,
+          comparedScenarioValue: 1674.75,
           absoluteDifference: -1065.75,
           percentageDifference: 61.111111111111114,
         },
         {
           year: 2022,
           value: 2781.6075,
-          scenarioValue: 1699.87125,
+          comparedScenarioValue: 1699.87125,
           absoluteDifference: -1081.7362500000002,
           percentageDifference: 61.11111111111111,
         },
         {
           year: 2023,
           value: 2823.3316125,
-          scenarioValue: 1725.36931875,
+          comparedScenarioValue: 1725.36931875,
           absoluteDifference: -1097.96229375,
           percentageDifference: 61.11111111111111,
         },

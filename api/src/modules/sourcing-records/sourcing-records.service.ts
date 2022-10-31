@@ -102,7 +102,7 @@ export class SourcingRecordsService extends AppBaseService<
     );
   }
 
-  async getDataForActualVsScebarioImpactTable(
+  async getDataForActualVsScenarioImpactTable(
     getActualVsScenarioImpactTableDto: GetActualVsScenarioImpactTableDto,
   ): Promise<ActualVsScenarioImpactTableData[]> {
     return this.sourcingRecordRepository.getDataForActualVsScenarioImpactTable(

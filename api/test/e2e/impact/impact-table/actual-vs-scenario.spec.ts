@@ -86,7 +86,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         endYear: 2023,
         startYear: 2020,
         groupBy: 'material',
-        scenarioId: preconditions.scenarioIntervention.scenarioId,
+        comparedScenarioId: preconditions.scenarioIntervention.scenarioId,
       })
       .expect(HttpStatus.OK);
 
@@ -116,7 +116,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         endYear: 2023,
         startYear: 2020,
         groupBy: 'material',
-        scenarioId: preconditions.scenarioIntervention.scenarioId,
+        comparedScenarioId: preconditions.scenarioIntervention.scenarioId,
       })
       .expect(HttpStatus.OK);
 
@@ -140,7 +140,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         endYear: 2023,
         startYear: 2020,
         groupBy: 'supplier',
-        scenarioId: scenario.id,
+        comparedScenarioId: scenario.id,
       })
       .expect(HttpStatus.OK);
 
@@ -166,7 +166,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           endYear: 2023,
           startYear: 2020,
           groupBy: 'material',
-          scenarioId: preconditions.newScenario.id,
+          comparedScenarioId: preconditions.newScenario.id,
         })
         .expect(HttpStatus.OK);
 
@@ -182,7 +182,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           endYear: 2023,
           startYear: 2019,
           groupBy: 'material',
-          scenarioId: preconditions.newScenario.id,
+          comparedScenarioId: preconditions.newScenario.id,
         })
         .expect(HttpStatus.OK);
 

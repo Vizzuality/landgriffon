@@ -11,8 +11,9 @@ export interface ZoomControlProps {
   onZoomChange: (zoom: number) => void;
 }
 
-const ENABLED_CLASSES = 'bg-white hover:bg-gray-200 active:bg-gray-300 cursor-pointer';
-const DISABLED_CLASSES = 'opacity-50 cursor-default';
+const COMMON_CLASSES = 'p-2 transition-colors';
+const ENABLED_CLASSES = 'bg-white hover:bg-gray-100 active:bg-navy-50 cursor-pointer';
+const DISABLED_CLASSES = 'bg-gray-100 opacity-75 cursor-default';
 
 export const ZoomControl: React.FC<ZoomControlProps> = ({
   className,
@@ -35,7 +36,7 @@ export const ZoomControl: React.FC<ZoomControlProps> = ({
       )}
     >
       <button
-        className={cx('p-2', {
+        className={cx(COMMON_CLASSES, {
           [ENABLED_CLASSES]: zoom < maxZoom,
           [DISABLED_CLASSES]: zoom >= maxZoom,
         })}
@@ -47,7 +48,7 @@ export const ZoomControl: React.FC<ZoomControlProps> = ({
         <PlusIcon className="w-5 h-5" />
       </button>
       <button
-        className={cx('p-2', {
+        className={cx(COMMON_CLASSES, {
           [ENABLED_CLASSES]: zoom > minZoom,
           [DISABLED_CLASSES]: zoom <= minZoom,
         })}

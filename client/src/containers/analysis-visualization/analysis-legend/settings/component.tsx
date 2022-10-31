@@ -16,6 +16,7 @@ import { analysisMap, setFilter, setLayer } from 'store/features/analysis';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
 import Loading from 'components/loading';
+import Callout from 'components/callout';
 
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { UseFuseOptions } from 'hooks/fuse';
@@ -61,17 +62,29 @@ const LayerSettings = ({
   );
 
   return (
-    <div className="flex flex-row justify-between gap-5 p-2 pl-8 place-items-center">
-      <div className="flex-grow text-sm">{layer.metadata?.name}</div>
-      <div className="flex flex-row gap-2 place-items-center">
-        <InfoToolTip icon="solid" info={layer.metadata?.description} />
-        {previewStatus === 'loading' && isPreviewActive ? (
-          <Loading />
-        ) : (
-          <TogglePreview isPreviewActive={isPreviewActive} onPreviewChange={handlePreviewToggle} />
+    <div className="p-2 pl-8">
+      <div className="flex flex-row justify-between gap-5 place-items-center">
+        <div className="flex-grow text-sm">{layer.metadata?.name}</div>
+        <div className="flex flex-row gap-2 place-items-center">
+          <InfoToolTip icon="solid" info={layer.metadata?.description} />
+          {previewStatus === 'loading' && isPreviewActive ? (
+            <Loading />
+          ) : (
+            <TogglePreview
+              isPreviewActive={isPreviewActive}
+              onPreviewChange={handlePreviewToggle}
+            />
+          )}
+          <Toggle onChange={onToggleActive} active={!!layer.active} />
+        </div>
+      </div>
+      <div>
+        {previewStatus === 'error' && isPreviewActive && (
+          <Callout type="error">
+            <p>Something went wrong while loading this layer.</p>
+            <p>Please refresh and try again later.</p>
+          </Callout>
         )}
-
-        <Toggle onChange={onToggleActive} active={!!layer.active} />
       </div>
     </div>
   );
@@ -246,7 +259,7 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
 
   return (
     <div className="flex flex-row h-[600px]">
-      <div className="flex flex-col items-stretch gap-5 p-6 w-96">
+      <div className="flex flex-col items-stretch gap-5 p-6 w-[25rem]">
         <div className="w-full">
           <Search
             onChange={setSearchText}

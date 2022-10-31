@@ -28,6 +28,8 @@ describe('Analysis and filters', () => {
       .click()
       .type('{downArrow}{downArrow}{enter}');
 
+    cy.wait(1000);
+
     cy.url().should('include', 'indicator=633cf928-7c4f-41a3-99c5-e8c1bda0b323');
   });
 

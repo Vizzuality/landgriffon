@@ -69,7 +69,7 @@ const MaterialSettings = ({
         <div className="flex flex-row justify-between">
           <div className="text-sm font-semibold text-gray-500">Food and agriculture</div>
           <div className="flex flex-row place-items-center gap-2">
-            <InfoToolTip icon="outline" info="TODO" />
+            <InfoToolTip icon="solid" info="TODO" />
             <div className="w-0.5 h-full bg-gray-200 rounded-full" />
             <ToolTip
               className="z-10"

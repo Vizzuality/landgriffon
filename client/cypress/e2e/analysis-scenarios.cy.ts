@@ -119,18 +119,4 @@ describe('Analysis and scenarios', () => {
     cy.wait('@scenarioVsScenario');
     cy.get('[data-testid="comparison-cell"]').should('have.length.above', 1);
   });
-
-  it('should be able to navigate to map, table, and chart', () => {
-    cy.visit('/analysis');
-    cy.url().should('contain', '/analysis/map');
-
-    cy.get('[data-testid="mode-control-table"]').click();
-    cy.url().should('contain', '/analysis/table');
-
-    cy.get('[data-testid="mode-control-chart"]').click();
-    cy.url().should('contain', '/analysis/chart');
-
-    cy.get('[data-testid="mode-control-map"]').click();
-    cy.url().should('contain', '/analysis/map');
-  });
 });

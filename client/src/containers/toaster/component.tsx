@@ -22,7 +22,7 @@ export const ALERT_CLASSES = {
   },
 };
 
-const Alert: React.FC<ToasterProps> = (props) => (
+const ToastContainer: React.FC<ToasterProps> = (props) => (
   <Toaster {...props}>
     {(t) => {
       const { iconColor, backgroundColor, messagesColor } = ALERT_CLASSES[t.type];
@@ -47,4 +47,4 @@ const Alert: React.FC<ToasterProps> = (props) => (
   </Toaster>
 );
 
-export default Alert;
+export default ToastContainer;

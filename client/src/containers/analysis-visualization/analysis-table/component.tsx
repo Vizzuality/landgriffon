@@ -134,12 +134,12 @@ const AnalysisTable = () => {
     },
     {
       enabled: isComparisonEnabled && !!currentScenario && isEnable,
-      select: ({ data: { scenarioVsScenarioImpactTable, ...data }, ...rest }) => {
+      select: ({ data: { impactTable, ...data }, ...rest }) => {
         return {
           ...rest,
           data: {
             ...data,
-            impactTable: scenarioVsScenarioImpactTable,
+            impactTable,
           },
         };
       },

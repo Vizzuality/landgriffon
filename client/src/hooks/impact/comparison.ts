@@ -76,10 +76,10 @@ export const useImpactComparison = <T = ImpactDataApiResponse<true>>(
   return query;
 };
 
-export const useImpactScenarioComparison = <T = ImpactDataApiResponse<'scenario'>>(
+export const useImpactScenarioComparison = <T = ImpactDataApiResponse<true>>(
   params: Partial<ImpactComparisonParams>,
   options: UseQueryOptions<
-    ImpactDataApiResponse<'scenario'>,
+    ImpactDataApiResponse<true>,
     unknown,
     T,
     ['impact-scenario-vs-scenario', typeof params]
@@ -92,7 +92,7 @@ export const useImpactScenarioComparison = <T = ImpactDataApiResponse<'scenario'
     ['impact-scenario-comparison', params],
     () =>
       apiRawService
-        .get<ImpactDataApiResponse<'scenario'>>('/impact/compare/scenario/vs/scenario', {
+        .get<ImpactDataApiResponse<true>>('/impact/compare/scenario/vs/scenario', {
           params,
         })
         .then((response) => response.data),
@@ -100,7 +100,7 @@ export const useImpactScenarioComparison = <T = ImpactDataApiResponse<'scenario'
       ...DEFAULT_QUERY_OPTIONS,
       placeholderData: {
         data: {
-          scenarioVsScenarioImpactTable: [],
+          impactTable: [],
           purchasedTonnes: [],
         },
         metadata: {},

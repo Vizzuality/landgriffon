@@ -92,17 +92,17 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
           lastYearNonProjectedData.year === item.year || item.isProjected ? item.value : null,
 
         // Scenario 1
-        scenarioOneValue: !item.isProjected ? item.scenarioValue || item.scenarioOneValue : null,
+        scenarioOneValue: !item.isProjected ? item.baseScenarioValue : null,
         scenarioOneValueProjected:
           lastYearNonProjectedData.year === item.year || item.isProjected
-            ? item.scenarioValue || item.scenarioOneValue
+            ? item.baseScenarioValue
             : null,
 
         // Scenario 2
-        scenarioTwoValue: !item.isProjected ? item.scenarioTwoValue : null,
+        scenarioTwoValue: !item.isProjected ? item.comparedScenarioValue : null,
         scenarioTwoValueProjected:
           lastYearNonProjectedData.year === item.year || item.isProjected
-            ? item.scenarioTwoValue
+            ? item.comparedScenarioValue
             : null,
       })) || [];
 

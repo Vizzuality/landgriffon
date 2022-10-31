@@ -58,7 +58,7 @@ const LayerSettings = ({
     <div className="flex flex-row justify-between gap-5 p-2 pl-8 place-items-center">
       <div className="flex-grow text-sm">{layer.metadata?.name}</div>
       <div className="flex flex-row gap-2 place-items-center">
-        <InfoToolTip icon="outline" info={layer.metadata?.description} />
+        <InfoToolTip icon="solid" info={layer.metadata?.description} />
         <TogglePreview isPreviewActive={isPreviewActive} onPreviewChange={handlePreviewToggle} />
         <Toggle onChange={onToggleActive} active={!!layer.active} />
       </div>

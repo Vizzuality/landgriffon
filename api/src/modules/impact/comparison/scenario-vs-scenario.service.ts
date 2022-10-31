@@ -83,12 +83,12 @@ export class ScenarioVsScenarioImpactService {
       scenarioVsScenarioImpactTableDto;
 
     const scenarioOneDto: GetActualVsScenarioImpactTableDto = {
-      scenarioId: baseScenarioId,
+      comparedScenarioId: baseScenarioId,
       ...generalDto,
     };
 
     const scenarioTwoDto: GetActualVsScenarioImpactTableDto = {
-      scenarioId: comparedScenarioId,
+      comparedScenarioId: comparedScenarioId,
       ...generalDto,
     };
 
@@ -249,7 +249,7 @@ export class ScenarioVsScenarioImpactService {
     entities: ImpactTableEntityType[],
   ): Promise<ActualVsScenarioImpactTableData[]> {
     return entities.length > 0
-      ? this.sourcingRecordService.getDataForActualVsScebarioImpactTable(
+      ? this.sourcingRecordService.getDataForActualVsScenarioImpactTable(
           actualVsScenarioImpactTableDto,
         )
       : Promise.resolve([]);

@@ -144,7 +144,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
           new Brackets((qbInterv: WhereExpressionBuilder) => {
             qbInterv
               .where('scenarioIntervention.scenarioId = :scenarioId', {
-                scenarioId: getActualVsScenarioImpactTable.scenarioId,
+                scenarioId: getActualVsScenarioImpactTable.comparedScenarioId,
               })
               .andWhere(`scenarioIntervention.status = :status`, {
                 status: SCENARIO_INTERVENTION_STATUS.ACTIVE,

@@ -128,8 +128,8 @@ const AnalysisTable = () => {
   );
   const impactScenarioComparisonData = useImpactScenarioComparison(
     {
-      scenarioOneId: currentScenario,
-      scenarioTwoId: scenarioToCompare,
+      baseScenarioId: currentScenario,
+      comparedScenarioId: scenarioToCompare,
       ...omit(params, ['scenarioId', 'scenarioToCompare']),
     },
     {

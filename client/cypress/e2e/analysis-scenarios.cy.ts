@@ -77,7 +77,9 @@ describe('Analysis and scenarios', () => {
     cy.url().should('contain', 'compareScenarioId=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7');
 
     // checking comparison cell is there
-    cy.wait('@scenarioVsActual');
+    cy.wait('@scenarioVsActual')
+      .its('request.url')
+      .should('contain', 'comparedScenarioId=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7');
     cy.get('[data-testid="comparison-cell"]').should('have.length.above', 1);
 
     // checking tree selectors on more filers
@@ -116,7 +118,9 @@ describe('Analysis and scenarios', () => {
       .and('contain', 'scenarioIds[]=7646039e-b2e0-4bd5-90fd-925e5868f9af');
 
     // checking comparison cell is there
-    cy.wait('@scenarioVsScenario');
+    cy.wait('@scenarioVsScenario')
+      .its('request.url')
+      .should('contain', 'comparedScenarioId=7646039e-b2e0-4bd5-90fd-925e5868f9af');
     cy.get('[data-testid="comparison-cell"]').should('have.length.above', 1);
   });
 });

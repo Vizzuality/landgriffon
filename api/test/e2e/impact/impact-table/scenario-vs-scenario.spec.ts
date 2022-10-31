@@ -130,8 +130,8 @@ describe('Scenario comparison test suite (e2e)', () => {
   });
 
   test(
-    'When I request scenario comparison for 2 Scenarios choosing start year and end year for which tehre is no actual data. ' +
-      'Then int he result past years with no data should have 0 value and isProjected:false, while future year should have projected values and isProjected: false',
+    'When I request scenario comparison for 2 Scenarios choosing start year and end year for which there is no actual data. ' +
+      'Then in the result past years with no data should have 0 value and isProjected:false, while future year should have projected values and isProjected: false',
     async () => {
       const preconditions: {
         newScenarioChangeSupplier: Scenario;
@@ -147,8 +147,8 @@ describe('Scenario comparison test suite (e2e)', () => {
           endYear: 2022,
           startYear: 2018,
           groupBy: 'material',
-          scenarioOneId: preconditions.newScenarioChangeSupplier.id,
-          scenarioTwoId: preconditions.newScenarioChangeMaterial.id,
+          baseScenarioId: preconditions.newScenarioChangeSupplier.id,
+          comparedScenarioId: preconditions.newScenarioChangeMaterial.id,
         });
 
       expect(response.status).toBe(HttpStatus.OK);
@@ -156,18 +156,14 @@ describe('Scenario comparison test suite (e2e)', () => {
       const expectedScenariosTableMByMaterial =
         getComparisonResponseWithProjectedYears(preconditions.indicator.id);
 
-      expect(response.body.data.scenarioVsScenarioImpactTable[0].rows).toEqual(
+      expect(response.body.data.impactTable[0].rows).toEqual(
         expect.arrayContaining(
-          expectedScenariosTableMByMaterial.scenarioVsScenarioImpactTable[0]
-            .rows,
+          expectedScenariosTableMByMaterial.impactTable[0].rows,
         ),
       );
-      expect(
-        response.body.data.scenarioVsScenarioImpactTable[0].yearSum,
-      ).toEqual(
+      expect(response.body.data.impactTable[0].yearSum).toEqual(
         expect.arrayContaining(
-          expectedScenariosTableMByMaterial.scenarioVsScenarioImpactTable[0]
-            .yearSum,
+          expectedScenariosTableMByMaterial.impactTable[0].yearSum,
         ),
       );
       expect(response.body.data.purchasedTonnes).toEqual(

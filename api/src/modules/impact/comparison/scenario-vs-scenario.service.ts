@@ -342,7 +342,7 @@ export class ScenarioVsScenarioImpactService {
               comparedScenarioValue:
                 lastYearsComparedScenarioValue +
                 (lastYearsComparedScenarioValue * this.growthRate) / 100,
-              isProjected: true,
+              isProjected,
             });
           }
           ++rowValuesIndex;

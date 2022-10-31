@@ -23,12 +23,12 @@ interface PlainValueItemProps extends CommonValueItemProps {
 }
 
 interface ComparisonValueItemProps extends CommonComparisonValueItemProps, PlainValueItemProps {
-  scenarioValue: number;
+  comparedScenarioValue: number;
 }
 
 interface ScenarioComparisonValueItemProps extends CommonComparisonValueItemProps {
-  scenarioOneValue: number;
-  scenarioTwoValue: number;
+  baseScenarioValue: number;
+  comparedScenarioValue: number;
 }
 
 export type ImpactRowType<

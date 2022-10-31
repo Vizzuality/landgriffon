@@ -2,7 +2,6 @@ import { useCallback, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import { DownloadIcon } from '@heroicons/react/outline';
 import uniq from 'lodash/uniq';
-import omit from 'lodash/omit';
 
 import ComparisonCell from './comparison-cell/component';
 
@@ -110,8 +109,6 @@ const AnalysisTable = () => {
     endYear: filters.endYear,
     groupBy: filters.groupBy,
     ...restFilters,
-    scenarioId: currentScenario,
-    scenarioToCompare,
     'page[number]': paginationState.pageIndex,
     'page[size]': paginationState.pageSize,
   };
@@ -121,28 +118,19 @@ const AnalysisTable = () => {
   });
 
   const impactActualComparisonData = useImpactComparison(
-    { ...params, scenarioId: scenarioToCompare },
+    { ...params, comparedScenarioId: scenarioToCompare },
     {
       enabled: isComparisonEnabled && !currentScenario && isEnable,
     },
   );
   const impactScenarioComparisonData = useImpactScenarioComparison(
     {
+      ...params,
       baseScenarioId: currentScenario,
       comparedScenarioId: scenarioToCompare,
-      ...omit(params, ['scenarioId', 'scenarioToCompare']),
     },
     {
       enabled: isComparisonEnabled && !!currentScenario && isEnable,
-      select: ({ data: { impactTable, ...data }, ...rest }) => {
-        return {
-          ...rest,
-          data: {
-            ...data,
-            impactTable,
-          },
-        };
-      },
     },
   );
 
@@ -231,7 +219,7 @@ const AnalysisTable = () => {
     <Mode extends ComparisonMode>(year: number): ColumnDefinition<ImpactRowType<Mode>> => {
       const valueIsComparison = (
         value: ImpactTableValueItem<ComparisonMode>,
-      ): value is ImpactTableValueItem<true | 'scenario'> => {
+      ): value is ImpactTableValueItem<true> => {
         return !isScenarioComparison && isComparison;
       };
 
@@ -262,19 +250,25 @@ const AnalysisTable = () => {
           }
 
           if (isScenarioComparison) {
-            const { scenarioOneValue, scenarioTwoValue, ...rest } = value;
+            const { baseScenarioValue, comparedScenarioValue, ...rest } = value;
             return (
               <ComparisonCell
                 {...rest}
-                value={scenarioOneValue}
-                scenarioValue={scenarioTwoValue}
+                value={baseScenarioValue}
+                scenarioValue={comparedScenarioValue}
                 unit={unit}
                 formatter={NUMBER_FORMATTER}
               />
             );
           }
 
-          return <ComparisonCell {...value} formatter={NUMBER_FORMATTER} />;
+          return (
+            <ComparisonCell
+              {...value}
+              scenarioValue={value.comparedScenarioValue}
+              formatter={NUMBER_FORMATTER}
+            />
+          );
         },
       };
     },
@@ -316,7 +310,7 @@ const AnalysisTable = () => {
         }) => {
           const baseData = values.map((value: ImpactTableValueItem<Mode>) => ({
             x: value.year,
-            y: valueIsScenarioComparison(value) ? value.scenarioOneValue : value.value,
+            y: valueIsScenarioComparison(value) ? value.baseScenarioValue : value.value,
           }));
 
           const actualDataChartConfig = datesRangeChartConfig(baseData, {
@@ -330,12 +324,12 @@ const AnalysisTable = () => {
                 if (isScenarioComparison) {
                   return {
                     x: value.year,
-                    y: value.scenarioTwoValue,
+                    y: value.comparedScenarioValue,
                   };
                 }
                 return {
                   x: value.year,
-                  y: value.scenarioValue,
+                  y: value.comparedScenarioValue,
                 };
               })
             : [];

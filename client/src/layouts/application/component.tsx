@@ -3,7 +3,7 @@ import { CollectionIcon, ChartBarIcon } from '@heroicons/react/outline';
 import Navigation from 'containers/navigation/desktop';
 import UserDropdown from 'containers/user-dropdown';
 import LandgriffonLogo from 'containers/logo';
-import Alert from 'components/alert';
+import ToastContainer from 'containers/toaster';
 
 import type { NavigationList } from 'containers/navigation/types';
 
@@ -26,7 +26,7 @@ const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => (
       </div>
     </div>
     <div className="flex-1 w-full min-w-0 bg-gray-100 rounded-tl-3xl">{children}</div>
-    <Alert position="bottom-center" />
+    <ToastContainer position="bottom-center" />
   </div>
 );
 

@@ -99,7 +99,7 @@ const AnalysisMap = () => {
   });
 
   return (
-    <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+    <div className="absolute top-0 left-0 w-full h-full overflow-hidden" data-testid="analysis-map">
       {isFetching && <PageLoading />}
       <Map
         layers={layers}

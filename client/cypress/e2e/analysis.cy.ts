@@ -1,15 +1,17 @@
 describe('Analysis navigation across table, map and chart', () => {
   beforeEach(() => {
+    cy.intercept('GET', '/api/v1/impact/ranking?*').as('fetchChartRanking');
     cy.login();
   });
 
   it('should load the charts', () => {
     cy.visit('/analysis/chart');
-    cy.wait(1000);
-    cy.get('[data-testid=analysis-chart]')
+    cy.wait('@fetchChartRanking');
+    cy.get('[data-testid="analysis-chart"]')
       .should('be.visible')
-      .find('h2').and('have.length', 4);
-  })
+      .find('.recharts-responsive-container')
+      .and('have.length', 4);
+  });
 
   it('should be able to navigate to map, table, and chart', () => {
     cy.visit('/analysis');

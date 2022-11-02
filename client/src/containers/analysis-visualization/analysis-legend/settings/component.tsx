@@ -289,11 +289,7 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
           <Button variant="secondary" onClick={onDismiss}>
             Cancel
           </Button>
-          <Button
-            onClick={handleApply}
-            variant="secondary"
-            className="text-navy-400 border-navy-400"
-          >
+          <Button onClick={handleApply} variant="primary">
             Apply
           </Button>
         </div>

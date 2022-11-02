@@ -10,6 +10,7 @@ import {
   safePolygon,
   useDismiss,
   autoUpdate,
+  FloatingPortal,
 } from '@floating-ui/react-dom-interactions';
 import { shift } from '@floating-ui/core';
 import classNames from 'classnames';
@@ -67,7 +68,7 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
     whileElementsMounted: autoUpdate,
     strategy: 'fixed',
     middleware: [
-      offset({ mainAxis: arrow ? 15 : 10 }),
+      offset({ mainAxis: arrow ? 10 : 5 }),
       flip(),
       shift({ padding: 4 }),
       arrowMiddleware({ element: arrowRef, padding: 5 }),
@@ -95,36 +96,38 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
       >
         {children}
       </button>
-      {isOpen && enabled && (
-        <div
-          {...getFloatingProps({
-            className: classNames(className, 'drop-shadow-md w-fit relative'),
-            ref: floating,
-            style: {
-              position: strategy,
-              top: y ?? '',
-              left: x ?? '',
-              // zIndex: 100,
-            },
-          })}
-        >
-          <div className="z-10">{content}</div>
+      <FloatingPortal>
+        {isOpen && enabled && (
           <div
-            ref={arrowRef}
-            style={{
-              top: arrowY ?? '',
-              left: arrowX ?? '',
-            }}
-            className={classNames(
-              '-z-10 absolute',
-              { hidden: !arrow },
-              ARROW_POSITION_CLASSES[floatingPlacement],
-              'w-3 h-3 rotate-45',
-              THEME[theme],
-            )}
-          />
-        </div>
-      )}
+            {...getFloatingProps({
+              className: classNames(className, 'drop-shadow-md w-fit relative'),
+              ref: floating,
+              style: {
+                position: strategy,
+                top: y ?? '',
+                left: x ?? '',
+                // zIndex: 100,
+              },
+            })}
+          >
+            <div className="z-10">{content}</div>
+            <div
+              ref={arrowRef}
+              style={{
+                top: arrowY ?? '',
+                left: arrowX ?? '',
+              }}
+              className={classNames(
+                '-z-10 absolute',
+                { hidden: !arrow },
+                ARROW_POSITION_CLASSES[floatingPlacement],
+                'w-3 h-3 rotate-45',
+                THEME[theme],
+              )}
+            />
+          </div>
+        )}
+      </FloatingPortal>
     </>
   );
 };

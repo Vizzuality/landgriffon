@@ -568,7 +568,11 @@ export class IndicatorRecordsService extends AppBaseService<
     };
   }
 
-  async calculateImpactWithNewMethodology(): Promise<void> {
-    return this.impactCalculator.calculateImpactForAllSourcingRecords();
+  async calculateImpactWithNewMethodology(
+    activeIndicators: Indicator[],
+  ): Promise<void> {
+    return this.impactCalculator.calculateImpactForAllSourcingRecords(
+      activeIndicators,
+    );
   }
 }

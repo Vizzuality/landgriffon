@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { INDICATOR_TYPES_NEW } from 'modules/indicators/indicator.entity';
+import { paramsToQueryInjector } from 'utils/helpers/params-to-query-injector.helper';
 
 // TODO: All dependencies below should be ideally translated to queryBuilders
 
@@ -87,21 +88,30 @@ export class IndicatorDependencyManager {
     return [...new Set(queries)].join(', ');
   }
 
-  // TODO: To be implemented
-  buildQueryForImport(nameCodes: INDICATOR_TYPES_NEW[]): any {
+  buildQueryForImport(nameCodes: INDICATOR_TYPES_NEW[]): {
+    params: string;
+    query: string;
+  } {
+    const importQueryFields: string[] = [
+      `sourcing_location."geoRegionId"`,
+      `sourcing_location."materialId"`,
+      `sourcing_location."adminRegionId"`,
+    ];
     const queries: any[] = [];
+    const params: string[] = [];
+
     for (const nameCode of nameCodes) {
+      params.push(...Object.keys(indicatorVSRawValueDependencies[nameCode]));
       queries.push(...Object.values(indicatorVSRawValueDependencies[nameCode]));
     }
-    return [...new Set(queries)].join(', ');
-  }
-
-  // TODO: To be implemented
-  getRequiredValuesByNameCode(nameCodes: INDICATOR_TYPES_NEW[]): any {
-    const props: string[] = [];
-    for (const nameCode of nameCodes) {
-      props.push(...INDICATOR_TO_RAW_VALUES[nameCode]);
-    }
-    return;
+    return {
+      params: [...new Set(params)]
+        .map((param: string) => `"${param}"`)
+        .join(', '),
+      query: paramsToQueryInjector(
+        importQueryFields,
+        [...new Set(queries)].join(', '),
+      ),
+    };
   }
 }

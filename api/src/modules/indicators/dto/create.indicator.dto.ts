@@ -8,16 +8,13 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import {
-  INDICATOR_STATUS,
-  INDICATOR_TYPES,
-} from 'modules/indicators/indicator.entity';
+import { INDICATOR_STATUS } from 'modules/indicators/indicator.entity';
 
 export class CreateIndicatorDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(2)
-  @MaxLength(40)
+  @MaxLength(500)
   @ApiProperty()
   name!: string;
 
@@ -31,11 +28,11 @@ export class CreateIndicatorDto {
   @IsOptional()
   @IsEnum(Object.values(INDICATOR_STATUS))
   @ApiPropertyOptional()
-  status?: string;
+  status: string;
 
   @IsString()
-  @IsEnum(Object.values(INDICATOR_TYPES))
-  @ApiPropertyOptional()
+  @IsNotEmpty()
+  @ApiProperty()
   nameCode: string;
 
   @IsString()

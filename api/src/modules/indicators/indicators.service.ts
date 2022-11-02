@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppBaseService,
@@ -15,7 +19,7 @@ import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto';
 import { UpdateIndicatorDto } from 'modules/indicators/dto/update.indicator.dto';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
-import { getManager, SelectQueryBuilder } from 'typeorm';
+import { getManager, In, SelectQueryBuilder } from 'typeorm';
 import { IndicatorNameCodeWithRelatedH3 } from 'modules/indicators/dto/indicator-namecode-with-related-h3.dto';
 import { FetchSpecification } from 'nestjs-base-service';
 
@@ -144,6 +148,46 @@ export class IndicatorsService extends AppBaseService<
       );
     }
     return indicators;
+  }
+
+  async activateIndicators(
+    indicatorsFromSheet: CreateIndicatorDto[],
+  ): Promise<Indicator[]> {
+    const activeIndicatorsNameCodes: string[] = indicatorsFromSheet
+      .filter((i: CreateIndicatorDto) => i.status === INDICATOR_STATUS.ACTIVE)
+      .map((i: CreateIndicatorDto) => i.nameCode);
+    this.logger.log(`Found ${activeIndicatorsNameCodes.length} to activate`);
+    const indicatorsToActivate: Indicator[] =
+      await this.indicatorRepository.find({
+        nameCode: In(activeIndicatorsNameCodes),
+      });
+    if (!indicatorsToActivate.length) {
+      throw new ServiceUnavailableException(
+        'No Indicators found matching provided NameCodes. Unable to calculate impact. Aborting Import',
+      );
+    }
+    if (indicatorsToActivate.length !== activeIndicatorsNameCodes.length) {
+      this.logger.warn(`Mismatch in indicators meant to be activated: `);
+      this.logger.warn(
+        `Indicators meant to be activated: ${activeIndicatorsNameCodes.join(
+          ', ',
+        )}`,
+      );
+      this.logger.warn(
+        `Indicators found in the DB by these namecodes: ${indicatorsToActivate
+          .map((i: Indicator) => i.nameCode)
+          .join(', ')}`,
+      );
+      this.logger.warn(`Activating found ones...`);
+    }
+    const activeIndicators: Indicator[] = indicatorsToActivate.map(
+      (i: Indicator) =>
+        ({
+          ...i,
+          status: INDICATOR_STATUS.ACTIVE,
+        } as Indicator),
+    );
+    return this.indicatorRepository.save(activeIndicators);
   }
 
   async extendFindAllQuery(

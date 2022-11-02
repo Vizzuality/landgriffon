@@ -16,6 +16,7 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 import { SourcingDataExcelValidator } from 'modules/import-data/sourcing-data/validators/sourcing-data.class.validator';
 import { validateOrReject } from 'class-validator';
 import { plainToClass } from 'class-transformer';
+import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto';
 
 /**
  * @debt: Define a more accurate DTO / Interface / Class for API-DB trades
@@ -32,6 +33,7 @@ export interface SourcingRecordsDtos {
   adminRegions: CreateAdminRegionDto[];
   businessUnits: CreateBusinessUnitDto[];
   suppliers: CreateSupplierDto[];
+  indicators: CreateIndicatorDto[];
   sourcingData: SourcingData[];
 }
 
@@ -81,6 +83,10 @@ export class SourcingRecordsDtoProcessorService {
     const adminRegions: CreateAdminRegionDto[] =
       await this.createAdminRegionDtos(importData.countries);
 
+    const indicators: CreateIndicatorDto[] = await this.createIndicatorDtos(
+      importData.indicators,
+    );
+
     const processedSourcingData: Record<string, any> =
       await this.cleanCustomData(importData.sourcingData);
 
@@ -102,6 +108,7 @@ export class SourcingRecordsDtoProcessorService {
       suppliers,
       adminRegions,
       sourcingData,
+      indicators,
     };
   }
 
@@ -255,6 +262,16 @@ export class SourcingRecordsDtoProcessorService {
     return adminRegionDtos;
   }
 
+  private async createIndicatorDtos(
+    importData: Record<string, any>[],
+  ): Promise<CreateIndicatorDto[]> {
+    const indicatorsDtos: CreateIndicatorDto[] = [];
+    importData.forEach((importRow: Record<string, any>) => {
+      indicatorsDtos.push(this.createIndicatorDTOFromData(importRow));
+    });
+    return indicatorsDtos;
+  }
+
   /**
    * Creates an array of SourcingLocation and nested SourcingRecord objects from the JSON data processed from the XLSX file
    *
@@ -334,6 +351,16 @@ export class SourcingRecordsDtoProcessorService {
     adminRegionDto.isoA3 = adminRegionData.iso_a3;
     adminRegionDto.isoA2 = adminRegionData.iso_a2;
     return adminRegionDto;
+  }
+
+  private createIndicatorDTOFromData(
+    indicatorData: Record<string, any>,
+  ): CreateIndicatorDto {
+    const indicatorDto: CreateIndicatorDto = new CreateIndicatorDto();
+    indicatorDto.name = indicatorData.name;
+    indicatorDto.nameCode = indicatorData.nameCode;
+    indicatorDto.status = indicatorData.status;
+    return indicatorDto;
   }
 
   private createSourcingLocationDTOFromData(

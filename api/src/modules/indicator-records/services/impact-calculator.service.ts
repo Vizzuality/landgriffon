@@ -23,7 +23,7 @@ import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-
 import { IndicatorRecordCalculatedValuesDtoV2 } from 'modules/indicator-records/dto/indicator-record-calculated-values.dto';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
-import { IndicatorDependencyManager } from 'modules/impact/services/indicator-dependency-getter.service';
+import { IndicatorDependencyManager } from 'modules/impact/services/indicator-dependency-manager.service';
 
 /**
  * @description: This is PoC (Proof of Concept) for the updated LG methodology v0.1
@@ -41,12 +41,11 @@ export class ImpactCalculator {
     private readonly dependencyManager: IndicatorDependencyManager,
   ) {}
 
-  async calculateImpactForAllSourcingRecords(): Promise<any> {
+  async calculateImpactForAllSourcingRecords(
+    activeIndicators: Indicator[],
+  ): Promise<any> {
     const rawData: SourcingRecordsWithIndicatorRawDataDtoV2[] =
-      await this.getIndicatorRawDataForAllSourcingRecordsV2();
-
-    const indicatorsToCalculateImpactFor: Indicator[] =
-      await this.indicatorService.findAllUnpaginated();
+      await this.getIndicatorRawDataForAllSourcingRecordsV2(activeIndicators);
 
     const newImpactToBeSaved: IndicatorRecord[] = [];
 
@@ -78,7 +77,7 @@ export class ImpactCalculator {
       );
       map.set(INDICATOR_TYPES_NEW.LAND_USE, landUse);
 
-      indicatorsToCalculateImpactFor.forEach((indicator: Indicator) => {
+      activeIndicators.forEach((indicator: Indicator) => {
         newImpactToBeSaved.push(
           IndicatorRecord.merge(new IndicatorRecord(), {
             value:
@@ -285,13 +284,19 @@ export class ImpactCalculator {
     return calculatedIndicatorValues;
   }
 
-  async getIndicatorRawDataForAllSourcingRecordsV2(): Promise<
-    SourcingRecordsWithIndicatorRawDataDtoV2[]
-  > {
+  async getIndicatorRawDataForAllSourcingRecordsV2(
+    activeIndicators: Indicator[],
+  ): Promise<SourcingRecordsWithIndicatorRawDataDtoV2[]> {
+    const { params, query } = this.dependencyManager.buildQueryForImport(
+      activeIndicators.map(
+        (indicator: Indicator) => indicator.nameCode as INDICATOR_TYPES_NEW,
+      ),
+    );
     try {
       // TODO due to possible performance issues this query that makes use of the stored procedures for
       //      indicator value calculation has not been refactored. It remains to be reworked
-      const response: any = await getManager().query(`
+      const response: any = await getManager().query(
+        `
         SELECT
           -- TODO: Hack to retrieve 1 materialH3Id for each sourcingRecord. This should include a year fallback strategy in the stored procedures
           --       used below
@@ -300,30 +305,20 @@ export class ImpactCalculator {
           sr.tonnage,
           sr.year,
           slwithmaterialh3data.id as "sourcingLocationId",
-          slwithmaterialh3data.production,
-          slwithmaterialh3data."harvestedArea",
-          slwithmaterialh3data."weightedAllHarvest",
-          slwithmaterialh3data."rawDeforestation",
-          slwithmaterialh3data."waterStressPerct",
-          slwithmaterialh3data."rawCarbon",
-          slwithmaterialh3data."rawWater",
-          slwithmaterialh3data."materialH3DataId"
+          slwithmaterialh3data."materialH3DataId",
+          ${params}
+
       FROM
           sourcing_records sr
           INNER JOIN
               (
                   SELECT
                       sourcing_location.id,
-                      sum_material_over_georegion(sourcing_location."geoRegionId", sourcing_location."materialId", 'producer') as production,
-                      sum_material_over_georegion(sourcing_location."geoRegionId", sourcing_location."materialId", 'harvest') as "harvestedArea",
-                      sum_h3_weighted_cropland_area(sourcing_location."geoRegionId", sourcing_location."materialId", 'producer') as "weightedAllHarvest",
-                      sum_weighted_deforestation_over_georegion(sourcing_location."geoRegionId", sourcing_location."materialId", 'producer') as "rawDeforestation",
-                      sum_weighted_carbon_over_georegion(sourcing_location."geoRegionId", sourcing_location."materialId", 'producer') as "rawCarbon",
-                      get_percentage_water_stress_area(sourcing_location."geoRegionId") as "waterStressPerct",
-                      get_blwf_impact(sourcing_location."adminRegionId", sourcing_location."materialId") as "rawWater",
                       "scenarioInterventionId",
                       "interventionType",
-                      mth."h3DataId" as "materialH3DataId"
+                      mth."h3DataId" as "materialH3DataId",
+                      ${query}
+
                   FROM
                       sourcing_location
                   inner join
@@ -334,7 +329,8 @@ export class ImpactCalculator {
                   AND "interventionType" IS NULL
                   and mth."type" = 'producer'
               ) as slwithmaterialh3data
-              on sr."sourcingLocationId" = slwithmaterialh3data.id`);
+              on sr."sourcingLocationId" = slwithmaterialh3data.id`,
+      );
       if (!response.length)
         this.logger.warn(
           `Could not retrieve Sourcing Records with weighted indicator values`,

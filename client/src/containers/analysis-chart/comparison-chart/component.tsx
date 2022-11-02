@@ -92,10 +92,12 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
           lastYearNonProjectedData.year === item.year || item.isProjected ? item.value : null,
 
         // Scenario 1
-        scenarioOneValue: !item.isProjected ? item.baseScenarioValue : null,
+        scenarioOneValue: !item.isProjected
+          ? item.baseScenarioValue || item.comparedScenarioValue
+          : null,
         scenarioOneValueProjected:
           lastYearNonProjectedData.year === item.year || item.isProjected
-            ? item.baseScenarioValue
+            ? item.baseScenarioValue || item.comparedScenarioValue
             : null,
 
         // Scenario 2

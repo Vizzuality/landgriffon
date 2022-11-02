@@ -87,7 +87,8 @@ const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
                     <div className="flex space-x-1">
                       <div className="inline-flex">
                         <Pill className="inline-flex bg-blue-200 rounded-tr-none rounded-br-none whitespace-nowrap">
-                          {scenario.scenarioInterventions.length} growth rates
+                          {/** TODO: this value is hardcoded. Update it when the API takes growth rates into account */}
+                          1 growth rate
                         </Pill>
                         <Pill className="inline-flex bg-orange-100 rounded-tl-none rounded-bl-none whitespace-nowrap">
                           {scenario.scenarioInterventions.length} interventions

@@ -30,7 +30,6 @@ import {
 } from 'nestjs-base-service';
 import {
   Indicator,
-  INDICATOR_TYPES_NEW,
   indicatorResource,
 } from 'modules/indicators/indicator.entity';
 import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto';
@@ -74,16 +73,6 @@ export class IndicatorsController {
       metadata: PaginationMeta | undefined;
     } = await this.indicatorsService.findAllPaginated(fetchSpecification);
     return this.indicatorsService.serialize(results.data, results.metadata);
-  }
-  // TODO: test endpooint. delete
-  @Get('test')
-  async test(): Promise<any> {
-    return this.dependencyGetter.buildQueryForIntervention([
-      INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE,
-      INDICATOR_TYPES_NEW.WATER_USE,
-      INDICATOR_TYPES_NEW.CLIMATE_RISK,
-      INDICATOR_TYPES_NEW.LAND_USE,
-    ]);
   }
 
   @ApiOperation({ description: 'Find indicator by id' })

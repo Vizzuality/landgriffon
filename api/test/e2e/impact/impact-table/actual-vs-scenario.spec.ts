@@ -191,4 +191,49 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       );
     },
   );
+
+  test('When I request data for Comparison Impact table for a Scenario with various Interventions of different types Grouped by Suppliers, I should receive the table Groued by Suppliers', async () => {
+    const preconditions: {
+      indicator: Indicator;
+      newScenario: Scenario;
+    } = await createMultipleInterventionsPreconditions();
+
+    const response1 = await request(app.getHttpServer())
+      .get('/api/v1/impact/compare/scenario/vs/actual')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .query({
+        'indicatorIds[]': [preconditions.indicator.id],
+        endYear: 2023,
+        startYear: 2020,
+        groupBy: 'supplier',
+        comparedScenarioId: preconditions.newScenario.id,
+      })
+      .expect(HttpStatus.OK);
+
+    expect(response1.body.data.impactTable[0].rows[0].name).toEqual(
+      'Supplier A',
+    );
+    expect(response1.body.data.impactTable[0].rows[1].name).toEqual(
+      'Supplier B',
+    );
+
+    const response2 = await request(app.getHttpServer())
+      .get('/api/v1/impact/compare/scenario/vs/actual')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .query({
+        'indicatorIds[]': [preconditions.indicator.id],
+        endYear: 2023,
+        startYear: 2019,
+        groupBy: 'supplier',
+        comparedScenarioId: preconditions.newScenario.id,
+      })
+      .expect(HttpStatus.OK);
+
+    expect(response2.body.data.impactTable[0].rows[0].name).toEqual(
+      'Supplier A',
+    );
+    expect(response2.body.data.impactTable[0].rows[1].name).toEqual(
+      'Supplier B',
+    );
+  });
 });

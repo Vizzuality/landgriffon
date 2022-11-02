@@ -211,7 +211,7 @@ export class ActualVsScenarioImpactService {
       case GROUP_BY_VALUES.SUPPLIER:
         impactTableDto.supplierIds = this.getIdsFromTree(
           entities,
-          impactTableDto.materialIds,
+          impactTableDto.supplierIds,
         );
         break;
       default:

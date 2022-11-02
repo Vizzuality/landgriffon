@@ -67,12 +67,15 @@ export const useImpactLayer = () => {
                 name: `${indicator.label} in ${year}`,
                 unit: data.metadata.unit,
                 min: !!data.metadata.quantiles.length && NUMBER_FORMAT(data.metadata.quantiles[0]),
-                items: data.metadata.quantiles.slice(1).map(
-                  (v, index): LegendItemProp => ({
-                    value: NUMBER_FORMAT(v),
-                    color: COLOR_RAMPS[colorKey][index],
-                  }),
-                ),
+                items: data.metadata.quantiles
+                  .sort((a, b) => a - b) // always sort quantiles
+                  .slice(1)
+                  .map(
+                    (v, index): LegendItemProp => ({
+                      value: NUMBER_FORMAT(v),
+                      color: COLOR_RAMPS[colorKey][index],
+                    }),
+                  ),
               },
             },
           },

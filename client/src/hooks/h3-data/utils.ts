@@ -68,12 +68,12 @@ export const DEFAULT_QUERY_OPTIONS = {
 };
 
 export const responseParser = (response: H3APIResponse, colors: RGBColor[]): H3APIResponse => {
-  const threshold = response.metadata.quantiles.slice(1, -1);
+  const threshold = response.metadata.quantiles.sort((a, b) => a - b).slice(1, -1);
   const scale = scaleThreshold<H3Item['v'], RGBColor>().domain(threshold).range(colors);
   const h3DataWithColor = response.data.map(
     (d: H3Item): H3Item => ({
       ...d,
-      c: scale(d.v as H3Item['v']),
+      c: scale(Number(d.v) as H3Item['v']),
     }),
   );
   return { ...response, data: h3DataWithColor };

@@ -8,4 +8,4 @@ export const CONTENT_CLASSES = {
   fit: `w-fit ${COMMON_CONTENT_CLASSES}`,
 };
 
-export const OVERLAY_CLASSES = 'z-50 fixed inset-0 bg-black bg-blur';
+export const OVERLAY_CLASSES = 'z-40 fixed inset-0 bg-black bg-blur';

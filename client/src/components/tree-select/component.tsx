@@ -31,7 +31,7 @@ const THEMES = {
       'flex-row max-w-full bg-white relative border border-gray-200 transition-colors hover:border-gray-300 rounded-md shadow-sm px-3 cursor-pointer min-h-[2.5rem] h-min py-1 text-sm shadow-sm',
     arrow: 'items-center text-gray-900',
     treeNodes:
-      'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-navy-400 z-[100]',
+      'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-navy-50 z-[100]',
     badge: 'text-sm',
   },
   'inline-primary': {
@@ -39,7 +39,7 @@ const THEMES = {
     wrapper: 'inline-flex border-b-2 border-navy-400 max-w-none min-w-[30px] min-h-[26px]',
     arrow: 'mx-auto w-fit',
     treeNodes:
-      'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-green-50 hover:text-navy-400',
+      'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-navy-50',
     treeContent: 'max-w-xl',
     badge: '',
   },
@@ -125,7 +125,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
           className={classNames(THEMES[theme].treeNodes, {
             'w-full': fitContent,
             hidden: searchTerm !== '' && !filteredKeys.includes(item.value),
-            'bg-green-50 text-navy-400 font-semibold': selectedKeys.includes(item.value),
+            'bg-navy-50  font-semibold': selectedKeys.includes(item.value),
           })}
           style={{ paddingLeft: 16 * counter }}
         >

@@ -61,6 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Solved an issue where years was not filtering the actual data table (LANDGRIF-969)[https://vizzuality.atlassian.net/browse/LANDGRIF-969]
 - Recovering sorting by column in the actual data table [LANDGRIF-965](https://vizzuality.atlassian.net/browse/LANDGRIF-965)
 - Tooltip in the chart doesn't break the page [LANDGRIF-995](https://vizzuality.atlassian.net/browse/LANDGRIF-995)
+- Not include scenarios with 0 interventions in the scenario dropdowns for comparison [LANDGRIF-999](https://vizzuality.atlassian.net/browse/LANDGRIF-999)
 
 ## [2022.08.03]
 

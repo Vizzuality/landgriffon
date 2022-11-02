@@ -19,7 +19,7 @@ const ScenariosComparison: FC = () => {
   const dispatch = useAppDispatch();
 
   const { data: scenarios } = useScenarios({
-    params: { disablePagination: true, hasInterventions: true },
+    params: { disablePagination: true, hasActiveInterventions: true },
     options: {
       select: (data) => data.data,
     },

@@ -100,17 +100,16 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
         {isOpen && enabled && (
           <div
             {...getFloatingProps({
-              className: classNames(className, 'drop-shadow-md w-fit relative'),
+              className: classNames(className, 'drop-shadow-md w-fit z-50'),
               ref: floating,
               style: {
                 position: strategy,
                 top: y ?? '',
                 left: x ?? '',
-                // zIndex: 100,
               },
             })}
           >
-            <div className="z-10">{content}</div>
+            {content}
             <div
               ref={arrowRef}
               style={{

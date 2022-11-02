@@ -12,7 +12,7 @@ import type { H3ImpactResponse } from '../utils';
 
 interface CompareH3ApiParams extends ImpactH3APIParams {
   comparedScenarioId: Scenario['id'];
-  relative: boolean;
+  relative?: boolean;
   baseScenarioId: Scenario['id'];
 }
 

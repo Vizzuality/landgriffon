@@ -30,8 +30,8 @@ const DEFAULT_THEME: Theme = {
   borderRadius: 6,
   colors: {
     ...defaultTheme.colors,
-    primary: '#078A3C',
-    primary25: '#EBF6F1',
+    // ? navy-50
+    primary50: '#F0F2FD',
   },
   spacing: {
     ...defaultTheme.spacing,
@@ -79,10 +79,10 @@ const getComponents = <
         {...props}
         className={classNames(
           className,
-          'text-gray-900 truncate cursor-pointer hover:bg-green-50',
-          props.isFocused ? 'bg-green-50 text-navy-400' : 'text-gray-900',
+          'text-gray-900 truncate cursor-pointer hover:bg-navy-50',
+          props.isFocused ? 'bg-navy-50 text-navy-400' : 'text-gray-900',
           {
-            'bg-green-50': props.isSelected,
+            'bg-navy-50': props.isSelected,
             'text-opacity-50 cursor-default': props.isDisabled,
           },
         )}

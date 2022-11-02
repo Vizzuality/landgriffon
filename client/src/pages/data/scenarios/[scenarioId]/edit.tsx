@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import { useQueryClient } from '@tanstack/react-query';
 import { XIcon, PlusIcon, DotsVerticalIcon } from '@heroicons/react/solid';
 
+import InfoTooltip from 'components/info-tooltip';
 import { useScenario, useUpdateScenario } from 'hooks/scenarios';
 import {
   useScenarioInterventions,
@@ -109,7 +110,13 @@ const UpdateScenarioPage: React.FC = () => {
             >
               {/* TO-DO: Promote to a specific component */}
               <div>
-                <h2 className="mb-4">Growth rates</h2>
+                <div className="flex items-baseline space-x-1 mb-4">
+                  <h2>Growth rates</h2>
+                  <InfoTooltip
+                    icon="outline"
+                    info="Growth rates set your expectations of how  purchases of raw materials will change into the future. Add a new rule to get started."
+                  />
+                </div>
                 <div className="grid grid-cols-8 gap-4">
                   <div className="col-span-4">
                     <label className="block mb-2 text-sm">Business unit</label>
@@ -134,13 +141,19 @@ const UpdateScenarioPage: React.FC = () => {
                   </div>
                 </div>
                 <p className="mx-2 text-xs">
-                  Add as many you want, more specific growth rates override less specific ones.
+                  Add as many as you want, more specific growth rates override less specific ones.
                 </p>
               </div>
 
               <div>
-                <div className="flex mb-4">
-                  <h2 className="flex-1 mb-4">Interventions</h2>
+                <div className="flex mb-4 justify-between items-center">
+                  <div className="flex items-baseline space-x-1">
+                    <h2 className="flex-1">Interventions</h2>
+                    <InfoTooltip
+                      icon="outline"
+                      info="Each intervention is a specific change in sourcing. Create an intervention to get started."
+                    />
+                  </div>
                   {!isInterventionsLoading && interventions.length > 0 && (
                     <Link href={`/data/scenarios/${data.id}/interventions/new`} passHref>
                       <Anchor

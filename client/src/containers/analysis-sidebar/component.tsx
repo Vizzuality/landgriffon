@@ -44,7 +44,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
     'page[size]': 10,
     'search[title]': searchTerm,
     include: 'scenarioInterventions',
-    hasInterventions: true,
+    hasActiveInterventions: true,
   });
 
   const scenariosList: Scenario[] = useMemo(() => {

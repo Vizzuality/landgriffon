@@ -20,6 +20,7 @@ import { ImportDataService } from 'modules/import-data/import-data.service';
 import { TasksModule } from 'modules/tasks/tasks.module';
 import { importQueueName } from 'modules/import-data/workers/import-queue.name';
 import { ScenariosModule } from 'modules/scenarios/scenarios.module';
+import { IndicatorsModule } from 'modules/indicators/indicators.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { ScenariosModule } from 'modules/scenarios/scenarios.module';
     IndicatorRecordsModule,
     TasksModule,
     ScenariosModule,
+    IndicatorsModule,
   ],
   providers: [
     SourcingDataImportService,

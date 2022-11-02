@@ -224,7 +224,7 @@ describe.skip('Sourcing Data import', () => {
     expect.assertions(1);
     try {
       await sourcingDataImportService.importSourcingData(
-        __dirname + '/base-dataset.xlsx',
+        __dirname + '/test-base-dataset.xlsx',
         '',
       );
     } catch (err: any) {
@@ -252,7 +252,7 @@ describe.skip('Sourcing Data import', () => {
     ];
 
     await sourcingDataImportService.importSourcingData(
-      __dirname + '/base-dataset.xlsx',
+      __dirname + '/test-base-dataset.xlsx',
       '',
     );
   }, 100000);
@@ -274,7 +274,7 @@ describe.skip('Sourcing Data import', () => {
     ];
 
     await sourcingDataImportService.importSourcingData(
-      __dirname + '/base-dataset.xlsx',
+      __dirname + '/test-base-dataset.xlsx',
       '',
     );
 
@@ -322,7 +322,7 @@ describe.skip('Sourcing Data import', () => {
     ];
 
     await sourcingDataImportService.importSourcingData(
-      __dirname + '/base-dataset.xlsx',
+      __dirname + '/test-base-dataset.xlsx',
       '',
     );
 

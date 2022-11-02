@@ -30,6 +30,8 @@ import { TasksService } from 'modules/tasks/tasks.service';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { ScenariosService } from 'modules/scenarios/scenarios.service';
 import * as config from 'config';
+import { IndicatorsService } from 'modules/indicators/indicators.service';
+import { Indicator } from 'modules/indicators/indicator.entity';
 const useNewMethodology: boolean =
   `${config.get('newMethodology')}`.toLowerCase() === 'true';
 
@@ -46,6 +48,7 @@ export interface SourcingRecordsSheets extends Record<string, any[]> {
   businessUnits: Record<string, any>[];
   suppliers: Record<string, any>[];
   sourcingData: Record<string, any>[];
+  indicators: Record<string, any>[];
 }
 
 const SHEETS_MAP: Record<string, keyof SourcingRecordsSheets> = {
@@ -53,6 +56,7 @@ const SHEETS_MAP: Record<string, keyof SourcingRecordsSheets> = {
   'business units': 'businessUnits',
   suppliers: 'suppliers',
   countries: 'countries',
+  indicators: 'indicators',
   'for upload': 'sourcingData',
 };
 
@@ -77,6 +81,7 @@ export class SourcingDataImportService {
     protected readonly indicatorRecordsService: IndicatorRecordsService,
     protected readonly tasksService: TasksService,
     protected readonly scenarioService: ScenariosService,
+    protected readonly indicatorService: IndicatorsService,
   ) {}
 
   async importSourcingData(filePath: string, taskId: string): Promise<any> {
@@ -106,6 +111,20 @@ export class SourcingDataImportService {
           'No Materials found present in the DB. Please check the LandGriffon installation manual',
         );
       }
+      this.logger.log('Activating Indicators...');
+      const activeIndicators: Indicator[] =
+        await this.indicatorService.activateIndicators(
+          dtoMatchedData.indicators,
+        );
+
+      await this.tasksService.updateImportJobEvent({
+        taskId,
+        newLogs: [
+          `Activated indicators: ${activeIndicators
+            .map((i: Indicator) => i.name)
+            .join(', ')}`,
+        ],
+      });
 
       const businessUnits: BusinessUnit[] =
         await this.businessUnitService.createTree(dtoMatchedData.businessUnits);
@@ -120,8 +139,7 @@ export class SourcingDataImportService {
           materials,
           dtoMatchedData.sourcingData,
         );
-      // TODO: TBD What to do when there is some location where we cannot determine its admin-region: i.e coordinates
-      //       in the middle of the sea
+
       const geoCodedSourcingData: SourcingData[] =
         await this.geoCodingService.geoCodeLocations(
           sourcingDataWithOrganizationalEntities,
@@ -145,7 +163,9 @@ export class SourcingDataImportService {
       //       TBD: What to do when there is no H3 for a Material
       try {
         if (useNewMethodology) {
-          await this.indicatorRecordsService.calculateImpactWithNewMethodology();
+          await this.indicatorRecordsService.calculateImpactWithNewMethodology(
+            activeIndicators,
+          );
         } else {
           await this.indicatorRecordsService.createIndicatorRecordsForAllSourcingRecords();
         }
@@ -281,6 +301,8 @@ export class SourcingDataImportService {
         SHEETS_MAP,
       );
     } catch (error) {
+      this.logger.error(error);
+      await this.fileService.deleteDataFromFS(filePath);
       throw new ServiceUnavailableException(
         `File: ${filename} could not have been loaded. Please try again later or contact the administrator`,
       );
@@ -299,6 +321,7 @@ export class SourcingDataImportService {
           parsedXLSXDataset,
         );
     } catch (error) {
+      this.logger.error(error);
       await this.fileService.deleteDataFromFS(filePath);
       throw error;
     }

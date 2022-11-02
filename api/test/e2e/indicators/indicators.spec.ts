@@ -68,19 +68,20 @@ describe('IndicatorsModule (e2e)', () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/indicators')
       .set('Authorization', `Bearer ${jwtToken}`)
-      .send()
-      .expect(HttpStatus.BAD_REQUEST);
+      .send();
+
+    expect(HttpStatus.BAD_REQUEST);
 
     expect(response).toHaveErrorMessage(
       HttpStatus.BAD_REQUEST,
       'Bad Request Exception',
       [
         'name should not be empty',
-        'name must be shorter than or equal to 40 characters',
+        'name must be shorter than or equal to 500 characters',
         'name must be longer than or equal to 2 characters',
         'name must be a string',
+        'nameCode should not be empty',
         'nameCode must be a string',
-        'nameCode must be a valid enum value',
       ],
     );
   });

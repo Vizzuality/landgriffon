@@ -420,7 +420,7 @@ const AnalysisTable = () => {
           </div>
         </div>
       </div>
-      <div className="relative px-6 my-6">
+      <div className="relative px-6 my-6" data-testid="analysis-table">
         <Table {...tableProps} />
       </div>
     </>

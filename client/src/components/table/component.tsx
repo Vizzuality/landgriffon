@@ -42,6 +42,7 @@ const columnToColumnDef = <T,>(
   return columnHelper.accessor<DeepKeys<T>, DeepValue<T, DeepKeys<T>>>(
     id as DeepKeys<T>,
     {
+      enableSorting: false,
       ...column,
       cell,
       meta: {

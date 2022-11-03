@@ -4,10 +4,20 @@ beforeEach(() => {
     fixture: 'scenario/scenario-interventions',
   }).as('fetchScenarioInterventions');
 
-  cy.intercept('GET', '/api/v1/scenarios?scenarios?disablePagination=true&sort=-updatedAt', {
-    statusCode: 200,
-    fixture: 'scenario/scenarios',
-  }).as('fetchScenarios');
+  cy.intercept(
+    {
+      method: 'GET',
+      pathname: '/api/v1/scenarios',
+      query: {
+        disablePagination: 'true',
+        sort: '-updatedAt',
+      },
+    },
+    {
+      statusCode: 200,
+      fixture: 'scenario/scenarios',
+    },
+  ).as('fetchScenarios');
 
   cy.intercept('DELETE', '/api/v1/scenarios/**', {
     statusCode: 200,

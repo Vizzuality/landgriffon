@@ -27,7 +27,7 @@ import type { ChangeEventHandler, Ref } from 'react';
 
 const THEMES = {
   default: {
-    label: 'text-gray-300',
+    label: 'text-gray-900 text-xs',
     wrapper:
       'flex-row max-w-full bg-white relative border border-gray-200 transition-colors hover:border-gray-300 rounded-md shadow-sm px-3 cursor-pointer min-h-[2.5rem] h-min py-1 text-sm shadow-sm',
     arrow: 'items-center text-gray-900',

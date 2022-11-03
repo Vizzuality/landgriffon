@@ -19,13 +19,17 @@ import { getApp } from '../../utils/getApp';
 import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import {
-  SourcingLocation,
+  SCENARIO_INTERVENTION_STATUS,
+  ScenarioIntervention,
+} from 'modules/scenario-interventions/scenario-intervention.entity';
+import {
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
+  SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { ScenarioInterventionsModule } from '../../../src/modules/scenario-interventions/scenario-interventions.module';
+import { JSONAPIEntityData } from '../../../src/utils/app-base.service';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -215,7 +219,7 @@ describe('ScenariosModule (e2e)', () => {
       expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
     });
 
-    test('Get scenarios that have at least one intervention', async () => {
+    test('When I filter scenarios by hasActiveInterventions, I should only get scenarios with at least one active intervention', async () => {
       const scenarioOne: Scenario = await createScenario({
         title: 'scenario one',
         status: SCENARIO_STATUS.ACTIVE,
@@ -224,42 +228,95 @@ describe('ScenariosModule (e2e)', () => {
       await createScenarioIntervention({
         scenario: scenarioOne,
         title: 'intervention 1-1',
+        status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
       });
 
       const scenarioTwo: Scenario = await createScenario({
         title: 'scenario two',
         status: SCENARIO_STATUS.ACTIVE,
-        description: 'selected',
+        description: 'ignored 2',
       });
+
       await createScenarioIntervention({
         scenario: scenarioTwo,
         title: 'intervention 2-1',
+        status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
       });
+
       await createScenarioIntervention({
         scenario: scenarioTwo,
         title: 'intervention 2-2',
+        status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
       });
 
-      await createScenario({
+      const scenarioThree: Scenario = await createScenario({
         title: 'scenario three',
         status: SCENARIO_STATUS.ACTIVE,
         description: 'selected',
+      });
+      await createScenarioIntervention({
+        scenario: scenarioThree,
+        title: 'intervention 2-1',
+        status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+      });
+      await createScenarioIntervention({
+        scenario: scenarioThree,
+        title: 'intervention 2-2',
+        status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+      });
+
+      const scenarioFour: Scenario = await createScenario({
+        title: 'scenario four',
+        status: SCENARIO_STATUS.ACTIVE,
+        description: 'selected 2',
+      });
+
+      await createScenarioIntervention({
+        scenario: scenarioFour,
+        title: 'intervention 4-1',
+        status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+      });
+      await createScenarioIntervention({
+        scenario: scenarioFour,
+        title: 'intervention 4-2',
+        status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
       });
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/scenarios`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
-          hasInterventions: true,
-          filter: {
-            description: 'selected',
-          },
+          hasActiveInterventions: true,
         })
         .send()
         .expect(HttpStatus.OK);
 
-      expect(response.body.data.length).toEqual(1);
-      expect(response.body.data[0].attributes.title).toEqual('scenario two');
+      expect(response.body.data.length).toEqual(2);
+      expect(
+        response.body.data.some(
+          (scenario: JSONAPIEntityData) =>
+            scenario.attributes.title === scenarioThree.title,
+        ),
+      ).toBeTruthy();
+      expect(
+        response.body.data.some(
+          (scenario: JSONAPIEntityData) =>
+            scenario.attributes.title === scenarioFour.title,
+        ),
+      ).toBeTruthy();
+
+      expect(
+        response.body.data.some(
+          (scenario: JSONAPIEntityData) =>
+            scenario.attributes.title === scenarioOne.title,
+        ),
+      ).toBeFalsy();
+      expect(
+        response.body.data.some(
+          (scenario: JSONAPIEntityData) =>
+            scenario.attributes.title === scenarioTwo.title,
+        ),
+      ).toBeFalsy();
 
       expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
     });

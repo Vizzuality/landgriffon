@@ -47,10 +47,10 @@ export class ScenariosController {
   })
   @ApiQuery({
     required: false,
-    name: 'hasInterventions',
+    name: 'hasActiveInterventions',
     type: 'boolean',
     description:
-      'If true, only scenarios that have interventions will be selected.',
+      'If true, only scenarios with at least one active intervention will be selected.',
   })
   @ApiQuery({
     //TODO wile a more generic way to approach this is pending to be developed on the nestjs-base-service, only title is supported for now

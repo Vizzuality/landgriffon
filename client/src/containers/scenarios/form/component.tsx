@@ -16,7 +16,7 @@ type ScenarioFormProps = {
 };
 
 const schemaValidation = yup.object({
-  title: yup.string().min(2).required('Title must have at least two characters'),
+  title: yup.string().min(2).max(40).required(),
   description: yup.string(),
 });
 

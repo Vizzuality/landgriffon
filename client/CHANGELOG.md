@@ -8,13 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [v0.3.0 Unreleased]
 
 ### Added
+- Information about the layers in the tooltips of contextual layers [LANDGRIF-997](https://vizzuality.atlassian.net/browse/LANDGRIF-997)
+- Numbers of growth rates in scenarios page
 
 ### Changed
 - In tables the columns are not sortable by default, it should be specified in each column configuration [LANDGRIF-965](https://vizzuality.atlassian.net/browse/LANDGRIF-965)
+- Updated styles for tree-selectors according the design
 
 ### Fixed
 
 - Not include scenarios with 0 interventions in the scenario dropdowns for comparison [LANDGRIF-999](https://vizzuality.atlassian.net/browse/LANDGRIF-999)
+- Legend alignment in charts
+- Click on the legend also change the opacity of projected areas
 
 ## [v0.2.2]
 

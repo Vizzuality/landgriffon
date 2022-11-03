@@ -433,14 +433,14 @@ download-satDeforestation:
 	aws configure set aws_secret_access_key $$AWS_SECRET_ACCESS_KEY; \
 	aws s3 sync s3://landgriffon-raw-data/processed/satelligence $(WORKDIR_SATDEFORESTATION);
 
-	mkdir $(WORKDIR_SATDEFORESTATION)/mask
-	mkdir $(WORKDIR_SATDEFORESTATION)/risk
+	mkdir -p $(WORKDIR_SATDEFORESTATION)/mask
+	mkdir -p $(WORKDIR_SATDEFORESTATION)/risk
 	mv $(WORKDIR_SATDEFORESTATION)/Deforestation_2021_ha.tif $(WORKDIR_SATDEFORESTATION)/mask
 	mv $(WORKDIR_SATDEFORESTATION)/Deforestation_risk.tif $(WORKDIR_SATDEFORESTATION)/risk
 
 convert-satDeforestation: download-satDeforestation
-	python	tiff_folder_to_h3_table.py	$(WORKDIR_SATDEFORESTATION)/mask	h3_grid_sat_deforestation		indicator	SAT_DF		2021	--h3-res=11	--thread-count=$(PARALLELIZATION_FACTOR)
-	python	tiff_folder_to_h3_table.py	$(WORKDIR_SATDEFORESTATION)/risk	h3_grid_sat_deforestation_risk	indicator	SAT_DF_R	2021	--h3-res=11	--thread-count=$(PARALLELIZATION_FACTOR)
+	python	tiff_folder_to_h3_table.py	$(WORKDIR_SATDEFORESTATION)/mask	h3_grid_sat_deforestation		indicator	SAT_DF		2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR)
+	python	tiff_folder_to_h3_table.py	$(WORKDIR_SATDEFORESTATION)/risk	h3_grid_sat_deforestation_risk	indicator	SAT_DF_R	2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR)
 
 
 ####################

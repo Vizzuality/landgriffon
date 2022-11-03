@@ -382,8 +382,6 @@ const AnalysisTable = () => {
       isLoading: isFetching,
       data: tableData as ImpactRowType<Mode>[],
       columns: baseColumns as ColumnDefinition<ImpactRowType<Mode>>[],
-      manualSorting: false,
-      enableSorting: false,
     }),
     [
       baseColumns,

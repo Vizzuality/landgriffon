@@ -54,7 +54,11 @@ const CreateInterventionPage: React.FC = () => {
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-10 col-start-2 xl:col-start-3 xl:col-span-8">
           <h1 data-testid="page-title">New intervention</h1>
-          <InterventionForm onSubmit={handleSubmit} isSubmitting={createIntervention.isLoading} />
+          <InterventionForm
+            onSubmit={handleSubmit}
+            isCreation
+            isSubmitting={createIntervention.isLoading}
+          />
         </div>
       </div>
     </CleanLayout>

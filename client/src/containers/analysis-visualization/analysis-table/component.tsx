@@ -229,7 +229,8 @@ const AnalysisTable = () => {
         id: `${year}`,
         size: 170,
         align: 'left',
-        enableSorting: !isComparison,
+        // TODO: restore when the API supports it
+        // enableSorting: !isComparison,
         cell: ({ row: { original: data, id }, table }) => {
           //* The metadata is only present at the parent row, so we need to get it from there
           const { rowsById } = table.getExpandedRowModel();

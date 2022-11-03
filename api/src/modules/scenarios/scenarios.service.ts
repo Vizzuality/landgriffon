@@ -78,9 +78,9 @@ export class ScenariosService extends AppBaseService<
     fetchSpecification: Record<string, unknown>,
     info: AppInfoDTO,
   ): Promise<SelectQueryBuilder<Scenario>> {
-    if (fetchSpecification.hasInterventions) {
+    if (fetchSpecification.hasActiveInterventions) {
       query.andWhere(
-        'exists (select from "scenario_intervention" si where si."scenarioId" = "scenario".id)',
+        `exists (select from "scenario_intervention" si where si."scenarioId" = "scenario".id and si.status = 'active')`,
       );
     }
     if (fetchSpecification.search) {

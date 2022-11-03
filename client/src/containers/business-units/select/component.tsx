@@ -8,11 +8,7 @@ import type { BusinessUnitsTreesParams } from 'hooks/business-units';
 import type { Ref } from 'react';
 import type { TreeSelectProps } from 'components/tree-select/types';
 
-interface BusinessUnitsFilterProps
-  extends Pick<
-    TreeSelectProps<true>,
-    'current' | 'ellipsis' | 'error' | 'fitContent' | 'multiple' | 'theme' | 'onChange'
-  > {
+interface BusinessUnitsFilterProps extends Omit<TreeSelectProps<true>, 'options'> {
   /** Tree depth. Defaults to `1` */
   depth?: BusinessUnitsTreesParams['depth'];
   ellipsis?: TreeSelectProps['ellipsis'];
@@ -28,17 +24,12 @@ const InnerBusinessUnitsFilter = (
   {
     current,
     depth = 1,
-    ellipsis,
-    error,
-    fitContent,
     multiple,
-    theme = 'default',
     withSourcingLocations, // Do not a default; backend will override depth if this is set at all
     supplierIds,
     materialIds,
     originIds,
     locationTypes,
-    onChange,
     ...props
   }: BusinessUnitsFilterProps,
   ref: Ref<HTMLInputElement>,
@@ -86,19 +77,14 @@ const InnerBusinessUnitsFilter = (
 
   return (
     <TreeSelect
-      {...props}
       multiple
       showSearch
       loading={isFetching}
       options={treeOptions}
       placeholder="all businesses"
-      onChange={onChange}
       current={currentOptions}
-      theme={theme}
-      fitContent={fitContent}
-      ellipsis={ellipsis}
-      error={error}
       ref={ref}
+      {...props}
     />
   );
 };

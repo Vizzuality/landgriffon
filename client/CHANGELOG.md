@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [v0.3.0 Unreleased]
+
+### Added
+
+### Changed
+
+### Fixed
+- Not include scenarios with 0 interventions in the scenario dropdowns for comparison [LANDGRIF-999](https://vizzuality.atlassian.net/browse/LANDGRIF-999)
+
 ## [v0.2.1]
 
 ### Fixed
@@ -63,10 +72,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Comparison colors for the impact layer when is enabled [LANDGRIF-979](https://vizzuality.atlassian.net/browse/LANDGRIF-979)
 - Fixed an issue where smart filers in more filters were not passing all params required [LANDGRIF-978](https://vizzuality.atlassian.net/browse/LANDGRIF-978)
 - Recovering download template file in the upload modal [LANDGRIF-964](https://vizzuality.atlassian.net/browse/LANDGRIF-964)
-- Solved an issue where years was not filtering the actual data table (LANDGRIF-969)[https://vizzuality.atlassian.net/browse/LANDGRIF-969]
+- Solved an issue where years was not filtering the actual data table [LANDGRIF-969](https://vizzuality.atlassian.net/browse/LANDGRIF-969)
 - Recovering sorting by column in the actual data table [LANDGRIF-965](https://vizzuality.atlassian.net/browse/LANDGRIF-965)
 - Tooltip in the chart doesn't break the page [LANDGRIF-995](https://vizzuality.atlassian.net/browse/LANDGRIF-995)
-- Not include scenarios with 0 interventions in the scenario dropdowns for comparison [LANDGRIF-999](https://vizzuality.atlassian.net/browse/LANDGRIF-999)
 
 ## [2022.08.03]
 

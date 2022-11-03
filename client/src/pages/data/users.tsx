@@ -10,25 +10,26 @@ import Search from 'components/search';
 import Table from 'components/table';
 import { DEFAULT_PAGE_SIZES } from 'components/table/pagination/constants';
 
+import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type { TableProps } from 'components/table/component';
-import type { PaginationState } from '@tanstack/react-table';
 import type { User } from 'types';
 
 const AdminUsersPage: React.FC = () => {
   const [search, setSearch] = useState<string>('');
-  const [sorting, setSorting] = useState([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPaginationState] = useState<PaginationState>({
     pageIndex: 1,
     pageSize: DEFAULT_PAGE_SIZES[0],
   });
 
-  const { data, isLoading } = useUsers({
+  const sortStr = useMemo(() => {
+    return sorting.map((sort) => (sort.desc ? `-${sort.id}` : sort.id)).join(',') || null;
+  }, [sorting]);
+
+  const { data, isFetching } = useUsers({
     'page[size]': pagination.pageSize,
     'page[number]': pagination.pageIndex,
-    ...(sorting[0] && {
-      orderBy: sorting[0].id,
-      order: sorting[0].desc ? 'desc' : 'asc',
-    }),
+    sort: sortStr,
   });
 
   const handleOnSearch = useDebounceCallback((searchTerm: string) => setSearch(searchTerm), 250);
@@ -44,7 +45,7 @@ const AdminUsersPage: React.FC = () => {
           header: 'Active',
           cell: ({ row }) => (row.original.isActive ? 'Yes' : 'No'),
         },
-      ].map((column) => ({ align: 'left', ...column })),
+      ].map((column) => ({ align: 'left', enableSorting: true, ...column })),
       data: data?.data ?? [],
       theme: 'striped',
       onPaginationChange: setPaginationState,
@@ -86,7 +87,7 @@ const AdminUsersPage: React.FC = () => {
           </Button>
         </div>
       </div>
-      <Table {...tableProps} isLoading={isLoading} />
+      <Table {...tableProps} isLoading={isFetching} />
     </AdminLayout>
   );
 };

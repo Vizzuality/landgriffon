@@ -33,6 +33,7 @@ import type { Intervention, InterventionFormData } from '../types';
 
 type InterventionFormProps = {
   intervention?: Intervention;
+  isCreation?: boolean;
   isSubmitting?: boolean;
   onSubmit?: (interventionFormData: InterventionFormData) => void;
 };
@@ -153,6 +154,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   intervention,
   isSubmitting,
   onSubmit,
+  isCreation = false,
 }) => {
   const {
     query: { scenarioId },
@@ -515,7 +517,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
               <BusinessUnitsSelect
                 {...field}
                 multiple
-                checkedStrategy="CHILD"
+                checkedStrategy={isCreation ? 'CHILD' : undefined}
                 materialIds={currentMaterialIds?.map(({ value }) => value)}
                 supplierIds={currentSupplierIds?.map(({ value }) => value)}
                 originIds={currentLocationIds?.map(({ value }) => value)}

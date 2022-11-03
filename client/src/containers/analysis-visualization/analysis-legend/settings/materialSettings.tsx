@@ -69,7 +69,10 @@ const MaterialSettings = ({
         <div className="flex flex-row justify-between">
           <div className="text-sm font-semibold text-gray-500">Food and agriculture</div>
           <div className="flex flex-row place-items-center gap-2">
-            <InfoToolTip icon="solid" info="TODO" />
+            <InfoToolTip
+              icon="solid"
+              info="Food and agriculture represents agricultural production and global livestock distribution for all commodities incorporated in LandGriffon."
+            />
             <div className="w-0.5 h-full bg-gray-200 rounded-full" />
             <ToolTip
               className="z-10"

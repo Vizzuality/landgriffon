@@ -515,6 +515,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
               <BusinessUnitsSelect
                 {...field}
                 multiple
+                checkedStrategy="CHILD"
                 materialIds={currentMaterialIds?.map(({ value }) => value)}
                 supplierIds={currentSupplierIds?.map(({ value }) => value)}
                 originIds={currentLocationIds?.map(({ value }) => value)}

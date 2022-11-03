@@ -21,7 +21,7 @@ const LegendChart: React.FC<ExtendedLegendProps> = ({ payload, onClick = () => n
 
   return (
     <div className="flex justify-between">
-      <ul className="flex flex-wrap">
+      <ul className="flex flex-wrap gap-x-2 gap-y-4">
         {payload
           .filter(({ type }) => type !== 'none')
           .map((item, index) => (
@@ -33,18 +33,23 @@ const LegendChart: React.FC<ExtendedLegendProps> = ({ payload, onClick = () => n
               onClick={handleClick.bind(null, item, index)}
             >
               <div
-                className="w-2 h-3 rounded shrink-0 grow-0"
+                className="w-[6px] h-3 rounded shrink-0 grow-0"
                 style={{ backgroundColor: `${item.color}` }}
               />
-              <div className="overflow-hidden text-xs whitespace-nowrap text-ellipsis max-w-[100px]">
+              <div
+                className="overflow-hidden text-xs whitespace-nowrap text-ellipsis max-w-[100px]"
+                title={item.value}
+              >
                 {item.value}
               </div>
             </li>
           ))}
       </ul>
-      <div className="flex items-center space-x-1">
-        <ProjectedDataIcon />
-        <div className="text-xs whitespace-nowrap">Projected data</div>
+      <div>
+        <div className="flex items-center space-x-1">
+          <ProjectedDataIcon />
+          <div className="text-xs whitespace-nowrap">Projected data</div>
+        </div>
       </div>
     </div>
   );

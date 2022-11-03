@@ -192,7 +192,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                   <Legend
                     verticalAlign="top"
                     content={renderLegend}
-                    height={70}
+                    height={90}
                     onClick={handleLegendClick}
                   />
                   <CartesianGrid
@@ -244,6 +244,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                       stroke={chartData.colors[key]}
                       strokeWidth={0}
                       fill="url(#patternStripe)"
+                      fillOpacity={itemOpacity[key] || defaultOpacity}
                       animationEasing="ease"
                       animationDuration={500}
                       tooltipType="none"

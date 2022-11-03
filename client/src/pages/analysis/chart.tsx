@@ -54,6 +54,7 @@ const ChartPage: NextPageWithLayout = () => {
               'grid-cols-1': activeIndicators?.length === 1,
               'grid-cols-1 2xl:grid-cols-2': activeIndicators?.length > 1,
             })}
+            data-testid="analysis-charts"
           >
             {activeIndicators.map((indicator) => (
               <AnalysisChart key={`analysis-chart-${indicator.id}`} indicator={indicator} />

@@ -90,6 +90,10 @@ describe('Analysis and scenarios', () => {
   });
 
   it('should be able to select a scenario vs scenario in the comparison select', () => {
+    cy.intercept(
+      'GET',
+      '/api/v1/impact/table?*scenarioId=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7*',
+    ).as('fetchImpactTableData');
     cy.visit('/analysis/table');
     cy.wait('@scenariosNoPaginated');
     cy.wait('@scenariosList');
@@ -97,6 +101,10 @@ describe('Analysis and scenarios', () => {
     cy.get('[data-testid="scenario-item-8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7"]')
       .find('[data-testid="scenario-item-radio"]')
       .click();
+
+    cy.wait('@fetchImpactTableData')
+      .its('request.url')
+      .should('contain', 'scenarioId=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7');
 
     cy.url().should('contain', 'scenarioId=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7');
 

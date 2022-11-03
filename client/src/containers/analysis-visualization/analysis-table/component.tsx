@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import { DownloadIcon } from '@heroicons/react/outline';
 import uniq from 'lodash/uniq';
+import omit from 'lodash/omit';
 
 import ComparisonCell from './comparison-cell/component';
 
@@ -109,6 +110,7 @@ const AnalysisTable = () => {
     endYear: filters.endYear,
     groupBy: filters.groupBy,
     ...restFilters,
+    scenarioId: currentScenario,
     'page[number]': paginationState.pageIndex,
     'page[size]': paginationState.pageSize,
   };
@@ -118,14 +120,14 @@ const AnalysisTable = () => {
   });
 
   const impactActualComparisonData = useImpactComparison(
-    { ...params, comparedScenarioId: scenarioToCompare },
+    { ...omit(params, 'scenarioId'), comparedScenarioId: scenarioToCompare },
     {
       enabled: isComparisonEnabled && !currentScenario && isEnable,
     },
   );
   const impactScenarioComparisonData = useImpactScenarioComparison(
     {
-      ...params,
+      ...omit(params, 'scenarioId'),
       baseScenarioId: currentScenario,
       comparedScenarioId: scenarioToCompare,
     },

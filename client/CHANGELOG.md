@@ -5,12 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [v0.2.0 Unreleased]
+## [v0.2.1]
+
+### Fixed
+- Analysis table is not updating selecting an scenario [LANDGRIF-1019](https://vizzuality.atlassian.net/browse/LANDGRIF-1019)
+
+## [v0.2.0]
 
 ### Added
 
 - Comparison mode toggle for impact table H3 data [LANDGRIF-941](https://vizzuality.atlassian.net/browse/LANDGRIF-941)
-- Readded material layer to the map as a contextual layer [LANDGRIF-827](https://vizzuality.atlassian.net/browse/LANDGRIF-827)
+- Re-added material layer to the map as a contextual layer [LANDGRIF-827](https://vizzuality.atlassian.net/browse/LANDGRIF-827)
 - Add map preview to legend settings modal [LANDGRIF-827](https://vizzuality.atlassian.net/browse/LANDGRIF-827)
 - In chart view, when a comparison is enabled the chart changes to line chart [LANDGRIF-807](https://vizzuality.atlassian.net/browse/LANDGRIF-807)
 - Scenario creation link from analysis [LANDGRIF-805](https://vizzuality.atlassian.net/browse/LANDGRIF-805)

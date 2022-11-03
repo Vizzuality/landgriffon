@@ -6,7 +6,7 @@ describe('Analysis and scenarios', () => {
         pathname: '/api/v1/scenarios',
         query: {
           disablePagination: 'true',
-          hasInterventions: 'true',
+          hasActiveInterventions: 'true',
         },
       },
       {

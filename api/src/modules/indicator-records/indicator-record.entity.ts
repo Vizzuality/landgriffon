@@ -108,7 +108,7 @@ export class IndicatorRecord extends TimestampedBaseEntity {
 
   static updateImpactView(): Promise<void> {
     return getManager().query(
-      `REFRESH MATERIALIZED VIEW ${IMPACT_VIEW_NAME} WITH DATA`,
+      `REFRESH MATERIALIZED VIEW CONCURRENTLY ${IMPACT_VIEW_NAME} WITH DATA`,
     );
   }
 }

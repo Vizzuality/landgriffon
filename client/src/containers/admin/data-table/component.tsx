@@ -108,7 +108,6 @@ const AdminDataPage: React.FC = () => {
         id: column.id,
         title: column.title,
         isVisible: column.visible,
-        enableSorting: false,
       })),
     [yearsData.columns],
   );
@@ -123,12 +122,33 @@ const AdminDataPage: React.FC = () => {
         size: 280,
         align: 'left',
         isSticky: 'left',
+        enableSorting: true,
       },
-      { id: 'businessUnit', header: 'Business Unit' },
-      { id: 't1Supplier', eader: 'T1 Supplier' },
-      { id: 'producer', header: 'Producer' },
-      { id: 'locationType', header: 'Location Type' },
-      { id: 'country', header: 'Country' },
+      {
+        id: 'businessUnit',
+        header: 'Business Unit',
+        enableSorting: true,
+      },
+      {
+        id: 't1Supplier',
+        eader: 'T1 Supplier',
+        enableSorting: true,
+      },
+      {
+        id: 'producer',
+        header: 'Producer',
+        enableSorting: true,
+      },
+      {
+        id: 'locationType',
+        header: 'Location Type',
+        enableSorting: true,
+      },
+      {
+        id: 'country',
+        header: 'Country',
+        enableSorting: true,
+      },
       ...yearsColumns,
     ],
     [yearsColumns],
@@ -211,7 +231,6 @@ const AdminDataPage: React.FC = () => {
             enableRowSelection={false}
             enableSubRowSelection={false}
             enableMultiRowSelection={false}
-            enableSorting
             enableMultiSort={false}
             onPaginationChange={setPagination}
             onSortingChange={setSorting}

@@ -231,7 +231,6 @@ const AdminDataPage: React.FC = () => {
             enableRowSelection={false}
             enableSubRowSelection={false}
             enableMultiRowSelection={false}
-            enableMultiSort={false}
             onPaginationChange={setPagination}
             onSortingChange={setSorting}
             noDataMessage={

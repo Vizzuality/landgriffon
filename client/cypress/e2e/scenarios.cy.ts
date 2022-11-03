@@ -83,11 +83,12 @@ describe('Scenarios', () => {
     cy.intercept('GET', '/api/v1/scenarios?*sort=title*', {
       statusCode: 200,
       fixture: 'scenario/filters/by-name-results',
-    });
+    }).as('fetchScenariosByName');
 
     // ? selects the "Sort by name" option and click on it
     cy.get('[data-testid="select-sort-scenario"]').click();
-    cy.get('[role="listbox"]').type('{downArrow}').type('{enter}');
+    cy.get('[role="listbox"]').type('{downArrow}{downArrow}{enter}');
+    cy.wait('@fetchScenariosByName');
 
     // ? checks the user updates acording to the sort selection
     cy.url().should('contain', 'sortBy=title');

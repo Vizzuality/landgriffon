@@ -25,7 +25,11 @@ const useH3ComparisonData = <T = H3ImpactResponse>(
   const params = { ...rawParams, ...(vsActual ? {} : { baseScenarioId }) };
 
   const url = `/h3/map/impact/compare/${vsActual ? 'actual' : 'scenario'}/vs/scenario`;
-  const enabled = (options.enabled ?? true) && !!(params.indicatorId && params.year);
+
+  const enabled =
+    (options.enabled ?? true) &&
+    !!params.comparedScenarioId &&
+    !!(params.indicatorId && params.year);
 
   const query = useQuery(
     ['h3-data-impact', 'comparison', params],

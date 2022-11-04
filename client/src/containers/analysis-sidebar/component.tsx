@@ -53,14 +53,14 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
   }, [data]);
 
   const handleOnChange = useCallback(
-    (id: Scenario['id']) => {
-      // TO-DO: deprecated, we'll keep only for retro-compatibility
+    async (id: Scenario['id']) => {
+      await setScenarioId(id);
+      await setScenarioToCompare(null);
+
+      // TODO: deprecated, we'll keep only for retro-compatibility
       dispatch(setCurrentScenario(id));
       dispatch(setScenarioToCompareAction(null));
       dispatch(setComparisonEnabled(false));
-
-      setScenarioId(id);
-      setScenarioToCompare(null);
     },
     [dispatch, setScenarioId, setScenarioToCompare],
   );

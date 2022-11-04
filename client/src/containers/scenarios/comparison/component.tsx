@@ -1,18 +1,21 @@
 import { useCallback, useMemo, useEffect } from 'react';
-import { useRouter } from 'next/router';
 
 import { useScenarios } from 'hooks/scenarios';
 import { useAppDispatch } from 'store/hooks';
-import { setComparisonEnabled, setScenarioToCompare } from 'store/features/analysis/scenarios';
+import {
+  setComparisonEnabled,
+  setScenarioToCompare as setScenarioToCompareAction,
+} from 'store/features/analysis/scenarios';
 import Select from 'components/select';
 import useEffectOnce from 'hooks/once';
+import useQueryParam from 'hooks/queryParam';
 
 import type { Dispatch, FC } from 'react';
 import type { SelectOption } from 'components/select/types';
 
 const ScenariosComparison: FC = () => {
-  const router = useRouter();
-  const { scenarioId, compareScenarioId } = router.query || {};
+  const [scenarioId, setScenarioId] = useQueryParam<string>('scenarioId');
+  const [compareScenarioId, setCompareScenarioId] = useQueryParam<string>('compareScenarioId');
   const dispatch = useAppDispatch();
 
   const { data: scenarios } = useScenarios({
@@ -33,41 +36,26 @@ const ScenariosComparison: FC = () => {
 
   const handleOnChange = useCallback<Dispatch<SelectOption>>(
     (current) => {
-      // TO-DO: deprecated, we'll keep only for retro-compatibility
+      // TODO: deprecated, we'll keep only for retro-compatibility
       dispatch(setComparisonEnabled(!!current));
-      dispatch(setScenarioToCompare(current?.value || null));
+      dispatch(setScenarioToCompareAction(current?.value || null));
 
-      const queryParams = { ...router.query, compareScenarioId: current?.value };
-      router.replace(
-        {
-          pathname: router.pathname,
-          query: queryParams,
-        },
-        null,
-        { shallow: true },
-      );
+      setCompareScenarioId(current?.value || null);
     },
-    [dispatch, router],
+    [dispatch, setCompareScenarioId],
   );
 
   // Reset comparison when options changes
   useEffect(() => {
     if (selected?.value && compareScenarioId !== selected?.value) {
       // TO-DO: deprecated, we'll keep only for retro-compatibility
-      dispatch(setScenarioToCompare(null));
+      dispatch(setScenarioToCompareAction(null));
       dispatch(setComparisonEnabled(false));
 
-      const queryParams = { ...router.query, compareScenarioId: null, scenarioId: selected?.value };
-      router.replace(
-        {
-          pathname: router.pathname,
-          query: queryParams,
-        },
-        null,
-        { shallow: true },
-      );
+      setCompareScenarioId(null);
+      setScenarioId(selected?.value || null);
     }
-  }, [selected, dispatch, options, compareScenarioId, router]);
+  }, [selected, dispatch, options, compareScenarioId, setCompareScenarioId, setScenarioId]);
 
   // We consider comparison is enabled when compareScenarioId is present
   useEffectOnce(() => {

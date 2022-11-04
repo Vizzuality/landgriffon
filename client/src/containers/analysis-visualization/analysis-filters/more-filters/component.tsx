@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import { FilterIcon } from '@heroicons/react/solid';
 import {
   offset,
@@ -102,22 +102,26 @@ const MoreFilters = () => {
   const [counter, setCounter] = useState<number>(0);
   const [isOpen, setIsOpen] = useState(false);
 
-  // Restoring state from initial state from redux
-  useEffect(() => {
-    if (isOpen) return;
-    setSelectedFilters(moreFilters);
-  }, [isOpen, moreFilters]);
+  const handleOpen = useCallback(
+    (open: boolean) => {
+      setIsOpen(open);
+      if (open) {
+        setSelectedFilters(moreFilters);
+      }
+    },
+    [moreFilters],
+  );
 
   // Only the changes are applied when the user clicks on Apply
   const handleApply = useCallback(() => {
     dispatch(setFilters(selectedFilters));
-    setIsOpen(false);
-  }, [dispatch, selectedFilters]);
+    handleOpen(false);
+  }, [dispatch, handleOpen, selectedFilters]);
 
   // Close filters window
   const handleCancel = useCallback(() => {
-    setIsOpen(false);
-  }, []);
+    handleOpen(false);
+  }, [handleOpen]);
 
   // Restoring state from initial state only internally,
   // the user have to apply the changes
@@ -147,7 +151,7 @@ const MoreFilters = () => {
 
   const { reference, floating, strategy, x, y, context } = useFloating({
     open: isOpen,
-    onOpenChange: setIsOpen,
+    onOpenChange: handleOpen,
     placement: 'bottom-start',
     middleware: [offset({ mainAxis: 4 }), shift({ padding: 4 })],
   });
@@ -228,16 +232,12 @@ const MoreFilters = () => {
   );
 
   // Check current values are valid if the scenario changes
-  const handleScenarioChange = useCallback(
-    () => {
-      reviewFilterContent('materials', materials, materialOptions);
-      reviewFilterContent('locationTypes', locationTypes, locationTypes);
-      reviewFilterContent('origins', origins, origins);
-      reviewFilterContent('suppliers', suppliers, suppliers);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+  const handleScenarioChange = useCallback(() => {
+    reviewFilterContent('materials', materials, materialOptions);
+    reviewFilterContent('locationTypes', locationTypes, locationTypes);
+    reviewFilterContent('origins', origins, origins);
+    reviewFilterContent('suppliers', suppliers, suppliers);
+  }, [locationTypes, materialOptions, materials, origins, reviewFilterContent, suppliers]);
 
   useQueryParam('scenarioId', { onChange: handleScenarioChange });
 

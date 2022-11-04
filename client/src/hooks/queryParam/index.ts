@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useState, useTransition } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDebounce, useEffectOnceWhen } from 'rooks';
 
 import type { Dispatch } from 'react';
@@ -19,12 +19,12 @@ interface UseQueryParamOptions<T, F = T> {
 
 const serialize = <T>(value: T): string => {
   if (value === undefined) return undefined;
-
+  if (typeof value === 'string') return value;
   return JSON.stringify(value);
 };
 
 const parse = <T>(value: string): T => {
-  if (!value === undefined) return undefined;
+  if (value === undefined) return undefined;
 
   try {
     return JSON.parse(value);
@@ -49,11 +49,6 @@ const useQueryParam = <T, F = T>(
 
   const [value, setValue] = useState(defaultValue);
 
-  useEffect(() => {
-    if (!router.isReady) return;
-    onChange?.(value);
-  }, [onChange, router.isReady, value]);
-
   const queryValue = router.query[name] as string;
 
   const [isDoneSettingInitialState, setIsDoneSettingInitialState] = useState(false);
@@ -71,34 +66,24 @@ const useQueryParam = <T, F = T>(
     setIsDoneSettingInitialState(true);
   }, router.isReady);
 
-  const [isPending, startTransition] = useTransition();
-
   const setQueryParam = useCallback(
-    (value: T) => {
+    async (value: T) => {
       const queryParams = router.query;
 
-      if (!value && queryValue) {
+      if (!value) {
         delete queryParams[name];
       } else {
         queryParams[name] = serialize(formatParam ? formatParam(value) : value);
       }
-      if (!isPending)
-        startTransition(() => {
-          (pushInsteadOfReplace ? router.push : router.replace)({ query: queryParams }, undefined, {
-            shallow: true,
-          });
-        });
+      await (pushInsteadOfReplace ? router.push : router.replace)(
+        { query: queryParams },
+        undefined,
+        {
+          shallow: true,
+        },
+      );
     },
-    [
-      formatParam,
-      isPending,
-      name,
-      pushInsteadOfReplace,
-      queryValue,
-      router.push,
-      router.query,
-      router.replace,
-    ],
+    [formatParam, name, pushInsteadOfReplace, router.push, router.query, router.replace],
   );
 
   const setDebouncedQueryParam = useDebounce(setQueryParam, waitTimeMs);
@@ -120,14 +105,13 @@ const useQueryParam = <T, F = T>(
   }, [name, queryValue, router.events, setDebouncedQueryParam, setQueryParam]);
 
   const setParam = useCallback(
-    (value: T) => {
+    async (value: T) => {
       if (!isDoneSettingInitialState) return;
       setValue(value);
-      if (!isPending) {
-        setDebouncedQueryParam(value);
-      }
+      onChange?.(value);
+      await setDebouncedQueryParam(value);
     },
-    [isDoneSettingInitialState, isPending, setDebouncedQueryParam],
+    [isDoneSettingInitialState, onChange, setDebouncedQueryParam],
   );
 
   return [value, setParam, isDoneSettingInitialState] as const;

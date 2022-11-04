@@ -8,10 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [v0.3.0 Unreleased]
 
 ### Added
+
 - Information about the layers in the tooltips of contextual layers [LANDGRIF-997](https://vizzuality.atlassian.net/browse/LANDGRIF-997)
 - Numbers of growth rates in scenarios page
 
 ### Changed
+
+- Select leaf nodes of business units on intervention creation (instead of parent nodes). [LANDGRIF-917](https://vizzuality.atlassian.net/browse/LANDGRIF-917)
 - Applied 40-character limitation to scenario title in scenario creation page. [LANDGRIF-1016](https://vizzuality.atlassian.net/browse/LANDGRIF-1016)
 - In tables the columns are not sortable by default, it should be specified in each column configuration [LANDGRIF-965](https://vizzuality.atlassian.net/browse/LANDGRIF-965)
 - Updated styles for tree-selectors according the design

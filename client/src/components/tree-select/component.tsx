@@ -12,7 +12,7 @@ import {
   autoUpdate,
 } from '@floating-ui/react-dom-interactions';
 import { ChevronDownIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
-import Tree, { TreeNode } from 'rc-tree';
+import Tree from 'rc-tree';
 import Fuse from 'fuse.js';
 
 import { CHECKED_STRATEGIES } from './utils';
@@ -20,6 +20,7 @@ import { CHECKED_STRATEGIES } from './utils';
 import Badge from 'components/badge';
 import Loading from 'components/loading';
 
+import type { DataNode } from 'rc-tree/lib/interface';
 import type { TreeProps } from 'rc-tree';
 import type { TreeSelectProps, TreeSelectOption } from './types';
 import type { ChangeEventHandler, Ref } from 'react';
@@ -117,22 +118,21 @@ const InnerTreeSelect = <IsMulti extends boolean>(
   const [checkedKeys, setCheckedKeys] = useState<TreeProps['checkedKeys']>([]);
   const [filteredKeys, setFilteredKeys] = useState([]);
 
-  const renderTreeNodes = useCallback(
-    (data, counter = 0) =>
-      data.map((item) => (
-        <TreeNode
-          key={item.value}
-          title={item.label}
-          className={classNames(THEMES[theme].treeNodes, {
-            'w-full': fitContent,
-            hidden: searchTerm !== '' && !filteredKeys.includes(item.value),
-            'bg-green-50 text-navy-400 font-semibold': selectedKeys.includes(item.value),
-          })}
-          style={{ paddingLeft: 16 * counter }}
-        >
-          {item.children && renderTreeNodes(item.children, counter + 1)}
-        </TreeNode>
-      )),
+  const optionToTreeData = useCallback(
+    (option: TreeSelectOption, depth = 0): DataNode => {
+      return {
+        key: option.value,
+        title: option.label,
+        className: classNames(THEMES[theme].treeNodes, {
+          'w-full': fitContent,
+          hidden: searchTerm !== '' && !filteredKeys.includes(option.value),
+          'bg-green-50 text-navy-400 font-semibold': selectedKeys.includes(option.value),
+        }),
+        style: { paddingLeft: 16 * depth },
+        children: option.children?.map((option) => optionToTreeData(option, depth + 1)),
+        isLeaf: !option.children || option.children.length === 0,
+      };
+    },
     [filteredKeys, fitContent, searchTerm, selectedKeys, theme],
   );
 
@@ -175,7 +175,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
       // Depending of the checked strategy apply different filters
       const filteredValues = CHECKED_STRATEGIES[checkedStrategy](checkedKeys, checkedNodes);
 
-      // TO-DO: this function is repeated
+      // TODO: this function is repeated
       const checkedOptions: TreeSelectOption[] = [];
       if (filteredValues) {
         (filteredValues as string[]).forEach((key) => {
@@ -210,7 +210,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
   const resetSearch = useCallback(() => setSearchTerm(''), []);
   useEffect(() => {
     if (searchTerm && searchTerm !== '') {
-      // TO-DO: investigate if there is a better way for nesting search and Fuse.js
+      // TODO: investigate if there is a better way for nesting search and Fuse.js
       const filteredOptions = fuse.search(searchTerm).map(({ item }) => {
         if (!item.children || item.children.length === 0) return item;
         const fuseChildren = new Fuse(item.children, SEARCH_OPTIONS);
@@ -330,6 +330,11 @@ const InnerTreeSelect = <IsMulti extends boolean>(
     selected,
     theme,
   ]);
+
+  const treeData = useMemo(() => {
+    // if (options?.[0]?.label === 'Angola') debug.current = true;
+    return options.map((option) => optionToTreeData(option));
+  }, [optionToTreeData, options]);
 
   return (
     <div className="min-w-0 " data-testid={`tree-select-${id}`}>
@@ -468,9 +473,8 @@ const InnerTreeSelect = <IsMulti extends boolean>(
                   onExpand={handleExpand}
                   onSelect={handleSelect}
                   onCheck={handleCheck}
-                >
-                  {renderTreeNodes(options)}
-                </Tree>
+                  treeData={treeData}
+                />
                 {(options.length === 0 || (searchTerm && filteredKeys.length === 0)) && (
                   <div className="p-2 mx-auto text-sm text-gray-600 opacity-60 w-fit">
                     No results

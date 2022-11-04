@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Not include scenarios with 0 interventions in the scenario dropdowns for comparison [LANDGRIF-999](https://vizzuality.atlassian.net/browse/LANDGRIF-999)
 - Legend alignment in charts
 - Click on the legend also change the opacity of projected areas
+- Relative and absolute switcher was not working on the chart view [LANDGRIF-993](https://vizzuality.atlassian.net/browse/LANDGRIF-993)
 
 ## [v0.2.2]
 

@@ -1,6 +1,8 @@
 import classNames from 'classnames';
 import { uniqBy } from 'lodash';
 
+import { useAppSelector } from 'store/hooks';
+import { scenarios } from 'store/features/analysis';
 import { NUMBER_FORMAT } from 'utils/number-format';
 
 type CustomTooltipProps = {
@@ -10,16 +12,19 @@ type CustomTooltipProps = {
     type: string;
     payload: {
       absoluteDifference: number;
+      percentageDifference: number;
     };
   }[];
 };
 
 const CustomTooltip: React.FC<CustomTooltipProps> = ({ payload }) => {
+  const { comparisonMode } = useAppSelector(scenarios);
   const tooltipData = uniqBy(payload, 'stroke');
   // We will assume that actual-data is the first item and the scenario is the second one
   const baseValue = tooltipData[0]?.value;
   const comparedValue = tooltipData[1]?.value;
   const absoluteDifference = tooltipData[1]?.payload.absoluteDifference;
+  const percentageDifference = tooltipData[1]?.payload.percentageDifference;
 
   return (
     <div className="p-4 text-gray-900 bg-white border border-gray-200 rounded-md">
@@ -44,7 +49,9 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ payload }) => {
           >
             {absoluteDifference > 0 && '+'}
             {absoluteDifference < 0 && '-'}
-            {NUMBER_FORMAT(absoluteDifference)}
+            {comparisonMode === 'absolute'
+              ? NUMBER_FORMAT(absoluteDifference)
+              : `${NUMBER_FORMAT(percentageDifference)}%`}
           </div>
         )}
       </div>

@@ -17,7 +17,7 @@ const DISABLED_CLASSES = 'bg-gray-100 opacity-75 cursor-default';
 
 export const ZoomControl: React.FC<ZoomControlProps> = ({
   className,
-  viewport: { zoom, maxZoom, minZoom },
+  viewport: { zoom, maxZoom, minZoom } = {},
   onZoomChange,
 }) => {
   const increaseZoom = useCallback<MouseEventHandler<HTMLButtonElement>>(() => {

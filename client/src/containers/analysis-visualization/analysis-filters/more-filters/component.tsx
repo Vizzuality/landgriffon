@@ -11,7 +11,6 @@ import {
 } from '@floating-ui/react-dom-interactions';
 import { Transition } from '@headlessui/react';
 import sortBy from 'lodash/sortBy';
-import { useRouter } from 'next/router';
 
 import Materials from '../materials/component';
 import OriginRegions from '../origin-regions/component';
@@ -26,6 +25,8 @@ import { useAdminRegionsTrees } from 'hooks/admin-regions';
 import { useSuppliersTrees } from 'hooks/suppliers';
 import { useLocationTypes } from 'hooks/location-types';
 import Button from 'components/button/component';
+import { flattenTree } from 'components/tree-select/utils';
+import useQueryParam from 'hooks/queryParam';
 
 import type { TreeSelectOption } from 'components/tree-select/types';
 import type { AnalysisFiltersState } from 'store/features/analysis/filters';
@@ -50,21 +51,6 @@ interface ApiTreeResponse {
   children?: this[];
 }
 
-// const reviewFilterContent = useCallback(
-//   (name: keyof MoreFiltersState) => {
-//     const currentValues = moreFilters[name];
-//     const allOptions = allData[name];
-//     const validOptions = currentValues.filter(({ value }) =>
-//       allOptions.some((option) => option.value === value),
-//     );
-
-//     if (validOptions.length !== currentValues.length) {
-//       dispatch(setFilter({ id: name, value: validOptions }));
-//     }
-//   },
-//   [allData, dispatch, moreFilters],
-// );
-
 const DEFAULT_QUERY_OPTIONS = {
   staleTime: 2 * 60 * 1000, // 2 minutes
   select: (data: ApiTreeResponse[]) =>
@@ -79,9 +65,9 @@ const DEFAULT_QUERY_OPTIONS = {
 };
 
 const MoreFilters = () => {
-  const { query } = useRouter();
-  const scenarioId = query.scenarioId as string;
-  const compareScenarioId = query.compareScenarioId as string;
+  const [scenarioId] = useQueryParam<string>('scenarioId', { defaultValue: null });
+  const [compareScenarioId] = useQueryParam<string>('compareScenarioId', { defaultValue: null });
+
   const dispatch = useAppDispatch();
   const { materials, origins, suppliers, locationTypes } = useAppSelector(analysisFilters);
 
@@ -229,41 +215,31 @@ const MoreFilters = () => {
       currentValues: TreeSelectOption[],
       allOptions: TreeSelectOption[],
     ) => {
-      const recursiveSearch = (options: typeof allOptions = []): typeof allOptions => {
-        // debugger;
-        const validParentOptions = currentValues.filter(({ value }) =>
-          allOptions.some((option) => option.value === value),
-        );
-        const validChildrenOptions = options.flatMap((opt) => recursiveSearch(opt.children));
-        return [...validParentOptions, ...validChildrenOptions];
-      };
+      const allNodes = allOptions.flatMap(flattenTree);
+      const allKeys = allNodes.map(({ value }) => value);
+      const currentNodes = currentValues.flatMap(flattenTree);
+      const validOptions = currentNodes.filter(({ value }) => allKeys.includes(value));
 
-      const validOptions = recursiveSearch(allOptions);
-
-      if (validOptions.length !== currentValues.length) {
+      if (validOptions.length !== allKeys.length) {
         dispatch(setFilter({ id: name, value: validOptions }));
       }
     },
     [dispatch],
   );
 
-  useEffect(() => {
-    if (isOpen) return;
+  // Check current values are valid if the scenario changes
+  const handleScenarioChange = useCallback(
+    () => {
+      reviewFilterContent('materials', materials, materialOptions);
+      reviewFilterContent('locationTypes', locationTypes, locationTypes);
+      reviewFilterContent('origins', origins, origins);
+      reviewFilterContent('suppliers', suppliers, suppliers);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
-    reviewFilterContent('materials', materials, materialOptions);
-    reviewFilterContent('locationTypes', locationTypes, locationTypes);
-    reviewFilterContent('origins', origins, origins);
-    reviewFilterContent('suppliers', suppliers, suppliers);
-  }, [
-    materialOptions,
-    reviewFilterContent,
-    scenarioId,
-    locationTypes,
-    origins,
-    suppliers,
-    isOpen,
-    materials,
-  ]);
+  useQueryParam('scenarioId', { onChange: handleScenarioChange });
 
   return (
     <div className="relative">

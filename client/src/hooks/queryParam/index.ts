@@ -1,6 +1,8 @@
 import { useRouter } from 'next/router';
-import { useCallback, useState, useTransition } from 'react';
+import { useCallback, useEffect, useState, useTransition } from 'react';
 import { useDebounce, useEffectOnceWhen } from 'rooks';
+
+import type { Dispatch } from 'react';
 
 interface UseQueryParamOptions<T, F = T> {
   /**
@@ -11,6 +13,8 @@ interface UseQueryParamOptions<T, F = T> {
   formatParam?: (value: T) => F;
   waitTimeMs?: number;
   pushInsteadOfReplace?: boolean;
+  onChange?: Dispatch<T>;
+  defaultValue?: T | (() => T);
 }
 
 const serialize = <T>(value: T): string => {
@@ -20,7 +24,7 @@ const serialize = <T>(value: T): string => {
 };
 
 const parse = <T>(value: string): T => {
-  if (value === undefined) return undefined;
+  if (!value === undefined) return undefined;
 
   try {
     return JSON.parse(value);
@@ -31,28 +35,30 @@ const parse = <T>(value: string): T => {
 
 const window = typeof global.window === 'undefined' ? null : global.window;
 
-const updateQueryParams = (params: URLSearchParams, push: boolean) => {
-  if (push) {
-    window.history.pushState?.(null, null, `?${params}`);
-  } else {
-    window.history.replaceState?.(null, null, `?${params}`);
-  }
-};
-
 const useQueryParam = <T, F = T>(
   name: string,
-  defaultValue?: T | (() => T),
-  { formatParam, waitTimeMs = 100, pushInsteadOfReplace = false }: UseQueryParamOptions<T, F> = {},
+  {
+    defaultValue,
+    formatParam,
+    waitTimeMs = 100,
+    pushInsteadOfReplace = false,
+    onChange,
+  }: UseQueryParamOptions<T, F> = {},
 ) => {
-  const { query, isReady } = useRouter();
+  const router = useRouter();
 
   const [value, setValue] = useState(defaultValue);
 
-  const queryValue = query[name] as string;
+  useEffect(() => {
+    if (!router.isReady) return;
+    onChange?.(value);
+  }, [onChange, router.isReady, value]);
+
+  const queryValue = router.query[name] as string;
 
   const [isDoneSettingInitialState, setIsDoneSettingInitialState] = useState(false);
   useEffectOnceWhen(() => {
-    const newValue = parse<T>(query[name] as string);
+    const newValue = parse<T>(router.query[name] as string);
 
     if (newValue) {
       if (!value || typeof value !== 'object' || typeof newValue !== 'object') {
@@ -63,36 +69,62 @@ const useQueryParam = <T, F = T>(
     }
 
     setIsDoneSettingInitialState(true);
-  }, isReady);
+  }, router.isReady);
 
   const [isPending, startTransition] = useTransition();
 
   const setQueryParam = useCallback(
     (value: T) => {
-      const currentURL = new URL(window.location.href);
-      const queryParams = currentURL.searchParams;
+      const queryParams = router.query;
 
       if (!value && queryValue) {
-        queryParams.delete(name);
-        return updateQueryParams(queryParams, pushInsteadOfReplace);
+        delete queryParams[name];
+      } else {
+        queryParams[name] = serialize(formatParam ? formatParam(value) : value);
       }
-
-      queryParams.set(name, serialize(formatParam ? formatParam(value) : value));
-      return updateQueryParams(queryParams, pushInsteadOfReplace);
+      if (!isPending)
+        startTransition(() => {
+          (pushInsteadOfReplace ? router.push : router.replace)({ query: queryParams }, undefined, {
+            shallow: true,
+          });
+        });
     },
-    [formatParam, name, pushInsteadOfReplace, queryValue],
+    [
+      formatParam,
+      isPending,
+      name,
+      pushInsteadOfReplace,
+      queryValue,
+      router.push,
+      router.query,
+      router.replace,
+    ],
   );
 
   const setDebouncedQueryParam = useDebounce(setQueryParam, waitTimeMs);
+
+  useEffect(() => {
+    const handleParam = (href: string) => {
+      const url = new URL(`${window.location.host}${href}`);
+      const newQueryStr = Object.fromEntries(url.searchParams.entries())[name];
+
+      const value = parse<T>(newQueryStr);
+
+      setValue(value);
+    };
+    router.events.on('beforeHistoryChange', handleParam);
+
+    return () => {
+      router.events.off('beforeHistoryChange', handleParam);
+    };
+  }, [name, queryValue, router.events, setDebouncedQueryParam, setQueryParam]);
 
   const setParam = useCallback(
     (value: T) => {
       if (!isDoneSettingInitialState) return;
       setValue(value);
       if (!isPending) {
-        startTransition(() => {
-          setDebouncedQueryParam(value);
-        });
+        setDebouncedQueryParam(value);
       }
     },
     [isDoneSettingInitialState, isPending, setDebouncedQueryParam],

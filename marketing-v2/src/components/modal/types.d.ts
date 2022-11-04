@@ -2,10 +2,6 @@ import { ReactNode } from 'react';
 
 export interface ModalProps {
   /**
-   * Title used by screen readers
-   */
-  title: string;
-  /**
    * Whether the modal is opened
    */
   open: boolean;

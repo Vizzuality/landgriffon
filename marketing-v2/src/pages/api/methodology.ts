@@ -5,10 +5,14 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 sendgridMail.setApiKey(process.env.SENDGRID_API_KEY_CONTACT);
 sendgridClient.setApiKey(process.env.SENDGRID_API_KEY_SUBSCRIPTION);
 
+const DOWNLOADS = {
+  'full-methodology': 'https://www.landgriffon.com/docs/LG_Methodology_Technical_Note.pdf',
+  'executive-summary': 'https://www.landgriffon.com/docs/LG_Methodology_Executive_Summary.pdf',
+};
+
 const Methodology = (req: NextApiRequest, res: NextApiResponse): void => {
   if (req.method === 'POST') {
-    const { name, email, information } = req.body;
-
+    const { name, email, information, download } = req.body;
     // Send a message to the user with Methodology link
 
     const msg = {
@@ -26,7 +30,7 @@ const Methodology = (req: NextApiRequest, res: NextApiResponse): void => {
         <p>Hi ${name}</p>
         <br/>
         <p>Thank you for your interest in LandGriffon's Methodology!</p>
-        <p><strong>You can download it here.</strong>: https://www.landgriffon.com/docs/LG_Methodology_Executive_Summary.pdf</p>
+        <p><strong>You can download it here.</strong>: ${DOWNLOADS[download]}</p>
         <p>The methodology is a work in progress. We want it to serve you and create real change in the sector. If you have any input you would like to share with us regarding the methodology, please let us know.</p>
         <br/>
         <br/>

@@ -15,7 +15,7 @@ import { ChevronDownIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
 import Tree from 'rc-tree';
 import Fuse from 'fuse.js';
 
-import { CHECKED_STRATEGIES } from './utils';
+import { CHECKED_STRATEGIES, flattenTree } from './utils';
 
 import Badge from 'components/badge';
 import Loading from 'components/loading';
@@ -220,7 +220,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
           children: childrenResult.map(({ item: itemChildren }) => itemChildren),
         };
       });
-      setFilteredKeys(filteredOptions.flatMap(flattenKeys));
+      setFilteredKeys(filteredOptions.flatMap((opt) => flattenTree(opt).map((opt) => opt.value)));
     }
   }, [fuse, options, searchTerm]);
 
@@ -487,15 +487,6 @@ const InnerTreeSelect = <IsMulti extends boolean>(
       )}
     </div>
   );
-};
-
-const flattenKeys: (root: TreeSelectOption) => TreeSelectOption['value'][] = (root) => {
-  const keys: TreeSelectOption['value'][] = [root.value];
-  if (root.children) {
-    keys.push(...root.children.flatMap(flattenKeys));
-  }
-
-  return keys;
 };
 
 const TreeSelect = React.forwardRef(InnerTreeSelect) as <IsMulti extends boolean = false>(

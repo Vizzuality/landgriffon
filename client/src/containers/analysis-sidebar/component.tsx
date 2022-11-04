@@ -2,15 +2,13 @@ import { useMemo, useCallback } from 'react';
 import { XCircleIcon, PlusIcon } from '@heroicons/react/solid';
 import { RadioGroup } from '@headlessui/react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import omit from 'lodash/omit';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import {
   scenarios,
   setComparisonEnabled,
   setCurrentScenario,
-  setScenarioToCompare,
+  setScenarioToCompare as setScenarioToCompareAction,
 } from 'store/features/analysis/scenarios';
 import { useInfiniteScenarios } from 'hooks/scenarios';
 import useBottomScrollListener from 'hooks/scroll';
@@ -18,6 +16,7 @@ import ScenariosFilters from 'containers/scenarios/filters';
 import { Anchor } from 'components/button';
 import Loading from 'components/loading';
 import ScenarioItem from 'containers/scenarios/item';
+import useQueryParam from 'hooks/queryParam';
 
 import type { MutableRefObject } from 'react';
 import type { Scenario } from 'containers/scenarios/types';
@@ -33,8 +32,10 @@ const ACTUAL_DATA: Scenario = {
 const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement> }> = ({
   scrollref,
 }) => {
-  const router = useRouter();
-  const { scenarioId = null } = router.query || {};
+  const [scenarioId = null, setScenarioId] = useQueryParam<string>('scenarioId', {
+    defaultValue: null,
+  });
+  const [, setScenarioToCompare] = useQueryParam<string>('scenarioToCompare');
 
   const { sort, searchTerm } = useAppSelector(scenarios);
   const dispatch = useAppDispatch();
@@ -55,21 +56,13 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
     (id: Scenario['id']) => {
       // TO-DO: deprecated, we'll keep only for retro-compatibility
       dispatch(setCurrentScenario(id));
-      dispatch(setScenarioToCompare(null));
+      dispatch(setScenarioToCompareAction(null));
       dispatch(setComparisonEnabled(false));
 
-      const queryParams = omit(router.query, ['compareScenarioId', 'scenarioId']);
-      if (id) queryParams['scenarioId'] = id;
-
-      router.replace(
-        {
-          query: queryParams,
-        },
-        null,
-        { shallow: true },
-      );
+      setScenarioId(id);
+      setScenarioToCompare(null);
     },
-    [dispatch, router],
+    [dispatch, setScenarioId, setScenarioToCompare],
   );
 
   useBottomScrollListener(

@@ -94,7 +94,8 @@ const AnalysisMap = () => {
     return pick(view, ['latitude', 'longitude', 'zoom']);
   }, []);
 
-  const [viewState, setViewState] = useQueryParam('viewState', INITIAL_VIEW_STATE, {
+  const [viewState, setViewState] = useQueryParam('viewState', {
+    defaultValue: INITIAL_VIEW_STATE,
     formatParam,
   });
 

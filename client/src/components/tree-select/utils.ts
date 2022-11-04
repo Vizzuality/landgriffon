@@ -1,3 +1,4 @@
+import type { TreeSelectOption } from './types';
 import type { DataNode, Key } from 'rc-tree/lib/interface';
 
 const ALL = (checkedKeys: Key[], checkedNodes: DataNode[]): DataNode['key'][] =>
@@ -27,3 +28,12 @@ const CHILD = (checkedKeys: Key[], checkedNodes: DataNode[]): DataNode['key'][] 
 };
 
 export const CHECKED_STRATEGIES = { ALL, PARENT, CHILD };
+
+export const flattenTree = (tree: TreeSelectOption) => {
+  const flattenedTree: TreeSelectOption[] = [tree];
+  if (tree.children) {
+    flattenedTree.push(...tree.children.flatMap(flattenTree));
+  }
+
+  return flattenedTree;
+};

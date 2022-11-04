@@ -110,6 +110,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
   ]);
 
   const [searchTerm, setSearchTerm] = useState<string>('');
+
   const [selected, setSelected] = useState<TreeSelectOption>(null);
   const [selectedKeys, setSelectedKeys] = useState<TreeProps['selectedKeys']>([]);
   const [expandedKeys, setExpandedKeys] = useState<TreeProps['expandedKeys']>([]);
@@ -296,6 +297,12 @@ const InnerTreeSelect = <IsMulti extends boolean>(
           onClick={(e) => {
             e.stopPropagation();
             setIsOpen(true);
+          }}
+          onKeyUp={(e) => {
+            // Pressing space closes the selector, so the event is prevented in that case
+            if (e.key !== ' ') return;
+            e.stopPropagation();
+            e.currentTarget.value += ' ';
           }}
           onChange={handleSearch}
           autoComplete="off"

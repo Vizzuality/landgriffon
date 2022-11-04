@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [v0.3.0 Unreleased]
 
 ### Added
+
 - Information about the layers in the tooltips of contextual layers [LANDGRIF-997](https://vizzuality.atlassian.net/browse/LANDGRIF-997)
 - Numbers of growth rates in scenarios page
 

@@ -27,7 +27,7 @@ import { useSuppliersTrees } from 'hooks/suppliers';
 import { useLocationTypes } from 'hooks/location-types';
 import Button from 'components/button/component';
 
-import type { SelectOption } from 'components/select';
+import type { TreeSelectOption } from 'components/tree-select/types';
 import type { AnalysisFiltersState } from 'store/features/analysis/filters';
 
 type MoreFiltersState = {
@@ -49,6 +49,21 @@ interface ApiTreeResponse {
   name: string;
   children?: this[];
 }
+
+// const reviewFilterContent = useCallback(
+//   (name: keyof MoreFiltersState) => {
+//     const currentValues = moreFilters[name];
+//     const allOptions = allData[name];
+//     const validOptions = currentValues.filter(({ value }) =>
+//       allOptions.some((option) => option.value === value),
+//     );
+
+//     if (validOptions.length !== currentValues.length) {
+//       dispatch(setFilter({ id: name, value: validOptions }));
+//     }
+//   },
+//   [allData, dispatch, moreFilters],
+// );
 
 const DEFAULT_QUERY_OPTIONS = {
   staleTime: 2 * 60 * 1000, // 2 minutes
@@ -126,7 +141,7 @@ const MoreFilters = () => {
 
   // Updating internal state from selectors
   const handleChangeFilter = useCallback(
-    (key: keyof MoreFiltersState, values: SelectOption<string | number>[]) => {
+    (key: keyof MoreFiltersState, values: TreeSelectOption[]) => {
       setSelectedFilters((filters) => ({ ...filters, [key]: values }));
     },
     [],
@@ -208,33 +223,47 @@ const MoreFilters = () => {
     },
   );
 
-  const allData: Partial<Record<keyof MoreFiltersState, SelectOption[]>> = useMemo(() => {
-    return {
-      materials: materialOptions,
-      origins: originOptions,
-      suppliers: supplierOptions,
-      locationTypes: locationTypeOptions,
-    };
-  }, [locationTypeOptions, materialOptions, originOptions, supplierOptions]);
-
   const reviewFilterContent = useCallback(
-    (name: keyof MoreFiltersState) => {
-      const currentValues = selectedFilters[name];
-      const allOptions = allData[name];
-      const validOptions = currentValues.filter(({ value }) =>
-        allOptions.some((option) => option.value === value),
-      );
+    (
+      name: keyof MoreFiltersState,
+      currentValues: TreeSelectOption[],
+      allOptions: TreeSelectOption[],
+    ) => {
+      const recursiveSearch = (options: typeof allOptions = []): typeof allOptions => {
+        // debugger;
+        const validParentOptions = currentValues.filter(({ value }) =>
+          allOptions.some((option) => option.value === value),
+        );
+        const validChildrenOptions = options.flatMap((opt) => recursiveSearch(opt.children));
+        return [...validParentOptions, ...validChildrenOptions];
+      };
+
+      const validOptions = recursiveSearch(allOptions);
 
       if (validOptions.length !== currentValues.length) {
         dispatch(setFilter({ id: name, value: validOptions }));
       }
     },
-    [allData, dispatch, selectedFilters],
+    [dispatch],
   );
 
   useEffect(() => {
-    Object.keys(selectedFilters).forEach(reviewFilterContent);
-  }, [reviewFilterContent, scenarioId, selectedFilters]);
+    if (isOpen) return;
+
+    reviewFilterContent('materials', materials, materialOptions);
+    reviewFilterContent('locationTypes', locationTypes, locationTypes);
+    reviewFilterContent('origins', origins, origins);
+    reviewFilterContent('suppliers', suppliers, suppliers);
+  }, [
+    materialOptions,
+    reviewFilterContent,
+    scenarioId,
+    locationTypes,
+    origins,
+    suppliers,
+    isOpen,
+    materials,
+  ]);
 
   return (
     <div className="relative">

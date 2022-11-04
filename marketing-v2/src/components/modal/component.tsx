@@ -3,7 +3,6 @@ import { useRef } from 'react';
 import classNames from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
 import { XIcon } from '@heroicons/react/solid';
-import { useDialog } from '@react-aria/dialog';
 import { FocusScope } from '@react-aria/focus';
 import { useOverlay, usePreventScroll, useModal, OverlayContainer } from '@react-aria/overlays';
 
@@ -11,7 +10,6 @@ import { CONTENT_CLASSES, OVERLAY_CLASSES } from './constants';
 import type { ModalProps } from './types';
 
 export const Modal: React.FC<ModalProps> = ({
-  title,
   open,
   dismissable = true,
   size = 'default',
@@ -30,7 +28,6 @@ export const Modal: React.FC<ModalProps> = ({
     containerRef,
   );
   const { modalProps } = useModal();
-  const { dialogProps } = useDialog({ 'aria-label': title }, containerRef);
 
   usePreventScroll({ isDisabled: !open });
 
@@ -57,7 +54,7 @@ export const Modal: React.FC<ModalProps> = ({
             className={classNames(OVERLAY_CLASSES)}
           >
             <FocusScope contain restoreFocus autoFocus>
-              <div {...overlayProps} {...dialogProps} {...modalProps} ref={containerRef}>
+              <div {...overlayProps} {...modalProps} ref={containerRef}>
                 <motion.div
                   initial={{
                     opacity: 0,
@@ -87,18 +84,17 @@ export const Modal: React.FC<ModalProps> = ({
                 >
                   {dismissable && (
                     <div className="relative flex items-center mb-4">
-                      <div className="font-medium text-lg">{title}</div>
                       <button
                         type="button"
                         onClick={onDismiss}
-                        className="absolute flex items-center rounded-md px-4 py-4 text-sm text-gray-300 -right-4 -top-4 focus:text-black hover:text-black"
+                        className="absolute flex items-center px-4 py-4 text-sm text-gray-300 rounded-md -right-4 -top-4 focus:text-black hover:text-black"
                       >
                         <XIcon className="w-6 h-6 text-gray-500" />
                       </button>
                     </div>
                   )}
 
-                  <div>{children}</div>
+                  {children}
                 </motion.div>
               </div>
             </FocusScope>

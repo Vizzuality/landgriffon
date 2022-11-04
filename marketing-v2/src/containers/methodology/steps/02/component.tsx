@@ -6,7 +6,6 @@ import useModal from 'hooks/modals';
 import Image from 'next/image';
 
 import DOWNLOAD_SVG from 'svgs/ui/icn_download.svg?sprite';
-import DOCUMENT_SVG from 'svgs/ui/document.svg?sprite';
 
 const Step02: React.FC = () => {
   const {
@@ -46,32 +45,38 @@ const Step02: React.FC = () => {
         </div>
 
         <div
-          className="relative h-56 pl-8 overflow-hidden font-semibold text-white border-2 border-blue-900 cursor-pointer group pt-7 w-96"
-          style={{
-            backgroundImage: `url('/images/methodology/methodology_bg.jpg')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center bottom',
-          }}
+          className="relative h-56 pt-5 pl-5 overflow-hidden text-white bg-blue-400 cursor-pointer group w-96"
           onClick={openMethodologyFormModal}
         >
-          <div className="absolute flex items-center justify-center transition-colors bg-white h-9 top-3 right-3 w-9 group-hover:bg-orange-500">
-            <Icon icon={DOCUMENT_SVG} className="w-5 h-5" />
+          <div className="absolute bottom-0 right-5 w-[125px] pointer-events-none">
+            <div
+              className="rounded-lg absolute -bottom-12 left-0 w-[125px] h-[177px] z-10 bg-contain transform group-hover:-translate-y-2 transition duration-500 ease-in-out"
+              style={{
+                backgroundImage: `url('/images/methodology/methodology_front.png')`,
+              }}
+            />
+            <div
+              className="rounded-lg absolute -bottom-14 left-2 w-[125px] h-[177px] z-0 bg-contain transform group-hover:translate-y-2 group-hover:translate-x-1 transition duration-500 ease-in-out"
+              style={{
+                backgroundImage: `url('/images/methodology/methodology_front.png')`,
+              }}
+            >
+              <div className="absolute top-0 left-0 w-full h-full rounded-lg bg-blue-900/80"></div>
+            </div>
+          </div>
+          <div className="absolute flex items-center justify-center w-10 h-10 transition-colors bg-white rounded-full top-3 right-3 group-hover:bg-orange-500 group-hover:border group-hover:border-white ">
+            <Icon icon={DOWNLOAD_SVG} className="w-5 h-5" />
           </div>
 
-          <div className="w-4/5">
-            <p className="text-2xl font-black uppercase font-display">
-              Learn more about the science behind
+          <div className="space-y-2">
+            <p className="text-blue-600">Download our methodology</p>
+            <p className="w-2/4 text-2xl font-bold text-blue-600">
+              Learn more about our science-based approach
             </p>
-          </div>
-
-          <div className="absolute bottom-0 left-0 flex items-center justify-between w-full px-8 py-3 space-x-5 transition-opacity opacity-0 group-hover:opacity-100 bg-white/10">
-            <p className="font-bold">Read our methodology document to find out how it works.</p>
-            <Icon icon={DOWNLOAD_SVG} className="w-5 h-5 fill-white" />
           </div>
         </div>
 
         <Modal
-          title="To download our Methodology, please fill in the following fields"
           size="wide"
           open={isMethodologyFormModalOpen}
           onDismiss={closeMethodologyFormModal}

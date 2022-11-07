@@ -7,6 +7,7 @@ import type { MouseEventHandler } from 'react';
 type ToggleProps = {
   active: boolean;
   onChange?: (active: boolean) => void;
+  disabled?: boolean;
 };
 
 /**
@@ -16,7 +17,7 @@ const handleClick: MouseEventHandler = (e) => {
   e.stopPropagation();
 };
 
-const Toggle: React.FC<ToggleProps> = ({ active, onChange }) => {
+const Toggle: React.FC<ToggleProps> = ({ active, onChange, disabled = false }) => {
   const handleChange = useCallback(
     (status: boolean) => {
       onChange?.(status);
@@ -28,8 +29,10 @@ const Toggle: React.FC<ToggleProps> = ({ active, onChange }) => {
     <Switch
       checked={active}
       onChange={handleChange}
-      className="relative inline-flex items-center justify-center flex-shrink-0 w-8 h-5 rounded-full cursor-pointer group focus:outline-none"
+      className="relative inline-flex items-center justify-center flex-shrink-0 w-8 h-5 rounded-full cursor-pointer group focus:outline-none disabled:cursor-default"
       onClick={handleClick}
+      disabled={disabled}
+      aria-disabled={disabled}
     >
       <span className="sr-only">Use setting</span>
       <span
@@ -39,7 +42,7 @@ const Toggle: React.FC<ToggleProps> = ({ active, onChange }) => {
       <span
         aria-hidden="true"
         className={classNames(
-          active ? 'bg-navy-400' : 'bg-gray-200',
+          active && !disabled ? 'bg-navy-400' : 'bg-gray-200',
           'pointer-events-none absolute h-3.5 w-7 mx-auto rounded-full transition-colors ease-in-out duration-200',
         )}
       />

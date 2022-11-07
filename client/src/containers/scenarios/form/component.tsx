@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import Link from 'next/link';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -6,6 +6,7 @@ import * as yup from 'yup';
 import Input from 'components/forms/input';
 import Textarea from 'components/forms/textarea';
 import { Anchor, Button } from 'components/button';
+import Toggle from 'components/toggle';
 
 import type { Scenario, ScenarioFormData } from '../types';
 
@@ -18,6 +19,7 @@ type ScenarioFormProps = {
 const schemaValidation = yup.object({
   title: yup.string().min(2).max(40).required(),
   description: yup.string(),
+  visibility: yup.boolean().required().default(true),
 });
 
 type SubSchema = yup.InferType<typeof schemaValidation>;
@@ -30,28 +32,54 @@ const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
 }) => {
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<SubSchema>({
     resolver: yupResolver(schemaValidation),
+    defaultValues: {
+      visibility: true,
+    },
   });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid w-full grid-cols-1 gap-6 mt-6">
-      <div>
-        <label>Name</label>
-        <Input
-          {...register('title')}
-          type="text"
-          name="title"
-          id="title"
-          defaultValue={scenario?.title}
-          placeholder="Type a scenario name"
-          aria-label="Name"
-          autoFocus
-          error={errors?.title?.message}
-          data-testid="scenario-name-input"
-        />
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label>Name</label>
+          <Input
+            {...register('title')}
+            type="text"
+            name="title"
+            id="title"
+            defaultValue={scenario?.title}
+            placeholder="Type a scenario name"
+            aria-label="Name"
+            autoFocus
+            error={errors?.title?.message}
+            data-testid="scenario-name-input"
+          />
+        </div>
+        <div className="flex flex-col">
+          <label>Access</label>
+          <div className="flex items-center space-x-1 h-full">
+            <Controller
+              name="visibility"
+              control={control}
+              render={({ field: { onChange: handleChangeVisibility, value } }) => (
+                <Toggle
+                  data-testid="scenario-visibility"
+                  active={value}
+                  onChange={handleChangeVisibility}
+                  // ! this feature is disabled until the API allows to change the visibility of a scenario
+                  disabled
+                />
+              )}
+            />
+
+            <span>Make scenario public</span>
+          </div>
+        </div>
       </div>
       <div>
         <label>

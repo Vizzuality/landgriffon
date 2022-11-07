@@ -19,7 +19,7 @@ WORKDIR_GHG=data/forest_ghg
 WORKDIR_WOODPULP=data/woodpulp
 
 all:
-ifeq ($(AWS_ACCESS_KEY_ID),)
+ifeq ($(DATA_S3_ACCESS_KEY),)
 	$(error AWS S3 credentials are not defined in env vars. Import will not run)
 else
 	make clean
@@ -433,8 +433,8 @@ convert-aboveGroundBiomass: preprocess-aboveGroundBiomass
 download-satDeforestation:
 	mkdir -p $(WORKDIR_SATDEFORESTATION)
 
-	aws configure set awc_acces_key_id $$AWS_ACCESS_KEY_ID; \
-	aws configure set aws_secret_access_key $$AWS_SECRET_ACCESS_KEY; \
+	aws configure set awc_acces_key_id $$DATA_S3_ACCESS_KEY; \
+	aws configure set aws_secret_access_key $$DATA_S3_SECRET_KEY; \
 	aws s3 sync s3://landgriffon-raw-data/processed/satelligence $(WORKDIR_SATDEFORESTATION);
 
 	mkdir -p $(WORKDIR_SATDEFORESTATION)/mask
@@ -455,8 +455,8 @@ download-woodpulp:
 	mkdir -p $(WORKDIR_WOODPULP)/ha
 	mkdir -p $(WORKDIR_WOODPULP)/prod
 
-	aws configure set awc_acces_key_id $$AWS_ACCESS_KEY_ID; \
-	aws configure set aws_secret_access_key $$AWS_SECRET_ACCESS_KEY; \
+	aws configure set awc_acces_key_id $$DATA_S3_ACCESS_KEY; \
+	aws configure set aws_secret_access_key $$DATA_S3_SECRET_KEY; \
 	aws s3 sync s3://landgriffon-raw-data/processed/woodpulp/ $(WORKDIR_WOODPULP);
 
 	mv	$(WORKDIR_WOODPULP)/gfw_plantations_woodpulp_harvest_ha_res.tif	$(WORKDIR_WOODPULP)/ha/gfw_plantations_woodpulp_ha.tif

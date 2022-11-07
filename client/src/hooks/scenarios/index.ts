@@ -10,7 +10,7 @@ import type {
   UseQueryOptions,
 } from '@tanstack/react-query';
 import type { AxiosResponse } from 'axios';
-import type { Scenario } from 'containers/scenarios/types';
+import type { Scenario, ScenarioDTO } from 'containers/scenarios/types';
 import type { APIMetadataPagination } from 'types';
 
 type ResponseData = {
@@ -133,8 +133,8 @@ export function useDeleteScenario() {
 }
 
 export function useUpdateScenario() {
-  const updateScenario = ({ id, data }) =>
-    apiService.request({
+  const updateScenario = ({ id, data }: { id: Scenario['id']; data: Partial<ScenarioDTO> }) =>
+    apiService.request<Scenario>({
       method: 'PATCH',
       data,
       url: `/scenarios/${decodeURIComponent(id)}`,
@@ -146,8 +146,8 @@ export function useUpdateScenario() {
 }
 
 export function useCreateScenario() {
-  const createScenario = (data) =>
-    apiService.request({
+  const createScenario = (data: ScenarioDTO) =>
+    apiService.request<{ data: Scenario }>({
       method: 'POST',
       url: '/scenarios',
       data,

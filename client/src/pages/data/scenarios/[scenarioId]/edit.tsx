@@ -24,7 +24,9 @@ import { Anchor, Button } from 'components/button';
 import Input from 'components/forms/input';
 import Toggle from 'components/toggle';
 import Dropdown from 'components/dropdown';
+import { parseScenarioFormDataToDto } from 'containers/scenarios/utils';
 
+import type { ScenarioFormData } from 'containers/scenarios/types';
 import type { ErrorResponse } from 'types';
 
 const UpdateScenarioPage: React.FC = () => {
@@ -41,9 +43,10 @@ const UpdateScenarioPage: React.FC = () => {
   });
 
   const handleUpdateScenario = useCallback(
-    (scenarioFormData) => {
+    (scenarioFormData: ScenarioFormData) => {
+      const scenarioDTO = parseScenarioFormDataToDto(scenarioFormData);
       updateScenario.mutate(
-        { id: data.id, data: scenarioFormData },
+        { id: data.id, data: scenarioDTO },
         {
           onSuccess: () => {
             toast.success('Your changes were successfully saved.');

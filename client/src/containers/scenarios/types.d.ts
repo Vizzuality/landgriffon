@@ -4,12 +4,22 @@ export type Scenario = {
   description?: string;
   updatedAt?: Date;
   scenarioInterventions?: Intervention[];
+  // ! this property might change in the future as it is not defined in the API yet
+  visibility?: 'public' | 'private';
 };
 
 export type ScenarioFormData = {
   id?: Scenario['id'];
   title: Scenario['title'];
   description?: Scenario['description'];
+  visibility: boolean;
+};
+
+export type ScenarioDTO = {
+  id?: Scenario['id'];
+  title: Scenario['title'];
+  description?: Scenario['description'];
+  visibility?: Scenario['visibility'];
 };
 
 export type Scenarios = Scenario[];

@@ -8,14 +8,17 @@ import { useCreateScenario } from 'hooks/scenarios';
 import CleanLayout from 'layouts/clean';
 import BackLink from 'components/back-link';
 import ScenarioForm from 'containers/scenarios/form';
+import { parseScenarioFormDataToDto } from 'containers/scenarios/utils';
 
+import type { ScenarioFormData } from 'containers/scenarios/types';
 import type { ErrorResponse } from 'types';
 
 const CreateScenarioPage: React.FC = () => {
   const createScenario = useCreateScenario();
   const handleCreateScenario = useCallback(
-    (scenarioFormData) => {
-      createScenario.mutate(scenarioFormData, {
+    (scenarioFormData: ScenarioFormData) => {
+      const scenarioDTO = parseScenarioFormDataToDto(scenarioFormData);
+      createScenario.mutate(scenarioDTO, {
         onSuccess: ({ data }) => {
           const { data: scenario } = data;
           const { id, title } = scenario;

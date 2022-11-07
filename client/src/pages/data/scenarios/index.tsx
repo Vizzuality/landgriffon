@@ -26,7 +26,7 @@ const displayClasses = {
   list: 'space-y-6 mt-4',
 };
 
-const listColumnClasses = 'font-bold text-gray-400 uppercase';
+const listColumnClasses = 'font-bold text-gray-400 uppercase text-xs xl:text-base';
 
 const SORT_OPTIONS = [
   {

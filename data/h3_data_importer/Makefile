@@ -19,8 +19,12 @@ WORKDIR_GHG=data/forest_ghg
 WORKDIR_WOODPULP=data/woodpulp
 
 all:
+ifeq ($(AWS_ACCESS_KEY_ID),)
+	$(error AWS S3 credentials are not defined in env vars. Import will not run)
+else
 	make clean
 	make -j 2 crop indicators
+endif
 
 crop:
 	make -j 2 convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock convert-woodpulp

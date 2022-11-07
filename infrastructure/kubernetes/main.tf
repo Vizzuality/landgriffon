@@ -67,4 +67,7 @@ module "environment" {
   data_import_container_registry_url = data.terraform_remote_state.core.outputs.data_import_container_registry_url
   api_env_vars                       = lookup(each.value, "api_env_vars", [])
   api_secrets                        = lookup(each.value, "api_secrets", [])
+  data_s3_access_key                 = var.data_s3_access_key
+  data_s3_secret_key                 = var.data_s3_secret_key
+
 }

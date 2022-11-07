@@ -20,7 +20,7 @@ export const ComparisonToggle = () => {
   );
 
   return (
-    <div className="flex flex-row text-sm w-fit">
+    <div className="flex flex-row text-xs w-fit">
       <button
         className={classNames(
           COMMON_MODE_BUTTON_CLASSNAMES,

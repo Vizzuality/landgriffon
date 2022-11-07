@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from 'react';
 import classNames from 'classnames';
-import { InformationCircleIcon } from '@heroicons/react/solid';
+import { InformationCircleIcon } from '@heroicons/react/outline';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { useScenario } from 'hooks/scenarios';

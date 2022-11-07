@@ -5,9 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+## [v0.2.2]
+
+- Filters resetting when switching scenario [LANDGRIF-1021](https://vizzuality.atlassian.net/browse/LLANDGRIF-1021)
+
 ## [v0.2.1]
 
 ### Fixed
+
 - Analysis table is not updating selecting an scenario [LANDGRIF-1019](https://vizzuality.atlassian.net/browse/LANDGRIF-1019)
 
 ## [v0.2.0]

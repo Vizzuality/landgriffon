@@ -33,8 +33,6 @@ const parse = <T>(value: string): T => {
   }
 };
 
-const window = typeof global.window === 'undefined' ? null : global.window;
-
 const useQueryParam = <T, F = T>(
   name: string,
   {
@@ -90,10 +88,8 @@ const useQueryParam = <T, F = T>(
 
   useEffect(() => {
     const handleParam = (href: string) => {
-      const url = new URL(`${window.location.host}${href}`);
-      const newQueryStr = Object.fromEntries(url.searchParams.entries())[name];
-
-      const value = parse<T>(newQueryStr);
+      const params = new URLSearchParams(href.split('?')[1]);
+      const value = parse<T>(params.get(name) || undefined);
 
       setValue(value);
     };

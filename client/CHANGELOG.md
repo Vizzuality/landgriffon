@@ -7,7 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## Unreleased
 
+## [v0.2.3]
+
+### Fixed
+
+- Switching between comparison modes not working [LANDGRIF-1033](https://vizzuality.atlassian.net/browse/LLANDGRIF-1033)
+
 ## [v0.2.2]
+
+### Fixed
 
 - Filters resetting when switching scenario [LANDGRIF-1021](https://vizzuality.atlassian.net/browse/LLANDGRIF-1021)
 

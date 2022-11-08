@@ -35,6 +35,7 @@ import {
   CachedData,
 } from 'modules/cached-data/cached.data.entity';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 
 export interface CachedRawValue {
   rawValue: number;
@@ -177,6 +178,7 @@ export class IndicatorRecordsService extends AppBaseService<
       materialId: string;
       tonnage: number;
       year: number;
+      sourcingRecord: SourcingRecord;
     },
     providedCoefficients?: IndicatorCoefficientsDto,
   ): Promise<IndicatorRecord[]> {
@@ -201,12 +203,15 @@ export class IndicatorRecordsService extends AppBaseService<
 
     let calculatedIndicatorRecordValues: IndicatorRecordCalculatedValuesDto;
     if (providedCoefficients) {
-      calculatedIndicatorRecordValues = this.useProvidedIndicatorCoefficients(
-        providedCoefficients,
-        sourcingData,
-        indicators,
-        materialH3Data.id,
-      );
+      // Here we will be missing scaler, probably it should be obtained inside useProvidedIndicatorCoefficients() method
+
+      calculatedIndicatorRecordValues =
+        await this.useProvidedIndicatorCoefficients(
+          providedCoefficients,
+          sourcingData,
+          indicators,
+          materialH3Data.id,
+        );
     } else {
       const rawData: IndicatorComputedRawDataDto =
         await this.getIndicatorRawDataByGeoRegionAndMaterial(
@@ -331,16 +336,51 @@ export class IndicatorRecordsService extends AppBaseService<
    * @description: Calculates Indicator values by the tonnage of the impact and estimates (coefficients) provided
    * by the user, for each possible indicator passed in an array
    */
-  private useProvidedIndicatorCoefficients(
+  private async useProvidedIndicatorCoefficients(
     newIndicatorCoefficients: IndicatorCoefficientsDto,
-    sourcingData: { sourcingRecordId: string; tonnage: number },
+    sourcingData: {
+      sourcingRecordId: string;
+      tonnage: number;
+      materialId: string;
+      geoRegionId: string;
+      year: number;
+      sourcingRecord: SourcingRecord;
+    },
     indicators: Indicator[],
     materialH3DataId: string,
-  ): IndicatorRecordCalculatedValuesDto {
+  ): Promise<IndicatorRecordCalculatedValuesDto> {
+    let productionValue: number;
+    if (sourcingData.sourcingRecord.indicatorRecords) {
+      productionValue = sourcingData.sourcingRecord.indicatorRecords[0].scaler;
+    } else {
+      const materialH3s: Map<MATERIAL_TO_H3_TYPE, H3Data> =
+        await this.h3DataService.getAllMaterialH3sByClosestYear(
+          sourcingData.materialId,
+          sourcingData.year,
+        );
+
+      const materialH3: H3Data | undefined = materialH3s.get(
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
+      if (!materialH3) {
+        throw new NotFoundException(
+          `No H3 Data could be found the material ${sourcingData.materialId} type ${MATERIAL_TO_H3_TYPE.PRODUCER}`,
+        );
+      }
+
+      productionValue = await this.calculateRawMaterialValueOverGeoRegion(
+        sourcingData.geoRegionId,
+        materialH3,
+      );
+    }
+
     const calculatedIndicatorValues: IndicatorRecordCalculatedValuesDto =
       new IndicatorRecordCalculatedValuesDto();
     calculatedIndicatorValues.sourcingRecordId = sourcingData.sourcingRecordId;
     calculatedIndicatorValues.materialH3DataId = materialH3DataId;
+
+    // now we have here production data thta will later be saved as scaler in new IR:
+    calculatedIndicatorValues.production = productionValue;
     calculatedIndicatorValues.values = new Map();
 
     for (const indicator of indicators) {

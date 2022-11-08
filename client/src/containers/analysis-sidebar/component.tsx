@@ -160,9 +160,9 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
             </div>
           )}
 
-        {(!!searchTerm || searchTerm !== '') && scenariosList?.length === 0 && (
+        {!!searchTerm && searchTerm !== '' && scenariosList?.length === 0 && (
           <div className="text-sm">
-            No results with the term &quot;<strong>{searchTerm}</strong>&quot;
+            No scenarios with at least one active intervention were found.
           </div>
         )}
       </div>

@@ -85,24 +85,20 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
           <div className="space-y-6">
             {/* Actual data */}
             <ScenarioItem scenario={ACTUAL_DATA} isSelected={scenarioId === null} />
+            <ScenariosFilters />
             {/* Scenarios */}
             {((!isLoading && !error && scenariosList && scenariosList.length > 0) ||
               !!searchTerm ||
               searchTerm !== '') && (
-              <>
-                <div>
-                  <ScenariosFilters />
-                </div>
-                <div className="relative z-10 flex-1 overflow-hidden">
-                  <ul className="relative grid grid-cols-1 gap-5 my-2 overflow-auto">
-                    {scenariosList?.map((item) => (
-                      <li key={item.id} className="last-of-type:mb-12">
-                        <ScenarioItem scenario={item} isSelected={scenarioId === item.id} />
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </>
+              <div className="relative z-10 flex-1 overflow-hidden">
+                <ul className="relative grid grid-cols-1 gap-5 my-2 overflow-auto">
+                  {scenariosList?.map((item) => (
+                    <li key={item.id} className="last-of-type:mb-12">
+                      <ScenarioItem scenario={item} isSelected={scenarioId === item.id} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
           </div>
         </RadioGroup>

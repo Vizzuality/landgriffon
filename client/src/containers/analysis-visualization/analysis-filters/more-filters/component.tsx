@@ -10,7 +10,6 @@ import {
   FloatingPortal,
 } from '@floating-ui/react-dom-interactions';
 import { Transition } from '@headlessui/react';
-import { sortBy } from 'lodash-es';
 import { useRouter } from 'next/router';
 
 import Materials from '../materials/component';
@@ -26,7 +25,7 @@ import { useAdminRegionsTrees } from 'hooks/admin-regions';
 import { useSuppliersTrees } from 'hooks/suppliers';
 import { useLocationTypes } from 'hooks/location-types';
 import Button from 'components/button/component';
-import { flattenTree } from 'components/tree-select/utils';
+import { flattenTree, recursiveMap, recursiveSort } from 'components/tree-select/utils';
 
 import type { TreeSelectOption } from 'components/tree-select/types';
 import type { AnalysisFiltersState } from 'store/features/analysis/filters';
@@ -53,15 +52,10 @@ interface ApiTreeResponse {
 
 const DEFAULT_QUERY_OPTIONS = {
   staleTime: 2 * 60 * 1000, // 2 minutes
-  select: (data: ApiTreeResponse[]) =>
-    sortBy(
-      data?.map(({ name, id, children }) => ({
-        label: name,
-        value: id,
-        children: children?.map(({ name, id }) => ({ label: name, value: id })),
-      })),
-      'label',
-    ),
+  select: (data: ApiTreeResponse[]) => {
+    const sorted = recursiveSort(data, 'name');
+    return sorted.map((item) => recursiveMap(item, ({ id, name }) => ({ label: name, value: id })));
+  },
 };
 
 const MoreFilters = () => {
@@ -219,7 +213,7 @@ const MoreFilters = () => {
       currentValues: TreeSelectOption[],
       allOptions: TreeSelectOption[],
     ) => {
-      const allNodes = allOptions.flatMap(flattenTree);
+      const allNodes = allOptions.flatMap((opt) => flattenTree(opt));
       const allKeys = allNodes.map(({ value }) => value);
       const currentNodes = currentValues.flatMap(flattenTree);
       const validOptions = currentNodes.filter(({ value }) => allKeys.includes(value));

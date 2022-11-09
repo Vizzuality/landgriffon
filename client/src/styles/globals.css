@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 @-webkit-keyframes autofill {
-  0%,100% {
+  0%,
+  100% {
     color: #666;
     @apply bg-transparent;
   }
@@ -24,7 +25,7 @@
   }
 
   /* Firefox */
-  input[type=number] {
+  input[type='number'] {
     -moz-appearance: textfield;
   }
 
@@ -49,7 +50,7 @@
   }
 
   /* Fixing override from TailwindCSS base styles */
-  text[type=number] {
+  text[type='number'] {
     font-size: inherit;
     font-weight: inherit;
   }
@@ -58,7 +59,7 @@
 @layer utilities {
   /* We want a blur effect without having a high opacity background, but we still want the
   background to be visible for the browsers that don't support backdrop-filter, so we double the
-  background opacity. This can be tested on Firefox. */ta
+  background opacity. This can be tested on Firefox. */
   .bg-blur {
     @apply bg-opacity-40;
   }
@@ -81,7 +82,7 @@
 }
 
 .rc-tree-checkbox.rc-tree-checkbox-indeterminate {
-  @apply bg-navy-400 border-0;
+  @apply bg-navy-200 border-0;
 }
 
 .rc-tree-node-content-wrapper {

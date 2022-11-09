@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { sortBy } from 'lodash-es';
 
 import TreeSelect from 'components/tree-select';
 import { useAdminRegionsTrees } from 'hooks/admin-regions';
+import { recursiveMap, recursiveSort } from 'components/tree-select/utils';
 
 import type { MakePropOptional } from 'types';
 import type { AdminRegionsTreesParams } from 'hooks/admin-regions';
@@ -43,17 +43,8 @@ const OriginRegionsFilter = <IsMulti extends boolean>({
   const treeOptions = useMemo<TreeSelectProps<IsMulti>['options']>(
     () =>
       options ??
-      sortBy(
-        data?.map(({ name, id, children }) => ({
-          label: name,
-          value: id,
-          children: children?.map(({ name, id, children }) => ({
-            label: name,
-            value: id,
-            children: children?.map(({ name, id }) => ({ label: name, value: id })),
-          })),
-        })),
-        'label',
+      recursiveSort(data, 'name')?.map((item) =>
+        recursiveMap(item, ({ id, name }) => ({ value: id, label: name })),
       ),
     [data, options],
   );

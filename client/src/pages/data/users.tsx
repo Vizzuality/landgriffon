@@ -38,14 +38,16 @@ const AdminUsersPage: React.FC = () => {
     () => ({
       state: { pagination, sorting },
       columns: [
-        { id: 'displayName', header: 'Name', size: 110 },
-        { id: 'email', header: 'Email' },
+        { id: 'displayName', header: 'Name', size: 110, align: 'left', enableSorting: true },
+        { id: 'email', header: 'Email', align: 'left', enableSorting: true },
         {
           id: 'isActive',
           header: 'Active',
           cell: ({ row }) => (row.original.isActive ? 'Yes' : 'No'),
+          align: 'left',
+          enableSorting: true,
         },
-      ].map((column) => ({ align: 'left', enableSorting: true, ...column })),
+      ],
       data: data?.data ?? [],
       theme: 'striped',
       onPaginationChange: setPaginationState,

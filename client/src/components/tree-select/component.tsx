@@ -13,14 +13,14 @@ import {
 } from '@floating-ui/react-dom-interactions';
 import { ChevronDownIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
 import Tree from 'rc-tree';
-import Fuse from 'fuse.js';
+import { useDebouncedValue } from 'rooks';
 
-import { CHECKED_STRATEGIES, flattenTree } from './utils';
+import { CHECKED_STRATEGIES, useFilteredKeys } from './utils';
 
 import Badge from 'components/badge';
 import Loading from 'components/loading';
 
-import type { DataNode } from 'rc-tree/lib/interface';
+import type { DataNode, Key } from 'rc-tree/lib/interface';
 import type { TreeProps } from 'rc-tree';
 import type { TreeSelectProps, TreeSelectOption } from './types';
 import type { ChangeEventHandler, Ref } from 'react';
@@ -46,10 +46,10 @@ const THEMES = {
   },
 };
 
-const SEARCH_OPTIONS = {
-  includeScore: false,
-  keys: ['label', 'children.label'],
-  threshold: 0.4,
+const customSwitcherIcon: TreeProps['switcherIcon'] = ({ isLeaf, expanded }) => {
+  if (isLeaf) return <span className="block w-4" />;
+
+  return <ChevronDownIcon className={classNames('h-4 w-4', { '-rotate-90': !expanded })} />;
 };
 
 const InnerTreeSelect = <IsMulti extends boolean>(
@@ -111,36 +111,51 @@ const InnerTreeSelect = <IsMulti extends boolean>(
   ]);
 
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [debouncedSearch, setDebouncedSearch] = useDebouncedValue(searchTerm, 100);
 
   const [selected, setSelected] = useState<TreeSelectOption>(null);
   const [selectedKeys, setSelectedKeys] = useState<TreeProps['selectedKeys']>([]);
   const [expandedKeys, setExpandedKeys] = useState<TreeProps['expandedKeys']>([]);
   const [checkedKeys, setCheckedKeys] = useState<TreeProps['checkedKeys']>([]);
-  const [filteredKeys, setFilteredKeys] = useState([]);
+  const { data: filteredOptionsKeys } = useFilteredKeys(options, debouncedSearch);
+
+  const getIsLeaf = useCallback(
+    (option: TreeSelectOption) => {
+      if (filteredOptionsKeys.includes(option.value)) return true;
+      if (!option.children?.length) return false;
+
+      return option.children?.some((child) => getIsLeaf(child));
+    },
+    [filteredOptionsKeys],
+  );
 
   const optionToTreeData = useCallback(
     (option: TreeSelectOption, depth = 0): DataNode => {
+      const childOptions = option.children?.map((option) => optionToTreeData(option, depth + 1));
+
+      const isFilteredOut = !!debouncedSearch && !filteredOptionsKeys.includes(option.value);
+
+      const isLeaf = !!debouncedSearch ? option.children?.some((child) => getIsLeaf(child)) : true;
+
       return {
         key: option.value,
         title: option.label,
         className: classNames(THEMES[theme].treeNodes, {
           'w-full': fitContent,
-          hidden: searchTerm !== '' && !filteredKeys.includes(option.value),
-          'bg-navy-50  font-semibold': selectedKeys.includes(option.value),
+          'bg-navy-50 font-semibold': selectedKeys.includes(option.value),
+          hidden: isFilteredOut,
         }),
         style: { paddingLeft: 16 * depth },
-        children: option.children?.map((option) => optionToTreeData(option, depth + 1)),
-        isLeaf: !option.children || option.children.length === 0,
+        children: childOptions,
+        isLeaf: !isLeaf,
       };
     },
-    [filteredKeys, fitContent, searchTerm, selectedKeys, theme],
+    [debouncedSearch, filteredOptionsKeys, fitContent, getIsLeaf, selectedKeys, theme],
   );
 
-  const customSwitcherIcon = useCallback(({ isLeaf, expanded }) => {
-    if (isLeaf) return <span className="block w-4" />;
-
-    return <ChevronDownIcon className={classNames('h-4 w-4', { '-rotate-90': !expanded })} />;
-  }, []);
+  const treeData = useMemo(() => {
+    return options.map((option) => optionToTreeData(option));
+  }, [optionToTreeData, options]);
 
   const handleExpand: TreeProps['onExpand'] = useCallback((keys) => setExpandedKeys(keys), []);
 
@@ -167,13 +182,32 @@ const InnerTreeSelect = <IsMulti extends boolean>(
     onChange?.(null);
   }, [onChange]);
 
-  // Selection for multiple
-  const handleCheck = useCallback(
-    (checkedKeys, info) => {
-      const { checkedNodes } = info;
+  // Only for multiple, find options depending on checked keys
+  const currentOptions = useMemo<TreeSelectOption[]>(() => {
+    const checkedOptions = [];
+    if (checkedKeys) {
+      (checkedKeys as string[]).forEach((key) => {
+        const recursiveSearch = (arr) => {
+          arr.forEach((opt) => {
+            if (opt.value === key) checkedOptions.push(opt);
+            if (opt.children) recursiveSearch(opt.children);
+          });
+        };
+        recursiveSearch(options);
+      });
+    }
+    return checkedOptions;
+  }, [checkedKeys, options]);
 
+  // Selection for multiple
+  const handleCheck = useCallback<TreeProps['onCheck']>(
+    (checkedKeys: Key[], { checkedNodes }) => {
+      // const root = fullTreeData.find((option) => checkedKeys.includes(option.key));
       // Depending of the checked strategy apply different filters
-      const filteredValues = CHECKED_STRATEGIES[checkedStrategy](checkedKeys, checkedNodes);
+      const filteredValues = CHECKED_STRATEGIES[checkedStrategy](
+        checkedKeys,
+        checkedNodes as DataNode[],
+      );
 
       // TODO: this function is repeated
       const checkedOptions: TreeSelectOption[] = [];
@@ -197,52 +231,22 @@ const InnerTreeSelect = <IsMulti extends boolean>(
   );
 
   // Search capability
-  const fuse = useMemo(() => new Fuse(options, SEARCH_OPTIONS), [options]);
   const handleSearch: ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
       e.stopPropagation();
       setSearchTerm(e.currentTarget.value);
-      onSearch?.(e.currentTarget.value);
       setIsOpen(true);
+      onSearch?.(e.currentTarget.value);
     },
     [onSearch],
   );
-  const resetSearch = useCallback(() => setSearchTerm(''), []);
-  useEffect(() => {
-    if (searchTerm && searchTerm !== '') {
-      // TODO: investigate if there is a better way for nesting search and Fuse.js
-      const filteredOptions = fuse.search(searchTerm).map(({ item }) => {
-        if (!item.children || item.children.length === 0) return item;
-        const fuseChildren = new Fuse(item.children, SEARCH_OPTIONS);
-        const childrenResult = fuseChildren.search(searchTerm);
-        return {
-          ...item,
-          children: childrenResult.map(({ item: itemChildren }) => itemChildren),
-        };
-      });
-      setFilteredKeys(filteredOptions.flatMap((opt) => flattenTree(opt).map((opt) => opt.value)));
-    }
-  }, [fuse, options, searchTerm]);
-
-  // Only for multiple, find options depending on checked keys
-  const currentOptions = useMemo<TreeSelectOption[]>(() => {
-    const checkedOptions = [];
-    if (checkedKeys) {
-      (checkedKeys as string[]).forEach((key) => {
-        const recursiveSearch = (arr) => {
-          arr.forEach((opt) => {
-            if (opt.value === key) checkedOptions.push(opt);
-            if (opt.children) recursiveSearch(opt.children);
-          });
-        };
-        recursiveSearch(options);
-      });
-    }
-    return checkedOptions;
-  }, [checkedKeys, options]);
+  const resetSearch = useCallback(() => {
+    setDebouncedSearch('');
+    setSearchTerm('');
+  }, [setDebouncedSearch]);
 
   const handleRemoveBadge = useCallback(
-    (option) => {
+    (option: TreeSelectOption) => {
       const filteredKeys = (checkedKeys as string[]).filter((key) => option.value !== key);
       // TO-DO: this function is repeated
       const checkedOptions = [];
@@ -330,11 +334,6 @@ const InnerTreeSelect = <IsMulti extends boolean>(
     selected,
     theme,
   ]);
-
-  const treeData = useMemo(() => {
-    // if (options?.[0]?.label === 'Angola') debug.current = true;
-    return options.map((option) => optionToTreeData(option));
-  }, [optionToTreeData, options]);
 
   return (
     <div className="min-w-0 " data-testid={`tree-select-${id}`}>
@@ -475,7 +474,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
                   onCheck={handleCheck}
                   treeData={treeData}
                 />
-                {(options.length === 0 || (searchTerm && filteredKeys.length === 0)) && (
+                {(options.length === 0 || (searchTerm && filteredOptionsKeys.length === 0)) && (
                   <div className="p-2 mx-auto text-sm text-gray-600 opacity-60 w-fit">
                     No results
                   </div>

@@ -10,6 +10,7 @@ import {
   createBusinessUnit,
   createGeoRegion,
   createH3Data,
+  createIndicatorRecord,
   createMaterial,
   createMaterialToH3,
   createSourcingLocation,
@@ -59,6 +60,7 @@ import { SupplierRepository } from '../../../src/modules/suppliers/supplier.repo
 import { GeoRegionRepository } from '../../../src/modules/geo-regions/geo-region.repository';
 import { MaterialRepository } from '../../../src/modules/materials/material.repository';
 import { CachedDataRepository } from '../../../src/modules/cached-data/cached-data.repository';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 
 describe('Indicator Records Service', () => {
   let indicatorRecordRepository: IndicatorRecordRepository;
@@ -150,12 +152,20 @@ describe('Indicator Records Service', () => {
         MATERIAL_TO_H3_TYPE.HARVEST,
       );
 
+      const fakeIndicatorRecordForScaler: IndicatorRecord =
+        await createIndicatorRecord();
+
+      indicatorPreconditions.sourcingRecord1.indicatorRecords = [
+        fakeIndicatorRecordForScaler,
+      ];
+
       const sourcingData = {
         sourcingRecordId: indicatorPreconditions.sourcingRecord1.id,
         tonnage: indicatorPreconditions.sourcingRecord1.tonnage,
         geoRegionId: indicatorPreconditions.sourcingLocation1.geoRegionId,
         materialId: indicatorPreconditions.sourcingLocation1.materialId,
         year: indicatorPreconditions.sourcingRecord1.year,
+        sourcingRecord: indicatorPreconditions.sourcingRecord1,
       };
 
       const providedCoefficients: IndicatorCoefficientsDto = {
@@ -183,11 +193,24 @@ describe('Indicator Records Service', () => {
     test('When creating Indicator Records providing indicator coefficients, it should create the records properly', async () => {
       // ARRANGE
       const indicatorPreconditions = await createPreconditions();
-      const fakeH3Data = await createH3Data();
+
+      const h3Material = await h3DataMock({
+        h3TableName: 'fakeMaterialTable2002',
+        h3ColumnName: 'fakeMaterialColumn2002',
+        additionalH3Data: h3MaterialExampleDataFixture,
+        year: 2002,
+      });
+
       const materialH3Data = await createMaterialToH3(
         indicatorPreconditions.material1.id,
-        fakeH3Data.id,
+        h3Material.id,
         MATERIAL_TO_H3_TYPE.HARVEST,
+      );
+
+      await createMaterialToH3(
+        indicatorPreconditions.material1.id,
+        h3Material.id,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
       );
 
       const sourcingData = {
@@ -196,6 +219,7 @@ describe('Indicator Records Service', () => {
         geoRegionId: indicatorPreconditions.sourcingLocation1.geoRegionId,
         materialId: indicatorPreconditions.sourcingLocation1.materialId,
         year: indicatorPreconditions.sourcingRecord1.year,
+        sourcingRecord: indicatorPreconditions.sourcingRecord1,
       };
 
       const providedCoefficients: IndicatorCoefficientsDto = {
@@ -223,7 +247,7 @@ describe('Indicator Records Service', () => {
         materialH3Data,
         sourcingData.sourcingRecordId,
         350,
-        null,
+        1610,
         calculatedIndicators,
       );
       await checkCreatedIndicatorRecord(
@@ -232,7 +256,7 @@ describe('Indicator Records Service', () => {
         materialH3Data,
         sourcingData.sourcingRecordId,
         100,
-        null,
+        1610,
         calculatedIndicators,
       );
       await checkCreatedIndicatorRecord(
@@ -241,7 +265,7 @@ describe('Indicator Records Service', () => {
         materialH3Data,
         sourcingData.sourcingRecordId,
         400,
-        null,
+        1610,
         calculatedIndicators,
       );
       await checkCreatedIndicatorRecord(
@@ -250,19 +274,22 @@ describe('Indicator Records Service', () => {
         materialH3Data,
         sourcingData.sourcingRecordId,
         200,
-        null,
+        1610,
         calculatedIndicators,
       );
     });
 
     test("When creating indicator record with no provided coefficients, and there's no H3 data for the given material, it should throw an error", async () => {
       //ARRANGE
+
+      const randomSourcingRecord: SourcingRecord = await createSourcingRecord();
       const sourcingData = {
         sourcingRecordId: UUIDv4(),
         geoRegionId: UUIDv4(),
         materialId: UUIDv4(),
         tonnage: 10000,
         year: 2010,
+        sourcingRecord: randomSourcingRecord,
       };
 
       jest
@@ -292,6 +319,7 @@ describe('Indicator Records Service', () => {
         geoRegionId: indicatorPreconditions.sourcingLocation2.geoRegionId,
         materialId: indicatorPreconditions.sourcingLocation2.materialId,
         year: indicatorPreconditions.sourcingRecord2.year,
+        sourcingRecord: indicatorPreconditions.sourcingRecord2,
       };
 
       const h3Material = await h3DataMock({
@@ -324,12 +352,19 @@ describe('Indicator Records Service', () => {
       //ARRANGE
       const indicatorPreconditions = await createPreconditions();
 
+      const fakeIndicatorRecordForScaler: IndicatorRecord =
+        await createIndicatorRecord();
+      indicatorPreconditions.sourcingRecord2.indicatorRecords = [
+        fakeIndicatorRecordForScaler,
+      ];
+
       const sourcingData = {
         sourcingRecordId: indicatorPreconditions.sourcingRecord2.id,
         tonnage: indicatorPreconditions.sourcingRecord2.tonnage,
         geoRegionId: indicatorPreconditions.sourcingLocation2.geoRegionId,
         materialId: indicatorPreconditions.sourcingLocation2.materialId,
         year: indicatorPreconditions.sourcingRecord2.year,
+        sourcingRecord: indicatorPreconditions.sourcingRecord2,
       };
 
       const h3Material = await h3DataMock({
@@ -376,6 +411,7 @@ describe('Indicator Records Service', () => {
         geoRegionId: indicatorPreconditions.sourcingLocation2.geoRegionId,
         materialId: indicatorPreconditions.sourcingLocation2.materialId,
         year: indicatorPreconditions.sourcingRecord2.year,
+        sourcingRecord: indicatorPreconditions.sourcingRecord2,
       };
 
       const h3Material = await h3DataMock({
@@ -563,6 +599,7 @@ describe('Indicator Records Service', () => {
         geoRegionId: indicatorPreconditions.sourcingLocation2.geoRegionId,
         materialId: indicatorPreconditions.sourcingLocation2.materialId,
         year: indicatorPreconditions.sourcingRecord2.year,
+        sourcingRecord: indicatorPreconditions.sourcingRecord2,
       };
 
       const h3MaterialProducer = await h3DataMock({
@@ -670,6 +707,7 @@ describe('Indicator Records Service', () => {
         geoRegionId: indicatorPreconditions.sourcingLocation2.geoRegionId,
         materialId: indicatorPreconditions.sourcingLocation2.materialId,
         year: indicatorPreconditions.sourcingRecord2.year,
+        sourcingRecord: indicatorPreconditions.sourcingRecord2,
       };
 
       const h3MaterialHarvest = await h3DataMock({

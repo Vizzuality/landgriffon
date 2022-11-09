@@ -379,7 +379,7 @@ export class IndicatorRecordsService extends AppBaseService<
     calculatedIndicatorValues.sourcingRecordId = sourcingData.sourcingRecordId;
     calculatedIndicatorValues.materialH3DataId = materialH3DataId;
 
-    // now we have here production data thta will later be saved as scaler in new IR:
+    // now we have here production data that will later be saved as scaler in new IR:
     calculatedIndicatorValues.production = productionValue;
     calculatedIndicatorValues.values = new Map();
 

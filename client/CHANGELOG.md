@@ -65,7 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added interaction in the charts clicking on the legend [LANDGRIF-772](https://vizzuality.atlassian.net/browse/LANDGRIF-772)
 
 ### Changed
-
+- Removed minus sign (`-`) from absolute difference in comparison charts. [LANDGRIF-1046](https://vizzuality.atlassian.net/browse/LANDGRIF-1046)
 - Bigger table page size [LANDGRIF-922](https://vizzuality.atlassian.net/browse/LANDGRIF-922)
 - `ACTUAL_DATA` was removed and a null scenario id is used in it's place
 - Send `scenarioId` param alongside analysis filters [LANDGRIF-891](https://vizzuality.atlassian.net/browse/LANDGRIF-891)

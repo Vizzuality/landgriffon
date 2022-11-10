@@ -344,13 +344,16 @@ export class IndicatorRecordsService extends AppBaseService<
       materialId: string;
       geoRegionId: string;
       year: number;
-      sourcingRecord: SourcingRecord;
+      sourcingRecord?: SourcingRecord;
     },
     indicators: Indicator[],
     materialH3DataId: string,
   ): Promise<IndicatorRecordCalculatedValuesDto> {
     let productionValue: number;
-    if (sourcingData.sourcingRecord.indicatorRecords) {
+    if (
+      sourcingData.sourcingRecord &&
+      sourcingData.sourcingRecord.indicatorRecords
+    ) {
       productionValue = sourcingData.sourcingRecord.indicatorRecords[0].scaler;
     } else {
       const materialH3s: Map<MATERIAL_TO_H3_TYPE, H3Data> =

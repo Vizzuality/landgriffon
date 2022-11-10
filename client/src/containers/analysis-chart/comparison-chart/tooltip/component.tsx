@@ -48,7 +48,6 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ payload }) => {
             )}
           >
             {absoluteDifference > 0 && '+'}
-            {absoluteDifference < 0 && '-'}
             {comparisonMode === 'absolute'
               ? NUMBER_FORMAT(absoluteDifference)
               : `${NUMBER_FORMAT(percentageDifference)}%`}

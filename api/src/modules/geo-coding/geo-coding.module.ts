@@ -5,6 +5,7 @@ import { UnknownLocationGeoCodingStrategy } from 'modules/geo-coding/strategies/
 import { CountryOfProductionGeoCodingStrategy } from 'modules/geo-coding/strategies/country-of-production.geocoding.service';
 import { AggregationPointGeocodingStrategy } from 'modules/geo-coding/strategies/aggregation-point.geocoding.service';
 import { PointOfProductionGeocodingStrategy } from 'modules/geo-coding/strategies/point-of-production.geocoding.service';
+import { AdminRegionOfProductionService } from 'modules/geo-coding/strategies/admin-region-of-production.service';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
@@ -57,6 +58,7 @@ const geocodingCacheEnabled: boolean =
     CountryOfProductionGeoCodingStrategy,
     AggregationPointGeocodingStrategy,
     PointOfProductionGeocodingStrategy,
+    AdminRegionOfProductionService,
   ],
   exports: [GeoCodingAbstractClass],
 })

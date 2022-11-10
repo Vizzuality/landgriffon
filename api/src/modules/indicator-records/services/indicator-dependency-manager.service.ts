@@ -4,16 +4,6 @@ import { paramsToQueryInjector } from 'utils/helpers/params-to-query-injector.he
 
 // TODO: All dependencies below should be ideally translated to queryBuilders
 
-const dependenciesForImport: any = {
-  production: `sum_material_over_georegion(sourcing_location."geoRegionId", sourcing_location."materialId", 'producer') as production`,
-  harvestedArea: `sum_material_over_georegion(sourcing_location."geoRegionId", sourcing_location."materialId", 'harvest') as "harvestedArea"`,
-  weightedAllHarvest: ` sum_h3_weighted_cropland_area(sourcing_location."geoRegionId", sourcing_location."materialId", 'producer') as "weightedAllHarvest"`,
-  rawDeforestation: `sum_weighted_deforestation_over_georegion(sourcing_location."geoRegionId", sourcing_location."materialId", 'producer') as "rawDeforestation"`,
-  rawCarbon: ` sum_weighted_carbon_over_georegion(sourcing_location."geoRegionId", sourcing_location."materialId", 'producer') as "rawCarbon"`,
-  rawWater: `get_blwf_impact(sourcing_location."adminRegionId", sourcing_location."materialId") as "rawWater"`,
-  waterStressPerct: `get_blwf_impact(sourcing_location."adminRegionId", sourcing_location."materialId") as "rawWater"`,
-};
-
 const dependenciesForInterventions: any = {
   production: `sum_material_over_georegion($1, $2, 'producer') as production`,
   harvestedArea: `sum_material_over_georegion($1, $2, 'harvest') as "harvestedArea"`,
@@ -22,6 +12,8 @@ const dependenciesForInterventions: any = {
   rawCarbon: `sum_weighted_carbon_over_georegion($1, $2, 'producer') as "rawCarbon"`,
   rawWater: `get_blwf_impact($3, $2) as "rawWater"`,
   waterStressPerct: `get_percentage_water_stress_area($1) as "waterStressPerct"`,
+  satDeforestation: ` sum_satelligence_deforestation_over_georegion($1) as "satDeforestation"`,
+  satDeforestationRisk: `sum_satelligence_deforestation_risk_over_georegion($1) as "satDeforestationRisk"`,
 };
 
 // landUse needs: landPerTon and tonnage
@@ -50,20 +42,12 @@ const indicatorVSRawValueDependencies: any = {
     waterStressPerct: dependenciesForInterventions['waterStressPerct'],
     rawWater: dependenciesForInterventions['rawWater'],
   },
-};
-
-export const INDICATOR_TO_RAW_VALUES: any = {
-  [INDICATOR_TYPES_NEW.LAND_USE]: ['production', 'harvestedArea'],
-  [INDICATOR_TYPES_NEW.DEFORESTATION_RISK]: [
-    'rawDeforestation',
-    'weightedAllHarvest',
-  ],
-  [INDICATOR_TYPES_NEW.CLIMATE_RISK]: ['rawCarbon', 'weightedAllHarvest'],
-  [INDICATOR_TYPES_NEW.WATER_USE]: ['rawWater', 'weightedAllHarvest'],
-  [INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE]: [
-    'waterStressPerct',
-    'rawWater',
-  ],
+  [INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION]: {
+    satDeforestation: dependenciesForInterventions['satDeforestation'],
+  },
+  [INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION_RISK]: {
+    satDeforestationRisk: dependenciesForInterventions['satDeforestationRisk'],
+  },
 };
 
 @Injectable()
@@ -72,13 +56,6 @@ export class IndicatorDependencyManager {
    * @description: Returns the query (stored procedure) needed to calculate the given raw value for a indicator
    * TODO: This should be (again) translated to api logic as it is in (WIP) https://github.com/Vizzuality/landgriffon/pull/591
    */
-  getQueryForImport(type: any): string {
-    return dependenciesForImport[type];
-  }
-
-  getQueryForIntervention(type: any): string {
-    return dependenciesForImport[type];
-  }
 
   buildQueryForIntervention(nameCodes: INDICATOR_TYPES_NEW[]): any {
     const queries: any[] = [];

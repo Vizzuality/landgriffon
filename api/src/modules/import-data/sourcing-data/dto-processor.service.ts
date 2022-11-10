@@ -37,7 +37,7 @@ export interface SourcingRecordsDtos {
   sourcingData: SourcingData[];
 }
 
-const SOURCING_LOCATION_PROPERTIES: Array<string> = [
+const SOURCING_LOCATION_SHEET_PROPERTIES: Array<string> = [
   'material.hsCode',
   'business_unit.path',
   't1_supplier.name',
@@ -46,6 +46,7 @@ const SOURCING_LOCATION_PROPERTIES: Array<string> = [
   'location_address_input',
   'location_latitude_input',
   'location_longitude_input',
+  'location_admin_region_input',
   'location_type',
   'material.path',
   'business_unit.path',
@@ -113,7 +114,7 @@ export class SourcingRecordsDtoProcessorService {
   }
 
   private isSourcingLocationData(field: string): boolean {
-    return SOURCING_LOCATION_PROPERTIES.includes(field);
+    return SOURCING_LOCATION_SHEET_PROPERTIES.includes(field);
   }
 
   private getYear(field: string): number | null {
@@ -376,6 +377,10 @@ export class SourcingRecordsDtoProcessorService {
       sourcingLocationData.location_address_input === ''
         ? undefined
         : sourcingLocationData.location_address_input;
+    sourcingLocationDto.locationAdminRegionInput =
+      sourcingLocationData.location_admin_region_input === ''
+        ? undefined
+        : sourcingLocationData.location_admin_region_input;
     sourcingLocationDto.locationLatitude =
       sourcingLocationData.location_latitude_input === ''
         ? undefined

@@ -197,7 +197,16 @@ export class AdminRegionsService extends AppBaseService<
     return this.adminRegionRepository.findByIds(ids);
   }
 
-  async getAdminRegionDescendants(adminRegionIds: string[]): Promise<string[]> {
+  /**
+   * @description: Returns a flat array of all children of given Admin Region's Id
+   *               Optionally return full entities, or Ids
+   */
+
+  // TODO: Add proper return typing to support retrieving entities or Ids
+  async getAdminRegionDescendants(
+    adminRegionIds: string[],
+    options?: { fullEntities: boolean },
+  ): Promise<any> {
     // using type casting not to search for and provide the full entity, since only id is used by the method (to improve performance)
     let adminRegions: AdminRegion[] = [];
     for (const id of adminRegionIds) {
@@ -206,6 +215,9 @@ export class AdminRegionsService extends AppBaseService<
           id,
         } as AdminRegion);
       adminRegions = [...adminRegions, ...result];
+    }
+    if (options?.fullEntities) {
+      return adminRegions;
     }
 
     return adminRegions.map((adminRegion: AdminRegion) => adminRegion.id);

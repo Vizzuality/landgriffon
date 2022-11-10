@@ -35,16 +35,12 @@ import {
 import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto';
 import { UpdateIndicatorDto } from 'modules/indicators/dto/update.indicator.dto';
 import { PaginationMeta } from 'utils/app-base.service';
-import { IndicatorDependencyManager } from 'modules/impact/services/indicator-dependency-manager.service';
 
 @Controller(`/api/v1/indicators`)
 @ApiTags(indicatorResource.className)
 @ApiBearerAuth()
 export class IndicatorsController {
-  constructor(
-    public readonly indicatorsService: IndicatorsService,
-    public readonly dependencyGetter: IndicatorDependencyManager,
-  ) {}
+  constructor(public readonly indicatorsService: IndicatorsService) {}
 
   @ApiOperation({
     description: 'Find all indicators',

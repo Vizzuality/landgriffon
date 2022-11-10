@@ -9,6 +9,7 @@ import { MaterialsModule } from 'modules/materials/materials.module';
 import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { CachedDataModule } from 'modules/cached-data/cached-data.module';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
+import { IndicatorDependencyManager } from 'modules/indicator-records/services/indicator-dependency-manager.service';
 
 @Module({
   imports: [
@@ -20,7 +21,15 @@ import { ImpactCalculator } from 'modules/indicator-records/services/impact-calc
     CachedDataModule,
   ],
   controllers: [IndicatorRecordsController],
-  providers: [IndicatorRecordsService, ImpactCalculator],
-  exports: [IndicatorRecordsService, ImpactCalculator],
+  providers: [
+    IndicatorRecordsService,
+    ImpactCalculator,
+    IndicatorDependencyManager,
+  ],
+  exports: [
+    IndicatorRecordsService,
+    ImpactCalculator,
+    IndicatorDependencyManager,
+  ],
 })
 export class IndicatorRecordsModule {}

@@ -23,7 +23,7 @@ import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-
 import { IndicatorRecordCalculatedValuesDtoV2 } from 'modules/indicator-records/dto/indicator-record-calculated-values.dto';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
-import { IndicatorDependencyManager } from 'modules/impact/services/indicator-dependency-manager.service';
+import { IndicatorDependencyManager } from 'modules/indicator-records/services/indicator-dependency-manager.service';
 
 /**
  * @description: This is PoC (Proof of Concept) for the updated LG methodology v0.1
@@ -76,13 +76,20 @@ export class ImpactCalculator {
         unsustainableWaterUse,
       );
       map.set(INDICATOR_TYPES_NEW.LAND_USE, landUse);
+      map.set(
+        INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION,
+        data.satDeforestation,
+      );
+
+      map.set(
+        INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION_RISK,
+        data.satDeforestationRisk,
+      );
 
       activeIndicators.forEach((indicator: Indicator) => {
         newImpactToBeSaved.push(
           IndicatorRecord.merge(new IndicatorRecord(), {
-            value:
-              map.get(indicator.nameCode as INDICATOR_TYPES_NEW) ??
-              (null as unknown as number),
+            value: map.get(indicator.nameCode as INDICATOR_TYPES_NEW),
             indicatorId: indicator.id,
             status: INDICATOR_RECORD_STATUS.SUCCESS,
             sourcingRecordId: data.sourcingRecordId,
@@ -194,15 +201,23 @@ export class ImpactCalculator {
         INDICATOR_TYPES_NEW.LAND_USE,
         landUse,
       );
+      calculatedIndicatorRecordValues.values.set(
+        INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION,
+        rawData.satDeforestation,
+      );
+
+      calculatedIndicatorRecordValues.values.set(
+        INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION_RISK,
+        rawData.satDeforestationRisk,
+      );
     }
 
     indicatorsToCalculateImpactFor.forEach((indicator: Indicator) => {
       indicatorRecords.push(
         IndicatorRecord.merge(new IndicatorRecord(), {
-          value:
-            calculatedIndicatorRecordValues.values.get(
-              indicator.nameCode as INDICATOR_TYPES_NEW,
-            ) ?? (null as unknown as number),
+          value: calculatedIndicatorRecordValues.values.get(
+            indicator.nameCode as INDICATOR_TYPES_NEW,
+          ),
           indicatorId: indicator.id,
           status: INDICATOR_RECORD_STATUS.SUCCESS,
           sourcingRecordId: sourcingData.sourcingRecordId,
@@ -270,6 +285,11 @@ export class ImpactCalculator {
       newIndicatorCoefficients[INDICATOR_TYPES_NEW.WATER_USE] *
         sourcingData.tonnage,
     );
+
+    // TODO: We need to ignore satelligence indicators from being affected by a coefficient that a user can send
+    //       updating the model will be required for this, as by default any indicator that is active will be shown
+    //       in the UI, also for sending coefficients in intervention calculation
+
     // Depends on water use indicator's final value
     const waterUseValue: number = calculatedIndicatorValues.values.get(
       INDICATOR_TYPES_NEW.WATER_USE,

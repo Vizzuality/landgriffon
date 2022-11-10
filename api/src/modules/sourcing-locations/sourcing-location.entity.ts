@@ -26,6 +26,8 @@ export enum LOCATION_TYPES {
   AGGREGATION_POINT = 'aggregation point',
   POINT_OF_PRODUCTION = 'point of production',
   COUNTRY_OF_PRODUCTION = 'country of production',
+  ADMINISTRATIVE_REGION_OF_PRODUCTION = 'administrative region of production',
+  COUNTRY_OF_DELIVERY = 'country of delivery',
 }
 
 //TODO Refactor to use the dash version also in the DB, to"

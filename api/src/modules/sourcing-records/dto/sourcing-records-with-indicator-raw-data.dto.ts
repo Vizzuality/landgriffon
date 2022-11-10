@@ -22,6 +22,9 @@ export class SourcingRecordsWithIndicatorRawDataDtoV2 {
   rawWater: number;
 
   materialH3DataId: string;
+
+  satDeforestation: number;
+  satDeforestationRisk: number;
 }
 
 export class IndicatorRawDataBySourcingRecord {
@@ -36,6 +39,9 @@ export class IndicatorRawDataBySourcingRecord {
   rawDeforestation: number;
   rawCarbon: number;
   rawWater: number;
+
+  satDeforestation: number;
+  satDeforestationRisk: number;
 }
 
 // TODO: Delete below class once new methodology is validated

@@ -190,6 +190,22 @@ export class IndicatorsService extends AppBaseService<
     return this.indicatorRepository.save(activeIndicators);
   }
 
+  /**
+   * @description: Reset all present Indicators to status inactive, to be actived by a spreadsheet (import)
+   *               as requested by the user
+   * @note: TypeORM does not seem to support bulk updates without filtering criteria
+   */
+  async resetIndicators(): Promise<void> {
+    this.logger.log(`Setting all Indicators to Inactive...`);
+    const allIndicators: Indicator[] = await this.indicatorRepository.find();
+    await this.indicatorRepository.save(
+      allIndicators.map((i: Indicator) => ({
+        ...i,
+        status: INDICATOR_STATUS.INACTIVE,
+      })),
+    );
+  }
+
   async extendFindAllQuery(
     queryBuilder: SelectQueryBuilder<Indicator>,
     fetchSpecificacion: FetchSpecification,

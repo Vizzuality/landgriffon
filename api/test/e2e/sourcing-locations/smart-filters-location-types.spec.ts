@@ -70,13 +70,18 @@ describe('SourcingLocationsModule (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .expect(HttpStatus.OK);
 
-      expect(response.body.data.length).toEqual(4);
+      expect(response.body.data.length).toEqual(6);
       expect(response.body.data).toEqual(
         expect.arrayContaining([
           { label: 'Country of production', value: 'country-of-production' },
           { label: 'Aggregation point', value: 'aggregation-point' },
           { label: 'Point of production', value: 'point-of-production' },
           { label: 'Unknown', value: 'unknown' },
+          {
+            label: 'Administrative region of production',
+            value: 'administrative-region-of-production',
+          },
+          { label: 'Country of delivery', value: 'country-of-delivery' },
         ]),
       );
     });

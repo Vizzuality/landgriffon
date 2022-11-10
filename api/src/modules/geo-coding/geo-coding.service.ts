@@ -9,6 +9,7 @@ import {
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
+import { AdminRegionOfProductionService } from 'modules/geo-coding/strategies/admin-region-of-production.service';
 
 @Injectable()
 export class GeoCodingService extends GeoCodingAbstractClass {
@@ -19,6 +20,7 @@ export class GeoCodingService extends GeoCodingAbstractClass {
     protected readonly pointOfProductionGeocodingService: PointOfProductionGeocodingStrategy,
     protected readonly countryOfProductionService: CountryOfProductionGeoCodingStrategy,
     protected readonly unknownLocationService: UnknownLocationGeoCodingStrategy,
+    protected readonly adminRegionOfProductionService: AdminRegionOfProductionService,
   ) {
     super();
   }
@@ -48,6 +50,19 @@ export class GeoCodingService extends GeoCodingAbstractClass {
       if (location.locationType === LOCATION_TYPES.POINT_OF_PRODUCTION) {
         geoCodedSourcingData.push(
           await this.geoCodePointOfProduction(location),
+        );
+      }
+      if (location.locationType === LOCATION_TYPES.COUNTRY_OF_DELIVERY) {
+        geoCodedSourcingData.push(
+          await this.geoCodeCountryOfDeliveryLocationType(location),
+        );
+      }
+      if (
+        location.locationType ===
+        LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION
+      ) {
+        geoCodedSourcingData.push(
+          await this.geoCodeAdminRegionOfProductionLocationType(location),
         );
       }
     }
@@ -84,6 +99,22 @@ export class GeoCodingService extends GeoCodingAbstractClass {
         locationInfo as SourcingData,
       );
     }
+
+    if (locationInfo.locationType === LOCATION_TYPES.COUNTRY_OF_DELIVERY) {
+      geoCodedSourcingLocation =
+        await this.geoCodeCountryOfDeliveryLocationType(
+          locationInfo as SourcingData,
+        );
+    }
+    if (
+      locationInfo.locationType ===
+      LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION
+    ) {
+      geoCodedSourcingLocation =
+        await this.geoCodeAdminRegionOfProductionLocationType(
+          locationInfo as SourcingData,
+        );
+    }
     return geoCodedSourcingLocation as SourcingLocation;
   }
 
@@ -115,5 +146,26 @@ export class GeoCodingService extends GeoCodingAbstractClass {
     sourcingData: SourcingData,
   ): Promise<SourcingData> {
     return this.unknownLocationService.geoCodeUnknownLocationType(sourcingData);
+  }
+
+  /**
+   * @description: Due to LG methodology reasons, it is not clear yet how to treat
+   *               Country of Delivery location type. For now it will be treated as Unknown
+   *               This will be improved in the future so it will require its own logic
+   *               as the others
+   */
+
+  async geoCodeCountryOfDeliveryLocationType(
+    sourcingData: SourcingData,
+  ): Promise<SourcingData> {
+    return this.unknownLocationService.geoCodeUnknownLocationType(sourcingData);
+  }
+
+  async geoCodeAdminRegionOfProductionLocationType(
+    sourcingData: SourcingData,
+  ): Promise<SourcingData> {
+    return this.adminRegionOfProductionService.geoCodeAdministrativeRegionOfProduction(
+      sourcingData,
+    );
   }
 }

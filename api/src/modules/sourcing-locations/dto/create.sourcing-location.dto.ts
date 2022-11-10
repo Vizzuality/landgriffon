@@ -68,6 +68,10 @@ export class CreateSourcingLocationDto {
 
   @IsOptional()
   @IsString()
+  locationAdminRegionInput?: string;
+
+  @IsOptional()
+  @IsString()
   @MinLength(2)
   @ApiPropertyOptional()
   locationCountryInput?: string;

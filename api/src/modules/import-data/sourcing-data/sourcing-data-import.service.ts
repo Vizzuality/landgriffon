@@ -219,6 +219,7 @@ export class SourcingDataImportService {
   async cleanDataBeforeImport(): Promise<void> {
     this.logger.log('Cleaning database before import...');
     try {
+      await this.indicatorService.resetIndicators();
       await this.scenarioService.clearTable();
       await this.indicatorRecordsService.clearTable();
       await this.businessUnitService.clearTable();

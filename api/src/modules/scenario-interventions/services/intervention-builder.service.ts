@@ -209,6 +209,7 @@ export class InterventionBuilder {
           materialId: sourcingLocation.materialId,
           adminRegionId: sourcingLocation.adminRegionId,
           year: sourcingRecord.year,
+          sourcingRecord: sourcingRecord,
         };
         sourcingRecord.indicatorRecords = useNewMethodology
           ? await this.impactCalculator.createIndicatorRecordsBySourcingRecords(

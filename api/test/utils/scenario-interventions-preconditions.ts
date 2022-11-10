@@ -24,6 +24,8 @@ import {
   createSupplier,
 } from '../entity-mocks';
 import { MATERIAL_TO_H3_TYPE } from '../../src/modules/materials/material-to-h3.entity';
+import { h3DataMock } from '../e2e/h3-data/mocks/h3-data.mock';
+import { h3MaterialExampleDataFixture } from '../e2e/h3-data/mocks/h3-fixtures';
 
 export interface ScenarioInterventionPreconditions {
   scenario: Scenario;
@@ -41,6 +43,10 @@ export interface ScenarioInterventionPreconditions {
   businessUnit2: BusinessUnit;
   sourcingLocation1: SourcingLocation;
   sourcingLocation2: SourcingLocation;
+  indicator1: Indicator;
+  indicator2: Indicator;
+  indicator3: Indicator;
+  indicator4: Indicator;
 }
 
 export async function createInterventionPreconditions(): Promise<ScenarioInterventionPreconditions> {
@@ -100,25 +106,37 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
   await createH3Data({ indicatorId: indicator2.id });
   await createH3Data({ indicatorId: indicator3.id });
   await createH3Data({ indicatorId: indicator4.id });
+
+  // creating h3 data for material to be able to get scaler for new indicator records
+
+  const h3Material = await h3DataMock({
+    h3TableName: 'fakeMaterialTable2002',
+    h3ColumnName: 'fakeMaterialColumn2002',
+    additionalH3Data: h3MaterialExampleDataFixture,
+    year: 2002,
+  });
+
   await createMaterialToH3(
     material1Descendant.id,
-    h3data1.id,
+    h3Material.id,
     MATERIAL_TO_H3_TYPE.HARVEST,
   );
+
   await createMaterialToH3(
     material1Descendant.id,
-    h3data1.id,
+    h3Material.id,
     MATERIAL_TO_H3_TYPE.PRODUCER,
   );
 
   await createMaterialToH3(
     material2.id,
-    h3data1.id,
+    h3Material.id,
     MATERIAL_TO_H3_TYPE.HARVEST,
   );
+
   await createMaterialToH3(
     material2.id,
-    h3data1.id,
+    h3Material.id,
     MATERIAL_TO_H3_TYPE.PRODUCER,
   );
 
@@ -221,23 +239,42 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
     businessUnit2,
     sourcingLocation1,
     sourcingLocation2,
+    indicator1,
+    indicator2,
+    indicator3,
+    indicator4,
   };
 }
 
 export async function createInterventionPreconditionsWithMultipleYearRecords(): Promise<ScenarioInterventionPreconditions> {
   const scenarioInterventionPreconditions: ScenarioInterventionPreconditions =
     await createInterventionPreconditions();
-  await createSourcingRecord({
+  const newSourcingRecord1: SourcingRecord = await createSourcingRecord({
     sourcingLocationId: scenarioInterventionPreconditions.sourcingLocation1.id,
     year: 2019,
     tonnage: 550,
   });
 
-  await createSourcingRecord({
+  const newSourcingRecord2: SourcingRecord = await createSourcingRecord({
     sourcingLocationId: scenarioInterventionPreconditions.sourcingLocation2.id,
     year: 2019,
     tonnage: 650,
   });
+
+  await createIndicatorRecordForIntervention(
+    {
+      indicator: scenarioInterventionPreconditions.indicator1,
+      value: 2000,
+    },
+    newSourcingRecord1,
+  );
+  await createIndicatorRecordForIntervention(
+    {
+      indicator: scenarioInterventionPreconditions.indicator1,
+      value: 2000,
+    },
+    newSourcingRecord2,
+  );
 
   return scenarioInterventionPreconditions;
 }

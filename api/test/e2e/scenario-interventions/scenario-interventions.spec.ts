@@ -67,6 +67,8 @@ import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { Unit } from 'modules/units/unit.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
+import { dropH3DataMock, h3DataMock } from '../h3-data/mocks/h3-data.mock';
+import { h3MaterialExampleDataFixture } from '../h3-data/mocks/h3-fixtures';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -218,6 +220,10 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       SourcingLocation,
       SourcingLocationGroup,
       Scenario,
+    ]);
+    await dropH3DataMock([
+      'fake_material_table2002',
+      'fake_replacing_material_table',
     ]);
   });
 
@@ -593,15 +599,23 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       });
 
       const replacingMaterial: Material = await createMaterial();
-      const h3data = await createH3Data();
+
+      const h3ReplacingMaterial = await h3DataMock({
+        h3TableName: 'fakeReplacingMaterialTable',
+        h3ColumnName: 'fakeReplacingMaterialColumn',
+        additionalH3Data: h3MaterialExampleDataFixture,
+        year: 2002,
+      });
+
       await createMaterialToH3(
         replacingMaterial.id,
-        h3data.id,
+        h3ReplacingMaterial.id,
         MATERIAL_TO_H3_TYPE.HARVEST,
       );
+
       await createMaterialToH3(
         replacingMaterial.id,
-        h3data.id,
+        h3ReplacingMaterial.id,
         MATERIAL_TO_H3_TYPE.PRODUCER,
       );
 
@@ -706,15 +720,22 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
         const replacingMaterial: Material = await createMaterial();
-        const h3data = await createH3Data();
+        const h3ReplacingMaterial = await h3DataMock({
+          h3TableName: 'fakeReplacingMaterialTable',
+          h3ColumnName: 'fakeReplacingMaterialColumn',
+          additionalH3Data: h3MaterialExampleDataFixture,
+          year: 2002,
+        });
+
         await createMaterialToH3(
           replacingMaterial.id,
-          h3data.id,
+          h3ReplacingMaterial.id,
           MATERIAL_TO_H3_TYPE.HARVEST,
         );
+
         await createMaterialToH3(
           replacingMaterial.id,
-          h3data.id,
+          h3ReplacingMaterial.id,
           MATERIAL_TO_H3_TYPE.PRODUCER,
         );
 
@@ -803,15 +824,22 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
         const replacingMaterial: Material = await createMaterial();
-        const h3data = await createH3Data();
+        const h3ReplacingMaterial = await h3DataMock({
+          h3TableName: 'fakeReplacingMaterialTable',
+          h3ColumnName: 'fakeReplacingMaterialColumn',
+          additionalH3Data: h3MaterialExampleDataFixture,
+          year: 2002,
+        });
+
         await createMaterialToH3(
           replacingMaterial.id,
-          h3data.id,
+          h3ReplacingMaterial.id,
           MATERIAL_TO_H3_TYPE.HARVEST,
         );
+
         await createMaterialToH3(
           replacingMaterial.id,
-          h3data.id,
+          h3ReplacingMaterial.id,
           MATERIAL_TO_H3_TYPE.PRODUCER,
         );
 

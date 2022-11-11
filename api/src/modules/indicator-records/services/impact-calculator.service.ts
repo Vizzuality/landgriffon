@@ -1,6 +1,7 @@
 import {
   Injectable,
   Logger,
+  NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
@@ -18,12 +19,18 @@ import {
   IndicatorRecord,
 } from 'modules/indicator-records/indicator-record.entity';
 import { IndicatorCoefficientsDtoV2 } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
-import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
+import {
+  MaterialToH3,
+  MATERIAL_TO_H3_TYPE,
+} from 'modules/materials/material-to-h3.entity';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 import { IndicatorRecordCalculatedValuesDtoV2 } from 'modules/indicator-records/dto/indicator-record-calculated-values.dto';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
-import { IndicatorDependencyManager } from 'modules/indicator-records/services/indicator-dependency-manager.service';
+import { IndicatorDependencyManager } from 'modules/impact/services/indicator-dependency-manager.service';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { H3DataService } from 'modules/h3-data/h3-data.service';
 
 /**
  * @description: This is PoC (Proof of Concept) for the updated LG methodology v0.1
@@ -39,6 +46,7 @@ export class ImpactCalculator {
     private readonly materialToH3: MaterialsToH3sService,
     private readonly indicatorService: IndicatorsService,
     private readonly dependencyManager: IndicatorDependencyManager,
+    private readonly h3DataService: H3DataService,
   ) {}
 
   async calculateImpactForAllSourcingRecords(
@@ -110,6 +118,7 @@ export class ImpactCalculator {
       adminRegionId: string;
       tonnage: number;
       year: number;
+      sourcingRecord?: SourcingRecord;
     },
     providedCoefficients?: IndicatorCoefficientsDtoV2,
   ): Promise<any> {
@@ -119,6 +128,7 @@ export class ImpactCalculator {
       adminRegionId,
       tonnage,
       sourcingRecordId,
+      sourcingRecord,
     } = sourcingData;
 
     let calculatedIndicatorRecordValues: IndicatorRecordCalculatedValuesDtoV2;
@@ -140,6 +150,51 @@ export class ImpactCalculator {
         { sourcingRecordId, tonnage },
         materialH3s.h3DataId,
       );
+
+      // Getting production / scaler value from received sourcing record of finding it by material h3 data and georegion
+
+      if (
+        sourcingData.sourcingRecord &&
+        sourcingData.sourcingRecord.indicatorRecords
+      ) {
+        rawData = new IndicatorRawDataBySourcingRecord();
+        rawData.production =
+          sourcingData.sourcingRecord.indicatorRecords[0].scaler;
+      } else {
+        const materialH3s: Map<MATERIAL_TO_H3_TYPE, H3Data> =
+          await this.h3DataService.getAllMaterialH3sByClosestYear(
+            sourcingData.materialId,
+            sourcingData.year,
+          );
+
+        const materialH3: H3Data | undefined = materialH3s.get(
+          MATERIAL_TO_H3_TYPE.PRODUCER,
+        );
+        if (!materialH3) {
+          throw new NotFoundException(
+            `No H3 Data could be found the material ${sourcingData.materialId} type ${MATERIAL_TO_H3_TYPE.PRODUCER}`,
+          );
+        }
+
+        // Here we will get Raw Data, but will use only the production
+
+        const queryForActiveIndicators: string =
+          this.dependencyManager.buildQueryForIntervention(
+            indicatorsToCalculateImpactFor.map(
+              (i: Indicator) => i.nameCode as INDICATOR_TYPES_NEW,
+            ),
+          );
+
+        const rawDataForNewSourcingRecord =
+          await this.getImpactRawDataPerSourcingRecord(
+            queryForActiveIndicators,
+            materialId,
+            geoRegionId,
+            adminRegionId,
+          );
+        rawData = new IndicatorRawDataBySourcingRecord();
+        rawData.production = rawDataForNewSourcingRecord.production;
+      }
     } else {
       const queryForActiveIndicators: string =
         this.dependencyManager.buildQueryForIntervention(

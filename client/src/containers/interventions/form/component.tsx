@@ -7,7 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { PlusIcon, MinusIcon } from '@heroicons/react/solid';
 import * as yup from 'yup';
 import classNames from 'classnames';
-import { sortBy } from 'lodash';
+import { sortBy } from 'lodash-es';
 
 import { InterventionTypes, LocationTypes, InfoTooltip } from '../enums';
 

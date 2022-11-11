@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { flatten, noop, pick, uniq } from 'lodash';
+import { flatten, noop, pick, uniq } from 'lodash-es';
 import { DownloadIcon } from '@heroicons/react/solid';
 
 import Downloader from 'containers/downloader';

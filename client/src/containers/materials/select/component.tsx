@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { sortBy } from 'lodash';
+import { sortBy } from 'lodash-es';
 
 import { useMaterialsTrees } from 'hooks/materials';
 import TreeSelect from 'components/tree-select';

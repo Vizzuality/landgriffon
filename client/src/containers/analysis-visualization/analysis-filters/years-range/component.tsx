@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { isFinite, toNumber, range } from 'lodash';
+import { isFinite, toNumber, range } from 'lodash-es';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisUI } from 'store/features/analysis/ui';

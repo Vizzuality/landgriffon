@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { sortBy } from 'lodash';
+import { sortBy } from 'lodash-es';
 
 import TreeSelect from 'components/tree-select';
 import { useAdminRegionsTrees } from 'hooks/admin-regions';

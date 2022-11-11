@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import omit from 'lodash/omit';
+import omit from 'lodash-es/omit';
 import chroma from 'chroma-js';
 import {
   AreaChart,

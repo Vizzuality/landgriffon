@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { toNumber, range } from 'lodash';
+import { toNumber, range } from 'lodash-es';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters, setFilter, setFilters } from 'store/features/analysis/filters';

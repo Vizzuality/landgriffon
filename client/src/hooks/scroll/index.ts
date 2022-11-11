@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useMemo } from 'react';
-import lodashDebounce from 'lodash/debounce';
+import { debounce as lodashDebounce } from 'lodash-es';
 
 import type { RefObject, MutableRefObject } from 'react';
 

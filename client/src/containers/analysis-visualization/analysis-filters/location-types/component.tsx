@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { sortBy } from 'lodash';
+import { sortBy } from 'lodash-es';
 
 // hooks
 import { useLocationTypes } from 'hooks/location-types';

@@ -1,8 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { XCircleIcon } from '@heroicons/react/solid';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
-import sortBy from 'lodash/sortBy';
-import { pick } from 'lodash';
+import { sortBy, pick } from 'lodash-es';
 
 import { useAppSelector } from 'store/hooks';
 import { analysisMap } from 'store/features/analysis';

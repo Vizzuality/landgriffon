@@ -409,7 +409,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(
         toBeCloseToArray(
           response.body.metadata.quantiles,
-          [75, 49.5, 24.75, 0, -24.75, -49.5, -75],
+          [-75, -58.3335, -41.6665, 0, 0, 0, 0],
           5,
         ),
       ).toBeTruthy();
@@ -443,7 +443,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(
         toBeCloseToArray(
           response.body.metadata.quantiles,
-          [7.33, 4.8378, 2.4189, 0, -2.4189, -4.8378, -7.33],
+          [-7.33, -5.95001, -4.196645, 0, 0, 0, 0],
           5,
         ),
       ).toBeTruthy();
@@ -481,7 +481,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(
         toBeCloseToArray(
           response.body.metadata.quantiles,
-          [150, 99, 49.5, 0, -49.5, -99, -150],
+          [-125, -108.3335, -91.6665, 0, 83.333, 116.667, 150],
           5,
         ),
       ).toBeTruthy();
@@ -517,7 +517,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(
         toBeCloseToArray(
           response.body.metadata.quantiles,
-          [200, 132, 66, 0, -66, -132, -200],
+          [-11.8, -10.04668, -8.293315, 0, 70.172684, 135.0873158, 200],
           5,
         ),
       ).toBeTruthy();

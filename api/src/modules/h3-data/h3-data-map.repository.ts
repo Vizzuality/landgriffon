@@ -520,20 +520,35 @@ export class H3DataMapRepository extends Repository<H3Data> {
     tmpTableName: string,
   ): Promise<number[]> {
     try {
-      const resultArray: any[] = await getManager().query(
-        `select greatest(abs(max(v)),abs(min(v))) max_val
-            from "${tmpTableName}"
+      // due to the inner workings of the pg driver and the way it parses different number types
+      // this is explicitly casted to a double precision float, so the returning type is a JS number
+      const resultArrayMax: any[] = await getManager().query(
+        `select
+         CAST(max(v) AS DOUBLE PRECISION) max_val,
+         CAST(percentile_cont(0.66667) within group (order by v) AS DOUBLE PRECISION) perc66max,
+         CAST(percentile_cont(0.33333) within group (order by v) AS DOUBLE PRECISION) perc33max
+         from "${tmpTableName}"
+         where v > 0;
          `,
       );
-      const maxVal: number = resultArray[0].max_val;
+      const resultArrayMin: any[] = await getManager().query(
+        `select
+         CAST(min(v) AS DOUBLE PRECISION) min_val,
+         CAST(percentile_cont(0.33333) within group (order by v) AS DOUBLE PRECISION) perc33min,
+         CAST(percentile_cont(0.66667) within group (order by v) AS DOUBLE PRECISION) perc66min
+         from "${tmpTableName}"
+         where v < 0;
+         `,
+      );
+
       return [
-        +maxVal,
-        0.66 * maxVal,
-        0.33 * maxVal,
+        resultArrayMin[0].min_val || 0,
+        resultArrayMin[0].perc33min || 0,
+        resultArrayMin[0].perc66min || 0,
         0,
-        -0.33 * maxVal,
-        -0.66 * maxVal,
-        -maxVal,
+        resultArrayMax[0].perc33max || 0,
+        resultArrayMax[0].perc66max || 0,
+        resultArrayMax[0].max_val || 0,
       ];
     } catch (err) {
       this.logger.error(err);

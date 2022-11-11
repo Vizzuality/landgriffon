@@ -1,8 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import { DownloadIcon } from '@heroicons/react/outline';
-import uniq from 'lodash/uniq';
-import omit from 'lodash/omit';
+import { uniq, omit } from 'lodash-es';
 
 import ComparisonCell from './comparison-cell/component';
 

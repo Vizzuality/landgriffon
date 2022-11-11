@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { sortBy } from 'lodash';
+import { sortBy } from 'lodash-es';
 
 import { useBusinessUnitsTrees } from 'hooks/business-units';
 import TreeSelect from 'components/tree-select';

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { uniqBy } from 'lodash';
+import { uniqBy } from 'lodash-es';
 
 import { useAppSelector } from 'store/hooks';
 import { scenarios } from 'store/features/analysis';

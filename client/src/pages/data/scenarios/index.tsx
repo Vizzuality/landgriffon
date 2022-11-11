@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { PlusIcon, SortDescendingIcon } from '@heroicons/react/solid';
 import { useDebounceCallback } from '@react-hook/debounce';
-import omit from 'lodash/omit';
+import { omit } from 'lodash-es';
 
 import ListIcon from 'components/icons/list';
 import GridIcon from 'components/icons/grid';

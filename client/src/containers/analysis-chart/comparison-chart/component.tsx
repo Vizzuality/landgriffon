@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
-import omit from 'lodash/omit';
+import { omit } from 'lodash-es';
 import {
   LineChart,
   Line,

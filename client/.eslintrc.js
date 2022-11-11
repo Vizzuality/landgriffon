@@ -38,6 +38,12 @@ module.exports = {
         ignoreRestSiblings: true,
       },
     ],
+    'no-restricted-imports': [
+      'error',
+      {
+        patterns: [{ group: ['lodash', '!lodash-es'], message: 'Use lodash-es instead' }],
+      },
+    ],
   },
   overrides: [
     {

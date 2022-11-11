@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { merge } from 'lodash';
+import { merge } from 'lodash-es';
 import { PlusIcon, DownloadIcon } from '@heroicons/react/solid';
 import { useDebounceCallback } from '@react-hook/debounce';
 import { format } from 'date-fns';

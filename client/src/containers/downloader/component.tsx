@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { CSVDownload } from 'react-csv';
-import { noop } from 'lodash';
+import { noop } from 'lodash-es';
 
 import { apiService } from 'services/api';
 

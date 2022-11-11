@@ -10,7 +10,7 @@ import {
   FloatingPortal,
 } from '@floating-ui/react-dom-interactions';
 import { Transition } from '@headlessui/react';
-import sortBy from 'lodash/sortBy';
+import { sortBy } from 'lodash-es';
 
 import Materials from '../materials/component';
 import OriginRegions from '../origin-regions/component';

@@ -1,7 +1,7 @@
 import { useCallback, useState, useEffect } from 'react';
 import { SearchIcon, XIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
-import omit from 'lodash/omit';
+import { omit } from 'lodash-es';
 
 import Input from 'components/forms/input';
 

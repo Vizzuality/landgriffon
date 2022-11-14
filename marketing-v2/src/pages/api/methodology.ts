@@ -39,8 +39,6 @@ const Methodology = (req: NextApiRequest, res: NextApiResponse): void => {
       `,
     };
 
-    return;
-
     sendgridMail.send(msg).then(
       () => {
         res.status(200).json({ status: 'success ' });

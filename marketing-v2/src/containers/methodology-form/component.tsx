@@ -65,152 +65,167 @@ const MethodologyForm: React.FC<MethodologyFormProps> = ({ close }) => {
           </div>
         )}
 
-        <div>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-14">
-                <div className="max-w-sm space-y-10">
-                  <div className="w-full">
-                    <label htmlFor="name" className="font-bold ">
-                      Full name
-                    </label>
-                    <input
-                      id="name"
-                      className={cx({
-                        'block w-full py-5 bg-transparent border-b-2 border-black/20 placeholder:text-black/30 focus:outline-none':
-                          true,
-                        'border-red-500': errors.name,
-                      })}
-                      placeholder="Enter your first and last name here"
-                      {...register('name')}
-                    />
+        {saveContactMethodologyMutation.isSuccess && (
+          <div>
+            <p>
+              Thank you for filling in your details! You&apos;ll receive a link to our methodology
+              in your email inbox. If you can&apos;t see it, please check your spam.
+            </p>
+          </div>
+        )}
+
+        {!saveContactMethodologyMutation.isSuccess && (
+          <div>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-14">
+                  <div className="max-w-sm space-y-10">
+                    <div className="w-full">
+                      <label htmlFor="name" className="font-bold ">
+                        Full name
+                      </label>
+                      <input
+                        id="name"
+                        className={cx({
+                          'block w-full py-5 bg-transparent border-b-2 border-black/20 placeholder:text-black/30 focus:outline-none':
+                            true,
+                          'border-red-500': errors.name,
+                        })}
+                        placeholder="Enter your first and last name here"
+                        {...register('name')}
+                      />
+                    </div>
+
+                    <div className="w-full">
+                      <label htmlFor="email" className="font-bold ">
+                        Email
+                      </label>
+                      <input
+                        id="email"
+                        className={cx({
+                          'block w-full py-5 bg-transparent border-b-2 border-black/20 placeholder:text-black/30 focus:outline-none':
+                            true,
+                          'border-red-500': errors.email,
+                        })}
+                        placeholder="name@company.com"
+                        {...register('email')}
+                      />
+                    </div>
+
+                    <div className="w-full">
+                      <label htmlFor="company" className="font-bold ">
+                        Name of company or organization
+                      </label>
+                      <input
+                        id="company"
+                        className={cx({
+                          'block w-full py-5 bg-transparent border-b-2 border-black/20 placeholder:text-black/30 focus:outline-none':
+                            true,
+                          'border-red-500': errors.company,
+                        })}
+                        placeholder="Enter name here. If you’re downloading for personal interest, please write “personal”"
+                        {...register('company')}
+                      />
+                    </div>
                   </div>
 
-                  <div className="w-full">
-                    <label htmlFor="email" className="font-bold ">
-                      Email
-                    </label>
-                    <input
-                      id="email"
-                      className={cx({
-                        'block w-full py-5 bg-transparent border-b-2 border-black/20 placeholder:text-black/30 focus:outline-none':
-                          true,
-                        'border-red-500': errors.email,
-                      })}
-                      placeholder="name@company.com"
-                      {...register('email')}
-                    />
-                  </div>
+                  <div>
+                    <p className="font-semibold">
+                      {' '}
+                      Which document(s) would you like us to send you?
+                    </p>
 
-                  <div className="w-full">
-                    <label htmlFor="company" className="font-bold ">
-                      Name of company or organization
-                    </label>
-                    <input
-                      id="company"
-                      className={cx({
-                        'block w-full py-5 bg-transparent border-b-2 border-black/20 placeholder:text-black/30 focus:outline-none':
-                          true,
-                        'border-red-500': errors.company,
-                      })}
-                      placeholder="Enter name here. If you’re downloading for personal interest, please write “personal”"
-                      {...register('company')}
-                    />
+                    <div className="flex items-center mt-5 space-x-2.5">
+                      <input
+                        id="download-full-methodology"
+                        type="radio"
+                        {...register('download')}
+                        value="fullMethodology"
+                        className={cx({
+                          'w-5 h-5 border-2 border-black': true,
+                          'border-red-500': errors.fullMethodology,
+                        })}
+                      />
+                      <label className="font-light" htmlFor="download-full-methodology">
+                        Send me the full methodology whitepaper.
+                      </label>
+                    </div>
+                    <p className="leading-9 pl-7 opacity-30">
+                      This document provides an in-depth description of how LandGriffon imports
+                      supply chain data, measures impact, and forecasts scenarios.
+                    </p>
+
+                    <div className="flex items-center mt-5 space-x-2.5">
+                      <input
+                        id="download-executive-summary"
+                        type="radio"
+                        {...register('download')}
+                        value="executiveSummary"
+                        className={cx({
+                          'w-5 h-5 border-2 border-black': true,
+                          'border-red-500': errors.executiveSummary,
+                        })}
+                      />
+
+                      <label className="font-light" htmlFor="download-executive-summary">
+                        Send me the executive summary.
+                      </label>
+                    </div>
+                    <p className="leading-9 pl-7 opacity-30">
+                      This document provides an overview of how LandGriffon functions.
+                    </p>
                   </div>
                 </div>
 
-                <div>
-                  <p className="font-semibold"> Which document(s) would you like us to send you?</p>
+                <div className="bg-gray-100 p-7">
+                  <div className="flex items-center mt-5 space-x-2.5">
+                    <input
+                      id="terms"
+                      type="checkbox"
+                      {...register('terms')}
+                      className={cx({
+                        'w-5 h-5 border-2 border-black': true,
+                        'border-red-500': errors.terms,
+                      })}
+                    />
+                    <label className="font-light" htmlFor="terms">
+                      I agree with LandGriffon’s{' '}
+                      <Link href="/privacy-policy">
+                        <a className="font-semibold text-black underline">Privacy Policy.</a>
+                      </Link>
+                    </label>
+                  </div>
 
                   <div className="flex items-center mt-5 space-x-2.5">
                     <input
-                      id="download-full-methodology"
-                      type="radio"
-                      {...register('download')}
-                      value="fullMethodology"
+                      id="information"
+                      type="checkbox"
+                      {...register('information')}
                       className={cx({
                         'w-5 h-5 border-2 border-black': true,
-                        'border-red-500': errors.fullMethodology,
+                        'border-red-500': errors.information,
                       })}
                     />
-                    <label className="font-light" htmlFor="download-full-methodology">
-                      Send me the full methodology whitepaper.
+                    <label className="font-light" htmlFor="information">
+                      I want to be added to the LandGriffon mailing list for occasional updates
+                      through the email newsletter.
                     </label>
                   </div>
-                  <p className="leading-9 pl-7 opacity-30">
-                    This document provides an in-depth description of how LandGriffon imports supply
-                    chain data, measures impact, and forecasts scenarios.
-                  </p>
 
-                  <div className="flex items-center mt-5 space-x-2.5">
-                    <input
-                      id="download-executive-summary"
-                      type="radio"
-                      {...register('download')}
-                      value="executiveSummary"
-                      className={cx({
-                        'w-5 h-5 border-2 border-black': true,
-                        'border-red-500': errors.executiveSummary,
-                      })}
-                    />
-
-                    <label className="font-light" htmlFor="download-executive-summary">
-                      Send me the executive summary.
-                    </label>
+                  <div className="flex justify-end pt-4">
+                    <button
+                      type="submit"
+                      className="px-5 py-4 font-semibold text-black bg-transparent border-2 border-black hover:bg-black/10"
+                      disabled={submitting}
+                    >
+                      Send me the methodology
+                    </button>
                   </div>
-                  <p className="leading-9 pl-7 opacity-30">
-                    This document provides an overview of how LandGriffon functions.
-                  </p>
                 </div>
               </div>
-
-              <div className="bg-gray-100 p-7">
-                <div className="flex items-center mt-5 space-x-2.5">
-                  <input
-                    id="terms"
-                    type="checkbox"
-                    {...register('terms')}
-                    className={cx({
-                      'w-5 h-5 border-2 border-black': true,
-                      'border-red-500': errors.terms,
-                    })}
-                  />
-                  <label className="font-light" htmlFor="terms">
-                    I agree with LandGriffon’s{' '}
-                    <Link href="/privacy-policy">
-                      <a className="font-semibold text-black underline">Privacy Policy.</a>
-                    </Link>
-                  </label>
-                </div>
-
-                <div className="flex items-center mt-5 space-x-2.5">
-                  <input
-                    id="information"
-                    type="checkbox"
-                    {...register('information')}
-                    className={cx({
-                      'w-5 h-5 border-2 border-black': true,
-                      'border-red-500': errors.information,
-                    })}
-                  />
-                  <label className="font-light" htmlFor="information">
-                    I want to be added to the LandGriffon mailing list for occasional updates
-                    through the email newsletter.
-                  </label>
-                </div>
-
-                <div className="flex justify-end pt-4">
-                  <button
-                    type="submit"
-                    className="px-5 py-4 font-semibold text-black bg-transparent border-2 border-black hover:bg-black/10"
-                  >
-                    Send me the methodology
-                  </button>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
+            </form>
+          </div>
+        )}
       </div>
     </section>
   );

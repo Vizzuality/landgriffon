@@ -8,6 +8,7 @@ import { IndicatorRecord } from 'modules/indicator-records/indicator-record.enti
 import {
   Indicator,
   INDICATOR_TYPES,
+  INDICATOR_TYPES_NEW,
 } from 'modules/indicators/indicator.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import {
@@ -25,7 +26,11 @@ import {
 } from '../entity-mocks';
 import { MATERIAL_TO_H3_TYPE } from '../../src/modules/materials/material-to-h3.entity';
 import { h3DataMock } from '../e2e/h3-data/mocks/h3-data.mock';
-import { h3MaterialExampleDataFixture } from '../e2e/h3-data/mocks/h3-fixtures';
+import {
+  h3IndicatorExampleDataFixture,
+  h3MaterialExampleDataFixture,
+} from '../e2e/h3-data/mocks/h3-fixtures';
+import { getManager } from 'typeorm';
 
 export interface ScenarioInterventionPreconditions {
   scenario: Scenario;
@@ -85,28 +90,66 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
     adminRegionId: adminRegion1Descendant.id,
   });
 
+  // Creating 5 new indicators
+
   const indicator1: Indicator = await createIndicator({
-    name: 'def',
-    nameCode: INDICATOR_TYPES.CARBON_EMISSIONS,
+    name: 'climate risk',
+    nameCode: INDICATOR_TYPES_NEW.CLIMATE_RISK,
   });
   const indicator2: Indicator = await createIndicator({
-    name: 'carb',
-    nameCode: INDICATOR_TYPES.BIODIVERSITY_LOSS,
+    name: 'water use',
+    nameCode: INDICATOR_TYPES_NEW.WATER_USE,
   });
   const indicator3: Indicator = await createIndicator({
-    name: 'biod',
-    nameCode: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+    name: 'unsust water use',
+    nameCode: INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE,
   });
   const indicator4: Indicator = await createIndicator({
-    name: 'watr',
-    nameCode: INDICATOR_TYPES.DEFORESTATION,
+    name: 'def risk',
+    nameCode: INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
   });
 
-  const h3data1 = await createH3Data({ indicatorId: indicator1.id });
-  await createH3Data({ indicatorId: indicator2.id });
-  await createH3Data({ indicatorId: indicator3.id });
-  await createH3Data({ indicatorId: indicator4.id });
+  const indicator5: Indicator = await createIndicator({
+    name: 'land use',
+    nameCode: INDICATOR_TYPES_NEW.LAND_USE,
+  });
 
+  // Creating tables with h3Data for the new indicators
+
+  const croplandAreaH3Data = await createH3Data({
+    h3columnName: 'spam2010V2R0GlobalHAllA',
+    h3tableName: 'h3_grid_spam2010v2r0_global_ha',
+  });
+  const weightedCarbonH3Data = await createH3Data({
+    h3columnName: 'forestGhg2020Buffered',
+    h3tableName: 'h3_grid_ghg_global',
+  });
+  const weightedDeforestationH3Data = await createH3Data({
+    h3columnName: 'hansenLoss2020HaBuffered',
+    h3tableName: 'h3_grid_deforestation_global',
+  });
+  const waterStressH3Data = await createH3Data({
+    h3columnName: 'bwsCat',
+    h3tableName: 'h3_grid_aqueduct_global',
+  });
+
+  for await (const H3Data of [
+    croplandAreaH3Data,
+    weightedCarbonH3Data,
+    weightedDeforestationH3Data,
+    waterStressH3Data,
+  ]) {
+    await getManager().query(
+      `CREATE TABLE "${H3Data.h3tableName}" (h3index h3index, "${H3Data.h3columnName}" float4);`,
+    );
+    let query = `INSERT INTO ${H3Data.h3tableName} (h3index, "${H3Data.h3columnName}") VALUES `;
+    const queryArr = [];
+    for (const [key, value] of Object.entries(h3IndicatorExampleDataFixture)) {
+      queryArr.push(`('${key}', ${value})`);
+    }
+    query = query.concat(queryArr.join());
+    await getManager().query(query);
+  }
   // creating h3 data for material to be able to get scaler for new indicator records
 
   const h3Material = await h3DataMock({
@@ -150,6 +193,7 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
     {
       indicator: indicator1,
       value: 1200,
+      scaler: 333,
     },
     sourcingRecord1,
   );
@@ -158,6 +202,7 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
     {
       indicator: indicator2,
       value: 1200,
+      scaler: 333,
     },
     sourcingRecord1,
   );
@@ -166,6 +211,7 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
     {
       indicator: indicator3,
       value: 1200,
+      scaler: 333,
     },
     sourcingRecord1,
   );
@@ -174,6 +220,7 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
     {
       indicator: indicator4,
       value: 1100,
+      scaler: 333,
     },
     sourcingRecord1,
   );

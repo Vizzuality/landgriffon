@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 sendgridClient.setApiKey(process.env.SENDGRID_API_KEY_SUBSCRIPTION);
 
-const Contact = (req: NextApiRequest, res: NextApiResponse): void => {
+const Newsletter = (req: NextApiRequest, res: NextApiResponse): void => {
   if (req.method === 'PUT') {
     const { email } = req.body;
 
@@ -37,4 +37,4 @@ const Contact = (req: NextApiRequest, res: NextApiResponse): void => {
   }
 };
 
-export default Contact;
+export default Newsletter;

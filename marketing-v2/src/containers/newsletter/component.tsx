@@ -9,6 +9,7 @@ import Wrapper from 'containers/wrapper';
 import { useCallback, useState } from 'react';
 import { useSaveNewsletter } from 'hooks/newsletter';
 import Loading from 'components/loading';
+import { saveContactToSubscribersSpreadsheet } from 'utils/subscribers-spreadsheet';
 
 const schema = yup.object().shape({
   email: yup.string().email().required(),
@@ -29,6 +30,7 @@ const NewsLetter: React.FC = () => {
   const onSubmit = useCallback(
     (data) => {
       setSubmitting(true);
+      saveContactToSubscribersSpreadsheet({ ...data, form: 'newsletter' });
       saveNewsLetterMutation.mutate(
         { data },
         {

@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Updated styles for tree-selectors according the design
 
 ### Fixed
-
+- Changed key value for items in Impact chart tooltip. [LANDGRIF-1056](https://vizzuality.atlassian.net/browse/LANDGRIF-1056)
 - Not include scenarios with 0 interventions in the scenario dropdowns for comparison [LANDGRIF-999](https://vizzuality.atlassian.net/browse/LANDGRIF-999)
 - Legend alignment in charts
 - Click on the legend also change the opacity of projected areas

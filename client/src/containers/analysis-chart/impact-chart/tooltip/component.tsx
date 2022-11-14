@@ -2,6 +2,7 @@ import { NUMBER_FORMAT } from 'utils/number-format';
 
 type CustomTooltipProps = {
   payload: {
+    dataKey: string;
     value: number;
     name: string;
     color: string;
@@ -15,7 +16,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ payload }) => (
       {payload
         .filter(({ type }) => type !== 'none')
         .map((item) => (
-          <li key={item.value} className="flex justify-between space-x-2">
+          <li key={item.dataKey} className="flex justify-between space-x-2">
             <div
               className="w-2 h-3 rounded shrink-0 grow-0"
               style={{ backgroundColor: item.color }}

@@ -14,6 +14,8 @@ import {
   createBusinessUnit,
   createGeoRegion,
   createH3Data,
+  createIndicator,
+  createIndicatorRecordForIntervention,
   createMaterial,
   createMaterialToH3,
   createScenario,
@@ -64,11 +66,16 @@ import {
   MaterialToH3,
 } from 'modules/materials/material-to-h3.entity';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
-import { Indicator } from 'modules/indicators/indicator.entity';
+import {
+  Indicator,
+  INDICATOR_TYPES_NEW,
+} from 'modules/indicators/indicator.entity';
 import { Unit } from 'modules/units/unit.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { dropH3DataMock, h3DataMock } from '../h3-data/mocks/h3-data.mock';
 import { h3MaterialExampleDataFixture } from '../h3-data/mocks/h3-fixtures';
+import { IndicatorRepository } from 'modules/indicators/indicator.repository';
+import { ApiPreconditionFailedResponse } from '@nestjs/swagger';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -86,6 +93,24 @@ const expectedJSONAPIAttributes: string[] = [
   'newLocationLatitudeInput',
   'newLocationLongitudeInput',
 ];
+
+// TODO: Refactor after new methodology is final
+
+jest.mock('config', () => {
+  const config = jest.requireActual('config');
+
+  const configGet = config.get;
+
+  config.get = function (key: string): any {
+    switch (key) {
+      case 'newMethodology':
+        return true;
+      default:
+        return configGet.call(config, key);
+    }
+  };
+  return config;
+});
 
 describe('ScenarioInterventionsModule (e2e)', () => {
   const geoCodingServiceMock = {
@@ -153,6 +178,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   let sourcingRecordRepository: SourcingRecordRepository;
   let adminRegionRepository: AdminRegionRepository;
   let indicatorRecordRepository: IndicatorRecordRepository;
+  let indicatorRepository: IndicatorRepository;
   let geoRegionRepository: GeoRegionRepository;
   let jwtToken: string;
   let userId: string;
@@ -195,6 +221,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       IndicatorRecordRepository,
     );
 
+    indicatorRepository =
+      moduleFixture.get<IndicatorRepository>(IndicatorRepository);
+
     app = getApp(moduleFixture);
     await app.init();
     const tokenWithId = await saveUserAndGetTokenWithUserId(moduleFixture, app);
@@ -203,7 +232,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   });
 
   afterEach(async () => {
-    jest.clearAllMocks();
     await clearEntityTables([
       ScenarioIntervention,
       IndicatorRecord,
@@ -224,16 +252,23 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     await dropH3DataMock([
       'fake_material_table2002',
       'fake_replacing_material_table',
+      'h3_grid_spam2010v2r0_global_ha',
+      'h3_grid_ghg_global',
+      'h3_grid_deforestation_global',
+      'h3_grid_aqueduct_global',
+      'fakeChildMaterialTable',
     ]);
   });
 
   afterAll(async () => {
     await app.close();
+    jest.clearAllMocks();
   });
 
   describe('Scenario interventions - Creating intervention of type - Change of production efficiency', () => {
     test('Create a scenario intervention of type Change of production efficiency, with correct data should be successful', async () => {
       const preconditions = await createInterventionPreconditions();
+
       const response = await request(app.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -248,11 +283,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           adminRegionIds: [preconditions.adminRegion1.id],
           newLocationCountryInput: 'TestCountry',
           type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          // TODO generate from enum
           newIndicatorCoefficients: {
+            UWU_T: 5,
+            UWUSR_T: 5,
             GHG_LUC_T: 1,
             DF_LUC_T: 10,
-            UWU_T: 5,
-            BL_LUC_T: 3,
+            LI: 3,
           },
         });
 
@@ -347,12 +384,20 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const newSourcingRecords: SourcingRecord[] =
         await sourcingRecordRepository.find({
           where: {
-            sourcingLocationId: canceledSourcingLocations[0].id,
+            sourcingLocationId: newSourcingLocations[0].id,
           },
         });
 
       expect(newSourcingRecords.length).toBe(1);
       expect(newSourcingRecords[0].tonnage).toEqual('250');
+
+      const newIndicatorRecords: IndicatorRecord[] =
+        await indicatorRecordRepository.find({
+          where: { sourcingRecordId: newSourcingRecords[0].id },
+        });
+
+      expect(newIndicatorRecords.length).toBe(5);
+      expect(newIndicatorRecords[0].scaler).toEqual(333);
     });
   });
 
@@ -382,12 +427,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
           newLocationCountryInput: 'Spain',
-          newIndicatorCoefficients: {
-            GHG_LUC_T: 1,
-            DF_LUC_T: 10,
-            UWU_T: 5,
-            BL_LUC_T: 3,
-          },
         });
 
       expect(response.status).toBe(HttpStatus.CREATED);
@@ -497,12 +536,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
           newLocationCountryInput: 'Spain',
-          newIndicatorCoefficients: {
-            GHG_LUC_T: 1,
-            DF_LUC_T: 10,
-            UWU_T: 5,
-            BL_LUC_T: 3,
-          },
         });
 
       expect(response.status).toBe(HttpStatus.CREATED);
@@ -641,12 +674,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
           newLocationCountryInput: 'Spain',
           newMaterialId: replacingMaterial.id,
-          newIndicatorCoefficients: {
-            GHG_LUC_T: 1,
-            DF_LUC_T: 10,
-            UWU_T: 5,
-            BL_LUC_T: 3,
-          },
         });
 
       expect(response.status).toBe(HttpStatus.CREATED);
@@ -752,12 +779,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
             newLocationCountryInput: 'Spain',
             newMaterialId: replacingMaterial.id,
-            newIndicatorCoefficients: {
-              GHG_LUC_T: 1,
-              DF_LUC_T: 10,
-              UWU_T: 5,
-              BL_LUC_T: 3,
-            },
           });
 
         expect(response.status).toBe(HttpStatus.CREATED);
@@ -856,12 +877,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
             newLocationCountryInput: 'Spain',
             newMaterialId: replacingMaterial.id,
-            newIndicatorCoefficients: {
-              GHG_LUC_T: 1,
-              DF_LUC_T: 10,
-              UWU_T: 5,
-              BL_LUC_T: 3,
-            },
           });
 
         expect(response.status).toBe(HttpStatus.CREATED);
@@ -915,12 +930,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           adminRegionIds: [preconditions.adminRegion1.id],
           newLocationCountryInput: 'TestCountry',
           type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
-          newIndicatorCoefficients: {
-            GHG_LUC_T: 1,
-            DF_LUC_T: 10,
-            UWU_T: 5,
-            BL_LUC_T: 3,
-          },
         });
 
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -1005,12 +1014,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnitIds: [businessUnit.id],
           adminRegionIds: [adminRegion.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-          newIndicatorCoefficients: {
-            GHG_LUC_T: 1,
-            DF_LUC_T: 10,
-            UWU_T: 5,
-            BL_LUC_T: 3,
-          },
         });
 
       expect(HttpStatus.BAD_REQUEST);
@@ -1291,10 +1294,11 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           newLocationCountryInput: 'TestCountry',
           type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           newIndicatorCoefficients: {
+            UWU_T: 5,
+            UWUSR_T: 5,
             GHG_LUC_T: 1,
             DF_LUC_T: 10,
-            UWU_T: 5,
-            BL_LUC_T: 3,
+            LI: 3,
           },
         });
 
@@ -1439,14 +1443,19 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   });
 
   describe('Scenario Interventions - Only replacing / replaced elements as part of a Intervention', () => {
+    let preconditions: ScenarioInterventionPreconditions;
+
     beforeAll(async () => {
-      await createInterventionPreconditions();
       jest
         .spyOn(indicatorRecordRepository, 'getH3SumOverGeoRegionSQL')
         .mockResolvedValue(1000);
       jest
         .spyOn(indicatorRecordRepository, 'getIndicatorRecordRawValue')
         .mockResolvedValue(1000);
+    });
+
+    beforeEach(async () => {
+      preconditions = await createInterventionPreconditions();
     });
     afterAll(() => jest.clearAllMocks());
 
@@ -1537,6 +1546,24 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           year: 2020,
         });
 
+        await createIndicatorRecordForIntervention(
+          {
+            indicator: preconditions.indicator1,
+            value: 1200,
+            scaler: 22,
+          },
+          sourcingRecord1,
+        );
+
+        await createIndicatorRecordForIntervention(
+          {
+            indicator: preconditions.indicator1,
+            value: 1200,
+            scaler: 22,
+          },
+          sourcingRecord2,
+        );
+
         await createSourcingLocation({
           adminRegion: grandChildAdminRegion,
           material: grandChildMaterial,
@@ -1568,6 +1595,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             businessUnitIds: [parentBusinessUnit.id],
             adminRegionIds: [parentAdminRegion.id],
             type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+            newIndicatorCoefficients: {
+              UWU_T: 5,
+              UWUSR_T: 5,
+              GHG_LUC_T: 1,
+              DF_LUC_T: 10,
+              LI: 3,
+            },
           });
 
         const intervention: ScenarioIntervention | undefined =
@@ -1596,6 +1630,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         'And I dont select any Element to filter (AR, BR, SUP...)' +
         'Then I should not see any element as replaced by the interventions',
       async () => {
+        const indicators: any = await indicatorRepository.findAndCount();
         for (const num of range(1, 20)) {
           const adminRegion: AdminRegion = await createAdminRegion({
             name: `admin region:${num}`,
@@ -1681,6 +1716,33 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           year: 2020,
         });
 
+        await createIndicatorRecordForIntervention(
+          {
+            indicator: preconditions.indicator1,
+            value: 1200,
+            scaler: 22,
+          },
+          sourcingRecord1,
+        );
+
+        await createIndicatorRecordForIntervention(
+          {
+            indicator: preconditions.indicator1,
+            value: 1200,
+            scaler: 22,
+          },
+          sourcingRecord2,
+        );
+
+        await createIndicatorRecordForIntervention(
+          {
+            indicator: preconditions.indicator1,
+            value: 1200,
+            scaler: 22,
+          },
+          sourcingRecord3,
+        );
+
         await createSourcingLocation({
           material: grandChildMaterial,
           businessUnit: childBusinessUnit,
@@ -1716,6 +1778,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             supplierIds: [parentSupplier.id, parentSupplier2.id],
             businessUnitIds: [parentBusinessUnit.id],
             type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+            newIndicatorCoefficients: {
+              UWU_T: 5,
+              UWUSR_T: 5,
+              GHG_LUC_T: 1,
+              DF_LUC_T: 10,
+              LI: 3,
+            },
           });
 
         const createdScenarioIntervention1 =
@@ -1750,6 +1819,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             materialIds: [parentMaterial.id],
             supplierIds: [parentSupplier.id],
             type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+            newIndicatorCoefficients: {
+              UWU_T: 5,
+              UWUSR_T: 5,
+              GHG_LUC_T: 1,
+              DF_LUC_T: 10,
+              LI: 3,
+            },
           });
 
         const createdScenarioIntervention2 =
@@ -1771,6 +1847,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             scenarioId: scenario.id,
             materialIds: [parentMaterial.id],
             type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+            newIndicatorCoefficients: {
+              UWU_T: 5,
+              UWUSR_T: 5,
+              GHG_LUC_T: 1,
+              DF_LUC_T: 10,
+              LI: 3,
+            },
           });
 
         const createdScenarioIntervention3 =
@@ -1818,7 +1901,14 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           parent: parentMaterial,
         });
         // childMaterial Indicator calculation dependencies
-        const h3DataChild = await createH3Data();
+
+        const h3DataChild = await h3DataMock({
+          h3TableName: 'fakeChildMaterialTable',
+          h3ColumnName: 'fakeChildMaterialColumn',
+          additionalH3Data: h3MaterialExampleDataFixture,
+          year: 2002,
+        });
+
         await createMaterialToH3(
           childMaterial.id,
           h3DataChild.id,
@@ -1972,7 +2062,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           parent: parentMaterial,
         });
         // childMaterial Indicator calculation dependencies
-        const h3DataChild = await createH3Data();
+        const h3DataChild = await h3DataMock({
+          h3TableName: 'fakeChildMaterialTable',
+          h3ColumnName: 'fakeChildMaterialColumn',
+          additionalH3Data: h3MaterialExampleDataFixture,
+          year: 2002,
+        });
         await createMaterialToH3(
           childMaterial.id,
           h3DataChild.id,

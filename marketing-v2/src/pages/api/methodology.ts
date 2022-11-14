@@ -5,9 +5,9 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 sendgridMail.setApiKey(process.env.SENDGRID_API_KEY_CONTACT);
 sendgridClient.setApiKey(process.env.SENDGRID_API_KEY_SUBSCRIPTION);
 
-const DOWNLOADS = {
-  'full-methodology': 'https://www.landgriffon.com/docs/LG_Methodology_Technical_Note.pdf',
-  'executive-summary': 'https://www.landgriffon.com/docs/LG_Methodology_Executive_Summary.pdf',
+const DOWNLOAD_LINKS = {
+  fullMethodology: 'https://www.landgriffon.com/docs/LG_Methodology_Technical_Note.pdf',
+  executiveSummary: 'https://www.landgriffon.com/docs/LG_Methodology_Executive_Summary.pdf',
 };
 
 const Methodology = (req: NextApiRequest, res: NextApiResponse): void => {
@@ -21,7 +21,7 @@ const Methodology = (req: NextApiRequest, res: NextApiResponse): void => {
       subject: `Landgriffon's Methodology`,
       text: `Hi ${name}\n\n
       Thank you for your interest in LandGriffon's Methodology!\n\n
-      You can download it here.\n\n
+      You can download it here: ${DOWNLOAD_LINKS[download]}\n\n
       The methodology is a work in progress. We want it to serve you and create real change in the sector. If you have any input you would like to share with us regarding the methodology, please let us know.\n\n
       All the best,\n\n
       The LandGriffon team\n\n
@@ -30,7 +30,7 @@ const Methodology = (req: NextApiRequest, res: NextApiResponse): void => {
         <p>Hi ${name}</p>
         <br/>
         <p>Thank you for your interest in LandGriffon's Methodology!</p>
-        <p><strong>You can download it here.</strong>: ${DOWNLOADS[download]}</p>
+        <p><strong>You can download it here.</strong>: ${DOWNLOAD_LINKS[download]}</p>
         <p>The methodology is a work in progress. We want it to serve you and create real change in the sector. If you have any input you would like to share with us regarding the methodology, please let us know.</p>
         <br/>
         <br/>
@@ -38,6 +38,8 @@ const Methodology = (req: NextApiRequest, res: NextApiResponse): void => {
         <p>The LandGriffon team</p>
       `,
     };
+
+    return;
 
     sendgridMail.send(msg).then(
       () => {
@@ -51,7 +53,6 @@ const Methodology = (req: NextApiRequest, res: NextApiResponse): void => {
     );
 
     // Save the user in a marketing list
-
     const data = {
       list_ids: information
         ? ['0ee4b8ab-2088-44c1-b7cc-5eab97a49fda', '1b704de4-643f-4531-b6cb-63fea0e6ad2a']

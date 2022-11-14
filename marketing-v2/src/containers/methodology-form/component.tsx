@@ -6,7 +6,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import Link from 'next/link';
 
-import Wrapper from 'containers/wrapper';
 import { useCallback, useState } from 'react';
 import { useSaveContactMethodologySendgrid } from 'hooks/methodology';
 import Loading from 'components/loading';
@@ -45,7 +44,6 @@ const MethodologyForm: React.FC<MethodologyFormProps> = ({ close }) => {
     docData.append('entry.204130736', 'methodology');
 
     // TO-DO: solve CORS issue with google forms
-    console.log({ data });
     axios
       .post(SCRIPT_URL, docData)
       .then((response) => console.log(response))
@@ -72,7 +70,7 @@ const MethodologyForm: React.FC<MethodologyFormProps> = ({ close }) => {
     },
     [close, saveContactMethodologyDocs, saveContactMethodologyMutation],
   );
-  console.log({ formState });
+
   return (
     <section className="flex flex-col -mx-6 overflow-hidden bg-white grow">
       <h2 className="px-6 font-bold md:px-14">

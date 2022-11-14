@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { XCircleIcon } from '@heroicons/react/solid';
 import { H3HexagonLayer } from '@deck.gl/geo-layers';
-import { sortBy, pick } from 'lodash-es';
+import { sortBy } from 'lodash-es';
 
 import { useAppSelector } from 'store/hooks';
 import { analysisMap } from 'store/features/analysis';
@@ -15,9 +15,8 @@ import { NUMBER_FORMAT } from 'utils/number-format';
 import Map, { INITIAL_VIEW_STATE } from 'components/map';
 import { useAllContextualLayersData } from 'hooks/h3-data/contextual';
 import useH3MaterialData from 'hooks/h3-data/material';
-import useQueryParam from 'hooks/queryParam';
 
-import type { ViewState, MapStyle } from 'components/map';
+import type { MapStyle } from 'components/map';
 import type { BasemapValue } from 'components/map/controls/basemap/types';
 
 const AnalysisMap = () => {
@@ -89,14 +88,7 @@ const AnalysisMap = () => {
     setMapStyle(newStyle);
   }, []);
 
-  const formatParam = useCallback((view: ViewState) => {
-    return pick(view, ['latitude', 'longitude', 'zoom']);
-  }, []);
-
-  const [viewState, setViewState] = useQueryParam('viewState', {
-    defaultValue: INITIAL_VIEW_STATE,
-    formatParam,
-  });
+  const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
 
   return (
     <div className="absolute top-0 left-0 w-full h-full overflow-hidden" data-testid="analysis-map">

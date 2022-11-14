@@ -63,6 +63,7 @@ const YearsFilter: React.FC = () => {
       onChange={setYearsRange}
       onEndYearSearch={handleOnEndYearSearch}
       lastYearWithData={lastYearWithData}
+      placeholderFrom="Select a year"
     />
   );
 };

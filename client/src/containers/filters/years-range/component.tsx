@@ -31,6 +31,8 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
   onStartYearSearch = () => null,
   onEndYearSearch = () => null,
   lastYearWithData,
+  placeholderFrom = 'Type any year',
+  placeholderTo = 'Type any year',
 }) => {
   const startYearOption = useMemo(() => ({ label: `${startYear}`, value: startYear }), [startYear]);
   const endYearOption = useMemo(() => ({ label: `${endYear}`, value: endYear }), [endYear]);
@@ -151,7 +153,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
                     onChange?.({ startYear: Number(value), endYear });
                   }}
                   onSearch={onStartYearSearch}
-                  placeholder="Type any year"
+                  placeholder={placeholderFrom}
                 />
                 <div>To</div>
                 <Select
@@ -171,7 +173,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
                     onChange?.({ startYear, endYear: Number(value) });
                   }}
                   onSearch={onEndYearSearch}
-                  placeholder="Type any year"
+                  placeholder={placeholderTo}
                 />
               </div>
             </div>

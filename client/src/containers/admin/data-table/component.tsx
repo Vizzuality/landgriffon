@@ -182,6 +182,8 @@ const AdminDataPage: React.FC = () => {
             endYear={endYear}
             years={yearsFromData}
             onChange={setYearsRange}
+            placeholderFrom="Select a year"
+            placeholderTo="Select a year"
           />
           <DownloadMaterialsDataButton onError={(errorMessage) => toast.error(errorMessage)} />
           <Button

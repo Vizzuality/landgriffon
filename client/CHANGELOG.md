@@ -16,10 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Numbers of growth rates in scenarios page
 
 ### Changed
-- Disconnected map from URL changes temporary. [LANDGRIF-1055](https://vizzuality.atlassian.net/browse/LANDGRIF-1055)
+- Updated placeholders of year range selectors. [LANDGRIF-1057](https://vizzuality.atlassian.net/browse/LANDGRIF-1057)
 - In tables the columns are not sortable by default, it should be specified in each column configuration [LANDGRIF-965](https://vizzuality.atlassian.net/browse/LANDGRIF-965)
 - Updated styles for tree-selectors according the design
-
 - Select leaf nodes of business units on intervention creation (instead of parent nodes). [LANDGRIF-917](https://vizzuality.atlassian.net/browse/LANDGRIF-917)
 - Applied 40-character limitation to scenario title in scenario creation page. [LANDGRIF-1016](https://vizzuality.atlassian.net/browse/LANDGRIF-1016)
 - In tables the columns are not sortable by default, it should be specified in each column configuration [LANDGRIF-965](https://vizzuality.atlassian.net/browse/LANDGRIF-965)

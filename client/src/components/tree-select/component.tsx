@@ -115,9 +115,19 @@ const InnerTreeSelect = <IsMulti extends boolean>(
 
   const [selected, setSelected] = useState<TreeSelectOption>(null);
   const [selectedKeys, setSelectedKeys] = useState<TreeProps['selectedKeys']>([]);
-  const [expandedKeys, setExpandedKeys] = useState<TreeProps['expandedKeys']>([]);
+  const [userExpandedKeys, setUserExpandedKeys] = useState<TreeProps['expandedKeys']>([]);
+  const [userClosedKeys, setUserClosedKeys] = useState<TreeProps['expandedKeys']>([]);
+
   const [checkedKeys, setCheckedKeys] = useState<TreeProps['checkedKeys']>([]);
   const { data: filteredOptionsKeys } = useFilteredKeys(options, debouncedSearch);
+
+  const expandedKeys = useMemo(() => {
+    const uniqueKeys = new Set([...userExpandedKeys, ...filteredOptionsKeys]);
+    userClosedKeys.forEach((key) => {
+      uniqueKeys.delete(key);
+    });
+    return Array.from(uniqueKeys);
+  }, [filteredOptionsKeys, userClosedKeys, userExpandedKeys]);
 
   const getIsLeaf = useCallback(
     (option: TreeSelectOption) => {
@@ -157,7 +167,23 @@ const InnerTreeSelect = <IsMulti extends boolean>(
     return options.map((option) => optionToTreeData(option));
   }, [optionToTreeData, options]);
 
-  const handleExpand: TreeProps['onExpand'] = useCallback((keys) => setExpandedKeys(keys), []);
+  const handleExpand: TreeProps['onExpand'] = useCallback(
+    (keys, { node, expanded }) => {
+      // if the item is being closed, remove it from the expanded keys
+      if (!expanded) {
+        setUserClosedKeys((keys) => {
+          const uniqueKeys = new Set(keys);
+          uniqueKeys.add(node.key);
+          return Array.from(uniqueKeys);
+        });
+      } else if (userClosedKeys.includes(node.key)) {
+        setUserClosedKeys((keys) => keys.filter((key) => key !== node.key));
+      }
+
+      setUserExpandedKeys(keys);
+    },
+    [userClosedKeys],
+  );
 
   // Selection for non-multiple
   const handleSelect: TreeProps['onSelect'] = useCallback(
@@ -460,7 +486,6 @@ const InnerTreeSelect = <IsMulti extends boolean>(
             {!loading && (
               <>
                 <Tree
-                  autoExpandParent
                   checkStrictly={false}
                   checkable={multiple}
                   selectable={!multiple}

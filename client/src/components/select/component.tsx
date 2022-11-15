@@ -188,7 +188,9 @@ const InnerSelect = <OptionValue, IsMulti extends boolean = false>(
     [],
   );
 
-  const { result: optionsResult, search: setSearchTerm } = useFuse(options, SEARCH_OPTIONS);
+  const [searchTerm, setSearchTerm] = useState('');
+  const optionsResult = useFuse(options as Option[], searchTerm, SEARCH_OPTIONS);
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleSearch = useCallback(

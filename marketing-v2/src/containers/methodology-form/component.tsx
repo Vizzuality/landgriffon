@@ -15,15 +15,10 @@ const schema = yup.object().shape({
   email: yup.string().email().required(),
   company: yup.string().required(),
   terms: yup.bool().oneOf([true]).required(),
-  information: yup.bool(),
-  download: yup.string().required(),
+  newsletter: yup.bool(),
 });
 
-interface MethodologyFormProps {
-  close: () => void;
-}
-
-const MethodologyForm: React.FC<MethodologyFormProps> = ({ close }) => {
+const MethodologyForm: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
 
   const { register, handleSubmit, formState } = useForm({
@@ -35,6 +30,7 @@ const MethodologyForm: React.FC<MethodologyFormProps> = ({ close }) => {
 
   const onSubmit = useCallback(
     (data) => {
+      console.log(data);
       setSubmitting(true);
       saveContactToSubscribersSpreadsheet({ ...data, form: 'methodology' });
       saveContactMethodologyMutation.mutate(
@@ -42,7 +38,6 @@ const MethodologyForm: React.FC<MethodologyFormProps> = ({ close }) => {
         {
           onSuccess: () => {
             setSubmitting(false);
-            close();
           },
           onError: () => {
             setSubmitting(false);
@@ -50,7 +45,7 @@ const MethodologyForm: React.FC<MethodologyFormProps> = ({ close }) => {
         },
       );
     },
-    [close, saveContactMethodologyMutation],
+    [saveContactMethodologyMutation],
   );
 
   return (
@@ -78,8 +73,8 @@ const MethodologyForm: React.FC<MethodologyFormProps> = ({ close }) => {
           <div>
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-14">
-                  <div className="max-w-sm space-y-10">
+                <div className="grid grid-cols-1 gap-14">
+                  <div className="space-y-10">
                     <div className="w-full">
                       <label htmlFor="name" className="font-bold ">
                         Full name
@@ -129,97 +124,48 @@ const MethodologyForm: React.FC<MethodologyFormProps> = ({ close }) => {
                     </div>
                   </div>
 
-                  <div>
-                    <p className="font-semibold">
-                      {' '}
-                      Which document(s) would you like us to send you?
-                    </p>
-
-                    <div className="flex items-center mt-5 space-x-2.5">
+                  <div className="bg-gray-100 p-7">
+                    <div className="flex items-top mt-5 space-x-2.5">
                       <input
-                        id="download-full-methodology"
-                        type="radio"
-                        {...register('download')}
-                        value="fullMethodology"
-                        className={cx({
-                          'w-5 h-5 border-2 border-black': true,
-                          'border-red-500': errors.fullMethodology,
+                        id="accept-terms"
+                        type="checkbox"
+                        {...register('terms')}
+                        className={cx('w-5 h-5 border-2 border-black', {
+                          'border-red-500': errors.terms,
                         })}
                       />
-                      <label className="font-light" htmlFor="download-full-methodology">
-                        Send me the full methodology whitepaper.
+                      <label className="font-light" htmlFor="accept-terms">
+                        I agree with LandGriffon’s{' '}
+                        <Link href="/privacy-policy">
+                          <a className="font-semibold text-black underline">Privacy Policy.</a>
+                        </Link>
                       </label>
                     </div>
-                    <p className="leading-9 pl-7 opacity-30">
-                      This document provides an in-depth description of how LandGriffon imports
-                      supply chain data, measures impact, and forecasts scenarios.
-                    </p>
 
-                    <div className="flex items-center mt-5 space-x-2.5">
+                    <div className="flex items-top mt-5 space-x-2.5">
                       <input
-                        id="download-executive-summary"
-                        type="radio"
-                        {...register('download')}
-                        value="executiveSummary"
-                        className={cx({
-                          'w-5 h-5 border-2 border-black': true,
-                          'border-red-500': errors.executiveSummary,
+                        id="newsletter"
+                        type="checkbox"
+                        {...register('newsletter')}
+                        className={cx('w-5 h-5 border-2 border-black', {
+                          'border-red-500': errors.newsletter,
                         })}
                       />
-
-                      <label className="font-light" htmlFor="download-executive-summary">
-                        Send me the executive summary.
+                      <label className="font-light" htmlFor="newsletter">
+                        I want to be added to the LandGriffon mailing list for occasional updates
+                        through the email newsletter.
                       </label>
                     </div>
-                    <p className="leading-9 pl-7 opacity-30">
-                      This document provides an overview of how LandGriffon functions.
-                    </p>
-                  </div>
-                </div>
 
-                <div className="bg-gray-100 p-7">
-                  <div className="flex items-center mt-5 space-x-2.5">
-                    <input
-                      id="terms"
-                      type="checkbox"
-                      {...register('terms')}
-                      className={cx({
-                        'w-5 h-5 border-2 border-black': true,
-                        'border-red-500': errors.terms,
-                      })}
-                    />
-                    <label className="font-light" htmlFor="terms">
-                      I agree with LandGriffon’s{' '}
-                      <Link href="/privacy-policy">
-                        <a className="font-semibold text-black underline">Privacy Policy.</a>
-                      </Link>
-                    </label>
-                  </div>
-
-                  <div className="flex items-center mt-5 space-x-2.5">
-                    <input
-                      id="information"
-                      type="checkbox"
-                      {...register('information')}
-                      className={cx({
-                        'w-5 h-5 border-2 border-black': true,
-                        'border-red-500': errors.information,
-                      })}
-                    />
-                    <label className="font-light" htmlFor="information">
-                      I want to be added to the LandGriffon mailing list for occasional updates
-                      through the email newsletter.
-                    </label>
-                  </div>
-
-                  <div className="flex justify-end pt-4">
-                    <button
-                      type="submit"
-                      className="px-5 py-4 font-semibold text-black bg-transparent border-2 border-black hover:bg-black/10"
-                      disabled={submitting}
-                    >
-                      Send me the methodology
-                    </button>
+                    <div className="flex justify-end pt-4">
+                      <button
+                        type="submit"
+                        className="px-5 py-4 font-semibold text-black bg-transparent border-2 border-black hover:bg-black/10"
+                        disabled={submitting}
+                      >
+                        Send me the methodology
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

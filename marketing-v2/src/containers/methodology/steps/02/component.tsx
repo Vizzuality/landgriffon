@@ -82,7 +82,7 @@ const Step02: React.FC = () => {
           onDismiss={closeMethodologyFormModal}
           dismissable
         >
-          <MethodologyForm close={closeMethodologyFormModal} />
+          <MethodologyForm />
         </Modal>
       </div>
 

@@ -525,6 +525,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             rawDeforestation: 500,
             rawCarbon: 600,
             rawWater: 700,
+            satDeforestation: 800,
+            satDeforestationRisk: 900,
           });
 
         const preconditions: ScenarioInterventionPreconditions =

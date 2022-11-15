@@ -11,6 +11,7 @@ import {
 } from '@floating-ui/react-dom-interactions';
 import { Transition } from '@headlessui/react';
 import { sortBy } from 'lodash-es';
+import { useRouter } from 'next/router';
 
 import Materials from '../materials/component';
 import OriginRegions from '../origin-regions/component';
@@ -26,7 +27,6 @@ import { useSuppliersTrees } from 'hooks/suppliers';
 import { useLocationTypes } from 'hooks/location-types';
 import Button from 'components/button/component';
 import { flattenTree } from 'components/tree-select/utils';
-import useQueryParam from 'hooks/queryParam';
 
 import type { TreeSelectOption } from 'components/tree-select/types';
 import type { AnalysisFiltersState } from 'store/features/analysis/filters';
@@ -65,8 +65,8 @@ const DEFAULT_QUERY_OPTIONS = {
 };
 
 const MoreFilters = () => {
-  const [scenarioId] = useQueryParam<string>('scenarioId', { defaultValue: null });
-  const [compareScenarioId] = useQueryParam<string>('compareScenarioId', { defaultValue: null });
+  const { query } = useRouter();
+  const { scenarioId, compareScenarioId } = query;
 
   const dispatch = useAppDispatch();
   const { materials, origins, suppliers, locationTypes } = useAppSelector(analysisFilters);
@@ -239,7 +239,10 @@ const MoreFilters = () => {
     reviewFilterContent('suppliers', suppliers, suppliers);
   }, [locationTypes, materialOptions, materials, origins, reviewFilterContent, suppliers]);
 
-  useQueryParam('scenarioId', { onChange: handleScenarioChange });
+  useEffect(() => {
+    handleScenarioChange();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scenarioId]);
 
   return (
     <div className="relative">

@@ -2,6 +2,8 @@ import { useMemo, useCallback } from 'react';
 import { XCircleIcon, PlusIcon } from '@heroicons/react/solid';
 import { RadioGroup } from '@headlessui/react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { pickBy } from 'lodash-es';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import {
@@ -16,7 +18,6 @@ import ScenariosFilters from 'containers/scenarios/filters';
 import { Anchor } from 'components/button';
 import Loading from 'components/loading';
 import ScenarioItem from 'containers/scenarios/item';
-import useQueryParam from 'hooks/queryParam';
 
 import type { MutableRefObject } from 'react';
 import type { Scenario } from 'containers/scenarios/types';
@@ -32,10 +33,8 @@ const ACTUAL_DATA: Scenario = {
 const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement> }> = ({
   scrollref,
 }) => {
-  const [scenarioId = null, setScenarioId] = useQueryParam<string>('scenarioId', {
-    defaultValue: null,
-  });
-  const [, setScenarioToCompare] = useQueryParam<string>('scenarioToCompare');
+  const { query, push } = useRouter();
+  const { scenarioId = ACTUAL_DATA.id } = query;
 
   const { sort, searchTerm } = useAppSelector(scenarios);
   const dispatch = useAppDispatch();
@@ -53,16 +52,17 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
   }, [data]);
 
   const handleOnChange = useCallback(
-    async (id: Scenario['id']) => {
-      await setScenarioId(id);
-      await setScenarioToCompare(null);
+    (id: Scenario['id']) => {
+      push({ query: pickBy({ ...query, compareScenarioId: null, scenarioId: id }) }, null, {
+        shallow: false,
+      });
 
       // TODO: deprecated, we'll keep only for retro-compatibility
       dispatch(setCurrentScenario(id));
       dispatch(setScenarioToCompareAction(null));
       dispatch(setComparisonEnabled(false));
     },
-    [dispatch, setScenarioId, setScenarioToCompare],
+    [dispatch, push, query],
   );
 
   useBottomScrollListener(
@@ -84,7 +84,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
           <RadioGroup.Label className="sr-only">Scenarios</RadioGroup.Label>
           <div className="space-y-6">
             {/* Actual data */}
-            <ScenarioItem scenario={ACTUAL_DATA} isSelected={scenarioId === null} />
+            <ScenarioItem scenario={ACTUAL_DATA} isSelected={scenarioId === ACTUAL_DATA.id} />
             <ScenariosFilters />
             {/* Scenarios */}
             {((!isLoading && !error && scenariosList && scenariosList.length > 0) ||

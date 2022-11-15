@@ -27,10 +27,10 @@ import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-
 import { IndicatorRecordCalculatedValuesDtoV2 } from 'modules/indicator-records/dto/indicator-record-calculated-values.dto';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
-import { IndicatorDependencyManager } from 'modules/impact/services/indicator-dependency-manager.service';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { H3DataService } from 'modules/h3-data/h3-data.service';
+import { IndicatorDependencyManager } from 'modules/indicator-records/services/indicator-dependency-manager.service';
 
 /**
  * @description: This is PoC (Proof of Concept) for the updated LG methodology v0.1

@@ -12,7 +12,7 @@ const DOWNLOAD_LINKS = {
 
 const Methodology = (req: NextApiRequest, res: NextApiResponse): void => {
   if (req.method === 'POST') {
-    const { name, email, information, download } = req.body;
+    const { name, email, newsletter } = req.body;
     // Send a message to the user with Methodology link
 
     const msg = {
@@ -21,7 +21,8 @@ const Methodology = (req: NextApiRequest, res: NextApiResponse): void => {
       subject: `Landgriffon's Methodology`,
       text: `Hi ${name}\n\n
       Thank you for your interest in LandGriffon's Methodology!\n\n
-      You can download it here: ${DOWNLOAD_LINKS[download]}\n\n
+      You can download it here: ${DOWNLOAD_LINKS.fullMethodology}\n\n
+      You can also download the Executive summary here: ${DOWNLOAD_LINKS.executiveSummary}\n\n
       The methodology is a work in progress. We want it to serve you and create real change in the sector. If you have any input you would like to share with us regarding the methodology, please let us know.\n\n
       All the best,\n\n
       The LandGriffon team\n\n
@@ -30,7 +31,8 @@ const Methodology = (req: NextApiRequest, res: NextApiResponse): void => {
         <p>Hi ${name}</p>
         <br/>
         <p>Thank you for your interest in LandGriffon's Methodology!</p>
-        <p><strong>You can download it here.</strong>: ${DOWNLOAD_LINKS[download]}</p>
+        <p><strong>You can download it here.</strong>: <a href="${DOWNLOAD_LINKS.fullMethodology}" download>Full Methodology document</a></p>
+        <p><strong>Also, you can download the <a href="${DOWNLOAD_LINKS.executiveSummary}" download>Executive summary document</a>.</strong></p>
         <p>The methodology is a work in progress. We want it to serve you and create real change in the sector. If you have any input you would like to share with us regarding the methodology, please let us know.</p>
         <br/>
         <br/>
@@ -52,7 +54,7 @@ const Methodology = (req: NextApiRequest, res: NextApiResponse): void => {
 
     // Save the user in a marketing list
     const data = {
-      list_ids: information
+      list_ids: newsletter
         ? ['1b704de4-643f-4531-b6cb-63fea0e6ad2a', 'd2008d48-54fc-47ad-80d4-30fa831581ba'] // contact + methodology
         : ['d2008d48-54fc-47ad-80d4-30fa831581ba'], // methodology
       contacts: [

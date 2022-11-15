@@ -203,12 +203,12 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
 
   const flatLayers = useMemo(() => categories.flatMap(({ layers }) => layers), [categories]);
 
-  const {
-    reset,
-    result,
-    search: setSearchText,
-    term: searchText,
-  } = useFuse(flatLayers, FUSE_OPTIONS);
+  const [searchText, setSearchText] = useState('');
+  const result = useFuse(flatLayers, searchText, FUSE_OPTIONS);
+
+  const reset = useCallback(() => {
+    setSearchText('');
+  }, []);
 
   const filteredLayersIds = useMemo(() => result.map((item) => item.id), [result]);
 

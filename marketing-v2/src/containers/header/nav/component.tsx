@@ -37,9 +37,9 @@ const HeaderNav: React.FC<NavProps> = ({ open }: NavProps) => {
             opacity: 0,
             y: -10,
           }}
-          className="flex flex-col justify-between lg:flex-row lg:space-x-10 fixed left-0 z-50 w-full h-[calc(100%_-_theme(space.14))] lg:h-auto bg-white top-14 lg:top-0 lg:w-auto lg:relative py-5 lg:py-0"
+          className="flex flex-col justify-between lg:flex-row lg:space-x-10 fixed left-0 z-50 w-full lg:h-[calc(100%_-_theme(space.14))] bg-white top-14 lg:top-0 lg:w-auto lg:relative py-5 lg:py-0"
         >
-          <ul className="flex flex-col space-y-5 bg-white lg:flex-row lg:space-y-0 lg:space-x-14">
+          <ul className="flex flex-col space-y-5 lg:flex-row lg:space-y-0 lg:space-x-14">
             {!isLg && (
               <li>
                 <Link href="/">
@@ -131,7 +131,7 @@ const HeaderNav: React.FC<NavProps> = ({ open }: NavProps) => {
               </a>
             </li>
           </ul>
-          <div>
+          <div className="mt-4 lg:mt-0">
             <Link href="/contact">
               <a className="block px-10 mx-5 text-base text-center text-white bg-green-500 lg:mx-0 py-7">
                 Contact

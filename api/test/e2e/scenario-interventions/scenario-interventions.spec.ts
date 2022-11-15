@@ -14,7 +14,6 @@ import {
   createBusinessUnit,
   createGeoRegion,
   createH3Data,
-  createIndicator,
   createIndicatorRecordForIntervention,
   createMaterial,
   createMaterialToH3,
@@ -66,16 +65,13 @@ import {
   MaterialToH3,
 } from 'modules/materials/material-to-h3.entity';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
-import {
-  Indicator,
-  INDICATOR_TYPES_NEW,
-} from 'modules/indicators/indicator.entity';
+import { Indicator } from 'modules/indicators/indicator.entity';
 import { Unit } from 'modules/units/unit.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { dropH3DataMock, h3DataMock } from '../h3-data/mocks/h3-data.mock';
 import { h3MaterialExampleDataFixture } from '../h3-data/mocks/h3-fixtures';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
-import { ApiPreconditionFailedResponse } from '@nestjs/swagger';
+import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -180,6 +176,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   let indicatorRecordRepository: IndicatorRecordRepository;
   let indicatorRepository: IndicatorRepository;
   let geoRegionRepository: GeoRegionRepository;
+  let impactCalculatorService: ImpactCalculator;
   let jwtToken: string;
   let userId: string;
 
@@ -223,6 +220,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
     indicatorRepository =
       moduleFixture.get<IndicatorRepository>(IndicatorRepository);
+    impactCalculatorService =
+      moduleFixture.get<ImpactCalculator>(ImpactCalculator);
 
     app = getApp(moduleFixture);
     await app.init();
@@ -511,6 +510,80 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       expect(newSourcingRecords.length).toBe(1);
       expect(newSourcingRecords[0].tonnage).toEqual('250');
     });
+
+    test(
+      'When I create a scenario intervention of type Change of supplier with provided coefficients, ' +
+        'then correct Indicator records with scaler should be saved',
+      async () => {
+        jest
+          .spyOn(impactCalculatorService, 'getImpactRawDataPerSourcingRecord')
+          .mockResolvedValue({
+            production: 100,
+            harvestedArea: 200,
+            weightedAllHarvest: 300,
+            waterStressPerct: 400,
+            rawDeforestation: 500,
+            rawCarbon: 600,
+            rawWater: 700,
+          });
+
+        const preconditions: ScenarioInterventionPreconditions =
+          await createInterventionPreconditionsForSupplierChange();
+
+        const geoRegion: GeoRegion = await createGeoRegion();
+        await createAdminRegion({
+          isoA2: 'ABC',
+          geoRegion,
+        });
+
+        const response = await request(app.getHttpServer())
+          .post('/api/v1/scenario-interventions')
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send({
+            title: 'scenario intervention supplier',
+            startYear: 2018,
+            percentage: 50,
+            scenarioId: preconditions.scenario.id,
+            materialIds: [preconditions.material1.id],
+            businessUnitIds: [preconditions.businessUnit1.id],
+            adminRegionIds: [preconditions.adminRegion1.id],
+            type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+            newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
+            newLocationCountryInput: 'Spain',
+            newIndicatorCoefficients: {
+              UWU_T: 5,
+              UWUSR_T: 5,
+              GHG_LUC_T: 1,
+              DF_LUC_T: 10,
+              LI: 3,
+            },
+          });
+
+        expect(response.status).toBe(HttpStatus.CREATED);
+
+        const newSourcingLocations: SourcingLocation[] =
+          await sourcingLocationRepository.find({
+            where: {
+              interventionType:
+                SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+            },
+          });
+
+        const newSourcingRecords: SourcingRecord[] =
+          await sourcingRecordRepository.find({
+            where: {
+              sourcingLocationId: newSourcingLocations[0].id,
+            },
+          });
+        const newIndicatorRecords: IndicatorRecord[] =
+          await indicatorRecordRepository.find({
+            where: { sourcingRecordId: newSourcingRecords[0].id },
+          });
+
+        expect(newIndicatorRecords.length).toBe(5);
+        expect(newIndicatorRecords[0].scaler).toEqual(100);
+      },
+    );
 
     test('Create a scenario intervention of type Change of supplier location with start year for which there are multiple years, should be successful', async () => {
       const preconditions: ScenarioInterventionPreconditions =

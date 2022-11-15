@@ -4,10 +4,8 @@ import { Material } from 'modules/materials/material.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
-import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import {
   Indicator,
-  INDICATOR_TYPES,
   INDICATOR_TYPES_NEW,
 } from 'modules/indicators/indicator.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
@@ -109,7 +107,7 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
     nameCode: INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
   });
 
-  const indicator5: Indicator = await createIndicator({
+  await createIndicator({
     name: 'land use',
     nameCode: INDICATOR_TYPES_NEW.LAND_USE,
   });
@@ -242,6 +240,7 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
     {
       indicator: indicator1,
       value: 2000,
+      scaler: 222,
     },
     sourcingRecord2,
   );
@@ -250,6 +249,7 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
     {
       indicator: indicator2,
       value: 2200,
+      scaler: 222,
     },
     sourcingRecord2,
   );

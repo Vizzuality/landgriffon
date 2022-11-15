@@ -3,18 +3,10 @@ LABEL maintainer="hello@vizzuality.com"
 
 ARG UID=5000
 ARG GID=5000
-ARG NEXTAUTH_URL
-ARG NEXTAUTH_SECRET
-ARG NEXT_PUBLIC_MAPBOX_API_TOKEN
-ARG NEXT_PUBLIC_API_URL
 
 ENV NAME landgriffon-marketing-v2
 ENV USER $NAME
 ENV APP_HOME /opt/$NAME
-ENV NEXTAUTH_URL $NEXTAUTH_URL
-ENV NEXTAUTH_SECRET $NEXTAUTH_SECRET
-ENV NEXT_PUBLIC_MAPBOX_API_TOKEN $NEXT_PUBLIC_MAPBOX_API_TOKEN
-ENV NEXT_PUBLIC_API_URL $NEXT_PUBLIC_API_URL
 ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN apk add --no-cache libc6-compat git
@@ -37,7 +29,7 @@ COPY --chown=$USER:$USER cypress ./cypress
 # NextJS config files
 COPY --chown=$USER:$USER next.config.js next-env.d.ts local.d.ts \
 	postcss.config.js tailwind.config.js cypress.json entrypoint.sh \
-	tsconfig.json .browserlistrc .babelrc .eslintrc.js .prettierrc.json ./
+	tsconfig.json .browserlistrc .eslintrc.js .prettierrc.json ./
 
 RUN yarn build
 

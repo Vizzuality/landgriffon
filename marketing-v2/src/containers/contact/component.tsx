@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import Wrapper from 'containers/wrapper';
 import { useCallback, useState } from 'react';
@@ -11,10 +12,10 @@ import { useSaveContact } from 'hooks/contact';
 
 import Icon from 'components/icon';
 import Loading from 'components/loading';
+import { saveContactToSubscribersSpreadsheet } from 'utils/subscribers-spreadsheet';
 
 import EMAIL_SVG from 'svgs/contact/icn_email.svg?sprite';
 import LOCATION_SVG from 'svgs/contact/icn_location.svg?sprite';
-import { useRouter } from 'next/router';
 
 const schema = yup.object().shape({
   name: yup.string().required(),
@@ -23,6 +24,7 @@ const schema = yup.object().shape({
   topic: yup.string().required(),
   message: yup.string().required(),
   terms: yup.bool().oneOf([true]).required(),
+  newsletter: yup.bool(),
 });
 
 const Contact: React.FC = () => {
@@ -40,6 +42,7 @@ const Contact: React.FC = () => {
       topic: topic || '',
       message: '',
       terms: false,
+      newsletter: false,
     },
     resolver: yupResolver(schema),
   });
@@ -50,6 +53,7 @@ const Contact: React.FC = () => {
   const onSubmit = useCallback(
     (data) => {
       setSubmitting(true);
+      if (data.newsletter) saveContactToSubscribersSpreadsheet({ ...data, form: 'contact' });
       saveContactMutation.mutate(
         { data },
         {
@@ -247,22 +251,39 @@ const Contact: React.FC = () => {
               </div>
 
               <div className="flex flex-col items-end justify-between space-y-10 md:flex-row md:space-x-10 md:space-y-0">
-                <div className="flex items-center space-x-2.5">
-                  <input
-                    id="terms"
-                    type="checkbox"
-                    {...register('terms')}
-                    className={cx({
-                      'border-red-500': errors.terms,
-                    })}
-                  />
+                <div>
+                  <div className="flex items-center space-x-2.5">
+                    <input
+                      id="terms"
+                      type="checkbox"
+                      {...register('terms')}
+                      className={cx('w-5 h-5 border-2 border-black', {
+                        'border-red-500': errors.terms,
+                      })}
+                    />
 
-                  <label className="font-light" htmlFor="terms">
-                    I agree with the LandGriffon&apos;s{' '}
-                    <Link href="/privacy-policy">
-                      <a className="font-semibold text-black underline">Privacy Policy</a>
-                    </Link>{' '}
-                  </label>
+                    <label className="font-light" htmlFor="terms">
+                      I agree with the LandGriffon&apos;s{' '}
+                      <Link href="/privacy-policy">
+                        <a className="font-semibold text-black underline">Privacy Policy</a>
+                      </Link>{' '}
+                    </label>
+                  </div>
+
+                  <div className="flex items-top mt-5 space-x-2.5">
+                    <input
+                      id="newsletter"
+                      type="checkbox"
+                      {...register('newsletter')}
+                      className={cx('w-5 h-5 border-2 border-black', {
+                        'border-red-500': errors.newsletter,
+                      })}
+                    />
+                    <label className="font-light" htmlFor="newsletter">
+                      I want to be added to the LandGriffon mailing list for occasional updates
+                      through the email newsletter.
+                    </label>
+                  </div>
                 </div>
 
                 <button

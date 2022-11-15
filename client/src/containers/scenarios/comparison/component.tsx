@@ -1,4 +1,6 @@
 import { useCallback, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { pickBy } from 'lodash-es';
 
 import { useScenarios } from 'hooks/scenarios';
 import { useAppDispatch } from 'store/hooks';
@@ -8,18 +10,17 @@ import {
 } from 'store/features/analysis/scenarios';
 import Select from 'components/select';
 import useEffectOnce from 'hooks/once';
-import useQueryParam from 'hooks/queryParam';
 
 import type { Dispatch, FC } from 'react';
 import type { SelectOption } from 'components/select/types';
 
 const ScenariosComparison: FC = () => {
-  const [scenarioId, setScenarioId] = useQueryParam<string>('scenarioId');
-  const [compareScenarioId, setCompareScenarioId] = useQueryParam<string>('compareScenarioId');
+  const { query, push } = useRouter();
+  const { scenarioId, compareScenarioId } = query;
   const dispatch = useAppDispatch();
 
   const { data: scenarios } = useScenarios({
-    params: { disablePagination: true, hasActiveInterventions: true },
+    params: { disablePagination: true, hasActiveInterventions: true, sort: '-updatedAt' },
     options: {
       select: (data) => data.data,
     },
@@ -40,9 +41,11 @@ const ScenariosComparison: FC = () => {
       dispatch(setComparisonEnabled(!!current));
       dispatch(setScenarioToCompareAction(current?.value || null));
 
-      setCompareScenarioId(current?.value || null);
+      push({ query: pickBy({ ...query, compareScenarioId: current?.value || null }) }, null, {
+        shallow: true,
+      });
     },
-    [dispatch, setCompareScenarioId],
+    [dispatch, push, query],
   );
 
   // Reset comparison when options changes
@@ -52,10 +55,17 @@ const ScenariosComparison: FC = () => {
       dispatch(setScenarioToCompareAction(null));
       dispatch(setComparisonEnabled(false));
 
-      setCompareScenarioId(null);
-      setScenarioId(selected?.value || null);
+      push(
+        {
+          query: pickBy({ ...query, compareScenarioId: null, scenarioId: selected?.value || null }),
+        },
+        null,
+        {
+          shallow: true,
+        },
+      );
     }
-  }, [selected, dispatch, options, compareScenarioId, setCompareScenarioId, setScenarioId]);
+  }, [selected, dispatch, options, compareScenarioId, push, query]);
 
   // We consider comparison is enabled when compareScenarioId is present
   useEffectOnce(() => {

@@ -60,7 +60,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
               )}
               <Listbox.Button
                 className={classnames(
-                  'relative inline-flex items-center py-2.5 pl-3 pr-10 text-left leading-5 bg-white border rounded-md shadow-sm cursor-default hover:cursor-pointer focus:border-navy-400 focus:outline-none focus:ring-0',
+                  'relative w-full inline-flex items-center py-2.5 pl-3 pr-10 text-left leading-5 bg-white border rounded-md shadow-sm cursor-default hover:cursor-pointer focus:border-navy-400 focus:outline-none focus:ring-0',
                   {
                     'mt-1': !!label,
                     'border-red-400': error,

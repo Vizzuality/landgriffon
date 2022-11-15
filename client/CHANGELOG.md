@@ -5,15 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [v0.4.0 Unreleased]
-
-### Added
-
-- Toggle to set the visibility (public or private) of a scenario. [LANDGRIF-1009](https://vizzuality.atlassian.net/browse/LANDGRIF-1009)
+## [v0.3.1]
 
 ### Fixed
 
-- Tests were failing due to a change in the dev environment
+- Tests were failing due to a change in the api where data was reset
+- Scenario list when the user opens the comparison dropdown [LANDGRIF-1066](https://vizzuality.atlassian.net/browse/LANDGRIF-1066)
+- Fixed reset of "group by" filter in analysis page when a scenario is selected. [LANDGRIF-1059](https://vizzuality.atlassian.net/browse/LANDGRIF-1059)
 
 ## [v0.3.0]
 
@@ -26,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Numbers of growth rates in scenarios page
 
 ### Changed
+
 - Updated placeholders of year range selectors. [LANDGRIF-1057](https://vizzuality.atlassian.net/browse/LANDGRIF-1057)
 - In tables the columns are not sortable by default, it should be specified in each column configuration [LANDGRIF-965](https://vizzuality.atlassian.net/browse/LANDGRIF-965)
 - Updated styles for tree-selectors according the design
@@ -35,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Updated styles for tree-selectors according the design
 
 ### Fixed
+
 - Changed key value for items in Impact chart tooltip. [LANDGRIF-1056](https://vizzuality.atlassian.net/browse/LANDGRIF-1056)
 - Analysis sidebar: removed "no results" message triggered when there weren't scenarios available to list. [LANDGRIF-1029](https://vizzuality.atlassian.net/browse/LANDGRIF-1029)
 - Not include scenarios with 0 interventions in the scenario dropdowns for comparison [LANDGRIF-999](https://vizzuality.atlassian.net/browse/LANDGRIF-999)

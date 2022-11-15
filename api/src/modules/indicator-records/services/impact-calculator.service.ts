@@ -185,7 +185,7 @@ export class ImpactCalculator {
             ),
           );
 
-        const rawDataForNewSourcingRecord =
+        const rawDataForNewSourcingRecord: IndicatorRawDataBySourcingRecord =
           await this.getImpactRawDataPerSourcingRecord(
             queryForActiveIndicators,
             materialId,

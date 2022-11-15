@@ -1,7 +1,9 @@
 import Fuse from 'fuse.js';
 import { useQuery } from '@tanstack/react-query';
-import { useId } from 'react';
+import { useId, useMemo } from 'react';
 import sortBy from 'lodash/sortBy';
+
+import useFuse from 'hooks/fuse';
 
 import type { DeepKeys } from '@tanstack/react-table';
 import type { UseQueryOptions } from '@tanstack/react-query';
@@ -141,6 +143,7 @@ export const useFilteredKeys = <T = TreeSelectOption['value'][]>(
   search: string,
   options?: UseQueryOptions<string[], unknown, T, [typeof id, typeof selectOptions, typeof search]>,
 ) => {
+  const enabled = !!search && (options?.enabled ?? true);
   const id = useId();
   const query = useQuery({
     queryKey: [id, selectOptions, search] as const,
@@ -155,36 +158,21 @@ export const useFilteredKeys = <T = TreeSelectOption['value'][]>(
     placeholderData: [],
     keepPreviousData: true,
     ...options,
+    enabled,
   });
 
   return query;
 };
-/**
- * Filtering large amounts of data takes time, and Tanstack Query
- * does a great jobhandling this cases in an asynchronous way
- */
-export const useFilteredOptions = <T = TreeSelectOption[]>(
-  selectOptions: TreeSelectOption[],
-  search: string,
-  options?: UseQueryOptions<
-    TreeSelectOption[],
-    unknown,
-    T,
-    [typeof id, typeof selectOptions, typeof search]
-  >,
-) => {
-  const id = useId();
-  const query = useQuery({
-    queryKey: [id, selectOptions, search] as const,
-    queryFn: ({ queryKey: [, selectOptions, search] }) => {
-      const filteredOptions = getFilteredOptions(selectOptions, search);
-      return filteredOptions;
-    },
-    useErrorBoundary: true,
-    placeholderData: [],
-    keepPreviousData: true,
-    ...options,
-  });
 
-  return query;
+export const useFilteredOptions = (selectOptions: TreeSelectOption[], search: string) => {
+  const flatOptions = useMemo(
+    () => selectOptions.flatMap((opt) => flattenTree(opt)).map(({ children, ...rest }) => rest),
+    [selectOptions],
+  );
+  const filteredOptions = useFuse(flatOptions, search, {
+    includeScore: false,
+    keys: ['label'],
+    threshold: 0.4,
+  });
+  return filteredOptions;
 };

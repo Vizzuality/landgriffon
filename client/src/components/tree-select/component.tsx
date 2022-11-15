@@ -15,7 +15,8 @@ import { ChevronDownIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
 import Tree from 'rc-tree';
 import { useDebouncedValue } from 'rooks';
 
-import { CHECKED_STRATEGIES, useFilteredKeys } from './utils';
+import { CHECKED_STRATEGIES, useFilteredKeys, useFilteredOptions } from './utils';
+import SearchOverlay from './search-overlay';
 
 import Badge from 'components/badge';
 import Loading from 'components/loading';
@@ -118,8 +119,15 @@ const InnerTreeSelect = <IsMulti extends boolean>(
   const [userExpandedKeys, setUserExpandedKeys] = useState<TreeProps['expandedKeys']>([]);
   const [userClosedKeys, setUserClosedKeys] = useState<TreeProps['expandedKeys']>([]);
 
-  const [checkedKeys, setCheckedKeys] = useState<TreeProps['checkedKeys']>([]);
+  const [checkedKeys, setCheckedKeys] = useState<Key[]>([]);
   const { data: filteredOptionsKeys } = useFilteredKeys(options, debouncedSearch);
+  const _filteredOptions = useFilteredOptions(options, debouncedSearch);
+  const filteredOptions = useMemo(() => {
+    return _filteredOptions.map((option) => ({
+      ...option,
+      isSelected: checkedKeys.includes(option.value),
+    }));
+  }, [_filteredOptions, checkedKeys]);
 
   const expandedKeys = useMemo(() => {
     const uniqueKeys = new Set([...userExpandedKeys, ...filteredOptionsKeys]);
@@ -143,25 +151,21 @@ const InnerTreeSelect = <IsMulti extends boolean>(
     (option: TreeSelectOption, depth = 0): DataNode => {
       const childOptions = option.children?.map((option) => optionToTreeData(option, depth + 1));
 
-      const isFilteredOut = !!debouncedSearch && !filteredOptionsKeys.includes(option.value);
-
-      const isLeaf = !!debouncedSearch ? option.children?.some((child) => getIsLeaf(child)) : true;
-
       return {
         key: option.value,
         title: option.label,
         className: classNames(THEMES[theme].treeNodes, {
           'w-full': fitContent,
           'bg-navy-50 font-semibold': selectedKeys.includes(option.value),
-          hidden: isFilteredOut,
         }),
         style: { paddingLeft: 16 * depth },
         children: childOptions,
-        isLeaf: !isLeaf,
       };
     },
-    [debouncedSearch, filteredOptionsKeys, fitContent, getIsLeaf, selectedKeys, theme],
-  );
+s,
+      };
+    },
+    [fitContent, selectedKeys  );
 
   const treeData = useMemo(() => {
     return options.map((option) => optionToTreeData(option));
@@ -483,28 +487,46 @@ const InnerTreeSelect = <IsMulti extends boolean>(
                 <Loading className="w-5 mr-3 -ml-1 h5 text-navy-400" />
               </div>
             )}
-            {!loading && (
-              <>
-                <Tree
-                  checkStrictly={false}
-                  checkable={multiple}
-                  selectable={!multiple}
-                  multiple={multiple}
-                  selectedKeys={selectedKeys}
-                  expandedKeys={expandedKeys}
-                  checkedKeys={checkedKeys}
-                  switcherIcon={customSwitcherIcon}
-                  onExpand={handleExpand}
-                  onSelect={handleSelect}
-                  onCheck={handleCheck}
-                  treeData={treeData}
-                />
-                {(options.length === 0 || (searchTerm && filteredOptionsKeys.length === 0)) && (
-                  <div className="p-2 mx-auto text-sm text-gray-600 opacity-60 w-fit">
-                    No results
-                  </div>
-                )}
-              </>
+            {debouncedSearch ? (
+              <SearchOverlay
+                onChange={(newKey) => {
+                  setCheckedKeys((currentKeys) => {
+                    const newKeys = new Set(currentKeys);
+                    if (newKeys.has(newKey)) {
+                      newKeys.delete(newKey);
+                    } else {
+                      newKeys.add(newKey);
+                    }
+                    return Array.from(newKeys);
+                  });
+                  setSearchTerm('');
+                }}
+                options={filteredOptions}
+              />
+            ) : (
+              !loading && (
+                <>
+                  <Tree
+                    checkStrictly={false}
+                    checkable={multiple}
+                    selectable={!multiple}
+                    multiple={multiple}
+                    selectedKeys={selectedKeys}
+                    expandedKeys={expandedKeys}
+                    checkedKeys={checkedKeys}
+                    switcherIcon={customSwitcherIcon}
+                    onExpand={handleExpand}
+                    onSelect={handleSelect}
+                    onCheck={handleCheck}
+                    treeData={treeData}
+                  />
+                  {(options.length === 0 || (searchTerm && filteredOptionsKeys.length === 0)) && (
+                    <div className="p-2 mx-auto text-sm text-gray-600 opacity-60 w-fit">
+                      No results
+                    </div>
+                  )}
+                </>
+              )
             )}
           </div>
         </div>

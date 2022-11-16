@@ -1,3 +1,4 @@
+import type { FieldDataNode } from 'rc-tree';
 import type { CHECKED_STRATEGIES } from './utils';
 
 export type TreeSelectOption = {
@@ -36,3 +37,5 @@ export interface TreeSelectProps<IsMulti extends boolean = false> extends Common
   current: (IsMulti extends true ? TreeSelectOption[] : TreeSelectOption) | null;
   onChange?: (selected: IsMulti extends true ? TreeSelectOption[] : TreeSelectOption) => void;
 }
+
+export type TreeDataNode = FieldDataNode<Omit<TreeSelectOption, 'children'>>;

@@ -7,24 +7,24 @@ import useFuse from 'hooks/fuse';
 
 import type { DeepKeys } from '@tanstack/react-table';
 import type { UseQueryOptions } from '@tanstack/react-query';
-import type { TreeSelectOption } from './types';
-import type { DataNode, Key } from 'rc-tree/lib/interface';
+import type { TreeDataNode, TreeSelectOption } from './types';
+import type { DataNode, FlattenNode, Key } from 'rc-tree/lib/interface';
 
 interface HasChildren<T> {
   children?: T[];
 }
 
-const ALL = (checkedKeys: Key[], checkedNodes: DataNode[]): DataNode['key'][] =>
-  checkedNodes.map(({ key }) => key);
+const ALL = (checkedKeys: Key[], checkedNodes: TreeDataNode[]): DataNode['key'][] =>
+  checkedNodes.map(({ value }) => value);
 
-const PARENT = (checkedKeys: Key[], checkedNodes: DataNode[]): DataNode['key'][] => {
+const PARENT = (checkedKeys: Key[], checkedNodes: TreeDataNode[]): TreeDataNode['value'][] => {
   // 1. Extracting parents selected
   const parentsWithChildren = checkedNodes.filter((node) => !!node?.children);
   // 2. Extracting children ids from parents selected above
   const childrenWithParents = [];
   if (parentsWithChildren && parentsWithChildren.length) {
     parentsWithChildren.forEach(({ children }) =>
-      children.forEach(({ key }) => childrenWithParents.push(key)),
+      children.forEach(({ value }) => childrenWithParents.push(value)),
     );
   }
   // 3. Filtering checkedKeys with children ids to not send unnecessary values
@@ -35,8 +35,8 @@ const PARENT = (checkedKeys: Key[], checkedNodes: DataNode[]): DataNode['key'][]
   return filteredValues;
 };
 
-const CHILD = (checkedKeys: Key[], checkedNodes: DataNode[]): DataNode['key'][] => {
-  const onlyChildren = checkedNodes.filter((node) => !node?.children).map(({ key }) => key);
+const CHILD = (checkedKeys: Key[], checkedNodes: TreeDataNode[]): TreeDataNode['value'][] => {
+  const onlyChildren = checkedNodes.filter((node) => !node?.children).map(({ value }) => value);
   return onlyChildren;
 };
 
@@ -49,6 +49,14 @@ export const flattenTree = <T extends HasChildren<T>>(tree: T) => {
   }
 
   return flattenedTree;
+};
+
+export const getParentKeys = <T>(node: FlattenNode<T>) => {
+  if (!node.parent) {
+    return [];
+  }
+  const parent = node.parent;
+  return [parent.key, ...getParentKeys(parent)];
 };
 
 export const filterTree = <T extends HasChildren<T>>(
@@ -141,13 +149,18 @@ const getFilteredOptions = (options: TreeSelectOption[], search?: string) => {
 export const useFilteredKeys = <T = TreeSelectOption['value'][]>(
   selectOptions: TreeSelectOption[],
   search: string,
-  options?: UseQueryOptions<string[], unknown, T, [typeof id, typeof selectOptions, typeof search]>,
+  options?: UseQueryOptions<
+    string[],
+    unknown,
+    T,
+    [typeof id, typeof search, typeof selectOptions['length']]
+  >,
 ) => {
   const enabled = !!search && (options?.enabled ?? true);
   const id = useId();
   const query = useQuery({
-    queryKey: [id, selectOptions, search] as const,
-    queryFn: ({ queryKey: [, selectOptions, search] }) => {
+    queryKey: [id, search, selectOptions.length] as const,
+    queryFn: ({ queryKey: [, search] }) => {
       if (!search) return [];
       const filteredOptions = getFilteredOptions(selectOptions, search);
 

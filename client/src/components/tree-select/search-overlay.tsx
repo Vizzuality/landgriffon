@@ -1,12 +1,16 @@
 import classNames from 'classnames';
 import { useCallback } from 'react';
 
+import type { WithRequiredProperty } from 'types';
+import type { FlattenNode, Key } from 'rc-tree/lib/interface';
 import type { Dispatch } from 'react';
-import type { TreeSelectOption } from './types';
+import type { TreeDataNode, TreeSelectOption } from './types';
 
 interface SearchOverlayProps {
-  options: (Omit<TreeSelectOption, 'children'> & { isSelected: boolean })[];
-  onChange: Dispatch<TreeSelectOption['value']>;
+  options: (WithRequiredProperty<Partial<FlattenNode<TreeDataNode>>, 'key' | 'title'> & {
+    isSelected: boolean;
+  })[];
+  onChange: Dispatch<Key>;
 }
 
 const SearchOverlay = ({ options, onChange }: SearchOverlayProps) => {
@@ -19,17 +23,17 @@ const SearchOverlay = ({ options, onChange }: SearchOverlayProps) => {
 
   return (
     <div>
-      {options.map(({ label, value, isSelected }) => (
+      {options.map(({ title, key, isSelected }) => (
         <button
           type="button"
           className={classNames(
             'p-2 hover:bg-navy-50 cursor-pointer block w-full text-left',
             isSelected ? 'font-bold text-navy-400' : 'text-gray-900',
           )}
-          key={value}
-          onClick={getHandleChange(value)}
+          key={key}
+          onClick={getHandleChange(key)}
         >
-          {label}
+          {title}
         </button>
       ))}
     </div>

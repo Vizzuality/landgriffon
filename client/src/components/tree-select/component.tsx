@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo, useEffect } from 'react';
+import React, { useCallback, useState, useMemo, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 import {
   flip,
@@ -13,17 +13,21 @@ import {
 } from '@floating-ui/react-dom-interactions';
 import { ChevronDownIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
 import Tree from 'rc-tree';
+import { flattenTreeData } from 'rc-tree/lib/utils/treeUtil';
 import { useDebouncedValue } from 'rooks';
+import { useQuery } from '@tanstack/react-query';
+import Fuse from 'fuse.js';
 
-import { CHECKED_STRATEGIES, useFilteredKeys, useFilteredOptions } from './utils';
+import { CHECKED_STRATEGIES, getParentKeys, useFilteredKeys } from './utils';
 import SearchOverlay from './search-overlay';
 
 import Badge from 'components/badge';
 import Loading from 'components/loading';
 
-import type { DataNode, Key } from 'rc-tree/lib/interface';
+import type { UseFuseOptions } from 'hooks/fuse';
+import type { FieldNames, Key } from 'rc-tree/lib/interface';
 import type { TreeProps } from 'rc-tree';
-import type { TreeSelectProps, TreeSelectOption } from './types';
+import type { TreeSelectProps, TreeSelectOption, TreeDataNode } from './types';
 import type { ChangeEventHandler, Ref } from 'react';
 
 const THEMES = {
@@ -47,10 +51,21 @@ const THEMES = {
   },
 };
 
-const customSwitcherIcon: TreeProps['switcherIcon'] = ({ isLeaf, expanded }) => {
+const customSwitcherIcon: TreeProps<TreeDataNode>['switcherIcon'] = ({ isLeaf, expanded }) => {
   if (isLeaf) return <span className="block w-4" />;
 
   return <ChevronDownIcon className={classNames('h-4 w-4', { '-rotate-90': !expanded })} />;
+};
+
+const SEARCH_OPTIONS: UseFuseOptions<{ title: string; key: Key }> = {
+  includeScore: false,
+  keys: ['title'],
+  threshold: 0.4,
+};
+
+const FIELD_NAMES: FieldNames = {
+  key: 'value',
+  title: 'label',
 };
 
 const InnerTreeSelect = <IsMulti extends boolean>(
@@ -60,7 +75,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
     maxBadges = 5,
     multiple,
     options = [],
-    placeholder,
+    placeholder = '',
     showSearch = false,
     onChange,
     onSearch,
@@ -68,7 +83,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
     ellipsis = false,
     error = false,
     fitContent = false,
-    checkedStrategy = 'PARENT', // by default show child
+    checkedStrategy: checkedStrategyName = 'PARENT', // by default show child
     label,
     autoFocus = false,
     id,
@@ -85,6 +100,10 @@ const InnerTreeSelect = <IsMulti extends boolean>(
     return [currentRaw];
   }, [currentRaw]);
   const [isOpen, setIsOpen] = useState(autoFocus && (!current || current.length === 0));
+
+  const checkedStrategy = CHECKED_STRATEGIES[checkedStrategyName];
+
+  const listContainerRef = useRef<HTMLDivElement>(null);
 
   const badgesToShow = ellipsis ? 1 : maxBadges;
 
@@ -107,7 +126,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
 
   const { getReferenceProps, getFloatingProps } = useInteractions([
     useClick(context),
-    useDismiss(context, {}),
+    useDismiss(context),
     useRole(context, { role: 'listbox' }),
   ]);
 
@@ -115,87 +134,88 @@ const InnerTreeSelect = <IsMulti extends boolean>(
   const [debouncedSearch, setDebouncedSearch] = useDebouncedValue(searchTerm, 100);
 
   const [selected, setSelected] = useState<TreeSelectOption>(null);
-  const [selectedKeys, setSelectedKeys] = useState<TreeProps['selectedKeys']>([]);
-  const [userExpandedKeys, setUserExpandedKeys] = useState<TreeProps['expandedKeys']>([]);
-  const [userClosedKeys, setUserClosedKeys] = useState<TreeProps['expandedKeys']>([]);
+  const [selectedKeys, setSelectedKeys] = useState<TreeProps<TreeDataNode>['selectedKeys']>([]);
+  const [expandedKeys, setExpandedKeys] = useState<TreeProps<TreeDataNode>['expandedKeys']>([]);
 
   const [checkedKeys, setCheckedKeys] = useState<Key[]>([]);
   const { data: filteredOptionsKeys } = useFilteredKeys(options, debouncedSearch);
-  const _filteredOptions = useFilteredOptions(options, debouncedSearch);
-  const filteredOptions = useMemo(() => {
-    return _filteredOptions.map((option) => ({
-      ...option,
-      isSelected: checkedKeys.includes(option.value),
-    }));
-  }, [_filteredOptions, checkedKeys]);
-
-  const expandedKeys = useMemo(() => {
-    const uniqueKeys = new Set([...userExpandedKeys, ...filteredOptionsKeys]);
-    userClosedKeys.forEach((key) => {
-      uniqueKeys.delete(key);
-    });
-    return Array.from(uniqueKeys);
-  }, [filteredOptionsKeys, userClosedKeys, userExpandedKeys]);
-
-  const getIsLeaf = useCallback(
-    (option: TreeSelectOption) => {
-      if (filteredOptionsKeys.includes(option.value)) return true;
-      if (!option.children?.length) return false;
-
-      return option.children?.some((child) => getIsLeaf(child));
-    },
-    [filteredOptionsKeys],
-  );
 
   const optionToTreeData = useCallback(
-    (option: TreeSelectOption, depth = 0): DataNode => {
-      const childOptions = option.children?.map((option) => optionToTreeData(option, depth + 1));
+    (option: TreeSelectOption, depth = 0): TreeDataNode => {
+      const children = option.children?.map((option) => optionToTreeData(option, depth + 1));
 
       return {
-        key: option.value,
-        title: option.label,
+        ...option,
         className: classNames(THEMES[theme].treeNodes, {
           'w-full': fitContent,
           'bg-navy-50 font-semibold': selectedKeys.includes(option.value),
         }),
         style: { paddingLeft: 16 * depth },
-        children: childOptions,
+        children,
       };
     },
-s,
-      };
+    [fitContent, selectedKeys, theme],
+  );
+
+  const { data: treeData } = useQuery({
+    queryKey: ['tree-data', id],
+    queryFn: () => options.map((option) => optionToTreeData(option)),
+    placeholderData: [],
+  });
+
+  const { data: flatTreeData } = useQuery({
+    queryKey: ['flattened-options', id],
+    queryFn: () => {
+      const flattened = flattenTreeData(treeData, true, FIELD_NAMES);
+      return flattened;
     },
-    [fitContent, selectedKeys  );
+    placeholderData: [],
+    enabled: !!treeData?.length,
+  });
 
-  const treeData = useMemo(() => {
-    return options.map((option) => optionToTreeData(option));
-  }, [optionToTreeData, options]);
+  const fuse = useMemo(
+    () =>
+      new Fuse(
+        flatTreeData,
+        SEARCH_OPTIONS as unknown as Fuse.IFuseOptions<typeof flatTreeData[number]>,
+      ),
+    [flatTreeData],
+  );
 
-  const handleExpand: TreeProps['onExpand'] = useCallback(
+  const { data: filteredOptions } = useQuery({
+    queryKey: ['filtered-options', id, debouncedSearch],
+    queryFn: ({ queryKey: [, , search] }) => {
+      const result = fuse.search(search);
+      return result.map(({ item }) => ({ ...item, isSelected: selectedKeys.includes(item.key) }));
+    },
+    placeholderData: [],
+    enabled: !!flatTreeData?.length,
+  });
+
+  const handleExpand: TreeProps<TreeDataNode>['onExpand'] = useCallback(
     (keys, { node, expanded }) => {
       // if the item is being closed, remove it from the expanded keys
-      if (!expanded) {
-        setUserClosedKeys((keys) => {
-          const uniqueKeys = new Set(keys);
+      setExpandedKeys((prevKeys) => {
+        const uniqueKeys = new Set(prevKeys);
+        if (!expanded) {
+          uniqueKeys.delete(node.key);
+        } else {
           uniqueKeys.add(node.key);
-          return Array.from(uniqueKeys);
-        });
-      } else if (userClosedKeys.includes(node.key)) {
-        setUserClosedKeys((keys) => keys.filter((key) => key !== node.key));
-      }
-
-      setUserExpandedKeys(keys);
+        }
+        return Array.from(uniqueKeys);
+      });
     },
-    [userClosedKeys],
+    [],
   );
 
   // Selection for non-multiple
-  const handleSelect: TreeProps['onSelect'] = useCallback(
+  const handleSelect: TreeProps<TreeDataNode>['onSelect'] = useCallback(
     (keys, { node }) => {
-      const currentSelection: TreeSelectOption = { label: node.title as string, value: node.key };
+      const currentSelection: TreeSelectOption = { label: node.label as string, value: node.value };
       setSelectedKeys(keys);
       setSelected(currentSelection);
 
+      // TODO: move to effect
       if (!multiple) {
         // TODO: type inference is not working here
         onChange?.(currentSelection as TreeSelectProps<IsMulti>['current']);
@@ -230,28 +250,24 @@ s,
   }, [checkedKeys, options]);
 
   // Selection for multiple
-  const handleCheck = useCallback<TreeProps['onCheck']>(
+  const handleCheck = useCallback<TreeProps<TreeDataNode>['onCheck']>(
     (checkedKeys: Key[], { checkedNodes }) => {
       // const root = fullTreeData.find((option) => checkedKeys.includes(option.key));
       // Depending of the checked strategy apply different filters
-      const filteredValues = CHECKED_STRATEGIES[checkedStrategy](
-        checkedKeys,
-        checkedNodes as DataNode[],
-      );
+      const filteredValues = checkedStrategy(checkedKeys, checkedNodes) || [];
 
       // TODO: this function is repeated
       const checkedOptions: TreeSelectOption[] = [];
-      if (filteredValues) {
-        (filteredValues as string[]).forEach((key) => {
-          const recursiveSearch = (arr: TreeSelectOption[]) => {
-            arr.forEach((opt) => {
-              if (opt.value === key) checkedOptions.push(opt);
-              if (opt.children) recursiveSearch(opt.children);
-            });
-          };
-          recursiveSearch(options);
-        });
-      }
+      filteredValues.forEach((key) => {
+        const recursiveSearch = (arr: TreeSelectOption[]) => {
+          arr.forEach((opt) => {
+            if (opt.value === key) checkedOptions.push(opt);
+            if (opt.children) recursiveSearch(opt.children);
+          });
+        };
+        recursiveSearch(options);
+      });
+
       if (multiple) {
         onChange?.(checkedOptions as TreeSelectProps<IsMulti>['current']);
       }
@@ -291,6 +307,7 @@ s,
           recursiveSearch(options);
         });
       }
+
       if (multiple) {
         onChange?.(checkedOptions as TreeSelectProps<IsMulti>['current']);
       }
@@ -364,6 +381,92 @@ s,
     selected,
     theme,
   ]);
+
+  const [treeRef, setTreeRef] = useState<Tree<TreeDataNode>>();
+  const [keyToScroll, setKeyToScroll] = useState<Key>();
+
+  useEffect(() => {
+    if (!listContainerRef.current || !keyToScroll) return;
+    const listContainer = listContainerRef.current;
+
+    const visibleFlattenedTreeData = flattenTreeData(treeData, expandedKeys, FIELD_NAMES);
+
+    const elementIndex = visibleFlattenedTreeData.findIndex((node) => node.key === keyToScroll);
+
+    if (elementIndex === -1) return;
+
+    const listHeight = listContainer.clientHeight;
+
+    // for some reason, there's an invisible .rc-tree-treenode outside of the list. With this selector we ensure to get the element only if it has a sibling of the same type
+    const firstChild = listContainer.querySelector('.rc-tree-treenode ~ .rc-tree-treenode');
+    const offset = firstChild.clientHeight;
+
+    listContainer.scrollTop = offset * (elementIndex + 1) - listHeight / 2;
+    setKeyToScroll(undefined);
+  }, [keyToScroll, treeRef, treeData, expandedKeys]);
+
+  const handleSearchSelection = useCallback(
+    (newKey: Key) => {
+      setSearchTerm('');
+      setDebouncedSearch('');
+
+      const selectedNode = flatTreeData.find((data) => data.key === newKey);
+      setKeyToScroll(newKey);
+      const keysToExpand = [selectedNode.key, ...getParentKeys(selectedNode)];
+      setExpandedKeys((currentKeys) => {
+        const uniqueKeys = new Set([...currentKeys, ...keysToExpand]);
+        return Array.from(uniqueKeys);
+      });
+
+      if (multiple) {
+        setCheckedKeys((currentKeys) => {
+          const newKeys = new Set(currentKeys);
+          if (newKeys.has(newKey)) {
+            newKeys.delete(newKey);
+          } else {
+            newKeys.add(newKey);
+          }
+          return Array.from(newKeys);
+        });
+        setSelectedKeys((currentKeys) => {
+          const newKeys = new Set(currentKeys);
+          if (newKeys.has(newKey)) {
+            newKeys.delete(newKey);
+          } else {
+            newKeys.add(newKey);
+          }
+
+          const keys = Array.from(newKeys);
+          const newCheckedKeys = new Set([...checkedKeys, ...keys]);
+          const newCheckedNodes = flatTreeData
+            .filter((data) => newCheckedKeys.has(data.key))
+            .map(({ data }) => data);
+          const filteredValuesKeys =
+            checkedStrategy(Array.from(newCheckedKeys), newCheckedNodes) || [];
+          const newNodes = flatTreeData
+            .filter((data) => filteredValuesKeys.includes(data.key))
+            .map(({ data }) => data);
+          onChange?.(newNodes as TreeSelectProps<IsMulti>['current']);
+          return keys;
+        });
+      } else {
+        if (selected.value === selectedNode.key) {
+          setSelected(null);
+        } else {
+          setSelected({ label: selectedNode.title as string, value: selectedNode.key });
+        }
+      }
+    },
+    [
+      setDebouncedSearch,
+      flatTreeData,
+      multiple,
+      checkedKeys,
+      checkedStrategy,
+      onChange,
+      selected?.value,
+    ],
+  );
 
   return (
     <div className="min-w-0 " data-testid={`tree-select-${id}`}>
@@ -477,56 +580,43 @@ s,
           })}
         >
           <div
+            ref={listContainerRef}
             className={classNames(
               'bg-white max-h-80 overflow-y-auto',
               fitContent ? 'max-w-full w-full' : 'max-w-xs',
             )}
           >
-            {loading && (
+            {loading ? (
               <div className="p-4">
                 <Loading className="w-5 mr-3 -ml-1 h5 text-navy-400" />
               </div>
-            )}
-            {debouncedSearch ? (
-              <SearchOverlay
-                onChange={(newKey) => {
-                  setCheckedKeys((currentKeys) => {
-                    const newKeys = new Set(currentKeys);
-                    if (newKeys.has(newKey)) {
-                      newKeys.delete(newKey);
-                    } else {
-                      newKeys.add(newKey);
-                    }
-                    return Array.from(newKeys);
-                  });
-                  setSearchTerm('');
-                }}
-                options={filteredOptions}
-              />
+            ) : debouncedSearch ? (
+              <SearchOverlay onChange={handleSearchSelection} options={filteredOptions} />
             ) : (
-              !loading && (
-                <>
-                  <Tree
-                    checkStrictly={false}
-                    checkable={multiple}
-                    selectable={!multiple}
-                    multiple={multiple}
-                    selectedKeys={selectedKeys}
-                    expandedKeys={expandedKeys}
-                    checkedKeys={checkedKeys}
-                    switcherIcon={customSwitcherIcon}
-                    onExpand={handleExpand}
-                    onSelect={handleSelect}
-                    onCheck={handleCheck}
-                    treeData={treeData}
-                  />
-                  {(options.length === 0 || (searchTerm && filteredOptionsKeys.length === 0)) && (
-                    <div className="p-2 mx-auto text-sm text-gray-600 opacity-60 w-fit">
-                      No results
-                    </div>
-                  )}
-                </>
-              )
+              <>
+                <Tree
+                  ref={setTreeRef}
+                  className={classNames({ hidden: loading || !!debouncedSearch })}
+                  checkStrictly={false}
+                  checkable={multiple}
+                  selectable={!multiple}
+                  multiple={multiple}
+                  selectedKeys={selectedKeys}
+                  expandedKeys={expandedKeys}
+                  checkedKeys={checkedKeys}
+                  switcherIcon={customSwitcherIcon}
+                  onExpand={handleExpand}
+                  onSelect={handleSelect}
+                  onCheck={handleCheck}
+                  treeData={treeData}
+                  fieldNames={FIELD_NAMES}
+                />
+                {(options.length === 0 || (searchTerm && filteredOptionsKeys.length === 0)) && (
+                  <div className="p-2 mx-auto text-sm text-gray-600 opacity-60 w-fit">
+                    No results
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

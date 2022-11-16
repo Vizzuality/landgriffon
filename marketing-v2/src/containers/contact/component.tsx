@@ -53,7 +53,11 @@ const Contact: React.FC = () => {
   const onSubmit = useCallback(
     (data) => {
       setSubmitting(true);
-      if (data.newsletter) saveContactToSubscribersSpreadsheet({ ...data, form: 'contact' });
+      saveContactToSubscribersSpreadsheet({
+        ...data,
+        form: 'contact',
+        newsletter: data.newsletter ? 'Yes' : 'No',
+      });
       saveContactMutation.mutate(
         { data },
         {

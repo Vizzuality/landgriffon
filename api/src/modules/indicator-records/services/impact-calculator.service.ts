@@ -161,39 +161,15 @@ export class ImpactCalculator {
         rawData.production =
           sourcingData.sourcingRecord.indicatorRecords[0].scaler;
       } else {
-        const materialH3s: Map<MATERIAL_TO_H3_TYPE, H3Data> =
-          await this.h3DataService.getAllMaterialH3sByClosestYear(
-            sourcingData.materialId,
-            sourcingData.year,
-          );
+        // Here we will get production value that will e saved as scaler later
 
-        const materialH3: H3Data | undefined = materialH3s.get(
-          MATERIAL_TO_H3_TYPE.PRODUCER,
-        );
-        if (!materialH3) {
-          throw new NotFoundException(
-            `No H3 Data could be found the material ${sourcingData.materialId} type ${MATERIAL_TO_H3_TYPE.PRODUCER}`,
-          );
-        }
-
-        // Here we will get Raw Data, but will use only the production
-
-        const queryForActiveIndicators: string =
-          this.dependencyManager.buildQueryForIntervention(
-            indicatorsToCalculateImpactFor.map(
-              (i: Indicator) => i.nameCode as INDICATOR_TYPES_NEW,
-            ),
-          );
-
-        const rawDataForNewSourcingRecord: IndicatorRawDataBySourcingRecord =
-          await this.getImpactRawDataPerSourcingRecord(
-            queryForActiveIndicators,
-            materialId,
+        const productionValue: number =
+          await this.getProductionValueForGeoregionAndMaterial(
             geoRegionId,
-            adminRegionId,
+            materialId,
           );
         rawData = new IndicatorRawDataBySourcingRecord();
-        rawData.production = rawDataForNewSourcingRecord.production;
+        rawData.production = productionValue;
       }
     } else {
       const queryForActiveIndicators: string =
@@ -304,6 +280,17 @@ export class ImpactCalculator {
         `Could not calculate Raw Indicator values for new Scenario`,
       );
     }
+  }
+
+  async getProductionValueForGeoregionAndMaterial(
+    geoRegionId: string,
+    materialId: string,
+  ): Promise<number> {
+    const res: number = await getManager().query(
+      `SELECT sum_material_over_georegion($1, $2, 'producer') as production`,
+      [geoRegionId, materialId],
+    );
+    return res;
   }
 
   /**

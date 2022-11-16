@@ -147,20 +147,21 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data, display = 'grid' }) =
           </div>
           <div
             className={classNames('flex items-center space-x-1', {
-              'bg-navy-50': true, //data.visibility === 'public' // ! <- replace with this contidition when scenario visibility is available in the API
-              'bg-gray-100': data.visibility === 'private',
+              'bg-navy-50': data.visibility === 'public',
+              'bg-gray-100': data.visibility !== 'public',
               'rounded-md justify-center p-3': display === 'list',
               'p-6 -mx-6': display === 'grid',
             })}
           >
             <Toggle
               data-testid="scenario-visibility"
-              // active={data.visibility === 'public'} // ! <-- uncomment this when scenario visibility is available in the API
-              active
+              active={data.visibility === 'public'}
               onChange={handleChangeVisibility}
               disabled // ! <-- this feature is disabled until the API allows to change the visibility of a scenario
             />
-            <span className="text-sm text-gray-500">Make scenario public</span>
+            <span className="text-sm text-gray-500 peer-disabled:text-gray-300">
+              Make scenario public
+            </span>
           </div>
           <div
             className={classNames({

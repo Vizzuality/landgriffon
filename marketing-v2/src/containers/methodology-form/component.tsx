@@ -69,7 +69,7 @@ const MethodologyForm: React.FC<MethodologyFormProps> = ({ close }) => {
           <div>
             <p>
               Thank you for filling in your details! You&apos;ll receive a link to our methodology
-              in your email inbox. If you can&apos;t see it, please check your spam.
+              in your email inbox. If you can&apos;t see it, please check your spam folder.
             </p>
           </div>
         )}

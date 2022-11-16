@@ -93,6 +93,10 @@
   @apply w-full text-gray-900;
 }
 
+.rc-tree-indent-unit {
+  @apply w-4;
+}
+
 /* Recharts */
 .recharts-label {
   @apply text-xs fill-gray-400;

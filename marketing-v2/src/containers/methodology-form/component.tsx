@@ -32,7 +32,11 @@ const MethodologyForm: React.FC = () => {
     (data) => {
       console.log(data);
       setSubmitting(true);
-      saveContactToSubscribersSpreadsheet({ ...data, form: 'methodology' });
+      saveContactToSubscribersSpreadsheet({
+        ...data,
+        form: 'methodology',
+        newsletter: data.newsletter ? 'Yes' : 'No',
+      });
       saveContactMethodologyMutation.mutate(
         { data },
         {

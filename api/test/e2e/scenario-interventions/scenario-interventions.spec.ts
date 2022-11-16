@@ -516,18 +516,11 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         'then correct Indicator records with scaler should be saved',
       async () => {
         jest
-          .spyOn(impactCalculatorService, 'getImpactRawDataPerSourcingRecord')
-          .mockResolvedValue({
-            production: 100,
-            harvestedArea: 200,
-            weightedAllHarvest: 300,
-            waterStressPerct: 400,
-            rawDeforestation: 500,
-            rawCarbon: 600,
-            rawWater: 700,
-            satDeforestation: 800,
-            satDeforestationRisk: 900,
-          });
+          .spyOn(
+            impactCalculatorService,
+            'getProductionValueForGeoregionAndMaterial',
+          )
+          .mockResolvedValue(100);
 
         const preconditions: ScenarioInterventionPreconditions =
           await createInterventionPreconditionsForSupplierChange();

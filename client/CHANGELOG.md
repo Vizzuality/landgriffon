@@ -80,7 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Refactored actual data page to avoid strange renders and extra calls to the API
 
 ### Fixed
-
+- Fixed reset of "group by" filter in analysis page when a scenario is selected. [LANDGRIF-1059](https://vizzuality.atlassian.net/browse/LANDGRIF-1059)
 - Fix changing scenario keeping filters not valid for selection [LANDGRIF-958](https://vizzuality.atlassian.net/browse/LANDGRIF-958)
 - Errors in intervention creation form not showing up [LANDGRIF-958](https://vizzuality.atlassian.net/browse/LANDGRIF-958)
 - Navigating to another page with some query params now correctly override the state [LANDGRIF-911](https://vizzuality.atlassian.net/browse/LANDGRIF-911)

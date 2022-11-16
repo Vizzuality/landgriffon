@@ -2,6 +2,7 @@ import { useMemo, useCallback } from 'react';
 import { XCircleIcon, PlusIcon } from '@heroicons/react/solid';
 import { RadioGroup } from '@headlessui/react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import {
@@ -16,7 +17,6 @@ import ScenariosFilters from 'containers/scenarios/filters';
 import { Anchor } from 'components/button';
 import Loading from 'components/loading';
 import ScenarioItem from 'containers/scenarios/item';
-import useQueryParam from 'hooks/queryParam';
 
 import type { MutableRefObject } from 'react';
 import type { Scenario } from 'containers/scenarios/types';
@@ -32,12 +32,8 @@ const ACTUAL_DATA: Scenario = {
 const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement> }> = ({
   scrollref,
 }) => {
-  const [scenarioId = null, setScenarioId] = useQueryParam<string>('scenarioId', {
-    defaultValue: null,
-  });
-  const [, setScenarioToCompare] = useQueryParam<string>('scenarioToCompare');
-
-  const { sort, searchTerm } = useAppSelector(scenarios);
+  const router = useRouter();
+  const { sort, searchTerm, currentScenario: scenarioId } = useAppSelector(scenarios);
   const dispatch = useAppDispatch();
   const { fetchNextPage, hasNextPage, data, isLoading, error } = useInfiniteScenarios({
     sort: sort as string,
@@ -53,16 +49,25 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
   }, [data]);
 
   const handleOnChange = useCallback(
-    async (id: Scenario['id']) => {
-      await setScenarioId(id);
-      await setScenarioToCompare(null);
-
+    (id: Scenario['id']) => {
       // TODO: deprecated, we'll keep only for retro-compatibility
       dispatch(setCurrentScenario(id));
       dispatch(setScenarioToCompareAction(null));
       dispatch(setComparisonEnabled(false));
+
+      router.replace(
+        {
+          pathname: router.pathname,
+          query: {
+            ...router.query,
+            scenarioId: id,
+          },
+        },
+        null,
+        { shallow: true },
+      );
     },
-    [dispatch, setScenarioId, setScenarioToCompare],
+    [router, dispatch],
   );
 
   useBottomScrollListener(

@@ -155,7 +155,8 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data, display = 'grid' }) =
           >
             <Toggle
               data-testid="scenario-visibility"
-              active={data.visibility === 'public'}
+              // active={data.visibility === 'public'} // ! uncomment this line when the API returns the visibility of the scenario
+              active
               onChange={handleChangeVisibility}
               disabled // ! <-- this feature is disabled until the API allows to change the visibility of a scenario
             />

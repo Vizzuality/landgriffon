@@ -30,7 +30,11 @@ const NewsLetter: React.FC = () => {
   const onSubmit = useCallback(
     (data) => {
       setSubmitting(true);
-      saveContactToSubscribersSpreadsheet({ ...data, form: 'newsletter' });
+      saveContactToSubscribersSpreadsheet({
+        ...data,
+        form: 'newsletter',
+        newsletter: 'Yes',
+      });
       saveNewsLetterMutation.mutate(
         { data },
         {

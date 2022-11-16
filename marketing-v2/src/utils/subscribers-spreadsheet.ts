@@ -5,6 +5,7 @@ type SubscriberContact = {
   name?: string;
   company?: string;
   form: 'methodology' | 'newsletter' | 'contact';
+  newsletter: 'Yes' | 'No';
 };
 
 const SCRIPT_URL =
@@ -16,6 +17,7 @@ export const saveContactToSubscribersSpreadsheet = async (data: SubscriberContac
   docData.append('entry.1442491647', data.name);
   docData.append('entry.1779120400', data.company);
   docData.append('entry.204130736', data.form);
+  docData.append('entry.1734344997', data.newsletter || 'No');
 
   // TO-DO: solve CORS issue with google forms
   return axios

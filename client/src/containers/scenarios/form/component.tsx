@@ -62,7 +62,7 @@ const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
         </div>
         <div className="flex flex-col">
           <label>Access</label>
-          <div className="flex items-center space-x-1 h-full">
+          <div className="flex items-center h-full space-x-1">
             <Controller
               name="visibility"
               control={control}
@@ -77,7 +77,9 @@ const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
               )}
             />
 
-            <span>Make scenario public</span>
+            <span className="text-sm text-gray-500 peer-disabled:text-gray-300">
+              Make scenario public
+            </span>
           </div>
         </div>
       </div>

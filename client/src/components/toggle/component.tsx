@@ -29,7 +29,7 @@ const Toggle: React.FC<ToggleProps> = ({ active, onChange, disabled = false }) =
     <Switch
       checked={active}
       onChange={handleChange}
-      className="relative inline-flex items-center justify-center flex-shrink-0 w-8 h-5 rounded-full cursor-pointer group focus:outline-none disabled:cursor-default"
+      className="relative inline-flex items-center justify-center flex-shrink-0 w-8 h-5 rounded-full cursor-pointer peer focus:outline-none disabled:cursor-default"
       onClick={handleClick}
       disabled={disabled}
       aria-disabled={disabled}
@@ -42,8 +42,12 @@ const Toggle: React.FC<ToggleProps> = ({ active, onChange, disabled = false }) =
       <span
         aria-hidden="true"
         className={classNames(
-          active && !disabled ? 'bg-navy-400' : 'bg-gray-200',
           'pointer-events-none absolute h-3.5 w-7 mx-auto rounded-full transition-colors ease-in-out duration-200',
+          {
+            'bg-gray-200/50': disabled,
+            'bg-navy-400': active && !disabled,
+            'bg-gray-300': !active && !disabled,
+          },
         )}
       />
       <span

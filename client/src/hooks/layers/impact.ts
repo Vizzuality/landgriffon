@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { useRouter } from 'next/router';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
@@ -15,9 +16,12 @@ import type { LegendItem as LegendItemProp } from 'types';
 export const useImpactLayer = () => {
   const dispatch = useAppDispatch();
   const filters = useAppSelector(analysisFilters);
-  const { currentScenario, scenarioToCompare, isComparisonEnabled, comparisonMode } =
-    useAppSelector(scenarios);
-  const colorKey = scenarioToCompare ? 'compare' : 'impact';
+  const {
+    query: { scenarioId, compareScenarioId },
+  } = useRouter();
+  const isComparisonEnabled = !!compareScenarioId;
+  const { comparisonMode } = useAppSelector(scenarios);
+  const colorKey = !!compareScenarioId ? 'compare' : 'impact';
 
   const {
     layers: { impact: impactLayer },
@@ -27,11 +31,11 @@ export const useImpactLayer = () => {
     () =>
       storeToQueryParams({
         ...filters,
-        currentScenario,
-        scenarioToCompare,
+        currentScenario: scenarioId as string,
+        scenarioToCompare: compareScenarioId as string,
         isComparisonEnabled,
       }),
-    [currentScenario, filters, isComparisonEnabled, scenarioToCompare],
+    [compareScenarioId, filters, isComparisonEnabled, scenarioId],
   );
 
   const { indicator } = filters;
@@ -42,7 +46,7 @@ export const useImpactLayer = () => {
     {
       ...params,
       baseScenarioId: params.scenarioId,
-      comparedScenarioId: scenarioToCompare,
+      comparedScenarioId: compareScenarioId as string,
       relative: comparisonMode === 'relative',
     },
     { enabled: isComparisonEnabled },

@@ -8,7 +8,7 @@ export const COLOR_RAMPS: ColorRamps = {
   risk: ['#FEF0D9', '#FDD49E', '#FDBB84', '#FC8D59', '#E34A33', '#B30000'],
   water: ['#FEF0D9', '#FDD49E', '#FDBB84', '#FC8D59', '#E34A33', '#B30000'],
   material: ['#FFFFCC', '#D9F0A3', '#ADDD8E', '#78C679', '#31A354', '#006837'],
-  compare: ['#E03148', '#F5AFB8', '#FAE2E5', '#DAEDE2', '#6FCF96', '#078A3C'],
+  compare: ['#E03148', '#F5AFB8', '#FAE2E5', '#DAEDE2', '#6FCF96', '#078A3C'].reverse(),
 };
 
 export function useColors(layerName: string, colorScale): RGBColor[] {

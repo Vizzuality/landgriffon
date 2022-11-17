@@ -1,15 +1,15 @@
 import cx from 'classnames';
 import { useMemo } from 'react';
 
-import type { Legend } from 'types';
+import type { Legend, LegendItem } from 'types';
 
-export type LegendTypeChoroplethProps = {
+export type LegendTypeComparativeProps = {
   className?: string;
   min: number | string;
   items: Legend['items'];
 };
 
-export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
+export const LegendTypeComparative: React.FC<LegendTypeComparativeProps> = ({
   className,
   min = 0,
   items = [],
@@ -18,6 +18,12 @@ export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
     () => (items.length === 0 ? 0 : 100 / items.length),
     [items.length],
   );
+
+  const legendItems = useMemo<LegendItem[]>(
+    () => [{ label: min.toString(), value: min, color: 'transparent' }, ...items],
+    [items, min],
+  );
+
   if (items.length === 0) return null;
 
   return (
@@ -37,21 +43,15 @@ export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
 
       <ul
         className="flex m-0 mt-1 text-2xs"
-        style={{ width: `${itemWidth * (items.length + 1)}%` }}
+        style={{ width: `${itemWidth * legendItems.length}%` }}
       >
-        {(!!min || min === 0) && (
-          <li className="text-left group/item" style={{ width: `${itemWidth}%` }}>
-            <span className="truncate" title={min as string}>
-              {min}
-            </span>
-          </li>
-        )}
-        {items.map(({ label, value }, i) => (
+        {legendItems.map(({ label, value }, i) => (
           <li
             key={`${value}-${i}`}
-            className={cx('text-center transform', {
-              '-translate-x-1/2': i < items.length - 1,
-              '-translate-x-full text-right': i === items.length - 1,
+            className={cx('transform', {
+              'text-left': i < (legendItems.length - 1) / 2,
+              'text-center -translate-x-1/2': i === (legendItems.length - 1) / 2,
+              'text-right -translate-x-full': i > (legendItems.length - 1) / 2,
             })}
             style={{ width: `${itemWidth}%` }}
           >
@@ -65,4 +65,4 @@ export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
   );
 };
 
-export default LegendTypeChoropleth;
+export default LegendTypeComparative;

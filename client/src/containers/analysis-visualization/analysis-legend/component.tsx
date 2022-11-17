@@ -112,7 +112,7 @@ export const Legend: React.FC = () => {
     <>
       <div className="relative">
         {showLegend && (
-          <div className="absolute bottom-0 z- flex flex-col flex-grow max-w-xs overflow-hidden bg-white border border-gray-200 rounded-lg shadow-sm right-12 w-80 md:max-h-[75vh]">
+          <div className="absolute bottom-0 z- flex flex-col flex-grow overflow-hidden bg-white border border-gray-200 rounded-lg shadow-sm right-12 w-[330px] md:max-h-[75vh]">
             <div className="overflow-y-auto">
               <div className="divide-y divide-gray-100">
                 <div className="flex items-center justify-between px-2 py-1 place-items-center">

@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [v0.4.0 Unreleased]
+
 ## [v0.3.5]
 
 ### Fixed
@@ -37,9 +39,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 
 - Toggle to set the visibility (public or private) of a scenario. [LANDGRIF-1009](https://vizzuality.atlassian.net/browse/LANDGRIF-1009)
+
+## [v0.3.0]
+
+### Added
+
 - Information about the layers in the tooltips of contextual layers [LANDGRIF-997](https://vizzuality.atlassian.net/browse/LANDGRIF-997)
 - Numbers of growth rates in scenarios page
-
 - Information about the layers in the tooltips of contextual layers [LANDGRIF-997](https://vizzuality.atlassian.net/browse/LANDGRIF-997)
 - Numbers of growth rates in scenarios page
 

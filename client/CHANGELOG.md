@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [v0.3.1]
 
+### Added
+
+- New legend type called Comparative legend that allows to use different alignment of the items when a comparison is enabled.
+
 ### Fixed
 
+- Legend colors for comparison layer [LANDGRIF-979](https://vizzuality.atlassian.net/browse/LANDGRIF-979)
 - Tests were failing due to a change in the api where data was reset
 - Scenario list when the user opens the comparison dropdown [LANDGRIF-1066](https://vizzuality.atlassian.net/browse/LANDGRIF-1066)
 - Fixed reset of "group by" filter in analysis page when a scenario is selected. [LANDGRIF-1059](https://vizzuality.atlassian.net/browse/LANDGRIF-1059)

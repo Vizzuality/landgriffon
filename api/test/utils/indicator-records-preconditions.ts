@@ -7,62 +7,66 @@
 import { createH3Data, createIndicator } from '../entity-mocks';
 import { getManager } from 'typeorm';
 import { h3IndicatorExampleDataFixture } from '../e2e/h3-data/mocks/h3-fixtures';
-import { INDICATOR_TYPES } from '../../src/modules/indicators/indicator.entity';
+import {
+  Indicator,
+  INDICATOR_TYPES,
+  INDICATOR_TYPES_NEW,
+} from '../../src/modules/indicators/indicator.entity';
 
 export const createWorldToCalculateIndicatorRecords =
   async (): Promise<any> => {
-    const defoIndicator = await createIndicator({
-      name: '1',
-      nameCode: INDICATOR_TYPES.DEFORESTATION,
+    // Creating Indicators:
+    const climateRisk: Indicator = await createIndicator({
+      name: 'climate risk',
+      nameCode: INDICATOR_TYPES_NEW.CLIMATE_RISK,
     });
-    const waterIndicator = await createIndicator({
-      name: '2',
-      nameCode: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+    const waterUse: Indicator = await createIndicator({
+      name: 'water use',
+      nameCode: INDICATOR_TYPES_NEW.WATER_USE,
     });
-    const carbonEmissions = await createIndicator({
-      name: '3',
-      nameCode: INDICATOR_TYPES.CARBON_EMISSIONS,
+    const unsustainableWaterUse: Indicator = await createIndicator({
+      name: 'unsust water use',
+      nameCode: INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE,
     });
-    const biodiversityLoss = await createIndicator({
-      name: '4',
-      nameCode: INDICATOR_TYPES.BIODIVERSITY_LOSS,
+    const deforestation: Indicator = await createIndicator({
+      name: 'def risk',
+      nameCode: INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
     });
 
-    const deforestationH3Data = await createH3Data({
+    const landUse: Indicator = await createIndicator({
+      name: 'land use',
+      nameCode: INDICATOR_TYPES_NEW.LAND_USE,
+    });
+
+    // Creating tables with h3Data for the new indicators
+
+    const croplandAreaH3Data = await createH3Data({
+      h3columnName: 'spam2010V2R0GlobalHAllA',
+      h3tableName: 'h3_grid_spam2010v2r0_global_ha',
+    });
+    const weightedCarbonH3Data = await createH3Data({
+      h3columnName: 'forestGhg2020Buffered',
+      h3tableName: 'h3_grid_ghg_global',
+    });
+    const weightedDeforestationH3Data = await createH3Data({
+      h3columnName: 'hansenLoss2020HaBuffered',
       h3tableName: 'h3_grid_deforestation_global',
-      h3columnName: 'hansenLoss2019',
-      year: 2000,
-      indicatorId: defoIndicator.id,
     });
-    const biodiversityLossH3Data = await createH3Data({
-      h3tableName: 'h3_grid_bio_global',
-      h3columnName: 'lciaPslRPermanentCrops',
-      year: 2000,
-      indicatorId: biodiversityLoss.id,
-    });
-    const carbonEmissionsH3Data = await createH3Data({
-      h3tableName: 'h3_grid_carbon_global',
-      h3columnName: 'earthstat2000GlobalHectareEmissions',
-      year: 2000,
-      indicatorId: carbonEmissions.id,
-    });
-    const waterRiskH3Data = await createH3Data({
-      h3tableName: 'h3_grid_wf_global',
-      h3columnName: 'wfBltotMmyrT',
-      year: 2000,
-      indicatorId: waterIndicator.id,
+    const waterStressH3Data = await createH3Data({
+      h3columnName: 'bwsCat',
+      h3tableName: 'h3_grid_aqueduct_global',
     });
 
-    for await (const indicatorH3 of [
-      deforestationH3Data,
-      biodiversityLossH3Data,
-      carbonEmissionsH3Data,
-      waterRiskH3Data,
+    for await (const H3Data of [
+      croplandAreaH3Data,
+      weightedCarbonH3Data,
+      weightedDeforestationH3Data,
+      waterStressH3Data,
     ]) {
       await getManager().query(
-        `CREATE TABLE "${indicatorH3.h3tableName}" (h3index h3index, "${indicatorH3.h3columnName}" float4);`,
+        `CREATE TABLE "${H3Data.h3tableName}" (h3index h3index, "${H3Data.h3columnName}" float4);`,
       );
-      let query = `INSERT INTO ${indicatorH3.h3tableName} (h3index, "${indicatorH3.h3columnName}") VALUES `;
+      let query = `INSERT INTO ${H3Data.h3tableName} (h3index, "${H3Data.h3columnName}") VALUES `;
       const queryArr = [];
       for (const [key, value] of Object.entries(
         h3IndicatorExampleDataFixture,
@@ -74,15 +78,22 @@ export const createWorldToCalculateIndicatorRecords =
     }
 
     return {
-      deforestation: deforestationH3Data,
-      waterRisk: waterRiskH3Data,
-      biodiversityLoss: biodiversityLossH3Data,
-      carbonEmissions: carbonEmissionsH3Data,
+      croplandArea: croplandAreaH3Data,
+      weightedCarbon: weightedCarbonH3Data,
+      weightedDeforestation: weightedDeforestationH3Data,
+      waterStress: waterStressH3Data,
       h3tableNames: [
-        deforestationH3Data.h3tableName,
-        waterRiskH3Data.h3tableName,
-        biodiversityLossH3Data.h3tableName,
-        carbonEmissionsH3Data.h3tableName,
+        croplandAreaH3Data.h3tableName,
+        weightedCarbonH3Data.h3tableName,
+        weightedDeforestationH3Data.h3tableName,
+        waterStressH3Data.h3tableName,
+      ],
+      indicators: [
+        climateRisk,
+        waterUse,
+        unsustainableWaterUse,
+        deforestation,
+        landUse,
       ],
     };
   };

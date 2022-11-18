@@ -25,6 +25,7 @@ import {
   createSourcingLocation,
   createSourcingRecord,
   createSupplier,
+  createTask,
 } from '../../../entity-mocks';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { UnknownLocationGeoCodingStrategy } from 'modules/geo-coding/strategies/unknown-location.geocoding.service';
@@ -50,7 +51,30 @@ import { createWorldToCalculateIndicatorRecords } from '../../../utils/indicator
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { Material } from 'modules/materials/material.entity';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
-import { SourcingRecordsWithIndicatorRawDataDto } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
+import {
+  SourcingRecordsWithIndicatorRawDataDto,
+  SourcingRecordsWithIndicatorRawDataDtoV2,
+} from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
+import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
+
+// TODO: Refactor after new methodology is final
+
+jest.mock('config', () => {
+  const config = jest.requireActual('config');
+
+  const configGet = config.get;
+
+  config.get = function (key: string): any {
+    switch (key) {
+      case 'newMethodology':
+        return true;
+      default:
+        return configGet.call(config, key);
+    }
+  };
+  return config;
+});
+
 let tablesToDrop: string[] = [];
 
 let missingDataFallbackPolicy: string = 'error';
@@ -71,7 +95,7 @@ jest.mock('config', () => {
   return config;
 });
 // TODO: Restore when new methodology validated
-describe.skip('Sourcing Data import', () => {
+describe('Sourcing Data import', () => {
   /**
    * @note: We are currently ignoring '#N/A' location type values in production code
    * so this mock filters them to avoid DB constraint errors for not be one of the allowed
@@ -144,6 +168,7 @@ describe.skip('Sourcing Data import', () => {
   let sourcingLocationGroupRepository: SourcingLocationGroupRepository;
   let h3DataRepository: H3DataRepository;
   let sourcingDataImportService: SourcingDataImportService;
+  let impactCalculatorService: ImpactCalculator;
   let moduleFixture: TestingModule;
 
   beforeAll(async () => {
@@ -193,6 +218,8 @@ describe.skip('Sourcing Data import', () => {
     sourcingDataImportService = moduleFixture.get<SourcingDataImportService>(
       SourcingDataImportService,
     );
+    impactCalculatorService =
+      moduleFixture.get<ImpactCalculator>(ImpactCalculator);
   });
 
   afterEach(async () => {
@@ -246,6 +273,8 @@ describe.skip('Sourcing Data import', () => {
     const indicatorPreconditions =
       await createWorldToCalculateIndicatorRecords();
 
+    const task = await createTask();
+
     tablesToDrop = [
       ...(await createMaterialTreeForXLSXImport()),
       ...indicatorPreconditions.h3tableNames,
@@ -253,7 +282,7 @@ describe.skip('Sourcing Data import', () => {
 
     await sourcingDataImportService.importSourcingData(
       __dirname + '/test-base-dataset.xlsx',
-      '',
+      task.id,
     );
   }, 100000);
 
@@ -273,9 +302,11 @@ describe.skip('Sourcing Data import', () => {
       ...indicatorPreconditions.h3tableNames,
     ];
 
+    const task = await createTask();
+
     await sourcingDataImportService.importSourcingData(
       __dirname + '/test-base-dataset.xlsx',
-      '',
+      task.id,
     );
 
     const businessUnits: BusinessUnit[] = await businessUnitRepository.find();
@@ -295,7 +326,7 @@ describe.skip('Sourcing Data import', () => {
 
     const indicatorRecords: IndicatorRecord[] =
       await indicatorRecordRepository.find();
-    expect(indicatorRecords).toHaveLength(495 * 4);
+    expect(indicatorRecords).toHaveLength(495 * 5);
 
     const sourcingLocations: SourcingLocation[] =
       await sourcingLocationRepository.find();
@@ -321,9 +352,11 @@ describe.skip('Sourcing Data import', () => {
       ...indicatorPreconditions.h3tableNames,
     ];
 
+    const task = await createTask();
+
     await sourcingDataImportService.importSourcingData(
       __dirname + '/test-base-dataset.xlsx',
-      '',
+      task.id,
     );
 
     const sourcingRecords: SourcingRecord[] =
@@ -347,7 +380,7 @@ describe.skip('Sourcing Data import', () => {
     });
 
     await createMaterialTreeForXLSXImport();
-    await createWorldToCalculateIndicatorRecords();
+    const preconditions = await createWorldToCalculateIndicatorRecords();
 
     const materials: Material[] = await materialRepository.find();
 
@@ -379,14 +412,74 @@ describe.skip('Sourcing Data import', () => {
       tonnage: 500,
     });
 
-    const indicatorRawDataForImport: SourcingRecordsWithIndicatorRawDataDto[] =
-      await indicatorRecordRepository.getIndicatorRawDataForAllSourcingRecords();
+    const indicatorRawDataForImport: SourcingRecordsWithIndicatorRawDataDtoV2[] =
+      await impactCalculatorService.getIndicatorRawDataForAllSourcingRecordsV2(
+        preconditions.indicators,
+      );
 
     expect(indicatorRawDataForImport.length).toEqual(1);
     expect(indicatorRawDataForImport[0].sourcingLocationId).toBe(
       existingSouringLocation.id,
     );
   }, 100000);
+
+  test('When a new Import process is triggered, Then the existing data imported/generated by the user should be deleted, and remaining data should stay', async () => {
+    await createGeoRegion({
+      isCreatedByUser: true,
+      name: 'DEF',
+    });
+    const geoRegion: GeoRegion = await createGeoRegion({
+      isCreatedByUser: false,
+    });
+    const adminRegion: AdminRegion = await createAdminRegion({
+      isoA2: 'ABC',
+      geoRegion,
+    });
+    const adminRegionWithUserGeoRegion: AdminRegion = await createAdminRegion({
+      isoA2: 'GHI',
+    });
+    const businessUnit: BusinessUnit = await createBusinessUnit({
+      name: 'Business Unit 1',
+    });
+    const supplier: Supplier = await createSupplier({
+      name: 'Supplier 1',
+    });
+    const material: Material = await createMaterial({
+      name: 'Material 1',
+    });
+    const sourcinRecord: SourcingRecord = await createSourcingRecord({
+      year: 2019,
+    });
+    const sourcingRecord2: SourcingRecord = await createSourcingRecord({
+      year: 2020,
+    });
+    await createSourcingLocation({
+      sourcingRecords: [sourcinRecord],
+      adminRegion,
+      businessUnit,
+      t1Supplier: supplier,
+      material,
+    });
+    await createSourcingLocation({
+      sourcingRecords: [sourcingRecord2],
+      adminRegion: adminRegionWithUserGeoRegion,
+      businessUnit,
+      t1Supplier: supplier,
+      material,
+    });
+
+    await sourcingDataImportService.cleanDataBeforeImport();
+
+    expect(
+      await geoRegionRepository.find({ isCreatedByUser: true }),
+    ).toHaveLength(0);
+    expect(await geoRegionRepository.find()).toHaveLength(1);
+    expect(await adminRegionRepository.find()).toHaveLength(2);
+    expect(await sourcingLocationRepository.find()).toHaveLength(0);
+    expect(await sourcingRecordRepository.find()).toHaveLength(0);
+    expect(await businessUnitRepository.find()).toHaveLength(0);
+    expect(await supplierRepository.find()).toHaveLength(0);
+  });
 
   describe.skip('Additional config values for missing data fallback strategy and incomplete material h3 data', () => {
     test('When a valid file is sent to the API it should return a 400 bad request code, and an error should be displayed (error strategy)', async () => {
@@ -529,62 +622,5 @@ describe.skip('Sourcing Data import', () => {
         expect(sourcingLocation.materialId).not.toEqual(null);
       });
     }, 100000);
-
-    test('When a new Import process is triggered, Then the existing data imported/generated by the user should be deleted, and remaining data should stay', async () => {
-      await createGeoRegion({
-        isCreatedByUser: true,
-      });
-      const geoRegion: GeoRegion = await createGeoRegion();
-      const adminRegion: AdminRegion = await createAdminRegion({
-        isoA2: 'ABC',
-        geoRegion,
-      });
-      const adminRegionWithUserGeoRegion: AdminRegion = await createAdminRegion(
-        {
-          isoA2: 'GHI',
-        },
-      );
-      const businessUnit: BusinessUnit = await createBusinessUnit({
-        name: 'Business Unit 1',
-      });
-      const supplier: Supplier = await createSupplier({
-        name: 'Supplier 1',
-      });
-      const material: Material = await createMaterial({
-        name: 'Material 1',
-      });
-      const sourcinRecord: SourcingRecord = await createSourcingRecord({
-        year: 2019,
-      });
-      const sourcingRecord2: SourcingRecord = await createSourcingRecord({
-        year: 2020,
-      });
-      await createSourcingLocation({
-        sourcingRecords: [sourcinRecord],
-        adminRegion,
-        businessUnit,
-        t1Supplier: supplier,
-        material,
-      });
-      await createSourcingLocation({
-        sourcingRecords: [sourcingRecord2],
-        adminRegion: adminRegionWithUserGeoRegion,
-        businessUnit,
-        t1Supplier: supplier,
-        material,
-      });
-
-      sourcingDataImportService.cleanDataBeforeImport();
-
-      expect(
-        await geoRegionRepository.find({ isCreatedByUser: true }),
-      ).toHaveLength(0);
-      expect(await geoRegionRepository.find()).toHaveLength(1);
-      expect(await adminRegionRepository.find()).toHaveLength(2);
-      expect(await sourcingLocationRepository.find()).toHaveLength(0);
-      expect(await sourcingRecordRepository.find()).toHaveLength(0);
-      expect(await businessUnitRepository.find()).toHaveLength(0);
-      expect(await supplierRepository.find()).toHaveLength(0);
-    });
   });
 });

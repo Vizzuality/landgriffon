@@ -442,7 +442,7 @@ describe('ScenariosModule (e2e)', () => {
       expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
     });
     test(
-      'When I filter a Scenario by Id and I include its interventions in the query + ' +
+      'When I filter Interventions by Scenario Id + ' +
         'Then I should receive said Interventions in the response' +
         'And they should include the replaced entity information',
       async () => {
@@ -511,4 +511,30 @@ describe('ScenariosModule (e2e)', () => {
       },
     );
   });
+  test(
+    'When I filter Interventions by Scenario Id + ' +
+      'Then I should receive said Interventions in the response' +
+      'And they should be ordered by creation date in a DESC order',
+    async () => {
+      const interventions: ScenarioIntervention[] = [];
+
+      const scenario: Scenario = await createScenario();
+
+      for (const n of [1, 2, 3, 4, 5]) {
+        const intervention = await createScenarioIntervention({
+          scenario,
+          title: `inter ${n}`,
+        });
+        interventions.push(intervention);
+      }
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/scenarios/${scenario.id}/interventions`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send();
+
+      expect(
+        interventions.map((i: ScenarioIntervention) => i.id).reverse(),
+      ).toEqual(response.body.data.map((i: ScenarioIntervention) => i.id));
+    },
+  );
 });

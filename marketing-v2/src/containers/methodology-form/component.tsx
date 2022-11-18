@@ -55,7 +55,11 @@ const MethodologyForm: React.FC = () => {
   return (
     <section className="flex flex-col -mx-6 overflow-hidden bg-white grow">
       <h2 className="px-6 font-bold md:px-14">
-        To download our Methodology, please fill in the following fields
+        {saveContactMethodologyMutation.isSuccess ? (
+          <span>We have received your request</span>
+        ) : (
+          <span>To download our Methodology, please fill in the following fields</span>
+        )}
       </h2>
       <div className="relative z-10 flex flex-col px-6 py-8 overflow-x-hidden overflow-y-auto md:py-10 grow md:px-14">
         {submitting && (

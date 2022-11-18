@@ -13,4 +13,5 @@ environments = {
   test : {},
   vcf : {},
   tetrapack : {},
+  demo: {}
 }

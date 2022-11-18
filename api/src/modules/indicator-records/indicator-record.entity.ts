@@ -1,4 +1,5 @@
 import {
+  Check,
   Column,
   Entity,
   getManager,
@@ -39,6 +40,8 @@ export enum INDICATOR_RECORD_STATUS {
 }
 
 @Entity()
+@Check(`value <> 'NaN'`)
+@Check(`scaler <> 'NaN'`)
 export class IndicatorRecord extends TimestampedBaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')

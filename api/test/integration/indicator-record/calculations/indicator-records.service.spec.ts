@@ -1,10 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from 'app.module';
 import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
-import {
-  CachedRawValue,
-  IndicatorRecordsService,
-} from 'modules/indicator-records/indicator-records.service';
+import { CachedRawValue } from 'modules/indicator-records/indicator-records.service';
 import {
   createAdminRegion,
   createBusinessUnit,
@@ -16,21 +13,19 @@ import {
   createSourcingLocation,
   createSourcingRecord,
   createSupplier,
-} from '../../entity-mocks';
+} from '../../../entity-mocks';
 import {
   Indicator,
   INDICATOR_TYPES,
   INDICATOR_TYPES_NEW,
 } from 'modules/indicators/indicator.entity';
+
 import {
   INDICATOR_RECORD_STATUS,
   IndicatorRecord,
 } from 'modules/indicator-records/indicator-record.entity';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
-import {
-  IndicatorCoefficientsDto,
-  IndicatorCoefficientsDtoV2,
-} from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
+import { IndicatorCoefficientsDtoV2 } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { Material } from 'modules/materials/material.entity';
@@ -40,33 +35,33 @@ import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-records.module';
-import { createWorldToCalculateIndicatorRecords } from '../../utils/indicator-records-preconditions';
+import { createWorldToCalculateIndicatorRecords } from '../../../utils/indicator-records-preconditions';
 import { v4 as UUIDv4 } from 'uuid';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
-import { dropH3GridTables } from '../../utils/database-test-helper';
+import { dropH3GridTables } from '../../../utils/database-test-helper';
 import {
   MATERIAL_TO_H3_TYPE,
   MaterialToH3,
-} from '../../../src/modules/materials/material-to-h3.entity';
-import { h3MaterialExampleDataFixture } from '../../e2e/h3-data/mocks/h3-fixtures';
+} from '../../../../src/modules/materials/material-to-h3.entity';
+import { h3MaterialExampleDataFixture } from '../../../e2e/h3-data/mocks/h3-fixtures';
 import {
   dropH3DataMock,
   h3DataMock,
-} from '../../e2e/h3-data/mocks/h3-data.mock';
+} from '../../../e2e/h3-data/mocks/h3-data.mock';
 import { NotFoundException, ServiceUnavailableException } from '@nestjs/common';
-import { CachedDataService } from '../../../src/modules/cached-data/cached-data.service';
+import { CachedDataService } from '../../../../src/modules/cached-data/cached-data.service';
 import {
   CACHED_DATA_TYPE,
   CachedData,
-} from '../../../src/modules/cached-data/cached.data.entity';
-import { IndicatorRepository } from '../../../src/modules/indicators/indicator.repository';
-import { SourcingRecordRepository } from '../../../src/modules/sourcing-records/sourcing-record.repository';
-import { AdminRegionRepository } from '../../../src/modules/admin-regions/admin-region.repository';
-import { BusinessUnitRepository } from '../../../src/modules/business-units/business-unit.repository';
-import { SupplierRepository } from '../../../src/modules/suppliers/supplier.repository';
-import { GeoRegionRepository } from '../../../src/modules/geo-regions/geo-region.repository';
-import { MaterialRepository } from '../../../src/modules/materials/material.repository';
-import { CachedDataRepository } from '../../../src/modules/cached-data/cached-data.repository';
+} from '../../../../src/modules/cached-data/cached.data.entity';
+import { IndicatorRepository } from '../../../../src/modules/indicators/indicator.repository';
+import { SourcingRecordRepository } from '../../../../src/modules/sourcing-records/sourcing-record.repository';
+import { AdminRegionRepository } from '../../../../src/modules/admin-regions/admin-region.repository';
+import { BusinessUnitRepository } from '../../../../src/modules/business-units/business-unit.repository';
+import { SupplierRepository } from '../../../../src/modules/suppliers/supplier.repository';
+import { GeoRegionRepository } from '../../../../src/modules/geo-regions/geo-region.repository';
+import { MaterialRepository } from '../../../../src/modules/materials/material.repository';
+import { CachedDataRepository } from '../../../../src/modules/cached-data/cached-data.repository';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 
@@ -82,7 +77,7 @@ describe('Indicator Records Service', () => {
   let materialRepository: MaterialRepository;
   let cachedDataRepository: CachedDataRepository;
 
-  let indicatorRecordService: ImpactCalculator;
+  let impactCalculator: ImpactCalculator;
   let materialsToH3sService: MaterialsToH3sService;
   let cachedDataService: CachedDataService;
 
@@ -115,8 +110,7 @@ describe('Indicator Records Service', () => {
     cachedDataRepository =
       testingModule.get<CachedDataRepository>(CachedDataRepository);
 
-    indicatorRecordService =
-      testingModule.get<ImpactCalculator>(ImpactCalculator);
+    impactCalculator = testingModule.get<ImpactCalculator>(ImpactCalculator);
     materialsToH3sService = testingModule.get<MaterialsToH3sService>(
       MaterialsToH3sService,
     );
@@ -186,7 +180,7 @@ describe('Indicator Records Service', () => {
 
       //ACT
       const testStatement = async (): Promise<any> => {
-        await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
+        await impactCalculator.createIndicatorRecordsBySourcingRecords(
           sourcingData,
           providedCoefficients,
         );
@@ -242,7 +236,7 @@ describe('Indicator Records Service', () => {
 
       //ACT
       const calculatedIndicators =
-        await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
+        await impactCalculator.createIndicatorRecordsBySourcingRecords(
           sourcingData,
           providedCoefficients,
         );
@@ -319,7 +313,7 @@ describe('Indicator Records Service', () => {
         .mockResolvedValueOnce(undefined);
 
       const testStatement = async (): Promise<any> => {
-        await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
+        await impactCalculator.createIndicatorRecordsBySourcingRecords(
           sourcingData,
         );
       };
@@ -359,7 +353,7 @@ describe('Indicator Records Service', () => {
 
       //ACT
       const testStatement = async (): Promise<any> => {
-        await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
+        await impactCalculator.createIndicatorRecordsBySourcingRecords(
           sourcingData,
         );
       };
@@ -414,7 +408,7 @@ describe('Indicator Records Service', () => {
 
       //ACT
       const testStatement = async (): Promise<any> => {
-        await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
+        await impactCalculator.createIndicatorRecordsBySourcingRecords(
           sourcingData,
         );
       };
@@ -458,7 +452,7 @@ describe('Indicator Records Service', () => {
       );
 
       const calculatedRecords =
-        await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
+        await impactCalculator.createIndicatorRecordsBySourcingRecords(
           sourcingData,
         );
 
@@ -489,7 +483,7 @@ describe('Indicator Records Service', () => {
         indicatorPreconditions.landUseIndicator,
         materialH3DataProducer,
         sourcingData.sourcingRecordId,
-        805000,
+        500,
         1610,
         calculatedRecords,
       );
@@ -543,7 +537,7 @@ describe('Indicator Records Service', () => {
 
       //ACT
 
-      await indicatorRecordService.calculateImpactForAllSourcingRecords([
+      await impactCalculator.calculateImpactForAllSourcingRecords([
         indicatorPreconditions.waterUseIndicator,
         indicatorPreconditions.unsustWaterUseIndicator,
         indicatorPreconditions.climateRiskIndicator,
@@ -568,7 +562,7 @@ describe('Indicator Records Service', () => {
         indicatorPreconditions.landUseIndicator,
         materialH3DataProducer1,
         indicatorPreconditions.sourcingRecord1.id,
-        1610000,
+        1000,
         1610,
       );
       await checkCreatedIndicatorRecord(
@@ -601,7 +595,7 @@ describe('Indicator Records Service', () => {
         indicatorPreconditions.landUseIndicator,
         materialH3DataProducer2,
         indicatorPreconditions.sourcingRecord2.id,
-        805000,
+        500,
         1610,
       );
       await checkCreatedIndicatorRecord(
@@ -660,7 +654,7 @@ describe('Indicator Records Service', () => {
       );
 
       //Small "hack" to access the method to simplify part of the cache key
-      const indicatorRecordServiceAny: any = indicatorRecordService;
+      const indicatorRecordServiceAny: any = impactCalculator;
       const generateIndicatorCacheKey: any =
         indicatorRecordServiceAny.generateIndicatorCalculationCacheKey;
       const generateMaterialCacheKey: any =
@@ -712,7 +706,7 @@ describe('Indicator Records Service', () => {
 
       //ACT
       const calculatedRecords =
-        await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
+        await impactCalculator.createIndicatorRecordsBySourcingRecords(
           sourcingData,
         );
 
@@ -803,7 +797,7 @@ describe('Indicator Records Service', () => {
       materialsMap.set(MATERIAL_TO_H3_TYPE.PRODUCER, h3MaterialProducer);
 
       //Small "hack" to access the method to simplify part of the cache key
-      const indicatorRecordServiceAny: any = indicatorRecordService;
+      const indicatorRecordServiceAny: any = impactCalculator;
       const generateIndicatorCacheKey: any =
         indicatorRecordServiceAny.generateIndicatorCalculationCacheKey;
       const generateMaterialCacheKey: any =
@@ -844,7 +838,7 @@ describe('Indicator Records Service', () => {
 
       //ACT
       const calculatedRecords =
-        await indicatorRecordService.createIndicatorRecordsBySourcingRecords(
+        await impactCalculator.createIndicatorRecordsBySourcingRecords(
           sourcingData,
         );
 

@@ -1,7 +1,6 @@
 import {
   Injectable,
   Logger,
-  NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
@@ -19,17 +18,12 @@ import {
   IndicatorRecord,
 } from 'modules/indicator-records/indicator-record.entity';
 import { IndicatorCoefficientsDtoV2 } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
-import {
-  MaterialToH3,
-  MATERIAL_TO_H3_TYPE,
-} from 'modules/materials/material-to-h3.entity';
+import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 import { IndicatorRecordCalculatedValuesDtoV2 } from 'modules/indicator-records/dto/indicator-record-calculated-values.dto';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
-import { H3Data } from 'modules/h3-data/h3-data.entity';
-import { H3DataService } from 'modules/h3-data/h3-data.service';
 import { IndicatorDependencyManager } from 'modules/indicator-records/services/indicator-dependency-manager.service';
 
 /**
@@ -46,7 +40,6 @@ export class ImpactCalculator {
     private readonly materialToH3: MaterialsToH3sService,
     private readonly indicatorService: IndicatorsService,
     private readonly dependencyManager: IndicatorDependencyManager,
-    private readonly h3DataService: H3DataService,
   ) {}
 
   async calculateImpactForAllSourcingRecords(
@@ -58,9 +51,9 @@ export class ImpactCalculator {
     const newImpactToBeSaved: IndicatorRecord[] = [];
 
     rawData.forEach((data: SourcingRecordsWithIndicatorRawDataDtoV2) => {
-      const landPerTon: number = data.harvestedArea ?? 0 / data.production ?? 0;
+      const landPerTon: number = data.harvestedArea / data.production || 0;
       const weightedTotalCropLandArea: number =
-        data.weightedAllHarvest ?? 0 / data.production ?? 0;
+        data.weightedAllHarvest / data.production || 0;
       const deforestationPerHarvestLandUse: number =
         weightedTotalCropLandArea > 0
           ? data.rawDeforestation / weightedTotalCropLandArea
@@ -194,9 +187,9 @@ export class ImpactCalculator {
       >();
 
       const landPerTon: number =
-        rawData.harvestedArea ?? 0 / rawData.production ?? 0;
+        rawData.harvestedArea / rawData.production || 0;
       const weightedTotalCropLandArea: number =
-        rawData.weightedAllHarvest ?? 0 / rawData.production ?? 0;
+        rawData.weightedAllHarvest / rawData.production || 0;
       const deforestationPerHarvestLandUse: number =
         weightedTotalCropLandArea > 0
           ? rawData.rawDeforestation / weightedTotalCropLandArea
@@ -209,8 +202,7 @@ export class ImpactCalculator {
       const deforestation: number = deforestationPerHarvestLandUse * landUse;
       const carbonLoss: number = carbonPerHarvestLandUse * landUse;
       const waterUse: number = rawData.rawWater * sourcingData.tonnage;
-      const unsustainableWaterUse: number =
-        waterUse * rawData.waterStressPerct ? rawData.waterStressPerct : 0;
+      const unsustainableWaterUse: number = waterUse * rawData.waterStressPerct;
 
       calculatedIndicatorRecordValues.values.set(
         INDICATOR_TYPES_NEW.CLIMATE_RISK,
@@ -275,9 +267,8 @@ export class ImpactCalculator {
       ]);
       return res[0];
     } catch (error: any) {
-      console.error(error);
       throw new ServiceUnavailableException(
-        `Could not calculate Raw Indicator values for new Scenario`,
+        `Could not calculate Raw Indicator values for new Scenario ` + error,
       );
     }
   }
@@ -316,22 +307,22 @@ export class ImpactCalculator {
     calculatedIndicatorValues.values.set(
       INDICATOR_TYPES_NEW.LAND_USE,
       newIndicatorCoefficients[INDICATOR_TYPES_NEW.LAND_USE] *
-        sourcingData.tonnage,
+        sourcingData.tonnage || 0,
     );
     calculatedIndicatorValues.values.set(
       INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
       newIndicatorCoefficients[INDICATOR_TYPES_NEW.DEFORESTATION_RISK] *
-        sourcingData.tonnage,
+        sourcingData.tonnage || 0,
     );
     calculatedIndicatorValues.values.set(
       INDICATOR_TYPES_NEW.CLIMATE_RISK,
       newIndicatorCoefficients[INDICATOR_TYPES_NEW.CLIMATE_RISK] *
-        sourcingData.tonnage,
+        sourcingData.tonnage || 0,
     );
     calculatedIndicatorValues.values.set(
       INDICATOR_TYPES_NEW.WATER_USE,
       newIndicatorCoefficients[INDICATOR_TYPES_NEW.WATER_USE] *
-        sourcingData.tonnage,
+        sourcingData.tonnage || 0,
     );
 
     // TODO: We need to ignore satelligence indicators from being affected by a coefficient that a user can send

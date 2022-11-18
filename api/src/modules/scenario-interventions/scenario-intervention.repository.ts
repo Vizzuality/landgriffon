@@ -71,6 +71,7 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
         // .leftJoin('intervention.replacedSuppliers', 'replacedSuppliers')
 
         .where('intervention.scenarioId = :scenarioId', { scenarioId })
+        .orderBy('intervention.createdAt', 'DESC')
         .getMany()
     );
   }

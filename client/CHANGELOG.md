@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Update rows expanded state on analysis table [LANDGRIF-967](https://vizzuality.atlassian.net/browse/LANDGRIF-967)
 - Horizontal scroll on the legend [LANDGRIF-1082](https://vizzuality.atlassian.net/browse/LANDGRIF-1082)
 - Format of numbers of the contextual layers in the legend [LANDGRIF-1090](https://vizzuality.atlassian.net/browse/LANDGRIF-1090)
+- Tree Select search inconsistencies and items of depth 3 or deeper disappearing. [LANDGRIF-1026](https://vizzuality.atlassian.net/browse/LANDGRIF-1026) and [LANDGRIF-1030](https://vizzuality.atlassian.net/browse/LANDGRIF-1030)
 - Edition of intervention was not working [LANDGRIF-1073](https://vizzuality.atlassian.net/browse/LANDGRIF-1073)
 - Legend colors for comparison layer [LANDGRIF-979](https://vizzuality.atlassian.net/browse/LANDGRIF-979)
 - Tests were failing due to a change in the api where data was reset

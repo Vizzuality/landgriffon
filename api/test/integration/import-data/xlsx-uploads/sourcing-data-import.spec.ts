@@ -57,24 +57,6 @@ import {
 } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 
-// TODO: Refactor after new methodology is final
-
-jest.mock('config', () => {
-  const config = jest.requireActual('config');
-
-  const configGet = config.get;
-
-  config.get = function (key: string): any {
-    switch (key) {
-      case 'newMethodology':
-        return true;
-      default:
-        return configGet.call(config, key);
-    }
-  };
-  return config;
-});
-
 let tablesToDrop: string[] = [];
 
 let missingDataFallbackPolicy: string = 'error';
@@ -94,6 +76,23 @@ jest.mock('config', () => {
   };
   return config;
 });
+
+jest.mock('config', () => {
+  const config = jest.requireActual('config');
+
+  const configGet = config.get;
+
+  config.get = function (key: string): any {
+    switch (key) {
+      case 'newMethodology':
+        return true;
+      default:
+        return configGet.call(config, key);
+    }
+  };
+  return config;
+});
+
 // TODO: Restore when new methodology validated
 describe('Sourcing Data import', () => {
   /**

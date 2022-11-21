@@ -9,7 +9,7 @@ terraform {
 
 data "terraform_remote_state" "core" {
   backend = "s3"
-  config  = {
+  config = {
     bucket = var.tf_state_bucket
     region = var.aws_region
     key    = "core.tfstate"
@@ -36,18 +36,16 @@ resource "github_actions_secret" "mapbox_api_token_secret" {
 
 module "environment" {
   for_each = merge(var.environments, {
-    staging = {
-      load_fresh_data       = var.load_fresh_data_staging
-      data_import_arguments = var.data_import_arguments_staging
+    staging = merge({
+      load_fresh_data       = false
+      data_import_arguments = ["seed-data"]
       image_tag             = "staging"
-      api_env_vars          = lookup(lookup(var.environments, "staging", {}), "api_env_vars", [])
-    },
-    production = {
-      load_fresh_data       = var.load_fresh_data_prod
-      data_import_arguments = var.data_import_arguments_prod
+    }, lookup(var.environments, "staging", {})),
+    production = merge({
+      load_fresh_data       = false
+      data_import_arguments = ["seed-data"]
       image_tag             = "main"
-      api_env_vars          = lookup(lookup(var.environments, "production", {}), "api_env_vars", [])
-    }
+    }, lookup(var.environments, "production", {})),
   })
   source = "./modules/env"
 

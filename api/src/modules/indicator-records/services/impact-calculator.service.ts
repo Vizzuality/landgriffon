@@ -291,7 +291,7 @@ export class ImpactCalculator {
       [geoRegionId, materialId],
     );
 
-    if (res.length!) {
+    if (!res.length) {
       throw new ServiceUnavailableException(
         `Could not calculate production for the given location`,
       );

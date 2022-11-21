@@ -1,12 +1,12 @@
 import Fuse from 'fuse.js';
 import { useQuery } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
-import sortBy from 'lodash/sortBy';
+import { sortBy } from 'lodash-es';
+import { flattenTreeData } from 'rc-tree/lib/utils/treeUtil';
 
-import useFuse from 'hooks/fuse';
+import { FIELD_NAMES } from './constants';
 
 import type { DeepKeys } from '@tanstack/react-table';
-import type { UseQueryOptions } from '@tanstack/react-query';
 import type { TreeDataNode, TreeSelectOption } from './types';
 import type { DataNode, FlattenNode, Key } from 'rc-tree/lib/interface';
 
@@ -59,7 +59,7 @@ export const getParentKeys = <T>(node: FlattenNode<T>) => {
   return [parent.key, ...getParentKeys(parent)];
 };
 
-export const filterTree = <T extends HasChildren<T>>(
+const filterTree = <T extends HasChildren<T>>(
   tree: T,
   filter: (node: T) => boolean,
   depth = 0,
@@ -119,14 +119,6 @@ export const recursiveMap = <T extends HasChildren<T>, V extends Record<keyof un
   };
 };
 
-export const recursiveForEach = <T extends HasChildren<T>, V>(
-  value: T,
-  callback: (value: T) => V & { children?: V[] },
-) => {
-  callback(value);
-  value.children?.forEach((child) => recursiveMap(child, callback));
-};
-
 const getFilteredOptions = (options: TreeSelectOption[], search?: string) => {
   const filteredOptions = search
     ? options
@@ -146,46 +138,71 @@ const getFilteredOptions = (options: TreeSelectOption[], search?: string) => {
   return filteredOptions;
 };
 
-export const useFilteredKeys = <T = TreeSelectOption['value'][]>(
-  selectOptions: TreeSelectOption[],
-  search: string,
-  options?: UseQueryOptions<
-    string[],
-    unknown,
-    T,
-    [typeof id, typeof search, typeof selectOptions['length']]
-  >,
-) => {
-  const enabled = !!search && (options?.enabled ?? true);
-  const id = useId();
-  const query = useQuery({
-    queryKey: [id, search, selectOptions.length] as const,
-    queryFn: ({ queryKey: [, search] }) => {
-      if (!search) return [];
-      const filteredOptions = getFilteredOptions(selectOptions, search);
+interface UseTreeOptions {
+  render: (node: Omit<TreeDataNode, 'className'>) => TreeDataNode;
+  isOptionSelected: (id: Key) => boolean;
+}
 
-      const keys = filteredOptions.flatMap((opt) => flattenTree(opt).map((opt) => opt.value));
-
-      return keys;
-    },
-    placeholderData: [],
-    keepPreviousData: true,
-    ...options,
-    enabled,
+const optionToTreeData = (
+  option: TreeSelectOption,
+  render: UseTreeOptions['render'],
+  depth = 0,
+): TreeDataNode => {
+  const children = option.children?.map((option) => optionToTreeData(option, render, depth + 1));
+  return render({
+    ...option,
+    style: { paddingLeft: 16 * depth },
+    children,
   });
-
-  return query;
 };
 
-export const useFilteredOptions = (selectOptions: TreeSelectOption[], search: string) => {
-  const flatOptions = useMemo(
-    () => selectOptions.flatMap((opt) => flattenTree(opt)).map(({ children, ...rest }) => rest),
-    [selectOptions],
-  );
-  const filteredOptions = useFuse(flatOptions, search, {
-    includeScore: false,
-    keys: ['label'],
-    threshold: 0.4,
+export const useTree = (
+  options: TreeSelectOption[],
+  search = '',
+  { render, isOptionSelected }: UseTreeOptions,
+) => {
+  const id = useId();
+
+  const { data: filteredKeys } = useQuery({
+    queryKey: ['filtered-keys', id, options, search] as const,
+    queryFn: ({ queryKey: [, , options, search] }) => {
+      const filteredOptions = getFilteredOptions(options, search);
+      const keys = filteredOptions.flatMap((opt) => flattenTree(opt).map((opt) => opt.value));
+      return keys;
+    },
   });
-  return filteredOptions;
+
+  const { data: treeData } = useQuery({
+    queryKey: ['tree-data', id, options],
+    queryFn: () => options.map((option) => optionToTreeData(option, render)),
+    placeholderData: [],
+  });
+
+  const { data: flatTreeData } = useQuery({
+    // treeData is a circular dependency
+    queryKey: ['flattened-options', id, treeData.map((opt) => opt.value)],
+    queryFn: () => {
+      const flattened = flattenTreeData(treeData, true, FIELD_NAMES);
+      return flattened;
+    },
+    placeholderData: [],
+    enabled: !!treeData?.length,
+  });
+
+  const fuse = useMemo(
+    () => new Fuse(flatTreeData, { includeScore: false, keys: ['title'], threshold: 0.4 }),
+    [flatTreeData],
+  );
+
+  const { data: filteredOptions } = useQuery({
+    queryKey: ['filtered-options', id, search, flatTreeData.length] as const,
+    queryFn: ({ queryKey: [, , search] }) => {
+      const result = fuse.search(search);
+      return result.map(({ item }) => ({ ...item, isSelected: isOptionSelected(item.key) }));
+    },
+    placeholderData: [],
+    enabled: !!flatTreeData?.length,
+  });
+
+  return { treeData, filteredKeys, flatTreeData, filteredOptions };
 };

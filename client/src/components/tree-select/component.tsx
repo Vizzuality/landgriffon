@@ -15,17 +15,15 @@ import { ChevronDownIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
 import Tree from 'rc-tree';
 import { flattenTreeData } from 'rc-tree/lib/utils/treeUtil';
 import { useDebouncedValue } from 'rooks';
-import { useQuery } from '@tanstack/react-query';
-import Fuse from 'fuse.js';
 
-import { CHECKED_STRATEGIES, getParentKeys, useFilteredKeys } from './utils';
+import { CHECKED_STRATEGIES, getParentKeys, useTree } from './utils';
 import SearchOverlay from './search-overlay';
+import { FIELD_NAMES } from './constants';
 
 import Badge from 'components/badge';
 import Loading from 'components/loading';
 
-import type { UseFuseOptions } from 'hooks/fuse';
-import type { FieldNames, Key } from 'rc-tree/lib/interface';
+import type { Key } from 'rc-tree/lib/interface';
 import type { TreeProps } from 'rc-tree';
 import type { TreeSelectProps, TreeSelectOption, TreeDataNode } from './types';
 import type { ChangeEventHandler, Ref } from 'react';
@@ -55,17 +53,6 @@ const customSwitcherIcon: TreeProps<TreeDataNode>['switcherIcon'] = ({ isLeaf, e
   if (isLeaf) return <span className="block w-4" />;
 
   return <ChevronDownIcon className={classNames('h-4 w-4', { '-rotate-90': !expanded })} />;
-};
-
-const SEARCH_OPTIONS: UseFuseOptions<{ title: string; key: Key }> = {
-  includeScore: false,
-  keys: ['title'],
-  threshold: 0.4,
-};
-
-const FIELD_NAMES: FieldNames = {
-  key: 'value',
-  title: 'label',
 };
 
 const InnerTreeSelect = <IsMulti extends boolean>(
@@ -138,58 +125,21 @@ const InnerTreeSelect = <IsMulti extends boolean>(
   const [expandedKeys, setExpandedKeys] = useState<TreeProps<TreeDataNode>['expandedKeys']>([]);
 
   const [checkedKeys, setCheckedKeys] = useState<Key[]>([]);
-  const { data: filteredOptionsKeys } = useFilteredKeys(options, debouncedSearch);
 
-  const optionToTreeData = useCallback(
-    (option: TreeSelectOption, depth = 0): TreeDataNode => {
-      const children = option.children?.map((option) => optionToTreeData(option, depth + 1));
-
-      return {
-        ...option,
-        className: classNames(THEMES[theme].treeNodes, {
-          'w-full': fitContent,
-          'bg-navy-50 font-semibold': selectedKeys.includes(option.value),
-        }),
-        style: { paddingLeft: 16 * depth },
-        children,
-      };
-    },
-    [fitContent, selectedKeys, theme],
-  );
-
-  const { data: treeData } = useQuery({
-    queryKey: ['tree-data', id],
-    queryFn: () => options.map((option) => optionToTreeData(option)),
-    placeholderData: [],
-  });
-
-  const { data: flatTreeData } = useQuery({
-    queryKey: ['flattened-options', id],
-    queryFn: () => {
-      const flattened = flattenTreeData(treeData, true, FIELD_NAMES);
-      return flattened;
-    },
-    placeholderData: [],
-    enabled: !!treeData?.length,
-  });
-
-  const fuse = useMemo(
-    () =>
-      new Fuse(
-        flatTreeData,
-        SEARCH_OPTIONS as unknown as Fuse.IFuseOptions<typeof flatTreeData[number]>,
-      ),
-    [flatTreeData],
-  );
-
-  const { data: filteredOptions } = useQuery({
-    queryKey: ['filtered-options', id, debouncedSearch],
-    queryFn: ({ queryKey: [, , search] }) => {
-      const result = fuse.search(search);
-      return result.map(({ item }) => ({ ...item, isSelected: selectedKeys.includes(item.key) }));
-    },
-    placeholderData: [],
-    enabled: !!flatTreeData?.length,
+  const {
+    filteredKeys: filteredOptionsKeys,
+    filteredOptions,
+    flatTreeData,
+    treeData,
+  } = useTree(options, debouncedSearch, {
+    isOptionSelected: (key) => selectedKeys.includes(key),
+    render: (node) => ({
+      ...node,
+      className: classNames(THEMES[theme].treeNodes, {
+        'w-full': fitContent,
+        'bg-navy-50 font-semibold': selectedKeys.includes(node.value),
+      }),
+    }),
   });
 
   const handleExpand: TreeProps<TreeDataNode>['onExpand'] = useCallback(

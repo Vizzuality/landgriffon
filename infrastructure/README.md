@@ -6,22 +6,6 @@
 - Terraform + Terragrunt
 - Kubectl
 
-## Geo data seeding
-
-For both scenarios, be sure to set the corresponding variable back to `false` and run `terragrunt apply` to destroy
-the import servers, which are powerful and expensive.
-
-### For production or staging
-
-- On the `kubernetes` TF project, set `load_fresh_data_staging` or `load_fresh_data_prod` to true
-- Run `terragrunt apply`
-
-### For other envs
-
-- On the `kubernetes` TF project, set `load_fresh_data` to true on the nested value inside the `environments` variable.
-  See the `enviorment` module definition in the root `main.tf` file for info - look into the `for_each` default value.
-- Run `terragrunt apply`
-
 ## Deploying new environments
 
 The infrastructure is deployed using Terraform, and set up in a way that makes it very easy to deploy new, independent
@@ -73,3 +57,9 @@ The `value` in the key-value pair is an object with a set of properties, all of 
   as part of the initial data import process. Defaults to `["seed-data"]`
 - `image_tag`: tag of the different docker images to pull from the container registry. Does not apply to the Redis
   image. Defaults to the same value as `key`.
+
+### Handling production and staging
+
+The production and staging environments are always deployed, even if they are not declared in the `environments` variable.
+However, if you'd like to customize their behavior (for example, reload fresh data), you can explicitly add them to the
+`environments` variable, and specify your custom values for each configuration, as you would for any other env.

@@ -1,17 +1,23 @@
 describe('Analysis and filters', () => {
   beforeEach(() => {
+    cy.intercept('GET', '/api/v1/impact/table*', {
+      fixture: 'impact/table.json',
+    }).as('impactTable');
     cy.login();
   });
 
   it('should be able to select and indicator', () => {
     // data integrity check
-    cy.intercept('GET', '/api/v1/**/indicators', {
+    cy.intercept('GET', '/api/v1/indicators', {
       fixture: 'indicators/index.json',
     }).as('indicators');
     cy.visit('/analysis/table');
     cy.wait('@indicators').then((interception) => {
-      expect(interception.response.body.data).have.length(4);
+      expect(interception.response.body?.data).have.length(4);
     });
+    cy.get('[data-testid="analysis-table"]', {
+      timeout: 5000,
+    }).should('be.visible');
 
     cy.url().should('not.include', 'indicator');
 
@@ -36,23 +42,15 @@ describe('Analysis and filters', () => {
   it('should update the params playing with the filters', () => {
     cy.visit('/analysis/table');
 
-    cy.intercept('GET', '/api/v1/materials/trees*', {
+    cy.intercept('GET', '/api/v1/materials/trees?depth=1&withSourcingLocations=true', {
       fixture: 'trees/materials.json',
     }).as('materialsTrees');
-    cy.intercept('GET', '/api/v1/admin-regions/trees*', {
+    cy.intercept('GET', '/api/v1/admin-regions/trees?withSourcingLocations=true', {
       fixture: 'trees/admin-regions.json',
     }).as('originsTrees');
-    cy.intercept('GET', '/api/v1/suppliers/trees*', {
+    cy.intercept('GET', '/api/v1/suppliers/trees?withSourcingLocations=true', {
       fixture: 'trees/suppliers.json',
     }).as('suppliersTrees');
-
-    cy.intercept(
-      'GET',
-      '/api/v1/suppliers/trees?*originIds[]=8bd7e578-f64f-4042-8a3a-2a7652ce850b',
-      {
-        fixture: 'trees/suppliers-filtered.json',
-      },
-    ).as('suppliersTreesFiltered');
 
     // Step 1: open more filters
     cy.get('[data-testid="more-filters-button"]').click();
@@ -60,20 +58,30 @@ describe('Analysis and filters', () => {
     cy.wait('@originsTrees');
     cy.wait('@suppliersTrees');
 
-    // Step 2: Selecting Angola in the admin regions selector
-    cy.get('[data-testid="tree-select-origins-filter"]').find('div[role="combobox"]').click();
-    cy.get('#floating-ui-root').find('.rc-tree-treenode').eq(1).click();
-    cy.get('[data-testid="tree-select-origins-filter"]').find('input:visible').type('{enter}');
-
-    // Step 3: Selecting Moll in the material selector
+    // Adding new interceptors after selecting a filter
     cy.intercept(
       'GET',
-      '/api/v1/materials/trees?*supplierIds[]=c8bca40d-1aec-44e3-b82b-8170898800ad',
+      '/api/v1/suppliers/trees?*originIds[]=8bd7e578-f64f-4042-8a3a-2a7652ce850b*',
+      {
+        fixture: 'trees/suppliers-filtered.json',
+      },
+    ).as('suppliersTreesFiltered');
+
+    cy.intercept(
+      'GET',
+      '/api/v1/materials/trees?*supplierIds[]=c8bca40d-1aec-44e3-b82b-8170898800ad*',
       {
         fixture: 'trees/materials-filtered.json',
       },
     ).as('materialsTreesFiltered');
+
+    // Step 2: Selecting Angola in the admin regions selector
+    cy.get('[data-testid="tree-select-origins-filter"]').find('div[role="combobox"]').click();
+    cy.get('#floating-ui-root').find('.rc-tree-treenode').eq(1).click();
+    cy.get('[data-testid="tree-select-origins-filter"]').find('input:visible').type('{enter}');
     cy.wait('@suppliersTreesFiltered');
+
+    // Step 3: Selecting Moll in the material selector
     cy.get('[data-testid="tree-select-suppliers-filter"]').find('div[role="combobox"]').click();
     cy.get('#floating-ui-root').find('.rc-tree-treenode').eq(1).click();
     cy.get('[data-testid="tree-select-materials-filter"]').find('input:visible').type('{enter}');

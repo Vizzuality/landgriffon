@@ -1,11 +1,23 @@
 describe('Analysis navigation across table, map and chart', () => {
   beforeEach(() => {
-    cy.intercept('GET', '/api/v1/impact/ranking?*').as('fetchChartRanking');
+    cy.intercept('GET', '/api/v1/indicators', {
+      fixture: 'indicators/index.json',
+    }).as('fetchIndicators');
+    cy.intercept('GET', '/api/v1/impact/ranking?*', {
+      fixture: 'impact/chart.json',
+    }).as('fetchChartRanking');
+    cy.intercept('GET', '/api/v1/impact/table*', {
+      fixture: 'impact/table.json',
+    }).as('fetchImpactTable');
+    cy.intercept('GET', '/api/v1/h3/map/impact*', {
+      fixture: 'impact/map.json',
+    }).as('fetchImpactMap');
     cy.login();
   });
 
   it('should load the charts', () => {
     cy.visit('/analysis/chart');
+    cy.wait('@fetchIndicators');
     cy.wait('@fetchChartRanking');
     cy.get('[data-testid="analysis-chart"]')
       .should('be.visible')

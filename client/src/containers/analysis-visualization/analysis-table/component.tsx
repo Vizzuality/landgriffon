@@ -140,16 +140,21 @@ const AnalysisTable = () => {
     : impactActualComparisonData;
 
   const {
-    data: {
-      data: { impactTable = [] },
-      metadata,
-    },
+    data: impactData,
     isLoading,
     isFetching,
   } = useMemo(() => {
     if (isComparisonEnabled && !!scenarioToCompare) return impactComparisonData;
     return plainImpactData;
   }, [impactComparisonData, plainImpactData, isComparisonEnabled, scenarioToCompare]);
+
+  const {
+    data: { impactTable = [] },
+    metadata,
+  } = useMemo(() => {
+    if (impactData) return impactData;
+    return { data: { impactTable: [] }, metadata: {} };
+  }, [impactData]);
 
   const totalRows = useMemo(() => {
     return !isLoading && impactTable.length === 1 ? impactTable[0].rows.length : impactTable.length;

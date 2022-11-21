@@ -163,13 +163,13 @@ export class ImpactCalculator {
       } else {
         // Here we will get production value that will e saved as scaler later
 
-        const productionValue: { production: number }[] =
+        const productionValue: number =
           await this.getProductionValueForGeoregionAndMaterial(
             geoRegionId,
             materialId,
           );
         rawData = new IndicatorRawDataBySourcingRecord();
-        rawData.production = productionValue[0].production;
+        rawData.production = productionValue;
       }
     } else {
       const queryForActiveIndicators: string =
@@ -285,12 +285,18 @@ export class ImpactCalculator {
   async getProductionValueForGeoregionAndMaterial(
     geoRegionId: string,
     materialId: string,
-  ): Promise<{ production: number }[]> {
+  ): Promise<number> {
     const res: { production: number }[] = await getManager().query(
       `SELECT sum_material_over_georegion($1, $2, 'producer') as production`,
       [geoRegionId, materialId],
     );
-    return res;
+
+    if (res.length!) {
+      throw new ServiceUnavailableException(
+        `Could not calculate production for the given location`,
+      );
+    }
+    return res[0].production;
   }
 
   /**

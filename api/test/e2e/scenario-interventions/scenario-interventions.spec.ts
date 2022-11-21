@@ -520,7 +520,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             impactCalculatorService,
             'getProductionValueForGeoregionAndMaterial',
           )
-          .mockResolvedValue([{ production: 100 }]);
+          .mockResolvedValue(100);
 
         const preconditions: ScenarioInterventionPreconditions =
           await createInterventionPreconditionsForSupplierChange();

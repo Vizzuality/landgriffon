@@ -288,6 +288,16 @@ describe('Indicator Records Service', () => {
         1610,
         calculatedIndicators,
       );
+
+      await checkCreatedIndicatorRecord(
+        INDICATOR_TYPES_NEW.WATER_USE,
+        indicatorPreconditions.waterUseIndicator,
+        materialH3Data,
+        sourcingData.sourcingRecordId,
+        600,
+        1610,
+        calculatedIndicators,
+      );
     });
 
     test("When creating indicator record with no provided coefficients, and there's no H3 data for the given material, it should throw an error", async () => {

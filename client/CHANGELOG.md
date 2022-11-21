@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Edition of intervention was not working [LANDGRIF-1073](https://vizzuality.atlassian.net/browse/LANDGRIF-1073)
 - Legend colors for comparison layer [LANDGRIF-979](https://vizzuality.atlassian.net/browse/LANDGRIF-979)
 - Tests were failing due to a change in the api where data was reset
 - Scenario list when the user opens the comparison dropdown [LANDGRIF-1066](https://vizzuality.atlassian.net/browse/LANDGRIF-1066)

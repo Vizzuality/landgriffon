@@ -13,11 +13,6 @@ locals {
     jwt_secret    = random_password.jwt_secret_generator.result
     gmaps_api_key = var.gmaps_api_key
   }
-
-  data_secret_json = {
-    data_s3_access_key = var.data_s3_access_key
-    data_s3_secret_key = var.data_s3_secret_key
-  }
 }
 
 # JWT
@@ -115,11 +110,6 @@ resource "kubernetes_secret" "data_secret" {
   metadata {
     name      = "data"
     namespace = var.namespace
-  }
-
-  data = {
-    DATA_S3_ACCESS_KEY      = local.data_secret_json.data_s3_access_key
-    DATA_S3_SECRET_KEY      = local.data_secret_json.data_s3_secret_key
   }
 }
 

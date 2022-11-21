@@ -40,11 +40,13 @@ module "environment" {
       load_fresh_data       = var.load_fresh_data_staging
       data_import_arguments = var.data_import_arguments_staging
       image_tag             = "staging"
+      api_env_vars          = lookup(lookup(var.environments, "staging", {}), "api_env_vars", [])
     },
     production = {
       load_fresh_data       = var.load_fresh_data_prod
       data_import_arguments = var.data_import_arguments_prod
       image_tag             = "main"
+      api_env_vars          = lookup(lookup(var.environments, "production", {}), "api_env_vars", [])
     }
   })
   source = "./modules/env"
@@ -69,5 +71,4 @@ module "environment" {
   api_secrets                        = lookup(each.value, "api_secrets", [])
   data_s3_access_key                 = var.data_s3_access_key
   data_s3_secret_key                 = var.data_s3_secret_key
-
 }

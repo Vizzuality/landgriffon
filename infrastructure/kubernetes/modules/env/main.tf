@@ -149,8 +149,6 @@ module "k8s_secrets" {
   allowed_account_id = var.allowed_account_id
   namespace          = var.environment
   gmaps_api_key      = var.gmaps_api_key
-  data_s3_access_key = var.data_s3_access_key
-  data_s3_secret_key = var.data_s3_secret_key
 
   depends_on = [
     module.k8s_namespace

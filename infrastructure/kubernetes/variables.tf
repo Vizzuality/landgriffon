@@ -49,15 +49,3 @@ variable "mapbox_api_token" {
 variable "environments" {
   description = "A list of environments"
 }
-
-variable "data_s3_access_key" {
-  type        = string
-  sensitive   = true
-  description = "Science AWS S3 bucket access key"
-}
-
-variable "data_s3_secret_key" {
-  type        = string
-  sensitive   = true
-  description = "Science AWS S3 bucket secret key"
-}

@@ -67,7 +67,7 @@ module "default-node-group" {
   min_size        = var.default_node_group_min_size
   max_size        = var.default_node_group_max_size
   desired_size    = var.default_node_group_desired_size
-  node_role_arn   = module.eks.node_role_arn
+  node_role_arn   = module.eks.node_role.arn
   subnet_ids      = module.vpc.private_subnets.*.id
   labels          = {
     type : "default"
@@ -83,7 +83,7 @@ module "data-node-group" {
   min_size        = var.data_node_group_min_size
   max_size        = var.data_node_group_max_size
   desired_size    = var.data_node_group_desired_size
-  node_role_arn   = module.eks.node_role_arn
+  node_role_arn   = module.eks.node_role.arn
   subnet_ids      = [module.vpc.private_subnets[0].id]
   labels          = {
     type : "data"
@@ -108,4 +108,30 @@ module "client_container_registry" {
 module "data_import_container_registry" {
   source = "./modules/container_registry"
   name   = "data_import"
+}
+
+resource "aws_iam_policy" "raw_s3_rw_access" {
+  name        = "ReadWriteAccessToRawDataS3Bucket"
+  description = "Read + write access to the raw data S3 bucket"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        "Action": [
+          "s3:*",
+        ],
+        Effect   = "Allow"
+        Resource = [
+          module.s3_bucket.bucket_arn,
+          "${module.s3_bucket.bucket_arn}/*",
+        ]
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "raw_s3_rw_access_attachment" {
+  role       = module.eks.node_role.name
+  policy_arn = aws_iam_policy.raw_s3_rw_access.arn
 }

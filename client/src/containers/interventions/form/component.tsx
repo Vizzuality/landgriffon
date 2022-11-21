@@ -40,15 +40,15 @@ type InterventionFormProps = {
 
 const optionSchema = yup
   .object({
-    label: yup.string().required(),
-    value: yup.string().required(),
+    label: yup.string(),
+    value: yup.string(),
   })
   .default(undefined);
 
 const locationTypeSchema = yup
   .object({
-    label: yup.string().nullable().required(),
-    value: yup.mixed<LocationTypes>().required(),
+    label: yup.string().nullable(),
+    value: yup.mixed<LocationTypes>(),
   })
   .default(undefined);
 
@@ -76,7 +76,7 @@ const schemaValidation = yup.object({
 
   // Location
   newLocationType: locationTypeSchema.when('interventionType', {
-    is: (interventionType) => {
+    is: (interventionType: InterventionTypes) => {
       return [InterventionTypes.Material, InterventionTypes.SupplierLocation].includes(
         interventionType,
       );
@@ -85,7 +85,7 @@ const schemaValidation = yup.object({
     otherwise: locationTypeSchema.notRequired(),
   }),
   newLocationCountryInput: optionSchema.when('interventionType', {
-    is: (interventionType) =>
+    is: (interventionType: InterventionTypes) =>
       [InterventionTypes.Material, InterventionTypes.SupplierLocation].includes(interventionType),
     then: (schema) => schema.required('Country field is required'),
     otherwise: (schema) => schema.nullable(),

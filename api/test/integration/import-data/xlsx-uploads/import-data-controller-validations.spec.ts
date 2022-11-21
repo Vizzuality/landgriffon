@@ -46,7 +46,7 @@ describe('XLSX Upload Feature Validation Tests', () => {
       await request(app.getHttpServer())
         .post('/api/v1/import/sourcing-data')
         .set('Authorization', `Bearer ${jwtToken}`)
-        .attach('file', __dirname + '/base-dataset.xlsx')
+        .attach('file', __dirname + '/test-base-dataset.xlsx')
         .expect(HttpStatus.PAYLOAD_TOO_LARGE);
 
       const folderContent = await readdir(

@@ -6,6 +6,7 @@
 #########################
 PARALLELIZATION_FACTOR=10
 
+AWS_S3_BUCKET_URL=s3://landgriffon-raw-data
 WORKDIR_MAPSPAM=data/mapspam
 WORKDIR_GLW3=data/glw3
 WORKDIR_WATER_FOOTPRINT=data/waterFootprint
@@ -18,16 +19,16 @@ WORKDIR_HDI=data/contextual/hdi
 WORKDIR_GHG=data/forest_ghg
 WORKDIR_WOODPULP=data/woodpulp
 
-export AWS_ACCESS_KEY_ID = $(DATA_S3_ACCESS_KEY)
-export AWS_SECRET_ACCESS_KEY = $(DATA_S3_SECRET_KEY)
-
 all:
-ifeq ($(DATA_S3_ACCESS_KEY),)
-	$(error AWS S3 credentials are not defined in env vars. Import will not run)
-else
+	@aws s3 ls $(AWS_S3_BUCKET_URL) 2>&1 > /dev/null; \
+	if [ $$? -ne 0 ]; \
+	then \
+		echo "Error: Cannot access the expected AWS S3 bucket."; \
+		false; \
+	fi
+	@echo "AWS S3 bucket access confirmed, proceeding with import..."
 	make clean
 	make -j 2 crop indicators
-endif
 
 crop:
 	make -j 2 convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock convert-woodpulp
@@ -436,7 +437,7 @@ convert-aboveGroundBiomass: preprocess-aboveGroundBiomass
 download-satDeforestation:
 	mkdir -p $(WORKDIR_SATDEFORESTATION)
 
-	aws s3 sync s3://landgriffon-raw-data/processed/satelligence $(WORKDIR_SATDEFORESTATION)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/satelligence $(WORKDIR_SATDEFORESTATION)
 
 	mkdir -p $(WORKDIR_SATDEFORESTATION)/mask
 	mkdir -p $(WORKDIR_SATDEFORESTATION)/risk
@@ -456,7 +457,7 @@ download-woodpulp:
 	mkdir -p $(WORKDIR_WOODPULP)/ha
 	mkdir -p $(WORKDIR_WOODPULP)/prod
 
-	aws s3 sync s3://landgriffon-raw-data/processed/woodpulp/ $(WORKDIR_WOODPULP)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/woodpulp/ $(WORKDIR_WOODPULP)
 
 	mv	$(WORKDIR_WOODPULP)/gfw_plantations_woodpulp_harvest_ha_res.tif	$(WORKDIR_WOODPULP)/ha/gfw_plantations_woodpulp_ha.tif
 	mv	$(WORKDIR_WOODPULP)/gfw_plantations_woodpulp_prod_t_nd_res.tif	$(WORKDIR_WOODPULP)/prod/gfw_plantations_woodpulp_prod.tif

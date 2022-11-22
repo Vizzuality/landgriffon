@@ -24,13 +24,23 @@ import { IndicatorRecordCalculatedValuesDtoV2 } from 'modules/indicator-records/
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { H3DataService } from 'modules/h3-data/h3-data.service';
 import { IndicatorDependencyManager } from 'modules/indicator-records/services/indicator-dependency-manager.service';
+import { CachedDataService } from 'modules/cached-data/cached-data.service';
+import {
+  CACHED_DATA_TYPE,
+  CachedData,
+} from 'modules/cached-data/cached.data.entity';
 
 /**
  * @description: This is PoC (Proof of Concept) for the updated LG methodology v0.1
  *               Needs to be properly implemented (following the current methodology pattern)
  *               as soon as results are validated
  */
+
+export interface CachedRawData {
+  rawData: IndicatorRawDataBySourcingRecord;
+}
 
 @Injectable()
 export class ImpactCalculator {
@@ -40,6 +50,8 @@ export class ImpactCalculator {
     private readonly materialToH3: MaterialsToH3sService,
     private readonly indicatorService: IndicatorsService,
     private readonly dependencyManager: IndicatorDependencyManager,
+    private readonly h3DataService: H3DataService,
+    private readonly cachedDataService: CachedDataService,
   ) {}
 
   async calculateImpactForAllSourcingRecords(
@@ -51,53 +63,15 @@ export class ImpactCalculator {
     const newImpactToBeSaved: IndicatorRecord[] = [];
 
     rawData.forEach((data: SourcingRecordsWithIndicatorRawDataDtoV2) => {
-      const landPerTon: number = Number.isFinite(
-        data.harvestedArea / data.production,
-      )
-        ? data.harvestedArea / data.production
-        : 0;
-      const weightedTotalCropLandArea: number = Number.isFinite(
-        data.weightedAllHarvest / data.production,
-      )
-        ? data.weightedAllHarvest / data.production
-        : 0;
-      const deforestationPerHarvestLandUse: number =
-        weightedTotalCropLandArea > 0
-          ? data.rawDeforestation / weightedTotalCropLandArea
-          : 0;
-      const carbonPerHarvestLandUse: number =
-        weightedTotalCropLandArea > 0
-          ? data.rawCarbon / weightedTotalCropLandArea
-          : 0;
-      const landUse: number = landPerTon * data.tonnage;
-      const deforestation: number = deforestationPerHarvestLandUse * landUse;
-      const carbonLoss: number = carbonPerHarvestLandUse * landUse;
-      const waterUse: number = data.rawWater * data.tonnage;
-      const unsustainableWaterUse: number = waterUse * data.waterStressPerct;
-
-      const map: Map<INDICATOR_TYPES_NEW, number> = new Map();
-      map.set(INDICATOR_TYPES_NEW.CLIMATE_RISK, carbonLoss);
-      map.set(INDICATOR_TYPES_NEW.DEFORESTATION_RISK, deforestation);
-      map.set(INDICATOR_TYPES_NEW.WATER_USE, waterUse);
-      map.set(
-        INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE,
-        unsustainableWaterUse,
-      );
-      map.set(INDICATOR_TYPES_NEW.LAND_USE, landUse);
-      map.set(
-        INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION,
-        data.satDeforestation,
-      );
-
-      map.set(
-        INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION_RISK,
-        data.satDeforestationRisk,
-      );
+      const indicatorValues: Map<INDICATOR_TYPES_NEW, number> =
+        this.calculateIndicatorValues(data, data.tonnage);
 
       activeIndicators.forEach((indicator: Indicator) => {
         newImpactToBeSaved.push(
           IndicatorRecord.merge(new IndicatorRecord(), {
-            value: map.get(indicator.nameCode as INDICATOR_TYPES_NEW),
+            value: indicatorValues.get(
+              indicator.nameCode as INDICATOR_TYPES_NEW,
+            ),
             indicatorId: indicator.id,
             status: INDICATOR_RECORD_STATUS.SUCCESS,
             sourcingRecordId: data.sourcingRecordId,
@@ -107,6 +81,7 @@ export class ImpactCalculator {
         );
       });
     });
+
     await this.indicatorRecordRepository.saveChunks(newImpactToBeSaved);
   }
 
@@ -128,7 +103,6 @@ export class ImpactCalculator {
       adminRegionId,
       tonnage,
       sourcingRecordId,
-      sourcingRecord,
     } = sourcingData;
 
     let calculatedIndicatorRecordValues: IndicatorRecordCalculatedValuesDtoV2;
@@ -143,7 +117,9 @@ export class ImpactCalculator {
 
     const indicatorsToCalculateImpactFor: Indicator[] =
       await this.indicatorService.findAllUnpaginated();
-    let rawData: IndicatorRawDataBySourcingRecord;
+    let rawData: IndicatorRawDataBySourcingRecord =
+      new IndicatorRawDataBySourcingRecord();
+
     if (providedCoefficients) {
       calculatedIndicatorRecordValues = this.useProvidedIndicatorCoefficients(
         providedCoefficients,
@@ -152,35 +128,22 @@ export class ImpactCalculator {
       );
 
       // Getting production / scaler value from received sourcing record of finding it by material h3 data and georegion
-
-      if (
-        sourcingData.sourcingRecord &&
-        sourcingData.sourcingRecord.indicatorRecords
-      ) {
-        rawData = new IndicatorRawDataBySourcingRecord();
+      if (this.requiresNewProductionValue(sourcingData.sourcingRecord)) {
+        // Calculate new scaler value because it didn't exist
         rawData.production =
-          sourcingData.sourcingRecord.indicatorRecords[0].scaler;
-      } else {
-        // Here we will get production value that will e saved as scaler later
-
-        const productionValue: number =
           await this.getProductionValueForGeoregionAndMaterial(
             geoRegionId,
             materialId,
           );
-        rawData = new IndicatorRawDataBySourcingRecord();
-        rawData.production = productionValue;
+      } else {
+        rawData.production =
+          sourcingData.sourcingRecord!.indicatorRecords[0].scaler;
       }
     } else {
-      const queryForActiveIndicators: string =
-        this.dependencyManager.buildQueryForIntervention(
-          indicatorsToCalculateImpactFor.map(
-            (i: Indicator) => i.nameCode as INDICATOR_TYPES_NEW,
-          ),
-        );
-
-      rawData = await this.getImpactRawDataPerSourcingRecord(
-        queryForActiveIndicators,
+      rawData = await this.getImpactRawDataPerSourcingRecordCached(
+        indicatorsToCalculateImpactFor.map(
+          (i: Indicator) => i.nameCode as INDICATOR_TYPES_NEW,
+        ),
         materialId,
         geoRegionId,
         adminRegionId,
@@ -188,63 +151,10 @@ export class ImpactCalculator {
 
       calculatedIndicatorRecordValues =
         new IndicatorRecordCalculatedValuesDtoV2();
-      calculatedIndicatorRecordValues.values = new Map<
-        INDICATOR_TYPES_NEW,
-        number
-      >();
 
-      const landPerTon: number = Number.isFinite(
-        rawData.harvestedArea / rawData.production,
-      )
-        ? rawData.harvestedArea / rawData.production
-        : 0;
-      const weightedTotalCropLandArea: number = Number.isFinite(
-        rawData.weightedAllHarvest / rawData.production,
-      )
-        ? rawData.weightedAllHarvest / rawData.production
-        : 0;
-      const deforestationPerHarvestLandUse: number =
-        weightedTotalCropLandArea > 0
-          ? rawData.rawDeforestation / weightedTotalCropLandArea
-          : 0;
-      const carbonPerHarvestLandUse: number =
-        weightedTotalCropLandArea > 0
-          ? rawData.rawCarbon / weightedTotalCropLandArea
-          : 0;
-      const landUse: number = landPerTon * sourcingData.tonnage;
-      const deforestation: number = deforestationPerHarvestLandUse * landUse;
-      const carbonLoss: number = carbonPerHarvestLandUse * landUse;
-      const waterUse: number = rawData.rawWater * sourcingData.tonnage;
-      const unsustainableWaterUse: number = waterUse * rawData.waterStressPerct;
-
-      calculatedIndicatorRecordValues.values.set(
-        INDICATOR_TYPES_NEW.CLIMATE_RISK,
-        carbonLoss,
-      );
-      calculatedIndicatorRecordValues.values.set(
-        INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
-        deforestation,
-      );
-      calculatedIndicatorRecordValues.values.set(
-        INDICATOR_TYPES_NEW.WATER_USE,
-        waterUse,
-      );
-      calculatedIndicatorRecordValues.values.set(
-        INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE,
-        unsustainableWaterUse,
-      );
-      calculatedIndicatorRecordValues.values.set(
-        INDICATOR_TYPES_NEW.LAND_USE,
-        landUse,
-      );
-      calculatedIndicatorRecordValues.values.set(
-        INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION,
-        rawData.satDeforestation,
-      );
-
-      calculatedIndicatorRecordValues.values.set(
-        INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION_RISK,
-        rawData.satDeforestationRisk,
+      calculatedIndicatorRecordValues.values = this.calculateIndicatorValues(
+        rawData,
+        sourcingData.tonnage,
       );
     }
 
@@ -266,12 +176,56 @@ export class ImpactCalculator {
     return indicatorRecords;
   }
 
-  async getImpactRawDataPerSourcingRecord(
-    dynamicQuery: string,
+  private async getImpactRawDataPerSourcingRecordCached(
+    indicators: INDICATOR_TYPES_NEW[],
     materialId: string,
     geoRegionId: string,
     adminRegionId: string,
   ): Promise<IndicatorRawDataBySourcingRecord> {
+    const cacheKey: any = this.generateIndicatorCalculationCacheKey(
+      indicators,
+      materialId,
+      geoRegionId,
+      adminRegionId,
+    );
+
+    const cachedData: CachedData | undefined =
+      await this.cachedDataService.getCachedDataByKey(
+        cacheKey,
+        CACHED_DATA_TYPE.RAW_VALUES_GEOREGION,
+      );
+
+    if (cachedData) {
+      return (cachedData.data as CachedRawData).rawData;
+    }
+
+    const cachedRawValue: CachedRawData = {
+      rawData: await this.getImpactRawDataPerSourcingRecord(
+        indicators,
+        materialId,
+        geoRegionId,
+        adminRegionId,
+      ),
+    };
+
+    await this.cachedDataService.createCachedData(
+      cacheKey,
+      cachedRawValue,
+      CACHED_DATA_TYPE.RAW_VALUES_GEOREGION,
+    );
+
+    return cachedRawValue.rawData;
+  }
+
+  private async getImpactRawDataPerSourcingRecord(
+    indicators: INDICATOR_TYPES_NEW[],
+    materialId: string,
+    geoRegionId: string,
+    adminRegionId: string,
+  ): Promise<IndicatorRawDataBySourcingRecord> {
+    const dynamicQuery: string =
+      this.dependencyManager.buildQueryForIntervention(indicators);
+
     try {
       const res: any[] = await getManager().query(`SELECT ${dynamicQuery}`, [
         geoRegionId,
@@ -354,6 +308,77 @@ export class ImpactCalculator {
     );
 
     return calculatedIndicatorValues;
+  }
+
+  private requiresNewProductionValue(sourcingRecord?: SourcingRecord): boolean {
+    return !sourcingRecord || !sourcingRecord.indicatorRecords;
+  }
+
+  private calculateIndicatorValues(
+    rawData:
+      | SourcingRecordsWithIndicatorRawDataDtoV2
+      | IndicatorRawDataBySourcingRecord,
+    tonnage: number,
+  ): Map<INDICATOR_TYPES_NEW, number> {
+    const landPerTon: number = Number.isFinite(
+      rawData.harvestedArea / rawData.production,
+    )
+      ? rawData.harvestedArea / rawData.production
+      : 0;
+    const weightedTotalCropLandArea: number = Number.isFinite(
+      rawData.weightedAllHarvest / rawData.production,
+    )
+      ? rawData.weightedAllHarvest / rawData.production
+      : 0;
+    const deforestationPerHarvestLandUse: number =
+      weightedTotalCropLandArea > 0
+        ? rawData.rawDeforestation / weightedTotalCropLandArea
+        : 0;
+    const carbonPerHarvestLandUse: number =
+      weightedTotalCropLandArea > 0
+        ? rawData.rawCarbon / weightedTotalCropLandArea
+        : 0;
+    const landUse: number = landPerTon * tonnage;
+    const deforestation: number = deforestationPerHarvestLandUse * landUse;
+    const carbonLoss: number = carbonPerHarvestLandUse * landUse;
+    const waterUse: number = rawData.rawWater * tonnage;
+    const unsustainableWaterUse: number = waterUse * rawData.waterStressPerct;
+
+    const map: Map<INDICATOR_TYPES_NEW, number> = new Map();
+    map.set(INDICATOR_TYPES_NEW.CLIMATE_RISK, carbonLoss);
+    map.set(INDICATOR_TYPES_NEW.DEFORESTATION_RISK, deforestation);
+    map.set(INDICATOR_TYPES_NEW.WATER_USE, waterUse);
+    map.set(INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE, unsustainableWaterUse);
+    map.set(INDICATOR_TYPES_NEW.LAND_USE, landUse);
+    map.set(
+      INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION,
+      rawData.satDeforestation,
+    );
+    map.set(
+      INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION_RISK,
+      rawData.satDeforestationRisk,
+    );
+
+    return map;
+  }
+
+  private generateIndicatorCalculationCacheKey(
+    indicators: INDICATOR_TYPES_NEW[],
+    materialId: string,
+    geoRegionId: string,
+    adminRegionId: string,
+  ): any {
+    return {
+      // Sort the indicator list to guarantee that the same set of indicator types won't result in different keys
+      // because of their order
+      indicators: indicators.sort(
+        (a: INDICATOR_TYPES_NEW, b: INDICATOR_TYPES_NEW) =>
+          a.toString() > b.toString() ? -1 : 1,
+      ),
+      materialId,
+      geoRegionId,
+      adminRegionId,
+    };
   }
 
   async getIndicatorRawDataForAllSourcingRecordsV2(

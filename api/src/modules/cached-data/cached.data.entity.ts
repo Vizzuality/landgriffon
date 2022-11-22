@@ -6,6 +6,7 @@ import { BaseServiceResource } from 'types/resource.interface';
 export enum CACHED_DATA_TYPE {
   RAW_INDICATOR_VALUE_GEOREGION = 'rawImpactedValueGeoRegion',
   RAW_MATERIAL_VALUE_GEOREGION = 'rawMaterialValueGeoRegion',
+  RAW_VALUES_GEOREGION = 'rawValuesGeoRegion',
 }
 
 export const cachedDataResource: BaseServiceResource = {

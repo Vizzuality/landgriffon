@@ -9,7 +9,7 @@ import {
   useInteractions,
   FloatingPortal,
 } from '@floating-ui/react-dom-interactions';
-import { Transition } from '@headlessui/react';
+import { Popover, Transition } from '@headlessui/react';
 import { useRouter } from 'next/router';
 
 import Materials from '../materials/component';
@@ -94,28 +94,16 @@ const MoreFilters = () => {
   );
 
   const [counter, setCounter] = useState<number>(0);
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleOpen = useCallback(
-    (open: boolean) => {
-      setIsOpen(open);
-      if (open) {
-        setSelectedFilters(moreFilters);
-      }
-    },
-    [moreFilters],
-  );
 
   // Only the changes are applied when the user clicks on Apply
   const handleApply = useCallback(() => {
     dispatch(setFilters(selectedFilters));
-    handleOpen(false);
-  }, [dispatch, handleOpen, selectedFilters]);
+  }, [dispatch, selectedFilters]);
 
   // Close filters window
   const handleCancel = useCallback(() => {
-    handleOpen(false);
-  }, [handleOpen]);
+    setSelectedFilters(moreFilters);
+  }, [moreFilters]);
 
   // Restoring state from initial state only internally,
   // the user have to apply the changes
@@ -144,8 +132,8 @@ const MoreFilters = () => {
   );
 
   const { reference, floating, strategy, x, y, context } = useFloating({
-    open: isOpen,
-    onOpenChange: handleOpen,
+    // open: isOpen,
+    // onOpenChange: handleOpen,
     placement: 'bottom-start',
     strategy: 'fixed',
     middleware: [offset({ mainAxis: 4 }), shift({ padding: 4 })],
@@ -240,111 +228,125 @@ const MoreFilters = () => {
   }, [scenarioId]);
 
   return (
-    <div className="relative">
-      <button
-        className="flex items-center space-x-2 px-2 py-2.5 border border-gray-200 rounded-md bg-white shadow-sm hover:cursor-pointer focus:border-navy-400 focus:outline-none focus:ring-0"
-        type="button"
-        {...getReferenceProps({
-          ref: reference,
-        })}
-        data-testid="more-filters-button"
-      >
-        <FilterIcon className="block w-5 h-5 mx-1 text-gray-900" aria-hidden="true" />
-        {counter > 0 && (
-          <span className="flex items-center justify-center w-5 h-5 text-xs font-semibold text-white rounded-full bg-navy-400">
-            {counter}
-          </span>
-        )}
-      </button>
-      <div className="hidden opacity-100"></div>
-      <FloatingPortal>
-        <Transition
-          show={isOpen}
-          enter="transition ease-out duration-200"
-          enterFrom="opacity-0 translate-y-1"
-          enterTo="opacity-100 translate-y-0"
-          leave="transition ease-in duration-150"
-          leaveFrom="opacity-100 translate-y-0"
-          leaveTo="opacity-0 translate-y-1"
-          {...getFloatingProps({
-            ref: floating,
-            style: {
-              position: strategy,
-              top: y ?? '',
-              left: x ?? '',
-              zIndex: 100,
-            },
-          })}
-        >
-          <div className="p-4 mt-1 bg-white rounded-md shadow-md w-80 ring-1 ring-gray-200">
-            <div className="flex justify-between mb-4">
-              <div>Filter by</div>
-              <button type="button" className="text-navy-400" onClick={handleClearFilters}>
-                Clear all
-              </button>
-            </div>
-            <div className="flex flex-col gap-3">
-              <div>
-                <div className="mb-1">Material</div>
-                <Materials
-                  options={materialOptions}
-                  multiple
-                  current={selectedFilters.materials}
-                  fitContent
-                  onChange={(values) => handleChangeFilter('materials', values)}
-                  id="materials-filter"
-                />
-              </div>
-              <div>
-                <div className="mb-1">Origins</div>
-                <OriginRegions
-                  options={originOptions}
-                  multiple
-                  current={selectedFilters.origins}
-                  fitContent
-                  onChange={(values) => handleChangeFilter('origins', values)}
-                  id="origins-filter"
-                />
-              </div>
-              <div>
-                <div className="mb-1">Suppliers</div>
-                <Suppliers
-                  multiple
-                  options={supplierOptions}
-                  current={selectedFilters.suppliers}
-                  fitContent
-                  onChange={(values) => handleChangeFilter('suppliers', values)}
-                  id="suppliers-filter"
-                />
-              </div>
-              <div>
-                <div className="mb-1">Location type</div>
-                <LocationTypes
-                  options={locationTypeOptions}
-                  current={selectedFilters.locationTypes}
-                  fitContent
-                  onChange={(values) => handleChangeFilter('locationTypes', values)}
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-2 mt-6">
-              <Button variant="secondary" className="px-9" onClick={handleCancel}>
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                className="flex-grow"
-                onClick={handleApply}
-                disabled={!hasChangesToApply}
+    <Popover className="relative">
+      {({ open, close }) => (
+        <>
+          <Popover.Button
+            className="flex items-center space-x-2 px-2 py-2.5 border border-gray-200 rounded-md bg-white shadow-sm hover:cursor-pointer focus:border-navy-400 focus:outline-none focus:ring-0"
+            type="button"
+            {...getReferenceProps({
+              ref: reference,
+            })}
+            data-testid="more-filters-button"
+          >
+            <FilterIcon className="block w-5 h-5 mx-1 text-gray-900" aria-hidden="true" />
+            {counter > 0 && (
+              <span className="flex items-center justify-center w-5 h-5 text-xs font-semibold text-white rounded-full bg-navy-400">
+                {counter}
+              </span>
+            )}
+          </Popover.Button>
+          <FloatingPortal>
+            <Transition
+              as="div"
+              className="z-10"
+              show={open}
+              enter="transition ease-out duration-200"
+              enterFrom="opacity-0 translate-y-1"
+              enterTo="opacity-100 translate-y-0"
+              leave="transition ease-in duration-150"
+              leaveFrom="opacity-100 translate-y-0"
+              leaveTo="opacity-0 translate-y-1"
+              {...getFloatingProps({
+                ref: floating,
+                style: {
+                  position: strategy,
+                  top: y ?? '',
+                  left: x ?? '',
+                },
+              })}
+            >
+              <Popover.Panel
+                static
+                className="p-4 mt-1 bg-white rounded-md shadow-md w-80 ring-1 ring-gray-200"
               >
-                Apply
-              </Button>
-            </div>
-          </div>
-        </Transition>
-      </FloatingPortal>
-    </div>
+                <div className="flex justify-between mb-4">
+                  <div>Filter by</div>
+                  <button type="button" className="text-navy-400" onClick={handleClearFilters}>
+                    Clear all
+                  </button>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <div>
+                    <div className="mb-1">Material</div>
+                    <Materials
+                      options={materialOptions}
+                      multiple
+                      current={selectedFilters.materials}
+                      fitContent
+                      onChange={(values) => handleChangeFilter('materials', values)}
+                      id="materials-filter"
+                    />
+                  </div>
+                  <div>
+                    <div className="mb-1">Origins</div>
+                    <OriginRegions
+                      options={originOptions}
+                      multiple
+                      current={selectedFilters.origins}
+                      fitContent
+                      onChange={(values) => handleChangeFilter('origins', values)}
+                      id="origins-filter"
+                    />
+                  </div>
+                  <div>
+                    <div className="mb-1">Suppliers</div>
+                    <Suppliers
+                      multiple
+                      options={supplierOptions}
+                      current={selectedFilters.suppliers}
+                      fitContent
+                      onChange={(values) => handleChangeFilter('suppliers', values)}
+                      id="suppliers-filter"
+                    />
+                  </div>
+                  <div>
+                    <div className="mb-1">Location type</div>
+                    <LocationTypes
+                      options={locationTypeOptions}
+                      current={selectedFilters.locationTypes}
+                      fitContent
+                      onChange={(values) => handleChangeFilter('locationTypes', values)}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-2 mt-6">
+                  <Button
+                    variant="secondary"
+                    className="px-9"
+                    onClick={() => {
+                      close();
+                      handleCancel();
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="primary"
+                    className="flex-grow"
+                    onClick={handleApply}
+                    disabled={!hasChangesToApply}
+                  >
+                    Apply
+                  </Button>
+                </div>
+              </Popover.Panel>
+            </Transition>
+          </FloatingPortal>
+        </>
+      )}
+    </Popover>
   );
 };
 

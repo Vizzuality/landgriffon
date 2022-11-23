@@ -1,6 +1,6 @@
 {
   "name": "landgriffon-client",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "private": true,
   "scripts": {
     "dev": "next dev",

@@ -18,7 +18,7 @@ import LineChart from 'components/chart/line';
 import { NUMBER_FORMAT } from 'utils/number-format';
 import { DEFAULT_PAGE_SIZES } from 'components/table/pagination/constants';
 
-import type { PaginationState, SortingState } from '@tanstack/react-table';
+import type { ExpandedState, PaginationState, SortingState } from '@tanstack/react-table';
 import type { TableProps } from 'components/table/component';
 import type { ColumnDefinition } from 'components/table/column';
 import type { LinesConfig } from 'components/chart/line/types';
@@ -63,9 +63,10 @@ const AnalysisTable = () => {
     pageSize: DEFAULT_PAGE_SIZES[0],
   });
   const [sortingState, setSortingState] = useState<SortingState>([]);
+  const [expandedState, setExpandedState] = useState<ExpandedState>({});
   const tableState = useMemo(
-    () => ({ pagination: paginationState, sorting: sortingState }),
-    [paginationState, sortingState],
+    () => ({ pagination: paginationState, sorting: sortingState, expanded: expandedState }),
+    [expandedState, paginationState, sortingState],
   );
 
   const { scenarioToCompare, isComparisonEnabled, currentScenario } = useAppSelector(scenarios);
@@ -156,9 +157,13 @@ const AnalysisTable = () => {
     return { data: { impactTable: [] }, metadata: {} };
   }, [impactData]);
 
-  const totalRows = useMemo(() => {
-    return !isLoading && impactTable.length === 1 ? impactTable[0].rows.length : impactTable.length;
-  }, [isLoading, impactTable]);
+  // const totalRows = useMemo(() => {
+  //   return !isLoading && impactTable.length === 1 ? impactTable[0].rows.length : impactTable.length;
+  // }, [isLoading, impactTable]);
+  const [totalRows, setTotalRows] = useState<number>(0);
+  const handleExpandedChange = useCallback((table) => {
+    setTotalRows(table.getRowModel().rows.length);
+  }, []);
 
   const datesRangeChartConfig = (
     data,
@@ -384,12 +389,15 @@ const AnalysisTable = () => {
       state: tableState,
       onSortingChange: setSortingState,
       onPaginationChange: setPaginationState,
+      onExpandedChange: setExpandedState,
       isLoading: isFetching,
       data: tableData as ImpactRowType<Mode>[],
       columns: baseColumns as ColumnDefinition<ImpactRowType<Mode>>[],
+      handleExpandedChange,
     }),
     [
       baseColumns,
+      handleExpandedChange,
       isFetching,
       metadata.page,
       metadata.size,

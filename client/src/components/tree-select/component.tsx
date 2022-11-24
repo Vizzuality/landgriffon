@@ -380,7 +380,8 @@ const InnerTreeSelect = <IsMulti extends boolean>(
         });
         setSelectedKeys((currentKeys) => {
           const newKeys = new Set(currentKeys);
-          if (newKeys.has(newKey)) {
+          const shouldDelete = newKeys.has(newKey);
+          if (shouldDelete) {
             newKeys.delete(newKey);
           } else {
             newKeys.add(newKey);
@@ -388,6 +389,9 @@ const InnerTreeSelect = <IsMulti extends boolean>(
 
           const keys = Array.from(newKeys);
           const newCheckedKeys = new Set([...checkedKeys, ...keys]);
+          if (shouldDelete) {
+            newCheckedKeys.delete(newKey);
+          }
           const newCheckedNodes = flatTreeData
             .filter((data) => newCheckedKeys.has(data.key))
             .map(({ data }) => data);

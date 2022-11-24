@@ -118,7 +118,7 @@ export class AdminRegionsService extends AppBaseService<
           'adminRegion.geoRegionId = geoRegion.id',
         )
         .where('adminRegion.name = :adminRegionName', { adminRegionName });
-    if (options?.level) {
+    if (options && !isNaN(options.level)) {
       queryBuilder.andWhere('adminRegion.level = :level', {
         level: options.level,
       });

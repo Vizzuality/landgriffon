@@ -55,7 +55,7 @@ describe('AdminRegions - Get Admin Regions (Integration Tests)', () => {
       name: 'Wakanda',
       level: 0,
     });
-    await createAdminRegion({
+    const adminRegion2 = await createAdminRegion({
       geoRegion: geoRegion2,
       name: 'Wakanda',
       level: 1,
@@ -67,8 +67,16 @@ describe('AdminRegions - Get Admin Regions (Integration Tests)', () => {
         { level: 0 },
       );
 
+    const result2 =
+      await adminRegionService.getAdminRegionAndGeoRegionIdsByAdminRegionName(
+        adminRegion.name as string,
+        { level: 1 },
+      );
+
     expect(result.adminRegionId).toEqual(adminRegion.id);
     expect(result.geoRegionId).toEqual(geoRegion.id);
+    expect(result2.adminRegionId).toEqual(adminRegion2.id);
+    expect(result2.geoRegionId).toEqual(geoRegion2.id);
   });
 
   test('When I provide a AdminRegion name, and optionally a level, But any is found, Then I should get a proper error for each case', async () => {

@@ -10,7 +10,7 @@ import { splitStringByIndexes } from 'utils/string';
 
 import type { DeepKeys } from '@tanstack/react-table';
 import type { TreeDataNode, TreeSelectOption } from './types';
-import type { DataNode, FlattenNode, Key } from 'rc-tree/lib/interface';
+import type { DataNode, Key } from 'rc-tree/lib/interface';
 
 interface HasChildren<T> {
   children?: T[];
@@ -53,12 +53,12 @@ export const flattenTree = <T extends HasChildren<T>>(tree: T) => {
   return flattenedTree;
 };
 
-export const getParentKeys = <T>(node: FlattenNode<T>) => {
+export const getParents = <T extends { parent?: T }>(node: T): T[] => {
   if (!node.parent) {
     return [];
   }
   const parent = node.parent;
-  return [parent.key, ...getParentKeys(parent)];
+  return [parent, ...getParents(parent)];
 };
 
 const filterTree = <T extends HasChildren<T>>(

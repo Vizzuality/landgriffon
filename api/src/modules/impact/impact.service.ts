@@ -659,9 +659,7 @@ export class ImpactService {
           scenarioData.indicatorId === realData.indicatorId &&
           scenarioData.typeByIntervention !== null
         ) {
-          realData.impact = realData.impact
-            ? realData.impact + scenarioData.impact
-            : 0;
+          realData.impact += scenarioData.impact;
         }
       });
       result.push(realData);

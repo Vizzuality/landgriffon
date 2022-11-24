@@ -639,9 +639,7 @@ export class ScenarioVsScenarioImpactService {
             scenarioData.indicatorId === realData.indicatorId &&
             scenarioData.typeByIntervention !== null
           ) {
-            realData.scenarioImpact = realData.scenarioImpact
-              ? realData.scenarioImpact + scenarioData.impact
-              : 0;
+            realData.scenarioImpact! += scenarioData.impact;
           }
         },
       );
@@ -655,18 +653,15 @@ export class ScenarioVsScenarioImpactService {
 
     scenarioSourcingData.forEach(
       (scenarioData: ActualVsScenarioImpactTableData) => {
-        const realDataForEntitties:
-          | ActualVsScenarioImpactTableData
-          | undefined = realSourcingData.find(
-          (realData: ActualVsScenarioImpactTableData) => {
+        const realDataForEntities: ActualVsScenarioImpactTableData | undefined =
+          realSourcingData.find((realData: ActualVsScenarioImpactTableData) => {
             return (
               realData.year === scenarioData.year &&
               realData.name === scenarioData.name
             );
-          },
-        );
+          });
 
-        if (!realDataForEntitties) {
+        if (!realDataForEntities) {
           scenarioData.scenarioImpact = scenarioData.impact;
           scenarioData.impact = 0;
 

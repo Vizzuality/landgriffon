@@ -16,7 +16,7 @@ import Tree from 'rc-tree';
 import { flattenTreeData } from 'rc-tree/lib/utils/treeUtil';
 import { useDebouncedValue } from 'rooks';
 
-import { CHECKED_STRATEGIES, getParentKeys, useTree } from './utils';
+import { CHECKED_STRATEGIES, getParents, useTree } from './utils';
 import SearchOverlay from './search-overlay';
 import { FIELD_NAMES } from './constants';
 
@@ -362,7 +362,8 @@ const InnerTreeSelect = <IsMulti extends boolean>(
 
       const selectedNode = flatTreeData.find((data) => data.key === newKey);
       setKeyToScroll(newKey);
-      const keysToExpand = [selectedNode.key, ...getParentKeys(selectedNode)];
+      const parentKeys = getParents(selectedNode).map((node) => node.key);
+      const keysToExpand = [selectedNode.key, ...parentKeys];
       setExpandedKeys((currentKeys) => {
         const uniqueKeys = new Set([...currentKeys, ...keysToExpand]);
         return Array.from(uniqueKeys);

@@ -1,6 +1,8 @@
 import classNames from 'classnames';
 import { useCallback } from 'react';
 
+import { getParents } from './utils';
+
 import type { MatchResult } from 'utils/string';
 import type { WithRequiredProperty } from 'types';
 import type { FlattenNode, Key } from 'rc-tree/lib/interface';
@@ -25,26 +27,37 @@ const SearchOverlay = ({ options, onChange }: SearchOverlayProps) => {
 
   return (
     <div>
-      {options.map(({ matchingParts, title, key, isSelected }) => (
-        <button
-          title={title as string}
-          type="button"
-          className={classNames(
-            'p-2 hover:bg-navy-50 cursor-pointer block w-full text-left',
-            isSelected ? 'font-bold text-navy-400' : 'text-gray-900',
-          )}
-          key={key}
-          onClick={getHandleChange(key)}
-        >
-          {matchingParts.map(({ value, isMatch }, i) => {
-            return (
-              <span className={classNames({ 'font-bold': isMatch })} key={`${value}-${i}`}>
-                {value}
-              </span>
-            );
-          })}
-        </button>
-      ))}
+      {options.map(({ matchingParts, title, key, isSelected, parent }) => {
+        const parents = getParents({ parent } as FlattenNode<TreeDataNode>);
+        return (
+          <button
+            title={title as string}
+            type="button"
+            className={classNames(
+              'text-sm p-2 hover:bg-navy-50 cursor-pointer w-full text-left',
+              isSelected ? 'font-bold text-navy-400' : 'text-gray-900',
+            )}
+            key={key}
+            onClick={getHandleChange(key)}
+          >
+            {matchingParts.map(({ value, isMatch }, i) => {
+              return (
+                <span className={classNames({ 'font-bold': isMatch })} key={`${value}-${i}`}>
+                  {value}
+                </span>
+              );
+            })}
+            {parents.length !== 0 && (
+              <>
+                {' '}
+                <span className="text-gray-400 italic">
+                  ({parents.map((parent) => parent.title as string).join(', ')})
+                </span>
+              </>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 };

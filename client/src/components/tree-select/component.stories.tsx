@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import TreeSelect from './component';
 
@@ -22,10 +23,16 @@ export default {
   },
 } as ComponentMeta<typeof TreeSelect>;
 
+const queryClient = new QueryClient();
+
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
 const Template: ComponentStory<typeof TreeSelect> = (args) => {
   const [value, setValue] = useState(null);
-  return <TreeSelect {...args} current={value} onChange={setValue} />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TreeSelect {...args} current={value} onChange={setValue} />
+    </QueryClientProvider>
+  );
 };
 
 export const Default = Template.bind({});

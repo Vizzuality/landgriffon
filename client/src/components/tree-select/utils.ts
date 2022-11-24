@@ -140,7 +140,7 @@ const getFilteredOptions = (options: TreeSelectOption[], search?: string) => {
   return filteredOptions;
 };
 
-interface UseTreeOptions {
+export interface UseTreeOptions {
   render: (node: Omit<TreeDataNode, 'className'>) => TreeDataNode;
   isOptionSelected: (id: Key) => boolean;
 }

@@ -27,11 +27,11 @@ const SearchOverlay = ({ options, onChange }: SearchOverlayProps) => {
 
   return (
     <div>
-      {options.map(({ matchingParts, title, key, isSelected, parent }) => {
+      {options.map(({ matchingParts, data: { label }, key, isSelected, parent }) => {
         const parents = getParents({ parent } as FlattenNode<TreeDataNode>);
         return (
           <button
-            title={title as string}
+            title={label}
             type="button"
             className={classNames(
               'text-sm p-2 hover:bg-navy-50 cursor-pointer w-full text-left',
@@ -51,7 +51,7 @@ const SearchOverlay = ({ options, onChange }: SearchOverlayProps) => {
               <>
                 {' '}
                 <span className="text-gray-400 italic">
-                  ({parents.map((parent) => parent.title as string).join(', ')})
+                  ({parents.map((parent) => parent.data.label).join(', ')})
                 </span>
               </>
             )}

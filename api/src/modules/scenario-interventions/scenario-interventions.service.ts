@@ -335,12 +335,15 @@ export class ScenarioInterventionsService extends AppBaseService<
   ): Promise<Partial<ScenarioIntervention>> {
     const currentScenarioIntervention: ScenarioIntervention =
       await this.repository.findOneOrFail({ id });
-    const createScenarioDto: CreateScenarioInterventionDto = {
+    // TODO: Add proper typing once old methodology related deleted
+    const createScenarioDto: any = {
       ...(currentScenarioIntervention.createDto as unknown as CreateScenarioInterventionDto),
       ...dto,
     };
     const newScenarioIntervention: Partial<ScenarioIntervention> =
-      await this.createScenarioIntervention(createScenarioDto);
+      await this.createScenarioIntervention(
+        createScenarioDto as CreateScenarioInterventionDto,
+      );
 
     await this.repository.remove(currentScenarioIntervention);
     // since we create new intervention, updatedBy must be set manually

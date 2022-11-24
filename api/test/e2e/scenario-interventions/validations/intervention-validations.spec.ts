@@ -10,7 +10,10 @@ import {
   INDICATOR_TYPES_NEW,
 } from '../../../../src/modules/indicators/indicator.entity';
 import { AppModule } from '../../../../src/app.module';
-import { createIndicator } from '../../../entity-mocks';
+import {
+  createIndicator,
+  createScenarioIntervention,
+} from '../../../entity-mocks';
 import { clearEntityTables } from '../../../utils/database-test-helper';
 import * as request from 'supertest';
 import { SCENARIO_INTERVENTION_TYPE } from '../../../../src/modules/scenario-interventions/scenario-intervention.entity';
@@ -48,6 +51,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
         serialize: () => ({
           mockResponse: true,
         }),
+        updateIntervention: () => true,
       })
       .compile();
 
@@ -165,6 +169,150 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
         });
 
       expect(response.body.errors).toBeUndefined();
+    },
+  );
+
+  test(
+    'When I edit some coefficients of a intervention to calculate new impact with' +
+      'And I match the ones that are active' +
+      'Then the validation should pass',
+    async () => {
+      const intervention = await createScenarioIntervention();
+      await createIndicator({
+        nameCode: INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE,
+        name: INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE,
+      });
+      await createIndicator({
+        nameCode: INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
+        name: INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
+      });
+
+      const response = await request(app.getHttpServer())
+        .patch(`/api/v1/scenario-interventions/${intervention.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'test scenario intervention',
+          startYear: 2018,
+          percentage: 50,
+          scenarioId: uuidv4(),
+          materialIds: [uuidv4()],
+          supplierIds: [uuidv4()],
+          businessUnitIds: [uuidv4()],
+          adminRegionIds: [uuidv4()],
+          newLocationCountryInput: 'TestCountry',
+          type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          newIndicatorCoefficients: {
+            [INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE]: 1,
+            [INDICATOR_TYPES_NEW.DEFORESTATION_RISK]: 2,
+          },
+        });
+
+      expect(response.body.errors).toBeUndefined();
+    },
+  );
+  test(
+    'When I edit some coefficients of a intervention to calculate new impact with' +
+      'And I match the ones that are active' +
+      'Then the validation should pass',
+    async () => {
+      const intervention = await createScenarioIntervention();
+      await createIndicator({
+        nameCode: INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE,
+        name: INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE,
+      });
+      await createIndicator({
+        nameCode: INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
+        name: INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
+      });
+
+      const response = await request(app.getHttpServer())
+        .patch(`/api/v1/scenario-interventions/${intervention.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'test scenario intervention',
+          startYear: 2018,
+          percentage: 50,
+          scenarioId: uuidv4(),
+          materialIds: [uuidv4()],
+          supplierIds: [uuidv4()],
+          businessUnitIds: [uuidv4()],
+          adminRegionIds: [uuidv4()],
+          newLocationCountryInput: 'TestCountry',
+          type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          newIndicatorCoefficients: {
+            [INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE]: 1,
+            [INDICATOR_TYPES_NEW.DEFORESTATION_RISK]: 2,
+          },
+        });
+
+      expect(response.body.errors).toBeUndefined();
+    },
+  );
+
+  test(
+    'When I edit some coefficients to calculate new impact for that intervention' +
+      'But these differs from the ones that are active in the DB' +
+      'Then I should get and error message',
+    async () => {
+      const intervention = await createScenarioIntervention();
+
+      for (const [index, data] of Object.entries(
+        INDICATOR_TYPES_NEW,
+      ).entries()) {
+        if (index % 2 === 0) {
+          await createIndicator({
+            name: `indicator n ${index}`,
+            nameCode: data[1],
+            status: INDICATOR_STATUS.ACTIVE,
+          });
+        } else {
+          await createIndicator({
+            name: `indicator n ${index}`,
+            nameCode: data[1],
+            status: INDICATOR_STATUS.INACTIVE,
+          });
+        }
+      }
+
+      const indicatorRepository = getConnection().getRepository(Indicator);
+
+      const activeIndicators: string[] = (
+        await indicatorRepository.find({
+          status: INDICATOR_STATUS.ACTIVE,
+        })
+      ).map((i: Indicator) => i.nameCode);
+
+      const inactiveIndicators: string[] = (
+        await indicatorRepository.find({
+          status: INDICATOR_STATUS.INACTIVE,
+        })
+      ).map((i: Indicator) => i.nameCode);
+
+      const response = await request(app.getHttpServer())
+        .patch(`/api/v1/scenario-interventions/${intervention.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'test scenario intervention',
+          startYear: 2018,
+          percentage: 50,
+          scenarioId: uuidv4(),
+          materialIds: [uuidv4()],
+          supplierIds: [uuidv4()],
+          businessUnitIds: [uuidv4()],
+          adminRegionIds: [uuidv4()],
+          newLocationCountryInput: 'TestCountry',
+          type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          newIndicatorCoefficients: {
+            [INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE]: 1,
+          },
+        });
+
+      expect(
+        response.body.errors[0].meta.rawError.response.message[0],
+      ).toContain(activeIndicators.join(', '));
+      expect(
+        response.body.errors[0].meta.rawError.response.message[0],
+      ).not.toContain(inactiveIndicators.join(', '));
     },
   );
 });

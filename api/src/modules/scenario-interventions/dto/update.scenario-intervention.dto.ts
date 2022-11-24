@@ -1,10 +1,10 @@
 import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
+import { CreateScenarioInterventionDtoV2 } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
 import { IsEnum, IsNotEmpty, IsOptional, IsUUID } from 'class-validator';
 import { SCENARIO_INTERVENTION_STATUS } from 'modules/scenario-interventions/scenario-intervention.entity';
 
 export class UpdateScenarioInterventionDto extends PartialType(
-  CreateScenarioInterventionDto,
+  CreateScenarioInterventionDtoV2,
 ) {
   @IsNotEmpty()
   @IsUUID()

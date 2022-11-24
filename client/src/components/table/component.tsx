@@ -6,7 +6,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import classNames from 'classnames';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 import TableRow, { TableHeaderRow } from './row';
 
@@ -14,7 +14,14 @@ import Loading from 'components/loading';
 import Pagination from 'components/table/pagination';
 
 import type { ColumnDefinition } from './column';
-import type { ColumnHelper, Row, TableOptions, DeepValue, DeepKeys } from '@tanstack/react-table';
+import type {
+  ColumnHelper,
+  Row,
+  Table,
+  TableOptions,
+  DeepValue,
+  DeepKeys,
+} from '@tanstack/react-table';
 
 export interface TableProps<T>
   extends Omit<TableOptions<T>, 'columns' | 'getCoreRowModel' | 'pageCount'> {
@@ -29,6 +36,7 @@ export interface TableProps<T>
     pageSizes?: number[];
   };
   noDataMessage?: React.ReactNode;
+  handleExpandedChange?: (table: Table<T>) => void;
 }
 
 const columnToColumnDef = <T,>(
@@ -61,6 +69,7 @@ const ComposedTable = <T,>({
   theme = 'default',
   isLoading,
   noDataMessage = 'No data',
+  handleExpandedChange = () => null,
   ...options
 }: TableProps<T>) => {
   const columnHelper = useMemo(() => createColumnHelper<T>(), []);
@@ -125,6 +134,10 @@ const ComposedTable = <T,>({
   );
 
   const bodyRows = table.getExpandedRowModel().rows;
+
+  useEffect(() => {
+    handleExpandedChange(table);
+  }, [options.state.expanded, handleExpandedChange, table]);
 
   return (
     <div className="space-y-6">

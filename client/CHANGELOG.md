@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Update rows expanded state on analysis table [LANDGRIF-967](https://vizzuality.atlassian.net/browse/LANDGRIF-967)
 - Edition of intervention was not working [LANDGRIF-1073](https://vizzuality.atlassian.net/browse/LANDGRIF-1073)
 - Legend colors for comparison layer [LANDGRIF-979](https://vizzuality.atlassian.net/browse/LANDGRIF-979)
 - Tests were failing due to a change in the api where data was reset

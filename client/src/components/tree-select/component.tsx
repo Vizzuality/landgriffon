@@ -23,10 +23,11 @@ import { FIELD_NAMES } from './constants';
 import Badge from 'components/badge';
 import Loading from 'components/loading';
 
+import type { UseTreeOptions } from './utils';
 import type { Key } from 'rc-tree/lib/interface';
 import type { TreeProps } from 'rc-tree';
 import type { TreeSelectProps, TreeSelectOption, TreeDataNode } from './types';
-import type { ChangeEventHandler, Ref } from 'react';
+import type { ChangeEventHandler, Ref, RefObject, InputHTMLAttributes } from 'react';
 
 const THEMES = {
   default: {
@@ -35,7 +36,7 @@ const THEMES = {
       'flex-row max-w-full bg-white relative border border-gray-200 transition-colors hover:border-gray-300 rounded-md shadow-sm px-3 cursor-pointer min-h-[2.5rem] h-min py-1 text-sm shadow-sm',
     arrow: 'items-center text-gray-900',
     treeNodes:
-      'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-navy-50 z-[100]',
+      'flex items-center px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-navy-50 z-[100]',
     badge: 'text-sm',
   },
   'inline-primary': {
@@ -43,16 +44,50 @@ const THEMES = {
     wrapper: 'inline-flex border-b-2 border-navy-400 max-w-none min-w-[30px] min-h-[26px]',
     arrow: 'mx-auto w-fit',
     treeNodes:
-      'flex items-center space-x-2 px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-navy-50',
+      'flex items-center px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-navy-50',
     treeContent: 'max-w-xl',
     badge: '',
   },
 };
 
-const customSwitcherIcon: TreeProps<TreeDataNode>['switcherIcon'] = ({ isLeaf, expanded }) => {
+const CustomSwitcherIcon: TreeProps<TreeDataNode>['switcherIcon'] = ({ isLeaf, expanded }) => {
   if (isLeaf) return <span className="block w-4" />;
 
   return <ChevronDownIcon className={classNames('h-4 w-4', { '-rotate-90': !expanded })} />;
+};
+
+const CustomCheckbox = React.forwardRef<
+  HTMLInputElement,
+  InputHTMLAttributes<HTMLInputElement> & { indeterminate?: boolean }
+>(({ indeterminate = false, checked = false, className, ...props }, forwardedRef) => {
+  const fallbackRef = useRef<HTMLInputElement>(null);
+  const ref = forwardedRef || fallbackRef;
+
+  useEffect(() => {
+    if (!(ref as RefObject<HTMLInputElement>).current) return;
+
+    (ref as RefObject<HTMLInputElement>).current.indeterminate = !checked && indeterminate;
+  }, [checked, indeterminate, ref]);
+  // flex-shrink-0 w-4 h-4 border border-gray-200 rounded;
+  return (
+    <input
+      type="checkbox"
+      className={classNames(
+        'form-checkbox appearance-none rounded w-4 h-4 focus:ring-0 focus:outline-none',
+        checked || indeterminate ? 'bg-navy-400 border-none' : 'border border-gray-200',
+        className,
+      )}
+      checked={checked}
+      {...props}
+      ref={ref}
+    />
+  );
+});
+
+CustomCheckbox.displayName = 'CustomCheckbox';
+
+const CustomIcon: TreeProps<TreeDataNode>['icon'] = ({ checked, halfChecked, disabled }) => {
+  return <CustomCheckbox checked={checked} indeterminate={halfChecked} disabled={disabled} />;
 };
 
 const InnerTreeSelect = <IsMulti extends boolean>(
@@ -126,21 +161,26 @@ const InnerTreeSelect = <IsMulti extends boolean>(
 
   const [checkedKeys, setCheckedKeys] = useState<Key[]>([]);
 
+  const useTreeOptions = useMemo<UseTreeOptions>(
+    () => ({
+      isOptionSelected: (key) => selectedKeys.includes(key),
+      render: (node) => ({
+        ...node,
+        className: classNames(THEMES[theme].treeNodes, {
+          'w-full': fitContent,
+          'bg-navy-50 font-semibold': selectedKeys.includes(node.value),
+        }),
+      }),
+    }),
+    [fitContent, selectedKeys, theme],
+  );
+
   const {
     filteredKeys: filteredOptionsKeys,
     filteredOptions,
     flatTreeData,
     treeData,
-  } = useTree(options, debouncedSearch, {
-    isOptionSelected: (key) => selectedKeys.includes(key),
-    render: (node) => ({
-      ...node,
-      className: classNames(THEMES[theme].treeNodes, {
-        'w-full': fitContent,
-        'bg-navy-50 font-semibold': selectedKeys.includes(node.value),
-      }),
-    }),
-  });
+  } = useTree(options, debouncedSearch, useTreeOptions);
 
   const handleExpand: TreeProps<TreeDataNode>['onExpand'] = useCallback(
     (keys, { node, expanded }) => {
@@ -161,7 +201,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
   // Selection for non-multiple
   const handleSelect: TreeProps<TreeDataNode>['onSelect'] = useCallback(
     (keys, { node }) => {
-      const currentSelection: TreeSelectOption = { label: node.label as string, value: node.value };
+      const currentSelection: TreeSelectOption = { label: node.label, value: node.value };
       setSelectedKeys(keys);
       setSelected(currentSelection);
 
@@ -559,7 +599,8 @@ const InnerTreeSelect = <IsMulti extends boolean>(
                   selectedKeys={selectedKeys}
                   expandedKeys={expandedKeys}
                   checkedKeys={checkedKeys}
-                  switcherIcon={customSwitcherIcon}
+                  icon={(props) => CustomIcon(props)}
+                  switcherIcon={CustomSwitcherIcon}
                   onExpand={handleExpand}
                   onSelect={handleSelect}
                   onCheck={handleCheck}

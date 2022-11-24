@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { useCallback } from 'react';
 
+import type { MatchResult } from 'utils/string';
 import type { WithRequiredProperty } from 'types';
 import type { FlattenNode, Key } from 'rc-tree/lib/interface';
 import type { Dispatch } from 'react';
@@ -9,6 +10,7 @@ import type { TreeDataNode, TreeSelectOption } from './types';
 interface SearchOverlayProps {
   options: (WithRequiredProperty<Partial<FlattenNode<TreeDataNode>>, 'key' | 'title'> & {
     isSelected: boolean;
+    matchingParts: MatchResult[];
   })[];
   onChange: Dispatch<Key>;
 }
@@ -23,8 +25,9 @@ const SearchOverlay = ({ options, onChange }: SearchOverlayProps) => {
 
   return (
     <div>
-      {options.map(({ title, key, isSelected }) => (
+      {options.map(({ matchingParts, title, key, isSelected }) => (
         <button
+          title={title as string}
           type="button"
           className={classNames(
             'p-2 hover:bg-navy-50 cursor-pointer block w-full text-left',
@@ -33,7 +36,13 @@ const SearchOverlay = ({ options, onChange }: SearchOverlayProps) => {
           key={key}
           onClick={getHandleChange(key)}
         >
-          {title}
+          {matchingParts.map(({ value, isMatch }, i) => {
+            return (
+              <span className={classNames({ 'font-bold': isMatch })} key={`${value}-${i}`}>
+                {value}
+              </span>
+            );
+          })}
         </button>
       ))}
     </div>

@@ -25,6 +25,7 @@ import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import { SelectQueryBuilder } from 'typeorm';
 
 @Injectable()
 export class AdminRegionsService extends AppBaseService<
@@ -96,24 +97,39 @@ export class AdminRegionsService extends AppBaseService<
     return this.adminRegionRepository.saveListToTree(importData, 'mpath');
   }
 
+  /**
+   * @description: Get a AdminRegion Id and its GeoRegion Id by Admin Region name
+   *               Optionally provide a Admin Region level to filter by it
+   *               i.e: Level 0 is Country level, level 1 Region, level 2 Sub-Region...
+   */
+
   async getAdminRegionAndGeoRegionIdsByAdminRegionName(
     adminRegionName: string,
+    options?: { level: number },
   ): Promise<{ adminRegionId: string; geoRegionId: string }> {
-    const adminRegionAndGeoRegionIds: any = await this.adminRegionRepository
-      .createQueryBuilder('adminRegion')
-      .select('adminRegion.id', 'adminRegionId')
-      .addSelect('geoRegion.id', 'geoRegionId')
-      .innerJoin(
-        GeoRegion,
-        'geoRegion',
-        'adminRegion.geoRegionId = geoRegion.id',
-      )
-      .where('adminRegion.name = :adminRegionName', { adminRegionName })
-      .getRawOne();
+    const queryBuilder: SelectQueryBuilder<AdminRegion> =
+      this.adminRegionRepository
+        .createQueryBuilder('adminRegion')
+        .select('adminRegion.id', 'adminRegionId')
+        .addSelect('geoRegion.id', 'geoRegionId')
+        .innerJoin(
+          GeoRegion,
+          'geoRegion',
+          'adminRegion.geoRegionId = geoRegion.id',
+        )
+        .where('adminRegion.name = :adminRegionName', { adminRegionName });
+    if (options?.level) {
+      queryBuilder.andWhere('adminRegion.level = :level', {
+        level: options.level,
+      });
+    }
+    const adminRegionAndGeoRegionIds: any = await queryBuilder.getRawOne();
 
     if (!adminRegionAndGeoRegionIds)
       throw new NotFoundException(
-        `An Admin Region with name ${adminRegionName} could not been found`,
+        `An Admin Region with name ${adminRegionName} ${
+          options?.level ? `and level ${options.level} ` : ''
+        }could not been found`,
       );
     return adminRegionAndGeoRegionIds;
   }

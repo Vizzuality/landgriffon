@@ -6,6 +6,8 @@ import { flattenTreeData } from 'rc-tree/lib/utils/treeUtil';
 
 import { FIELD_NAMES } from './constants';
 
+import { splitStringByIndexes } from 'utils/string';
+
 import type { DeepKeys } from '@tanstack/react-table';
 import type { TreeDataNode, TreeSelectOption } from './types';
 import type { DataNode, FlattenNode, Key } from 'rc-tree/lib/interface';
@@ -190,7 +192,13 @@ export const useTree = (
   });
 
   const fuse = useMemo(
-    () => new Fuse(flatTreeData, { includeScore: false, keys: ['title'], threshold: 0.4 }),
+    () =>
+      new Fuse(flatTreeData, {
+        includeScore: false,
+        keys: ['title'],
+        threshold: 0.4,
+        includeMatches: true,
+      }),
     [flatTreeData],
   );
 
@@ -198,10 +206,18 @@ export const useTree = (
     queryKey: ['filtered-options', id, search, flatTreeData.length] as const,
     queryFn: ({ queryKey: [, , search] }) => {
       const result = fuse.search(search);
-      return result.map(({ item }) => ({ ...item, isSelected: isOptionSelected(item.key) }));
+
+      return result.map(({ item, matches }) => ({
+        ...item,
+        isSelected: isOptionSelected(item.key),
+        matchingParts: splitStringByIndexes(matches[0].value, matches[0].indices),
+      }));
     },
     placeholderData: [],
     enabled: !!flatTreeData?.length,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   return { treeData, filteredKeys, flatTreeData, filteredOptions };

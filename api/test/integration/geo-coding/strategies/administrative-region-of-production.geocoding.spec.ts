@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from 'app.module';
 import { GeoCodingModule } from 'modules/geo-coding/geo-coding.module';
-import { AdminRegionOfProductionService } from '../../../src/modules/geo-coding/strategies/admin-region-of-production.service';
-import { clearEntityTables } from '../../utils/database-test-helper';
-import { GeoRegion } from '../../../src/modules/geo-regions/geo-region.entity';
-import { AdminRegion } from '../../../src/modules/admin-regions/admin-region.entity';
-import { LOCATION_TYPES } from '../../../src/modules/sourcing-locations/sourcing-location.entity';
-import { SourcingData } from '../../../src/modules/import-data/sourcing-data/dto-processor.service';
-import { GeoCodingError } from '../../../src/modules/geo-coding/errors/geo-coding.error';
-import { createAdminRegion, createGeoRegion } from '../../entity-mocks';
+import { AdminRegionOfProductionService } from '../../../../src/modules/geo-coding/strategies/admin-region-of-production.service';
+import { clearEntityTables } from '../../../utils/database-test-helper';
+import { GeoRegion } from '../../../../src/modules/geo-regions/geo-region.entity';
+import { AdminRegion } from '../../../../src/modules/admin-regions/admin-region.entity';
+import { LOCATION_TYPES } from '../../../../src/modules/sourcing-locations/sourcing-location.entity';
+import { SourcingData } from '../../../../src/modules/import-data/sourcing-data/dto-processor.service';
+import { GeoCodingError } from '../../../../src/modules/geo-coding/errors/geo-coding.error';
+import { createAdminRegion, createGeoRegion } from '../../../entity-mocks';
 
 describe('Administrative Region of Production GeoCoding Service (Integration Testing)', () => {
   let adminRegionProductionService: AdminRegionOfProductionService;

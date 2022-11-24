@@ -22,10 +22,13 @@ export class CountryOfProductionGeoCodingStrategy extends BaseStrategy {
 
     // Since the country received in sourcingData.locationCountryInput is served by the API, we can safely assume that we
     // can get the adminRegion and geoRegion Ids by the AdminRegion name and avoid calling the geocoder
+    // We add a level 0 optional search param to ensure we get a Country level response, as we could gate
+    // a Admin Region that matches the country name, but its not actually a country
 
     const { adminRegionId, geoRegionId } =
       await this.adminRegionService.getAdminRegionAndGeoRegionIdsByAdminRegionName(
         sourcingData.locationCountryInput,
+        { level: 0 },
       );
 
     return {

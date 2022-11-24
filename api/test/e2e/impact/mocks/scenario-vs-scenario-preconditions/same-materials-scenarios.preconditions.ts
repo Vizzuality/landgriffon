@@ -242,7 +242,7 @@ export async function createSameMaterialScenariosPreconditions(): Promise<{
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
     });
 
-  // Change material for lonen instead of wool and cotton - replacing
+  // Change material for linen instead of wool and cotton - replacing
 
   const sourcingLocationChangeMaterialTextileReplacingLinen: SourcingLocation =
     await createSourcingLocation({

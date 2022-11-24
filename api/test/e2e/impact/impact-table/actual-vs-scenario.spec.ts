@@ -151,7 +151,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
 
   test(
     'When I request data for Impact table for a Scenario with various Interventions of different types I should get the expected results ignoring INACTIVE interventions. ' +
-      'Past years with no data should ahve isProjected property as false',
+      'Past years with no data should have isProjected property as false',
     async () => {
       const preconditions: {
         indicator: Indicator;

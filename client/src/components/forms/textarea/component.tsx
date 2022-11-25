@@ -12,7 +12,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       <div className={classnames('relative rounded-md shadow-sm', className)}>
         <textarea
           className={classnames(
-            'block border w-full rounded-md text-sm focus:outline-none focus:ring-0 focus:border-navy-400 px-3',
+            'block border w-full rounded-md text-sm focus:outline-none focus:ring-0 focus:border-navy-400 px-4',
             error ? 'border-red-400 pr-10' : 'border-gray-200',
             props.disabled ? 'text-gray-200' : 'text-gray-900',
           )}

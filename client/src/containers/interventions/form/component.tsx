@@ -53,29 +53,30 @@ const locationTypeSchema = yup
   .default(undefined);
 
 const schemaValidation = yup.object({
-  title: yup.string().max(60).required(),
-  interventionType: yup.string().required(),
+  title: yup.string().label('Title').max(60).required(),
+  interventionType: yup.string().label('Intervention type').required(),
   startYear: yup
     .object({
       label: yup.string(),
       value: yup.number(),
     })
+    .label('Start year')
     .required(),
-  percentage: yup.number().moreThan(0).max(100).required(),
-  scenarioId: yup.string().required(),
+  percentage: yup.number().label('Percentage').moreThan(0).max(100).required(),
+  scenarioId: yup.string().label('Scenario ID').required(),
 
   // Filters
-  materialIds: yup.array().of(optionSchema).required(),
-  businessUnitIds: yup.array().of(optionSchema),
-  supplierIds: yup.array().of(optionSchema),
-  adminRegionIds: yup.array().of(optionSchema),
+  materialIds: yup.array().label('Material IDs').of(optionSchema).required(),
+  businessUnitIds: yup.array().label('Business Unit IDs').of(optionSchema),
+  supplierIds: yup.array().label('Supplier IDs').of(optionSchema),
+  adminRegionIds: yup.array().label('Admin region IDs').of(optionSchema),
 
   // Supplier
-  newT1SupplierId: optionSchema.nullable(),
-  newProducerId: optionSchema.nullable(),
+  newT1SupplierId: optionSchema.label('New T1 Supplier ID').nullable(),
+  newProducerId: optionSchema.label('New producer ID').nullable(),
 
   // Location
-  newLocationType: locationTypeSchema.when('interventionType', {
+  newLocationType: locationTypeSchema.label('New location type').when('interventionType', {
     is: (interventionType: InterventionTypes) => {
       return [InterventionTypes.Material, InterventionTypes.SupplierLocation].includes(
         interventionType,
@@ -84,34 +85,38 @@ const schemaValidation = yup.object({
     then: locationTypeSchema.required(),
     otherwise: locationTypeSchema.notRequired(),
   }),
-  newLocationCountryInput: optionSchema.when('interventionType', {
+  newLocationCountryInput: optionSchema.label('New location Country').when('interventionType', {
     is: (interventionType: InterventionTypes) =>
       [InterventionTypes.Material, InterventionTypes.SupplierLocation].includes(interventionType),
     then: (schema) => schema.required('Country field is required'),
     otherwise: (schema) => schema.nullable(),
   }),
 
-  cityAddressCoordinates: yup.string().when('newLocationType', {
-    is: (newLocationType) =>
-      [LocationTypes.aggregationPoint, LocationTypes.pointOfProduction].includes(
-        newLocationType?.value,
-      ),
-    then: (schema) =>
-      schema
-        .test('is-coordinates', 'Coordinates should be valid (-90/90, -180/180)', (value) => {
-          if (!isCoordinates(value)) {
-            return false;
-          }
-          const [lat, lng] = value.split(',').map((coordinate) => parseFloat(coordinate));
-          return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
-        })
-        .required('Coordinates are required'),
-    otherwise: (schema) => schema.nullable(),
-  }),
+  cityAddressCoordinates: yup
+    .string()
+    .label('City, addres or coordinates')
+    .when('newLocationType', {
+      is: (newLocationType) =>
+        [LocationTypes.aggregationPoint, LocationTypes.pointOfProduction].includes(
+          newLocationType?.value,
+        ),
+      then: (schema) =>
+        schema
+          .test('is-coordinates', 'Coordinates should be valid (-90/90, -180/180)', (value) => {
+            if (!isCoordinates(value)) {
+              return true;
+            }
+            const [lat, lng] = value.split(',').map((coordinate) => parseFloat(coordinate));
+            return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+          })
+          .required('City, address or coordinates is required'),
+      otherwise: (schema) => schema.nullable(),
+    }),
 
   // New material
   newMaterialId: yup
     .array()
+    .label('New material')
     .of(optionSchema)
     .when('interventionType', (interventionType) => {
       if (InterventionTypes.Material === interventionType) {
@@ -120,9 +125,9 @@ const schemaValidation = yup.object({
 
       return yup.array().of(optionSchema).nullable();
     }),
-  newLocationAddressInput: yup.string().nullable(),
-  newLocationLongitude: yup.number().min(-180).max(180),
-  newLocationLatitude: yup.number().min(-90).max(90),
+  newLocationAddressInput: yup.string().label('Address').nullable(),
+  newLocationLongitude: yup.number().label('Longitude').min(-180).max(180),
+  newLocationLatitude: yup.number().label('Latitude').min(-90).max(90),
 
   // Coefficients
   coefficients: yup.lazy((coefficientObject) => {
@@ -165,6 +170,63 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   const indicatorNameCodes = useMemo(
     () => indicators?.map(({ nameCode }) => nameCode),
     [indicators],
+  );
+
+  const closeSupplierRef = useRef<() => void>(null);
+  const closeImpactsRef = useRef<() => void>(null);
+
+  // Suppliers
+  const { data: suppliers, isLoading: isLoadingSuppliers } = useSuppliersTypes({
+    type: 't1supplier',
+  });
+  const optionsSuppliers = useMemo<SelectOption[]>(
+    () =>
+      suppliers?.map((supplier) => ({
+        label: supplier.name,
+        value: supplier.id,
+      })),
+    [suppliers],
+  );
+
+  // Producers
+  const { data: producers, isLoading: isLoadingProducers } = useSuppliersTypes({
+    type: 'producer',
+  });
+  const optionsProducers = useMemo<SelectOption[]>(
+    () =>
+      producers?.map((producer) => ({
+        label: producer.name,
+        value: producer.id,
+      })),
+    [producers],
+  );
+
+  // Location types
+  const { data: locationTypes } = useLocationTypes();
+
+  // Countries
+  const { data: countries, isLoading: isLoadingCountries } = useAdminRegionsTrees({ depth: 0 });
+  const optionsCountries = useMemo<SelectOption[]>(
+    () =>
+      sortBy(
+        countries.map(({ name, id }) => ({
+          label: name,
+          value: id,
+        })),
+        'label',
+      ),
+    [countries],
+  );
+
+  // Years
+  const { data: years, isLoading: isLoadingYears } = useSourcingRecordsYears();
+  const optionsYears: SelectOption<number>[] = useMemo(
+    () =>
+      years.map((year) => ({
+        label: year.toString(),
+        value: year,
+      })),
+    [years],
   );
 
   const {
@@ -212,7 +274,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
             },
           ],
           newLocationType: {
-            label: intervention.newLocationType,
+            label: locationTypes.find(({ value }) => value === intervention.newLocationType)?.label,
             value: intervention.newLocationType,
           },
           // New location
@@ -258,9 +320,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     shouldFocusError: true,
   });
 
-  const closeSupplierRef = useRef<() => void>(null);
-  const closeImpactsRef = useRef<() => void>(null);
-
   const {
     materialIds: currentMaterialIds,
     businessUnitIds: currentBusinessUnitIds,
@@ -273,66 +332,15 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     coefficients = {},
   } = watch();
 
-  // Suppliers
-  const { data: suppliers, isLoading: isLoadingSuppliers } = useSuppliersTypes({
-    type: 't1supplier',
-  });
-  const optionsSuppliers = useMemo<SelectOption[]>(
-    () =>
-      suppliers?.map((supplier) => ({
-        label: supplier.name,
-        value: supplier.id,
-      })),
-    [suppliers],
-  );
-
-  // Producers
-  const { data: producers, isLoading: isLoadingProducers } = useSuppliersTypes({
-    type: 'producer',
-  });
-  const optionsProducers = useMemo<SelectOption[]>(
-    () =>
-      producers?.map((producer) => ({
-        label: producer.name,
-        value: producer.id,
-      })),
-    [producers],
-  );
-  // Location types
-  const { data: locationTypes } = useLocationTypes();
-  const optionsLocationTypes: SelectOption<LocationTypes>[] = useMemo(
-    () =>
-      locationTypes?.map(({ label, value }) => ({
-        label: `${label[0].toUpperCase()}${label.substring(1)}`,
-        value,
-      })),
-    [locationTypes],
-  );
-
-  // Countries
-  const { data: countries, isLoading: isLoadingCountries } = useAdminRegionsTrees({ depth: 0 });
-  const optionsCountries = useMemo<SelectOption[]>(
-    () =>
-      sortBy(
-        countries.map(({ name, id }) => ({
-          label: name,
-          value: id,
-        })),
-        'label',
-      ),
-    [countries],
-  );
-
-  // Years
-  const { data: years, isLoading: isLoadingYears } = useSourcingRecordsYears();
-  const optionsYears: SelectOption<number>[] = useMemo(
-    () =>
-      years.map((year) => ({
-        label: year.toString(),
-        value: year,
-      })),
-    [years],
-  );
+  // Populate the new location field when the location type options changes
+  useEffect(() => {
+    if (intervention?.newLocationType) {
+      setValue('newLocationType', {
+        label: locationTypes.find(({ value }) => value === intervention.newLocationType)?.label,
+        value: intervention.newLocationType,
+      });
+    }
+  }, [intervention?.newLocationType, locationTypes, setValue]);
 
   useEffect(() => {
     // ? defaults to latest year unless the user is editing an intervention,
@@ -517,6 +525,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
               <BusinessUnitsSelect
                 {...field}
                 multiple
+                placeholder="All business units"
                 checkedStrategy={isCreation ? 'CHILD' : undefined}
                 materialIds={currentMaterialIds?.map(({ value }) => value)}
                 supplierIds={currentSupplierIds?.map(({ value }) => value)}
@@ -538,6 +547,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
               <LocationsSelect
                 {...field}
                 multiple
+                placeholder="All regions"
                 materialIds={currentMaterialIds?.map(({ value }) => value)}
                 supplierIds={currentSupplierIds?.map(({ value }) => value)}
                 businessUnitIds={currentBusinessUnitIds?.map(({ value }) => value)}
@@ -666,6 +676,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                       <div data-testid="new-material-select">
                         <MaterialsSelect
                           {...field}
+                          placeholder="Select a material"
                           multiple={false}
                           current={value?.[0]}
                           onChange={(selected) => {
@@ -730,7 +741,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                                   showSearch
                                   loading={isLoadingProducers}
                                   current={field.value}
-                                  options={optionsLocationTypes}
+                                  options={locationTypes}
                                   placeholder="Select"
                                   onChange={(value) => {
                                     if (invalid) clearErrors('newLocationType');
@@ -775,12 +786,16 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                           <>
                             <div data-testid="city-address-coordinates-field">
                               <label className={LABEL_CLASSNAMES}>
-                                City, address or coordinates
+                                City, address or coordinates <sup>*</sup>
                               </label>
                               <Input
                                 type="text"
                                 {...register('cityAddressCoordinates')}
-                                error={errors?.cityAddressCoordinates?.message}
+                                error={
+                                  errors?.cityAddressCoordinates?.message ||
+                                  errors?.newLocationLatitude?.message ||
+                                  errors?.newLocationLongitude?.message
+                                }
                               />
                               <div className="mt-1 text-xs text-gray-500">
                                 Add lat and long coordinates separated by comma, e.g. 40, -3

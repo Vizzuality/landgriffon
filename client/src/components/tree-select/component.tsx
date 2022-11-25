@@ -481,7 +481,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
           {multiple ? (
             <>
               {(!currentOptions || !currentOptions.length) && !showSearch && (
-                <span className="inline-block text-gray-500 truncate ">{placeholder}</span>
+                <span className="inline-block text-gray-500 truncate">{placeholder}</span>
               )}
               {!!currentOptions?.length &&
                 currentOptions.slice(0, badgesToShow).map((option, index) => (
@@ -511,17 +511,17 @@ const InnerTreeSelect = <IsMulti extends boolean>(
               )}
             </>
           ) : (
-            <div className="inline-flex items-center min-w-0 my-auto">
+            <div className="inline-flex items-center min-w-0 my-auto pl-4 min-h-[36px]">
               {selected ? (
-                <span className="min-w-0 font-bold truncate">{selected.label}</span>
+                <span className="block w-full text-gray-900 truncate">{selected.label}</span>
               ) : (
                 // the placeholder is in the search input already
                 showSearch || <span className="text-gray-500">{placeholder}</span>
               )}
               {!selected && <SearchInput />}
               {selected && (
-                <button type="button" onClick={handleReset} className="px-2 py-0">
-                  <XIcon className="w-4 h-4 text-gray-400" />
+                <button type="button" onClick={handleReset} className="px-2 py-0 shrink-0">
+                  <XIcon className="w-4 h-4 text-gray-400 hover:text-gray-900" />
                 </button>
               )}
             </div>
@@ -529,9 +529,13 @@ const InnerTreeSelect = <IsMulti extends boolean>(
           {multiple && showSearch && <SearchInput />}
         </div>
         <div
-          className={classNames('flex pointer-events-none h-fit', THEMES[theme].arrow, {
-            'text-red-800': !!error,
-          })}
+          className={classNames(
+            'flex pointer-events-none h-fit shrink-0 px-2',
+            THEMES[theme].arrow,
+            {
+              'text-red-800': !!error,
+            },
+          )}
         >
           {theme === 'inline-primary' ? (
             <div

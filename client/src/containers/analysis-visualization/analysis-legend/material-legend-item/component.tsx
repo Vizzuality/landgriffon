@@ -91,7 +91,7 @@ const MaterialLayer = () => {
   return (
     <LegendItem
       name={Selector}
-      info={material?.metadata.name}
+      info={material?.metadata?.name}
       {...data?.metadata?.legend}
       unit={data?.metadata?.unit}
       showToolbar

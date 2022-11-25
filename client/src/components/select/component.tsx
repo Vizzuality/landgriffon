@@ -255,7 +255,7 @@ const InnerSelect = <OptionValue, IsMulti extends boolean = false>(
     ({ children, className, ...rest }: ControlProps<Option, IsMulti, Group>) => (
       <div ref={reference}>
         <components.Control
-          className={classNames(className, 'bg-transparent px-4 gap-x-0.5', {
+          className={classNames(className, 'bg-transparent px-2 gap-x-0.5', {
             'border border-l-0 border-r-0 border-t-0 border-b-2 border-b-primary shadow-none rounded-none min-w-[30px] p-0 min-h-0':
               theme === 'inline-primary',
             'w-full bg-white border rounded-md': theme === 'default',

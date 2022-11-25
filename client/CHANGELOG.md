@@ -5,7 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [v0.3.3]
+## [v0.4.0 Unreleased]
+
+## [v0.3.5]
 
 ### Added
 
@@ -13,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
-- Fixed CHILD select strategy not working with empty children list [LANDGRIF-1079](https://vizzuality.atlassian.net/browse/LANDGRIF-1079)
+- Address can't be sent to geo-locate a new location in interventions [LANDGRIF-1089](https://vizzuality.atlassian.net/browse/LANDGRIF-1089)
 - Update rows expanded state on analysis table [LANDGRIF-967](https://vizzuality.atlassian.net/browse/LANDGRIF-967)
 - Horizontal scroll on the legend [LANDGRIF-1082](https://vizzuality.atlassian.net/browse/LANDGRIF-1082)
 - Format of numbers of the contextual layers in the legend [LANDGRIF-1090](https://vizzuality.atlassian.net/browse/LANDGRIF-1090)

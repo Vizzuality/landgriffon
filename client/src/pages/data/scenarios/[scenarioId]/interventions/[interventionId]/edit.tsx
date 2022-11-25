@@ -49,11 +49,10 @@ const EditInterventionPage: React.FC = () => {
             // adding some delay to make sure the user reads the success message
             setTimeout(() => {
               router.replace(`/data/scenarios/${interventionDto.scenarioId}/edit`);
-            }, 1000);
+            }, 2000);
           },
           onError: (error: ErrorResponse) => {
             const { errors } = error.response?.data;
-            // errors.forEach(({ meta }) => toast.error(meta.rawError.response.message));
             errors.forEach(({ title }) => toast.error(title));
           },
         },

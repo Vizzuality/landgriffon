@@ -6,7 +6,7 @@ export enum InterventionTypes {
 
 export const enum LocationTypes {
   unknown = 'unknown',
-  aggregationPoint = 'aggregation-point',
+  aggregationPoint = 'production-aggregation-point',
   pointOfProduction = 'point-of-production',
   countryOfProduction = 'country-of-production',
 }

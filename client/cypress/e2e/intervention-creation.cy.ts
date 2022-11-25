@@ -21,7 +21,7 @@ beforeEach(() => {
 
   cy.intercept('GET', '/api/v1/sourcing-locations/location-types', {
     statusCode: 200,
-    fixture: 'scenario/scenario-location-types',
+    fixture: 'location-types/index',
   }).as('scenarioLocationTypes');
 
   cy.intercept('GET', '/api/v1/admin-regions/trees?depth=0', {
@@ -179,5 +179,113 @@ describe('Intervention creation', () => {
         'Something went wrong during intervention creation',
       );
     });
+  });
+});
+
+describe('Intervention location type', () => {
+  beforeEach(() => {
+    cy.intercept('POST', '/api/v1/scenario-interventions', {
+      statusCode: 201,
+      fixture: 'intervention/intervention-creation-dto',
+    }).as('successfullInterventionCreation');
+
+    cy.wait('@scenarioLocationTypes');
+
+    // Choose a location type: Switch to new material
+    cy.get('[data-testid="intervention-type-option"]').first().click();
+  });
+
+  it('aggregation point => city, address, coordinates is required', () => {
+    cy.get('[data-testid="new-location-select"]')
+      .click()
+      .find('input:visible')
+      .type('Production aggregation point{enter}');
+
+    cy.wait(300);
+
+    const cityAddressCoordinateField = cy
+      .get('[data-testid="city-address-coordinates-field"]')
+      .should('be.visible');
+    const cityAddressCoordinateInput = cityAddressCoordinateField.find('input');
+
+    // When is a city or address
+    cityAddressCoordinateInput.type('Hogwarts');
+    cy.get('[data-testid="intervention-submit-btn"]').click();
+    cy.get('[data-testid="hint-input-cityAddressCoordinates"]').should('not.exist');
+
+    // When is empty
+    cityAddressCoordinateInput.clear();
+    cy.get('[data-testid="intervention-submit-btn"]').click();
+    cy.get('[data-testid="hint-input-cityAddressCoordinates"]')
+      .find('p')
+      .should('contain.text', 'City, address or coordinates is required');
+
+    // When is a coordinate
+    cityAddressCoordinateInput.clear().type('40, -3');
+    cy.get('[data-testid="intervention-submit-btn"]').click();
+    cy.get('[data-testid="hint-input-cityAddressCoordinates"]').should('not.exist');
+
+    // When is not valid coordinate
+    cityAddressCoordinateInput.clear().type('200, -3');
+    cy.get('[data-testid="intervention-submit-btn"]').click();
+    cy.get('[data-testid="hint-input-cityAddressCoordinates"]')
+      .find('p')
+      .should('contain.text', 'Coordinates should be valid (-90/90, -180/180)');
+  });
+
+  it('country of production => city, address, coordinates is not required', () => {
+    cy.get('[data-testid="new-location-select"]')
+      .click()
+      .find('input:visible')
+      .type('Country of production{enter}');
+
+    cy.get('[data-testid="city-address-coordinates-field"]').should('not.exist');
+  });
+
+  it('point of production => city, address, coordinates is required', () => {
+    cy.get('[data-testid="new-location-select"]')
+      .click()
+      .find('input:visible')
+      .type('Point of production{enter}');
+
+    cy.wait(300);
+
+    const cityAddressCoordinateField = cy
+      .get('[data-testid="city-address-coordinates-field"]')
+      .should('be.visible');
+    const cityAddressCoordinateInput = cityAddressCoordinateField.find('input');
+
+    // When is a city or address
+    cityAddressCoordinateInput.type('Hogwarts');
+    cy.get('[data-testid="intervention-submit-btn"]').click();
+    cy.get('[data-testid="hint-input-cityAddressCoordinates"]').should('not.exist');
+
+    // When is empty
+    cityAddressCoordinateInput.clear();
+    cy.get('[data-testid="intervention-submit-btn"]').click();
+    cy.get('[data-testid="hint-input-cityAddressCoordinates"]')
+      .find('p')
+      .should('contain.text', 'City, address or coordinates is required');
+
+    // When is a coordinate
+    cityAddressCoordinateInput.clear().type('40, -3');
+    cy.get('[data-testid="intervention-submit-btn"]').click();
+    cy.get('[data-testid="hint-input-cityAddressCoordinates"]').should('not.exist');
+
+    // When is not valid coordinate
+    cityAddressCoordinateInput.clear().type('200, -3');
+    cy.get('[data-testid="intervention-submit-btn"]').click();
+    cy.get('[data-testid="hint-input-cityAddressCoordinates"]')
+      .find('p')
+      .should('contain.text', 'Coordinates should be valid (-90/90, -180/180)');
+  });
+
+  it('unknown => city, address, coordinates is not required', () => {
+    cy.get('[data-testid="new-location-select"]')
+      .click()
+      .find('input:visible')
+      .type('Unknown{enter}');
+
+    cy.get('[data-testid="city-address-coordinates-field"]').should('not.exist');
   });
 });

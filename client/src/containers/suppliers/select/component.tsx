@@ -90,7 +90,7 @@ const InnerSuppliersFilter = <IsMulti extends boolean>(
       showSearch
       loading={isFetching}
       options={treeOptions}
-      placeholder="all suppliers"
+      placeholder="All suppliers"
       onChange={onChange}
       current={currentOptions}
       theme={theme}

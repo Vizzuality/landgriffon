@@ -20,7 +20,7 @@ export class LocationLatitudeInputValidator
       return !latitudeInput;
     } else if (
       ((args.object as SourcingDataExcelValidator).location_type ===
-        LOCATION_TYPES.AGGREGATION_POINT ||
+        LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT ||
         (args.object as SourcingDataExcelValidator).location_type ===
           LOCATION_TYPES.POINT_OF_PRODUCTION) &&
       (args.object as SourcingDataExcelValidator).location_address_input
@@ -28,7 +28,7 @@ export class LocationLatitudeInputValidator
       return !latitudeInput;
     } else if (
       ((args.object as SourcingDataExcelValidator).location_type ===
-        LOCATION_TYPES.AGGREGATION_POINT ||
+        LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT ||
         (args.object as SourcingDataExcelValidator).location_type ===
           LOCATION_TYPES.POINT_OF_PRODUCTION) &&
       !(args.object as SourcingDataExcelValidator).location_address_input
@@ -50,7 +50,7 @@ export class LocationLatitudeInputValidator
       }`;
     } else if (
       ((args.object as SourcingDataExcelValidator).location_type ===
-        LOCATION_TYPES.AGGREGATION_POINT ||
+        LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT ||
         (args.object as SourcingDataExcelValidator).location_type ===
           LOCATION_TYPES.POINT_OF_PRODUCTION) &&
       (args.object as SourcingDataExcelValidator).location_address_input
@@ -60,7 +60,7 @@ export class LocationLatitudeInputValidator
       }. Latitude must be empty if address is provided`;
     } else if (
       (args.object as SourcingDataExcelValidator).location_type ===
-        LOCATION_TYPES.AGGREGATION_POINT ||
+        LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT ||
       (args.object as SourcingDataExcelValidator).location_type ===
         LOCATION_TYPES.POINT_OF_PRODUCTION
     ) {

@@ -128,7 +128,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
     material: materialOne,
     t1Supplier: t1SupplierOne,
     producer: producerSupplierOne,
-    locationType: LOCATION_TYPES.AGGREGATION_POINT,
+    locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
   });
 
   const sourcingRecordOne: SourcingRecord = await createSourcingRecord({
@@ -211,7 +211,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
       materialId: materialOne.id,
       t1SupplierId: t1SupplierOne.id,
       producerId: producerSupplierOne.id,
-      locationType: LOCATION_TYPES.AGGREGATION_POINT,
+      locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
     });
 
@@ -238,7 +238,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
       materialId: materialOne.id,
       t1SupplierId: t1SupplierOne.id,
       producerId: producerSupplierOne.id,
-      locationType: LOCATION_TYPES.AGGREGATION_POINT,
+      locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
     });
 
@@ -270,7 +270,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
       materialId: materialOne.id,
       t1SupplierId: t1SupplierOne.id,
       producerId: producerSupplierOne.id,
-      locationType: LOCATION_TYPES.AGGREGATION_POINT,
+      locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
     });
 
@@ -296,7 +296,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
       materialId: materialOne.id,
       t1SupplierId: t1SupplierOne.id,
       producerId: producerSupplierOne.id,
-      locationType: LOCATION_TYPES.AGGREGATION_POINT,
+      locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
     });
 
@@ -326,7 +326,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
       materialId: materialTwo.id,
       t1SupplierId: t1SupplierTwo.id,
       producerId: producerSupplierTwo.id,
-      locationType: LOCATION_TYPES.AGGREGATION_POINT,
+      locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
     });
 
@@ -353,7 +353,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
       materialId: materialTwo.id,
       t1SupplierId: t1SupplierTwo.id,
       producerId: producerSupplierTwo.id,
-      locationType: LOCATION_TYPES.AGGREGATION_POINT,
+      locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
     });
 
@@ -386,7 +386,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
       materialId: materialOne.id,
       t1SupplierId: t1SupplierOne.id,
       producerId: producerSupplierOne.id,
-      locationType: LOCATION_TYPES.AGGREGATION_POINT,
+      locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
     });
 
@@ -423,7 +423,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
       materialId: materialOne.id,
       t1SupplierId: t1SupplierOne.id,
       producerId: producerSupplierOne.id,
-      locationType: LOCATION_TYPES.AGGREGATION_POINT,
+      locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
     });
 

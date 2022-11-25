@@ -17,7 +17,6 @@ import { Material } from 'modules/materials/material.entity';
 import { MaterialsModule } from 'modules/materials/materials.module';
 import {
   LOCATION_TYPES,
-  LOCATION_TYPES_PARAMS,
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
@@ -174,7 +173,7 @@ describe('Materials - Get trees - Smart Filters', () => {
       });
 
       await createSourcingLocation({
-        locationType: LOCATION_TYPES.AGGREGATION_POINT,
+        locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
         materialId: material2.id,
       });
 
@@ -188,8 +187,8 @@ describe('Materials - Get trees - Smart Filters', () => {
         .query({
           withSourcingLocations: true,
           'locationTypes[]': [
-            LOCATION_TYPES_PARAMS.POINT_OF_PRODUCTION,
-            LOCATION_TYPES_PARAMS.UNKNOWN,
+            LOCATION_TYPES.POINT_OF_PRODUCTION,
+            LOCATION_TYPES.UNKNOWN,
           ],
         })
         .set('Authorization', `Bearer ${jwtToken}`);
@@ -259,7 +258,7 @@ describe('Materials - Get trees - Smart Filters', () => {
         });
 
         await createSourcingLocation({
-          locationType: LOCATION_TYPES.AGGREGATION_POINT,
+          locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
           materialId: material2.id,
         });
 
@@ -273,7 +272,7 @@ describe('Materials - Get trees - Smart Filters', () => {
           .query({
             withSourcingLocations: true,
             scenarioId: scenario.id,
-            'locationTypes[]': [LOCATION_TYPES_PARAMS.POINT_OF_PRODUCTION],
+            'locationTypes[]': [LOCATION_TYPES.POINT_OF_PRODUCTION],
           })
           .set('Authorization', `Bearer ${jwtToken}`);
 
@@ -357,7 +356,7 @@ describe('Materials - Get trees - Smart Filters', () => {
         });
 
         await createSourcingLocation({
-          locationType: LOCATION_TYPES.AGGREGATION_POINT,
+          locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
           materialId: material2.id,
         });
 

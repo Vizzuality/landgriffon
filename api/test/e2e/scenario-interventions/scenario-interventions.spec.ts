@@ -31,7 +31,6 @@ import { Supplier } from 'modules/suppliers/supplier.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import {
   LOCATION_TYPES,
-  LOCATION_TYPES_PARAMS,
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
@@ -424,7 +423,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnitIds: [preconditions.businessUnit1.id],
           adminRegionIds: [preconditions.adminRegion1.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-          newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
+          newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
           newLocationCountryInput: 'Spain',
         });
 
@@ -543,7 +542,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             businessUnitIds: [preconditions.businessUnit1.id],
             adminRegionIds: [preconditions.adminRegion1.id],
             type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-            newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
+            newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
             newLocationCountryInput: 'Spain',
             newIndicatorCoefficients: {
               UWU_T: 5,
@@ -602,7 +601,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnitIds: [preconditions.businessUnit1.id],
           adminRegionIds: [preconditions.adminRegion1.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-          newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
+          newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
           newLocationCountryInput: 'Spain',
         });
 
@@ -739,7 +738,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             preconditions.adminRegion2.id,
           ],
           type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
-          newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
+          newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
           newLocationCountryInput: 'Spain',
           newMaterialId: replacingMaterial.id,
         });
@@ -844,7 +843,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             scenarioId: preconditions.scenario.id,
             materialIds: [preconditions.material1.id],
             type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
-            newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
+            newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
             newLocationCountryInput: 'Spain',
             newMaterialId: replacingMaterial.id,
           });
@@ -942,7 +941,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             scenarioId: preconditions.scenario.id,
             materialIds: [preconditions.material1.id],
             type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
-            newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
+            newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
             newLocationCountryInput: 'Spain',
             newMaterialId: replacingMaterial.id,
           });
@@ -1089,7 +1088,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',
         [
-          'Available location types options: unknown,aggregation-point,point-of-production,country-of-production',
+          'Available location types options: unknown,production-aggregation-point,point-of-production,country-of-production,administrative-region-of-production,country-of-delivery',
           'New location type input is required for the selected intervention type',
           'New Location Country input is required for the selected intervention and location type',
         ],
@@ -1115,7 +1114,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnitIds: [businessUnit.id],
           adminRegionIds: [adminRegion.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-          newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
+          newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
         });
 
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -1140,7 +1139,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnitIds: [businessUnit.id],
           adminRegionIds: [adminRegion.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-          newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
+          newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
         });
 
       expect(HttpStatus.BAD_REQUEST);
@@ -1170,7 +1169,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           supplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-          newLocationType: LOCATION_TYPES_PARAMS.AGGREGATION_POINT,
+          newLocationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
         });
 
       expect(HttpStatus.BAD_REQUEST);
@@ -1178,10 +1177,10 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',
         [
-          'New Location Country input is required for the selected intervention and location type',
-          'Address input or coordinates are required for locations of type aggregation point.',
-          'Address input or coordinates are required for locations of type aggregation point. Latitude values must be min: -90, max: 90',
-          'Address input or coordinates are required for locations of type aggregation point. Longitude values must be min: -180, max: 180',
+          `New Location Country input is required for the selected intervention and location type`,
+          `Address input or coordinates are required for locations of type ${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT}.`,
+          `Address input or coordinates are required for locations of type ${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT}. Latitude values must be min: -90, max: 90`,
+          `Address input or coordinates are required for locations of type ${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT}. Longitude values must be min: -180, max: 180`,
         ],
       );
 
@@ -1197,7 +1196,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           supplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-          newLocationType: LOCATION_TYPES_PARAMS.POINT_OF_PRODUCTION,
+          newLocationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
           newLocationCountryInput: 'TestCountry',
         });
 
@@ -1206,9 +1205,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',
         [
-          'Address input or coordinates are required for locations of type point of production.',
-          'Address input or coordinates are required for locations of type point of production. Latitude values must be min: -90, max: 90',
-          'Address input or coordinates are required for locations of type point of production. Longitude values must be min: -180, max: 180',
+          `Address input or coordinates are required for locations of type ${LOCATION_TYPES.POINT_OF_PRODUCTION}.`,
+          `Address input or coordinates are required for locations of type ${LOCATION_TYPES.POINT_OF_PRODUCTION}. Latitude values must be min: -90, max: 90`,
+          `Address input or coordinates are required for locations of type ${LOCATION_TYPES.POINT_OF_PRODUCTION}. Longitude values must be min: -180, max: 180`,
         ],
       );
 
@@ -1224,7 +1223,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           supplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-          newLocationType: LOCATION_TYPES_PARAMS.AGGREGATION_POINT,
+          newLocationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
           newLocationCountryInput: 'TestCountry',
           newLocationLatitude: -4,
           newLocationLongitude: -60,
@@ -1236,9 +1235,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',
         [
-          'Address input OR coordinates are required for locations of type aggregation point. Address must be empty if coordinates are provided',
-          'Address input OR coordinates must be provided for locations of type aggregation point. Latitude must be empty if address is provided',
-          'Address input OR coordinates must be provided for locations of type aggregation point. Longitude must be empty if address is provided',
+          `Address input OR coordinates are required for locations of type ${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT}. Address must be empty if coordinates are provided`,
+          `Address input OR coordinates must be provided for locations of type ${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT}. Latitude must be empty if address is provided`,
+          `Address input OR coordinates must be provided for locations of type ${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT}. Longitude must be empty if address is provided`,
         ],
       );
     });
@@ -1270,7 +1269,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         HttpStatus.BAD_REQUEST,
         'Bad Request Exception',
         [
-          'Available location types options: unknown,aggregation-point,point-of-production,country-of-production',
+          `Available location types options: ${Object.values(
+            LOCATION_TYPES,
+          ).join(',')}`,
           'newMaterialId must be a UUID',
           'New Material is required for the selected intervention type',
           'New location type input is required for the selected intervention type',
@@ -1698,7 +1699,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         'And I dont select any Element to filter (AR, BR, SUP...)' +
         'Then I should not see any element as replaced by the interventions',
       async () => {
-        const indicators: any = await indicatorRepository.findAndCount();
+        await indicatorRepository.findAndCount();
         for (const num of range(1, 20)) {
           const adminRegion: AdminRegion = await createAdminRegion({
             name: `admin region:${num}`,
@@ -2078,7 +2079,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             businessUnitIds: [parentBusinessUnit.id],
             adminRegionIds: [parentAdminRegion.id],
             type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
-            newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
+            newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
             newLocationCountryInput: 'Spain',
             newMaterialId: newMaterial.id,
           });
@@ -2211,7 +2212,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnit: childBusinessUnit,
           t1Supplier: childSupplier,
           sourcingRecords: [sourcingRecord1],
-          locationType: LOCATION_TYPES.AGGREGATION_POINT,
+          locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
         });
 
         await createSourcingLocation({
@@ -2237,7 +2238,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             businessUnitIds: [parentBusinessUnit.id],
             adminRegionIds: [parentAdminRegion.id],
             type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
-            newLocationType: LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
+            newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
             newLocationCountryInput: 'Spain',
             newMaterialId: newMaterial.id,
           });
@@ -2254,7 +2255,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         expect(
           canceledSourcingLocations.find(
             (location: SourcingLocation) =>
-              location.locationType === LOCATION_TYPES.AGGREGATION_POINT,
+              location.locationType ===
+              LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
           ),
         ).toBeTruthy();
         expect(
@@ -2354,7 +2356,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnitIds: [preconditions.businessUnit1.id],
           adminRegionIds: [preconditions.adminRegion1.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-          newLocationType: LOCATION_TYPES_PARAMS.POINT_OF_PRODUCTION,
+          newLocationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
           newLocationCountryInput: 'Spain',
           newLocationLatitude: -4,
           newLocationLongitude: -60,

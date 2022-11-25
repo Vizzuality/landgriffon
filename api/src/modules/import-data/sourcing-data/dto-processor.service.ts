@@ -17,6 +17,8 @@ import { SourcingDataExcelValidator } from 'modules/import-data/sourcing-data/va
 import { validateOrReject } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto';
+import { replaceStringWhiteSpacesWithDash } from 'utils/transform-location-type.util';
+import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 
 /**
  * @debt: Define a more accurate DTO / Interface / Class for API-DB trades
@@ -370,7 +372,9 @@ export class SourcingRecordsDtoProcessorService {
   ): CreateSourcingLocationDto {
     const sourcingLocationDto: CreateSourcingLocationDto =
       new CreateSourcingLocationDto();
-    sourcingLocationDto.locationType = sourcingLocationData.location_type;
+    sourcingLocationDto.locationType = replaceStringWhiteSpacesWithDash(
+      sourcingLocationData.location_type,
+    ) as LOCATION_TYPES;
     sourcingLocationDto.locationCountryInput =
       sourcingLocationData.location_country_input;
     sourcingLocationDto.locationAddressInput =

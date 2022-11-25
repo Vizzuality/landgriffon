@@ -73,15 +73,27 @@ describe('SourcingLocationsModule (e2e)', () => {
       expect(response.body.data.length).toEqual(6);
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { label: 'Country of production', value: 'country-of-production' },
-          { label: 'Aggregation point', value: 'aggregation-point' },
-          { label: 'Point of production', value: 'point-of-production' },
+          {
+            label: 'Country of production',
+            value: `${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}`,
+          },
+          {
+            label: 'Production aggregation point',
+            value: `${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT}`,
+          },
+          {
+            label: 'Point of production',
+            value: `${LOCATION_TYPES.POINT_OF_PRODUCTION}`,
+          },
           { label: 'Unknown', value: 'unknown' },
           {
             label: 'Administrative region of production',
-            value: 'administrative-region-of-production',
+            value: `${LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION}`,
           },
-          { label: 'Country of delivery', value: 'country-of-delivery' },
+          {
+            label: 'Country of delivery',
+            value: `${LOCATION_TYPES.COUNTRY_OF_DELIVERY}`,
+          },
         ]),
       );
     });
@@ -119,7 +131,7 @@ describe('SourcingLocationsModule (e2e)', () => {
       });
 
       await createSourcingLocation({
-        locationType: LOCATION_TYPES.AGGREGATION_POINT,
+        locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
         materialId: childMaterialOne.id,
         t1SupplierId: supplierOne.id,
         adminRegionId: adminRegionOne.id,
@@ -153,10 +165,19 @@ describe('SourcingLocationsModule (e2e)', () => {
       expect(responseParentMaterialFilter.body.data.length).toEqual(4);
       expect(responseParentMaterialFilter.body.data).toEqual(
         expect.arrayContaining([
-          { label: 'Country of production', value: 'country-of-production' },
-          { label: 'Aggregation point', value: 'aggregation-point' },
-          { label: 'Point of production', value: 'point-of-production' },
-          { label: 'Unknown', value: 'unknown' },
+          {
+            label: 'Country of production',
+            value: `${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}`,
+          },
+          {
+            label: 'Production aggregation point',
+            value: `${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT}`,
+          },
+          {
+            label: 'Point of production',
+            value: `${LOCATION_TYPES.POINT_OF_PRODUCTION}`,
+          },
+          { label: 'Unknown', value: `${LOCATION_TYPES.UNKNOWN}` },
         ]),
       );
 
@@ -169,8 +190,11 @@ describe('SourcingLocationsModule (e2e)', () => {
       expect(responseChildMaterialFilter.body.data.length).toEqual(2);
       expect(responseChildMaterialFilter.body.data).toEqual(
         expect.arrayContaining([
-          { label: 'Point of production', value: 'point-of-production' },
-          { label: 'Unknown', value: 'unknown' },
+          {
+            label: 'Point of production',
+            value: `${LOCATION_TYPES.POINT_OF_PRODUCTION}`,
+          },
+          { label: 'Unknown', value: `${LOCATION_TYPES.UNKNOWN}` },
         ]),
       );
 
@@ -187,8 +211,14 @@ describe('SourcingLocationsModule (e2e)', () => {
       expect(responseSupplierFilter.body.data.length).toEqual(2);
       expect(responseSupplierFilter.body.data).toEqual(
         expect.arrayContaining([
-          { label: 'Country of production', value: 'country-of-production' },
-          { label: 'Aggregation point', value: 'aggregation-point' },
+          {
+            label: 'Country of production',
+            value: `${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}`,
+          },
+          {
+            label: 'Production aggregation point',
+            value: `${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT}`,
+          },
         ]),
       );
 
@@ -205,9 +235,15 @@ describe('SourcingLocationsModule (e2e)', () => {
       expect(responseBusinessUnitFilter.body.data.length).toEqual(3);
       expect(responseBusinessUnitFilter.body.data).toEqual(
         expect.arrayContaining([
-          { label: 'Country of production', value: 'country-of-production' },
-          { label: 'Aggregation point', value: 'aggregation-point' },
-          { label: 'Unknown', value: 'unknown' },
+          {
+            label: 'Country of production',
+            value: `${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}`,
+          },
+          {
+            label: 'Production aggregation point',
+            value: `${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT}`,
+          },
+          { label: 'Unknown', value: `${LOCATION_TYPES.UNKNOWN}` },
         ]),
       );
 
@@ -225,7 +261,10 @@ describe('SourcingLocationsModule (e2e)', () => {
       expect(responseMixedFilter.body.data.length).toEqual(1);
       expect(responseMixedFilter.body.data).toEqual(
         expect.arrayContaining([
-          { label: 'Point of production', value: 'point-of-production' },
+          {
+            label: 'Point of production',
+            value: `${LOCATION_TYPES.POINT_OF_PRODUCTION}`,
+          },
         ]),
       );
     });
@@ -240,10 +279,27 @@ describe('SourcingLocationsModule (e2e)', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { label: 'Country of production', value: 'country-of-production' },
-          { label: 'Aggregation point', value: 'aggregation-point' },
-          { label: 'Point of production', value: 'point-of-production' },
+          {
+            label: 'Country of production',
+            value: `${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}`,
+          },
+          {
+            label: 'Production aggregation point',
+            value: `${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT}`,
+          },
+          {
+            label: 'Point of production',
+            value: `${LOCATION_TYPES.POINT_OF_PRODUCTION}`,
+          },
           { label: 'Unknown', value: 'unknown' },
+          {
+            label: 'Administrative region of production',
+            value: `${LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION}`,
+          },
+          {
+            label: 'Country of delivery',
+            value: `${LOCATION_TYPES.COUNTRY_OF_DELIVERY}`,
+          },
         ]),
       );
     });
@@ -281,14 +337,14 @@ describe('SourcingLocationsModule (e2e)', () => {
         await createSourcingLocation({
           materialId: childMaterial2.id,
           interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
-          locationType: LOCATION_TYPES.AGGREGATION_POINT,
+          locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
           scenarioInterventionId: intervention.id,
         });
 
         await createSourcingLocation({
           materialId: childMaterial2.id,
           interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
-          locationType: LOCATION_TYPES.AGGREGATION_POINT,
+          locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
           scenarioInterventionId: intervention.id,
         });
 
@@ -315,8 +371,14 @@ describe('SourcingLocationsModule (e2e)', () => {
         expect(response.body.data).toHaveLength(3);
         expect(response.body.data).toEqual([
           { label: 'Unknown', value: 'unknown' },
-          { label: 'Aggregation point', value: 'aggregation-point' },
-          { label: 'Country of production', value: 'country-of-production' },
+          {
+            label: 'Production aggregation point',
+            value: `${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT}`,
+          },
+          {
+            label: 'Country of production',
+            value: `${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}`,
+          },
         ]);
       },
     );
@@ -373,7 +435,7 @@ describe('SourcingLocationsModule (e2e)', () => {
           name: 'supplier3Material',
         });
         await createSourcingLocation({
-          locationType: LOCATION_TYPES.AGGREGATION_POINT,
+          locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
           materialId: childMaterial1.id,
           adminRegion: adminRegionThatShouldShowResults,
           t1Supplier: supplierThatShouldShowResults,
@@ -404,12 +466,12 @@ describe('SourcingLocationsModule (e2e)', () => {
         expect(response.body.data).toHaveLength(2);
         expect(response.body.data).toEqual([
           {
-            label: 'Aggregation point',
-            value: 'aggregation-point',
+            label: 'Production aggregation point',
+            value: `${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT}`,
           },
           {
             label: 'Point of production',
-            value: 'point-of-production',
+            value: `${LOCATION_TYPES.POINT_OF_PRODUCTION}`,
           },
         ]);
       },
@@ -434,7 +496,7 @@ describe('SourcingLocationsModule (e2e)', () => {
         await createSourcingLocation({
           materialId: baseMaterial.id,
           interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
-          locationType: LOCATION_TYPES.AGGREGATION_POINT,
+          locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
           scenarioInterventionId: intervention.id,
         });
 
@@ -454,7 +516,10 @@ describe('SourcingLocationsModule (e2e)', () => {
         expect(HttpStatus.OK);
         expect(response.body.data).toHaveLength(1);
         expect(response.body.data).toEqual([
-          { label: 'Aggregation point', value: 'aggregation-point' },
+          {
+            label: 'Production aggregation point',
+            value: `${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT}`,
+          },
         ]);
       },
     );

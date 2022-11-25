@@ -1,5 +1,5 @@
 import { LocationTypeWithLabel } from 'modules/sourcing-locations/dto/location-type.sourcing-locations.dto';
-import { LOCATION_TYPES_PARAMS } from 'modules/sourcing-locations/sourcing-location.entity';
+import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 
 // Helper to parse location types to the format the client consumes it
 
@@ -11,10 +11,7 @@ export const locationTypeParser = (
       label:
         locationType.locationType.replace(/-/g, ' ').charAt(0).toUpperCase() +
         locationType.locationType.replace(/-/g, ' ').slice(1),
-      value: locationType.locationType.replace(
-        / /g,
-        '-',
-      ) as LOCATION_TYPES_PARAMS,
+      value: locationType.locationType.replace(/ /g, '-') as LOCATION_TYPES,
     };
   });
 };

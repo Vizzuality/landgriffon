@@ -1,3 +1,5 @@
+import { LOCATION_TYPES } from '../../../../src/modules/sourcing-locations/sourcing-location.entity';
+
 export const groupByMaterialResponseData = {
   rows: [
     {
@@ -387,7 +389,7 @@ export const groupByBusinessUnitResponseData = {
 export const groupByLocationTypeResponseData = {
   rows: [
     {
-      name: 'aggregation point',
+      name: `${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT}`,
       children: [],
       values: [
         {
@@ -413,7 +415,7 @@ export const groupByLocationTypeResponseData = {
       ],
     },
     {
-      name: 'country of production',
+      name: `${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}`,
       children: [],
       values: [
         {

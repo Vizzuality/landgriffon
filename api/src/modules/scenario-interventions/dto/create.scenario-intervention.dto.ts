@@ -15,16 +15,12 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { SCENARIO_INTERVENTION_TYPE } from 'modules/scenario-interventions/scenario-intervention.entity';
-import {
-  LOCATION_TYPES,
-  LOCATION_TYPES_PARAMS,
-} from 'modules/sourcing-locations/sourcing-location.entity';
+import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 import {
   IndicatorCoefficientsDto,
   IndicatorCoefficientsDtoV2,
 } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
-import { Transform, Type } from 'class-transformer';
-import { transformSingleLocationType } from 'utils/transform-location-type.util';
+import { Type } from 'class-transformer';
 import { InterventionLocationAddressInputValidator } from 'modules/scenario-interventions/dto/custom-validators/address-input.custom.validator';
 import { InterventionLocationLatitudeInputValidator } from 'modules/scenario-interventions/dto/custom-validators/latitude-input.custom.validator';
 import { InterventionLocationLongitudeInputValidator } from 'modules/scenario-interventions/dto/custom-validators/longitude-input.custom.validator';
@@ -186,11 +182,11 @@ export class CreateScenarioInterventionDto {
     each: true,
     message:
       'Available location types options: ' +
-      Object.values(LOCATION_TYPES_PARAMS).toString().toLowerCase(),
+      Object.values(LOCATION_TYPES).toString().toLowerCase(),
   })
-  @Transform(({ value }: { value: LOCATION_TYPES_PARAMS }) =>
-    transformSingleLocationType(value),
-  )
+  // @Transform(({ value }: { value: LOCATION_TYPES }) =>
+  //   transformSingleLocationType(value),
+  // )
   @Type(() => String)
   newLocationType!: LOCATION_TYPES;
 
@@ -212,7 +208,7 @@ export class CreateScenarioInterventionDto {
   @ApiPropertyOptional({
     description: `
     New Supplier Location address, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER}
-    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT} in case no coordintaes were provided.
+    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT} in case no coordintaes were provided.
     Address OR coordinates must be provided.
 
     Must be NULL for New Supplier Locations of types: ${LOCATION_TYPES.UNKNOWN} and ${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}
@@ -230,7 +226,7 @@ export class CreateScenarioInterventionDto {
   @ApiPropertyOptional({
     description: `
     New Supplier Location latitude, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER}
-    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT} in case no address was provided.
+    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT} in case no address was provided.
     Address OR coordinates must be provided.
 
     Must be NULL for New Supplier Locations of types: ${LOCATION_TYPES.UNKNOWN} and ${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}
@@ -250,7 +246,7 @@ export class CreateScenarioInterventionDto {
   @ApiPropertyOptional({
     description: `
     New Supplier Location longitude, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER}
-    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT} in case no address was provided.
+    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT} in case no address was provided.
     Address OR coordinates must be provided.
 
     Must be NULL for New Supplier Locations of type: ${LOCATION_TYPES.UNKNOWN} and ${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}
@@ -453,11 +449,8 @@ export class CreateScenarioInterventionDtoV2 {
     each: true,
     message:
       'Available location types options: ' +
-      Object.values(LOCATION_TYPES_PARAMS).toString().toLowerCase(),
+      Object.values(LOCATION_TYPES).toString().toLowerCase(),
   })
-  @Transform(({ value }: { value: LOCATION_TYPES_PARAMS }) =>
-    transformSingleLocationType(value),
-  )
   @Type(() => String)
   newLocationType!: LOCATION_TYPES;
 
@@ -479,7 +472,7 @@ export class CreateScenarioInterventionDtoV2 {
   @ApiPropertyOptional({
     description: `
     New Supplier Location address, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER}
-    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT} in case no coordintaes were provided.
+    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT} in case no coordintaes were provided.
     Address OR coordinates must be provided.
 
     Must be NULL for New Supplier Locations of types: ${LOCATION_TYPES.UNKNOWN} and ${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}
@@ -497,7 +490,7 @@ export class CreateScenarioInterventionDtoV2 {
   @ApiPropertyOptional({
     description: `
     New Supplier Location latitude, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER}
-    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT} in case no address was provided.
+    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT} in case no address was provided.
     Address OR coordinates must be provided.
 
     Must be NULL for New Supplier Locations of types: ${LOCATION_TYPES.UNKNOWN} and ${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}
@@ -517,7 +510,7 @@ export class CreateScenarioInterventionDtoV2 {
   @ApiPropertyOptional({
     description: `
     New Supplier Location longitude, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER}
-    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.AGGREGATION_POINT} in case no address was provided.
+    and New Supplier Locations of types: ${LOCATION_TYPES.POINT_OF_PRODUCTION} and ${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT} in case no address was provided.
     Address OR coordinates must be provided.
 
     Must be NULL for New Supplier Locations of type: ${LOCATION_TYPES.UNKNOWN} and ${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}

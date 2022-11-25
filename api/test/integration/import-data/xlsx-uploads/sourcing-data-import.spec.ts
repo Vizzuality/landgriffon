@@ -93,7 +93,6 @@ jest.mock('config', () => {
   return config;
 });
 
-// TODO: Restore when new methodology validated
 describe('Sourcing Data import', () => {
   /**
    * @note: We are currently ignoring '#N/A' location type values in production code

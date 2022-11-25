@@ -11,7 +11,7 @@ import {
 } from './mocks/h3-impact-map.mock';
 import { saveUserAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
-import { LOCATION_TYPES_PARAMS } from 'modules/sourcing-locations/sourcing-location.entity';
+import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 
@@ -330,7 +330,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           indicatorId: impactMapMockData.indicatorId,
-          'locationTypes[]': [LOCATION_TYPES_PARAMS.AGGREGATION_POINT],
+          'locationTypes[]': [LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT],
           year: 2020,
           resolution: 6,
         });
@@ -354,8 +354,8 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         .query({
           indicatorId: impactMapMockData.indicatorId,
           'locationTypes[]': [
-            LOCATION_TYPES_PARAMS.AGGREGATION_POINT,
-            LOCATION_TYPES_PARAMS.UNKNOWN,
+            LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
+            LOCATION_TYPES.UNKNOWN,
           ],
           year: 2020,
           resolution: 6,
@@ -388,8 +388,8 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         .query({
           indicatorId: impactMapMockData.indicatorId,
           'locationTypes[]': [
-            LOCATION_TYPES_PARAMS.AGGREGATION_POINT,
-            LOCATION_TYPES_PARAMS.UNKNOWN,
+            LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
+            LOCATION_TYPES.UNKNOWN,
           ],
           year: 2020,
           resolution: 6,
@@ -422,8 +422,8 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         .query({
           indicatorId: impactMapMockData.indicatorId,
           'locationTypes[]': [
-            LOCATION_TYPES_PARAMS.AGGREGATION_POINT,
-            LOCATION_TYPES_PARAMS.UNKNOWN,
+            LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
+            LOCATION_TYPES.UNKNOWN,
           ],
           year: 2020,
           resolution: 6,
@@ -458,8 +458,8 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         .query({
           indicatorId: impactMapMockData.indicatorId,
           'locationTypes[]': [
-            LOCATION_TYPES_PARAMS.AGGREGATION_POINT,
-            LOCATION_TYPES_PARAMS.UNKNOWN,
+            LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
+            LOCATION_TYPES.UNKNOWN,
           ],
           year: 2020,
           resolution: 6,
@@ -494,8 +494,8 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         .query({
           indicatorId: impactMapMockData.indicatorId,
           'locationTypes[]': [
-            LOCATION_TYPES_PARAMS.AGGREGATION_POINT,
-            LOCATION_TYPES_PARAMS.UNKNOWN,
+            LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
+            LOCATION_TYPES.UNKNOWN,
           ],
           year: 2020,
           resolution: 6,

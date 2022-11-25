@@ -36,7 +36,7 @@ const THEMES = {
       'flex-row max-w-full bg-white relative border border-gray-200 transition-colors hover:border-gray-300 rounded-md shadow-sm px-3 cursor-pointer min-h-[2.5rem] h-min py-1 text-sm shadow-sm',
     arrow: 'items-center text-gray-900',
     treeNodes:
-      'flex items-center px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-navy-50 z-[100]',
+      'flex gap-1 items-center px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-navy-50 z-[100]',
     badge: 'text-sm',
   },
   'inline-primary': {
@@ -68,13 +68,13 @@ const CustomCheckbox = React.forwardRef<
 
     (ref as RefObject<HTMLInputElement>).current.indeterminate = !checked && indeterminate;
   }, [checked, indeterminate, ref]);
-  // flex-shrink-0 w-4 h-4 border border-gray-200 rounded;
+
   return (
     <input
       type="checkbox"
       className={classNames(
-        'form-checkbox appearance-none rounded w-4 h-4 focus:ring-0 focus:outline-none',
-        checked || indeterminate ? 'bg-navy-400 border-none' : 'border border-gray-200',
+        'flex-shrink-0 rounded w-4 h-4 focus:ring-2 active:ring-2 ring-offset-1 focus:outline-offset-0 ring-navy-200 m-0.5 focus:outline-none focus:ring-offset-0',
+        checked || indeterminate ? 'bg-navy-4 border-none' : 'border border-gray-200',
         className,
       )}
       checked={checked}

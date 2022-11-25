@@ -71,22 +71,26 @@
     }
   }
 }
+.rc-tree {
+  .rc-tree-checkbox {
+    @apply hidden;
+  }
 
-/* RC Tree checkbox override */
-.rc-tree-checkbox {
-  @apply hidden;
-}
+  .rc-tree-iconEle {
+    @apply bg-transparent;
+  }
 
-.rc-tree-node-content-wrapper {
-  @apply w-full overflow-hidden truncate text-ellipsis flex flex-row gap-2;
-}
+  .rc-tree-node-content-wrapper {
+    @apply w-full overflow-hidden truncate text-ellipsis flex flex-row gap-1 place-items-center;
+  }
 
-.rc-tree-title {
-  @apply w-full text-gray-900;
-}
+  .rc-tree-title {
+    @apply w-full text-gray-900;
+  }
 
-.rc-tree-indent-unit {
-  @apply w-4;
+  .rc-tree-indent-unit {
+    @apply w-4;
+  }
 }
 
 /* Recharts */

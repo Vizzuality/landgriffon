@@ -1,4 +1,4 @@
-import type { THEMES } from './constants';
+import type { THEME_CLASSNAMES } from './constants';
 
 export type BadgeProps = {
   data?: unknown;
@@ -6,5 +6,5 @@ export type BadgeProps = {
   className?: string;
   removable?: boolean;
   onClick?: (data: BadgeProps['data']) => void;
-  theme?: keyof typeof THEMES;
+  theme?: keyof typeof THEME_CLASSNAMES;
 };

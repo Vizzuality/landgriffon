@@ -11,7 +11,7 @@ import {
   useRole,
   autoUpdate,
 } from '@floating-ui/react-dom-interactions';
-import { ChevronDownIcon, XIcon, SearchIcon } from '@heroicons/react/solid';
+import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
 import Tree from 'rc-tree';
 import { flattenTreeData } from 'rc-tree/lib/utils/treeUtil';
 import { useDebouncedValue } from 'rooks';
@@ -33,7 +33,7 @@ const THEMES = {
   default: {
     label: 'text-gray-900 text-xs',
     wrapper:
-      'flex-row max-w-full bg-white relative border border-gray-200 transition-colors hover:border-gray-300 rounded-md shadow-sm px-3 cursor-pointer min-h-[2.5rem] h-min py-1 text-sm shadow-sm',
+      'flex-row max-w-full bg-white relative border border-gray-200 transition-colors hover:border-gray-300 rounded-md shadow-sm cursor-pointer min-h-[2.5rem] text-sm',
     arrow: 'items-center text-gray-900',
     treeNodes:
       'flex gap-1 items-center px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-navy-50 z-[100]',
@@ -41,7 +41,7 @@ const THEMES = {
   },
   'inline-primary': {
     label: 'truncate text-ellipsis font-bold cursor-pointer px-0 py-0',
-    wrapper: 'inline-flex border-b-2 border-navy-400 max-w-none min-w-[30px] min-h-[26px]',
+    wrapper: 'flex border-b-2 border-navy-400 max-w-none min-w-[30px] min-h-[26px]',
     arrow: 'mx-auto w-fit',
     treeNodes:
       'flex items-center px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-navy-50',
@@ -324,16 +324,15 @@ const InnerTreeSelect = <IsMulti extends boolean>(
 
   const SearchInput = useMemo(() => {
     const Component = () => (
-      <div className="inline-flex flex-row flex-grow h-min gap-x-1">
-        <SearchIcon className="block w-4 h-4 my-auto text-gray-400" />
+      <div className="flex pl-1">
         <input
           ref={ref}
           autoFocus
           type="search"
           value={searchTerm}
           placeholder={selected === null ? placeholder : null}
-          className={classNames('px-0 py-0 truncate border-none focus:ring-0', {
-            'text-sm min-w-fit': theme !== 'inline-primary',
+          className={classNames('p-0 appearance-none truncate border-none focus:ring-0 w-full', {
+            'text-sm': theme !== 'inline-primary',
           })}
           onClick={(e) => {
             e.stopPropagation();
@@ -347,30 +346,16 @@ const InnerTreeSelect = <IsMulti extends boolean>(
           }}
           onChange={handleSearch}
           autoComplete="off"
-          style={{
-            minWidth: searchTerm || currentOptions.length !== 0 ? '4ch' : `${placeholder.length}ch`,
-            maxWidth: '10ch',
-            width: `${searchTerm.length}ch`,
-          }}
         />
         {searchTerm && (
-          <button type="button" onClick={resetSearch} className="px-2 py-0">
+          <button type="button" onClick={resetSearch} className="px-2 py-0 flex-shrink-0">
             <XIcon className="w-4 h-4 text-gray-400" />
           </button>
         )}
       </div>
     );
     return Component;
-  }, [
-    currentOptions.length,
-    handleSearch,
-    placeholder,
-    ref,
-    resetSearch,
-    searchTerm,
-    selected,
-    theme,
-  ]);
+  }, [handleSearch, placeholder, ref, resetSearch, searchTerm, selected, theme]);
 
   const [treeRef, setTreeRef] = useState<Tree<TreeDataNode>>();
   const [keyToScroll, setKeyToScroll] = useState<Key>();
@@ -397,8 +382,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
 
   const handleSearchSelection = useCallback(
     (newKey: Key) => {
-      setSearchTerm('');
-      setDebouncedSearch('');
+      resetSearch();
 
       const selectedNode = flatTreeData.find((data) => data.key === newKey);
       setKeyToScroll(newKey);
@@ -452,15 +436,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
         }
       }
     },
-    [
-      setDebouncedSearch,
-      flatTreeData,
-      multiple,
-      checkedKeys,
-      checkedStrategy,
-      onChange,
-      selected?.value,
-    ],
+    [resetSearch, flatTreeData, multiple, checkedKeys, checkedStrategy, onChange, selected?.value],
   );
 
   return (
@@ -469,7 +445,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
         {...getReferenceProps({
           ref: reference,
         })}
-        className={classNames('relative w-full min-w-0', {
+        className={classNames('w-full min-w-0', {
           [THEMES[theme].wrapper]: theme === 'default',
           'ring-[1.5px] ring-navy-400': theme === 'default' && isOpen && !error,
           'flex flex-row justify-between items-center gap-1': theme === 'default',
@@ -478,32 +454,37 @@ const InnerTreeSelect = <IsMulti extends boolean>(
         })}
       >
         <div
-          className={classNames('gap-1 h-min overflow-hidden', {
-            'flex flex-wrap': theme !== 'inline-primary',
-            'ring-navy-400 border-navy-400': isOpen,
-            'border-red-400': theme === 'inline-primary' && error,
-            [THEMES[theme].wrapper]: theme === 'inline-primary',
-          })}
+          className={classNames(
+            'gap-x-1 gap-y-0.5 overflow-hidden h-full flex flex-grow min-h-0 p-0.5',
+            // apply flex-1 to all children to wrap content nicely
+            '[&>*]:flex-1',
+            {
+              'flex flex-wrap': theme !== 'inline-primary',
+              'ring-navy-400 border-navy-400': isOpen,
+              'border-red-400': theme === 'inline-primary' && error,
+              [THEMES[theme].wrapper]: theme === 'inline-primary',
+            },
+          )}
         >
           {label && <span className={classNames(THEMES[theme].label)}>{label}</span>}
           {multiple ? (
             <>
               {(!currentOptions || !currentOptions.length) && !showSearch && (
-                <span className="inline-block text-gray-500 truncate">{placeholder}</span>
+                <span className="inline-block text-gray-500 truncate ">{placeholder}</span>
               )}
               {!!currentOptions?.length &&
                 currentOptions.slice(0, badgesToShow).map((option, index) => (
                   <Badge
                     key={option.value}
                     className={classNames(
-                      'h-fit my-auto max-w-full',
+                      'h-max my-auto max-w-fit min-w-fit',
                       THEMES[theme].label,
                       THEMES[theme].badge,
                     )}
                     data={option}
                     onClick={handleRemoveBadge}
                     removable={theme !== 'inline-primary'}
-                    theme={theme}
+                    theme="big"
                   >
                     {option.label}
                     {theme === 'inline-primary' && index < currentOptions.length - 1 && ','}
@@ -512,7 +493,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
               {currentOptions?.length > badgesToShow && (
                 <Badge
                   className={classNames('h-fit my-auto', THEMES[theme].label, THEMES[theme].badge)}
-                  theme={theme}
+                  theme="big"
                 >
                   {currentOptions.length - badgesToShow} more selected
                 </Badge>

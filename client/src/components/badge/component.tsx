@@ -24,7 +24,7 @@ const Badge: React.FC<BadgeProps> = ({
   );
 
   return (
-    <span
+    <div
       className={classNames(
         'inline-flex items-center overflow-hidden shadow-sm px-2 py-px gap-x-0.5',
         THEME_CLASSNAMES[theme]?.wrapper,
@@ -46,7 +46,7 @@ const Badge: React.FC<BadgeProps> = ({
           <XIcon className="h-3 w-3" />
         </button>
       )}
-    </span>
+    </div>
   );
 };
 

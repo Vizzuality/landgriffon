@@ -213,7 +213,7 @@ export class H3DataMapRepository extends Repository<H3Data> {
 
       if (dto.relative) {
         // TODO "edge" case when sumDataWithoutScenario is 0, the result will always be 200%, pending to search for a more accurate formula by Elena
-        aggregateExpression = `100 * ( ${sumDataWithScenario} - ${sumDataWithoutScenario}) / ( ( ${sumDataWithScenario} + ${sumDataWithoutScenario} ) / 2 ) / ir.scaler `;
+        aggregateExpression = `100 * ( ABS(${sumDataWithScenario}) - ABS(${sumDataWithoutScenario}) ) / ( ( ABS(${sumDataWithScenario}) + ABS(${sumDataWithoutScenario}) ) / 2 ) / ir.scaler `;
       } else {
         aggregateExpression = `( ${sumDataWithScenario} - ${sumDataWithoutScenario} ) / ir.scaler `;
       }
@@ -270,7 +270,7 @@ export class H3DataMapRepository extends Repository<H3Data> {
 
       if (dto.relative) {
         // TODO "edge" case when sumDataWithoutScenario is 0, the result will always be 200%, pending to search for a more accurate formula by Elena
-        aggregateExpression = `100 * (${sumDataWitComparedScenario} - ${sumDataWithBaseScenario}) / ( ( ${sumDataWitComparedScenario} + ${sumDataWithBaseScenario} ) / 2 ) / ir.scaler `;
+        aggregateExpression = `100 * ( ABS(${sumDataWitComparedScenario}) - ABS(${sumDataWithBaseScenario}) ) / ( ( ABS(${sumDataWitComparedScenario}) + ABS(${sumDataWithBaseScenario}) ) / 2 ) / ir.scaler `;
       } else {
         aggregateExpression = `( ${sumDataWitComparedScenario} - ${sumDataWithBaseScenario} ) / ir.scaler `;
       }

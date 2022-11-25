@@ -17,7 +17,6 @@ import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { Material } from 'modules/materials/material.entity';
 import {
   LOCATION_TYPES,
-  LOCATION_TYPES_PARAMS,
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
@@ -193,7 +192,7 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
 
       await createSourcingLocation({
         adminRegionId: childAdminRegion2.id,
-        locationType: LOCATION_TYPES.AGGREGATION_POINT,
+        locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
       });
 
       await createSourcingLocation({
@@ -206,8 +205,8 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
         .query({
           withSourcingLocations: true,
           'locationTypes[]': [
-            LOCATION_TYPES_PARAMS.COUNTRY_OF_PRODUCTION,
-            LOCATION_TYPES_PARAMS.AGGREGATION_POINT,
+            LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+            LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
           ],
         })
         .set('Authorization', `Bearer ${jwtToken}`);
@@ -270,7 +269,7 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
         });
 
         await createSourcingLocation({
-          locationType: LOCATION_TYPES.AGGREGATION_POINT,
+          locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
           materialId: baseMaterial.id,
           adminRegion: childAdminRegion2,
         });
@@ -280,7 +279,7 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
           .query({
             withSourcingLocations: true,
             scenarioId: scenario.id,
-            'locationTypes[]': [LOCATION_TYPES_PARAMS.POINT_OF_PRODUCTION],
+            'locationTypes[]': [LOCATION_TYPES.POINT_OF_PRODUCTION],
           })
           .set('Authorization', `Bearer ${jwtToken}`);
 
@@ -359,7 +358,7 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
         });
 
         await createSourcingLocation({
-          locationType: LOCATION_TYPES.AGGREGATION_POINT,
+          locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
           materialId: material2.id,
           adminRegion: adminRegions3,
         });

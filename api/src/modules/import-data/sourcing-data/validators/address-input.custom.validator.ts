@@ -20,7 +20,7 @@ export class LocationAddressInputValidator
       return !addressInput;
     } else if (
       ((args.object as SourcingDataExcelValidator).location_type ===
-        LOCATION_TYPES.AGGREGATION_POINT ||
+        LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT ||
         (args.object as SourcingDataExcelValidator).location_type ===
           LOCATION_TYPES.POINT_OF_PRODUCTION) &&
       ((args.object as SourcingDataExcelValidator).location_latitude_input ||
@@ -29,7 +29,7 @@ export class LocationAddressInputValidator
       return !addressInput;
     } else if (
       ((args.object as SourcingDataExcelValidator).location_type ===
-        LOCATION_TYPES.AGGREGATION_POINT ||
+        LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT ||
         (args.object as SourcingDataExcelValidator).location_type ===
           LOCATION_TYPES.POINT_OF_PRODUCTION) &&
       (!(args.object as SourcingDataExcelValidator).location_latitude_input ||
@@ -52,7 +52,7 @@ export class LocationAddressInputValidator
       }`;
     } else if (
       ((args.object as SourcingDataExcelValidator).location_type ===
-        LOCATION_TYPES.AGGREGATION_POINT ||
+        LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT ||
         (args.object as SourcingDataExcelValidator).location_type ===
           LOCATION_TYPES.POINT_OF_PRODUCTION) &&
       ((args.object as SourcingDataExcelValidator).location_latitude_input ||

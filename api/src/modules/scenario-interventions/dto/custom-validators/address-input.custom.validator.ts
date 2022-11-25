@@ -54,7 +54,8 @@ export class InterventionLocationAddressInputValidator
   }
 
   dtoAlreadyHasCoordinates(dto: CreateScenarioInterventionDto): boolean {
-    return (dto.newLocationType === LOCATION_TYPES.AGGREGATION_POINT ||
+    return (dto.newLocationType ===
+      LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT ||
       dto.newLocationType === LOCATION_TYPES.POINT_OF_PRODUCTION) &&
       (dto.newLocationLatitude || dto.newLocationLongitude)
       ? true
@@ -62,7 +63,8 @@ export class InterventionLocationAddressInputValidator
   }
 
   addressIsRequired(dto: CreateScenarioInterventionDto): boolean {
-    return (dto.newLocationType === LOCATION_TYPES.AGGREGATION_POINT ||
+    return (dto.newLocationType ===
+      LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT ||
       dto.newLocationType === LOCATION_TYPES.POINT_OF_PRODUCTION) &&
       (!dto.newLocationLatitude || !dto.newLocationLongitude)
       ? true

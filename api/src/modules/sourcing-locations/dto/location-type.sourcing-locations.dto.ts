@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { LOCATION_TYPES_PARAMS } from 'modules/sourcing-locations/sourcing-location.entity';
+import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 
 export class LocationTypeWithLabel {
   @ApiProperty()
   label: string;
 
   @ApiProperty()
-  value: LOCATION_TYPES_PARAMS;
+  value: LOCATION_TYPES;
 }
 
 export class LocationTypesDto {

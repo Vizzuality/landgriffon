@@ -13,7 +13,7 @@ import {
 } from 'modules/h3-data/h3-data.entity';
 import { Logger, ServiceUnavailableException } from '@nestjs/common';
 import {
-  LOCATION_TYPES_PARAMS,
+  LOCATION_TYPES,
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
@@ -315,7 +315,7 @@ export class H3DataMapRepository extends Repository<H3Data> {
     materialIds?: string[],
     originIds?: string[],
     supplierIds?: string[],
-    locationTypes?: LOCATION_TYPES_PARAMS[],
+    locationTypes?: LOCATION_TYPES[],
     baseQueryExtend?: (baseQuery: SelectQueryBuilder<any>) => void,
     scenarioComparisonQuantiles?: boolean,
   ): Promise<{ impactMap: H3IndexValueData[]; quantiles: number[] }> {

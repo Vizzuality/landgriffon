@@ -9,12 +9,9 @@ import {
   IsUUID,
 } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
-import {
-  LOCATION_TYPES,
-  LOCATION_TYPES_PARAMS,
-} from 'modules/sourcing-locations/sourcing-location.entity';
-import { transformLocationType } from 'utils/transform-location-type.util';
+import { Type } from 'class-transformer';
+import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
+import { replaceStringWhiteSpacesWithDash } from 'utils/transform-location-type.util';
 
 export class GetBusinessUnitTreeWithOptionsDto {
   @ApiPropertyOptional({
@@ -50,7 +47,7 @@ export class GetBusinessUnitTreeWithOptionsDto {
 
   @ApiPropertyOptional({
     description: 'Types of Sourcing Locations, written with hyphens',
-    enum: Object.values(LOCATION_TYPES_PARAMS),
+    enum: Object.values(LOCATION_TYPES),
     name: 'locationTypes[]',
   })
   @IsOptional()
@@ -58,13 +55,12 @@ export class GetBusinessUnitTreeWithOptionsDto {
     each: true,
     message:
       'Available options: ' +
-      Object.values(LOCATION_TYPES_PARAMS).toString().toLowerCase(),
+      replaceStringWhiteSpacesWithDash(
+        Object.values(LOCATION_TYPES).toString().toLowerCase(),
+      ),
   })
-  @Transform(({ value }: { value: LOCATION_TYPES_PARAMS[] }) =>
-    transformLocationType(value),
-  )
   @Type(() => String)
-  locationTypes?: LOCATION_TYPES_PARAMS[];
+  locationTypes?: LOCATION_TYPES[];
 
   @ApiPropertyOptional()
   @IsOptional()

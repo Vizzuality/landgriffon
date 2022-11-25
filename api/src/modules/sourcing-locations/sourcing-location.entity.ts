@@ -23,21 +23,11 @@ import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-in
 
 export enum LOCATION_TYPES {
   UNKNOWN = 'unknown',
-  AGGREGATION_POINT = 'aggregation point',
-  POINT_OF_PRODUCTION = 'point of production',
-  COUNTRY_OF_PRODUCTION = 'country of production',
-  ADMINISTRATIVE_REGION_OF_PRODUCTION = 'administrative region of production',
-  COUNTRY_OF_DELIVERY = 'country of delivery',
-}
-
-//TODO Refactor to use the dash version also in the DB, to"
-//     1. Avoid using strings with empty spaces
-//     2. Avoid duplicating types (with dash/ with no dash)
-export enum LOCATION_TYPES_PARAMS {
-  UNKNOWN = 'unknown',
-  AGGREGATION_POINT = 'aggregation-point',
+  PRODUCTION_AGGREGATION_POINT = 'production-aggregation-point',
   POINT_OF_PRODUCTION = 'point-of-production',
   COUNTRY_OF_PRODUCTION = 'country-of-production',
+  ADMINISTRATIVE_REGION_OF_PRODUCTION = 'administrative-region-of-production',
+  COUNTRY_OF_DELIVERY = 'country-of-delivery',
 }
 
 export enum LOCATION_ACCURACY {

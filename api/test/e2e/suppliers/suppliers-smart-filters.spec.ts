@@ -19,7 +19,6 @@ import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-
 import { MaterialRepository } from 'modules/materials/material.repository';
 import {
   LOCATION_TYPES,
-  LOCATION_TYPES_PARAMS,
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SCENARIO_INTERVENTION_STATUS } from '../../../src/modules/scenario-interventions/scenario-intervention.entity';
@@ -166,12 +165,12 @@ describe('Suppliers - Get trees - Smart Filters', () => {
 
       await createSourcingLocation({
         t1SupplierId: childSupplier.id,
-        locationType: LOCATION_TYPES.AGGREGATION_POINT,
+        locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
       });
 
       await createSourcingLocation({
         producerId: supplier2.id,
-        locationType: LOCATION_TYPES.AGGREGATION_POINT,
+        locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
       });
 
       await createSourcingLocation({
@@ -183,7 +182,7 @@ describe('Suppliers - Get trees - Smart Filters', () => {
         .get('/api/v1/suppliers/trees')
         .query({
           withSourcingLocations: true,
-          'locationTypes[]': [LOCATION_TYPES_PARAMS.AGGREGATION_POINT],
+          'locationTypes[]': [LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT],
         })
         .set('Authorization', `Bearer ${jwtToken}`);
 

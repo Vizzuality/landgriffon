@@ -44,7 +44,9 @@ export class GeoCodingService extends GeoCodingAbstractClass {
         );
       }
 
-      if (location.locationType === LOCATION_TYPES.AGGREGATION_POINT) {
+      if (
+        location.locationType === LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT
+      ) {
         geoCodedSourcingData.push(await this.geoCodeAggregationPoint(location));
       }
       if (location.locationType === LOCATION_TYPES.POINT_OF_PRODUCTION) {
@@ -89,7 +91,9 @@ export class GeoCodingService extends GeoCodingAbstractClass {
       )) as SourcingData;
     }
 
-    if (locationInfo.locationType === LOCATION_TYPES.AGGREGATION_POINT) {
+    if (
+      locationInfo.locationType === LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT
+    ) {
       geoCodedSourcingLocation = (await this.geoCodeAggregationPoint(
         locationInfo as SourcingData,
       )) as SourcingData;

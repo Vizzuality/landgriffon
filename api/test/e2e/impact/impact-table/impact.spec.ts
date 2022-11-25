@@ -26,7 +26,6 @@ import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Material } from 'modules/materials/material.entity';
 import {
   LOCATION_TYPES,
-  LOCATION_TYPES_PARAMS,
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
@@ -945,7 +944,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         businessUnit: businessUnit1,
         t1Supplier: supplier1,
         adminRegion: adminRegion,
-        locationType: LOCATION_TYPES.AGGREGATION_POINT,
+        locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
       });
 
       // Creating Sourcing Records and Indicator Records for previously created Sourcing Locations of different location types
@@ -1158,7 +1157,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         businessUnit: businessUnit1,
         t1Supplier: supplier1,
         adminRegion: adminRegion,
-        locationType: LOCATION_TYPES.AGGREGATION_POINT,
+        locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
       });
 
       // Creating Sourcing Records and Indicator Records for previously created Sourcing Locations of different Location Types
@@ -1199,7 +1198,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           endYear: 2013,
           startYear: 2010,
           groupBy: 'material',
-          'locationTypes[]': [LOCATION_TYPES_PARAMS.AGGREGATION_POINT],
+          'locationTypes[]': [LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT],
         });
       //.expect(HttpStatus.OK);
 

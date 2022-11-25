@@ -68,7 +68,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     });
     await createSourcingLocation({
       producerId: supplier1.id,
-      locationType: LOCATION_TYPES.AGGREGATION_POINT,
+      locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
       materialId: material2.id,
     });
     await createSourcingLocation({
@@ -186,7 +186,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     });
     await createSourcingLocation({
       producerId: supplier1.id,
-      locationType: LOCATION_TYPES.AGGREGATION_POINT,
+      locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
       materialId: material2.id,
     });
     await createSourcingLocation({
@@ -246,7 +246,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     await createSourcingLocation({
       t1SupplierId: supplier4.id,
       producerId: supplier1.id,
-      locationType: LOCATION_TYPES.AGGREGATION_POINT,
+      locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
       materialId: material1.id,
       locationCountryInput: 'Argentina',
     });

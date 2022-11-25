@@ -18,7 +18,6 @@ import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import {
   LOCATION_TYPES,
-  LOCATION_TYPES_PARAMS,
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
@@ -160,7 +159,7 @@ describe('Business Units - Get trees - Smart Filters', () => {
         .get('/api/v1/business-units/trees')
         .query({
           withSourcingLocations: true,
-          'locationTypes[]': [LOCATION_TYPES_PARAMS.UNKNOWN],
+          'locationTypes[]': [LOCATION_TYPES.UNKNOWN],
         })
         .set('Authorization', `Bearer ${jwtToken}`);
 
@@ -216,7 +215,7 @@ describe('Business Units - Get trees - Smart Filters', () => {
         });
 
         await createSourcingLocation({
-          locationType: LOCATION_TYPES.AGGREGATION_POINT,
+          locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
           materialId: baseMaterial.id,
           adminRegion: parentAdminRegion2,
           businessUnit: businessUnitThatShouldNotAppear,
@@ -227,7 +226,7 @@ describe('Business Units - Get trees - Smart Filters', () => {
           .query({
             withSourcingLocations: true,
             scenarioId: scenario.id,
-            'locationTypes[]': [LOCATION_TYPES_PARAMS.POINT_OF_PRODUCTION],
+            'locationTypes[]': [LOCATION_TYPES.POINT_OF_PRODUCTION],
           })
           .set('Authorization', `Bearer ${jwtToken}`);
 
@@ -314,7 +313,7 @@ describe('Business Units - Get trees - Smart Filters', () => {
         });
 
         await createSourcingLocation({
-          locationType: LOCATION_TYPES.AGGREGATION_POINT,
+          locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
           materialId: material2.id,
           adminRegion: adminRegions3,
           businessUnit: businessUnitThatShouldNotAppear,
@@ -387,7 +386,7 @@ describe('Business Units - Get trees - Smart Filters', () => {
         });
 
         await createSourcingLocation({
-          locationType: LOCATION_TYPES.AGGREGATION_POINT,
+          locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
           interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
           materialId: baseMaterial.id,
           scenarioInterventionId: interventionInactive.id,

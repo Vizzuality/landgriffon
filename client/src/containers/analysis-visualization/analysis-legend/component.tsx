@@ -74,12 +74,12 @@ export const Legend: React.FC = () => {
 
   const LegendToShow = useCallback(
     (layer: Layer) =>
-      layer.isContextual ? (
-        <ContextualLegendItem layer={layer} />
-      ) : layer.id === 'impact' ? (
+      layer.id === 'impact' ? (
         <ImpactLayer />
       ) : layer.id === 'material' ? (
         <MaterialLayer />
+      ) : layer.isContextual ? (
+        <ContextualLegendItem layer={layer} />
       ) : null,
     [],
   );

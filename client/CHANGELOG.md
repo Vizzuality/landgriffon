@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Format of numbers of the contextual layers in the legend [LANDGRIF-1090](https://vizzuality.atlassian.net/browse/LANDGRIF-1090)
 - Edition of intervention was not working [LANDGRIF-1073](https://vizzuality.atlassian.net/browse/LANDGRIF-1073)
 - Legend colors for comparison layer [LANDGRIF-979](https://vizzuality.atlassian.net/browse/LANDGRIF-979)
 - Tests were failing due to a change in the api where data was reset

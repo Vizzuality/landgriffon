@@ -10,7 +10,7 @@ import type {
   UseQueryOptions,
 } from '@tanstack/react-query';
 import type { AxiosResponse } from 'axios';
-import type { Scenario, Intervention } from 'containers/scenarios/types';
+import type { Scenario } from 'containers/scenarios/types';
 import type { APIMetadataPagination } from 'types';
 
 type ResponseData = {
@@ -25,7 +25,7 @@ type ResponseInfiniteData = UseInfiniteQueryResult<
 >;
 
 type ResponseDataScenario = UseQueryResult<Scenario>;
-type ResponseInterventionsData = UseQueryResult<Intervention[]>;
+
 type QueryParams = {
   sort?: string;
   include?: string;
@@ -112,21 +112,6 @@ export function useScenario(id?: Scenario['id'] | null): ResponseDataScenario {
   );
 
   return useMemo<ResponseDataScenario>(() => response, [response]);
-}
-
-export function useScenarioInterventions(id: Scenario['id'] | null): ResponseInterventionsData {
-  const response: ResponseInterventionsData = useQuery(
-    ['interventions-by-scenario', id],
-    () =>
-      apiService
-        .request({
-          method: 'GET',
-          url: `/scenarios/${id}/interventions`,
-        })
-        .then(({ data: responseData }) => responseData.data),
-    DEFAULT_QUERY_OPTIONS,
-  );
-  return useMemo<ResponseInterventionsData>((): ResponseInterventionsData => response, [response]);
 }
 
 export function useDeleteScenario() {

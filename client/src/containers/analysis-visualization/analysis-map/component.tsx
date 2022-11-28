@@ -52,12 +52,12 @@ const AnalysisMap = () => {
         if (!layerInfo) {
           return null;
         }
-
-        const data = layerInfo.isContextual
-          ? contextualDataById[props.id]?.data
-          : layerInfo.id === 'material'
-          ? materialData?.data
-          : impactData;
+        const data =
+          layerInfo.id === 'material'
+            ? materialData?.data
+            : layerInfo.id === 'impact'
+            ? impactData
+            : contextualDataById[layerInfo.id];
 
         return new H3HexagonLayer({
           ...props,

@@ -7,6 +7,7 @@ import { analysisFilters, setFilter } from 'store/features/analysis/filters';
 import { useIndicators } from 'hooks/indicators';
 import Select from 'components/forms/select';
 
+import type { Indicator } from 'types';
 import type { SelectProps, Option } from 'components/forms/select/types';
 
 const ALL = {
@@ -35,7 +36,7 @@ const IndicatorsFilter = () => {
   );
 
   const options: SelectProps['options'] = useMemo(() => {
-    let d = data || [];
+    let d: Partial<Indicator>[] = data || [];
     if (visualizationMode !== 'map') d = [...[ALL], ...data];
     return d.map((indicator) => ({ label: indicator.name, value: indicator.id }));
   }, [data, visualizationMode]);

@@ -6,6 +6,14 @@ export type HEXColor = string;
 
 export type ColorRamps = Record<string, HEXColor[]>;
 
+/**
+ * Allows to define a type that accepts a broader type and still allow intellisense for specific values.
+ * For example, we might want to allow any string as a color, but still have intellisense for red, blue...
+ */
+type Autocomplete<Specific extends Broad, Broad = string> =
+  | Specific
+  | (Broad & Record<never, never>);
+
 export type APIMetadataPagination = {
   page: number;
   size: number;
@@ -79,13 +87,31 @@ type Unit = {
   symbol: string;
 };
 
-export type Indicator = {
+export interface IndicatorMetadata {
+  name: string;
+  units: string;
+  source: string[];
+  license: string;
+  citation: string[];
+  'name code': string;
+  resolution: string;
+  'short name': string;
+  description: string;
+  'indicator type': Autocomplete<`${'landscape' | 'farm'}-level`>;
+  'date of content': `${number}-${number}`;
+  'geographic coverage': Autocomplete<'Global coverage.'>;
+  'frequency of updates': Autocomplete<'Annual'>;
+}
+
+export interface Indicator {
   id: string;
   name: string;
   nameCode: string;
-  value?: number;
+  status: Autocomplete<'active'>;
+  type: 'indicators';
   unit?: Unit;
-};
+  metadata: IndicatorMetadata;
+}
 
 export type Group = {
   id: string;

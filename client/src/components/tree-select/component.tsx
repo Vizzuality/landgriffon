@@ -27,13 +27,13 @@ import type { UseTreeOptions } from './utils';
 import type { Key } from 'rc-tree/lib/interface';
 import type { TreeProps } from 'rc-tree';
 import type { TreeSelectProps, TreeSelectOption, TreeDataNode } from './types';
-import type { ChangeEventHandler, Ref, RefObject, InputHTMLAttributes } from 'react';
+import type { Ref, RefObject, InputHTMLAttributes, EventHandler, SyntheticEvent } from 'react';
 
 const THEMES = {
   default: {
     label: 'text-gray-900 text-xs',
     wrapper:
-      'flex-row max-w-full bg-white relative border border-gray-200 transition-colors hover:border-gray-300 rounded-md shadow-sm cursor-pointer min-h-[2.5rem] text-sm',
+      'flex-row max-w-full bg-white relative border border-gray-200 transition-colors hover:border-gray-300 rounded-md shadow-sm cursor-pointer min-h-[2.5rem] text-sm p-0.5 px-[0.2rem]',
     arrow: 'items-center text-gray-900',
     treeNodes:
       'flex gap-1 items-center px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-navy-50 z-[100]',
@@ -168,7 +168,6 @@ const InnerTreeSelect = <IsMulti extends boolean>(
         ...node,
         className: classNames(THEMES[theme].treeNodes, {
           'w-full': fitContent,
-          'bg-navy-50 font-semibold': selectedKeys.includes(node.value),
         }),
       }),
     }),
@@ -205,7 +204,6 @@ const InnerTreeSelect = <IsMulti extends boolean>(
       setSelectedKeys(keys);
       setSelected(currentSelection);
 
-      // TODO: move to effect
       if (!multiple) {
         // TODO: type inference is not working here
         onChange?.(currentSelection as TreeSelectProps<IsMulti>['current']);
@@ -267,7 +265,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
   );
 
   // Search capability
-  const handleSearch: ChangeEventHandler<HTMLInputElement> = useCallback(
+  const handleSearch: EventHandler<SyntheticEvent<HTMLInputElement>> = useCallback(
     (e) => {
       e.stopPropagation();
       setSearchTerm(e.currentTarget.value);
@@ -324,16 +322,19 @@ const InnerTreeSelect = <IsMulti extends boolean>(
 
   const SearchInput = useMemo(() => {
     const Component = () => (
-      <div className="flex pl-1">
+      <div className="flex gap-2">
         <input
           ref={ref}
           autoFocus
           type="search"
           value={searchTerm}
           placeholder={selected === null ? placeholder : null}
-          className={classNames('p-0 appearance-none truncate border-none focus:ring-0 w-full', {
-            'text-sm': theme !== 'inline-primary',
-          })}
+          className={classNames(
+            'p-0 appearance-none truncate border-none focus:ring-0 w-full pl-2 py-2',
+            {
+              'text-sm': theme !== 'inline-primary',
+            },
+          )}
           onClick={(e) => {
             e.stopPropagation();
             setIsOpen(true);
@@ -343,12 +344,13 @@ const InnerTreeSelect = <IsMulti extends boolean>(
             if (e.key !== ' ') return;
             e.stopPropagation();
             e.currentTarget.value += ' ';
+            handleSearch(e);
           }}
           onChange={handleSearch}
           autoComplete="off"
         />
         {searchTerm && (
-          <button type="button" onClick={resetSearch} className="px-2 py-0 flex-shrink-0">
+          <button type="button" onClick={resetSearch} className="flex-shrink-0">
             <XIcon className="w-4 h-4 text-gray-400" />
           </button>
         )}
@@ -455,7 +457,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
       >
         <div
           className={classNames(
-            'gap-x-1 gap-y-0.5 overflow-hidden h-full flex flex-grow min-h-0 p-0.5',
+            'gap-x-1 gap-y-0.5 overflow-hidden h-full flex flex-grow min-h-0',
             // apply flex-1 to all children to wrap content nicely
             '[&>*]:flex-1',
             {

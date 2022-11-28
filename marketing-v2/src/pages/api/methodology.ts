@@ -18,6 +18,7 @@ const Methodology = (req: NextApiRequest, res: NextApiResponse): void => {
     const msg = {
       to: email,
       from: 'hello@landgriffon.com',
+      fromname: 'LandGriffon',
       subject: `Landgriffon's Methodology`,
       text: `Hi ${name}\n\n
       Thank you for your interest in LandGriffon's Methodology!\n\n

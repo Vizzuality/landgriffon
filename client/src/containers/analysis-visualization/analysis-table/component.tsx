@@ -157,9 +157,7 @@ const AnalysisTable = () => {
     return { data: { impactTable: [] }, metadata: {} };
   }, [impactData]);
 
-  // const totalRows = useMemo(() => {
-  //   return !isLoading && impactTable.length === 1 ? impactTable[0].rows.length : impactTable.length;
-  // }, [isLoading, impactTable]);
+  // Total rows count
   const [totalRows, setTotalRows] = useState<number>(0);
   const handleExpandedChange = useCallback((table) => {
     setTotalRows(table.getRowModel().rows.length);

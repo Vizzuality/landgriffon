@@ -134,10 +134,11 @@ const ComposedTable = <T,>({
   );
 
   const bodyRows = table.getExpandedRowModel().rows;
+  const rowModel = table.getRowModel();
 
   useEffect(() => {
     handleExpandedChange(table);
-  }, [options.state.expanded, handleExpandedChange, table]);
+  }, [rowModel, handleExpandedChange, table]);
 
   return (
     <div className="space-y-6">

@@ -38,7 +38,9 @@ const PARENT = (checkedKeys: Key[], checkedNodes: TreeDataNode[]): TreeDataNode[
 };
 
 const CHILD = (checkedKeys: Key[], checkedNodes: TreeDataNode[]): TreeDataNode['value'][] => {
-  const onlyChildren = checkedNodes.filter((node) => !node?.children).map(({ value }) => value);
+  const onlyChildren = checkedNodes
+    .filter((node) => !node.children || node.children.length === 0)
+    .map(({ value }) => value);
   return onlyChildren;
 };
 

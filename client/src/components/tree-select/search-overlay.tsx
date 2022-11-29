@@ -26,7 +26,7 @@ const SearchOverlay = ({ options, onChange }: SearchOverlayProps) => {
   );
 
   return (
-    <div>
+    <div data-testid="tree-select-search-results">
       {options.map(({ matchingParts, data: { label }, key, isSelected, parent }) => {
         const parents = getParents({ parent } as FlattenNode<TreeDataNode>);
         return (

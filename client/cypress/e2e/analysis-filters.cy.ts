@@ -78,13 +78,17 @@ describe('Analysis and filters', () => {
     // Step 2: Selecting Angola in the admin regions selector
     cy.get('[data-testid="tree-select-origins-filter"]').find('div[role="combobox"]').click();
     cy.get('#floating-ui-root').find('.rc-tree-treenode').eq(1).click();
-    cy.get('[data-testid="tree-select-origins-filter"]').find('input:visible').type('{enter}');
-    cy.wait('@suppliersTreesFiltered');
+    cy.get('[data-testid="tree-select-origins-filter"]')
+      .find('input:visible:first')
+      .type('{enter}');
 
     // Step 3: Selecting Moll in the material selector
+    cy.wait('@suppliersTreesFiltered');
     cy.get('[data-testid="tree-select-suppliers-filter"]').find('div[role="combobox"]').click();
     cy.get('#floating-ui-root').find('.rc-tree-treenode').eq(1).click();
-    cy.get('[data-testid="tree-select-materials-filter"]').find('input:visible').type('{enter}');
+    cy.get('[data-testid="tree-select-materials-filter"]')
+      .find('input:visible:first')
+      .type('{enter}');
 
     // Step 4: Checking material selector
     cy.wait('@materialsTreesFiltered')

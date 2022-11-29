@@ -69,6 +69,10 @@ const CustomCheckbox = React.forwardRef<
     (ref as RefObject<HTMLInputElement>).current.indeterminate = !checked && indeterminate;
   }, [checked, indeterminate, ref]);
 
+  const onChange = useCallback(() => {
+    // noop
+  }, []);
+
   return (
     <input
       type="checkbox"
@@ -78,6 +82,7 @@ const CustomCheckbox = React.forwardRef<
         className,
       )}
       checked={checked}
+      onChange={onChange}
       {...props}
       ref={ref}
     />

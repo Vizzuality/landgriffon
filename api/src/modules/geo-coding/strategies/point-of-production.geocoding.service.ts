@@ -76,14 +76,15 @@ export class PointOfProductionGeocodingStrategy extends BaseStrategy {
         });
       let adminRegionId: string;
       try {
-        adminRegionId =
+        adminRegionId = (
           await this.adminRegionService.getClosestAdminRegionByCoordinates(
             {
               lng: geoCodeResponseData?.data?.results[0]?.geometry.location.lng,
               lat: geoCodeResponseData?.data?.results[0]?.geometry.location.lat,
             },
             sourcingData as SourcingLocation,
-          );
+          )
+        ).adminRegionId;
       } catch (e) {
         await this.geoRegionService.remove(geoRegionId as unknown as string);
         throw e;

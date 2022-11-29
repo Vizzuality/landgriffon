@@ -51,9 +51,16 @@ export class ImpactCalculator {
     const newImpactToBeSaved: IndicatorRecord[] = [];
 
     rawData.forEach((data: SourcingRecordsWithIndicatorRawDataDtoV2) => {
-      const landPerTon: number = data.harvestedArea / data.production || 0;
-      const weightedTotalCropLandArea: number =
-        data.weightedAllHarvest / data.production || 0;
+      const landPerTon: number = Number.isFinite(
+        data.harvestedArea / data.production,
+      )
+        ? data.harvestedArea / data.production
+        : 0;
+      const weightedTotalCropLandArea: number = Number.isFinite(
+        data.weightedAllHarvest / data.production,
+      )
+        ? data.weightedAllHarvest / data.production
+        : 0;
       const deforestationPerHarvestLandUse: number =
         weightedTotalCropLandArea > 0
           ? data.rawDeforestation / weightedTotalCropLandArea
@@ -186,10 +193,16 @@ export class ImpactCalculator {
         number
       >();
 
-      const landPerTon: number =
-        rawData.harvestedArea / rawData.production || 0;
-      const weightedTotalCropLandArea: number =
-        rawData.weightedAllHarvest / rawData.production || 0;
+      const landPerTon: number = Number.isFinite(
+        rawData.harvestedArea / rawData.production,
+      )
+        ? rawData.harvestedArea / rawData.production
+        : 0;
+      const weightedTotalCropLandArea: number = Number.isFinite(
+        rawData.weightedAllHarvest / rawData.production,
+      )
+        ? rawData.weightedAllHarvest / rawData.production
+        : 0;
       const deforestationPerHarvestLandUse: number =
         weightedTotalCropLandArea > 0
           ? rawData.rawDeforestation / weightedTotalCropLandArea

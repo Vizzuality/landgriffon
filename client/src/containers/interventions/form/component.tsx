@@ -352,7 +352,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
 
   useEffect(() => {
     if (currentInterventionType === InterventionTypes.SupplierLocation) {
-      (['newMaterialId'] as const).forEach((field) => resetField(field));
+      (['newMaterialId'] as const).forEach((field) => resetField(field, { defaultValue: null }));
     } else if (currentInterventionType === InterventionTypes.Efficiency) {
       (
         [
@@ -365,7 +365,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
           'newLocationLatitude',
           'newLocationLongitude',
         ] as const
-      ).forEach((field) => resetField(field));
+      ).forEach((field) => resetField(field, { defaultValue: null }));
     }
 
     // * resets "impacts per ton" coefficients whenever the intervention type changes
@@ -377,8 +377,8 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     }
 
     // * resets supplier and producer info whenever the intervention type changes
-    resetField('newT1SupplierId');
-    resetField('newProducerId');
+    resetField('newT1SupplierId', { defaultValue: null });
+    resetField('newProducerId', { defaultValue: null });
 
     // * closes "Supplier" panel whenever the intervention type changes
     if (closeSupplierRef.current !== null) {
@@ -406,11 +406,11 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   useEffect(() => {
     // * if a location type doesn't require coordinates, the coordinates fields are reset to avoid sending them unintentionally
     if (locationType?.value === LocationTypes.countryOfProduction) {
-      resetField('cityAddressCoordinates');
-      resetField('newLocationLatitude');
-      resetField('newLocationLongitude');
+      resetField('cityAddressCoordinates', { defaultValue: null });
+      resetField('newLocationLatitude', { defaultValue: null });
+      resetField('newLocationLongitude', { defaultValue: null });
     }
-  }, [locationType, resetField]);
+  }, [locationType, resetField, setValue]);
 
   useEffect(() => setValue('scenarioId', scenarioId as string), [scenarioId, setValue]);
 
@@ -424,11 +424,11 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
             .map((coordinate: string) => Number.parseFloat(coordinate));
           setValue('newLocationLatitude', lat);
           setValue('newLocationLongitude', lng);
-          resetField('newLocationAddressInput');
+          resetField('newLocationAddressInput', { defaultValue: null });
         } else {
           setValue('newLocationAddressInput', cityAddressCoordinates);
-          resetField('newLocationLatitude');
-          resetField('newLocationLongitude');
+          resetField('newLocationLatitude', { defaultValue: null });
+          resetField('newLocationLongitude', { defaultValue: null });
         }
       }
     });

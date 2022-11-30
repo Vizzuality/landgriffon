@@ -336,13 +336,9 @@ export class ScenarioInterventionsService extends AppBaseService<
     const currentScenarioIntervention: ScenarioIntervention =
       await this.repository.findOneOrFail({ id });
     // TODO: Add proper typing once old methodology related deleted
-    const createScenarioDto: any = {
-      ...(currentScenarioIntervention.createDto as unknown as CreateScenarioInterventionDto),
-      ...dto,
-    };
     const newScenarioIntervention: Partial<ScenarioIntervention> =
       await this.createScenarioIntervention(
-        createScenarioDto as CreateScenarioInterventionDto,
+        dto as CreateScenarioInterventionDto,
       );
 
     await this.repository.remove(currentScenarioIntervention);

@@ -126,8 +126,8 @@ const schemaValidation = yup.object({
       return yup.array().of(optionSchema).nullable();
     }),
   newLocationAddressInput: yup.string().label('Address').nullable(),
-  newLocationLongitude: yup.number().label('Longitude').min(-180).max(180),
-  newLocationLatitude: yup.number().label('Latitude').min(-90).max(90),
+  newLocationLongitude: yup.number().label('Longitude').min(-180).max(180).nullable(),
+  newLocationLatitude: yup.number().label('Latitude').min(-90).max(90).nullable(),
 
   // Coefficients
   coefficients: yup.lazy((coefficientObject) => {
@@ -202,7 +202,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   );
 
   // Location types
-  const { data: locationTypes } = useLocationTypes();
+  const { data: locationTypes, isLoading: isLoadingLocationTypes } = useLocationTypes();
 
   // Countries
   const { data: countries, isLoading: isLoadingCountries } = useAdminRegionsTrees({ depth: 0 });
@@ -739,7 +739,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                                 <Select
                                   {...field}
                                   showSearch
-                                  loading={isLoadingProducers}
+                                  loading={isLoadingLocationTypes}
                                   current={field.value}
                                   options={locationTypes}
                                   placeholder="Select"

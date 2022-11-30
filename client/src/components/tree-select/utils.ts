@@ -1,6 +1,6 @@
 import Fuse from 'fuse.js';
 import { useQuery } from '@tanstack/react-query';
-import { useId, useMemo } from 'react';
+import { useEffect, useId, useMemo } from 'react';
 import { sortBy } from 'lodash-es';
 import { flattenTreeData } from 'rc-tree/lib/utils/treeUtil';
 
@@ -166,7 +166,6 @@ export const useTree = (
   { render, isOptionSelected }: UseTreeOptions,
 ) => {
   const id = useId();
-
   const { data: filteredKeys } = useQuery({
     queryKey: ['filtered-keys', id, options, search] as const,
     queryFn: ({ queryKey: [, , options, search] }) => {
@@ -176,11 +175,18 @@ export const useTree = (
     },
   });
 
-  const { data: treeData } = useQuery({
-    queryKey: ['tree-data', id, options],
-    queryFn: () => options.map((option) => optionToTreeData(option, render)),
+  const { data: treeData, refetch } = useQuery({
+    queryKey: ['tree-data', id, options, render] as const,
+    queryFn: ({ queryKey: [, , options] }) => {
+      return options.map((option) => optionToTreeData(option, render));
+    },
     placeholderData: [],
   });
+
+  // TODO: this is a hack to force the tree to re-render when the current selection changes. Looks like even adding render as part of the query key doesn't trigger it
+  useEffect(() => {
+    refetch();
+  }, [refetch, render]);
 
   const { data: flatTreeData } = useQuery({
     // treeData is a circular dependency
@@ -205,7 +211,7 @@ export const useTree = (
   );
 
   const { data: filteredOptions } = useQuery({
-    queryKey: ['filtered-options', id, search, flatTreeData.length] as const,
+    queryKey: ['filtered-options', id, search, flatTreeData.length, isOptionSelected] as const,
     queryFn: ({ queryKey: [, , search] }) => {
       const result = fuse.search(search);
 

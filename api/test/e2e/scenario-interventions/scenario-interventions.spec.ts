@@ -1344,7 +1344,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
     });
 
-    test('Update a scenario intervention needing recalculation should be successful', async () => {
+    // TODO: Skipping this tests since the FE will send a new full DTO when editing a intervention
+    test.skip('Update a scenario intervention needing recalculation should be successful', async () => {
       const preconditions: ScenarioInterventionPreconditions =
         await createInterventionPreconditionsWithMultipleYearRecords();
 

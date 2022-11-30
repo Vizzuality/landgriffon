@@ -362,23 +362,34 @@ export class H3DataMapRepository extends Repository<H3Data> {
     params: any[],
     scenarioComparisonQuantiles?: boolean,
   ): Promise<{ impactMap: H3IndexValueData[]; quantiles: number[] }> {
-    const tmpTableName: string = H3DataMapRepository.generateRandomTableName();
-    await getManager().query(
-      `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${query.getSql()})`,
-      params,
-    );
-    const impactMap: any = await getManager().query(
-      `SELECT * FROM "${tmpTableName}"
+    try {
+      const tmpTableName: string =
+        H3DataMapRepository.generateRandomTableName();
+      await getManager().query(
+        `CREATE TEMPORARY TABLE "${tmpTableName}" AS (${query.getSql()})`,
+        params,
+      );
+      const impactMap: any = await getManager().query(
+        `SELECT * FROM "${tmpTableName}"
       WHERE ABS("${tmpTableName}".v) > 0;`,
-    );
-    const quantiles: number[] = await (scenarioComparisonQuantiles
-      ? this.calculateScenarioComparisonQuantiles(tmpTableName)
-      : this.calculateQuantiles(tmpTableName));
-    await getManager().query(`DROP TABLE "${tmpTableName}";`);
+      );
+      const quantiles: number[] = await (scenarioComparisonQuantiles
+        ? this.calculateScenarioComparisonQuantiles(tmpTableName)
+        : this.calculateQuantiles(tmpTableName));
+      await getManager().query(`DROP TABLE "${tmpTableName}";`);
 
-    this.logger.log('Impact Map generated');
+      this.logger.log('Impact Map generated');
 
-    return { impactMap, quantiles };
+      return { impactMap, quantiles };
+    } catch (e: any) {
+      this.logger.error(`Error querying Impact Map: ${e}`);
+      // TODO: provisional guard to avoid a 500 in the consumer for when comparing scenario / actual values
+      //       end up on a division by 0, which is now a not likely but uncovered case
+      return {
+        impactMap: [],
+        quantiles: [0, 0, 0, 0, 0, 0, 0],
+      };
+    }
   }
 
   private generateBaseMapSubQuery(

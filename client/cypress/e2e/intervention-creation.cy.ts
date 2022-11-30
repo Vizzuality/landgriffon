@@ -193,19 +193,28 @@ describe('Intervention location type', () => {
 
     // Choose a location type: Switch to new material
     cy.get('[data-testid="intervention-type-option"]').first().click();
+
+    cy.wait(3000);
+  });
+
+  it('country of production => city, address, coordinates is not required', () => {
+    cy.get('[data-testid="new-location-select"]')
+      .click()
+      .find('input:visible')
+      .type('Country of production{enter}');
+
+    cy.get('[data-testid="city-address-coordinates-field"]').should('not.exist');
   });
 
   it('aggregation point => city, address, coordinates is required', () => {
     cy.get('[data-testid="new-location-select"]')
       .click()
-      .find('input:visible:first')
+      .find('input:visible')
       .type('Production aggregation{enter}');
-
-    cy.wait(300);
 
     const cityAddressCoordinateField = cy
       .get('[data-testid="city-address-coordinates-field"]')
-      .should('be.visible');
+      .should('exist');
     const cityAddressCoordinateInput = cityAddressCoordinateField.find('input');
 
     // When is a city or address
@@ -233,26 +242,13 @@ describe('Intervention location type', () => {
       .should('contain.text', 'Coordinates should be valid (-90/90, -180/180)');
   });
 
-  it('country of production => city, address, coordinates is not required', () => {
-    cy.get('[data-testid="new-location-select"]')
-      .click()
-      .find('input:visible')
-      .type('Country of production{enter}');
-
-    cy.get('[data-testid="city-address-coordinates-field"]').should('not.exist');
-  });
-
   it('point of production => city, address, coordinates is required', () => {
     cy.get('[data-testid="new-location-select"]')
       .click()
       .find('input:visible')
       .type('Point of production{enter}');
 
-    cy.wait(300);
-
-    const cityAddressCoordinateField = cy
-      .get('[data-testid="city-address-coordinates-field"]')
-      .should('be.visible');
+    const cityAddressCoordinateField = cy.get('[data-testid="city-address-coordinates-field"]');
     const cityAddressCoordinateInput = cityAddressCoordinateField.find('input');
 
     // When is a city or address
@@ -283,7 +279,7 @@ describe('Intervention location type', () => {
   it('unknown => city, address, coordinates is not required', () => {
     cy.get('[data-testid="new-location-select"]')
       .click()
-      .find('input:visible:first')
+      .find('input:visible')
       .type('Unknown{enter}');
 
     cy.get('[data-testid="city-address-coordinates-field"]').should('not.exist');

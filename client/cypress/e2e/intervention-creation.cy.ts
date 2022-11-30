@@ -198,8 +198,8 @@ describe('Intervention location type', () => {
   it('aggregation point => city, address, coordinates is required', () => {
     cy.get('[data-testid="new-location-select"]')
       .click()
-      .find('input:visible')
-      .type('Production aggregation point{enter}');
+      .find('input:visible:first')
+      .type('Production aggregation{enter}');
 
     cy.wait(300);
 
@@ -283,7 +283,7 @@ describe('Intervention location type', () => {
   it('unknown => city, address, coordinates is not required', () => {
     cy.get('[data-testid="new-location-select"]')
       .click()
-      .find('input:visible')
+      .find('input:visible:first')
       .type('Unknown{enter}');
 
     cy.get('[data-testid="city-address-coordinates-field"]').should('not.exist');

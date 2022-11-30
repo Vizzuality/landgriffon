@@ -126,8 +126,28 @@ const schemaValidation = yup.object({
       return yup.array().of(optionSchema).nullable();
     }),
   newLocationAddressInput: yup.string().label('Address').nullable(),
-  newLocationLongitude: yup.number().label('Longitude').min(-180).max(180).nullable(),
-  newLocationLatitude: yup.number().label('Latitude').min(-90).max(90).nullable(),
+  newLocationLongitude: yup
+    .number()
+    .label('Longitude')
+    .when('newLocationType', {
+      is: (newLocationType) =>
+        [LocationTypes.aggregationPoint, LocationTypes.pointOfProduction].includes(
+          newLocationType?.value,
+        ),
+      then: (schema) => schema.min(-180).max(180).required('Longitude field is required'),
+      otherwise: (schema) => schema.nullable(),
+    }),
+  newLocationLatitude: yup
+    .number()
+    .label('Latitude')
+    .when('newLocationType', {
+      is: (newLocationType) =>
+        [LocationTypes.aggregationPoint, LocationTypes.pointOfProduction].includes(
+          newLocationType?.value,
+        ),
+      then: (schema) => schema.min(-90).max(90).required('Latitude field is required'),
+      otherwise: (schema) => schema.nullable(),
+    }),
 
   // Coefficients
   coefficients: yup.lazy((coefficientObject) => {
@@ -289,8 +309,11 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
             (intervention.newLocationLatitudeInput &&
               intervention.newLocationLongitudeInput &&
               `${intervention.newLocationLatitudeInput},${intervention.newLocationLongitudeInput}`) ||
-            '',
+            null,
           newLocationAddressInput: intervention?.newLocationAddressInput || null,
+          newLocationLatitude: 0,
+          newLocationLongitude: 0,
+
           // New supplier/producer
           newT1SupplierId: intervention?.newT1Supplier
             ? {
@@ -400,15 +423,20 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
       'newLocationType',
       'newLocationCountryInput',
       'newLocationAddressInput',
+      'newLocationLatitude',
+      'newLocationLongitude',
     ]);
   }, [currentInterventionType, clearErrors]);
 
   useEffect(() => {
     // * if a location type doesn't require coordinates, the coordinates fields are reset to avoid sending them unintentionally
-    if (locationType?.value === LocationTypes.countryOfProduction) {
+    if (
+      locationType?.value === LocationTypes.countryOfProduction ||
+      locationType?.value === LocationTypes.unknown
+    ) {
       resetField('cityAddressCoordinates', { defaultValue: null });
-      resetField('newLocationLatitude', { defaultValue: null });
-      resetField('newLocationLongitude', { defaultValue: null });
+      resetField('newLocationLatitude', { defaultValue: 0 });
+      resetField('newLocationLongitude', { defaultValue: 0 });
     }
   }, [locationType, resetField, setValue]);
 
@@ -427,8 +455,8 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
           resetField('newLocationAddressInput', { defaultValue: null });
         } else {
           setValue('newLocationAddressInput', cityAddressCoordinates);
-          resetField('newLocationLatitude', { defaultValue: null });
-          resetField('newLocationLongitude', { defaultValue: null });
+          resetField('newLocationLatitude', { defaultValue: 0 });
+          resetField('newLocationLongitude', { defaultValue: 0 });
         }
       }
     });
@@ -793,6 +821,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                                 {...register('cityAddressCoordinates')}
                                 error={
                                   errors?.cityAddressCoordinates?.message ||
+                                  errors?.newLocationAddressInput?.message ||
                                   errors?.newLocationLatitude?.message ||
                                   errors?.newLocationLongitude?.message
                                 }
@@ -802,20 +831,17 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                               </div>
                             </div>
                             <div className="hidden">
-                              <Input
-                                type="text"
-                                {...register('newLocationAddressInput')}
-                                error={errors?.newLocationAddressInput?.message}
-                              />
+                              <Input type="text" {...register('newLocationAddressInput')} />
                             </div>
                           </>
                         )}
-                        {locationType?.value === LocationTypes.aggregationPoint && (
+                        {(locationType?.value === LocationTypes.aggregationPoint ||
+                          locationType?.value === LocationTypes.pointOfProduction) && (
                           <div className="hidden">
                             <div className="flex w-full space-x-2">
                               <Input
                                 {...register('newLocationLatitude')}
-                                type="hidden"
+                                type="number"
                                 placeholder="Latitude"
                                 min={-90}
                                 max={90}
@@ -823,7 +849,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                               />
                               <Input
                                 {...register('newLocationLongitude')}
-                                type="hidden"
+                                type="number"
                                 placeholder="Longitude"
                                 min={-180}
                                 max={180}

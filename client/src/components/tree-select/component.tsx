@@ -23,7 +23,6 @@ import { FIELD_NAMES } from './constants';
 import Badge from 'components/badge';
 import Loading from 'components/loading';
 
-import type { UseTreeOptions } from './utils';
 import type { Key } from 'rc-tree/lib/interface';
 import type { TreeProps } from 'rc-tree';
 import type { TreeSelectProps, TreeSelectOption, TreeDataNode } from './types';
@@ -165,18 +164,22 @@ const InnerTreeSelect = <IsMulti extends boolean>(
   const [expandedKeys, setExpandedKeys] = useState<TreeProps<TreeDataNode>['expandedKeys']>([]);
   const [checkedKeys, setCheckedKeys] = useState<Key[]>([]);
 
-  const useTreeOptions = useMemo<UseTreeOptions>(
-    () => ({
-      isOptionSelected: (key) => selectedKeys.includes(key) || selected?.value === key,
-      render: (node) => ({
+  const isOptionSelected = useCallback(
+    (key: Key) => selectedKeys.includes(key) || selected?.value === key,
+    [selected, selectedKeys],
+  );
+
+  const renderNode = useCallback(
+    (node: TreeDataNode) => {
+      return {
         ...node,
         className: classNames(THEMES[theme].treeNodes, {
           'w-full': fitContent,
-          'bg-navy-50 font-bold': !multiple && selected?.value === node.value,
+          'bg-navy-50 font-bold': !multiple && selected?.value === node?.value,
         }),
-      }),
-    }),
-    [fitContent, multiple, selected?.value, selectedKeys, theme],
+      };
+    },
+    [fitContent, multiple, selected, theme],
   );
 
   const {
@@ -184,7 +187,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
     filteredOptions,
     flatTreeData,
     treeData,
-  } = useTree(options, debouncedSearch, useTreeOptions);
+  } = useTree(options, debouncedSearch, { isOptionSelected, render: renderNode });
 
   const handleExpand: TreeProps<TreeDataNode>['onExpand'] = useCallback(
     (keys, { node, expanded }) => {
@@ -365,7 +368,6 @@ const InnerTreeSelect = <IsMulti extends boolean>(
     return Component;
   }, [handleSearch, multiple, placeholder, ref, resetSearch, searchTerm, selected, theme]);
 
-  const [treeRef, setTreeRef] = useState<Tree<TreeDataNode>>();
   const [keyToScroll, setKeyToScroll] = useState<Key>();
 
   useEffect(() => {
@@ -386,7 +388,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
 
     listContainer.scrollTop = offset * (elementIndex + 1) - listHeight / 2;
     setKeyToScroll(undefined);
-  }, [keyToScroll, treeRef, treeData, expandedKeys]);
+  }, [keyToScroll, treeData, expandedKeys]);
 
   const handleSearchSelection = useCallback(
     (newKey: Key) => {
@@ -580,7 +582,6 @@ const InnerTreeSelect = <IsMulti extends boolean>(
             ) : (
               <>
                 <Tree
-                  ref={setTreeRef}
                   className={classNames({ hidden: loading || !!debouncedSearch })}
                   checkStrictly={false}
                   checkable={multiple}

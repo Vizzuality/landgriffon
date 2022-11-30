@@ -436,7 +436,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
           return keys;
         });
       } else {
-        if (selected.value === selectedNode.key) {
+        if (selected?.value === selectedNode.key) {
           setSelected(null);
         } else {
           setSelected({ label: selectedNode.title as string, value: selectedNode.key });

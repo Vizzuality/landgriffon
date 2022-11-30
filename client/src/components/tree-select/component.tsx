@@ -36,7 +36,7 @@ const THEMES = {
       'flex-row max-w-full bg-white relative border border-gray-200 transition-colors hover:border-gray-300 rounded-md shadow-sm cursor-pointer min-h-[2.5rem] text-sm p-0.5 px-[0.2rem]',
     arrow: 'items-center text-gray-900',
     treeNodes:
-      'flex gap-1 items-center px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-navy-50 z-[100]',
+      'flex gap-1 items-center p-2 pl-1 whitespace-nowrap text-sm cursor-pointer hover:bg-navy-50 z-[100]',
     badge: 'text-sm',
   },
   'inline-primary': {
@@ -163,20 +163,20 @@ const InnerTreeSelect = <IsMulti extends boolean>(
   const [selected, setSelected] = useState<TreeSelectOption>(null);
   const [selectedKeys, setSelectedKeys] = useState<TreeProps<TreeDataNode>['selectedKeys']>([]);
   const [expandedKeys, setExpandedKeys] = useState<TreeProps<TreeDataNode>['expandedKeys']>([]);
-
   const [checkedKeys, setCheckedKeys] = useState<Key[]>([]);
 
   const useTreeOptions = useMemo<UseTreeOptions>(
     () => ({
-      isOptionSelected: (key) => selectedKeys.includes(key),
+      isOptionSelected: (key) => selectedKeys.includes(key) || selected?.value === key,
       render: (node) => ({
         ...node,
         className: classNames(THEMES[theme].treeNodes, {
           'w-full': fitContent,
+          'bg-navy-50 font-bold': !multiple && selected?.value === node.value,
         }),
       }),
     }),
-    [fitContent, selectedKeys, theme],
+    [fitContent, multiple, selected?.value, selectedKeys, theme],
   );
 
   const {
@@ -335,8 +335,9 @@ const InnerTreeSelect = <IsMulti extends boolean>(
           value={searchTerm}
           placeholder={selected === null ? placeholder : null}
           className={classNames(
-            'p-0 appearance-none truncate border-none focus:ring-0 w-full pl-2 py-2',
+            'p-0 appearance-none truncate border-none focus:ring-0 w-full py-2',
             {
+              'pl-2': multiple,
               'text-sm': theme !== 'inline-primary',
             },
           )}
@@ -362,7 +363,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
       </div>
     );
     return Component;
-  }, [handleSearch, placeholder, ref, resetSearch, searchTerm, selected, theme]);
+  }, [handleSearch, multiple, placeholder, ref, resetSearch, searchTerm, selected, theme]);
 
   const [treeRef, setTreeRef] = useState<Tree<TreeDataNode>>();
   const [keyToScroll, setKeyToScroll] = useState<Key>();
@@ -443,7 +444,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
         }
       }
     },
-    [resetSearch, flatTreeData, multiple, checkedKeys, checkedStrategy, onChange, selected?.value],
+    [resetSearch, flatTreeData, multiple, checkedKeys, checkedStrategy, onChange, selected],
   );
 
   return (
@@ -466,6 +467,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
             // apply flex-1 to all children to wrap content nicely
             '[&>*]:flex-1',
             {
+              'px-2': !multiple,
               'flex flex-wrap': theme !== 'inline-primary',
               'ring-navy-400 border-navy-400': isOpen,
               'border-red-400': theme === 'inline-primary' && error,

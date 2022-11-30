@@ -308,11 +308,15 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
             intervention.newLocationAddressInput ||
             (intervention.newLocationLatitudeInput &&
               intervention.newLocationLongitudeInput &&
-              `${intervention.newLocationLatitudeInput},${intervention.newLocationLongitudeInput}`) ||
+              `${intervention.newLocationLatitudeInput}, ${intervention.newLocationLongitudeInput}`) ||
             null,
           newLocationAddressInput: intervention?.newLocationAddressInput || null,
-          newLocationLatitude: 0,
-          newLocationLongitude: 0,
+          newLocationLatitude: intervention?.newLocationLatitudeInput
+            ? Number(intervention?.newLocationLatitudeInput)
+            : 0,
+          newLocationLongitude: intervention?.newLocationLongitudeInput
+            ? Number(intervention?.newLocationLongitudeInput)
+            : 0,
 
           // New supplier/producer
           newT1SupplierId: intervention?.newT1Supplier
@@ -841,18 +845,14 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                             <div className="flex w-full space-x-2">
                               <Input
                                 {...register('newLocationLatitude')}
-                                type="number"
+                                type="text"
                                 placeholder="Latitude"
-                                min={-90}
-                                max={90}
                                 className="w-full"
                               />
                               <Input
                                 {...register('newLocationLongitude')}
-                                type="number"
+                                type="text"
                                 placeholder="Longitude"
-                                min={-180}
-                                max={180}
                                 className="w-full"
                               />
                             </div>
@@ -985,7 +985,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                       }
                     >
                       <div className="space-y-4">
-                        {indicators.map((indicator) => (
+                        {indicators?.map((indicator) => (
                           <div key={indicator.id}>
                             <label className={LABEL_CLASSNAMES}>{indicator.name}</label>
                             <Input

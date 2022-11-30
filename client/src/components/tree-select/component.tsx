@@ -587,7 +587,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
                   selectedKeys={selectedKeys}
                   expandedKeys={expandedKeys}
                   checkedKeys={checkedKeys}
-                  icon={(props) => CustomIcon(props)}
+                  icon={multiple && CustomIcon}
                   switcherIcon={CustomSwitcherIcon}
                   onExpand={handleExpand}
                   onSelect={handleSelect}

@@ -148,7 +148,7 @@ extract-mapspam-crop-harvest: download-mapspam-crop-harvest
 		-E $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_RICE_A.tif --E_band 1 \
 		-F $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_SORG_A.tif --F_band 1 \
 		-G $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_SMIL_A.tif --G_band 1 \
-		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_WheaOcerBarlMaizRiceSortSmil_A.tif
+		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_WheaOcerBarlMaizRiceSorgSmil_A.tif
 	gdal_calc.py --quiet --calc "A+B+C+D" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_WHEA_A.tif --A_band 1 \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_OCER_A.tif --B_band 1 \

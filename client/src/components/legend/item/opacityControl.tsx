@@ -20,8 +20,8 @@ const OpacityControl: React.FC<OpacityControlProps> = ({ opacity, onChange }) =>
 
   const TooltipContent = useMemo(
     () => (
-      <div className="bg-white px-4 py-1 rounded-md w-52">
-        <div className="text-left text-gray-600">Opacity</div>
+      <div className="bg-white px-4 py-2 rounded-md w-52">
+        <div className="text-left text-gray-500 text-2xs">Opacity</div>
         <RangeSlider
           unit="%"
           min={0}
@@ -32,7 +32,7 @@ const OpacityControl: React.FC<OpacityControlProps> = ({ opacity, onChange }) =>
             setRangeValue(value);
           }}
         />
-        <div className="flex flex-row justify-between w-full text-gray-400">
+        <div className="flex flex-row justify-between w-full text-gray-300 text-2xs">
           <div>0%</div>
           <div>100%</div>
         </div>

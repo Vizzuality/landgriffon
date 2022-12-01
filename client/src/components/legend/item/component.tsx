@@ -71,15 +71,15 @@ export const LegendItem = ({
           </div>
         )}
         {!isLoading && (
-          <>
+          <div className="overflow-hidden">
             {showComparisonModeToggle && isComparisonEnabled && <ComparisonToggle />}
             {children && (
-              <div className="flex flex-row gap-2 text-gray-500">
-                <div className="flex-grow min-w-0">{children}</div>
-                <div className="-mt-0.5 min-w-fit px text-2xs">{unit && <>({unit})</>}</div>
+              <div className="flex justify-between w-full flex-row gap-2 text-gray-500">
+                <div className="flex-grow">{children}</div>
+                <div className="-mt-0.5 px text-2xs">{unit && `(${unit})`}</div>
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
     </div>

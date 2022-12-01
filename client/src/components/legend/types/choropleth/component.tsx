@@ -15,7 +15,7 @@ export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
   items = [],
 }) => {
   const itemWidth = useMemo<number>(
-    () => (items.length === 0 ? 0 : 100 / items.length),
+    () => Math.floor(items.length === 0 ? 0 : 100 / items.length),
     [items.length],
   );
   if (items.length === 0) return null;

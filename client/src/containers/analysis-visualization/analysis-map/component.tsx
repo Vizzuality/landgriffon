@@ -18,6 +18,7 @@ import useH3MaterialData from 'hooks/h3-data/material';
 
 import type { MapStyle } from 'components/map';
 import type { BasemapValue } from 'components/map/controls/basemap/types';
+import type { H3Data } from 'types';
 
 const AnalysisMap = () => {
   const { layerDeckGLProps, layers: layersMetadata } = useAppSelector(analysisMap);
@@ -52,12 +53,12 @@ const AnalysisMap = () => {
         if (!layerInfo) {
           return null;
         }
-        const data =
+        const data: H3Data =
           layerInfo.id === 'material'
             ? materialData?.data
             : layerInfo.id === 'impact'
             ? impactData
-            : contextualDataById[layerInfo.id];
+            : contextualDataById[layerInfo.id]?.data;
 
         return new H3HexagonLayer({
           ...props,

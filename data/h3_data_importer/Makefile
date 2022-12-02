@@ -88,7 +88,7 @@ extract-mapspam-crop-production: download-mapspam-crop-production
 		-E $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_RICE_A.tif \
 		-F $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_SORG_A.tif \
 		-G $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_SMIL_A.tif \
-		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_WheaOcerBarlMaizRiceSortSmil_A.tif
+		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_WheaOcerBarlMaizRiceSorgSmil_A.tif
 	gdal_calc.py --quiet --calc "A+B+C+D" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_WHEA_A.tif \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_OCER_A.tif \

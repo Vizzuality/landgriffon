@@ -68,8 +68,9 @@ export class AdminRegionsService extends AppBaseService<
   }
 
   async getAdminRegionById(id: string): Promise<AdminRegion> {
-    const found: AdminRegion | undefined =
-      await this.adminRegionRepository.findOne(id);
+    const found: AdminRegion | null = await this.adminRegionRepository.findOne({
+      where: { id },
+    });
 
     if (!found) {
       throw new NotFoundException(`Admin region with ID "${id}" not found`);
@@ -79,8 +80,7 @@ export class AdminRegionsService extends AppBaseService<
   }
 
   async getAdminRegionsById(id: string[]): Promise<AdminRegion[]> {
-    const found: AdminRegion[] = await this.adminRegionRepository.findByIds(id);
-    return found;
+    return await this.adminRegionRepository.findByIds(id);
   }
 
   async findAllUnpaginated(): Promise<AdminRegion[]> {

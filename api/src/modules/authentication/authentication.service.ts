@@ -97,7 +97,7 @@ export class AuthenticationService {
     email: string;
     password: string;
   }): Promise<User | null> {
-    const user: User | undefined = await this.userRepository.findByEmail(email);
+    const user: User | null = await this.userRepository.findByEmail(email);
     const isUserActive: boolean = (user &&
       user.isActive &&
       !user.isDeleted) as boolean;
@@ -265,7 +265,7 @@ export class AuthenticationService {
   }
 
   private async checkEmail(email: string): Promise<void> {
-    const user: User | undefined = await this.userRepository.findByEmail(email);
+    const user: User | null = await this.userRepository.findByEmail(email);
     if (user && !user.isDeleted) {
       throw new ConflictException('Email already exists.');
     }

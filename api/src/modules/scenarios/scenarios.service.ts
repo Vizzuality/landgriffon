@@ -47,10 +47,10 @@ export class ScenariosService extends AppBaseService<
     };
   }
 
-  async getScenarioById(id: number): Promise<Scenario> {
-    const found: Scenario | undefined = await this.scenarioRepository.findOne(
-      id,
-    );
+  async getScenarioById(id: string): Promise<Scenario> {
+    const found: Scenario | null = await this.scenarioRepository.findOne({
+      where: { id },
+    });
 
     if (!found) {
       throw new NotFoundException(`Scenario with ID "${id}" not found`);

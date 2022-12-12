@@ -61,8 +61,8 @@ export class ContextualLayersService {
       );
     }
 
-    const contextualLayer: ContextualLayer | undefined =
-      await this.contextualLayerRepository.findOne(contextualLayerId);
+    const contextualLayer: ContextualLayer | null =
+      await this.contextualLayerRepository.findOneBy({ id: contextualLayerId });
     if (!contextualLayer) {
       throw new NotFoundException(
         `No Contextual Layer info found with Contextual layer Id: ${contextualLayerId}`,

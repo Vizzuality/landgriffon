@@ -66,10 +66,9 @@ export class IndicatorsService extends AppBaseService<
   }
 
   async getIndicatorById(id: string): Promise<Indicator> {
-    const found: Indicator | undefined = await this.indicatorRepository.findOne(
-      id,
-      { where: { status: INDICATOR_STATUS.ACTIVE } },
-    );
+    const found: Indicator | null = await this.indicatorRepository.findOne({
+      where: { id, status: INDICATOR_STATUS.ACTIVE },
+    });
 
     if (!found) {
       throw new NotFoundException(`Indicator with ID "${id}" not found`);
@@ -85,9 +84,9 @@ export class IndicatorsService extends AppBaseService<
      * in the client's request
      */
 
-    const deforestationIndicator: Indicator | undefined =
+    const deforestationIndicator: Indicator | null =
       await this.indicatorRepository.findOne({
-        nameCode: INDICATOR_TYPES.DEFORESTATION,
+        where: { nameCode: INDICATOR_TYPES.DEFORESTATION },
       });
     if (!deforestationIndicator)
       throw new NotFoundException(
@@ -109,10 +108,11 @@ export class IndicatorsService extends AppBaseService<
   }
 
   async getIndicatorsById(ids: string[]): Promise<Indicator[]> {
-    const indicators: Indicator[] = await this.indicatorRepository.findByIds(
-      ids,
-      { where: { status: INDICATOR_STATUS.ACTIVE } },
-    );
+    const indicators: Indicator[] = await this.indicatorRepository.findBy({
+      id: In(ids),
+      status: INDICATOR_STATUS.ACTIVE,
+    });
+
     if (!indicators.length) {
       throw new NotFoundException(
         'No Indicator has been found with provided IDs',
@@ -159,7 +159,9 @@ export class IndicatorsService extends AppBaseService<
     this.logger.log(`Found ${activeIndicatorsNameCodes.length} to activate`);
     const indicatorsToActivate: Indicator[] =
       await this.indicatorRepository.find({
-        nameCode: In(activeIndicatorsNameCodes),
+        where: {
+          nameCode: In(activeIndicatorsNameCodes),
+        },
       });
     if (!indicatorsToActivate.length) {
       throw new ServiceUnavailableException(

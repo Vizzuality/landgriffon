@@ -38,21 +38,10 @@ export class UnitConversionsService extends AppBaseService<
     };
   }
 
-  async getUnitConversionById(id: number): Promise<UnitConversion> {
-    const found: UnitConversion | undefined =
-      await this.unitConversionRepository.findOne(id);
-
-    if (!found) {
-      throw new NotFoundException(`Conversion unit with ID "${id}" not found`);
-    }
-
-    return found;
-  }
-
   async getUnitConversionByUnitId(unitId: string): Promise<UnitConversion> {
-    const unitConversion: UnitConversion | undefined =
+    const unitConversion: UnitConversion | null =
       await this.unitConversionRepository.findOne({
-        where: { unit: unitId },
+        where: { id: unitId },
       });
     if (!unitConversion) {
       throw new NotFoundException(

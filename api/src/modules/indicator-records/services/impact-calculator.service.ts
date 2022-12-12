@@ -107,10 +107,9 @@ export class ImpactCalculator {
 
     let calculatedIndicatorRecordValues: IndicatorRecordCalculatedValuesDtoV2;
     const indicatorRecords: IndicatorRecord[] = [];
-    const materialH3s: MaterialToH3 | undefined =
-      await this.materialToH3.findOne({
-        where: { materialId },
-      });
+    const materialH3s: MaterialToH3 | null = await this.materialToH3.findOne({
+      where: { materialId },
+    });
     if (!materialH3s) {
       throw new MissingH3DataError();
     }
@@ -189,7 +188,7 @@ export class ImpactCalculator {
       adminRegionId,
     );
 
-    const cachedData: CachedData | undefined =
+    const cachedData: CachedData | null =
       await this.cachedDataService.getCachedDataByKey(
         cacheKey,
         CACHED_DATA_TYPE.RAW_VALUES_GEOREGION,

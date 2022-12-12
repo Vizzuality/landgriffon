@@ -81,9 +81,9 @@ export class IndicatorRecordsService extends AppBaseService<
     };
   }
 
-  async getIndicatorRecordById(id: number): Promise<IndicatorRecord> {
-    const found: IndicatorRecord | undefined =
-      await this.indicatorRecordRepository.findOne(id);
+  async getIndicatorRecordById(id: string): Promise<IndicatorRecord> {
+    const found: IndicatorRecord | null =
+      await this.indicatorRecordRepository.findOneBy({ id });
     if (!found) {
       throw new NotFoundException(`Indicator Record with ID "${id}" not found`);
     }
@@ -228,16 +228,12 @@ export class IndicatorRecordsService extends AppBaseService<
     }
 
     // Create the Indicator Records entities from the calculated indicator values
-    const indicatorRecords: IndicatorRecord[] = indicators.map(
-      (indicator: Indicator) => {
-        return IndicatorRecordsService.createIndicatorRecord(
-          indicator,
-          calculatedIndicatorRecordValues,
-        );
-      },
-    );
-
-    return indicatorRecords;
+    return indicators.map((indicator: Indicator) => {
+      return IndicatorRecordsService.createIndicatorRecord(
+        indicator,
+        calculatedIndicatorRecordValues,
+      );
+    });
   }
 
   /**
@@ -488,7 +484,7 @@ export class IndicatorRecordsService extends AppBaseService<
       materialH3,
     );
 
-    const cachedData: CachedData | undefined =
+    const cachedData: CachedData | null =
       await this.cachedDataService.getCachedDataByKey(
         cacheKey,
         CACHED_DATA_TYPE.RAW_MATERIAL_VALUE_GEOREGION,
@@ -535,7 +531,7 @@ export class IndicatorRecordsService extends AppBaseService<
       materialH3s,
     );
 
-    const cachedData: CachedData | undefined =
+    const cachedData: CachedData | null =
       await this.cachedDataService.getCachedDataByKey(
         cacheKey,
         CACHED_DATA_TYPE.RAW_INDICATOR_VALUE_GEOREGION,

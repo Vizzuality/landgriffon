@@ -9,7 +9,7 @@ export class UserRepository extends Repository<User> {
    * We treat email addresses as login usernames in this context, so we perform
    * the lookup case-insensitively.
    */
-  async findByEmail(email: string): Promise<User | undefined> {
-    return this.findOne({ email: ILike(email.toLowerCase()) });
+  async findByEmail(email: string): Promise<User | null> {
+    return this.findOne({ where: { email: ILike(email.toLowerCase()) } });
   }
 }

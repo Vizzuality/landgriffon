@@ -62,18 +62,16 @@ export class H3DataService {
     );
   }
 
-  async getById(id: string): Promise<H3Data | undefined> {
-    return await this.h3DataRepository.findOne({ id });
+  async getById(id: string): Promise<H3Data | null> {
+    return await this.h3DataRepository.findOneBy({ id });
   }
 
-  async findH3ByIndicatorId(indicatorId: string): Promise<H3Data | undefined> {
-    return await this.h3DataRepository.findOne({ indicatorId });
+  async findH3ByIndicatorId(indicatorId: string): Promise<H3Data | null> {
+    return await this.h3DataRepository.findOne({ where: { indicatorId } });
   }
 
-  findH3ByContextualLayerId(
-    contextualLayerId: string,
-  ): Promise<H3Data | undefined> {
-    return this.h3DataRepository.findOne({ contextualLayerId });
+  findH3ByContextualLayerId(contextualLayerId: string): Promise<H3Data | null> {
+    return this.h3DataRepository.findOne({ where: { contextualLayerId } });
   }
 
   getContextualLayerH3DataByClosestYear(

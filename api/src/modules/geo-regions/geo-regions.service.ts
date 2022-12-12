@@ -39,10 +39,10 @@ export class GeoRegionsService extends AppBaseService<
     };
   }
 
-  async getGeoRegionById(id: number): Promise<GeoRegion> {
-    const found: GeoRegion | undefined = await this.geoRegionRepository.findOne(
+  async getGeoRegionById(id: string): Promise<GeoRegion> {
+    const found: GeoRegion | null = await this.geoRegionRepository.findOneBy({
       id,
-    );
+    });
 
     if (!found) {
       throw new NotFoundException(`geo region with ID "${id}" not found`);

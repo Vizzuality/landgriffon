@@ -74,9 +74,9 @@ export class SourcingLocationsService extends AppBaseService<
     };
   }
 
-  async getSourcingLocationById(id: number): Promise<SourcingLocation> {
-    const found: SourcingLocation | undefined =
-      await this.sourcingLocationRepository.findOne(id);
+  async getSourcingLocationById(id: string): Promise<SourcingLocation> {
+    const found: SourcingLocation | null =
+      await this.sourcingLocationRepository.findOne({ where: { id } });
 
     if (!found) {
       throw new NotFoundException(
@@ -252,7 +252,7 @@ export class SourcingLocationsService extends AppBaseService<
 
   async findByGeoRegionId(
     geoRegionId: string,
-  ): Promise<SourcingLocation | undefined> {
+  ): Promise<SourcingLocation | null> {
     return this.sourcingLocationRepository.findOne({ where: { geoRegionId } });
   }
 }

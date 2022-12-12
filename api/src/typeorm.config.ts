@@ -19,9 +19,9 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   migrationsRun:
     dbConfig.migrationsRun === true || dbConfig.migrationsRun === 'true',
   dropSchema: dbConfig.dropSchema === true || dbConfig.dropSchema === 'true',
-  cli: {
-    migrationsDir: 'migrations',
-  },
+  // cli: {
+  //   migrationsDir: 'migrations',
+  // },
   cache:
     dbConfig.cacheEnabled === true || dbConfig.cacheEnabled === 'true'
       ? {

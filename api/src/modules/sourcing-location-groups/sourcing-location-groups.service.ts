@@ -46,10 +46,10 @@ export class SourcingLocationGroupsService extends AppBaseService<
   }
 
   async getSourcingLocationGroupById(
-    id: number,
+    id: string,
   ): Promise<SourcingLocationGroup> {
-    const found: SourcingLocationGroup | undefined =
-      await this.sourcingLocationGroupRepository.findOne(id);
+    const found: SourcingLocationGroup | null =
+      await this.sourcingLocationGroupRepository.findOne({ where: { id } });
 
     if (!found) {
       throw new NotFoundException(

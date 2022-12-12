@@ -38,9 +38,9 @@ export class IndicatorCoefficientsService extends AppBaseService<
     };
   }
 
-  async getIndicatorCoefficientById(id: number): Promise<IndicatorCoefficient> {
-    const found: IndicatorCoefficient | undefined =
-      await this.indicatorCoefficientRepository.findOne(id);
+  async getIndicatorCoefficientById(id: string): Promise<IndicatorCoefficient> {
+    const found: IndicatorCoefficient | null =
+      await this.indicatorCoefficientRepository.findOneBy({ id });
     if (!found) {
       throw new NotFoundException(
         `Indicator Coefficient with ID "${id}" not found`,

@@ -34,10 +34,9 @@ export class CachedDataService {
   async getCachedDataByKey(
     keyToBeHashed: any,
     type: CACHED_DATA_TYPE,
-  ): Promise<CachedData | undefined> {
+  ): Promise<CachedData | null> {
     return this.cachedDataRepository.findOne({
-      hashedKey: this.generateKeyHash(keyToBeHashed),
-      type,
+      where: { hashedKey: this.generateKeyHash(keyToBeHashed), type },
     });
   }
 

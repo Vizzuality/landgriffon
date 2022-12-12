@@ -73,10 +73,7 @@ export class SuppliersService extends AppBaseService<
   async create(createModel: CreateSupplierDto): Promise<Supplier> {
     if (createModel.parentId) {
       try {
-        const parentSupplier: Supplier = await this.getSupplierById(
-          createModel.parentId,
-        );
-        createModel.parent = parentSupplier;
+        createModel.parent = await this.getSupplierById(createModel.parentId);
       } catch (error) {
         throw new HttpException(
           `Parent supplier with ID "${createModel.parentId}" not found`,
@@ -89,7 +86,9 @@ export class SuppliersService extends AppBaseService<
   }
 
   async getSupplierById(id: string): Promise<Supplier> {
-    const found: Supplier | undefined = await this.repository.findOne(id);
+    const found: Supplier | null = await this.repository.findOne({
+      where: { id },
+    });
 
     if (!found) {
       throw new NotFoundException(`Supplier with ID "${id}" not found`);
@@ -99,8 +98,7 @@ export class SuppliersService extends AppBaseService<
   }
 
   async getSuppliersById(id: string[]): Promise<Supplier[]> {
-    const found: Supplier[] = await this.repository.findByIds(id);
-    return found;
+    return await this.repository.findByIds(id);
   }
 
   async saveMany(entityArray: Supplier[]): Promise<void> {

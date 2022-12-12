@@ -95,9 +95,9 @@ export class ScenarioInterventionsService extends AppBaseService<
     };
   }
 
-  async getScenarioInterventionById(id: number): Promise<ScenarioIntervention> {
-    const found: ScenarioIntervention | undefined =
-      await this.scenarioInterventionRepository.findOne(id);
+  async getScenarioInterventionById(id: string): Promise<ScenarioIntervention> {
+    const found: ScenarioIntervention | null =
+      await this.scenarioInterventionRepository.findOne({ where: { id } });
 
     if (!found) {
       throw new NotFoundException(
@@ -334,7 +334,7 @@ export class ScenarioInterventionsService extends AppBaseService<
     dto: UpdateScenarioInterventionDto,
   ): Promise<Partial<ScenarioIntervention>> {
     const currentScenarioIntervention: ScenarioIntervention =
-      await this.repository.findOneOrFail({ id });
+      await this.repository.findOneOrFail({ where: { id } });
     // TODO: Add proper typing once old methodology related deleted
     const newScenarioIntervention: Partial<ScenarioIntervention> =
       await this.createScenarioIntervention(

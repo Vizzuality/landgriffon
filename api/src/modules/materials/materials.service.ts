@@ -120,10 +120,7 @@ export class MaterialsService extends AppBaseService<
   async create(createModel: CreateMaterialDto): Promise<Material> {
     if (createModel.parentId) {
       try {
-        const parentMaterial: Material = await this.getMaterialById(
-          createModel.parentId,
-        );
-        createModel.parent = parentMaterial;
+        createModel.parent = await this.getMaterialById(createModel.parentId);
       } catch (error) {
         throw new HttpException(
           `Parent material with ID "${createModel.parentId}" not found`,
@@ -136,9 +133,9 @@ export class MaterialsService extends AppBaseService<
   }
 
   async getMaterialById(id: string): Promise<Material> {
-    const found: Material | undefined = await this.materialRepository.findOne(
-      id,
-    );
+    const found: Material | null = await this.materialRepository.findOne({
+      where: { id },
+    });
 
     if (!found) {
       throw new NotFoundException(`Material with ID "${id}" not found`);

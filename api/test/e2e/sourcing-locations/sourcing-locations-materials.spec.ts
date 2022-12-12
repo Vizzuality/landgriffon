@@ -1,9 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { Material } from 'modules/materials/material.entity';
-import { MaterialsModule } from 'modules/materials/materials.module';
 import {
   createMaterial,
   createScenarioIntervention,
@@ -11,8 +8,10 @@ import {
   createSourcingRecord,
   createSupplier,
 } from '../../entity-mocks';
-import { saveAdminAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import {
   LOCATION_TYPES,
@@ -21,32 +20,51 @@ import {
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { SourcingLocationMaterial } from 'modules/sourcing-locations/dto/materials.sourcing-location.dto';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
+import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
+import { MaterialRepository } from 'modules/materials/material.repository';
+import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 
 describe('Materials - Get the list of Materials uploaded by User with details', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let sourcingLocationRepository: SourcingLocationRepository;
+  let sourcingRecordRepository: SourcingRecordRepository;
+  let materialRepository: MaterialRepository;
+  let supplierRepository: SupplierRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, MaterialsModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
 
-    sourcingLocationRepository = moduleFixture.get<SourcingLocationRepository>(
-      SourcingLocationRepository,
+    dataSource = testApplication.get<DataSource>(DataSource);
+
+    sourcingLocationRepository =
+      testApplication.get<SourcingLocationRepository>(
+        SourcingLocationRepository,
+      );
+    sourcingRecordRepository = testApplication.get<SourcingRecordRepository>(
+      SourcingRecordRepository,
     );
+    materialRepository =
+      testApplication.get<MaterialRepository>(MaterialRepository);
+    supplierRepository =
+      testApplication.get<SupplierRepository>(SupplierRepository);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
     await sourcingLocationRepository.delete({});
+    await sourcingRecordRepository.delete({});
+    await supplierRepository.delete({});
+    await materialRepository.delete({});
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   test('Getting list of materials uploaded by users (and being part of sourcing locations) should be successful with default pagination', async () => {
@@ -58,7 +76,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     const material2: Material = await createMaterial({ name: 'maize' });
     const material3: Material = await createMaterial({ name: 'cotton' });
     const material4: Material = await createMaterial({ name: 'cocoa' });
-    await createMaterial({ name: 'soya beans' });
+    await createMaterial({ name: 'soy beans' });
 
     // Creating sourcing locations for different materials and suppliers
     const sourcingLocation1 = await createSourcingLocation({
@@ -114,7 +132,9 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
       sourcingLocation: interventionSourcingLocation,
     });
 
-    const responseWithDefaultPagination = await request(app.getHttpServer())
+    const responseWithDefaultPagination = await request(
+      testApplication.getHttpServer(),
+    )
       .get(`/api/v1/sourcing-locations/materials`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send();
@@ -157,7 +177,9 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
       ),
     ).toBe(undefined);
 
-    const responseWithCustomPagination = await request(app.getHttpServer())
+    const responseWithCustomPagination = await request(
+      testApplication.getHttpServer(),
+    )
       .get(`/api/v1/sourcing-locations/materials`)
       .query({ 'page[size]': 2 })
       .set('Authorization', `Bearer ${jwtToken}`)
@@ -203,7 +225,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
       materialId: material4.id,
     });
 
-    const response1 = await request(app.getHttpServer())
+    const response1 = await request(testApplication.getHttpServer())
       .get(`/api/v1/sourcing-locations/materials`)
       .query({ search: 'maize' })
       .set('Authorization', `Bearer ${jwtToken}`)
@@ -213,7 +235,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     expect(response1.body.data.length).toEqual(1);
     expect(response1.body.data[0].attributes.material).toEqual(material2.name);
 
-    const response2 = await request(app.getHttpServer())
+    const response2 = await request(testApplication.getHttpServer())
       .get(`/api/v1/sourcing-locations/materials`)
       .query({ search: 'co' })
       .set('Authorization', `Bearer ${jwtToken}`)
@@ -267,7 +289,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     });
 
     // Order by country name
-    const response1 = await request(app.getHttpServer())
+    const response1 = await request(testApplication.getHttpServer())
       .get(`/api/v1/sourcing-locations/materials`)
       .query({ orderBy: 'country' })
       .set('Authorization', `Bearer ${jwtToken}`)
@@ -281,7 +303,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     expect(response1.body.data[3].attributes.material).toEqual(material4.name);
 
     // Order by supplierT1 name
-    const response2 = await request(app.getHttpServer())
+    const response2 = await request(testApplication.getHttpServer())
       .get(`/api/v1/sourcing-locations/materials`)
       .query({ orderBy: 't1Supplier' })
       .set('Authorization', `Bearer ${jwtToken}`)
@@ -294,7 +316,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     expect(response2.body.data[3].attributes.material).toEqual(material1.name);
 
     // Order by producer name
-    const response3 = await request(app.getHttpServer())
+    const response3 = await request(testApplication.getHttpServer())
       .get(`/api/v1/sourcing-locations/materials`)
       .query({ orderBy: 'producer' })
       .set('Authorization', `Bearer ${jwtToken}`)
@@ -307,7 +329,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     expect(response3.body.data[3].attributes.material).toEqual(material2.name);
 
     // Order by producer name - descending order
-    const response4 = await request(app.getHttpServer())
+    const response4 = await request(testApplication.getHttpServer())
       .get(`/api/v1/sourcing-locations/materials`)
       .query({ orderBy: 'producer', order: 'desc' })
       .set('Authorization', `Bearer ${jwtToken}`)
@@ -332,7 +354,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
       materialId: material1.id,
     });
 
-    const response1 = await request(app.getHttpServer())
+    const response1 = await request(testApplication.getHttpServer())
       .get(`/api/v1/sourcing-locations/materials`)
       .query({ orderBy: 'purchases' })
       .set('Authorization', `Bearer ${jwtToken}`)
@@ -347,7 +369,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
       ],
     );
 
-    const response2 = await request(app.getHttpServer())
+    const response2 = await request(testApplication.getHttpServer())
       .get(`/api/v1/sourcing-locations/materials`)
       .query({ orderBy: 'country', order: 'random' })
       .set('Authorization', `Bearer ${jwtToken}`)

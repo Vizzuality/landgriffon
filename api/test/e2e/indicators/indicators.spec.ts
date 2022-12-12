@@ -1,36 +1,36 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import {
   Indicator,
   INDICATOR_TYPES,
 } from 'modules/indicators/indicator.entity';
-import { IndicatorsModule } from 'modules/indicators/indicators.module';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
-import { saveAdminAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
 
 /**
  * Tests for the IndicatorsModule.
  */
 
 describe('IndicatorsModule (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let indicatorRepository: IndicatorRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, IndicatorsModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
+
+    dataSource = testApplication.get<DataSource>(DataSource);
 
     indicatorRepository =
-      moduleFixture.get<IndicatorRepository>(IndicatorRepository);
+      testApplication.get<IndicatorRepository>(IndicatorRepository);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
@@ -38,12 +38,13 @@ describe('IndicatorsModule (e2e)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   describe('Indicators - Create', () => {
     test('Create an indicator should be successful (happy case)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/indicators')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -52,9 +53,9 @@ describe('IndicatorsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdIndicator = await indicatorRepository.findOne(
-        response.body.data.id,
-      );
+      const createdIndicator = await indicatorRepository.findOne({
+        where: { id: response.body.data.id },
+      });
 
       if (!createdIndicator) {
         throw new Error('Error loading created Indicator');
@@ -65,7 +66,7 @@ describe('IndicatorsModule (e2e)', () => {
   });
 
   test('Create an indicator without the required fields should fail with a 400 error', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .post('/api/v1/indicators')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send();
@@ -93,7 +94,7 @@ describe('IndicatorsModule (e2e)', () => {
       indicator.nameCode = 'Midiclorian';
       await indicator.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/indicators/${indicator.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -114,14 +115,16 @@ describe('IndicatorsModule (e2e)', () => {
       indicator.nameCode = 'Midiclorian';
       await indicator.save();
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete(`/api/v1/indicators/${indicator.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
 
         .send()
         .expect(HttpStatus.OK);
 
-      expect(await indicatorRepository.findOne(indicator.id)).toBeUndefined();
+      expect(
+        await indicatorRepository.findOne({ where: { id: indicator.id } }),
+      ).toBeNull();
     });
   });
 
@@ -132,7 +135,7 @@ describe('IndicatorsModule (e2e)', () => {
       indicator.nameCode = 'Midiclorian';
       await indicator.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/indicators`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -149,7 +152,7 @@ describe('IndicatorsModule (e2e)', () => {
       indicator.nameCode = 'Midiclorian';
       await indicator.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/indicators/${indicator.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()

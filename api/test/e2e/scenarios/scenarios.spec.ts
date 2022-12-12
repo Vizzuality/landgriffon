@@ -1,9 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { Scenario, SCENARIO_STATUS } from 'modules/scenarios/scenario.entity';
-import { ScenariosModule } from 'modules/scenarios/scenarios.module';
 import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
 import {
   createAdminRegion,
@@ -14,8 +11,10 @@ import {
   createSourcingLocation,
   createSourcingRecord,
 } from '../../entity-mocks';
-import { saveUserWithRoleAndGetTokenWithUserId } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
@@ -28,8 +27,9 @@ import {
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
-import { ScenarioInterventionsModule } from '../../../src/modules/scenario-interventions/scenario-interventions.module';
-import { JSONAPIEntityData } from '../../../src/utils/app-base.service';
+import { JSONAPIEntityData } from 'utils/app-base.service';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -41,7 +41,8 @@ const expectedJSONAPIAttributes: string[] = [
 ];
 
 describe('ScenariosModule (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let scenarioRepository: ScenarioRepository;
   let scenarioInterventionRepository: ScenarioInterventionRepository;
   let sourcingLocationRepository: SourcingLocationRepository;
@@ -50,45 +51,43 @@ describe('ScenariosModule (e2e)', () => {
   let userId: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, ScenariosModule, ScenarioInterventionsModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
+
+    dataSource = testApplication.get<DataSource>(DataSource);
 
     scenarioRepository =
-      moduleFixture.get<ScenarioRepository>(ScenarioRepository);
+      testApplication.get<ScenarioRepository>(ScenarioRepository);
     scenarioInterventionRepository =
-      moduleFixture.get<ScenarioInterventionRepository>(
+      testApplication.get<ScenarioInterventionRepository>(
         ScenarioInterventionRepository,
       );
-    sourcingLocationRepository = moduleFixture.get<SourcingLocationRepository>(
-      SourcingLocationRepository,
-    );
-    sourcingRecordRepository = moduleFixture.get<SourcingRecordRepository>(
+    sourcingLocationRepository =
+      testApplication.get<SourcingLocationRepository>(
+        SourcingLocationRepository,
+      );
+    sourcingRecordRepository = testApplication.get<SourcingRecordRepository>(
       SourcingRecordRepository,
     );
 
-    app = getApp(moduleFixture);
-    await app.init();
-    const tokenWithId = await saveUserWithRoleAndGetTokenWithUserId(
-      moduleFixture,
-      app,
-    );
+    const tokenWithId = await setupTestUser(testApplication);
     jwtToken = tokenWithId.jwtToken;
-    userId = tokenWithId.userId;
+    userId = tokenWithId.user.id;
   });
 
   afterEach(async () => {
     await scenarioRepository.delete({});
+    await sourcingRecordRepository.delete({});
     await scenarioInterventionRepository.delete({});
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   describe('Scenarios - Create', () => {
     test('Create a scenario should be successful (happy case)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenarios')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -96,11 +95,13 @@ describe('ScenariosModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdScenario = await scenarioRepository.findOne(
-        response.body.data.id,
+      const createdScenario: Scenario | null = await scenarioRepository.findOne(
+        {
+          where: { id: response.body.data.id },
+        },
       );
 
-      if (!createdScenario) {
+      if (createdScenario === null) {
         throw new Error('Error loading created Scenario');
       }
 
@@ -111,7 +112,7 @@ describe('ScenariosModule (e2e)', () => {
     });
 
     test('Create a scenario without the required fields should fail with a 400 error', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenarios')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -134,7 +135,7 @@ describe('ScenariosModule (e2e)', () => {
     test('Update a scenario should be successful (happy case)', async () => {
       const scenario: Scenario = await createScenario();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/scenarios/${scenario.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -145,9 +146,9 @@ describe('ScenariosModule (e2e)', () => {
       expect(response.body.data.attributes.title).toEqual(
         'updated test scenario',
       );
-      const updatedScenario: Scenario = await scenarioRepository.findOneOrFail(
-        scenario.id,
-      );
+      const updatedScenario: Scenario = await scenarioRepository.findOneOrFail({
+        where: { id: scenario.id },
+      });
       expect(updatedScenario.updatedById).toEqual(userId);
 
       expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
@@ -158,13 +159,15 @@ describe('ScenariosModule (e2e)', () => {
     test('Delete a scenario should be successful (happy case)', async () => {
       const scenario: Scenario = await createScenario();
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete(`/api/v1/scenarios/${scenario.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
-      expect(await scenarioRepository.findOne(scenario.id)).toBeUndefined();
+      expect(
+        await scenarioRepository.findOne({ where: { id: scenario.id } }),
+      ).toBeNull();
     });
   });
 
@@ -211,7 +214,7 @@ describe('ScenariosModule (e2e)', () => {
     test('Get all scenarios should be successful (happy case)', async () => {
       const scenario: Scenario = await createScenario();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenarios`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -285,7 +288,7 @@ describe('ScenariosModule (e2e)', () => {
         status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenarios`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -341,7 +344,7 @@ describe('ScenariosModule (e2e)', () => {
       });
 
       //ACT
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenarios`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -374,7 +377,7 @@ describe('ScenariosModule (e2e)', () => {
         status: SCENARIO_STATUS.DELETED,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenarios`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -399,7 +402,7 @@ describe('ScenariosModule (e2e)', () => {
         Array.from(Array(10).keys()).map(() => createScenario()),
       );
 
-      const responseOne = await request(app.getHttpServer())
+      const responseOne = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenarios`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -413,7 +416,7 @@ describe('ScenariosModule (e2e)', () => {
       expect(responseOne.body.data).toHaveLength(3);
       expect(responseOne).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
 
-      const responseTwo = await request(app.getHttpServer())
+      const responseTwo = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenarios`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -434,7 +437,7 @@ describe('ScenariosModule (e2e)', () => {
     test('Get a scenario by id should be successful (happy case)', async () => {
       const scenario: Scenario = await createScenario();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenarios/${scenario.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -487,7 +490,7 @@ describe('ScenariosModule (e2e)', () => {
           scenarioInterventions: [scenarioIntervention],
         });
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get(`/api/v1/scenarios/${scenario.id}/interventions`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .send();
@@ -530,7 +533,7 @@ describe('ScenariosModule (e2e)', () => {
         });
         interventions.push(intervention);
       }
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenarios/${scenario.id}/interventions`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send();

@@ -1,40 +1,42 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
-import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
-import { saveAdminAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
 
 describe('Sourcing records - Create', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let sourcingRecordRepository: SourcingRecordRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, SourcingRecordsModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
 
-    sourcingRecordRepository = moduleFixture.get<SourcingRecordRepository>(
+    dataSource = testApplication.get<DataSource>(DataSource);
+
+    sourcingRecordRepository = testApplication.get<SourcingRecordRepository>(
       SourcingRecordRepository,
     );
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
     await sourcingRecordRepository.delete({});
   });
+
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   test('Create a sourcing record should be successful (happy case)', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .post('/api/v1/sourcing-records')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
@@ -43,9 +45,9 @@ describe('Sourcing records - Create', () => {
       })
       .expect(HttpStatus.CREATED);
 
-    const createdSourcingRecord = await sourcingRecordRepository.findOne(
-      response.body.data.id,
-    );
+    const createdSourcingRecord = await sourcingRecordRepository.findOne({
+      where: { id: response.body.data.id },
+    });
 
     if (!createdSourcingRecord) {
       throw new Error('Error loading created Sourcing Record');

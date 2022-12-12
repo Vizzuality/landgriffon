@@ -1,13 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import {
   SCENARIO_INTERVENTION_STATUS,
   SCENARIO_INTERVENTION_TYPE,
   ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
-import { ScenarioInterventionsModule } from 'modules/scenario-interventions/scenario-interventions.module';
 import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
 import {
   createAdminRegion,
@@ -23,8 +20,6 @@ import {
   createSourcingRecord,
   createSupplier,
 } from '../../entity-mocks';
-import { saveUserWithRoleAndGetTokenWithUserId } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { Material } from 'modules/materials/material.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
@@ -36,8 +31,6 @@ import {
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
-import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
-import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
@@ -51,13 +44,14 @@ import {
   ScenarioInterventionPreconditions,
 } from '../../utils/scenario-interventions-preconditions';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
-import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-records.module';
 import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
-import { ScenariosModule } from 'modules/scenarios/scenarios.module';
-import { In } from 'typeorm';
+import { DataSource, In } from 'typeorm';
 import { range } from 'lodash';
 import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
-import { clearEntityTables } from '../../utils/database-test-helper';
+import {
+  clearEntityTables,
+  clearTestDataFromDatabase,
+} from '../../utils/database-test-helper';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import {
   MATERIAL_TO_H3_TYPE,
@@ -71,7 +65,14 @@ import { dropH3DataMock, h3DataMock } from '../h3-data/mocks/h3-data.mock';
 import { h3MaterialExampleDataFixture } from '../h3-data/mocks/h3-fixtures';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
-import { ROLES } from '../../../src/modules/authorization/roles/roles.enum';
+import { ROLES } from 'modules/authorization/roles/roles.enum';
+import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
+import { Test } from '@nestjs/testing';
+import { AppModule } from 'app.module';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -90,39 +91,24 @@ const expectedJSONAPIAttributes: string[] = [
   'newLocationLongitudeInput',
 ];
 
-// TODO: Refactor after new methodology is final
-
-jest.mock('config', () => {
-  const config = jest.requireActual('config');
-
-  const configGet = config.get;
-
-  config.get = function (key: string): any {
-    switch (key) {
-      case 'newMethodology':
-        return true;
-      default:
-        return configGet.call(config, key);
-    }
-  };
-  return config;
-});
-
 describe('ScenarioInterventionsModule (e2e)', () => {
   const geoCodingServiceMock = {
     geoCodeLocations: async (sourcingData: any): Promise<any> => {
-      const geoRegion: GeoRegion | undefined =
-        await geoRegionRepository.findOne({
+      const geoRegion: GeoRegion | null = await geoRegionRepository.findOne({
+        where: {
           name: 'ABC',
-        });
-      if (geoRegion === undefined) {
+        },
+      });
+      if (geoRegion === null) {
         throw new Error('Could not find expected mock GeoRegion with name=ABC');
       }
-      const adminRegion: AdminRegion | undefined =
+      const adminRegion: AdminRegion | null =
         await adminRegionRepository.findOne({
-          geoRegionId: geoRegion.id,
+          where: {
+            geoRegionId: geoRegion.id,
+          },
         });
-      if (adminRegion === undefined) {
+      if (adminRegion === null) {
         throw new Error(
           'Could not find expected mock AdminRegion for GeoRegion with name=ABC',
         );
@@ -140,18 +126,21 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         }));
     },
     geoCodeSourcingLocation: async (sourcingData: any): Promise<any> => {
-      const geoRegion: GeoRegion | undefined =
-        await geoRegionRepository.findOne({
+      const geoRegion: GeoRegion | null = await geoRegionRepository.findOne({
+        where: {
           name: 'ABC',
-        });
-      if (geoRegion === undefined) {
+        },
+      });
+      if (geoRegion === null) {
         throw new Error('Could not find expected mock GeoRegion with name=ABC');
       }
-      const adminRegion: AdminRegion | undefined =
+      const adminRegion: AdminRegion | null =
         await adminRegionRepository.findOne({
-          geoRegionId: geoRegion.id,
+          where: {
+            geoRegionId: geoRegion.id,
+          },
         });
-      if (adminRegion === undefined) {
+      if (adminRegion === null) {
         throw new Error(
           'Could not find expected mock AdminRegion for GeoRegion with name=ABC',
         );
@@ -165,15 +154,15 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     },
   };
 
-  jest.spyOn(IndicatorRecord, 'updateImpactView').mockResolvedValue('' as any);
-
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let scenarioInterventionRepository: ScenarioInterventionRepository;
   let scenarioRepository: ScenarioRepository;
   let sourcingLocationRepository: SourcingLocationRepository;
   let sourcingRecordRepository: SourcingRecordRepository;
   let adminRegionRepository: AdminRegionRepository;
   let indicatorRecordRepository: IndicatorRecordRepository;
+  let indicatorRecordsService: IndicatorRecordsService;
   let indicatorRepository: IndicatorRepository;
   let geoRegionRepository: GeoRegionRepository;
   let impactCalculatorService: ImpactCalculator;
@@ -181,61 +170,59 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   let userId: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        AppModule,
-        ScenarioInterventionsModule,
-        ScenariosModule,
-        SourcingLocationsModule,
-        SourcingRecordsModule,
-        IndicatorRecordsModule,
-      ],
-    })
-      .overrideProvider(GeoCodingAbstractClass)
-      .useValue(geoCodingServiceMock)
-      .compile();
+    testApplication = await ApplicationManager.init(
+      Test.createTestingModule({
+        imports: [AppModule],
+      })
+        .overrideProvider(GeoCodingAbstractClass)
+        .useValue(geoCodingServiceMock),
+    );
 
     scenarioInterventionRepository =
-      moduleFixture.get<ScenarioInterventionRepository>(
+      testApplication.get<ScenarioInterventionRepository>(
         ScenarioInterventionRepository,
       );
 
     scenarioRepository =
-      moduleFixture.get<ScenarioRepository>(ScenarioRepository);
-    sourcingLocationRepository = moduleFixture.get<SourcingLocationRepository>(
-      SourcingLocationRepository,
-    );
-    sourcingRecordRepository = moduleFixture.get<SourcingRecordRepository>(
+      testApplication.get<ScenarioRepository>(ScenarioRepository);
+    sourcingLocationRepository =
+      testApplication.get<SourcingLocationRepository>(
+        SourcingLocationRepository,
+      );
+    sourcingRecordRepository = testApplication.get<SourcingRecordRepository>(
       SourcingRecordRepository,
     );
-    adminRegionRepository = moduleFixture.get<AdminRegionRepository>(
+    adminRegionRepository = testApplication.get<AdminRegionRepository>(
       AdminRegionRepository,
     );
     geoRegionRepository =
-      moduleFixture.get<GeoRegionRepository>(GeoRegionRepository);
+      testApplication.get<GeoRegionRepository>(GeoRegionRepository);
 
-    indicatorRecordRepository = moduleFixture.get<IndicatorRecordRepository>(
+    indicatorRecordRepository = testApplication.get<IndicatorRecordRepository>(
       IndicatorRecordRepository,
     );
 
     indicatorRepository =
-      moduleFixture.get<IndicatorRepository>(IndicatorRepository);
+      testApplication.get<IndicatorRepository>(IndicatorRepository);
     impactCalculatorService =
-      moduleFixture.get<ImpactCalculator>(ImpactCalculator);
-
-    app = getApp(moduleFixture);
-    await app.init();
-    const tokenWithId = await saveUserWithRoleAndGetTokenWithUserId(
-      moduleFixture,
-      app,
-      ROLES.ADMIN,
+      testApplication.get<ImpactCalculator>(ImpactCalculator);
+    indicatorRecordsService = testApplication.get<IndicatorRecordsService>(
+      IndicatorRecordsService,
     );
+
+    jest
+      .spyOn(indicatorRecordsService, 'updateImpactView')
+      .mockResolvedValue('' as any);
+
+    dataSource = testApplication.get<DataSource>(DataSource);
+
+    const tokenWithId = await setupTestUser(testApplication);
     jwtToken = tokenWithId.jwtToken;
-    userId = tokenWithId.userId;
+    userId = tokenWithId.user.id;
   });
 
   afterEach(async () => {
-    await clearEntityTables([
+    await clearEntityTables(dataSource, [
       ScenarioIntervention,
       IndicatorRecord,
       MaterialToH3,
@@ -252,7 +239,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       SourcingLocationGroup,
       Scenario,
     ]);
-    await dropH3DataMock([
+    await dropH3DataMock(dataSource, [
       'fake_material_table2002',
       'fake_replacing_material_table',
       'h3_grid_spam2010v2r0_global_ha',
@@ -264,15 +251,16 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
     jest.clearAllMocks();
   });
 
   describe('Scenario interventions - Creating intervention of type - Change of production efficiency', () => {
     test('Create a scenario intervention of type Change of production efficiency, with correct data should be successful', async () => {
-      const preconditions = await createInterventionPreconditions();
+      const preconditions = await createInterventionPreconditions(dataSource);
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -407,7 +395,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   describe('Scenario interventions - Creating intervention of type - Change of supplier location', () => {
     test('Create a scenario intervention of type Change of supplier location, with correct data should be successful', async () => {
       const preconditions: ScenarioInterventionPreconditions =
-        await createInterventionPreconditions();
+        await createInterventionPreconditions(dataSource);
 
       const geoRegion: GeoRegion = await createGeoRegion();
       await createAdminRegion({
@@ -415,7 +403,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         geoRegion,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -527,7 +515,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           .mockResolvedValue(100);
 
         const preconditions: ScenarioInterventionPreconditions =
-          await createInterventionPreconditionsForSupplierChange();
+          await createInterventionPreconditionsForSupplierChange(dataSource);
 
         const geoRegion: GeoRegion = await createGeoRegion();
         await createAdminRegion({
@@ -535,7 +523,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           geoRegion,
         });
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({
@@ -586,7 +574,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
     test('Create a scenario intervention of type Change of supplier location with start year for which there are multiple years, should be successful', async () => {
       const preconditions: ScenarioInterventionPreconditions =
-        await createInterventionPreconditionsForSupplierChange();
+        await createInterventionPreconditionsForSupplierChange(dataSource);
 
       const geoRegion: GeoRegion = await createGeoRegion();
       await createAdminRegion({
@@ -594,7 +582,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         geoRegion,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -695,7 +683,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   describe('Scenario interventions - Creating intervention of type - Change of material', () => {
     test('Create a scenario intervention of type Change of material, with correct data should be successful', async () => {
       const preconditions: ScenarioInterventionPreconditions =
-        await createInterventionPreconditions();
+        await createInterventionPreconditions(dataSource);
 
       const geoRegion: GeoRegion = await createGeoRegion();
       await createAdminRegion({
@@ -705,7 +693,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       const replacingMaterial: Material = await createMaterial();
 
-      const h3ReplacingMaterial = await h3DataMock({
+      const h3ReplacingMaterial = await h3DataMock(dataSource, {
         h3TableName: 'fakeReplacingMaterialTable',
         h3ColumnName: 'fakeReplacingMaterialColumn',
         additionalH3Data: h3MaterialExampleDataFixture,
@@ -724,7 +712,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         MATERIAL_TO_H3_TYPE.PRODUCER,
       );
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -810,7 +798,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         'And the Intervention should be created successfully',
       async () => {
         const preconditions: ScenarioInterventionPreconditions =
-          await createInterventionPreconditions();
+          await createInterventionPreconditions(dataSource);
 
         const geoRegion: GeoRegion = await createGeoRegion();
         await createAdminRegion({
@@ -819,7 +807,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
         const replacingMaterial: Material = await createMaterial();
-        const h3ReplacingMaterial = await h3DataMock({
+        const h3ReplacingMaterial = await h3DataMock(dataSource, {
           h3TableName: 'fakeReplacingMaterialTable',
           h3ColumnName: 'fakeReplacingMaterialColumn',
           additionalH3Data: h3MaterialExampleDataFixture,
@@ -838,7 +826,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           MATERIAL_TO_H3_TYPE.PRODUCER,
         );
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({
@@ -890,7 +878,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         'And the Intervention should be created successfully',
       async () => {
         const preconditions: ScenarioInterventionPreconditions =
-          await createInterventionPreconditions();
+          await createInterventionPreconditions(dataSource);
 
         const geoRegion: GeoRegion = await createGeoRegion();
         await createAdminRegion({
@@ -917,7 +905,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
         const replacingMaterial: Material = await createMaterial();
-        const h3ReplacingMaterial = await h3DataMock({
+        const h3ReplacingMaterial = await h3DataMock(dataSource, {
           h3TableName: 'fakeReplacingMaterialTable',
           h3ColumnName: 'fakeReplacingMaterialColumn',
           additionalH3Data: h3MaterialExampleDataFixture,
@@ -936,7 +924,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           MATERIAL_TO_H3_TYPE.PRODUCER,
         );
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({
@@ -986,9 +974,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   describe('Scenario interventions - Missing data for requested filters', () => {
     test('Create a scenario intervention of type Change of production efficiency with start year for which there is no sourcing data, should return an error', async () => {
       const preconditions: ScenarioInterventionPreconditions =
-        await createInterventionPreconditions();
+        await createInterventionPreconditions(dataSource);
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1012,9 +1000,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
     test('Create a scenario intervention of type Change of production efficiency, when there are no sourcing locations matching the filters, should return an error', async () => {
       const preconditions: ScenarioInterventionPreconditions =
-        await createInterventionPreconditions();
+        await createInterventionPreconditions(dataSource);
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1039,7 +1027,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
   describe('Missing data and validations', () => {
     test('Create a scenario intervention without the required fields should fail with a 400 error', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send();
@@ -1061,7 +1049,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           'startYear must be a number conforming to the specified constraints',
           'startYear should not be empty',
           'type must be a string',
-          'type must be a valid enum value',
+          'type must be one of the following values: default, Source from new supplier or location, Change production efficiency, Switch to a new material',
           'type should not be empty',
         ],
       );
@@ -1073,7 +1061,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const supplier: Supplier = await createSupplier();
       const adminRegion: AdminRegion = await createAdminRegion();
       const businessUnit: BusinessUnit = await createBusinessUnit();
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1106,7 +1094,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const supplier: Supplier = await createSupplier();
       const businessUnit: BusinessUnit = await createBusinessUnit();
       const adminRegion: AdminRegion = await createAdminRegion();
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1131,7 +1119,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         ],
       );
 
-      const response2 = await request(app.getHttpServer())
+      const response2 = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1162,7 +1150,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const material: Material = await createMaterial();
       const supplier: Supplier = await createSupplier();
       const businessUnit: BusinessUnit = await createBusinessUnit();
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1189,7 +1177,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         ],
       );
 
-      const response2 = await request(app.getHttpServer())
+      const response2 = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1216,7 +1204,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         ],
       );
 
-      const response3 = await request(app.getHttpServer())
+      const response3 = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1253,7 +1241,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const supplier: Supplier = await createSupplier();
       const businessUnit: BusinessUnit = await createBusinessUnit();
       const adminRegion: AdminRegion = await createAdminRegion();
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1291,7 +1279,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const supplier: Supplier = await createSupplier();
       const businessUnit: BusinessUnit = await createBusinessUnit();
       const adminRegion: AdminRegion = await createAdminRegion();
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1323,7 +1311,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const scenarioIntervention: ScenarioIntervention =
         await createScenarioIntervention();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/scenario-interventions/${scenarioIntervention.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1333,9 +1321,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(response.status).toBe(HttpStatus.OK);
       const updatedScenarioIntervention =
-        await scenarioInterventionRepository.findOneOrFail(
-          scenarioIntervention.id,
-        );
+        await scenarioInterventionRepository.findOneOrFail({
+          where: { id: scenarioIntervention.id },
+        });
       expect(updatedScenarioIntervention.updatedById).toEqual(userId);
 
       expect(response.body.data.attributes.title).toEqual(
@@ -1352,9 +1340,11 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     // TODO: Skipping this tests since the FE will send a new full DTO when editing a intervention
     test.skip('Update a scenario intervention needing recalculation should be successful', async () => {
       const preconditions: ScenarioInterventionPreconditions =
-        await createInterventionPreconditionsWithMultipleYearRecords();
+        await createInterventionPreconditionsWithMultipleYearRecords(
+          dataSource,
+        );
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1387,7 +1377,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         await sourcingRecordRepository.count();
       expect(sourcingRecordsCountBeforeUpdate).toEqual(8);
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/scenario-interventions/${allInterventions[0][0].id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1418,15 +1408,17 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const scenarioIntervention: ScenarioIntervention =
         await createScenarioIntervention();
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete(`/api/v1/scenario-interventions/${scenarioIntervention.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
       expect(
-        await scenarioInterventionRepository.findOne(scenarioIntervention.id),
-      ).toBeUndefined();
+        await scenarioInterventionRepository.findOne({
+          where: { id: scenarioIntervention.id },
+        }),
+      ).toBeNull();
     });
   });
 
@@ -1435,7 +1427,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const scenarioIntervention: ScenarioIntervention =
         await createScenarioIntervention();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenario-interventions`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -1451,7 +1443,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         Array.from(Array(10).keys()).map(() => createScenarioIntervention()),
       );
 
-      const responseOne = await request(app.getHttpServer())
+      const responseOne = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenario-interventions`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -1465,7 +1457,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       expect(responseOne.body.data).toHaveLength(3);
       expect(responseOne).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
 
-      const responseTwo = await request(app.getHttpServer())
+      const responseTwo = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenario-interventions`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -1497,7 +1489,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         status: SCENARIO_INTERVENTION_STATUS.DELETED,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenario-interventions`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -1530,7 +1522,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     });
 
     beforeEach(async () => {
-      preconditions = await createInterventionPreconditions();
+      preconditions = await createInterventionPreconditions(dataSource);
     });
     afterAll(() => jest.clearAllMocks());
 
@@ -1657,7 +1649,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         const scenario: Scenario = await createScenario();
 
         // ACT
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({
@@ -1679,8 +1671,10 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             },
           });
 
-        const intervention: ScenarioIntervention | undefined =
-          await scenarioInterventionRepository.findOne(response.body.data.id);
+        const intervention: ScenarioIntervention | null =
+          await scenarioInterventionRepository.findOne({
+            where: { id: response.body.data.id },
+          });
 
         // ASSERT
         expect(intervention).toBeTruthy();
@@ -1841,7 +1835,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
         const scenario: Scenario = await createScenario();
 
-        const responseAdminRegions = await request(app.getHttpServer())
+        const responseAdminRegions = await request(
+          testApplication.getHttpServer(),
+        )
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({
@@ -1863,9 +1859,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           });
 
         const createdScenarioIntervention1 =
-          await scenarioInterventionRepository.findOneOrFail(
-            responseAdminRegions.body.data.id,
-          );
+          await scenarioInterventionRepository.findOneOrFail({
+            where: { id: responseAdminRegions.body.data.id },
+          });
 
         expect(createdScenarioIntervention1.replacedAdminRegions).toHaveLength(
           0,
@@ -1883,7 +1879,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           createdScenarioIntervention1.replacedBusinessUnits[0].id,
         ).toEqual(parentBusinessUnit.id);
 
-        const responseBusinessUnits = await request(app.getHttpServer())
+        const responseBusinessUnits = await request(
+          testApplication.getHttpServer(),
+        )
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({
@@ -1904,15 +1902,15 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           });
 
         const createdScenarioIntervention2 =
-          await scenarioInterventionRepository.findOneOrFail(
-            responseBusinessUnits.body.data.id,
-          );
+          await scenarioInterventionRepository.findOneOrFail({
+            where: { id: responseBusinessUnits.body.data.id },
+          });
 
         expect(createdScenarioIntervention2.replacedBusinessUnits).toHaveLength(
           0,
         );
 
-        const responseSuppliers = await request(app.getHttpServer())
+        const responseSuppliers = await request(testApplication.getHttpServer())
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({
@@ -1932,9 +1930,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           });
 
         const createdScenarioIntervention3 =
-          await scenarioInterventionRepository.findOneOrFail(
-            responseSuppliers.body.data.id,
-          );
+          await scenarioInterventionRepository.findOneOrFail({
+            where: { id: responseSuppliers.body.data.id },
+          });
         expect(createdScenarioIntervention3.replacedSuppliers).toHaveLength(0);
       },
     );
@@ -1977,7 +1975,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
         // childMaterial Indicator calculation dependencies
 
-        const h3DataChild = await h3DataMock({
+        const h3DataChild = await h3DataMock(dataSource, {
           h3TableName: 'fakeChildMaterialTable',
           h3ColumnName: 'fakeChildMaterialColumn',
           additionalH3Data: h3MaterialExampleDataFixture,
@@ -2072,7 +2070,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
         const scenario: Scenario = await createScenario();
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({
@@ -2090,13 +2088,19 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             newMaterialId: newMaterial.id,
           });
 
-        const intervention: ScenarioIntervention | undefined =
-          await scenarioInterventionRepository.findOne(response.body.data.id);
+        const intervention: ScenarioIntervention | null =
+          await scenarioInterventionRepository.findOne({
+            where: { id: response.body.data.id },
+          });
 
         //ASSERT;
         expect(intervention).toBeTruthy();
-        expect(intervention!.newMaterial.id).toEqual(newMaterial.id);
-        expect(intervention!.newAdminRegion.id).toEqual(newAdminRegion.id);
+        expect((intervention as ScenarioIntervention).newMaterial.id).toEqual(
+          newMaterial.id,
+        );
+        expect(
+          (intervention as ScenarioIntervention).newAdminRegion.id,
+        ).toEqual(newAdminRegion.id);
       },
     );
 
@@ -2137,7 +2141,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           parent: parentMaterial,
         });
         // childMaterial Indicator calculation dependencies
-        const h3DataChild = await h3DataMock({
+        const h3DataChild = await h3DataMock(dataSource, {
           h3TableName: 'fakeChildMaterialTable',
           h3ColumnName: 'fakeChildMaterialColumn',
           additionalH3Data: h3MaterialExampleDataFixture,
@@ -2231,7 +2235,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
         const scenario: Scenario = await createScenario();
 
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({
@@ -2280,7 +2284,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const scenarioIntervention: ScenarioIntervention =
         await createScenarioIntervention();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenario-interventions/${scenarioIntervention.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -2341,7 +2345,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       jest
         .spyOn(indicatorRecordRepository, 'getIndicatorRecordRawValue')
         .mockResolvedValue(1000);
-      const preconditions = await createInterventionPreconditions();
+      const preconditions = await createInterventionPreconditions(dataSource);
       const geoRegion: GeoRegion = await createGeoRegion();
       await createAdminRegion({
         isoA2: 'ABC',
@@ -2349,7 +2353,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       });
 
       //CREATE
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -2369,7 +2373,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
       // GET
-      const response2 = await request(app.getHttpServer())
+      const response2 = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenario-interventions/${response.body.data.id}`)
         .set('Authorization', `Bearer ${jwtToken}`);
 

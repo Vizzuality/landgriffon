@@ -1,19 +1,22 @@
-import { getManager } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { snakeCase, camelCase } from 'typeorm/util/StringUtils';
 
-export const h3DataMock = async (h3DataMockParams: {
-  h3TableName: string;
-  h3ColumnName: string;
-  additionalH3Data?: Record<string, any> | null;
-  indicatorId?: string | null;
-  year: number;
-  contextualLayerId?: string | null;
-}): Promise<H3Data> => {
+export const h3DataMock = async (
+  dataSource: DataSource,
+  h3DataMockParams: {
+    h3TableName: string;
+    h3ColumnName: string;
+    additionalH3Data?: Record<string, any> | null;
+    indicatorId?: string | null;
+    year: number;
+    contextualLayerId?: string | null;
+  },
+): Promise<H3Data> => {
   const formattedTableName: string = snakeCase(h3DataMockParams.h3TableName);
   const formattedColumnName: string = camelCase(h3DataMockParams.h3ColumnName);
 
-  await getManager().query(
+  await dataSource.query(
     `CREATE TABLE "${formattedTableName}" (h3index h3index, "${formattedColumnName}" float4);`,
   );
 
@@ -26,7 +29,7 @@ export const h3DataMock = async (h3DataMockParams: {
       queryArr.push(`('${key}', ${value})`);
     }
     query = query.concat(queryArr.join());
-    await getManager().query(query);
+    await dataSource.query(query);
   }
 
   const h3data = new H3Data();
@@ -43,9 +46,12 @@ export const h3DataMock = async (h3DataMockParams: {
   return h3data.save();
 };
 
-export const dropH3DataMock = async (h3TableNames: string[]): Promise<void> => {
+export const dropH3DataMock = async (
+  dataSource: DataSource,
+  h3TableNames: string[],
+): Promise<void> => {
   for (const h3TableName of h3TableNames) {
-    await getManager().query(`DROP TABLE IF EXISTS ${snakeCase(h3TableName)};`);
+    await dataSource.query(`DROP TABLE IF EXISTS ${snakeCase(h3TableName)};`);
   }
 };
 

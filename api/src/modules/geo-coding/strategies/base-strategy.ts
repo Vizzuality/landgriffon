@@ -28,10 +28,9 @@ export abstract class BaseStrategy {
   ) {}
 
   async geoCodeByCountry(country: string): Promise<GeocodeResponse> {
-    const geocodeResponseData: GeocodeResponse = await this.geocoder.geocode({
+    return this.geocoder.geocode({
       address: `country ${country}`,
     });
-    return geocodeResponseData;
   }
 
   /**
@@ -136,7 +135,7 @@ export abstract class BaseStrategy {
 
   async findExistingSourcingLocationByGeoRegionId(
     geoRegionId: string,
-  ): Promise<SourcingLocation | undefined> {
+  ): Promise<SourcingLocation | null> {
     return this.sourcingLocationService.findByGeoRegionId(geoRegionId);
   }
 }

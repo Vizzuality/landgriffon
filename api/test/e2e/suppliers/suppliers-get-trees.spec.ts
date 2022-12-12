@@ -1,32 +1,32 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { Supplier } from 'modules/suppliers/supplier.entity';
-import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { createSourcingLocation, createSupplier } from '../../entity-mocks';
 import { expectedJSONAPIAttributes } from './config';
-import { saveAdminAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { Material } from 'modules/materials/material.entity';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
 
 describe('Suppliers - Get trees', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let supplierRepository: SupplierRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, SuppliersModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
+
+    dataSource = testApplication.get<DataSource>(DataSource);
 
     supplierRepository =
-      moduleFixture.get<SupplierRepository>(SupplierRepository);
+      testApplication.get<SupplierRepository>(SupplierRepository);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
@@ -34,11 +34,12 @@ describe('Suppliers - Get trees', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   test('When I request suppliers trees, and the DB is empty, then I should get empty array', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/suppliers/trees`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -56,7 +57,7 @@ describe('Suppliers - Get trees', () => {
       parent: rootSupplier,
     });
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/suppliers/trees`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -87,7 +88,7 @@ describe('Suppliers - Get trees', () => {
       parent: rootOneSupplier,
     });
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/suppliers/trees`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -128,7 +129,7 @@ describe('Suppliers - Get trees', () => {
       parent: childTwoSupplier,
     });
 
-    const responseDepthZero = await request(app.getHttpServer())
+    const responseDepthZero = await request(testApplication.getHttpServer())
       .get(`/api/v1/suppliers/trees`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -145,7 +146,7 @@ describe('Suppliers - Get trees', () => {
     ]);
     expect(responseDepthZero.body.data[0].attributes.children).toEqual([]);
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/suppliers/trees`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -207,7 +208,7 @@ describe('Suppliers - Get trees', () => {
         });
       }
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/suppliers/trees')
         .query({ withSourcingLocations: true })
         .set('Authorization', `Bearer ${jwtToken}`);

@@ -1,8 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-
 import { DeleteResult, Repository } from 'typeorm';
-
 import {
   ApiEvent,
   apiEventResource,
@@ -32,8 +30,6 @@ export class ApiEventsService extends AppBaseService<
   UpdateApiEventDTO,
   AppInfoDTO
 > {
-  protected readonly logger: Logger = new Logger(ApiEventsService.name);
-
   constructor(
     @InjectRepository(ApiEvent) readonly repo: Repository<ApiEvent>,
     @InjectRepository(LatestApiEventByTopicAndKind)
@@ -51,15 +47,14 @@ export class ApiEventsService extends AppBaseService<
 
   /**
    * Given a `QualifiedEventTopic` (topic qualified by `kind` and `apiEvent`),
-   * return the matching event with latest timestamp.
+   * return the matching event with the latest timestamp.
    */
   public async getLatestEventForTopic(
     qualifiedTopic: QualifiedEventTopic,
   ): Promise<ApiEventByTopicAndKind | undefined> {
-    const result: LatestApiEventByTopicAndKind | undefined =
+    const result: LatestApiEventByTopicAndKind | null =
       await this.latestEventByTopicAndKindRepo.findOne({
-        topic: qualifiedTopic.topic,
-        kind: qualifiedTopic.kind,
+        where: { topic: qualifiedTopic.topic, kind: qualifiedTopic.kind },
       });
     if (!result) {
       throw new NotFoundException(

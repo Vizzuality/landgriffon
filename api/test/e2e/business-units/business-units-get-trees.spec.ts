@@ -1,35 +1,35 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
-import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
 import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
-import { saveAdminAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { createBusinessUnit, createSourcingLocation } from '../../entity-mocks';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
 
 /**
  * Tests for the BusinessUnitsModule.
  */
 
 describe('BusinessUnits - Get Trees', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let businessUnitRepository: BusinessUnitRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, BusinessUnitsModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
 
-    businessUnitRepository = moduleFixture.get<BusinessUnitRepository>(
+    dataSource = testApplication.get<DataSource>(DataSource);
+
+    businessUnitRepository = testApplication.get<BusinessUnitRepository>(
       BusinessUnitRepository,
     );
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
@@ -37,12 +37,13 @@ describe('BusinessUnits - Get Trees', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   describe('Business units - Get Trees', () => {
     test('When I request business units trees, and the DB is empty, then I should get empty array', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/business-units/trees`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -81,7 +82,7 @@ describe('BusinessUnits - Get Trees', () => {
           await createSourcingLocation({ businessUnitId: businessUnit.id });
         }
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get('/api/v1/business-units/trees')
           .query({ withSourcingLocations: true })
           .set('Authorization', `Bearer ${jwtToken}`);

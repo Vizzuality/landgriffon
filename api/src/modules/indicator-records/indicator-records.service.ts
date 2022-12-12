@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
@@ -11,7 +11,6 @@ import {
 import { CreateIndicatorRecordDto } from 'modules/indicator-records/dto/create.indicator-record.dto';
 import { UpdateIndicatorRecordDto } from 'modules/indicator-records/dto/update.indicator-record.dto';
 import { AppInfoDTO } from 'dto/info.dto';
-import { InjectRepository } from '@nestjs/typeorm';
 import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import {
@@ -33,9 +32,11 @@ import { CachedDataService } from 'modules/cached-data/cached-data.service';
 import {
   CACHED_DATA_TYPE,
   CachedData,
-} from 'modules/cached-data/cached.data.entity';
+} from 'modules/cached-data/cached-data.entity';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { IMPACT_VIEW_NAME } from 'modules/impact/views/impact.materialized-view.entity';
+import { DataSource } from 'typeorm';
 
 export interface CachedRawValue {
   rawValue: number;
@@ -49,7 +50,6 @@ export class IndicatorRecordsService extends AppBaseService<
   AppInfoDTO
 > {
   constructor(
-    @InjectRepository(IndicatorRecordRepository)
     private readonly indicatorRecordRepository: IndicatorRecordRepository,
     private readonly indicatorService: IndicatorsService,
     private readonly impactCalculator: ImpactCalculator,
@@ -57,6 +57,7 @@ export class IndicatorRecordsService extends AppBaseService<
     private readonly materialsToH3sService: MaterialsToH3sService,
     private readonly h3DataYearsService: H3DataYearsService,
     private readonly cachedDataService: CachedDataService,
+    private readonly dataSource: DataSource,
   ) {
     super(
       indicatorRecordRepository,
@@ -81,9 +82,9 @@ export class IndicatorRecordsService extends AppBaseService<
     };
   }
 
-  async getIndicatorRecordById(id: number): Promise<IndicatorRecord> {
-    const found: IndicatorRecord | undefined =
-      await this.indicatorRecordRepository.findOne(id);
+  async getIndicatorRecordById(id: string): Promise<IndicatorRecord> {
+    const found: IndicatorRecord | null =
+      await this.indicatorRecordRepository.findOneBy({ id });
     if (!found) {
       throw new NotFoundException(`Indicator Record with ID "${id}" not found`);
     }
@@ -228,16 +229,12 @@ export class IndicatorRecordsService extends AppBaseService<
     }
 
     // Create the Indicator Records entities from the calculated indicator values
-    const indicatorRecords: IndicatorRecord[] = indicators.map(
-      (indicator: Indicator) => {
-        return IndicatorRecordsService.createIndicatorRecord(
-          indicator,
-          calculatedIndicatorRecordValues,
-        );
-      },
-    );
-
-    return indicatorRecords;
+    return indicators.map((indicator: Indicator) => {
+      return IndicatorRecordsService.createIndicatorRecord(
+        indicator,
+        calculatedIndicatorRecordValues,
+      );
+    });
   }
 
   /**
@@ -488,7 +485,7 @@ export class IndicatorRecordsService extends AppBaseService<
       materialH3,
     );
 
-    const cachedData: CachedData | undefined =
+    const cachedData: CachedData | null =
       await this.cachedDataService.getCachedDataByKey(
         cacheKey,
         CACHED_DATA_TYPE.RAW_MATERIAL_VALUE_GEOREGION,
@@ -535,7 +532,7 @@ export class IndicatorRecordsService extends AppBaseService<
       materialH3s,
     );
 
-    const cachedData: CachedData | undefined =
+    const cachedData: CachedData | null =
       await this.cachedDataService.getCachedDataByKey(
         cacheKey,
         CACHED_DATA_TYPE.RAW_INDICATOR_VALUE_GEOREGION,
@@ -616,6 +613,12 @@ export class IndicatorRecordsService extends AppBaseService<
   ): Promise<void> {
     return this.impactCalculator.calculateImpactForAllSourcingRecords(
       activeIndicators,
+    );
+  }
+
+  async updateImpactView(): Promise<void> {
+    return this.dataSource.query(
+      `REFRESH MATERIALIZED VIEW CONCURRENTLY ${IMPACT_VIEW_NAME} WITH DATA`,
     );
   }
 }

@@ -1,6 +1,6 @@
 import {
   Brackets,
-  EntityRepository,
+  DataSource,
   Repository,
   SelectQueryBuilder,
   WhereExpressionBuilder,
@@ -20,7 +20,7 @@ import { Indicator } from 'modules/indicators/indicator.entity';
 import { Material } from 'modules/materials/material.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
-import { Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import {
@@ -70,9 +70,13 @@ export class ScenarioComparisonTonnes {
   tonnageDifference?: number;
 }
 
-@EntityRepository(SourcingRecord)
+@Injectable()
 export class SourcingRecordRepository extends Repository<SourcingRecord> {
   logger: Logger = new Logger(SourcingRecordRepository.name);
+
+  constructor(private dataSource: DataSource) {
+    super(SourcingRecord, dataSource.createEntityManager());
+  }
 
   async getYears(materialIds?: string[]): Promise<number[]> {
     const queryBuilder: SelectQueryBuilder<SourcingRecord> =

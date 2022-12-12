@@ -1,5 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
@@ -39,7 +38,6 @@ export class SourcingRecordsService extends AppBaseService<
   AppInfoDTO
 > {
   constructor(
-    @InjectRepository(SourcingRecordRepository)
     protected readonly sourcingRecordRepository: SourcingRecordRepository,
   ) {
     super(
@@ -64,9 +62,9 @@ export class SourcingRecordsService extends AppBaseService<
     };
   }
 
-  async getSourcingRecordById(id: number): Promise<SourcingRecord> {
-    const found: SourcingRecord | undefined =
-      await this.sourcingRecordRepository.findOne(id);
+  async getSourcingRecordById(id: string): Promise<SourcingRecord> {
+    const found: SourcingRecord | null =
+      await this.sourcingRecordRepository.findOne({ where: { id } });
 
     if (!found) {
       throw new NotFoundException(`Sourcing Record with ID "${id}" not found`);

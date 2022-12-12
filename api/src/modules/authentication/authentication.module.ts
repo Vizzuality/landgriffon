@@ -9,7 +9,8 @@ import { AuthenticationService } from 'modules/authentication/authentication.ser
 import { JwtStrategy } from 'modules/authentication/strategies/jwt.strategy';
 import { LocalStrategy } from 'modules/authentication/strategies/local.strategy';
 import { ApiEventsModule } from 'modules/api-events/api-events.module';
-import { UserRepository } from 'modules/users/user.repository';
+import { User } from 'modules/users/user.entity';
+import { PasswordValidation } from 'decorators/password-validator.decorator';
 
 export const logger: Logger = new Logger('Authentication');
 
@@ -22,9 +23,37 @@ export const logger: Logger = new Logger('Authentication');
       secret: config.get('auth.jwt.secret'),
       signOptions: { expiresIn: config.get('auth.jwt.expiresIn') },
     }),
-    TypeOrmModule.forFeature([UserRepository]),
+    TypeOrmModule.forFeature([User]),
   ],
-  providers: [AuthenticationService, LocalStrategy, JwtStrategy],
+  providers: [
+    AuthenticationService,
+    LocalStrategy,
+    JwtStrategy,
+    PasswordValidation,
+    {
+      provide: 'PASSWORD_INCLUDE_UPPER_CASE',
+      useValue:
+        `${config.get('auth.password.includeUpperCase')}`.toLowerCase() ===
+        'true',
+    },
+    {
+      provide: 'PASSWORD_INCLUDE_NUMERICS',
+      useValue:
+        `${config.get('auth.password.includeNumerics')}`.toLowerCase() ===
+        'true',
+    },
+    {
+      provide: 'PASSWORD_INCLUDE_SPECIAL_CHARACTERS',
+      useValue:
+        `${config.get(
+          'auth.password.includeSpecialCharacters',
+        )}`.toLowerCase() === 'true',
+    },
+    {
+      provide: 'PASSWORD_MIN_LENGTH',
+      useValue: parseInt(`${config.get('auth.password.minLength')}`),
+    },
+  ],
   controllers: [AuthenticationController],
   exports: [AuthenticationService],
 })

@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, Logger } from '@nestjs/common';
 
 import { UrlParamRepository } from 'modules/url-params/url-param.repository';
 import {
@@ -19,10 +18,7 @@ export class UrlParamsService extends AppBaseService<
   Record<string, any>,
   AppInfoDTO
 > {
-  constructor(
-    @InjectRepository(UrlParamRepository)
-    protected readonly urlParamRepository: UrlParamRepository,
-  ) {
+  constructor(protected readonly urlParamRepository: UrlParamRepository) {
     super(
       urlParamRepository,
       urlParamResource.name.singular,
@@ -38,10 +34,9 @@ export class UrlParamsService extends AppBaseService<
   }
 
   async saveUrlParams(dto: Record<string, any>): Promise<Partial<UrlParam>> {
-    const savedParams: UrlParam | undefined =
-      await this.urlParamRepository.findOne({
-        params: dto,
-      });
+    const savedParams: UrlParam | null = await this.urlParamRepository.findOne({
+      where: { params: dto },
+    });
 
     if (!savedParams) {
       const newParams: UrlParam = await this.urlParamRepository.save({

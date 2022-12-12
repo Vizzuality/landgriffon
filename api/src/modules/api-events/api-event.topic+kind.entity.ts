@@ -12,7 +12,7 @@ export class ApiEventByTopicAndKind {
   timestamp!: Date;
 
   @ApiProperty()
-  @IsEnum(Object.values(API_EVENT_KINDS))
+  @IsEnum(API_EVENT_KINDS)
   @PrimaryColumn('enum', { enum: Object.values(API_EVENT_KINDS) })
   kind!: API_EVENT_KINDS;
 

@@ -13,7 +13,7 @@ export class UpdateIndicatorRecordDto extends PartialType(
 
   @IsString()
   @IsOptional()
-  @IsEnum(Object.values(INDICATOR_RECORD_STATUS))
+  @IsEnum(INDICATOR_RECORD_STATUS)
   @ApiPropertyOptional()
   status?: string;
 }

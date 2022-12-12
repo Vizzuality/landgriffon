@@ -3,9 +3,9 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  Logger,
   NotImplementedException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { User, userResource } from 'modules/users/user.entity';
 
 import { omit } from 'lodash';
@@ -31,7 +31,6 @@ export class UsersService extends AppBaseService<
   AppInfoDTO
 > {
   constructor(
-    @InjectRepository(UserRepository)
     protected readonly repository: UserRepository,
     @Inject(forwardRef(() => AuthenticationService))
     private readonly authenticationService: AuthenticationService,

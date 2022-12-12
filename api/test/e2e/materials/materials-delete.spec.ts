@@ -1,30 +1,30 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { Material } from 'modules/materials/material.entity';
-import { MaterialsModule } from 'modules/materials/materials.module';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { createMaterial } from '../../entity-mocks';
-import { saveAdminAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
 
 describe('Materials - Delete', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let materialRepository: MaterialRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, MaterialsModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
+
+    dataSource = testApplication.get<DataSource>(DataSource);
 
     materialRepository =
-      moduleFixture.get<MaterialRepository>(MaterialRepository);
+      testApplication.get<MaterialRepository>(MaterialRepository);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
@@ -32,18 +32,21 @@ describe('Materials - Delete', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   test('Delete a material should be successful (happy case)', async () => {
     const material: Material = await createMaterial();
 
-    await request(app.getHttpServer())
+    await request(testApplication.getHttpServer())
       .delete(`/api/v1/materials/${material.id}`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.OK);
 
-    expect(await materialRepository.findOne(material.id)).toBeUndefined();
+    expect(
+      await materialRepository.findOne({ where: { id: material.id } }),
+    ).toBeNull();
   });
 });

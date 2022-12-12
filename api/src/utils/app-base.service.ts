@@ -8,6 +8,7 @@ import * as JSONAPISerializer from 'jsonapi-serializer';
 import { Repository } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Serializer } from 'jsonapi-serializer';
+import { Logger } from '@nestjs/common';
 
 export class PaginationMeta {
   totalPages: number;
@@ -73,6 +74,7 @@ export abstract class AppBaseService<
     protected idProperty: string = 'id',
   ) {
     super(repository, alias, { idProperty });
+    this.logger = new Logger(alias);
   }
 
   /**

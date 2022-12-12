@@ -1,12 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { omit } from 'lodash';
 import * as config from 'config';
+import ApplicationManager, {
+  TestApplication,
+} from './utils/application-manager';
+import { DataSource } from 'typeorm';
+import { clearTestDataFromDatabase } from './utils/database-test-helper';
 
 describe('JSON API Specs (e2e)', () => {
-  let app: INestApplication;
+  let dataSource: DataSource;
+  let testApplication: TestApplication;
 
   beforeAll(async () => {
     if (process.env.NODE_ENV !== 'test') {
@@ -15,16 +18,14 @@ describe('JSON API Specs (e2e)', () => {
       );
     }
 
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
 
-    app = moduleFixture.createNestApplication();
-    await app.init();
+    dataSource = testApplication.get<DataSource>(DataSource);
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   it('should return a response shaped as JSON:API Error spec, including ', async () => {
@@ -43,7 +44,7 @@ describe('JSON API Specs (e2e)', () => {
         stack: null,
       },
     };
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .post('/auth/sign-in')
       .send({
         username: 'fakeuser@example.com',

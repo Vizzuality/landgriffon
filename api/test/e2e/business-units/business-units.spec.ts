@@ -1,34 +1,34 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
-import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
 import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
-import { saveAdminAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
 
 /**
  * Tests for the BusinessUnitsModule.
  */
 
 describe('BusinessUnitsModule (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let businessUnitRepository: BusinessUnitRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, BusinessUnitsModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
 
-    businessUnitRepository = moduleFixture.get<BusinessUnitRepository>(
+    dataSource = testApplication.get<DataSource>(DataSource);
+
+    businessUnitRepository = testApplication.get<BusinessUnitRepository>(
       BusinessUnitRepository,
     );
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
@@ -36,12 +36,13 @@ describe('BusinessUnitsModule (e2e)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   describe('Business units - Create', () => {
     test('Create a business unit should be successful (happy case)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/business-units')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -49,9 +50,9 @@ describe('BusinessUnitsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdBusinessUnit = await businessUnitRepository.findOne(
-        response.body.data.id,
-      );
+      const createdBusinessUnit = await businessUnitRepository.findOne({
+        where: { id: response.body.data.id },
+      });
 
       if (!createdBusinessUnit) {
         throw new Error('Error loading created Business Unit');
@@ -62,7 +63,7 @@ describe('BusinessUnitsModule (e2e)', () => {
   });
 
   test('Create a business unit without the required fields should fail with a 400 error', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .post('/api/v1/business-units')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -86,7 +87,7 @@ describe('BusinessUnitsModule (e2e)', () => {
       businessUnit.name = 'test business unit';
       await businessUnit.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/business-units/${businessUnit.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -106,15 +107,17 @@ describe('BusinessUnitsModule (e2e)', () => {
       businessUnit.name = 'test business unit';
       await businessUnit.save();
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete(`/api/v1/business-units/${businessUnit.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
       expect(
-        await businessUnitRepository.findOne(businessUnit.id),
-      ).toBeUndefined();
+        await businessUnitRepository.findOne({
+          where: { id: businessUnit.id },
+        }),
+      ).toBeNull();
     });
   });
 
@@ -124,7 +127,7 @@ describe('BusinessUnitsModule (e2e)', () => {
       businessUnit.name = 'test business unit';
       await businessUnit.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/business-units`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -140,7 +143,7 @@ describe('BusinessUnitsModule (e2e)', () => {
       businessUnit.name = 'test business unit';
       await businessUnit.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/business-units/${businessUnit.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()

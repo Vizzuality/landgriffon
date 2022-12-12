@@ -1,43 +1,40 @@
-import { TestingModule } from '@nestjs/testing';
 import { E2E_CONFIG } from '../e2e.config';
 import { genSalt, hash } from 'bcrypt';
 import * as request from 'supertest';
-import { INestApplication } from '@nestjs/common';
-import { UserRepository } from '../../src/modules/users/user.repository';
-import { Role } from '../../src/modules/authorization/role.entity';
-import { ROLES } from '../../src/modules/authorization/roles/roles.enum';
+import { Role } from 'modules/authorization/role.entity';
+import { ROLES } from 'modules/authorization/roles/roles.enum';
+import { User } from 'modules/users/user.entity';
+import { EntityManager } from 'typeorm';
+import { TestApplication } from './application-manager';
+import { faker } from '@faker-js/faker';
 
-export async function saveAdminAndGetToken(
-  moduleFixture: TestingModule,
-  app: INestApplication,
-): Promise<string> {
-  const tokenWithUser = await saveUserWithRoleAndGetTokenWithUserId(
-    moduleFixture,
-    app,
-    ROLES.ADMIN,
-  );
-  return tokenWithUser.jwtToken;
-}
+export type TestUser = { jwtToken: string; user: User; password: string };
 
-export async function saveUserWithRoleAndGetTokenWithUserId(
-  moduleFixture: TestingModule,
-  app: INestApplication,
-  role: ROLES = ROLES.ADMIN,
-): Promise<{ jwtToken: string; userId: string }> {
+export async function setupTestUser(
+  applicationManager: TestApplication,
+  roleName: ROLES = ROLES.ADMIN,
+  extraData: Partial<User> = {},
+): Promise<TestUser> {
   const salt = await genSalt();
-  const roleForUser = new Role();
-  roleForUser.name = role;
-  const userRepository = moduleFixture.get<UserRepository>(UserRepository);
-  await userRepository.save({
+  const role = new Role();
+  role.name = roleName;
+  const entityManager = applicationManager.get<EntityManager>(EntityManager);
+  const userRepository = entityManager.getRepository(User);
+
+  const password = faker.internet.password();
+
+  const user = await userRepository.save({
     ...E2E_CONFIG.users.signUp,
     salt,
-    password: await hash(E2E_CONFIG.users.signUp.password, salt),
+    password: await hash(password, salt),
     isActive: true,
     isDeleted: false,
-    roles: [roleForUser],
+    roles: [role],
+    ...extraData,
   });
-  const response = await request(app.getHttpServer())
+  const response = await request(applicationManager.application.getHttpServer())
     .post('/auth/sign-in')
-    .send(E2E_CONFIG.users.signIn);
-  return { jwtToken: response.body.accessToken, userId: response.body.user.id };
+    .send({ username: user.email, password: password });
+
+  return { jwtToken: response.body.accessToken, user, password };
 }

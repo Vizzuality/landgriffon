@@ -1,7 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import {
   createAdminRegion,
@@ -11,38 +9,42 @@ import {
   createSourcingLocation,
   createSupplier,
 } from '../../entity-mocks';
-import { saveAdminAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { Material } from 'modules/materials/material.entity';
-import { MaterialsModule } from 'modules/materials/materials.module';
 import {
   LOCATION_TYPES,
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
-import { clearEntityTables } from '../../utils/database-test-helper';
+import {
+  clearEntityTables,
+  clearTestDataFromDatabase,
+} from '../../utils/database-test-helper';
 import {
   SCENARIO_INTERVENTION_STATUS,
   ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
+import { DataSource } from 'typeorm';
 
 describe('Materials - Get trees - Smart Filters', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let jwtToken: string;
+  let dataSource: DataSource;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, MaterialsModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
+    dataSource = testApplication.get<DataSource>(DataSource);
+
+    ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
-    await clearEntityTables([
+    await clearEntityTables(dataSource, [
       Scenario,
       ScenarioIntervention,
       Supplier,
@@ -52,11 +54,12 @@ describe('Materials - Get trees - Smart Filters', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   test('When I request material trees, and the DB is empty, then I should get empty array', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/materials/trees`)
       .query({
         withSourcingLocations: true,
@@ -120,7 +123,7 @@ describe('Materials - Get trees - Smart Filters', () => {
         materialId: material3.id,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/materials/trees')
         .query({
           withSourcingLocations: true,
@@ -182,7 +185,7 @@ describe('Materials - Get trees - Smart Filters', () => {
         materialId: material3.id,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/materials/trees')
         .query({
           withSourcingLocations: true,
@@ -267,7 +270,7 @@ describe('Materials - Get trees - Smart Filters', () => {
           materialId: material3.id,
         });
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get('/api/v1/materials/trees')
           .query({
             withSourcingLocations: true,
@@ -365,7 +368,7 @@ describe('Materials - Get trees - Smart Filters', () => {
           materialId: material3.id,
         });
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get('/api/v1/materials/trees')
           .query({
             withSourcingLocations: true,
@@ -444,7 +447,7 @@ describe('Materials - Get trees - Smart Filters', () => {
           scenarioInterventionId: interventionInactive.id,
         });
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get('/api/v1/materials/trees')
           .query({
             withSourcingLocations: true,

@@ -1,23 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication, Logger } from '@nestjs/common';
-import * as faker from 'faker';
+import { HttpStatus, Logger } from '@nestjs/common';
+import { faker } from '@faker-js/faker';
 import * as request from 'supertest';
-import { Response } from 'supertest';
-import { AppModule } from 'app.module';
 import { E2E_CONFIG } from '../../e2e.config';
 import { v4 } from 'uuid';
 import { SignUpDto } from 'modules/authentication/dto/sign-up.dto';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ApiEvent } from 'modules/api-events/api-event.entity';
-import { ApiEventsModule } from 'modules/api-events/api-events.module';
-import { UsersModule } from 'modules/users/users.module';
-import { LoginDto } from 'modules/authentication/dto/login.dto';
-import { getApp } from '../../utils/getApp';
-import { saveAdminAndGetToken } from '../../utils/userAuth';
-import { ROLES } from '../../../src/modules/authorization/roles/roles.enum';
-import { getManager } from 'typeorm';
-import { User } from '../../../src/modules/users/user.entity';
-import { clearEntityTables } from '../../utils/database-test-helper';
+import { setupTestUser, TestUser } from '../../utils/userAuth';
+import { ROLES } from 'modules/authorization/roles/roles.enum';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
+import { DataSource } from 'typeorm';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { UserRepository } from 'modules/users/user.repository';
+import { createUser } from '../../entity-mocks';
 
 /**
  * Tests for the UsersModule.
@@ -33,51 +28,30 @@ import { clearEntityTables } from '../../utils/database-test-helper';
  */
 
 describe('UsersModule (e2e)', () => {
-  let app: INestApplication;
-  let moduleFixture: TestingModule;
-  let adminToken: string;
-  const aNewPassword = 'aNewPassword123!';
-
-  const signUpDto: SignUpDto = {
-    email: `${v4()}@example.com`,
-    password: 'Password123!',
-    displayName: `${faker.name.firstName()} ${faker.name.lastName()}`,
-  };
-
-  const loginDto: LoginDto = {
-    username: signUpDto.email,
-    password: signUpDto.password,
-  };
+  let adminTestUser: TestUser;
+  let userTestUser: TestUser;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
+  let userRepository: UserRepository;
 
   beforeAll(async () => {
-    moduleFixture = await Test.createTestingModule({
-      imports: [
-        AppModule,
-        ApiEventsModule,
-        TypeOrmModule.forFeature([ApiEvent]),
-        UsersModule,
-      ],
-    }).compile();
+    testApplication = await ApplicationManager.init();
 
-    app = getApp(moduleFixture);
+    adminTestUser = await setupTestUser(testApplication);
+    userTestUser = await setupTestUser(testApplication, ROLES.USER, {
+      email: 'user@example.com',
+    });
 
-    await app.init();
-    adminToken = await saveAdminAndGetToken(moduleFixture, app);
-
-    await request(app.getHttpServer())
-      .post('/auth/sign-up')
-      .send(signUpDto)
-      .expect(HttpStatus.CREATED);
+    dataSource = testApplication.get<DataSource>(DataSource);
+    userRepository = testApplication.get<UserRepository>(UserRepository);
   });
 
   afterAll(async () => {
-    await clearEntityTables([User]);
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   describe('Users - User creation', () => {
-    let jwtToken: string;
-
     const newUserDto: SignUpDto = {
       email: `${v4()}@example.com`,
       password: 'Example123!',
@@ -86,27 +60,18 @@ describe('UsersModule (e2e)', () => {
       fname: faker.name.lastName(),
     };
 
-    beforeAll(async () => {
-      jwtToken = await request(app.getHttpServer())
-        .post('/auth/sign-in')
-        .send(loginDto)
-        .expect(HttpStatus.CREATED)
-        .then((response: Response) => response.body.accessToken);
-      Logger.debug(`jwtToken: ${jwtToken}`);
-    });
-
     test('A user should not be able to create new users', async () => {
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .post('/api/v1/users')
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${userTestUser.jwtToken}`)
         .send(newUserDto)
         .expect(HttpStatus.FORBIDDEN);
     });
 
     test('A admin should be able to create a user with default user role if none provided ', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/users')
-        .set('Authorization', `Bearer ${adminToken}`)
+        .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
         .send({ email: 'test@test.com', password: '12345678' })
         .expect(HttpStatus.CREATED);
 
@@ -115,13 +80,13 @@ describe('UsersModule (e2e)', () => {
         { name: ROLES.USER },
       ]);
 
-      await getManager().getRepository(User).delete({ email: 'test@test.com' });
+      await userRepository.delete({ email: 'test@test.com' });
     });
 
     test('A admin user should be able to create a user with roles ', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/users')
-        .set('Authorization', `Bearer ${adminToken}`)
+        .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
         .send({
           email: 'test@test.com',
           password: '12345678',
@@ -135,13 +100,13 @@ describe('UsersModule (e2e)', () => {
         { name: ROLES.USER },
       ]);
 
-      await getManager().getRepository(User).delete({ email: 'test@test.com' });
+      await userRepository.delete({ email: 'test@test.com' });
     });
 
     test('A user should not be able to update its own role ', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch('/api/v1/users/me')
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
         .send({
           email: newUserDto.email,
           roles: [ROLES.ADMIN, ROLES.USER],
@@ -154,15 +119,11 @@ describe('UsersModule (e2e)', () => {
     });
 
     test('A admin should be able to update any users role', async () => {
-      const userId = await request(app.getHttpServer())
-        .post('/auth/sign-in')
-        .send(loginDto)
-        .expect(HttpStatus.CREATED)
-        .then((response: Response) => response.body.user.id);
+      const { id: userId } = await createUser();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/users/update/${userId}`)
-        .set('Authorization', `Bearer ${adminToken}`)
+        .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
         .send({
           roles: [ROLES.ADMIN, ROLES.USER],
         })
@@ -176,58 +137,38 @@ describe('UsersModule (e2e)', () => {
     });
 
     test('A user should not be able to create users using an email address already in use', async () => {
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .post('/api/v1/users')
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${userTestUser.jwtToken}`)
         .send(newUserDto)
         .expect(HttpStatus.FORBIDDEN);
     });
   });
 
   describe('Users - metadata', () => {
-    let jwtToken: string;
-
-    beforeAll(async () => {
-      jwtToken = await request(app.getHttpServer())
-        .post('/auth/sign-in')
-        .send(loginDto)
-        .expect(HttpStatus.CREATED)
-        .then((response: Response) => response.body.accessToken);
-    });
-
     test('A user should be able to read their own metadata', async () => {
-      const results = await request(app.getHttpServer())
+      const results = await request(testApplication.getHttpServer())
         .get('/api/v1/users/me')
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
         .expect(HttpStatus.OK);
 
       expect(results);
     });
 
     test('A user should be able to update their own metadata', async () => {
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .patch('/api/v1/users/me')
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
         .send(E2E_CONFIG.users.updated.bb())
         .expect(HttpStatus.OK);
     });
   });
 
   describe('Users - password updates which should fail', () => {
-    let jwtToken: string;
-
-    beforeAll(async () => {
-      jwtToken = await request(app.getHttpServer())
-        .post('/auth/sign-in')
-        .send(loginDto)
-        .expect(HttpStatus.CREATED)
-        .then((response: Response) => response.body.accessToken);
-    });
-
     test('A user should not be able to change their password as part of the user update lifecycle', async () => {
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .patch('/api/v1/users/me/')
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
         .send({
           ...E2E_CONFIG.users.updated.bb(),
           password: 'newPassword123!!',
@@ -236,74 +177,55 @@ describe('UsersModule (e2e)', () => {
     });
 
     test('A user should not be able to change their password if they provide an incorrect current password', async () => {
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .patch('/api/v1/users/me/password')
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
         .send({
           currentPassword: faker.datatype.uuid(),
-          newPassword: aNewPassword,
+          newPassword: faker.internet.password(),
         })
         .expect(HttpStatus.FORBIDDEN);
     });
   });
 
   describe('Users - password updates which should succeed', () => {
-    let jwtToken: string;
-
-    beforeAll(async () => {
-      jwtToken = await request(app.getHttpServer())
-        .post('/auth/sign-in')
-        .send(loginDto)
-        .expect(HttpStatus.CREATED)
-        .then((response: Response) => response.body.accessToken);
-    });
+    const newPassword = faker.internet.password();
 
     test('A user should be able to change their password if they provide the correct current password', async () => {
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .patch('/api/v1/users/me/password')
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${userTestUser.jwtToken}`)
         .send({
-          currentPassword: loginDto.password,
-          newPassword: aNewPassword,
+          currentPassword: userTestUser.password,
+          newPassword: newPassword,
         })
         .expect(HttpStatus.OK);
     });
 
     test('A user should be able to change their password if they provide the correct current password (take 2, back to initial password)', async () => {
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .patch('/api/v1/users/me/password')
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${userTestUser.jwtToken}`)
         .send({
-          currentPassword: aNewPassword,
-          newPassword: loginDto.password,
+          currentPassword: newPassword,
+          newPassword: userTestUser.password,
         })
         .expect(HttpStatus.OK);
     });
   });
 
   describe('Users - account deletion', () => {
-    let jwtToken: string;
-
-    beforeAll(async () => {
-      jwtToken = await request(app.getHttpServer())
-        .post('/auth/sign-in')
-        .send(loginDto)
-        .expect(HttpStatus.CREATED)
-        .then((response: Response) => response.body.accessToken);
-      Logger.debug(`jwtToken: ${jwtToken}`);
-    });
-
     test('A user should be able to delete their own account', async () => {
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete('/api/v1/users/me')
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
         .expect(HttpStatus.OK);
     });
 
     test('Once a user account is marked as deleted, the user should be logged out', async () => {
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .get('/api/v1/users/me')
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
         .expect(HttpStatus.UNAUTHORIZED);
     });
   });

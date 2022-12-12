@@ -22,7 +22,6 @@ import {
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
-import { getManager } from 'typeorm';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
@@ -36,7 +35,8 @@ import {
   ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
-import { Scenario } from '../../../../src/modules/scenarios/scenario.entity';
+import { Scenario } from 'modules/scenarios/scenario.entity';
+import { DataSource } from 'typeorm';
 
 export interface ImpactMapMockData {
   indicatorId: string;
@@ -55,9 +55,14 @@ export interface ImpactMapMockData {
   harvestH3DataTwoId: string;
   scenarioId: string;
   scenarioTwoId: string;
+  tablesToDrop: string[];
 }
 
-export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
+export const createImpactMapMockData = async (
+  dataSource: DataSource,
+): Promise<ImpactMapMockData> => {
+  const tablesToDrop: string[] = [];
+
   const unit: Unit = new Unit();
   unit.name = 'test unit';
   unit.symbol = 'tonnes';
@@ -74,7 +79,7 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
   indicator.nameCode = 'UWU_T';
   await indicator.save();
 
-  const harvestH3Data = await h3DataMock({
+  const harvestH3Data = await h3DataMock(dataSource, {
     h3TableName: 'harvestTable',
     h3ColumnName: 'harvestColumn',
     additionalH3Data: h3BasicFixtureForScaler,
@@ -82,13 +87,17 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
     year: 2020,
   });
 
-  const productionH3Data = await h3DataMock({
+  tablesToDrop.push(harvestH3Data.h3tableName);
+
+  const productionH3Data = await h3DataMock(dataSource, {
     h3TableName: 'productionTable',
     h3ColumnName: 'productionColumn',
     additionalH3Data: h3BasicFixtureForScaler,
     indicatorId: indicator.id,
     year: 2020,
   });
+
+  tablesToDrop.push(productionH3Data.h3tableName);
 
   const materialOne: Material = await createMaterial({
     name: 'MaterialOne',
@@ -458,17 +467,20 @@ export const createImpactMapMockData = async (): Promise<ImpactMapMockData> => {
     harvestH3DataTwoId: harvestH3Data.id,
     scenarioId: scenario.id,
     scenarioTwoId: scenarioTwo.id,
+    tablesToDrop,
   };
 };
 
-export const deleteImpactMapMockData = async (): Promise<void> => {
-  await getManager().delete(MaterialToH3, {});
-  await getManager().delete(Material, {});
-  await getManager().delete(H3Data, {});
-  await getManager().delete(Indicator, {});
-  await getManager().delete(IndicatorRecord, {});
-  await getManager().delete(UnitConversion, {});
-  await getManager().delete(Unit, {});
-  await getManager().delete(ScenarioIntervention, {});
-  await getManager().delete(Scenario, {});
+export const deleteImpactMapMockData = async (
+  dataSource: DataSource,
+): Promise<void> => {
+  await dataSource.getRepository(MaterialToH3).delete({});
+  await dataSource.getRepository(Material).delete({});
+  await dataSource.getRepository(H3Data).delete({});
+  await dataSource.getRepository(Indicator).delete({});
+  await dataSource.getRepository(IndicatorRecord).delete({});
+  await dataSource.getRepository(UnitConversion).delete({});
+  await dataSource.getRepository(Unit).delete({});
+  await dataSource.getRepository(ScenarioIntervention).delete({});
+  await dataSource.getRepository(Scenario).delete({});
 };

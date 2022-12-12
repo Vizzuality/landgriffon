@@ -11,7 +11,7 @@ export class UpdateScenarioInterventionDto extends PartialType(
   updatedById: string;
 
   @IsOptional()
-  @IsEnum(Object.values(SCENARIO_INTERVENTION_STATUS))
+  @IsEnum(SCENARIO_INTERVENTION_STATUS)
   @ApiPropertyOptional({
     description: 'Status of the intervention',
     enum: Object.values(SCENARIO_INTERVENTION_STATUS),

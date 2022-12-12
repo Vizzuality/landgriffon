@@ -1,18 +1,16 @@
-import {
-  EntityRepository,
-  getManager,
-  Repository,
-  SelectQueryBuilder,
-} from 'typeorm';
+import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import {
   CONTEXTUAL_LAYER_AGG_TYPE,
   ContextualLayer,
 } from 'modules/contextual-layers/contextual-layer.entity';
 import { H3IndexValueData } from 'modules/h3-data/h3-data.entity';
-import { NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
-@EntityRepository(ContextualLayer)
+@Injectable()
 export class ContextualLayerRepository extends Repository<ContextualLayer> {
+  constructor(private dataSource: DataSource) {
+    super(ContextualLayer, dataSource.createEntityManager());
+  }
   /**
    * Retrieves data from dynamically generated H3 data aggregating by H3 index for the given resolution,
    * and by the type of aggregation determined by aggregationType
@@ -56,7 +54,7 @@ export class ContextualLayerRepository extends Repository<ContextualLayer> {
           break;
       }
 
-      const query: SelectQueryBuilder<unknown> = getManager()
+      const query: SelectQueryBuilder<any> = this.dataSource
         .createQueryBuilder()
         .select(`h3_to_parent(h3index, ${resolution})`, 'h')
         .addSelect(aggregationSelect, 'v')

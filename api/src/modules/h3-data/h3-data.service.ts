@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 import { MaterialsService } from 'modules/materials/materials.service';
@@ -24,7 +23,6 @@ export class H3DataService {
   logger: Logger = new Logger(H3DataService.name);
 
   constructor(
-    @InjectRepository(H3DataRepository)
     protected readonly h3DataRepository: H3DataRepository,
     protected readonly materialService: MaterialsService,
     protected readonly materialToH3Service: MaterialsToH3sService,
@@ -62,18 +60,16 @@ export class H3DataService {
     );
   }
 
-  async getById(id: string): Promise<H3Data | undefined> {
-    return await this.h3DataRepository.findOne({ id });
+  async getById(id: string): Promise<H3Data | null> {
+    return await this.h3DataRepository.findOneBy({ id });
   }
 
-  async findH3ByIndicatorId(indicatorId: string): Promise<H3Data | undefined> {
-    return await this.h3DataRepository.findOne({ indicatorId });
+  async findH3ByIndicatorId(indicatorId: string): Promise<H3Data | null> {
+    return await this.h3DataRepository.findOne({ where: { indicatorId } });
   }
 
-  findH3ByContextualLayerId(
-    contextualLayerId: string,
-  ): Promise<H3Data | undefined> {
-    return this.h3DataRepository.findOne({ contextualLayerId });
+  findH3ByContextualLayerId(contextualLayerId: string): Promise<H3Data | null> {
+    return this.h3DataRepository.findOne({ where: { contextualLayerId } });
   }
 
   getContextualLayerH3DataByClosestYear(

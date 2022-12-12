@@ -1,6 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { AppModule } from 'app.module';
-import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { MaterialRepository } from 'modules/materials/material.repository';
@@ -51,16 +50,25 @@ import { createWorldToCalculateIndicatorRecords } from '../../../utils/indicator
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { Material } from 'modules/materials/material.entity';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
-import {
-  SourcingRecordsWithIndicatorRawDataDto,
-  SourcingRecordsWithIndicatorRawDataDtoV2,
-} from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
+import { SourcingRecordsWithIndicatorRawDataDtoV2 } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
+import { DataSource } from 'typeorm';
+import { TasksRepository } from 'modules/tasks/tasks.repository';
+import { clearTestDataFromDatabase } from '../../../utils/database-test-helper';
+import ApplicationManager, {
+  TestApplication,
+} from '../../../utils/application-manager';
 
 let tablesToDrop: string[] = [];
 
 let missingDataFallbackPolicy: string = 'error';
 
+/**
+ * @TODO: swap this for injecting config into the DIC
+ * and replacing that.
+ * It will require refactoring the test as well to use different DIC instances
+ * per test.
+ */
 jest.mock('config', () => {
   const config = jest.requireActual('config');
 
@@ -77,22 +85,6 @@ jest.mock('config', () => {
   return config;
 });
 
-jest.mock('config', () => {
-  const config = jest.requireActual('config');
-
-  const configGet = config.get;
-
-  config.get = function (key: string): any {
-    switch (key) {
-      case 'newMethodology':
-        return true;
-      default:
-        return configGet.call(config, key);
-    }
-  };
-  return config;
-});
-
 describe('Sourcing Data import', () => {
   /**
    * @note: We are currently ignoring '#N/A' location type values in production code
@@ -101,18 +93,21 @@ describe('Sourcing Data import', () => {
    */
   const geoCodingServiceMock = {
     geoCodeLocations: async (sourcingData: any): Promise<any> => {
-      const geoRegion: GeoRegion | undefined =
-        await geoRegionRepository.findOne({
+      const geoRegion: GeoRegion | null = await geoRegionRepository.findOne({
+        where: {
           name: 'ABC',
-        });
-      if (geoRegion === undefined) {
+        },
+      });
+      if (geoRegion === null) {
         throw new Error('Could not find expected mock GeoRegion with name=ABC');
       }
-      const adminRegion: AdminRegion | undefined =
+      const adminRegion: AdminRegion | null =
         await adminRegionRepository.findOne({
-          geoRegionId: geoRegion.id,
+          where: {
+            geoRegionId: geoRegion.id,
+          },
         });
-      if (adminRegion === undefined) {
+      if (adminRegion === null) {
         throw new Error(
           'Could not find expected mock AdminRegion for GeoRegion with name=ABC',
         );
@@ -153,6 +148,7 @@ describe('Sourcing Data import', () => {
     }
   }
 
+  let dataSource: DataSource;
   let businessUnitRepository: BusinessUnitRepository;
   let materialRepository: MaterialRepository;
   let materialToH3Service: MaterialsToH3sService;
@@ -167,57 +163,63 @@ describe('Sourcing Data import', () => {
   let h3DataRepository: H3DataRepository;
   let sourcingDataImportService: SourcingDataImportService;
   let impactCalculatorService: ImpactCalculator;
-  let moduleFixture: TestingModule;
+  let tasksRepository: TasksRepository;
+  let testApplication: TestApplication;
 
   beforeAll(async () => {
     jest.setTimeout(10000);
-    moduleFixture = await Test.createTestingModule({
-      imports: [AppModule, SourcingRecordsModule],
-    })
-      .overrideProvider(FileService)
-      .useClass(MockFileService)
-      .overrideProvider(GeoCodingAbstractClass)
-      .useValue(geoCodingServiceMock)
-      .overrideProvider(UnknownLocationGeoCodingStrategy)
-      .useClass(UnknownLocationServiceMock)
-      .compile();
+    testApplication = await ApplicationManager.init(
+      Test.createTestingModule({
+        imports: [AppModule],
+      })
+        .overrideProvider(FileService)
+        .useClass(MockFileService)
+        .overrideProvider(GeoCodingAbstractClass)
+        .useValue(geoCodingServiceMock)
+        .overrideProvider(UnknownLocationGeoCodingStrategy)
+        .useClass(UnknownLocationServiceMock),
+    );
 
-    businessUnitRepository = moduleFixture.get<BusinessUnitRepository>(
+    businessUnitRepository = testApplication.get<BusinessUnitRepository>(
       BusinessUnitRepository,
     );
     materialRepository =
-      moduleFixture.get<MaterialRepository>(MaterialRepository);
-    materialToH3Service = moduleFixture.get<MaterialsToH3sService>(
+      testApplication.get<MaterialRepository>(MaterialRepository);
+    materialToH3Service = testApplication.get<MaterialsToH3sService>(
       MaterialsToH3sService,
     );
     supplierRepository =
-      moduleFixture.get<SupplierRepository>(SupplierRepository);
-    adminRegionRepository = moduleFixture.get<AdminRegionRepository>(
+      testApplication.get<SupplierRepository>(SupplierRepository);
+    adminRegionRepository = testApplication.get<AdminRegionRepository>(
       AdminRegionRepository,
     );
-    sourcingLocationRepository = moduleFixture.get<SourcingLocationRepository>(
-      SourcingLocationRepository,
-    );
-    sourcingRecordRepository = moduleFixture.get<SourcingRecordRepository>(
+    sourcingLocationRepository =
+      testApplication.get<SourcingLocationRepository>(
+        SourcingLocationRepository,
+      );
+    sourcingRecordRepository = testApplication.get<SourcingRecordRepository>(
       SourcingRecordRepository,
     );
     sourcingLocationGroupRepository =
-      moduleFixture.get<SourcingLocationGroupRepository>(
+      testApplication.get<SourcingLocationGroupRepository>(
         SourcingLocationGroupRepository,
       );
     geoRegionRepository =
-      moduleFixture.get<GeoRegionRepository>(GeoRegionRepository);
-    indicatorRecordRepository = moduleFixture.get<IndicatorRecordRepository>(
+      testApplication.get<GeoRegionRepository>(GeoRegionRepository);
+    indicatorRecordRepository = testApplication.get<IndicatorRecordRepository>(
       IndicatorRecordRepository,
     );
     indicatorRepository =
-      moduleFixture.get<IndicatorRepository>(IndicatorRepository);
-    h3DataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
-    sourcingDataImportService = moduleFixture.get<SourcingDataImportService>(
+      testApplication.get<IndicatorRepository>(IndicatorRepository);
+    h3DataRepository = testApplication.get<H3DataRepository>(H3DataRepository);
+    sourcingDataImportService = testApplication.get<SourcingDataImportService>(
       SourcingDataImportService,
     );
     impactCalculatorService =
-      moduleFixture.get<ImpactCalculator>(ImpactCalculator);
+      testApplication.get<ImpactCalculator>(ImpactCalculator);
+    tasksRepository = testApplication.get<TasksRepository>(TasksRepository);
+
+    dataSource = testApplication.get<DataSource>(DataSource);
   });
 
   afterEach(async () => {
@@ -233,23 +235,25 @@ describe('Sourcing Data import', () => {
     await sourcingLocationRepository.delete({});
     await sourcingLocationGroupRepository.delete({});
     await h3DataRepository.delete({});
+    await tasksRepository.delete({});
 
     if (tablesToDrop.length > 0) {
-      await dropH3DataMock(tablesToDrop);
+      await dropH3DataMock(dataSource, tablesToDrop);
       tablesToDrop = [];
     }
   });
 
   afterAll(async () => {
     jest.clearAllTimers();
-    return moduleFixture.close();
+    await clearTestDataFromDatabase(dataSource);
+    return testApplication.close();
   });
 
   test('When a file is processed by the API and there are no materials in the database, an error should be displayed', async () => {
     expect.assertions(1);
     try {
       await sourcingDataImportService.importSourcingData(
-        __dirname + '/test-base-dataset.xlsx',
+        __dirname + '/files/test-base-dataset.xlsx',
         '',
       );
     } catch (err: any) {
@@ -268,18 +272,19 @@ describe('Sourcing Data import', () => {
       geoRegion,
     });
 
-    const indicatorPreconditions =
-      await createWorldToCalculateIndicatorRecords();
+    const indicatorPreconditions = await createWorldToCalculateIndicatorRecords(
+      dataSource,
+    );
 
     const task = await createTask();
 
     tablesToDrop = [
-      ...(await createMaterialTreeForXLSXImport()),
+      ...(await createMaterialTreeForXLSXImport(dataSource)),
       ...indicatorPreconditions.h3tableNames,
     ];
 
     await sourcingDataImportService.importSourcingData(
-      __dirname + '/test-base-dataset.xlsx',
+      __dirname + '/files/test-base-dataset.xlsx',
       task.id,
     );
   }, 100000);
@@ -293,17 +298,18 @@ describe('Sourcing Data import', () => {
       geoRegion,
     });
 
-    const indicatorPreconditions =
-      await createWorldToCalculateIndicatorRecords();
+    const indicatorPreconditions = await createWorldToCalculateIndicatorRecords(
+      dataSource,
+    );
     tablesToDrop = [
-      ...(await createMaterialTreeForXLSXImport()),
+      ...(await createMaterialTreeForXLSXImport(dataSource)),
       ...indicatorPreconditions.h3tableNames,
     ];
 
     const task = await createTask();
 
     await sourcingDataImportService.importSourcingData(
-      __dirname + '/test-base-dataset.xlsx',
+      __dirname + '/files/test-base-dataset.xlsx',
       task.id,
     );
 
@@ -343,26 +349,27 @@ describe('Sourcing Data import', () => {
       geoRegion,
     });
 
-    const indicatorPreconditions =
-      await createWorldToCalculateIndicatorRecords();
+    const indicatorPreconditions = await createWorldToCalculateIndicatorRecords(
+      dataSource,
+    );
     tablesToDrop = [
-      ...(await createMaterialTreeForXLSXImport()),
+      ...(await createMaterialTreeForXLSXImport(dataSource)),
       ...indicatorPreconditions.h3tableNames,
     ];
 
     const task = await createTask();
 
     await sourcingDataImportService.importSourcingData(
-      __dirname + '/test-base-dataset.xlsx',
+      __dirname + '/files/test-base-dataset.xlsx',
       task.id,
     );
 
     const sourcingRecords: SourcingRecord[] =
       await sourcingRecordRepository.find();
-    const sourcingLocation: SourcingLocation | undefined =
-      await sourcingLocationRepository.findOne(
-        sourcingRecords[0].sourcingLocationId,
-      );
+    const sourcingLocation: SourcingLocation | null =
+      await sourcingLocationRepository.findOne({
+        where: { id: sourcingRecords[0].sourcingLocationId },
+      });
 
     expect(sourcingRecords[0]).toMatchObject(new SourcingRecord());
     expect(sourcingLocation).toMatchObject(new SourcingLocation());
@@ -377,8 +384,13 @@ describe('Sourcing Data import', () => {
       geoRegion,
     });
 
-    await createMaterialTreeForXLSXImport();
-    const preconditions = await createWorldToCalculateIndicatorRecords();
+    const indicatorPreconditions = await createWorldToCalculateIndicatorRecords(
+      dataSource,
+    );
+    tablesToDrop = [
+      ...(await createMaterialTreeForXLSXImport(dataSource)),
+      ...indicatorPreconditions.h3tableNames,
+    ];
 
     const materials: Material[] = await materialRepository.find();
 
@@ -412,7 +424,7 @@ describe('Sourcing Data import', () => {
 
     const indicatorRawDataForImport: SourcingRecordsWithIndicatorRawDataDtoV2[] =
       await impactCalculatorService.getIndicatorRawDataForAllSourcingRecordsV2(
-        preconditions.indicators,
+        indicatorPreconditions.indicators,
       );
 
     expect(indicatorRawDataForImport.length).toEqual(1);
@@ -445,14 +457,14 @@ describe('Sourcing Data import', () => {
     const material: Material = await createMaterial({
       name: 'Material 1',
     });
-    const sourcinRecord: SourcingRecord = await createSourcingRecord({
+    const sourcingRecord: SourcingRecord = await createSourcingRecord({
       year: 2019,
     });
     const sourcingRecord2: SourcingRecord = await createSourcingRecord({
       year: 2020,
     });
     await createSourcingLocation({
-      sourcingRecords: [sourcinRecord],
+      sourcingRecords: [sourcingRecord],
       adminRegion,
       businessUnit,
       t1Supplier: supplier,
@@ -469,7 +481,7 @@ describe('Sourcing Data import', () => {
     await sourcingDataImportService.cleanDataBeforeImport();
 
     expect(
-      await geoRegionRepository.find({ isCreatedByUser: true }),
+      await geoRegionRepository.find({ where: { isCreatedByUser: true } }),
     ).toHaveLength(0);
     expect(await geoRegionRepository.find()).toHaveLength(1);
     expect(await adminRegionRepository.find()).toHaveLength(2);
@@ -488,21 +500,23 @@ describe('Sourcing Data import', () => {
         isoA2: 'ABC',
         geoRegion,
       });
-      await h3DataMock({
+      await h3DataMock(dataSource, {
         h3TableName: 'h3_grid_deforestation_global',
         h3ColumnName: 'hansen_loss_2019',
         year: 2019,
         additionalH3Data: h3BasicFixture,
       });
       tablesToDrop = [
-        ...(await createMaterialTreeForXLSXImport({ startYear: 2020 })),
-        ...(await createIndicatorsForXLSXImport()),
+        ...(await createMaterialTreeForXLSXImport(dataSource, {
+          startYear: 2020,
+        })),
+        ...(await createIndicatorsForXLSXImport(dataSource)),
         'h3_grid_deforestation_global',
       ];
 
       try {
         await sourcingDataImportService.importSourcingData(
-          __dirname + '/base-dataset-one-material.xlsx',
+          __dirname + '/files/base-base-dataset-dataset-one-material.xlsx',
           '',
         );
       } catch (err: any) {
@@ -520,20 +534,22 @@ describe('Sourcing Data import', () => {
         isoA2: 'ABC',
         geoRegion,
       });
-      await h3DataMock({
+      await h3DataMock(dataSource, {
         h3TableName: 'h3_grid_deforestation_global',
         h3ColumnName: 'hansen_loss_2019',
         year: 2019,
         additionalH3Data: h3BasicFixture,
       });
       tablesToDrop = [
-        ...(await createMaterialTreeForXLSXImport({ startYear: 2020 })),
-        ...(await createIndicatorsForXLSXImport()),
+        ...(await createMaterialTreeForXLSXImport(dataSource, {
+          startYear: 2020,
+        })),
+        ...(await createIndicatorsForXLSXImport(dataSource)),
         'h3_grid_deforestation_global',
       ];
 
       await sourcingDataImportService.importSourcingData(
-        __dirname + '/base-dataset.xlsx',
+        __dirname + '/files/base-base-dataset-dataset.xlsx',
         '',
       );
 
@@ -572,20 +588,22 @@ describe('Sourcing Data import', () => {
         isoA2: 'ABC',
         geoRegion,
       });
-      await h3DataMock({
+      await h3DataMock(dataSource, {
         h3TableName: 'h3_grid_deforestation_global',
         h3ColumnName: 'hansen_loss_2019',
         year: 2019,
         additionalH3Data: h3BasicFixture,
       });
       tablesToDrop = [
-        ...(await createMaterialTreeForXLSXImport({ startYear: 2020 })),
-        ...(await createIndicatorsForXLSXImport()),
+        ...(await createMaterialTreeForXLSXImport(dataSource, {
+          startYear: 2020,
+        })),
+        ...(await createIndicatorsForXLSXImport(dataSource)),
         'h3_grid_deforestation_global',
       ];
 
       await sourcingDataImportService.importSourcingData(
-        __dirname + '/base-dataset.xlsx',
+        __dirname + '/files/base-base-dataset-dataset.xlsx',
         '',
       );
 

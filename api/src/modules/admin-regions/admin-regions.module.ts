@@ -7,17 +7,18 @@ import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-loc
 import { MaterialsModule } from 'modules/materials/materials.module';
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
+import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([AdminRegionRepository]),
+    TypeOrmModule.forFeature([AdminRegion]),
     forwardRef(() => MaterialsModule),
     forwardRef(() => SuppliersModule),
     forwardRef(() => BusinessUnitsModule),
     forwardRef(() => SourcingLocationsModule),
   ],
   controllers: [AdminRegionsController],
-  providers: [AdminRegionsService],
-  exports: [AdminRegionsService],
+  providers: [AdminRegionsService, AdminRegionRepository],
+  exports: [AdminRegionsService, AdminRegionRepository],
 })
 export class AdminRegionsModule {}

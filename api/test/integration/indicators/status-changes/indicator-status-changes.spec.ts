@@ -1,15 +1,16 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from 'app.module';
-import { IndicatorsModule } from 'modules/indicators/indicators.module';
-import { clearEntityTables } from '../../../utils/database-test-helper';
+import { clearTestDataFromDatabase } from '../../../utils/database-test-helper';
 import {
   Indicator,
   INDICATOR_STATUS,
   INDICATOR_TYPES_NEW,
 } from 'modules/indicators/indicator.entity';
-import { IndicatorsService } from '../../../../src/modules/indicators/indicators.service';
+import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { createIndicator } from '../../../entity-mocks';
-import { CreateIndicatorDto } from '../../../../src/modules/indicators/dto/create.indicator.dto';
+import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto';
+import { DataSource } from 'typeorm';
+import ApplicationManager, {
+  TestApplication,
+} from '../../../utils/application-manager';
 
 /**
  * @description: LG heavily depends on each Indicator status to calculate impact during either XLSXL Imports or Intervention calculations
@@ -17,21 +18,22 @@ import { CreateIndicatorDto } from '../../../../src/modules/indicators/dto/creat
  */
 
 describe('Indicators - Status (Integration Tests', () => {
-  let moduleFixture: TestingModule;
+  let dataSource: DataSource;
+  let testApplication: TestApplication;
   let indicatorService: IndicatorsService;
   beforeAll(async () => {
-    moduleFixture = await Test.createTestingModule({
-      imports: [AppModule, IndicatorsModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
 
-    indicatorService = moduleFixture.get<IndicatorsService>(IndicatorsService);
+    indicatorService =
+      testApplication.get<IndicatorsService>(IndicatorsService);
+    dataSource = testApplication.get<DataSource>(DataSource);
   });
 
   afterEach(async () => {
-    await clearEntityTables([Indicator]);
+    await clearTestDataFromDatabase(dataSource);
   });
 
-  afterAll(() => moduleFixture.close());
+  afterAll(() => testApplication.close());
 
   test('When I provide some NameCodes to activate Indicators, Indicators matching these nameCode should be activated', async () => {
     const nameCodeArray: string[] = Object.values(INDICATOR_TYPES_NEW);

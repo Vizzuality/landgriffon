@@ -1,31 +1,31 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { Supplier } from 'modules/suppliers/supplier.entity';
-import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { createSupplier } from '../../entity-mocks';
 import { expectedJSONAPIAttributes } from './config';
-import { saveAdminAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
 
 describe('Suppliers - Update', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let supplierRepository: SupplierRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, SuppliersModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
+
+    dataSource = testApplication.get<DataSource>(DataSource);
 
     supplierRepository =
-      moduleFixture.get<SupplierRepository>(SupplierRepository);
+      testApplication.get<SupplierRepository>(SupplierRepository);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
@@ -33,13 +33,14 @@ describe('Suppliers - Update', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   test('Update a supplier should be successful (happy case)', async () => {
     const supplier: Supplier = await createSupplier();
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .patch(`/api/v1/suppliers/${supplier.id}`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
@@ -53,7 +54,7 @@ describe('Suppliers - Update', () => {
 
   test('Update a supplier name with length more than 300 should return bad request error', async () => {
     const supplier: Supplier = await createSupplier();
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .patch(`/api/v1/suppliers/${supplier.id}`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
@@ -70,7 +71,7 @@ describe('Suppliers - Update', () => {
 
   test('Update a supplier name with length less or equal to 300 should be successful', async () => {
     const supplier: Supplier = await createSupplier();
-    await request(app.getHttpServer())
+    await request(testApplication.getHttpServer())
       .patch(`/api/v1/suppliers/${supplier.id}`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
@@ -83,7 +84,7 @@ describe('Suppliers - Update', () => {
     const supplierOne: Supplier = await createSupplier();
     const supplierTwo: Supplier = await createSupplier();
 
-    const responseOne = await request(app.getHttpServer())
+    const responseOne = await request(testApplication.getHttpServer())
       .patch(`/api/v1/suppliers/${supplierOne.id}`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
@@ -94,7 +95,7 @@ describe('Suppliers - Update', () => {
     expect(responseOne).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
     expect(responseOne.body.data.attributes.parentId).toEqual(supplierTwo.id);
 
-    const responseTwo = await request(app.getHttpServer())
+    const responseTwo = await request(testApplication.getHttpServer())
       .patch(`/api/v1/suppliers/${supplierOne.id}`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({

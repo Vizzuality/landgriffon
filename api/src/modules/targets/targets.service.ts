@@ -1,10 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
 } from 'utils/app-base.service';
 import { AppInfoDTO } from 'dto/info.dto';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Target, targetResource } from 'modules/targets/target.entity';
 import { TargetsRepository } from 'modules/targets/targets.repository';
 import { CreateTargetDto } from 'modules/targets/dto/create-target.dto';
@@ -17,10 +16,7 @@ export class TargetsService extends AppBaseService<
   UpdateTargetDto,
   AppInfoDTO
 > {
-  constructor(
-    @InjectRepository(TargetsRepository)
-    public readonly targetsRepository: TargetsRepository,
-  ) {
+  constructor(public readonly targetsRepository: TargetsRepository) {
     super(
       targetsRepository,
       targetResource.name.singular,

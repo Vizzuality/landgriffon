@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
@@ -24,7 +23,6 @@ export class SourcingLocationsMaterialsService extends AppBaseService<
   AppInfoDTO
 > {
   constructor(
-    @InjectRepository(SourcingLocationRepository)
     protected readonly sourcingLocationRepository: SourcingLocationRepository,
   ) {
     super(

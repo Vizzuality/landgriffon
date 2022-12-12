@@ -12,8 +12,6 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from 'modules/users/user.entity';
 import { UsersService } from 'modules/users/users.service';
 import { compare, genSalt, hash } from 'bcrypt';
-
-import { InjectRepository } from '@nestjs/typeorm';
 import { IssuedAuthnToken } from 'modules/authentication/issued-authn-token';
 import { SignUpDto } from 'modules/authentication//dto/sign-up.dto';
 import { ApiEventsService } from 'modules/api-events/api-events.service';
@@ -82,7 +80,6 @@ export class AuthenticationService {
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-    @InjectRepository(UserRepository)
     private userRepository: UserRepository,
   ) {}
 
@@ -100,7 +97,7 @@ export class AuthenticationService {
     email: string;
     password: string;
   }): Promise<User | null> {
-    const user: User | undefined = await this.userRepository.findByEmail(email);
+    const user: User | null = await this.userRepository.findByEmail(email);
     const isUserActive: boolean = (user &&
       user.isActive &&
       !user.isDeleted) as boolean;
@@ -277,7 +274,7 @@ export class AuthenticationService {
   }
 
   private async checkEmail(email: string): Promise<void> {
-    const user: User | undefined = await this.userRepository.findByEmail(email);
+    const user: User | null = await this.userRepository.findByEmail(email);
     if (user && !user.isDeleted) {
       throw new ConflictException('Email already exists.');
     }

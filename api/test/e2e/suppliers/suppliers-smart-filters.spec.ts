@@ -1,9 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { Supplier } from 'modules/suppliers/supplier.entity';
-import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import {
   createMaterial,
@@ -12,8 +9,10 @@ import {
   createSourcingLocation,
   createSupplier,
 } from '../../entity-mocks';
-import { saveAdminAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { Material } from 'modules/materials/material.entity';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { MaterialRepository } from 'modules/materials/material.repository';
@@ -21,31 +20,33 @@ import {
   LOCATION_TYPES,
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
 } from 'modules/sourcing-locations/sourcing-location.entity';
-import { SCENARIO_INTERVENTION_STATUS } from '../../../src/modules/scenario-interventions/scenario-intervention.entity';
+import { SCENARIO_INTERVENTION_STATUS } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
 
 describe('Suppliers - Get trees - Smart Filters', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let supplierRepository: SupplierRepository;
   let sourcingLocationsRepository: SourcingLocationRepository;
   let materialRepository: MaterialRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, SuppliersModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
+
+    dataSource = testApplication.get<DataSource>(DataSource);
 
     supplierRepository =
-      moduleFixture.get<SupplierRepository>(SupplierRepository);
-    sourcingLocationsRepository = moduleFixture.get<SourcingLocationRepository>(
-      SourcingLocationRepository,
-    );
+      testApplication.get<SupplierRepository>(SupplierRepository);
+    sourcingLocationsRepository =
+      testApplication.get<SourcingLocationRepository>(
+        SourcingLocationRepository,
+      );
     materialRepository =
-      moduleFixture.get<MaterialRepository>(MaterialRepository);
+      testApplication.get<MaterialRepository>(MaterialRepository);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
@@ -55,11 +56,12 @@ describe('Suppliers - Get trees - Smart Filters', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   test('When I request suppliers trees, and the DB is empty, then I should get empty array', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/suppliers/trees`)
       .query({
         withSourcingLocations: true,
@@ -118,7 +120,7 @@ describe('Suppliers - Get trees - Smart Filters', () => {
         materialId: material3.id,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/suppliers/trees')
         .query({
           withSourcingLocations: true,
@@ -178,7 +180,7 @@ describe('Suppliers - Get trees - Smart Filters', () => {
         locationType: LOCATION_TYPES.UNKNOWN,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/suppliers/trees')
         .query({
           withSourcingLocations: true,
@@ -252,7 +254,7 @@ describe('Suppliers - Get trees - Smart Filters', () => {
           producerId: childSupplier2.id,
         });
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get('/api/v1/suppliers/trees')
           .query({
             withSourcingLocations: true,

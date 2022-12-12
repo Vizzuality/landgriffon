@@ -2,7 +2,6 @@ import {
   Check,
   Column,
   Entity,
-  getManager,
   Index,
   JoinColumn,
   ManyToOne,
@@ -16,7 +15,6 @@ import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
-import { IMPACT_VIEW_NAME } from 'modules/impact/views/impact.materialized-view.entity';
 
 export const indicatorRecordResource: BaseServiceResource = {
   className: 'IndicatorRecord',
@@ -108,10 +106,4 @@ export class IndicatorRecord extends TimestampedBaseEntity {
 
   @Column({ nullable: false })
   materialH3DataId: string;
-
-  static updateImpactView(): Promise<void> {
-    return getManager().query(
-      `REFRESH MATERIALIZED VIEW CONCURRENTLY ${IMPACT_VIEW_NAME} WITH DATA`,
-    );
-  }
 }

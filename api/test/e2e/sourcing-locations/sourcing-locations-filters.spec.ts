@@ -1,43 +1,50 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import {
   createSourcingLocation,
   createSourcingLocationGroup,
 } from '../../entity-mocks';
-import { saveAdminAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
+import { MaterialRepository } from 'modules/materials/material.repository';
 
 describe('SourcingLocationsModule (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let sourcingLocationRepository: SourcingLocationRepository;
+  let materialRepository: MaterialRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, SourcingLocationsModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
 
-    sourcingLocationRepository = moduleFixture.get<SourcingLocationRepository>(
-      SourcingLocationRepository,
-    );
+    dataSource = testApplication.get<DataSource>(DataSource);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
+    materialRepository =
+      testApplication.get<MaterialRepository>(MaterialRepository);
+    sourcingLocationRepository =
+      testApplication.get<SourcingLocationRepository>(
+        SourcingLocationRepository,
+      );
+
+    ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
     await sourcingLocationRepository.delete({});
+    await materialRepository.delete({});
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   describe('Sourcing locations - Filters', () => {
@@ -47,7 +54,7 @@ describe('SourcingLocationsModule (e2e)', () => {
       const sourcingLocation: SourcingLocation = await createSourcingLocation({
         sourcingLocationGroupId: sourcingLocationGroup.id,
       });
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(
           `/api/v1/sourcing-locations/${sourcingLocation.id}?include=sourcingLocationGroup`,
         )

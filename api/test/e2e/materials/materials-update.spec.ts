@@ -1,31 +1,31 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { Material } from 'modules/materials/material.entity';
-import { MaterialsModule } from 'modules/materials/materials.module';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { createMaterial } from '../../entity-mocks';
 import { expectedJSONAPIAttributes } from './config';
-import { saveAdminAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { setupTestUser } from '../../utils/userAuth';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 
 describe('Materials - Update', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let materialRepository: MaterialRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, MaterialsModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
+
+    dataSource = testApplication.get<DataSource>(DataSource);
 
     materialRepository =
-      moduleFixture.get<MaterialRepository>(MaterialRepository);
+      testApplication.get<MaterialRepository>(MaterialRepository);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
@@ -33,13 +33,14 @@ describe('Materials - Update', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   test('Update a material should be successful (happy case)', async () => {
     const material: Material = await createMaterial();
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .patch(`/api/v1/materials/${material.id}`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
@@ -55,7 +56,7 @@ describe('Materials - Update', () => {
     const materialOne: Material = await createMaterial();
     const materialTwo: Material = await createMaterial();
 
-    const responseOne = await request(app.getHttpServer())
+    const responseOne = await request(testApplication.getHttpServer())
       .patch(`/api/v1/materials/${materialOne.id}`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
@@ -66,7 +67,7 @@ describe('Materials - Update', () => {
     expect(responseOne).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
     expect(responseOne.body.data.attributes.parentId).toEqual(materialTwo.id);
 
-    const responseTwo = await request(app.getHttpServer())
+    const responseTwo = await request(testApplication.getHttpServer())
       .patch(`/api/v1/materials/${materialOne.id}`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({

@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GeoCodingModule } from 'modules/geo-coding/geo-coding.module';
-
-import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
+import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { ScenarioInterventionsController } from 'modules/scenario-interventions/scenario-interventions.controller';
 import { ScenarioInterventionsService } from 'modules/scenario-interventions/scenario-interventions.service';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
@@ -15,16 +14,13 @@ import { InterventionBuilder } from 'modules/scenario-interventions/services/int
 import { NewMaterialIntervention } from 'modules/scenario-interventions/strategies/new-material.intervention.strategy';
 import { NewSupplierLocationIntervention } from 'modules/scenario-interventions/strategies/new-supplier-location.intervention.strategy';
 import { ChangeProductionEfficiencyIntervention } from 'modules/scenario-interventions/strategies/change-production-efficiency.intervention.strategy';
-import * as config from 'config';
 import { ScenarioInterventionsControllerV2 } from 'modules/scenario-interventions/interventions-controller-v2.controller';
 import { ActiveIndicatorValidator } from 'modules/indicators/validators/active-indicator.validator';
-
-const useNewMethodology: boolean =
-  `${config.get('newMethodology')}`.toLowerCase() === 'true';
+import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ScenarioInterventionRepository]),
+    TypeOrmModule.forFeature([ScenarioIntervention]),
     IndicatorRecordsModule,
     GeoCodingModule,
     SourcingLocationsModule,
@@ -33,12 +29,9 @@ const useNewMethodology: boolean =
     AdminRegionsModule,
     SuppliersModule,
   ],
-  controllers: [
-    ...(useNewMethodology
-      ? [ScenarioInterventionsControllerV2]
-      : [ScenarioInterventionsController]),
-  ],
+  controllers: [ScenarioInterventionsControllerV2],
   providers: [
+    ScenarioInterventionRepository,
     ScenarioInterventionsService,
     InterventionBuilder,
     NewMaterialIntervention,
@@ -46,6 +39,6 @@ const useNewMethodology: boolean =
     ChangeProductionEfficiencyIntervention,
     ActiveIndicatorValidator,
   ],
-  exports: [ScenarioInterventionsService],
+  exports: [ScenarioInterventionRepository, ScenarioInterventionsService],
 })
 export class ScenarioInterventionsModule {}

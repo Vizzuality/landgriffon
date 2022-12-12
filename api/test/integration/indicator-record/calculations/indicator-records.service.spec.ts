@@ -38,34 +38,39 @@ import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-reco
 import { createWorldToCalculateIndicatorRecords } from '../../../utils/indicator-records-preconditions';
 import { v4 as UUIDv4 } from 'uuid';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
-import { dropH3GridTables } from '../../../utils/database-test-helper';
+import {
+  clearTestDataFromDatabase,
+  dropH3GridTables,
+} from '../../../utils/database-test-helper';
 import {
   MATERIAL_TO_H3_TYPE,
   MaterialToH3,
-} from '../../../../src/modules/materials/material-to-h3.entity';
+} from 'modules/materials/material-to-h3.entity';
 import { h3MaterialExampleDataFixture } from '../../../e2e/h3-data/mocks/h3-fixtures';
 import {
   dropH3DataMock,
   h3DataMock,
 } from '../../../e2e/h3-data/mocks/h3-data.mock';
 import { NotFoundException, ServiceUnavailableException } from '@nestjs/common';
-import { CachedDataService } from '../../../../src/modules/cached-data/cached-data.service';
+import { CachedDataService } from 'modules/cached-data/cached-data.service';
 import {
   CACHED_DATA_TYPE,
   CachedData,
-} from '../../../../src/modules/cached-data/cached.data.entity';
-import { IndicatorRepository } from '../../../../src/modules/indicators/indicator.repository';
-import { SourcingRecordRepository } from '../../../../src/modules/sourcing-records/sourcing-record.repository';
-import { AdminRegionRepository } from '../../../../src/modules/admin-regions/admin-region.repository';
-import { BusinessUnitRepository } from '../../../../src/modules/business-units/business-unit.repository';
-import { SupplierRepository } from '../../../../src/modules/suppliers/supplier.repository';
-import { GeoRegionRepository } from '../../../../src/modules/geo-regions/geo-region.repository';
-import { MaterialRepository } from '../../../../src/modules/materials/material.repository';
-import { CachedDataRepository } from '../../../../src/modules/cached-data/cached-data.repository';
+} from 'modules/cached-data/cached-data.entity';
+import { IndicatorRepository } from 'modules/indicators/indicator.repository';
+import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
+import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
+import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
+import { SupplierRepository } from 'modules/suppliers/supplier.repository';
+import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
+import { MaterialRepository } from 'modules/materials/material.repository';
+import { CachedDataRepository } from 'modules/cached-data/cached-data.repository';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
+import { DataSource } from 'typeorm';
 
 describe('Indicator Records Service', () => {
+  let dataSource: DataSource;
   let indicatorRecordRepository: IndicatorRecordRepository;
   let indicatorRepository: IndicatorRepository;
   let h3DataRepository: H3DataRepository;
@@ -85,6 +90,8 @@ describe('Indicator Records Service', () => {
     const testingModule: TestingModule = await Test.createTestingModule({
       imports: [AppModule, IndicatorRecordsModule],
     }).compile();
+
+    dataSource = testingModule.get<DataSource>(DataSource);
 
     indicatorRecordRepository = testingModule.get<IndicatorRecordRepository>(
       IndicatorRecordRepository,
@@ -131,9 +138,9 @@ describe('Indicator Records Service', () => {
     await materialRepository.delete({});
     await cachedDataRepository.delete({});
 
-    await dropH3GridTables();
+    await dropH3GridTables(dataSource);
 
-    await dropH3DataMock([
+    await dropH3DataMock(dataSource, [
       'fake_material_table2002',
       'fake_material1_table2002',
       'fake_material2_table2002',
@@ -142,8 +149,12 @@ describe('Indicator Records Service', () => {
     ]);
   });
 
+  afterAll(async () => {
+    return clearTestDataFromDatabase(dataSource);
+  });
+
   describe('createIndicatorRecordsBySourcingRecords', () => {
-    // This test doesn't make sence for new methodology, since all the Indicators in DTO are optional
+    // This test doesn't make sense for new methodology, since all the Indicators in DTO are optional
     test.skip('When creating Indicator Records providing indicator coefficients, and one of the indicator coefficients is missing on the DTO, it should throw error', async () => {
       // ARRANGE
       const indicatorPreconditions = await createPreconditions();
@@ -197,7 +208,7 @@ describe('Indicator Records Service', () => {
       // ARRANGE
       const indicatorPreconditions = await createPreconditions();
 
-      const h3Material = await h3DataMock({
+      const h3Material = await h3DataMock(dataSource, {
         h3TableName: 'fakeMaterialTable2002',
         h3ColumnName: 'fakeMaterialColumn2002',
         additionalH3Data: h3MaterialExampleDataFixture,
@@ -308,9 +319,7 @@ describe('Indicator Records Service', () => {
         sourcingRecord: randomSourcingRecord,
       };
 
-      jest
-        .spyOn(materialsToH3sService, 'findOne')
-        .mockResolvedValueOnce(undefined);
+      jest.spyOn(materialsToH3sService, 'findOne').mockResolvedValueOnce(null);
 
       const testStatement = async (): Promise<any> => {
         await impactCalculator.createIndicatorRecordsBySourcingRecords(
@@ -339,7 +348,7 @@ describe('Indicator Records Service', () => {
         sourcingRecord: indicatorPreconditions.sourcingRecord2,
       };
 
-      const h3Material = await h3DataMock({
+      const h3Material = await h3DataMock(dataSource, {
         h3TableName: 'fakeMaterialTable2002',
         h3ColumnName: 'fakeMaterialColumn2002',
         additionalH3Data: h3MaterialExampleDataFixture,
@@ -386,7 +395,7 @@ describe('Indicator Records Service', () => {
         sourcingRecord: indicatorPreconditions.sourcingRecord2,
       };
 
-      const h3Material = await h3DataMock({
+      const h3Material = await h3DataMock(dataSource, {
         h3TableName: 'fakeMaterialTable2002',
         h3ColumnName: 'fakeMaterialColumn2002',
         additionalH3Data: h3MaterialExampleDataFixture,
@@ -434,7 +443,7 @@ describe('Indicator Records Service', () => {
         sourcingRecord: indicatorPreconditions.sourcingRecord2,
       };
 
-      const h3Material = await h3DataMock({
+      const h3Material = await h3DataMock(dataSource, {
         h3TableName: 'fakeMaterialTable2002',
         h3ColumnName: 'fakeMaterialColumn2002',
         additionalH3Data: h3MaterialExampleDataFixture,
@@ -502,13 +511,13 @@ describe('Indicator Records Service', () => {
       //ARRANGE;
       const indicatorPreconditions = await createPreconditions();
 
-      const h3Material1 = await h3DataMock({
+      const h3Material1 = await h3DataMock(dataSource, {
         h3TableName: 'fakeMaterial1Table2002',
         h3ColumnName: 'fakeMaterialColumn2002',
         additionalH3Data: h3MaterialExampleDataFixture,
         year: 2002,
       });
-      const h3Material2 = await h3DataMock({
+      const h3Material2 = await h3DataMock(dataSource, {
         h3TableName: 'fakeMaterial2Table2002',
         h3ColumnName: 'fakeMaterialColumn2002',
         additionalH3Data: h3MaterialExampleDataFixture,
@@ -630,13 +639,13 @@ describe('Indicator Records Service', () => {
         sourcingRecord: indicatorPreconditions.sourcingRecord2,
       };
 
-      const h3MaterialProducer = await h3DataMock({
+      const h3MaterialProducer = await h3DataMock(dataSource, {
         h3TableName: 'fakeMaterialTableProducer2002',
         h3ColumnName: 'fakeMaterialColumn2002',
         additionalH3Data: h3MaterialExampleDataFixture,
         year: 2002,
       });
-      const h3MaterialHarvest = await h3DataMock({
+      const h3MaterialHarvest = await h3DataMock(dataSource, {
         h3TableName: 'fakeMaterialTableHarvest2002',
         h3ColumnName: 'fakeMaterialColumn2002',
         additionalH3Data: h3MaterialExampleDataFixture,
@@ -647,7 +656,7 @@ describe('Indicator Records Service', () => {
         h3MaterialProducer.id,
         MATERIAL_TO_H3_TYPE.PRODUCER,
       );
-      const materialH3DataHarvest = await createMaterialToH3(
+      await createMaterialToH3(
         indicatorPreconditions.material2.id,
         h3MaterialHarvest.id,
         MATERIAL_TO_H3_TYPE.HARVEST,
@@ -739,13 +748,13 @@ describe('Indicator Records Service', () => {
         sourcingRecord: indicatorPreconditions.sourcingRecord2,
       };
 
-      const h3MaterialHarvest = await h3DataMock({
+      const h3MaterialHarvest = await h3DataMock(dataSource, {
         h3TableName: 'fakeMaterialTableHarvest2002',
         h3ColumnName: 'fakeMaterialColumn2002',
         additionalH3Data: h3MaterialExampleDataFixture,
         year: 2002,
       });
-      const h3MaterialProducer = await h3DataMock({
+      const h3MaterialProducer = await h3DataMock(dataSource, {
         h3TableName: 'fakeMaterialTableProducer2002',
         h3ColumnName: 'fakeMaterialColumn2002',
         additionalH3Data: h3MaterialExampleDataFixture,
@@ -837,10 +846,9 @@ describe('Indicator Records Service', () => {
       );
 
       //ACT
-      const calculatedRecords =
-        await impactCalculator.createIndicatorRecordsBySourcingRecords(
-          sourcingData,
-        );
+      await impactCalculator.createIndicatorRecordsBySourcingRecords(
+        sourcingData,
+      );
 
       //ASSERT
 
@@ -879,13 +887,6 @@ describe('Indicator Records Service', () => {
 
   /**
    * Does expect checks on all relevant fields of IndicatorRecord
-   * @param indicatorType
-   * @param h3Data
-   * @param materialH3Data
-   * @param sourcingRecordId
-   * @param recordValue
-   * @param scalerValue
-   * @param calculatedIndicatorRecords
    */
   async function checkCreatedIndicatorRecord(
     indicatorType: INDICATOR_TYPES_NEW,
@@ -931,7 +932,7 @@ describe('Indicator Records Service', () => {
     value: number,
     type: CACHED_DATA_TYPE,
   ): Promise<void> {
-    const cachedData: CachedData | undefined =
+    const cachedData: CachedData | null =
       await cachedDataService.getCachedDataByKey(cacheKey, type);
 
     expect(cachedData).toBeDefined();
@@ -1053,7 +1054,7 @@ describe('Indicator Records Service', () => {
       tonnage: 500,
     });
 
-    const h3Data = await createWorldToCalculateIndicatorRecords();
+    const h3Data = await createWorldToCalculateIndicatorRecords(dataSource);
 
     const climateRiskIndicator = h3Data.indicators.find(
       (el: Indicator) => el.nameCode === INDICATOR_TYPES_NEW.CLIMATE_RISK,
@@ -1093,6 +1094,7 @@ describe('Indicator Records Service', () => {
       deforestationIndicator,
       waterUseIndicator,
       unsustWaterUseIndicator,
+      tablesToDrop: h3Data.tablesToDrop,
     };
   }
 });

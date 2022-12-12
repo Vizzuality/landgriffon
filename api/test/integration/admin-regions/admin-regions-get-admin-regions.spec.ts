@@ -1,30 +1,34 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from 'app.module';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
-import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
 import { createAdminRegion, createGeoRegion } from '../../entity-mocks';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
 
 describe('AdminRegions - Get Admin Regions (Integration Tests)', () => {
+  let testApplication: TestApplication;
   let adminRegionRepository: AdminRegionRepository;
   let adminRegionService: AdminRegionsService;
+  let dataSource: DataSource;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, AdminRegionsModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
 
-    adminRegionRepository = moduleFixture.get<AdminRegionRepository>(
+    dataSource = testApplication.get<DataSource>(DataSource);
+
+    adminRegionRepository = testApplication.get<AdminRegionRepository>(
       AdminRegionRepository,
     );
-    adminRegionService = moduleFixture.get(AdminRegionsService);
+    adminRegionService = testApplication.get(AdminRegionsService);
 
     await adminRegionRepository.delete({});
   });
 
   afterEach(async () => {
-    await adminRegionRepository.delete({});
+    await clearTestDataFromDatabase(dataSource);
   });
 
   test('When I provide a AdminRegion name, Then I should get that AdminRegion Id with its GeoRegion Id', async () => {

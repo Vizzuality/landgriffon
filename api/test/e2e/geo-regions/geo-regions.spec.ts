@@ -1,33 +1,33 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
-import { GeoRegionsModule } from 'modules/geo-regions/geo-regions.module';
 import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
-import { saveAdminAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
 
 /**
  * Tests for the GeoRegionsModule.
  */
 
 describe('GeoRegionsModule (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let geoRegionRepository: GeoRegionRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, GeoRegionsModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
+
+    dataSource = testApplication.get<DataSource>(DataSource);
 
     geoRegionRepository =
-      moduleFixture.get<GeoRegionRepository>(GeoRegionRepository);
+      testApplication.get<GeoRegionRepository>(GeoRegionRepository);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
@@ -35,12 +35,13 @@ describe('GeoRegionsModule (e2e)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   describe('Geo regions - Create', () => {
     test('Create a geo region should be successful (happy case)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/geo-regions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -48,9 +49,9 @@ describe('GeoRegionsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdGeoRegion = await geoRegionRepository.findOne(
-        response.body.data.id,
-      );
+      const createdGeoRegion = await geoRegionRepository.findOne({
+        where: { id: response.body.data.id },
+      });
 
       if (!createdGeoRegion) {
         throw new Error('Error loading created Geo region');
@@ -62,7 +63,7 @@ describe('GeoRegionsModule (e2e)', () => {
   });
 
   test('Create a geo region without the required fields should fail with a 400 error', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .post('/api/v1/geo-regions')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -86,7 +87,7 @@ describe('GeoRegionsModule (e2e)', () => {
       geoRegion.name = 'test geo region';
       await geoRegion.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/geo-regions/${geoRegion.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -106,13 +107,15 @@ describe('GeoRegionsModule (e2e)', () => {
       geoRegion.name = 'test geo region';
       await geoRegion.save();
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete(`/api/v1/geo-regions/${geoRegion.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
-      expect(await geoRegionRepository.findOne(geoRegion.id)).toBeUndefined();
+      expect(
+        await geoRegionRepository.findOne({ where: { id: geoRegion.id } }),
+      ).toBeNull();
     });
   });
 
@@ -122,7 +125,7 @@ describe('GeoRegionsModule (e2e)', () => {
       geoRegion.name = 'test geo region';
       await geoRegion.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/geo-regions`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -138,7 +141,7 @@ describe('GeoRegionsModule (e2e)', () => {
       geoRegion.name = 'test geo region';
       await geoRegion.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/geo-regions/${geoRegion.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()

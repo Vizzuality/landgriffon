@@ -1,34 +1,34 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { UnitConversion } from 'modules/unit-conversions/unit-conversion.entity';
-import { UnitConversionsModule } from 'modules/unit-conversions/unit-conversions.module';
 import { UnitConversionRepository } from 'modules/unit-conversions/unit-conversion.repository';
-import { saveAdminAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
 
 /**
  * Tests for the UnitConversionsModule.
  */
 
 describe('UnitConversionsModule (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let unitConversionRepository: UnitConversionRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, UnitConversionsModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
 
-    unitConversionRepository = moduleFixture.get<UnitConversionRepository>(
+    dataSource = testApplication.get<DataSource>(DataSource);
+
+    unitConversionRepository = testApplication.get<UnitConversionRepository>(
       UnitConversionRepository,
     );
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
@@ -36,12 +36,13 @@ describe('UnitConversionsModule (e2e)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   describe('Unit conversions - Create', () => {
     test('Create a unit conversion should be successful (happy case)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/unit-conversions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -49,9 +50,9 @@ describe('UnitConversionsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdUnitConversion = await unitConversionRepository.findOne(
-        response.body.data.id,
-      );
+      const createdUnitConversion = await unitConversionRepository.findOne({
+        where: { id: response.body.data.id },
+      });
 
       if (!createdUnitConversion) {
         throw new Error('Error loading created Unit Conversion');
@@ -66,7 +67,7 @@ describe('UnitConversionsModule (e2e)', () => {
       const unitConversion: UnitConversion = new UnitConversion();
       await unitConversion.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/unit-conversions/${unitConversion.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -83,15 +84,17 @@ describe('UnitConversionsModule (e2e)', () => {
       const unitConversion: UnitConversion = new UnitConversion();
       await unitConversion.save();
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete(`/api/v1/unit-conversions/${unitConversion.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
       expect(
-        await unitConversionRepository.findOne(unitConversion.id),
-      ).toBeUndefined();
+        await unitConversionRepository.findOne({
+          where: { id: unitConversion.id },
+        }),
+      ).toBeNull();
     });
   });
 
@@ -100,7 +103,7 @@ describe('UnitConversionsModule (e2e)', () => {
       const unitConversion: UnitConversion = new UnitConversion();
       await unitConversion.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/unit-conversions`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -115,7 +118,7 @@ describe('UnitConversionsModule (e2e)', () => {
       const unitConversion: UnitConversion = new UnitConversion();
       await unitConversion.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/unit-conversions/${unitConversion.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()

@@ -26,7 +26,7 @@ export class CreateScenarioDto {
 
   @IsString()
   @IsOptional()
-  @IsEnum(Object.values(SCENARIO_STATUS))
+  @IsEnum(SCENARIO_STATUS)
   @ApiPropertyOptional()
   status?: string;
 

@@ -1,5 +1,4 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
@@ -19,7 +18,7 @@ import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { Material } from 'modules/materials/material.entity';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
-import { H3DataMapRepository } from 'modules/h3-data/h3-data-map.repository';
+import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 
 /**
  * @debt: Check if we actually need extending nestjs-base-service over this module.
@@ -32,8 +31,7 @@ export class H3DataMapService {
   logger: Logger = new Logger(H3DataMapService.name);
 
   constructor(
-    @InjectRepository(H3DataMapRepository)
-    protected readonly h3DataRepository: H3DataMapRepository,
+    protected readonly h3DataRepository: H3DataRepository,
     protected readonly materialService: MaterialsService,
     protected readonly materialToH3Service: MaterialsToH3sService,
     protected readonly adminRegionService: AdminRegionsService,

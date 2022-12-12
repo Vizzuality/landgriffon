@@ -1,32 +1,32 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { Unit } from 'modules/units/unit.entity';
-import { UnitsModule } from 'modules/units/units.module';
 import { UnitRepository } from 'modules/units/unit.repository';
-import { saveAdminAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
 
 /**
  * Tests for the UnitsModule.
  */
 
 describe('UnitsModule (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let unitRepository: UnitRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, UnitsModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
 
-    unitRepository = moduleFixture.get<UnitRepository>(UnitRepository);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
+    unitRepository = testApplication.get<UnitRepository>(UnitRepository);
+
+    ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
@@ -34,12 +34,13 @@ describe('UnitsModule (e2e)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   describe('Units - Create', () => {
     test('Create a unit should be successful (happy case)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/units')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -47,7 +48,9 @@ describe('UnitsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdUnit = await unitRepository.findOne(response.body.data.id);
+      const createdUnit = await unitRepository.findOne({
+        where: { id: response.body.data.id },
+      });
 
       if (!createdUnit) {
         throw new Error('Error loading created Unit');
@@ -57,7 +60,7 @@ describe('UnitsModule (e2e)', () => {
     });
 
     test('Create a unit without the required fields should fail with a 400 error', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/units')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -82,7 +85,7 @@ describe('UnitsModule (e2e)', () => {
       unit.name = 'test unit';
       await unit.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/units/${unit.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -100,13 +103,15 @@ describe('UnitsModule (e2e)', () => {
       unit.name = 'test unit';
       await unit.save();
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete(`/api/v1/units/${unit.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
-      expect(await unitRepository.findOne(unit.id)).toBeUndefined();
+      expect(
+        await unitRepository.findOne({ where: { id: unit.id } }),
+      ).toBeNull();
     });
   });
 
@@ -116,7 +121,7 @@ describe('UnitsModule (e2e)', () => {
       unit.name = 'test unit';
       await unit.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/units`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -132,7 +137,7 @@ describe('UnitsModule (e2e)', () => {
       unit.name = 'test unit';
       await unit.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/units/${unit.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()

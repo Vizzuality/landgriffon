@@ -25,8 +25,8 @@ import {
   createSupplier,
   createUnit,
 } from '../../../../entity-mocks';
-import { INDICATOR_TYPES } from '../../../../../src/modules/indicators/indicator.entity';
-import { Scenario } from '../../../../../src/modules/scenarios/scenario.entity';
+import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
+import { Scenario } from 'modules/scenarios/scenario.entity';
 
 export async function createNewCoefficientsInterventionPreconditions(
   customScenario?: Scenario,

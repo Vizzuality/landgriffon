@@ -1,12 +1,14 @@
 import { Queue } from 'bull';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { AppModule } from 'app.module';
-import { ImportDataModule } from 'modules/import-data/import-data.module';
 import { getQueueToken } from '@nestjs/bull';
 import { importQueueName } from 'modules/import-data/workers/import-queue.name';
 import { ImportDataService } from 'modules/import-data/import-data.service';
 import { TasksRepository } from 'modules/tasks/tasks.repository';
 import { Task } from 'modules/tasks/task.entity';
+import ApplicationManager, {
+  TestApplication,
+} from '../../../utils/application-manager';
 
 // TODO: Update tests below once auth is done
 describe('XLSX Upload Feature Job Producer Tests', () => {
@@ -14,27 +16,29 @@ describe('XLSX Upload Feature Job Producer Tests', () => {
   const importQueue: any = { add: jest.fn() };
   const importQueueFail: any = { add: jest.fn().mockRejectedValue('test') };
   let queue: Queue;
-  let moduleFixture: TestingModule;
+  let testApplication: TestApplication;
   let importDataService: ImportDataService;
   let taskRepository: TasksRepository;
 
   const bootstrapTestingApp = async (fakeQueue: any): Promise<void> => {
-    moduleFixture = await Test.createTestingModule({
-      imports: [AppModule, ImportDataModule],
-    })
-      .overrideProvider(getQueueToken(importQueueName))
-      .useValue(fakeQueue)
-      .compile();
+    testApplication = await ApplicationManager.init(
+      Test.createTestingModule({
+        imports: [AppModule],
+      })
+        .overrideProvider(getQueueToken(importQueueName))
+        .useValue(fakeQueue),
+      true,
+    );
 
-    queue = moduleFixture.get(getQueueToken(importQueueName));
-    importDataService = moduleFixture.get(ImportDataService);
-    taskRepository = moduleFixture.get(TasksRepository);
+    queue = testApplication.get(getQueueToken(importQueueName));
+    importDataService = testApplication.get(ImportDataService);
+    taskRepository = testApplication.get(TasksRepository);
   };
 
   afterEach(async () => {
     jest.clearAllMocks();
     await taskRepository.clear();
-    await moduleFixture.close();
+    await testApplication.close();
   });
 
   test('When loadXlsxFile is called with required file data and a userId, Then a job should be pushed to the queue and a task with a processing status should be created', async () => {

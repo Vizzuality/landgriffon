@@ -2,9 +2,9 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
@@ -40,7 +40,6 @@ export class SourcingLocationsService extends AppBaseService<
   AppInfoDTO
 > {
   constructor(
-    @InjectRepository(SourcingLocationRepository)
     protected readonly sourcingLocationRepository: SourcingLocationRepository,
     @Inject(forwardRef(() => AdminRegionsService))
     protected readonly adminRegionService: AdminRegionsService,
@@ -74,9 +73,9 @@ export class SourcingLocationsService extends AppBaseService<
     };
   }
 
-  async getSourcingLocationById(id: number): Promise<SourcingLocation> {
-    const found: SourcingLocation | undefined =
-      await this.sourcingLocationRepository.findOne(id);
+  async getSourcingLocationById(id: string): Promise<SourcingLocation> {
+    const found: SourcingLocation | null =
+      await this.sourcingLocationRepository.findOne({ where: { id } });
 
     if (!found) {
       throw new NotFoundException(
@@ -252,7 +251,7 @@ export class SourcingLocationsService extends AppBaseService<
 
   async findByGeoRegionId(
     geoRegionId: string,
-  ): Promise<SourcingLocation | undefined> {
+  ): Promise<SourcingLocation | null> {
     return this.sourcingLocationRepository.findOne({ where: { geoRegionId } });
   }
 }

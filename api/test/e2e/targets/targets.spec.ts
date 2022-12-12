@@ -1,41 +1,40 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { Target } from 'modules/targets/target.entity';
-import { TargetsModule } from 'modules/targets/targets.module';
 import { TargetsRepository } from 'modules/targets/targets.repository';
 import { createIndicator, createTarget } from '../../entity-mocks';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
+import { setupTestUser } from '../../utils/userAuth';
 
 /**
  * Tests for Targets Module.
  */
 
 describe('Tasks Module (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let targetsRepository: TargetsRepository;
   let indicatorRepository: IndicatorRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, TargetsModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
 
-    targetsRepository = moduleFixture.get<TargetsRepository>(TargetsRepository);
+    dataSource = testApplication.get<DataSource>(DataSource);
+
+    targetsRepository =
+      testApplication.get<TargetsRepository>(TargetsRepository);
     indicatorRepository =
-      moduleFixture.get<IndicatorRepository>(IndicatorRepository);
+      testApplication.get<IndicatorRepository>(IndicatorRepository);
 
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
-    await app.init();
+    const tokenWithId = await setupTestUser(testApplication);
+    jwtToken = tokenWithId.jwtToken;
   });
 
   afterEach(async () => {
@@ -45,7 +44,8 @@ describe('Tasks Module (e2e)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   describe('Targets - Create', () => {
@@ -54,8 +54,9 @@ describe('Tasks Module (e2e)', () => {
         nameCode: 'GAMMA_RADIATION',
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/targets')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           baseLineYear: 2020,
           targetYear: 2023,
@@ -64,9 +65,9 @@ describe('Tasks Module (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdTarget = await targetsRepository.findOne(
-        response.body.data.id,
-      );
+      const createdTarget = await targetsRepository.findOne({
+        where: { id: response.body.data.id },
+      });
 
       if (!createdTarget) {
         throw new Error('Error loading created Target');
@@ -78,8 +79,9 @@ describe('Tasks Module (e2e)', () => {
   });
 
   test('Creating a target without required fields should return a 400 error', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .post('/api/v1/targets')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.BAD_REQUEST);
 
@@ -103,8 +105,9 @@ describe('Tasks Module (e2e)', () => {
     test('Updating a target should be successful (happy case)', async () => {
       const target: Target = await createTarget();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/targets/${target.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           targetYear: 2025,
           value: 30,
@@ -118,8 +121,9 @@ describe('Tasks Module (e2e)', () => {
     test('Updating a task without task id should return proper error message', async () => {
       await createTarget();
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .patch(`/api/v1/targets`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.NOT_FOUND);
     });
@@ -129,12 +133,15 @@ describe('Tasks Module (e2e)', () => {
     test('Deleting a target should be successful (happy case)', async () => {
       const target: Target = await createTarget();
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete(`/api/v1/targets/${target.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
-      expect(await targetsRepository.findOne(target.id)).toBeUndefined();
+      expect(
+        await targetsRepository.findOne({ where: { id: target.id } }),
+      ).toBeNull();
     });
   });
 
@@ -147,8 +154,9 @@ describe('Tasks Module (e2e)', () => {
         value: 22,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/targets`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -167,8 +175,9 @@ describe('Tasks Module (e2e)', () => {
         targetYear: 2024,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/targets/${target.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 

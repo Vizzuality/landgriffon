@@ -1,37 +1,38 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from 'app.module';
-import { GeoCodingModule } from 'modules/geo-coding/geo-coding.module';
-import { AdminRegionOfProductionService } from '../../../../src/modules/geo-coding/strategies/admin-region-of-production.service';
+import { AdminRegionOfProductionService } from 'modules/geo-coding/strategies/admin-region-of-production.service';
 import { clearEntityTables } from '../../../utils/database-test-helper';
-import { GeoRegion } from '../../../../src/modules/geo-regions/geo-region.entity';
-import { AdminRegion } from '../../../../src/modules/admin-regions/admin-region.entity';
-import { LOCATION_TYPES } from '../../../../src/modules/sourcing-locations/sourcing-location.entity';
-import { SourcingData } from '../../../../src/modules/import-data/sourcing-data/dto-processor.service';
-import { GeoCodingError } from '../../../../src/modules/geo-coding/errors/geo-coding.error';
+import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
+import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
+import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
+import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 import { createAdminRegion, createGeoRegion } from '../../../entity-mocks';
+import { DataSource } from 'typeorm';
+import ApplicationManager, {
+  TestApplication,
+} from '../../../utils/application-manager';
 
 describe('Administrative Region of Production GeoCoding Service (Integration Testing)', () => {
   let adminRegionProductionService: AdminRegionOfProductionService;
-
-  let moduleFixture: TestingModule;
+  let dataSource: DataSource;
+  let testApplication: TestApplication;
 
   beforeAll(async () => {
-    moduleFixture = await Test.createTestingModule({
-      imports: [AppModule, GeoCodingModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
+
+    dataSource = testApplication.get<DataSource>(DataSource);
 
     adminRegionProductionService =
-      moduleFixture.get<AdminRegionOfProductionService>(
+      testApplication.get<AdminRegionOfProductionService>(
         AdminRegionOfProductionService,
       );
-    await clearEntityTables([GeoRegion, AdminRegion]);
+    await clearEntityTables(dataSource, [GeoRegion, AdminRegion]);
   });
 
   afterEach(async () => {
-    await clearEntityTables([AdminRegion, GeoRegion]);
+    await clearEntityTables(dataSource, [AdminRegion, GeoRegion]);
   });
 
-  afterAll(() => moduleFixture.close());
+  afterAll(() => testApplication.close());
 
   test(
     'When I send a Admin Region of Production type to be geocoded ' +

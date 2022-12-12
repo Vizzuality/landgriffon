@@ -1,5 +1,10 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
+import { Injectable } from '@nestjs/common';
 
-@EntityRepository(IndicatorCoefficient)
-export class IndicatorCoefficientRepository extends Repository<IndicatorCoefficient> {}
+@Injectable()
+export class IndicatorCoefficientRepository extends Repository<IndicatorCoefficient> {
+  constructor(private dataSource: DataSource) {
+    super(IndicatorCoefficient, dataSource.createEntityManager());
+  }
+}

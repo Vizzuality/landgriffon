@@ -1,36 +1,36 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { Task, TASK_STATUS, TASK_TYPE } from 'modules/tasks/task.entity';
-import { TasksModule } from 'modules/tasks/tasks.module';
 import { TasksRepository } from 'modules/tasks/tasks.repository';
 import { createTask } from '../../entity-mocks';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
+import { setupTestUser } from '../../utils/userAuth';
 
 /**
  * Tests for Tasks Module.
  */
 
 describe('Tasks Module (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let tasksRepository: TasksRepository;
+  let jwtToken: string;
+  let userId: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, TasksModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
 
-    tasksRepository = moduleFixture.get<TasksRepository>(TasksRepository);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
-    await app.init();
+    tasksRepository = testApplication.get<TasksRepository>(TasksRepository);
+
+    const tokenWithId = await setupTestUser(testApplication);
+    jwtToken = tokenWithId.jwtToken;
+    userId = tokenWithId.user.id;
   });
 
   afterEach(async () => {
@@ -38,39 +38,48 @@ describe('Tasks Module (e2e)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   describe('Tasks - Create', () => {
     test('Creating a new task (happy case)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/tasks')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           type: TASK_TYPE.SOURCING_DATA_IMPORT,
           status: TASK_STATUS.PROCESSING,
-          userId: '2a833cc7-5a6f-492d-9a60-0d6d056923ea',
           data: {
             filename: 'fakeFile.xlsx',
           },
         })
         .expect(HttpStatus.CREATED);
 
-      const createdTask = await tasksRepository.findOne(response.body.data.id);
+      const createdTask = await tasksRepository.findOne({
+        where: { id: response.body.data.id },
+      });
 
       if (!createdTask) {
         throw new Error('Error loading created Task');
       }
 
-      expect(createdTask.userId).toEqual(
-        '2a833cc7-5a6f-492d-9a60-0d6d056923ea',
-      );
+      expect(createdTask.userId).toEqual(userId);
       expect(createdTask.data.filename).toEqual('fakeFile.xlsx');
     });
   });
 
-  test('Creating a task without required fields should return a 400 error', async () => {
-    const response = await request(app.getHttpServer())
+  test('Creating a task without being authenticated should return a 401 error', async () => {
+    await request(testApplication.getHttpServer())
       .post('/api/v1/tasks')
+      .send()
+      .expect(HttpStatus.UNAUTHORIZED);
+  });
+
+  test('Creating a task without required fields should return a 400 error', async () => {
+    const response = await request(testApplication.getHttpServer())
+      .post('/api/v1/tasks')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.BAD_REQUEST);
 
@@ -82,8 +91,6 @@ describe('Tasks Module (e2e)', () => {
         'type should not be empty',
         'status must be a string',
         'status should not be empty',
-        'userId must be a UUID',
-        'userId should not be empty',
       ],
     );
   });
@@ -95,8 +102,9 @@ describe('Tasks Module (e2e)', () => {
         userId: '2a833cc7-5a6f-492d-9a60-0d6d056923eb',
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .put(`/api/v1/tasks`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           taskId: task.id,
           newStatus: TASK_STATUS.FAILED,
@@ -116,8 +124,9 @@ describe('Tasks Module (e2e)', () => {
     test('Updating a task without task id should return proper error message', async () => {
       await createTask();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .put(`/api/v1/tasks`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.BAD_REQUEST);
 
@@ -133,12 +142,15 @@ describe('Tasks Module (e2e)', () => {
     test('Deleting a task should be successful (happy case)', async () => {
       const task: Task = await createTask();
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete(`/api/v1/tasks/${task.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
-      expect(await tasksRepository.findOne(task.id)).toBeUndefined();
+      expect(
+        await tasksRepository.findOne({ where: { id: task.id } }),
+      ).toBeNull();
     });
   });
 
@@ -151,8 +163,9 @@ describe('Tasks Module (e2e)', () => {
         status: TASK_STATUS.FAILED,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/tasks`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -169,8 +182,9 @@ describe('Tasks Module (e2e)', () => {
         status: TASK_STATUS.ABORTED,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/tasks/${task.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 

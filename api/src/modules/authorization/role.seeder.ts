@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Role } from 'modules/authorization/role.entity';
-import { getManager } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { ROLES } from 'modules/authorization/roles/roles.enum';
 
 /**
@@ -10,6 +10,7 @@ import { ROLES } from 'modules/authorization/roles/roles.enum';
 
 @Injectable()
 export class RoleSeeder {
+  constructor(private dataSource: DataSource) {}
   async seedRoles(): Promise<Role[]> {
     const roles: Role[] = Object.values(ROLES).map(
       (role: ROLES) =>
@@ -17,6 +18,6 @@ export class RoleSeeder {
           name: role,
         } as Role),
     );
-    return getManager().getRepository(Role).save(roles);
+    return this.dataSource.getRepository(Role).save(roles);
   }
 }

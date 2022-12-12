@@ -1,12 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import {
   SourcingLocation,
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
 } from 'modules/sourcing-locations/sourcing-location.entity';
-import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import {
   createMaterial,
@@ -14,52 +11,58 @@ import {
   createSourcingLocation,
 } from '../../entity-mocks';
 import { Material } from 'modules/materials/material.entity';
-import { saveUserWithRoleAndGetTokenWithUserId } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
+import { MaterialRepository } from 'modules/materials/material.repository';
 
 /**
  * Tests for the SourcingLocationsModule.
  */
 
 describe('SourcingLocationsModule (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let sourcingLocationRepository: SourcingLocationRepository;
+  let materialRepository: MaterialRepository;
   let jwtToken: string;
   let userId: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, SourcingLocationsModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
 
-    sourcingLocationRepository = moduleFixture.get<SourcingLocationRepository>(
-      SourcingLocationRepository,
-    );
+    dataSource = testApplication.get<DataSource>(DataSource);
 
-    app = getApp(moduleFixture);
-    await app.init();
+    sourcingLocationRepository =
+      testApplication.get<SourcingLocationRepository>(
+        SourcingLocationRepository,
+      );
+    materialRepository =
+      testApplication.get<MaterialRepository>(MaterialRepository);
 
-    const tokenWithId = await saveUserWithRoleAndGetTokenWithUserId(
-      moduleFixture,
-      app,
-    );
+    const tokenWithId = await setupTestUser(testApplication);
     jwtToken = tokenWithId.jwtToken;
-    userId = tokenWithId.userId;
+    userId = tokenWithId.user.id;
   });
 
   afterEach(async () => {
     await sourcingLocationRepository.delete({});
+    await materialRepository.delete({});
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   describe('Sourcing locations - Create', () => {
     test('Create a sourcing location should be successful (happy case)', async () => {
       const material: Material = await createMaterial();
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/sourcing-locations')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -70,9 +73,9 @@ describe('SourcingLocationsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdSourcingLocation = await sourcingLocationRepository.findOne(
-        response.body.data.id,
-      );
+      const createdSourcingLocation = await sourcingLocationRepository.findOne({
+        where: { id: response.body.data.id },
+      });
 
       if (!createdSourcingLocation) {
         throw new Error('Error loading created Sourcing location');
@@ -85,7 +88,7 @@ describe('SourcingLocationsModule (e2e)', () => {
      * @debt Add this test when CreateSourcingLocation DTO validation decorator issue is fixed
      */
     test.skip('Create a sourcing location without the required fields should fail with a 400 error', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/sourcing-locations')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -110,7 +113,7 @@ describe('SourcingLocationsModule (e2e)', () => {
         title: 'test sourcing location',
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/sourcing-locations/${sourcingLocation.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -119,7 +122,9 @@ describe('SourcingLocationsModule (e2e)', () => {
         .expect(HttpStatus.OK);
 
       const updatedSourcingLocation =
-        await sourcingLocationRepository.findOneOrFail(sourcingLocation.id);
+        await sourcingLocationRepository.findOneOrFail({
+          where: { id: sourcingLocation.id },
+        });
 
       expect(updatedSourcingLocation.updatedById).toEqual(userId);
 
@@ -133,15 +138,17 @@ describe('SourcingLocationsModule (e2e)', () => {
     test('Delete a sourcing location should be successful (happy case)', async () => {
       const sourcingLocation: SourcingLocation = await createSourcingLocation();
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete(`/api/v1/sourcing-locations/${sourcingLocation.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
       expect(
-        await sourcingLocationRepository.findOne(sourcingLocation.id),
-      ).toBeUndefined();
+        await sourcingLocationRepository.findOne({
+          where: { id: sourcingLocation.id },
+        }),
+      ).toBeNull();
     });
   });
 
@@ -149,7 +156,7 @@ describe('SourcingLocationsModule (e2e)', () => {
     test('Get all sourcing locations should be successful (happy case)', async () => {
       const sourcingLocation: SourcingLocation = await createSourcingLocation();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/sourcing-locations`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -174,7 +181,7 @@ describe('SourcingLocationsModule (e2e)', () => {
         interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/sourcing-locations`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -189,7 +196,7 @@ describe('SourcingLocationsModule (e2e)', () => {
     test('Get a sourcing location by id should be successful (happy case)', async () => {
       const sourcingLocation: SourcingLocation = await createSourcingLocation();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/sourcing-locations/${sourcingLocation.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()

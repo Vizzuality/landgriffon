@@ -25,7 +25,7 @@ export class CreateSupplierDto {
 
   @IsString()
   @IsOptional()
-  @IsEnum(Object.values(SUPPLIER_STATUS))
+  @IsEnum(SUPPLIER_STATUS)
   @ApiPropertyOptional()
   status?: string;
 

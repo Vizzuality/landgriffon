@@ -52,7 +52,7 @@ export class CreateSourcingLocationDto {
 
   @IsString()
   @IsOptional()
-  @IsEnum(Object.values(LOCATION_TYPES))
+  @IsEnum(LOCATION_TYPES)
   @ApiPropertyOptional()
   locationType?: LOCATION_TYPES;
 
@@ -78,7 +78,7 @@ export class CreateSourcingLocationDto {
 
   @IsString()
   @IsOptional()
-  @IsEnum(Object.values(LOCATION_ACCURACY))
+  @IsEnum(LOCATION_ACCURACY)
   @ApiPropertyOptional()
   locationAccuracy?: LOCATION_ACCURACY;
 

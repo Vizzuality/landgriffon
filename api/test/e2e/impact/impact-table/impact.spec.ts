@@ -1,7 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import {
   createAdminRegion,
   createBusinessUnit,
@@ -16,7 +14,6 @@ import {
 } from '../../../entity-mocks';
 import { v4 as uuidv4 } from 'uuid';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
-import { ImpactModule } from 'modules/impact/impact.module';
 import { Unit } from 'modules/units/unit.entity';
 import {
   Indicator,
@@ -30,8 +27,10 @@ import {
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
-import { saveAdminAndGetToken } from '../../../utils/userAuth';
-import { getApp } from '../../../utils/getApp';
+import { setupTestUser } from '../../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../../utils/application-manager';
 import {
   filteredByLocationTypeResponseData,
   groupByBusinessUnitResponseData,
@@ -45,30 +44,33 @@ import {
 } from '../mocks/response-mocks.impact';
 import { PaginationMeta } from 'utils/app-base.service';
 import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
-import { clearEntityTables } from '../../../utils/database-test-helper';
+import {
+  clearEntityTables,
+  clearTestDataFromDatabase,
+} from '../../../utils/database-test-helper';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { createNewMaterialInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-material-intervention.preconditions';
-import { Scenario } from '../../../../src/modules/scenarios/scenario.entity';
+import { Scenario } from 'modules/scenarios/scenario.entity';
+import { DataSource } from 'typeorm';
 
 describe('Impact Table and Charts test suite (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let jwtToken: string;
+  let dataSource: DataSource;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, ImpactModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
+    dataSource = testApplication.get<DataSource>(DataSource);
+
+    ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
-    await clearEntityTables([
+    await clearEntityTables(dataSource, [
       IndicatorRecord,
       MaterialToH3,
       H3Data,
@@ -86,11 +88,12 @@ describe('Impact Table and Charts test suite (e2e)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   test('When I query the API for an Impact Table but some of the required fields are missing then I should get a proper error message', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/table')
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect(HttpStatus.BAD_REQUEST);
@@ -109,7 +112,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
 
   test('When I query the API for a Impact Table with correct params but there are not indicators to retrieve in the DB, then I should get a proper errors message ', async () => {
     await createIndicatorRecord();
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/table')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -169,7 +172,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       });
     }
 
-    const response1 = await request(app.getHttpServer())
+    const response1 = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/table')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -201,7 +204,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       { year: 2012, value: 2060.45, isProjected: true },
     ]);
 
-    const response2 = await request(app.getHttpServer())
+    const response2 = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/table')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -216,7 +219,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       businessUnit.name,
     );
 
-    const response3 = await request(app.getHttpServer())
+    const response3 = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/table')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -230,7 +233,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     expect(response3.body.data.impactTable[0].rows[0].name).toEqual(
       supplier.name,
     );
-    const response4 = await request(app.getHttpServer())
+    const response4 = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/table')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -281,7 +284,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         sourcingLocation,
       });
     }
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/table')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -339,7 +342,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         sourcingLocation,
       });
     }
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/table')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -448,7 +451,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         });
       }
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/impact/table')
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -541,7 +544,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         });
       }
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/impact/table')
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -563,7 +566,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
        * Even if we pass only one material id,
        * full tree for that id shoudl be returned
        */
-      const responseWithFilter = await request(app.getHttpServer())
+      const responseWithFilter = await request(testApplication.getHttpServer())
         .get('/api/v1/impact/table')
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -582,7 +585,9 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         expect.arrayContaining(groupByMaterialNestedResponseData.yearSum),
       );
 
-      const responseWithGrandchildFilter = await request(app.getHttpServer())
+      const responseWithGrandchildFilter = await request(
+        testApplication.getHttpServer(),
+      )
         .get('/api/v1/impact/table')
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -682,7 +687,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         });
       }
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/impact/table')
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -776,7 +781,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         });
       }
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/impact/table')
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -787,7 +792,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         })
         .expect(HttpStatus.OK);
 
-      const response2 = await request(app.getHttpServer())
+      const response2 = await request(testApplication.getHttpServer())
         .get('/api/v1/impact/table')
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -887,7 +892,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         });
       }
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/impact/table')
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -979,7 +984,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         });
       }
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/impact/table')
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -1069,7 +1074,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         });
       }
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/impact/table')
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -1081,7 +1086,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           groupBy: 'material',
         })
         .expect(HttpStatus.OK);
-      const responseSecondPage = await request(app.getHttpServer())
+      const responseSecondPage = await request(testApplication.getHttpServer())
         .get('/api/v1/impact/table')
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -1190,7 +1195,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         });
       }
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/impact/table')
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -1224,7 +1229,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         const { replacedMaterials, replacingMaterials, indicator } =
           await createNewMaterialInterventionPreconditions(scenario);
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get('/api/v1/impact/table')
           .set('Authorization', `Bearer ${jwtToken}`)
           .query({

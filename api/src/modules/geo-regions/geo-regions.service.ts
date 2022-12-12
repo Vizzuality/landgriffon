@@ -1,5 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
@@ -21,10 +20,7 @@ export class GeoRegionsService extends AppBaseService<
   UpdateGeoRegionDto,
   AppInfoDTO
 > {
-  constructor(
-    @InjectRepository(GeoRegionRepository)
-    protected readonly geoRegionRepository: GeoRegionRepository,
-  ) {
+  constructor(protected readonly geoRegionRepository: GeoRegionRepository) {
     super(
       geoRegionRepository,
       geoRegionResource.name.singular,
@@ -39,10 +35,10 @@ export class GeoRegionsService extends AppBaseService<
     };
   }
 
-  async getGeoRegionById(id: number): Promise<GeoRegion> {
-    const found: GeoRegion | undefined = await this.geoRegionRepository.findOne(
+  async getGeoRegionById(id: string): Promise<GeoRegion> {
+    const found: GeoRegion | null = await this.geoRegionRepository.findOneBy({
       id,
-    );
+    });
 
     if (!found) {
       throw new NotFoundException(`geo region with ID "${id}" not found`);

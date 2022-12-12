@@ -1,34 +1,34 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
-import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
-import { saveAdminAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
 
 /**
  * Tests for the AdminRegionsModule.
  */
 
 describe('AdminRegionsModule (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let adminRegionRepository: AdminRegionRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, AdminRegionsModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
 
-    adminRegionRepository = moduleFixture.get<AdminRegionRepository>(
+    dataSource = testApplication.get<DataSource>(DataSource);
+
+    adminRegionRepository = testApplication.get<AdminRegionRepository>(
       AdminRegionRepository,
     );
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
@@ -36,12 +36,13 @@ describe('AdminRegionsModule (e2e)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   describe('Admin regions - Create', () => {
     test('Create a admin region should be successful (happy case)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/admin-regions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -49,9 +50,9 @@ describe('AdminRegionsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdAdminRegion = await adminRegionRepository.findOne(
-        response.body.data.id,
-      );
+      const createdAdminRegion = await adminRegionRepository.findOne({
+        where: { id: response.body.data.id },
+      });
 
       if (!createdAdminRegion) {
         throw new Error('Error loading created Admin region');
@@ -62,7 +63,7 @@ describe('AdminRegionsModule (e2e)', () => {
   });
 
   test('Create a admin region without the required fields should fail with a 400 error', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .post('/api/v1/admin-regions')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -86,7 +87,7 @@ describe('AdminRegionsModule (e2e)', () => {
       adminRegion.name = 'test admin region';
       await adminRegion.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/admin-regions/${adminRegion.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -106,15 +107,15 @@ describe('AdminRegionsModule (e2e)', () => {
       adminRegion.name = 'test admin region';
       await adminRegion.save();
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete(`/api/v1/admin-regions/${adminRegion.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
       expect(
-        await adminRegionRepository.findOne(adminRegion.id),
-      ).toBeUndefined();
+        await adminRegionRepository.findOne({ where: { id: adminRegion.id } }),
+      ).toBeNull();
     });
   });
 
@@ -124,7 +125,7 @@ describe('AdminRegionsModule (e2e)', () => {
       adminRegion.name = 'test admin region';
       await adminRegion.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/admin-regions`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -140,7 +141,7 @@ describe('AdminRegionsModule (e2e)', () => {
       adminRegion.name = 'test admin region';
       await adminRegion.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/admin-regions/${adminRegion.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()

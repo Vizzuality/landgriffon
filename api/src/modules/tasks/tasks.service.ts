@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import {
   TASK_STATUS,
   TASK_TYPE,
@@ -13,7 +13,6 @@ import { CreateTaskDto } from 'modules/tasks/dto/create-task.dto';
 import { UpdateJobEventDto } from 'modules/tasks/dto/update-task.dto';
 import { TasksRepository } from 'modules/tasks/tasks.repository';
 import { AppInfoDTO } from 'dto/info.dto';
-import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class TasksService extends AppBaseService<
@@ -22,10 +21,7 @@ export class TasksService extends AppBaseService<
   UpdateJobEventDto,
   AppInfoDTO
 > {
-  constructor(
-    @InjectRepository(TasksRepository)
-    public readonly taskRepository: TasksRepository,
-  ) {
+  constructor(public readonly taskRepository: TasksRepository) {
     super(
       taskRepository,
       taskResource.name.singular,
@@ -50,7 +46,7 @@ export class TasksService extends AppBaseService<
 
   async getJobsByUser(userId: string): Promise<Task[]> {
     const tasks: Task[] = await this.taskRepository.find({
-      where: { createdBy: userId },
+      where: { userId },
     });
     if (!tasks) throw new NotFoundException('No Jobs found for current user');
     return tasks;
@@ -86,7 +82,9 @@ export class TasksService extends AppBaseService<
      *
      */
     const { taskId, newStatus, newData, newErrors, newLogs } = updateTask;
-    const task: Task | undefined = await this.taskRepository.findOne(taskId);
+    const task: Task | null = await this.taskRepository.findOne({
+      where: { id: taskId },
+    });
     if (!task) {
       throw new NotFoundException(`Could not found Task with ID: ${taskId}`);
     }

@@ -8,7 +8,7 @@ export class CreateApiEventDTO {
    * Versioned kind of the event.
    */
   @ApiProperty()
-  @IsEnum(Object.values(API_EVENT_KINDS))
+  @IsEnum(API_EVENT_KINDS)
   kind!: API_EVENT_KINDS;
 
   /**

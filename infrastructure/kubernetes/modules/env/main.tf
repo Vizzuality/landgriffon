@@ -102,10 +102,6 @@ module "k8s_api" {
     {
       name  = "DB_MIGRATIONS_RUN"
       value = "true"
-    },
-    {
-      name : "USE_NEW_METHODOLOGY"
-      value : "TRUE"
     }
   ])
 

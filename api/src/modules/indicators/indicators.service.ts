@@ -3,7 +3,6 @@ import {
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
@@ -19,7 +18,7 @@ import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto';
 import { UpdateIndicatorDto } from 'modules/indicators/dto/update.indicator.dto';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
-import { getManager, In, SelectQueryBuilder } from 'typeorm';
+import { In, SelectQueryBuilder } from 'typeorm';
 import { IndicatorNameCodeWithRelatedH3 } from 'modules/indicators/dto/indicator-namecode-with-related-h3.dto';
 import { FetchSpecification } from 'nestjs-base-service';
 
@@ -30,10 +29,7 @@ export class IndicatorsService extends AppBaseService<
   UpdateIndicatorDto,
   AppInfoDTO
 > {
-  constructor(
-    @InjectRepository(IndicatorRepository)
-    protected readonly indicatorRepository: IndicatorRepository,
-  ) {
+  constructor(protected readonly indicatorRepository: IndicatorRepository) {
     super(
       indicatorRepository,
       indicatorResource.name.singular,
@@ -66,10 +62,9 @@ export class IndicatorsService extends AppBaseService<
   }
 
   async getIndicatorById(id: string): Promise<Indicator> {
-    const found: Indicator | undefined = await this.indicatorRepository.findOne(
-      id,
-      { where: { status: INDICATOR_STATUS.ACTIVE } },
-    );
+    const found: Indicator | null = await this.indicatorRepository.findOne({
+      where: { id, status: INDICATOR_STATUS.ACTIVE },
+    });
 
     if (!found) {
       throw new NotFoundException(`Indicator with ID "${id}" not found`);
@@ -85,15 +80,15 @@ export class IndicatorsService extends AppBaseService<
      * in the client's request
      */
 
-    const deforestationIndicator: Indicator | undefined =
+    const deforestationIndicator: Indicator | null =
       await this.indicatorRepository.findOne({
-        nameCode: INDICATOR_TYPES.DEFORESTATION,
+        where: { nameCode: INDICATOR_TYPES.DEFORESTATION },
       });
     if (!deforestationIndicator)
       throw new NotFoundException(
         'No Deforestation Indicator data found in database',
       );
-    const deforestationH3Data: any = await getManager()
+    const deforestationH3Data: any = await this.indicatorRepository
       .createQueryBuilder()
       .select()
       .from('h3_data', 'h3_data')
@@ -109,10 +104,11 @@ export class IndicatorsService extends AppBaseService<
   }
 
   async getIndicatorsById(ids: string[]): Promise<Indicator[]> {
-    const indicators: Indicator[] = await this.indicatorRepository.findByIds(
-      ids,
-      { where: { status: INDICATOR_STATUS.ACTIVE } },
-    );
+    const indicators: Indicator[] = await this.indicatorRepository.findBy({
+      id: In(ids),
+      status: INDICATOR_STATUS.ACTIVE,
+    });
+
     if (!indicators.length) {
       throw new NotFoundException(
         'No Indicator has been found with provided IDs',
@@ -159,7 +155,9 @@ export class IndicatorsService extends AppBaseService<
     this.logger.log(`Found ${activeIndicatorsNameCodes.length} to activate`);
     const indicatorsToActivate: Indicator[] =
       await this.indicatorRepository.find({
-        nameCode: In(activeIndicatorsNameCodes),
+        where: {
+          nameCode: In(activeIndicatorsNameCodes),
+        },
       });
     if (!indicatorsToActivate.length) {
       throw new ServiceUnavailableException(
@@ -208,7 +206,7 @@ export class IndicatorsService extends AppBaseService<
 
   async extendFindAllQuery(
     queryBuilder: SelectQueryBuilder<Indicator>,
-    fetchSpecificacion: FetchSpecification,
+    fetchSpecification: FetchSpecification,
   ): Promise<SelectQueryBuilder<Indicator>> {
     queryBuilder.andWhere(`${this.alias}.status = :status`, {
       status: INDICATOR_STATUS.ACTIVE,

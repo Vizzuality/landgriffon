@@ -1,27 +1,22 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as config from 'config';
-import { ImpactMaterializedView } from 'modules/impact/views/impact.materialized-view.entity';
+import { DataSourceOptions } from 'typeorm';
 
 const dbConfig: any = config.get('db');
 
-export const typeOrmConfig: TypeOrmModuleOptions = {
+export const typeOrmConfig: DataSourceOptions = {
   type: dbConfig.type,
   host: dbConfig.host,
   port: dbConfig.port,
   username: dbConfig.username,
   password: dbConfig.password,
   database: dbConfig.database,
-  logging: dbConfig.logging === true || dbConfig.logging === 'true',
+  logging: dbConfig.logging,
   maxQueryExecutionTime: dbConfig.maxQueryExecutionTime,
-  autoLoadEntities: true,
   synchronize: dbConfig.synchronize === true || dbConfig.synchronize === 'true',
   migrations: [__dirname + '/migrations/*.{ts,js}'],
   migrationsRun:
     dbConfig.migrationsRun === true || dbConfig.migrationsRun === 'true',
   dropSchema: dbConfig.dropSchema === true || dbConfig.dropSchema === 'true',
-  cli: {
-    migrationsDir: 'migrations',
-  },
   cache:
     dbConfig.cacheEnabled === true || dbConfig.cacheEnabled === 'true'
       ? {
@@ -34,5 +29,8 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
         }
       : false,
   uuidExtension: 'pgcrypto',
-  entities: [ImpactMaterializedView],
+  entities: [
+    __dirname + '/modules/**/**.entity.ts',
+    __dirname + '/modules/**/**.entity.js',
+  ],
 };

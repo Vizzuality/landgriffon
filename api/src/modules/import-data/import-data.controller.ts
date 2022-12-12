@@ -14,7 +14,6 @@ import {
 } from '@nestjs/swagger';
 import { ApiConsumesXLSX } from 'decorators/xlsx-upload.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { fileUploadInterceptor } from 'modules/import-data/file-upload.interceptor';
 import { XlsxPayloadInterceptor } from 'modules/import-data/xlsx-payload.interceptor';
 import { ImportDataService } from 'modules/import-data/import-data.service';
 import { Task } from 'modules/tasks/task.entity';
@@ -37,13 +36,7 @@ export class ImportDataController {
       'Bad Request. A .XLSX file not provided as payload or contains missing or incorrect data',
   })
   @ApiForbiddenResponse()
-  @UseInterceptors(
-    FileInterceptor(
-      'file',
-      fileUploadInterceptor({ allowedFileExtension: '.xlsx' }),
-    ),
-    XlsxPayloadInterceptor,
-  )
+  @UseInterceptors(FileInterceptor('file'), XlsxPayloadInterceptor)
   @RequiredRoles(ROLES.ADMIN)
   @Post('/sourcing-data')
   async importSourcingRecords(

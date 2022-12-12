@@ -176,5 +176,13 @@ $$
 LANGUAGE plpgsql;`);
   }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {}
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`DROP FUNCTION IF EXISTS get_blwf_impact();`);
+    await queryRunner.query(
+      `DROP FUNCTION IF EXISTS get_percentage_water_stress_area();`,
+    );
+    await queryRunner.query(
+      `DROP FUNCTION IF EXISTS sum_weighted_carbon_over_georegion();`,
+    );
+  }
 }

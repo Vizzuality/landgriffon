@@ -26,7 +26,7 @@ export class CreateIndicatorDto {
 
   @IsString()
   @IsOptional()
-  @IsEnum(Object.values(INDICATOR_STATUS))
+  @IsEnum(INDICATOR_STATUS)
   @ApiPropertyOptional()
   status: string;
 

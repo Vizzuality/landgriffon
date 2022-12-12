@@ -1,5 +1,10 @@
-import { EntityRepository, Repository } from 'typeorm';
-import { CachedData } from 'modules/cached-data/cached.data.entity';
+import { DataSource, Repository } from 'typeorm';
+import { CachedData } from 'modules/cached-data/cached-data.entity';
+import { Injectable } from '@nestjs/common';
 
-@EntityRepository(CachedData)
-export class CachedDataRepository extends Repository<CachedData> {}
+@Injectable()
+export class CachedDataRepository extends Repository<CachedData> {
+  constructor(private dataSource: DataSource) {
+    super(CachedData, dataSource.createEntityManager());
+  }
+}

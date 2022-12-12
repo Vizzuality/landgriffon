@@ -1,9 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
-import { H3DataModule } from 'modules/h3-data/h3-data.module';
 import {
   h3DataMock,
   createRandomNamesForH3TableAndColumns,
@@ -24,54 +21,63 @@ import { Indicator } from 'modules/indicators/indicator.entity';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { h3BasicFixture } from './mocks/h3-fixtures';
-import { saveAdminAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { Material } from 'modules/materials/material.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { DataSource } from 'typeorm';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 
 /**
  * Tests for the H3DataModule.
  */
 
 describe('H3-Data Module (e2e) - Get H3 data', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let h3DataRepository: H3DataRepository;
   let materialRepository: MaterialRepository;
+  let indicatorRepository: IndicatorRepository;
   let materialToH3Service: MaterialsToH3sService;
   const fakeTable = 'faketable';
   const fakeColumn = 'fakecolumn';
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, H3DataModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
 
-    h3DataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
-    materialToH3Service = moduleFixture.get<MaterialsToH3sService>(
+    h3DataRepository = testApplication.get<H3DataRepository>(H3DataRepository);
+    materialToH3Service = testApplication.get<MaterialsToH3sService>(
       MaterialsToH3sService,
     );
     materialRepository =
-      moduleFixture.get<MaterialRepository>(MaterialRepository);
+      testApplication.get<MaterialRepository>(MaterialRepository);
+    indicatorRepository =
+      testApplication.get<IndicatorRepository>(IndicatorRepository);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
+    dataSource = testApplication.get<DataSource>(DataSource);
+
+    ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
     await materialToH3Service.delete({});
     await materialRepository.delete({});
+    await indicatorRepository.delete({});
     await h3DataRepository.delete({});
-    await dropH3DataMock([fakeTable]);
+    await dropH3DataMock(dataSource, [fakeTable]);
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   test('Given the H3 Data table is empty, when I query the API, then I should be acknowledged that no requested H3 Data has been found ', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/h3/data/${fakeTable}/${fakeColumn}`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect(HttpStatus.NOT_FOUND);
@@ -82,14 +88,14 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
   });
 
   test('Given the H3 Data table is populated, when I query the API, then I should get its data in with h3index as key, and column values as value', async () => {
-    await h3DataMock({
+    await h3DataMock(dataSource, {
       h3TableName: fakeTable,
       h3ColumnName: fakeColumn,
       additionalH3Data: h3BasicFixture,
       year: 2020,
     });
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/h3/data/${fakeTable}/${fakeColumn}`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect(HttpStatus.OK);
@@ -103,7 +109,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
       await createSourcingRecord({ year });
     }
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get('/api/v1/h3/years')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({ layer: 'impact' })
@@ -149,7 +155,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
       });
     }
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/h3/years?layer=impact&materialIds[]=${materialOne.id}`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .expect(HttpStatus.OK);
@@ -195,7 +201,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
       });
     }
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get('/api/v1/h3/years')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({ layer: 'impact', materialIds: [materialOne.id, materialTwo.id] })
@@ -207,7 +213,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
   test(' When I query available years for a Material layer filtering by more than one Material, then I should get a proper error message', async () => {
     const material = await createMaterial();
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get('/api/v1/h3/years')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({ layer: 'material', materialIds: [material.id, material.id] })
@@ -230,7 +236,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
       });
       await h3DataRepository.save(fakeH3MasterData);
     }
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get('/api/v1/h3/years')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({ layer: 'material' })
@@ -246,7 +252,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
     const materialTwo = await createMaterial();
 
     for await (const year of yearsOne) {
-      const h3Data: H3Data = await h3DataMock({
+      const h3Data: H3Data = await h3DataMock(dataSource, {
         h3TableName: createRandomNamesForH3TableAndColumns(),
         h3ColumnName: createRandomNamesForH3TableAndColumns(),
         additionalH3Data: h3BasicFixture,
@@ -261,7 +267,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
     }
 
     for await (const year of yearsTwo) {
-      const h3Data: H3Data = await h3DataMock({
+      const h3Data: H3Data = await h3DataMock(dataSource, {
         h3TableName: createRandomNamesForH3TableAndColumns(),
         h3ColumnName: createRandomNamesForH3TableAndColumns(),
         additionalH3Data: h3BasicFixture,
@@ -275,12 +281,12 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
       );
     }
 
-    const responseOne = await request(app.getHttpServer())
+    const responseOne = await request(testApplication.getHttpServer())
       .get(`/api/v1/h3/years?layer=material&materialIds[]=${materialOne.id}`)
       .set('Authorization', `Bearer ${jwtToken}`);
     expect(responseOne.body.data).toEqual([...new Set(yearsOne)]);
 
-    const responseTwo = await request(app.getHttpServer())
+    const responseTwo = await request(testApplication.getHttpServer())
       .get(`/api/v1/h3/years?layer=material&materialIds[]=${materialTwo.id}`)
       .set('Authorization', `Bearer ${jwtToken}`);
     expect(responseTwo.body.data).toEqual([...new Set(yearsTwo)]);
@@ -303,7 +309,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
       });
     }
     await h3DataRepository.save(fakeH3MasterData);
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get('/api/v1/h3/years')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({ layer: 'risk' })
@@ -327,7 +333,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
       });
     }
     await h3DataRepository.save(fakeH3MasterData);
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get('/api/v1/h3/years')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({ layer: 'risk', indicatorId: savedIndicator.id })
@@ -336,7 +342,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
     expect(response.body.data).toEqual([2001, 2002, 2003, 2007]);
   });
   test('When I query the API for available years with a non-valid layer type, then I should get a proper error message', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get('/api/v1/h3/years')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({ layer: 'thisIsCertainlyNotAValidLayerType' })
@@ -378,21 +384,21 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
       sourcingRecords: [sourcingRecord2],
     });
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get('/api/v1/h3/years')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({ layer: 'impact', 'materialIds[]': [childMaterial1.id] });
 
     expect(response.body.data).toEqual([2010]);
 
-    const response2 = await request(app.getHttpServer())
+    const response2 = await request(testApplication.getHttpServer())
       .get('/api/v1/h3/years')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({ layer: 'impact', 'materialIds[]': [childMaterial2.id] });
 
     expect(response2.body.data).toEqual([2020]);
 
-    const response3 = await request(app.getHttpServer())
+    const response3 = await request(testApplication.getHttpServer())
       .get('/api/v1/h3/years')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({ layer: 'impact', 'materialIds[]': [parentMaterial.id] });
@@ -423,7 +429,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
       sourcingRecords: [sourcingRecord3, sourcingRecord4, sourcingRecord5],
     });
 
-    const response4 = await request(app.getHttpServer())
+    const response4 = await request(testApplication.getHttpServer())
       .get('/api/v1/h3/years')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({ layer: 'impact', 'materialIds[]': [childMaterial1.id] });

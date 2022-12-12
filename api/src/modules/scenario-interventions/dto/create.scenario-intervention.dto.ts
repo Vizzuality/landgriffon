@@ -49,7 +49,7 @@ export class CreateScenarioInterventionDto {
 
   @IsString()
   @IsNotEmpty()
-  @IsEnum(Object.values(SCENARIO_INTERVENTION_TYPE))
+  @IsEnum(SCENARIO_INTERVENTION_TYPE)
   @ApiProperty({
     description: 'Type of the Intervention',
     enum: Object.values(SCENARIO_INTERVENTION_TYPE),
@@ -315,7 +315,7 @@ export class CreateScenarioInterventionDtoV2 {
 
   @IsString()
   @IsNotEmpty()
-  @IsEnum(Object.values(SCENARIO_INTERVENTION_TYPE))
+  @IsEnum(SCENARIO_INTERVENTION_TYPE)
   @ApiProperty({
     description: 'Type of the Intervention',
     enum: Object.values(SCENARIO_INTERVENTION_TYPE),

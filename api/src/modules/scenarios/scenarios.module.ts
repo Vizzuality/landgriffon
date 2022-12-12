@@ -1,17 +1,15 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
+import { Scenario } from 'modules/scenarios/scenario.entity';
 import { ScenariosController } from 'modules/scenarios/scenarios.controller';
 import { ScenariosService } from 'modules/scenarios/scenarios.service';
 import { ScenarioInterventionsModule } from 'modules/scenario-interventions/scenario-interventions.module';
+import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([ScenarioRepository]),
-    ScenarioInterventionsModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Scenario]), ScenarioInterventionsModule],
   controllers: [ScenariosController],
-  providers: [ScenariosService],
-  exports: [ScenariosService],
+  providers: [ScenariosService, ScenarioRepository],
+  exports: [ScenariosService, ScenarioRepository],
 })
 export class ScenariosModule {}

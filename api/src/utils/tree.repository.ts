@@ -178,7 +178,7 @@ export class ExtendedTreeRepository<
    */
   private entityFromCreateDto(create: CreateDto): Entity {
     /**
-     * Probably not the best way of doing it but it should address at least
+     * Probably not the best way of doing it, but it should address at least
      * simple use cases. See:
      * https://stackoverflow.com/questions/17382143/create-a-new-object-from-type-parameter-in-generic-class#26696476
      */

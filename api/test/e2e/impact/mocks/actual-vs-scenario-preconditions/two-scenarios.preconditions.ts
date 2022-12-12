@@ -51,11 +51,7 @@ export async function createTwoScenariosPreconditions(): Promise<{
     indicator,
     preconditionsMaterials,
   );
-  await createNewMaterialInterventionPreconditions(
-    newScenario2,
-    indicator,
-    preconditionsMaterials,
-  );
+  await createNewMaterialInterventionPreconditions(newScenario2, indicator);
 
   return { newScenario1, newScenario2, indicator };
 }

@@ -35,7 +35,6 @@ import { Supplier, supplierResource } from 'modules/suppliers/supplier.entity';
 import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
 import { UpdateSupplierDto } from 'modules/suppliers/dto/update.supplier.dto';
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
-import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { PaginationMeta } from 'utils/app-base.service';
 import { GetSupplierTreeWithOptions } from 'modules/suppliers/dto/get-supplier-tree-with-options.dto';
 import { GetSupplierByType } from 'modules/suppliers/dto/get-supplier-by-type.dto';
@@ -45,10 +44,7 @@ import { SetScenarioIdsInterceptor } from 'modules/impact/set-scenario-ids.inter
 @ApiTags(supplierResource.className)
 @ApiBearerAuth()
 export class SuppliersController {
-  constructor(
-    public readonly suppliersService: SuppliersService,
-    public readonly suppliersRepository: SupplierRepository,
-  ) {}
+  constructor(public readonly suppliersService: SuppliersService) {}
 
   @ApiOperation({
     description: 'Find all suppliers',

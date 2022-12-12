@@ -1,5 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
@@ -20,8 +19,11 @@ export class SourcingLocationGroupsService extends AppBaseService<
   UpdateSourcingLocationGroupDto,
   AppInfoDTO
 > {
+  protected readonly logger: Logger = new Logger(
+    SourcingLocationGroupsService.name,
+  );
+
   constructor(
-    @InjectRepository(SourcingLocationGroupRepository)
     protected readonly sourcingLocationGroupRepository: SourcingLocationGroupRepository,
   ) {
     super(
@@ -46,10 +48,10 @@ export class SourcingLocationGroupsService extends AppBaseService<
   }
 
   async getSourcingLocationGroupById(
-    id: number,
+    id: string,
   ): Promise<SourcingLocationGroup> {
-    const found: SourcingLocationGroup | undefined =
-      await this.sourcingLocationGroupRepository.findOne(id);
+    const found: SourcingLocationGroup | null =
+      await this.sourcingLocationGroupRepository.findOne({ where: { id } });
 
     if (!found) {
       throw new NotFoundException(

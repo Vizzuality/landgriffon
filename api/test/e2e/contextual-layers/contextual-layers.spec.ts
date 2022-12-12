@@ -1,11 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
-import { saveAdminAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
-import { ContextualLayersModule } from 'modules/contextual-layers/contextual-layers.module';
-import { clearEntityTables } from '../../utils/database-test-helper';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
+import {
+  clearEntityTables,
+  clearTestDataFromDatabase,
+} from '../../utils/database-test-helper';
 import {
   CONTEXTUAL_LAYER_AGG_TYPE,
   CONTEXTUAL_LAYER_CATEGORY,
@@ -13,58 +15,61 @@ import {
   ContextualLayerByCategory,
 } from 'modules/contextual-layers/contextual-layer.entity';
 import { createContextualLayer } from '../../entity-mocks';
-import { H3Data } from '../../../src/modules/h3-data/h3-data.entity';
+import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { dropH3DataMock, h3DataMock } from '../h3-data/mocks/h3-data.mock';
 import { h3ContextualLayerExampleDataFixture } from '../h3-data/mocks/h3-fixtures';
+import { DataSource } from 'typeorm';
 
 /**
  * Tests for the GeoRegionsModule.
  */
 
 describe('ContextualLayersModule (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, ContextualLayersModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
+    dataSource = testApplication.get<DataSource>(DataSource);
+
+    ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
-    await clearEntityTables([H3Data, ContextualLayer]);
+    await clearEntityTables(dataSource, [H3Data, ContextualLayer]);
     const layerTables: string[] = Object.values(CONTEXTUAL_LAYER_AGG_TYPE).map(
       (value: CONTEXTUAL_LAYER_AGG_TYPE) => 'layerTable' + value,
     );
-    await dropH3DataMock(['layerTable', ...layerTables]);
+    await dropH3DataMock(dataSource, ['layerTable', ...layerTables]);
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   describe('Contextual Layers - Get all contextual layers by category', () => {
     test('When I query the API to get all the contextual layer info, Then I should get all available layers grouped by category', async () => {
-      for (const num of [1, 2]) {
-        await Promise.all(
-          Object.values(CONTEXTUAL_LAYER_CATEGORY).map(
-            async (category: string) => {
-              return createContextualLayer({
-                category: category as CONTEXTUAL_LAYER_CATEGORY,
-              });
-            },
-          ),
-        );
-      }
+      await Promise.all(
+        Array.from(Array(2)).map(() => {
+          return Promise.all(
+            Object.values(CONTEXTUAL_LAYER_CATEGORY).map(
+              async (category: string) => {
+                return createContextualLayer({
+                  category: category as CONTEXTUAL_LAYER_CATEGORY,
+                });
+              },
+            ),
+          );
+        }),
+      );
 
       await createContextualLayer({
         category: CONTEXTUAL_LAYER_CATEGORY.DEFAULT,
       });
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/contextual-layers/categories')
         .set('Authorization', `Bearer ${jwtToken}`);
 
@@ -93,7 +98,7 @@ describe('ContextualLayersModule (e2e)', () => {
         category: CONTEXTUAL_LAYER_CATEGORY.BUSINESS_DATASETS,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/contextual-layers/${contextualLayer.id}/h3Data`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .expect(HttpStatus.NOT_FOUND);
@@ -109,7 +114,7 @@ describe('ContextualLayersModule (e2e)', () => {
         metadata: { test: 'no aggType' } as unknown as JSON,
       });
 
-      await h3DataMock({
+      await h3DataMock(dataSource, {
         h3TableName: 'layerTable',
         h3ColumnName: 'layerColumn',
         additionalH3Data: h3ContextualLayerExampleDataFixture,
@@ -117,7 +122,7 @@ describe('ContextualLayersModule (e2e)', () => {
         contextualLayerId: contextualLayer.id,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(
           `/api/v1/contextual-layers/${contextualLayer.id}/h3Data?resolution=2`,
         )
@@ -135,7 +140,7 @@ describe('ContextualLayersModule (e2e)', () => {
         metadata: { test: 'metadata' } as unknown as JSON,
       });
 
-      await h3DataMock({
+      await h3DataMock(dataSource, {
         h3TableName: 'layerTable',
         h3ColumnName: 'layerColumn',
         additionalH3Data: h3ContextualLayerExampleDataFixture,
@@ -143,7 +148,7 @@ describe('ContextualLayersModule (e2e)', () => {
         contextualLayerId: contextualLayer.id,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/contextual-layers/${contextualLayer.id}/h3Data`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .expect(HttpStatus.OK);
@@ -179,7 +184,7 @@ describe('ContextualLayersModule (e2e)', () => {
 
         layers.set(aggType, layer);
 
-        await h3DataMock({
+        await h3DataMock(dataSource, {
           h3TableName: 'layerTable' + aggType,
           h3ColumnName: 'layerColumn',
           additionalH3Data: h3ContextualLayerExampleDataFixture,
@@ -191,7 +196,7 @@ describe('ContextualLayersModule (e2e)', () => {
       const responses: Map<CONTEXTUAL_LAYER_AGG_TYPE, request.Response> =
         new Map();
       for (const layer of layers.entries()) {
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get(`/api/v1/contextual-layers/${layer[1].id}/h3Data?resolution=2`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .expect(HttpStatus.OK);
@@ -262,7 +267,7 @@ describe('ContextualLayersModule (e2e)', () => {
         metadata: { test: 'metadata' } as unknown as JSON,
       });
 
-      await h3DataMock({
+      await h3DataMock(dataSource, {
         h3TableName: 'layerTable',
         h3ColumnName: 'layerColumn',
         additionalH3Data: h3ContextualLayerExampleDataFixture,
@@ -270,7 +275,7 @@ describe('ContextualLayersModule (e2e)', () => {
         contextualLayerId: contextualLayer.id,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/contextual-layers/${contextualLayer.id}/h3Data?year=2019`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .expect(HttpStatus.OK);

@@ -1,4 +1,4 @@
-import { Repository, getManager, SelectQueryBuilder } from 'typeorm';
+import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import {
   BaseImpactTableDto,
   GetActualVsScenarioImpactTableDto,
@@ -11,6 +11,7 @@ import { Material } from 'modules/materials/material.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
+import { Injectable } from '@nestjs/common';
 
 /**
  * @description: Even to Impact is not a mapped entity in our codebase, we will use
@@ -18,13 +19,17 @@ import { BusinessUnit } from 'modules/business-units/business-unit.entity';
  * It is not included in the module
  */
 
-// TODO: Refactor tu use this repository for all Impact Related data retrieval (Currently using Sourcing Records repo for this purpose)
-
+// TODO: Refactor to use this repository for all Impact Related data retrieval (Currently using Sourcing Records repo for this purpose)
+@Injectable()
 export class ImpactRepository extends Repository<any> {
+  constructor(private dataSource: DataSource) {
+    super(Object, dataSource.createEntityManager());
+  }
+
   private createBasicSelectQuery(
     impactDataDto: GetActualVsScenarioImpactTableDto | BaseImpactTableDto,
   ): SelectQueryBuilder<SourcingRecord> {
-    return getManager()
+    return this.dataSource
       .createQueryBuilder()
       .select('sourcingRecords.year', 'year')
       .addSelect('sum(sourcingRecords.tonnage)', 'tonnes')
@@ -76,5 +81,5 @@ export class ImpactRepository extends Repository<any> {
         indicatorIds: impactDataDto.indicatorIds,
       });
   }
-  // use getManager() from typeorm to perform queries
+  // use this.dataSource from typeorm to perform queries
 }

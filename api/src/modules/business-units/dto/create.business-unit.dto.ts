@@ -28,7 +28,7 @@ export class CreateBusinessUnitDto {
 
   @IsString()
   @IsOptional()
-  @IsEnum(Object.values(BUSINESS_UNIT_STATUS))
+  @IsEnum(BUSINESS_UNIT_STATUS)
   @ApiPropertyOptional()
   status?: string;
 

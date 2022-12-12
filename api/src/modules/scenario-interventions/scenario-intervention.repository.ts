@@ -1,16 +1,13 @@
-import {
-  Connection,
-  EntityRepository,
-  getConnection,
-  InsertResult,
-  QueryRunner,
-  Repository,
-} from 'typeorm';
+import { DataSource, InsertResult, QueryRunner, Repository } from 'typeorm';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
-import { Logger, ServiceUnavailableException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
@@ -26,9 +23,17 @@ import {
 import { chunk } from 'lodash';
 import * as config from 'config';
 import { IMPACT_VIEW_NAME } from 'modules/impact/views/impact.materialized-view.entity';
+import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 
-@EntityRepository(ScenarioIntervention)
+@Injectable()
 export class ScenarioInterventionRepository extends Repository<ScenarioIntervention> {
+  constructor(
+    private dataSource: DataSource,
+    private indicatorRecordService: IndicatorRecordsService,
+  ) {
+    super(ScenarioIntervention, dataSource.createEntityManager());
+  }
+
   logger: Logger = new Logger(ScenarioInterventionRepository.name);
 
   async getScenarioInterventionsByScenarioId(
@@ -82,8 +87,7 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
   async saveNewIntervention(
     newIntervention: ScenarioIntervention,
   ): Promise<any> {
-    const connection: Connection = getConnection();
-    const queryRunner: QueryRunner = connection.createQueryRunner();
+    const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     const locations: SourcingLocation[] = [];
@@ -245,7 +249,7 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
       this.logger.log('Committing transaction...');
       await queryRunner.commitTransaction();
       this.logger.warn(`REFRESHING ${IMPACT_VIEW_NAME} ON THE BACKGROUND...`);
-      IndicatorRecord.updateImpactView();
+      this.indicatorRecordService.updateImpactView();
       this.logger.log('New Intervention Saving Finished');
 
       return intervention;

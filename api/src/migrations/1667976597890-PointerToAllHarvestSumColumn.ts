@@ -2,7 +2,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * @description: Corrects pointing to SUM of all harvested materials pre-computed during seed ingestion
- *               In the future, we coould probably map this as an Entity, or at least a known record in H3Data
+ *               In the future, we could probably map this as an Entity, or at least a known record in H3Data
  *               to avoid this critical data being a magic string somewhere in the code
  */
 
@@ -46,5 +46,9 @@ $$
 LANGUAGE plpgsql;`);
   }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {}
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `DROP FUNCTION IF EXISTS sum_h3_weighted_cropland_area();`,
+    );
+  }
 }

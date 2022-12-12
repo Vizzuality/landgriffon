@@ -1,5 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
@@ -17,10 +16,7 @@ export class UnitsService extends AppBaseService<
   UpdateUnitDto,
   AppInfoDTO
 > {
-  constructor(
-    @InjectRepository(UnitRepository)
-    protected readonly unitRepository: UnitRepository,
-  ) {
+  constructor(protected readonly unitRepository: UnitRepository) {
     super(unitRepository, unitResource.name.singular, unitResource.name.plural);
   }
 
@@ -31,8 +27,10 @@ export class UnitsService extends AppBaseService<
     };
   }
 
-  async getUnitById(id: number): Promise<Unit> {
-    const found: Unit | undefined = await this.unitRepository.findOne(id);
+  async getUnitById(id: string): Promise<Unit> {
+    const found: Unit | null = await this.unitRepository.findOne({
+      where: { id },
+    });
 
     if (!found) {
       throw new NotFoundException(` Unit with ID "${id}" not found`);

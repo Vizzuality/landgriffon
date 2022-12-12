@@ -25,7 +25,7 @@ export class CreateMaterialDto {
 
   @IsString()
   @IsOptional()
-  @IsEnum(Object.values(MATERIALS_STATUS))
+  @IsEnum(MATERIALS_STATUS)
   @ApiPropertyOptional()
   status?: string;
 

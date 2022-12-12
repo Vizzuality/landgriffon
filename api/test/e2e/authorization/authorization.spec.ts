@@ -1,12 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { User } from 'modules/users/user.entity';
-import { getApp } from '../../utils/getApp';
-import { clearEntityTables } from '../../utils/database-test-helper';
-import { saveUserWithRoleAndGetTokenWithUserId } from '../../utils/userAuth';
-import { ROLES } from '../../../src/modules/authorization/roles/roles.enum';
+import {
+  clearEntityTables,
+  clearTestDataFromDatabase,
+} from '../../utils/database-test-helper';
+import { ROLES } from 'modules/authorization/roles/roles.enum';
 import {
   createIndicator,
   createMaterial,
@@ -15,53 +13,49 @@ import {
 import {
   Indicator,
   INDICATOR_TYPES,
-} from '../../../src/modules/indicators/indicator.entity';
-import { SourcingLocation } from '../../../src/modules/sourcing-locations/sourcing-location.entity';
+} from 'modules/indicators/indicator.entity';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
+import { DataSource } from 'typeorm';
+import { setupTestUser } from '../../utils/userAuth';
+import { HttpStatus } from '@nestjs/common';
 
 describe('Authorization Test (E2E)', () => {
-  let app: INestApplication;
-  let moduleFixture: TestingModule;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
 
   beforeAll(async () => {
-    moduleFixture = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
 
-    app = getApp(moduleFixture);
-
-    await app.init();
+    dataSource = testApplication.get<DataSource>(DataSource);
   });
+
   afterEach(async () => {
-    await clearEntityTables([User, Indicator, SourcingLocation]);
+    await clearEntityTables(dataSource, [User, Indicator, SourcingLocation]);
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   describe('Authorization Tests (e2e)', () => {
     describe('XLSXL Import', () => {
       test('When I try to import a file, But I have no Admin role, Then I should get an error message', async () => {
-        const { jwtToken } = await saveUserWithRoleAndGetTokenWithUserId(
-          moduleFixture,
-          app,
-          ROLES.USER,
-        );
+        const { jwtToken } = await setupTestUser(testApplication, ROLES.USER);
 
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .post(`/api/v1/import/sourcing-data`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
           .expect(HttpStatus.FORBIDDEN);
       });
       test('When I try to import a file, And I have no Admin role, Then I should not get Bad Request exception, But my request should be authorised', async () => {
-        const { jwtToken } = await saveUserWithRoleAndGetTokenWithUserId(
-          moduleFixture,
-          app,
-          ROLES.ADMIN,
-        );
+        const { jwtToken } = await setupTestUser(testApplication, ROLES.ADMIN);
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .post(`/api/v1/import/sourcing-data`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
@@ -74,12 +68,8 @@ describe('Authorization Test (E2E)', () => {
     });
     describe('Indicators', () => {
       test('When I want to list indicators, And I have no Admin roles, I should be allowed', async () => {
-        const { jwtToken } = await saveUserWithRoleAndGetTokenWithUserId(
-          moduleFixture,
-          app,
-          ROLES.USER,
-        );
-        await request(app.getHttpServer())
+        const { jwtToken } = await setupTestUser(testApplication, ROLES.USER);
+        await request(testApplication.getHttpServer())
           .get(`/api/v1/indicators/`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
@@ -89,19 +79,15 @@ describe('Authorization Test (E2E)', () => {
           nameCode: INDICATOR_TYPES.CARBON_EMISSIONS,
         });
 
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .get(`/api/v1/indicators/${indicator.id}`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
           .expect(HttpStatus.OK);
       });
       test('When I want to create, update or delete a Indicator, And I have no Admin roles, Then I should get a error response', async () => {
-        const { jwtToken } = await saveUserWithRoleAndGetTokenWithUserId(
-          moduleFixture,
-          app,
-          ROLES.USER,
-        );
-        await request(app.getHttpServer())
+        const { jwtToken } = await setupTestUser(testApplication, ROLES.USER);
+        await request(testApplication.getHttpServer())
           .post(`/api/v1/indicators/`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
@@ -111,13 +97,13 @@ describe('Authorization Test (E2E)', () => {
           nameCode: INDICATOR_TYPES.CARBON_EMISSIONS,
         });
 
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .delete(`/api/v1/indicators/${indicator.id}`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
           .expect(HttpStatus.FORBIDDEN);
 
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .patch(`/api/v1/indicators/${indicator.id}`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
@@ -126,12 +112,8 @@ describe('Authorization Test (E2E)', () => {
     });
     describe('Sourcing Locations', () => {
       test('When I want to list sourcing locations, And I have no Admin roles, I should be allowed', async () => {
-        const { jwtToken } = await saveUserWithRoleAndGetTokenWithUserId(
-          moduleFixture,
-          app,
-          ROLES.USER,
-        );
-        await request(app.getHttpServer())
+        const { jwtToken } = await setupTestUser(testApplication, ROLES.USER);
+        await request(testApplication.getHttpServer())
           .get(`/api/v1/sourcing-locations/`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
@@ -139,19 +121,15 @@ describe('Authorization Test (E2E)', () => {
 
         const sourcingLocation = await createSourcingLocation({});
 
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .get(`/api/v1/sourcing-locations/${sourcingLocation.id}`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
           .expect(HttpStatus.OK);
       });
       test('When I want to create, update or delete a Sourcing Location, And I have no Admin roles, Then I should get a error response', async () => {
-        const { jwtToken } = await saveUserWithRoleAndGetTokenWithUserId(
-          moduleFixture,
-          app,
-          ROLES.USER,
-        );
-        await request(app.getHttpServer())
+        const { jwtToken } = await setupTestUser(testApplication, ROLES.USER);
+        await request(testApplication.getHttpServer())
           .post(`/api/v1/sourcing-locations/`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
@@ -159,13 +137,13 @@ describe('Authorization Test (E2E)', () => {
 
         const sourcingLocation = await createSourcingLocation({});
 
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .delete(`/api/v1/sourcing-locations/${sourcingLocation.id}`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
           .expect(HttpStatus.FORBIDDEN);
 
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .patch(`/api/v1/sourcing-locations/${sourcingLocation.id}`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
@@ -174,18 +152,14 @@ describe('Authorization Test (E2E)', () => {
     });
     describe('Materials', () => {
       test('When I want to list of Materials, But I have no Admin roles, I should be allowed', async () => {
-        const { jwtToken } = await saveUserWithRoleAndGetTokenWithUserId(
-          moduleFixture,
-          app,
-          ROLES.USER,
-        );
-        await request(app.getHttpServer())
+        const { jwtToken } = await setupTestUser(testApplication, ROLES.USER);
+        await request(testApplication.getHttpServer())
           .get(`/api/v1/materials/`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
           .expect(HttpStatus.OK);
 
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .get(`/api/v1/materials/trees`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
@@ -193,19 +167,15 @@ describe('Authorization Test (E2E)', () => {
 
         const material = await createMaterial({});
 
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .get(`/api/v1/materials/${material.id}`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
           .expect(HttpStatus.OK);
       });
       test('When I want to create, update or delete a Material, And I have no Admin roles, Then I should get a error response', async () => {
-        const { jwtToken } = await saveUserWithRoleAndGetTokenWithUserId(
-          moduleFixture,
-          app,
-          ROLES.USER,
-        );
-        await request(app.getHttpServer())
+        const { jwtToken } = await setupTestUser(testApplication, ROLES.USER);
+        await request(testApplication.getHttpServer())
           .post(`/api/v1/materials/`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
@@ -213,13 +183,13 @@ describe('Authorization Test (E2E)', () => {
 
         const material = await createMaterial({});
 
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .delete(`/api/v1/materials/${material.id}`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
           .expect(HttpStatus.FORBIDDEN);
 
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .patch(`/api/v1/materials/${material.id}`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()

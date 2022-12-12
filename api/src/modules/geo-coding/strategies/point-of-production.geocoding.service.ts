@@ -39,7 +39,7 @@ export class PointOfProductionGeocodingStrategy extends BaseStrategy {
           )
         ).adminRegionId;
       } catch (e) {
-        const existingSourcingLocation: SourcingLocation | undefined =
+        const existingSourcingLocation: SourcingLocation | null =
           await this.findExistingSourcingLocationByGeoRegionId(
             geoRegionId as unknown as string,
           );

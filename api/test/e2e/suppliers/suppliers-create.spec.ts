@@ -1,31 +1,31 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
-import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { createSupplier } from '../../entity-mocks';
 import { expectedJSONAPIAttributes } from './config';
 import { Supplier } from 'modules/suppliers/supplier.entity';
-import { saveAdminAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
 
 describe('Suppliers - Create', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let supplierRepository: SupplierRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, SuppliersModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
+
+    dataSource = testApplication.get<DataSource>(DataSource);
 
     supplierRepository =
-      moduleFixture.get<SupplierRepository>(SupplierRepository);
+      testApplication.get<SupplierRepository>(SupplierRepository);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
@@ -33,11 +33,12 @@ describe('Suppliers - Create', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   test('Create a supplier should be successful (happy case)', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .post('/api/v1/suppliers')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
@@ -45,9 +46,9 @@ describe('Suppliers - Create', () => {
       })
       .expect(HttpStatus.CREATED);
 
-    const createdSupplier = await supplierRepository.findOne(
-      response.body.data.id,
-    );
+    const createdSupplier = await supplierRepository.findOne({
+      where: { id: response.body.data.id },
+    });
 
     if (!createdSupplier) {
       throw new Error('Error loading created Supplier');
@@ -58,7 +59,7 @@ describe('Suppliers - Create', () => {
   });
 
   test('Create a supplier with name smaller or equal to 300 characters should be successful', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .post('/api/v1/suppliers')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
@@ -66,9 +67,9 @@ describe('Suppliers - Create', () => {
       })
       .expect(HttpStatus.CREATED);
 
-    const createdSupplier = await supplierRepository.findOne(
-      response.body.data.id,
-    );
+    const createdSupplier = await supplierRepository.findOne({
+      where: { id: response.body.data.id },
+    });
 
     if (!createdSupplier) {
       throw new Error('Error loading created Supplier');
@@ -79,7 +80,7 @@ describe('Suppliers - Create', () => {
   });
 
   test('Create a supplier with name bigger than 1000 characters should return bad request error', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .post('/api/v1/suppliers')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
@@ -95,7 +96,7 @@ describe('Suppliers - Create', () => {
   });
 
   test('Create a supplier without the required fields should fail with a 400 error', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .post('/api/v1/suppliers')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -115,7 +116,7 @@ describe('Suppliers - Create', () => {
 
   describe('Tree structure', () => {
     test('Create a supplier without a parent should be successful', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/suppliers')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -127,7 +128,7 @@ describe('Suppliers - Create', () => {
     });
 
     test('Create a supplier with a parent id that does not exist should fail with a 400 error', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/suppliers')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -145,7 +146,7 @@ describe('Suppliers - Create', () => {
     test('Create a supplier with a parent id that exists should be successful and return the associated parent id', async () => {
       const supplier: Supplier = await createSupplier();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/suppliers')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({

@@ -21,9 +21,6 @@ import {
 import { NewSupplierLocationIntervention } from 'modules/scenario-interventions/strategies/new-supplier-location.intervention.strategy';
 import { ChangeProductionEfficiencyIntervention } from 'modules/scenario-interventions/strategies/change-production-efficiency.intervention.strategy';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
-import * as config from 'config';
-const useNewMethodology: boolean =
-  `${config.get('newMethodology')}`.toLowerCase() === 'true';
 
 /**
  * @description: This service consumes a previously created Intervention instance and takes care of building the full entity
@@ -211,15 +208,11 @@ export class InterventionBuilder {
           year: sourcingRecord.year,
           sourcingRecord: sourcingRecord,
         };
-        sourcingRecord.indicatorRecords = useNewMethodology
-          ? await this.impactCalculator.createIndicatorRecordsBySourcingRecords(
-              sourcingData,
-              newIndicatorCoefficients as unknown as IndicatorCoefficientsDtoV2,
-            )
-          : await this.indicatorRecordService.createIndicatorRecordsBySourcingRecords(
-              sourcingData,
-              newIndicatorCoefficients,
-            );
+        sourcingRecord.indicatorRecords =
+          await this.impactCalculator.createIndicatorRecordsBySourcingRecords(
+            sourcingData,
+            newIndicatorCoefficients as unknown as IndicatorCoefficientsDtoV2,
+          );
       }
     }
 

@@ -7,6 +7,13 @@
     "password": "",
     "database": "landgriffon",
     "synchronize": true,
+    "logging": [
+      "query",
+      "error",
+      "schema",
+      "info",
+      "log"
+    ],
     "migrationsRun": false
   },
   "auth": {

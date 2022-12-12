@@ -1,4 +1,4 @@
-FROM node:16.13-alpine3.14
+FROM node:18.12-alpine3.17
 LABEL maintainer="hello@vizzuality.com"
 
 ARG UID=5000

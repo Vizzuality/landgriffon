@@ -27,7 +27,7 @@ import {
   createSupplier,
   createUnit,
 } from '../../../../entity-mocks';
-import { INDICATOR_TYPES } from '../../../../../src/modules/indicators/indicator.entity';
+import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
 
 export async function createMixedScenariosPreconditions(): Promise<{
   indicator: Indicator;

@@ -25,13 +25,12 @@ import {
   createSupplier,
   createUnit,
 } from '../../../../entity-mocks';
-import { INDICATOR_TYPES } from '../../../../../src/modules/indicators/indicator.entity';
+import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 
 export async function createNewMaterialInterventionPreconditions(
   customScenario?: Scenario,
   customIndicator?: Indicator,
-  customMaterials?: Record<string, Material>,
 ): Promise<{
   indicator: Indicator;
   scenarioIntervention: ScenarioIntervention;

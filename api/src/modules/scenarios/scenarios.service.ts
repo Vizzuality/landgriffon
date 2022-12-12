@@ -1,5 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
@@ -21,7 +20,6 @@ export class ScenariosService extends AppBaseService<
   AppInfoDTO
 > {
   constructor(
-    @InjectRepository(ScenarioRepository)
     protected readonly scenarioRepository: ScenarioRepository,
     protected readonly scenarioInterventionService: ScenarioInterventionsService,
   ) {
@@ -47,10 +45,10 @@ export class ScenariosService extends AppBaseService<
     };
   }
 
-  async getScenarioById(id: number): Promise<Scenario> {
-    const found: Scenario | undefined = await this.scenarioRepository.findOne(
-      id,
-    );
+  async getScenarioById(id: string): Promise<Scenario> {
+    const found: Scenario | null = await this.scenarioRepository.findOne({
+      where: { id },
+    });
 
     if (!found) {
       throw new NotFoundException(`Scenario with ID "${id}" not found`);

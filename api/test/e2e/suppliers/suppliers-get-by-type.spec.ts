@@ -1,38 +1,45 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { Supplier, SUPPLIER_TYPES } from 'modules/suppliers/supplier.entity';
-import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
-import { saveAdminAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { setupTestUser } from '../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { createSourcingLocation, createSupplier } from '../../entity-mocks';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
+import { MaterialRepository } from 'modules/materials/material.repository';
 
 describe('Suppliers - Get by type', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
   let supplierRepository: SupplierRepository;
+  let materialRepository: MaterialRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, SuppliersModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
+
+    dataSource = testApplication.get<DataSource>(DataSource);
 
     supplierRepository =
-      moduleFixture.get<SupplierRepository>(SupplierRepository);
+      testApplication.get<SupplierRepository>(SupplierRepository);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
+    materialRepository =
+      testApplication.get<MaterialRepository>(MaterialRepository);
+
+    ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
     await supplierRepository.delete({});
+    await materialRepository.delete({});
   });
 
   afterAll(async () => {
-    await app.close();
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   describe('Suppliers - Get by type', () => {
@@ -54,27 +61,37 @@ describe('Suppliers - Get by type', () => {
           await createSourcingLocation({ producerId: supplier.id });
         }
 
-        const t1SupplierResponse = await request(app.getHttpServer())
+        const t1SupplierResponse = await request(
+          testApplication.getHttpServer(),
+        )
           .get(`/api/v1/suppliers/types`)
           .query({ type: SUPPLIER_TYPES.T1SUPPLIER })
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
           .expect(HttpStatus.OK);
 
-        t1SupplierResponse.body.data.forEach((supplier: any, i: number) => {
-          expect(supplier.attributes.name).toEqual(`T1 Supplier ${i + 1}`);
-        });
+        t1SupplierResponse.body.data
+          .sort((a: Record<string, any>, b: Record<string, any>) =>
+            a.attributes.name < b.attributes.name ? -1 : a > b ? 1 : 0,
+          )
+          .forEach((supplier: any, i: number) => {
+            expect(supplier.attributes.name).toEqual(`T1 Supplier ${i + 1}`);
+          });
 
-        const producerResponse = await request(app.getHttpServer())
+        const producerResponse = await request(testApplication.getHttpServer())
           .get(`/api/v1/suppliers/types`)
           .query({ type: SUPPLIER_TYPES.PRODUCER })
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
           .expect(HttpStatus.OK);
 
-        producerResponse.body.data.forEach((supplier: any, i: number) => {
-          expect(supplier.attributes.name).toEqual(`Producer ${i + 1}`);
-        });
+        producerResponse.body.data
+          .sort((a: Record<string, any>, b: Record<string, any>) =>
+            a.attributes.name < b.attributes.name ? -1 : a > b ? 1 : 0,
+          )
+          .forEach((supplier: any, i: number) => {
+            expect(supplier.attributes.name).toEqual(`Producer ${i + 1}`);
+          });
       },
     );
     test(
@@ -82,7 +99,7 @@ describe('Suppliers - Get by type', () => {
         'And I filter by a wrong type of Supplier' +
         'Then I should get a proper error message',
       async () => {
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get(`/api/v1/suppliers/types`)
           .query({ type: 'I have not sell anything in my life' })
           .set('Authorization', `Bearer ${jwtToken}`)

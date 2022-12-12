@@ -14,7 +14,7 @@ export const h3BasicFixtureForScaler = {
 };
 
 /**
- * Dataset of h3 indexes in resolution 6 and it's value, mocking a part of 'real-life' h3 table contents with production or harvest volumes.
+ * Dataset of h3 indexes in resolution 6 and its value, mocking a part of 'real-life' h3 table contents with production or harvest volumes.
  * Each 10 indexes of resolution 6 have same resolution 1 parent, each 5 within those 10 have same resolution 3 parent
  */
 

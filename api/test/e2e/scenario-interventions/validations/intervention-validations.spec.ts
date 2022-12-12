@@ -1,75 +1,61 @@
-import { Test, TestingModule } from '@nestjs/testing';
-
-import { ScenarioInterventionsModule } from '../../../../src/modules/scenario-interventions/scenario-interventions.module';
-import { getApp } from '../../../utils/getApp';
-import { saveUserWithRoleAndGetTokenWithUserId } from '../../../utils/userAuth';
-import { INestApplication } from '@nestjs/common';
 import {
   Indicator,
   INDICATOR_STATUS,
   INDICATOR_TYPES_NEW,
-} from '../../../../src/modules/indicators/indicator.entity';
-import { AppModule } from '../../../../src/app.module';
+} from 'modules/indicators/indicator.entity';
 import {
   createIndicator,
   createScenarioIntervention,
 } from '../../../entity-mocks';
-import { clearEntityTables } from '../../../utils/database-test-helper';
+import {
+  clearEntityTables,
+  clearTestDataFromDatabase,
+} from '../../../utils/database-test-helper';
 import * as request from 'supertest';
-import { SCENARIO_INTERVENTION_TYPE } from '../../../../src/modules/scenario-interventions/scenario-intervention.entity';
+import { SCENARIO_INTERVENTION_TYPE } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { v4 as uuidv4 } from 'uuid';
-import { IndicatorsModule } from '../../../../src/modules/indicators/indicators.module';
-import { getConnection } from 'typeorm';
-import { ScenarioInterventionsService } from '../../../../src/modules/scenario-interventions/scenario-interventions.service';
-
-jest.mock('config', () => {
-  const config = jest.requireActual('config');
-
-  const configGet = config.get;
-
-  config.get = function (key: string): any {
-    switch (key) {
-      case 'newMethodology':
-        return true;
-      default:
-        return configGet.call(config, key);
-    }
-  };
-  return config;
-});
+import { DataSource } from 'typeorm';
+import { setupTestUser } from '../../../utils/userAuth';
+import ApplicationManager, {
+  TestApplication,
+} from '../../../utils/application-manager';
+import { Test } from '@nestjs/testing';
+import { AppModule } from 'app.module';
+import { ScenarioInterventionsService } from 'modules/scenario-interventions/scenario-interventions.service';
 
 describe('Interventions E2E Tests (Controller Validations)', () => {
   let jwtToken: string;
-  let app: INestApplication;
-  beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, IndicatorsModule, ScenarioInterventionsModule],
-    })
-      .overrideProvider(ScenarioInterventionsService)
-      .useValue({
-        createScenarioIntervention: () => true,
-        serialize: () => ({
-          mockResponse: true,
-        }),
-        updateIntervention: () => true,
-      })
-      .compile();
+  let testApplication: TestApplication;
+  let dataSource: DataSource;
 
-    app = getApp(moduleFixture);
-    await app.init();
-    const tokenWithId = await saveUserWithRoleAndGetTokenWithUserId(
-      moduleFixture,
-      app,
+  beforeAll(async () => {
+    testApplication = await ApplicationManager.init(
+      Test.createTestingModule({
+        imports: [AppModule],
+      })
+        .overrideProvider(ScenarioInterventionsService)
+        .useValue({
+          createScenarioIntervention: () => true,
+          serialize: () => ({
+            mockResponse: true,
+          }),
+          updateIntervention: () => true,
+        }),
     );
+
+    dataSource = testApplication.get<DataSource>(DataSource);
+
+    const tokenWithId = await setupTestUser(testApplication);
     jwtToken = tokenWithId.jwtToken;
   });
 
   afterEach(() => {
-    return clearEntityTables([Indicator]);
+    return clearEntityTables(dataSource, [Indicator]);
   });
 
-  afterAll(() => {
-    return app.close();
+  afterAll(async () => {
+    await clearTestDataFromDatabase(dataSource);
+    await testApplication.close();
   });
 
   test(
@@ -95,21 +81,25 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
         }
       }
 
-      const indicatorRepository = getConnection().getRepository(Indicator);
+      const indicatorRepository = dataSource.getRepository(Indicator);
 
       const activeIndicators: string[] = (
         await indicatorRepository.find({
-          status: INDICATOR_STATUS.ACTIVE,
+          where: {
+            status: INDICATOR_STATUS.ACTIVE,
+          },
         })
       ).map((i: Indicator) => i.nameCode);
 
       const inactiveIndicators: string[] = (
         await indicatorRepository.find({
-          status: INDICATOR_STATUS.INACTIVE,
+          where: {
+            status: INDICATOR_STATUS.INACTIVE,
+          },
         })
       ).map((i: Indicator) => i.nameCode);
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -151,7 +141,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
         name: INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -190,7 +180,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
         name: INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/scenario-interventions/${intervention.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -228,7 +218,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
         name: INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/scenario-interventions/${intervention.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -277,21 +267,25 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
         }
       }
 
-      const indicatorRepository = getConnection().getRepository(Indicator);
+      const indicatorRepository = dataSource.getRepository(Indicator);
 
       const activeIndicators: string[] = (
         await indicatorRepository.find({
-          status: INDICATOR_STATUS.ACTIVE,
+          where: {
+            status: INDICATOR_STATUS.ACTIVE,
+          },
         })
       ).map((i: Indicator) => i.nameCode);
 
       const inactiveIndicators: string[] = (
         await indicatorRepository.find({
-          status: INDICATOR_STATUS.INACTIVE,
+          where: {
+            status: INDICATOR_STATUS.INACTIVE,
+          },
         })
       ).map((i: Indicator) => i.nameCode);
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/scenario-interventions/${intervention.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({

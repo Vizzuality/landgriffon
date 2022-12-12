@@ -21,9 +21,16 @@ import { TasksModule } from 'modules/tasks/tasks.module';
 import { importQueueName } from 'modules/import-data/workers/import-queue.name';
 import { ScenariosModule } from 'modules/scenarios/scenarios.module';
 import { IndicatorsModule } from 'modules/indicators/indicators.module';
+import { MulterModule } from '@nestjs/platform-express';
+import * as config from 'config';
+import MulterConfigService from 'modules/import-data/multer-config.service';
 
 @Module({
   imports: [
+    MulterModule.registerAsync({
+      useExisting: MulterConfigService,
+      imports: [ImportDataModule],
+    }),
     BullModule.registerQueue({
       name: importQueueName,
     }),
@@ -42,14 +49,27 @@ import { IndicatorsModule } from 'modules/indicators/indicators.module';
     IndicatorsModule,
   ],
   providers: [
+    MulterConfigService,
     SourcingDataImportService,
     FileService,
     SourcingRecordsDtoProcessorService,
     ImportDataProducer,
     ImportDataConsumer,
     ImportDataService,
+    {
+      provide: 'FILE_UPLOAD_SIZE_LIMIT',
+      useValue: config.get('fileUploads.sizeLimit'),
+    },
+    {
+      provide: 'FILE_UPLOAD_ALLOWED_FILE_EXTENSION',
+      useValue: '.xlsx',
+    },
+    {
+      provide: 'FILE_UPLOAD_STORAGE_PATH',
+      useValue: config.get('fileUploads.storagePath'),
+    },
   ],
   controllers: [ImportDataController],
-  exports: [ImportDataService],
+  exports: [ImportDataService, MulterConfigService],
 })
 export class ImportDataModule {}

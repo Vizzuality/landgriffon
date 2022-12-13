@@ -161,7 +161,7 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
 
     try {
       this.logger.log(
-        `Saving ${locations.length} Sourcing Locations for Intervention with Id: ${newIntervention.id}`,
+        `Saving Scenario Intervention with Id: ${newIntervention.id}`,
       );
       const intervention: InsertResult = await queryRunner.manager.insert(
         ScenarioIntervention,
@@ -170,7 +170,30 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
       this.logger.log(
         `Saving ${locations.length} Sourcing Locations for Intervention with Id: ${newIntervention.id}`,
       );
-      await queryRunner.manager.insert(SourcingLocation, locations);
+      const sourcingLocationInsertPromises: Array<Promise<InsertResult>> = [];
+
+      for (const [index, dataChunk] of chunk(
+        locations,
+        batchChunkSize,
+      ).entries()) {
+        this.logger.debug(
+          `Inserting sourcing locations chunk #${index} (${dataChunk.length} items)...`,
+        );
+
+        sourcingLocationInsertPromises.push(
+          queryRunner.manager
+            .createQueryBuilder()
+            .insert()
+            .into(SourcingLocation)
+            .values(dataChunk)
+            .execute(),
+        );
+      }
+      this.logger.log(
+        `Saving ${sourcingLocationInsertPromises.length} Sourcing Locations chunks`,
+      );
+      await Promise.all(sourcingLocationInsertPromises);
+
       this.logger.log(
         `Saving ${records.length} Sourcing Records for Intervention with Id: ${newIntervention.id}`,
       );

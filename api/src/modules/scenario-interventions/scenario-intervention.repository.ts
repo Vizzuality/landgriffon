@@ -170,25 +170,14 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
       this.logger.log(
         `Saving ${locations.length} Sourcing Locations for Intervention with Id: ${newIntervention.id}`,
       );
-      const sourcingLocationInsertPromises: Array<Promise<InsertResult>> = [];
-
-      for (const [index, dataChunk] of chunk(
-        locations,
-        batchChunkSize,
-      ).entries()) {
-        this.logger.debug(
-          `Inserting sourcing locations chunk #${index} (${dataChunk.length} items)...`,
+      const sourcingLocationInsertPromises: Array<Promise<InsertResult>> =
+        this.createInsertPromises(
+          locations,
+          batchChunkSize,
+          SourcingLocation,
+          queryRunner,
         );
 
-        sourcingLocationInsertPromises.push(
-          queryRunner.manager
-            .createQueryBuilder()
-            .insert()
-            .into(SourcingLocation)
-            .values(dataChunk)
-            .execute(),
-        );
-      }
       this.logger.log(
         `Saving ${sourcingLocationInsertPromises.length} Sourcing Locations chunks`,
       );
@@ -197,25 +186,14 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
       this.logger.log(
         `Saving ${records.length} Sourcing Records for Intervention with Id: ${newIntervention.id}`,
       );
-      const sourcingRecordInsertPromises: Array<Promise<InsertResult>> = [];
-
-      for (const [index, dataChunk] of chunk(
-        records,
-        batchChunkSize,
-      ).entries()) {
-        this.logger.debug(
-          `Inserting sourcing record chunk #${index} (${dataChunk.length} items)...`,
+      const sourcingRecordInsertPromises: Array<Promise<InsertResult>> =
+        this.createInsertPromises(
+          records,
+          batchChunkSize,
+          SourcingRecord,
+          queryRunner,
         );
 
-        sourcingRecordInsertPromises.push(
-          queryRunner.manager
-            .createQueryBuilder()
-            .insert()
-            .into(SourcingRecord)
-            .values(dataChunk)
-            .execute(),
-        );
-      }
       this.logger.log(
         `Saving ${sourcingRecordInsertPromises.length} Sourcing Records chunks`,
       );
@@ -223,23 +201,14 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
       this.logger.log(
         `Saving ${impacts.length} Indicator Records for Intervention with Id: ${newIntervention.id}`,
       );
-      const indicatorRecordInsertPromises: Array<Promise<InsertResult>> = [];
-      for (const [index, dataChunk] of chunk(
-        impacts,
-        batchChunkSize,
-      ).entries()) {
-        this.logger.debug(
-          `Inserting indicator record chunk #${index} (${dataChunk.length} items)...`,
+      const indicatorRecordInsertPromises: Array<Promise<InsertResult>> =
+        this.createInsertPromises(
+          impacts,
+          batchChunkSize,
+          IndicatorRecord,
+          queryRunner,
         );
-        indicatorRecordInsertPromises.push(
-          queryRunner.manager
-            .createQueryBuilder()
-            .insert()
-            .into(IndicatorRecord)
-            .values(dataChunk)
-            .execute(),
-        );
-      }
+
       this.logger.log(
         `Saving ${indicatorRecordInsertPromises.length} Indicator Records chunks`,
       );
@@ -291,5 +260,31 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
       // release query runner which is manually created
       await queryRunner.release();
     }
+  }
+
+  private createInsertPromises(
+    data: any,
+    batchChunkSize: number,
+    entity: any,
+    queryRunner: QueryRunner,
+  ): Array<Promise<InsertResult>> {
+    const insertPromises: Array<Promise<InsertResult>> = [];
+
+    for (const [index, dataChunk] of chunk(data, batchChunkSize).entries()) {
+      this.logger.debug(
+        `Inserting chunk #${index} (${dataChunk.length} items)...`,
+      );
+
+      insertPromises.push(
+        queryRunner.manager
+          .createQueryBuilder()
+          .insert()
+          .into(entity)
+          .values(dataChunk)
+          .execute(),
+      );
+    }
+
+    return insertPromises;
   }
 }

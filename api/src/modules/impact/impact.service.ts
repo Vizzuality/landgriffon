@@ -371,11 +371,18 @@ export class ImpactService {
     this.logger.log('Building Impact Table...');
     const { groupBy, startYear, endYear } = queryDto;
     const impactTable: ImpactTableDataByIndicator[] = [];
+
     // Create a range of years by start and endYears
     const rangeOfYears: number[] = range(startYear, endYear + 1);
-    const lastYearWithData: number = Math.max(
-      ...dataForImpactTable.map((el: ImpactTableData) => el.year),
-    );
+
+    // NOTE: the impact Table Data can be quite large, so to calculate the maximum number of years is not as trivial
+    // as using Math.max(...impactTable.map(...)) since the call stack will be exceeded because of no of arguments
+    const yearsWithData: Set<number> = new Set();
+    for (const impactTableData of dataForImpactTable) {
+      yearsWithData.add(impactTableData.year);
+    }
+    const lastYearWithData: number = Math.max(...yearsWithData.values());
+
     // Append data by indicator and add its unit.symbol as metadata. We need awareness of this loop during the whole process
     indicators.forEach((indicator: Indicator, indicatorValuesIndex: number) => {
       const calculatedData: ImpactTableRows[] = [];

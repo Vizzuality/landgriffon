@@ -1,12 +1,25 @@
 import Head from 'next/head';
-import { Suspense } from 'react';
+import { Suspense, useCallback, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
+import classNames from 'classnames';
 
 import Cookie from 'components/cookie';
 import Logo from 'components/logo';
+import IngredientButton from 'components/ingredient-button';
 
-export default function Home() {
+import { INGREDIENTS } from '../constants';
+
+import type { Ingredient } from '../types';
+
+const Home: React.FC = () => {
+  const [ingredient, setIngredient] = useState<string>(INGREDIENTS[0].id);
+
+  const handleSetIngredient = useCallback(
+    ({ id }: { id: Ingredient['id'] }) => setIngredient(id),
+    [],
+  );
+
   return (
     <div className="flex flex-col min-h-screen">
       <Head>
@@ -65,26 +78,18 @@ export default function Home() {
         <div className="space-y-6">
           <p className="text-sm text-center">Average chocolate cookie ingredients</p>
           <ul className="grid grid-cols-4 gap-2 list-none">
-            <li>
-              <button type="button" className="ingredient-button">
-                Cocoa
-              </button>
-            </li>
-            <li>
-              <button type="button" className="ingredient-button">
-                Wheat
-              </button>
-            </li>
-            <li>
-              <button type="button" className="ingredient-button">
-                Palm oil
-              </button>
-            </li>
-            <li>
-              <button type="button" className="ingredient-button">
-                Butter
-              </button>
-            </li>
+            {INGREDIENTS.map(({ id, name, Icon }) => (
+              <li key={`ingredient-button-${id}`}>
+                <IngredientButton
+                  current={ingredient}
+                  id={id}
+                  icon={Icon}
+                  onClick={handleSetIngredient.bind(this, { id })}
+                >
+                  {name}
+                </IngredientButton>
+              </li>
+            ))}
           </ul>
         </div>
       </header>
@@ -107,4 +112,6 @@ export default function Home() {
       </footer>
     </div>
   );
-}
+};
+
+export default Home;

@@ -22,19 +22,4 @@
   body {
     @apply antialiased text-black bg-primary;
   }
-
-  .text-disclaimer {
-    @apply text-2xl leading-7 uppercase font-display;
-  }
-
-  .ingredient-button {
-    @apply w-full p-4 text-sm text-center transition-all border rounded-lg border-secondary;
-  }
-
-  .ingredient-button:hover,
-  .ingredient-button:active,
-  .ingredient-button:focus,
-  .ingredient-button.is-active {
-    @apply bg-secondary text-primary;
-  }
 }

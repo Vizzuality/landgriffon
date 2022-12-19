@@ -50,7 +50,7 @@ function Cookie(props: any) {
   }, []);
 
   useFrame(({ mouse }) => {
-    rotationX.set(mouse.y * 0.1);
+    rotationX.set(mouse.y * 0.25);
     rotationY.set(-mouse.x * 0.5);
   });
 
@@ -59,7 +59,7 @@ function Cookie(props: any) {
       {...props}
       ref={cookieRef}
       dispose={null}
-      position={[0, -1.25, 0]}
+      position={[0, -1.5, 0]}
       rotation-x={rX}
       rotation-y={rY}
     >

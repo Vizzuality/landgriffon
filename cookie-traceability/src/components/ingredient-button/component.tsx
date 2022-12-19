@@ -12,7 +12,7 @@ const IngredientButton: React.FC<IngredientButtonProps> = ({
     data-id={id}
     type="button"
     className={classNames(
-      'w-full p-4 text-sm text-center xl:text-left transition-all border rounded-2xl border-secondary',
+      'w-full p-4 pb-5 text-sm text-center xl:text-left transition-all border rounded-[32px] border-secondary',
       {
         'bg-secondary text-primary': current === id,
       },

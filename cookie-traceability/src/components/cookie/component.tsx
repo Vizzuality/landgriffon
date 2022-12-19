@@ -12,10 +12,10 @@ import useBreakpoint from 'use-breakpoint';
 
 const POSITIONS = {
   xs: { x: 0, y: -2, z: 0, scale: 1.25 },
-  sm: { x: 0, y: -2, z: 0, scale: 1 },
-  md: { x: 0, y: -2.5, z: 0, scale: 1 },
-  lg: { x: 0, y: -2.5, z: 0, scale: 1 },
-  xl: { x: 0, y: -2.5, z: 0, scale: 1 },
+  sm: { x: 0, y: -2, z: 0, scale: 1.25 },
+  md: { x: 0, y: -2.25, z: 0, scale: 1.125 },
+  lg: { x: 0, y: -2.25, z: 0, scale: 1.125 },
+  xl: { x: 0, y: -2.23, z: 0, scale: 1.125 },
   '2xl': { x: 0, y: -2.2, z: 0, scale: 1 },
 };
 
@@ -63,7 +63,7 @@ function Cookie(props: any) {
   });
 
   useFrame(({ mouse }) => {
-    rotationX.set(mouse.y * 0.25);
+    rotationX.set(Math.max(-1, mouse.y) * 0.25);
     rotationY.set(-mouse.x * 0.5);
   });
 
@@ -79,6 +79,10 @@ function Cookie(props: any) {
       animate={{
         y: POSITIONS[breakpoint].y,
         scale: POSITIONS[breakpoint].scale || 1,
+      }}
+      transition={{
+        duration: 0.5,
+        ease: 'backOut',
       }}
       rotation-x={rX}
       rotation-y={rY}
@@ -96,7 +100,7 @@ function Cookie(props: any) {
       >
         <meshStandardMaterial
           {...texture}
-          color={'#EECDA3'}
+          color={'#CCAA88'}
           map-flipY={false}
           map-encoding={sRGBEncoding}
           normalMap-flipY={false}

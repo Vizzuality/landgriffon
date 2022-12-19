@@ -6,6 +6,19 @@ import { Group, LinearEncoding, MeshStandardMaterial, sRGBEncoding } from 'three
 
 import { useMotionValue, useSpring } from 'framer-motion';
 import { motion } from 'framer-motion-3d';
+
+import BREAKPOINTS from 'constants/breakpoints';
+import useBreakpoint from 'use-breakpoint';
+
+const POSITIONS = {
+  xs: { x: 0, y: -2, z: 0, scale: 1.25 },
+  sm: { x: 0, y: -2, z: 0, scale: 1 },
+  md: { x: 0, y: -2.5, z: 0, scale: 1 },
+  lg: { x: 0, y: -2.5, z: 0, scale: 1 },
+  xl: { x: 0, y: -2.5, z: 0, scale: 1 },
+  '2xl': { x: 0, y: -2.2, z: 0, scale: 1 },
+};
+
 interface CookieProps {
   nodes: any;
   materials: any;
@@ -13,6 +26,8 @@ interface CookieProps {
 
 function Cookie(props: any) {
   const cookieRef = useRef<Group>();
+
+  const { breakpoint } = useBreakpoint(BREAKPOINTS, 'xs', false);
 
   // Model
   const { nodes }: CookieProps = useGLTF('/models/cookie/cookie.gltf');
@@ -57,7 +72,14 @@ function Cookie(props: any) {
       {...props}
       ref={cookieRef}
       dispose={null}
-      position={[0, -2, 0]}
+      initial={{
+        y: POSITIONS[breakpoint].y,
+        scale: 0,
+      }}
+      animate={{
+        y: POSITIONS[breakpoint].y,
+        scale: POSITIONS[breakpoint].scale || 1,
+      }}
       rotation-x={rX}
       rotation-y={rY}
     >

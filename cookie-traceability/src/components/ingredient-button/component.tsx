@@ -12,7 +12,7 @@ const IngredientButton: React.FC<IngredientButtonProps> = ({
     data-id={id}
     type="button"
     className={classNames(
-      'w-full p-4 text-sm text-center xl:text-left transition-all border rounded-lg border-secondary',
+      'w-full p-4 text-sm text-center xl:text-left transition-all border rounded-2xl border-secondary',
       {
         'bg-secondary text-primary': current === id,
       },
@@ -35,7 +35,8 @@ const IngredientButton: React.FC<IngredientButtonProps> = ({
         })}
       />
     </div>
-    {children}
+
+    <div className="whitespace-nowrap">{children}</div>
   </button>
 );
 

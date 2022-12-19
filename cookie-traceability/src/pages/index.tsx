@@ -1,11 +1,7 @@
 import Head from 'next/head';
-import { Suspense, useCallback, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
-import classNames from 'classnames';
+import { useCallback, useState } from 'react';
 
-import Cookie from 'components/cookie';
-import Logo from 'components/logo';
+import Hero from 'components/hero';
 import IngredientButton from 'components/ingredient-button';
 
 import { INGREDIENTS } from '../constants';
@@ -29,51 +25,7 @@ const Home: React.FC = () => {
       </Head>
 
       <header className="px-4 pt-16 pb-10 space-y-10 text-secondary">
-        <div className="space-y-4">
-          <Logo className="m-auto fill-secondary" />
-
-          <h1 className="text-[42px] leading-[36px] font-display font-extrabold text-center uppercase">
-            Where does my <br /> cookie come
-            <br /> from?
-          </h1>
-
-          <div className="w-full h-[140px]">
-            <Canvas
-              camera={{
-                position: [5, 10, 15],
-                fov: 45,
-                near: 0.1,
-                far: 200,
-              }}
-              gl={{
-                physicallyCorrectLights: true,
-              }}
-              shadows
-            >
-              <ambientLight intensity={0.5} />
-              <directionalLight
-                color="white"
-                position={[0, 10, -10]}
-                intensity={1}
-                castShadow
-                shadow-camera-far={17.5}
-                shadow-camera-left={-10}
-                shadow-camera-right={10}
-                shadow-camera-top={3}
-                shadow-camera-bottom={-3}
-              />
-              <Suspense fallback={null}>
-                <Cookie />
-                <OrbitControls
-                  makeDefault
-                  maxPolarAngle={Math.PI / 2.5}
-                  minDistance={8}
-                  maxDistance={15}
-                />
-              </Suspense>
-            </Canvas>
-          </div>
-        </div>
+        <Hero />
 
         <div className="space-y-6">
           <p className="text-sm text-center">Average chocolate cookie ingredients</p>

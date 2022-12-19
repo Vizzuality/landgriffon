@@ -1,6 +1,5 @@
 import Head from 'next/head';
 import { useCallback, useState } from 'react';
-import { useMediaQuery } from 'react-responsive';
 
 import Hero from 'components/hero';
 import IngredientButton from 'components/ingredient-button';
@@ -11,7 +10,6 @@ import { INGREDIENTS } from '../constants';
 import type { Ingredient } from '../types';
 
 const Home: React.FC = () => {
-  const isDesktopOrLaptop = useMediaQuery({ query: '(min-width: 1224px)' });
   const [ingredient, setIngredient] = useState<string>(INGREDIENTS[0].id);
 
   const handleSetIngredient = useCallback(
@@ -54,7 +52,9 @@ const Home: React.FC = () => {
             Top 5 exporter countries
           </h2>
         </div>
-        {isDesktopOrLaptop && <Map />}
+        <div className="hidden lg:block">
+          <Map />
+        </div>
       </main>
 
       <footer className="px-4 text-center bg-gray-dark text-secondary py-14 space-y-7">

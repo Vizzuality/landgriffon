@@ -27,12 +27,12 @@ function Cookie(props: any) {
   }, []);
 
   useFrame(({ mouse }) => {
-    cookieRef.current!.rotation.x = mouse.y * 0.25;
-    cookieRef.current!.rotation.y = -mouse.x * 0.25;
+    cookieRef.current!.rotation.x = mouse.y * 0.1;
+    cookieRef.current!.rotation.y = -mouse.x * 0.1;
   });
 
   return (
-    <group {...props} ref={cookieRef} dispose={null}>
+    <group {...props} ref={cookieRef} dispose={null} position={[0, -1.25, 0]}>
       <mesh receiveShadow position={[0, -0.05, 0]}>
         <boxGeometry args={[5, 0.1, 5]} />
         <shadowMaterial opacity={0.25} />

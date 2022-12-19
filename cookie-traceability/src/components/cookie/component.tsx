@@ -24,8 +24,20 @@ function Cookie(props: any) {
   const rotationX = useMotionValue(0);
   const rotationY = useMotionValue(0);
 
-  const rX = useSpring(useTransform(rotationX, (v) => v));
-  const rY = useSpring(useTransform(rotationY, (v) => v));
+  const rX = useSpring(
+    useTransform(rotationX, (v) => v),
+    {
+      damping: 100,
+      stiffness: 1000,
+    },
+  );
+  const rY = useSpring(
+    useTransform(rotationY, (v) => v),
+    {
+      damping: 100,
+      stiffness: 1000,
+    },
+  );
 
   const chipMaterial = useMemo(() => {
     return new MeshStandardMaterial({

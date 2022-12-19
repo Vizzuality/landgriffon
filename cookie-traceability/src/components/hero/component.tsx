@@ -1,5 +1,7 @@
 import { Suspense } from 'react';
 
+import cx from 'classnames';
+
 import { Canvas } from '@react-three/fiber';
 
 import Logo from 'components/logo';
@@ -7,7 +9,12 @@ import Cookie from 'components/cookie';
 
 function Hero() {
   return (
-    <div className="relative px-4 pt-20 pb-40 xl:pt-24 xl:pb-40 2xl:pt-32 2xl:pb-60">
+    <div
+      className={cx({
+        'relative px-4 pt-20 xl:pt-24 xl:pb-40 2xl:pt-32 2xl:pb-60': true,
+        'pb-40 md:pb-48 xl:pb-56 2xl:pb-60': true,
+      })}
+    >
       <div className="space-y-14">
         <Logo className="m-auto fill-secondary" />
 

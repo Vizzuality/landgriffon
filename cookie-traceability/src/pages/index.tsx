@@ -52,9 +52,13 @@ const Home: React.FC = () => {
             Top 5 exporter countries
           </h2>
         </div>
+<<<<<<< HEAD
         <div className="hidden lg:block">
           <Map />
         </div>
+=======
+        {isDesktopOrLaptop && <Map />}
+>>>>>>> 72ea984d (Cookie hero: responsive fixes. style fixes)
       </main>
 
       <footer className="px-4 text-center bg-gray-dark text-secondary py-14 space-y-7">

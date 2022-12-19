@@ -1,0 +1,40 @@
+@font-face {
+  font-family: 'Geomanist';
+  src: url('/fonts/Geomanist-Medium.woff2') format('woff2'),
+    url('/fonts/Geomanist-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Geomanist';
+  src: url('/fonts/Geomanist-Black.woff2') format('woff2'),
+    url('/fonts/Geomanist-Black.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased text-black bg-primary;
+  }
+
+  .text-disclaimer {
+    @apply text-2xl leading-7 uppercase font-display;
+  }
+
+  .ingredient-button {
+    @apply w-full p-4 text-sm text-center transition-all border rounded-lg border-secondary;
+  }
+
+  .ingredient-button:hover,
+  .ingredient-button:active,
+  .ingredient-button:focus,
+  .ingredient-button.is-active {
+    @apply bg-secondary text-primary;
+  }
+}

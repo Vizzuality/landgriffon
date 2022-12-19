@@ -7,7 +7,7 @@ import Cookie from 'components/cookie';
 
 function Hero() {
   return (
-    <div className="relative pt-16 pb-60 space-y-14">
+    <div className="relative px-4 pt-32 pb-60 space-y-14">
       <Logo className="m-auto fill-secondary" />
 
       <h1 className="text-[112px] leading-[101px] font-display font-extrabold text-center uppercase">
@@ -18,7 +18,7 @@ function Hero() {
       <div className="absolute top-0 left-0 z-0 w-full h-full pointer-events-none">
         <Canvas
           camera={{
-            position: [1.25, 3.5, 5.75],
+            position: [1.25, 3.5, 6.75],
             fov: 45,
             near: 0.1,
             far: 200,
@@ -31,7 +31,7 @@ function Hero() {
           <ambientLight intensity={1} />
           <directionalLight
             color="white"
-            position={[0, 5, -2.5]}
+            position={[0, 5, -1]}
             intensity={2}
             castShadow
             shadow-camera-far={10}
@@ -39,6 +39,17 @@ function Hero() {
             shadow-camera-right={3}
             shadow-camera-top={3}
             shadow-camera-bottom={-3}
+          />
+          <directionalLight
+            color="white"
+            position={[5, 1, 0]}
+            intensity={2}
+            // castShadow
+            // shadow-camera-far={10}
+            // shadow-camera-left={-3}
+            // shadow-camera-right={3}
+            // shadow-camera-top={3}
+            // shadow-camera-bottom={-3}
           />
 
           <Suspense fallback={null}>

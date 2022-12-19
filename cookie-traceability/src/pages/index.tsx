@@ -25,7 +25,7 @@ const Home: React.FC = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <header className="relative px-4 pt-16 pb-10 space-y-10 text-secondary">
+      <header className="relative space-y-10 text-secondary">
         <Hero />
 
         <div className="relative z-10 space-y-6 max-w-[575px] mx-auto">

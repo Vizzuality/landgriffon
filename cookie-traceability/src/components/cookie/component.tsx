@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useMemo, useRef } from 'react';
 
 import { useFrame } from '@react-three/fiber';
 import { useGLTF, useTexture } from '@react-three/drei';
 import { Group, LinearEncoding, MeshStandardMaterial, sRGBEncoding } from 'three';
 
-import { useMotionValue, useSpring, useTransform, MotionValue } from 'framer-motion';
+import { useMotionValue, useSpring } from 'framer-motion';
 import { motion } from 'framer-motion-3d';
 interface CookieProps {
   nodes: any;
@@ -14,31 +14,16 @@ interface CookieProps {
 function Cookie(props: any) {
   const cookieRef = useRef<Group>();
 
+  // Model
+  const { nodes }: CookieProps = useGLTF('/models/cookie/cookie.gltf');
+
+  // Model Textures
   const texture = useTexture({
     map: '/models/cookie/cookie_4px_compressed.png',
     normalMap: '/models/cookie/cookie_normal_4px_compressed.png',
   });
 
-  const { nodes }: CookieProps = useGLTF('/models/cookie/cookie.gltf');
-
-  const rotationX = useMotionValue(0);
-  const rotationY = useMotionValue(0);
-
-  const rX = useSpring(
-    useTransform(rotationX, (v) => v),
-    {
-      damping: 100,
-      stiffness: 1000,
-    },
-  );
-  const rY = useSpring(
-    useTransform(rotationY, (v) => v),
-    {
-      damping: 100,
-      stiffness: 1000,
-    },
-  );
-
+  // Model Materials
   const chipMaterial = useMemo(() => {
     return new MeshStandardMaterial({
       color: '#5b210f',
@@ -48,6 +33,19 @@ function Cookie(props: any) {
       roughness: 0,
     });
   }, []);
+
+  // Animations
+  const rotationX = useMotionValue(0);
+  const rotationY = useMotionValue(0);
+
+  const rX = useSpring(rotationX, {
+    damping: 100,
+    stiffness: 1000,
+  });
+  const rY = useSpring(rotationY, {
+    damping: 100,
+    stiffness: 1000,
+  });
 
   useFrame(({ mouse }) => {
     rotationX.set(mouse.y * 0.25);
@@ -59,7 +57,7 @@ function Cookie(props: any) {
       {...props}
       ref={cookieRef}
       dispose={null}
-      position={[0, -1.5, 0]}
+      position={[0, -2, 0]}
       rotation-x={rX}
       rotation-y={rY}
     >

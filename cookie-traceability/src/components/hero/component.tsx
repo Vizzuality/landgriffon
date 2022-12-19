@@ -7,13 +7,15 @@ import Cookie from 'components/cookie';
 
 function Hero() {
   return (
-    <div className="relative px-4 pt-32 pb-60 space-y-14">
-      <Logo className="m-auto fill-secondary" />
+    <div className="relative px-4 pt-32 pb-60">
+      <div className="space-y-14">
+        <Logo className="m-auto fill-secondary" />
 
-      <h1 className="text-[112px] leading-[101px] font-display font-extrabold text-center uppercase">
-        Where does my <br /> cookie come
-        <br /> from?
-      </h1>
+        <h1 className="text-[112px] leading-[101px] font-display font-extrabold text-center uppercase">
+          Where does my <br /> cookie come
+          <br /> from?
+        </h1>
+      </div>
 
       <div className="absolute top-0 left-0 z-0 w-full h-full pointer-events-none">
         <Canvas

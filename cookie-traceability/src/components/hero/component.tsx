@@ -7,11 +7,11 @@ import Cookie from 'components/cookie';
 
 function Hero() {
   return (
-    <div className="relative px-4 pt-32 pb-60">
+    <div className="relative px-4 pt-20 pb-40 xl:pt-24 xl:pb-40 2xl:pt-32 2xl:pb-60">
       <div className="space-y-14">
         <Logo className="m-auto fill-secondary" />
 
-        <h1 className="text-[112px] leading-[101px] font-display font-extrabold text-center uppercase">
+        <h1 className="text-4xl leading-none md:text-[80px] md:leading-[80px] xl:text-[100px] xl:leading-[100px] 2xl:text-[112px] 2xl:leading-[101px] font-display font-extrabold text-center uppercase">
           Where does my <br /> cookie come
           <br /> from?
         </h1>
@@ -36,6 +36,7 @@ function Hero() {
             position={[0, 5, -1]}
             intensity={2}
             castShadow
+            shadow-camera-near={1}
             shadow-camera-far={10}
             shadow-camera-left={-3}
             shadow-camera-right={3}

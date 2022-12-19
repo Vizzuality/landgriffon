@@ -25,12 +25,12 @@ const Home: React.FC = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <header className="relative space-y-10 text-secondary">
+      <header className="relative pb-10 space-y-10 text-secondary">
         <Hero />
 
-        <div className="relative z-10 space-y-6 max-w-[575px] mx-auto">
+        <div className="relative z-10 space-y-6 max-w-[1200px] mx-auto px-4">
           <p className="text-sm text-center">Average chocolate cookie ingredients</p>
-          <ul className="grid grid-cols-4 gap-2 list-none xl:gap-4">
+          <ul className="grid grid-cols-4 gap-2 list-none xl:gap-6">
             {INGREDIENTS.map(({ id, name, Icon }) => (
               <li key={`ingredient-button-${id}`}>
                 <IngredientButton

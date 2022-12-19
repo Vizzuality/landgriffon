@@ -18,7 +18,7 @@ export default function Home() {
       <header className="px-4 pt-16 pb-10 space-y-10 text-secondary">
         <div className="space-y-4">
           <Logo className="m-auto fill-secondary" />
-          
+
           <h1 className="text-[42px] leading-[36px] font-display font-extrabold text-center uppercase">
             Where does my <br /> cookie come
             <br /> from?
@@ -92,7 +92,7 @@ export default function Home() {
         <div className=""></div>
       </main>
       <footer className="px-4 text-center bg-gray-dark text-secondary py-14 space-y-7">
-        <p className="text-2xl leading-7 uppercase font-display font-extrabold">
+        <p className="text-2xl font-extrabold leading-7 uppercase font-display">
           Turn supply chain
           <br /> knowledge into
           <br /> sustainable action.

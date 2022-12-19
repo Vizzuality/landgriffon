@@ -12,7 +12,7 @@ const IngredientButton: React.FC<IngredientButtonProps> = ({
     data-id={id}
     type="button"
     className={classNames(
-      'w-full p-4 text-sm text-center transition-all border rounded-lg border-secondary',
+      'w-full p-4 text-sm text-center xl:text-left transition-all border rounded-lg border-secondary',
       {
         'bg-secondary text-primary': current === id,
       },
@@ -21,7 +21,7 @@ const IngredientButton: React.FC<IngredientButtonProps> = ({
   >
     <div
       className={classNames(
-        'flex items-center justify-center mx-auto mb-2 border rounded-full w-9 h-9',
+        'flex items-center justify-center mx-auto xl:mx-0 mb-2 border rounded-full w-9 h-9',
         {
           'border-primary': current === id,
           'border-secondary': current !== id,

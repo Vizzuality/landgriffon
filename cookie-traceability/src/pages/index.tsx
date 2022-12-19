@@ -1,14 +1,17 @@
 import Head from 'next/head';
 import { useCallback, useState } from 'react';
+import { useMediaQuery } from 'react-responsive';
 
 import Hero from 'components/hero';
 import IngredientButton from 'components/ingredient-button';
+import Map from 'components/map';
 
 import { INGREDIENTS } from '../constants';
 
 import type { Ingredient } from '../types';
 
 const Home: React.FC = () => {
+  const isDesktopOrLaptop = useMediaQuery({ query: '(min-width: 1224px)' });
   const [ingredient, setIngredient] = useState<string>(INGREDIENTS[0].id);
 
   const handleSetIngredient = useCallback(
@@ -27,9 +30,9 @@ const Home: React.FC = () => {
       <header className="relative px-4 pt-16 pb-10 space-y-10 text-secondary">
         <Hero />
 
-        <div className="relative z-10 space-y-6">
+        <div className="relative z-10 space-y-6 max-w-[575px] mx-auto">
           <p className="text-sm text-center">Average chocolate cookie ingredients</p>
-          <ul className="grid grid-cols-4 gap-2 list-none">
+          <ul className="grid grid-cols-4 gap-2 list-none xl:gap-4">
             {INGREDIENTS.map(({ id, name, Icon }) => (
               <li key={`ingredient-button-${id}`}>
                 <IngredientButton
@@ -45,13 +48,17 @@ const Home: React.FC = () => {
           </ul>
         </div>
       </header>
-
-      <main className="flex-1 px-4 bg-secondary">
-        <div className=""></div>
+      <main className="flex-1 px-4 bg-secondary py-14">
+        <div className="">
+          <h2 className="text-xl font-extrabold text-center uppercase xl:text-4xl font-display text-gray-dark">
+            Top 5 exporter countries
+          </h2>
+        </div>
+        {isDesktopOrLaptop && <Map />}
       </main>
 
       <footer className="px-4 text-center bg-gray-dark text-secondary py-14 space-y-7">
-        <p className="text-2xl font-extrabold leading-7 uppercase font-display">
+        <p className="text-2xl font-extrabold leading-7 uppercase xl:text-7xl font-display">
           Turn supply chain
           <br /> knowledge into
           <br /> sustainable action.

@@ -6,7 +6,7 @@ import IngredientButton from 'components/ingredient-button';
 import Map from 'components/map';
 import Ranking from 'components/ranking';
 
-import { INGREDIENTS } from 'constants/ingredients';
+import { INGREDIENTS } from '../constants';
 
 import type { Ingredient } from '../types';
 

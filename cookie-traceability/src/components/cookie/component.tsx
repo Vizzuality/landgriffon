@@ -136,14 +136,14 @@ function Cookie(props: any) {
           }
 
           // scrollTo #ingredients
-          const ingredients = document.querySelector('#ingredients');
+          // const ingredients = document.querySelector('#ingredients');
 
-          if (ingredients) {
-            ingredients.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start',
-            });
-          }
+          // if (ingredients) {
+          //   ingredients.scrollIntoView({
+          //     behavior: 'smooth',
+          //     block: 'start',
+          //   });
+          // }
         }}
       >
         <meshStandardMaterial

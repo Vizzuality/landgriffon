@@ -1,6 +1,6 @@
-import { useMemo, useRef } from 'react';
+import { MouseEvent, useCallback, useMemo, useRef, useState } from 'react';
 
-import { useFrame } from '@react-three/fiber';
+import { ThreeEvent, useFrame } from '@react-three/fiber';
 import { useGLTF, useTexture } from '@react-three/drei';
 import { Group, LinearEncoding, MeshStandardMaterial, sRGBEncoding } from 'three';
 
@@ -26,8 +26,11 @@ interface CookieProps {
 }
 
 function Cookie(props: any) {
+  const [selected, setSelected] = useState(false);
+
   const cookieRef = useRef<Group>();
 
+  const DURATION = 0.75;
   const { breakpoint } = useBreakpoint(BREAKPOINTS, 'xs', false);
 
   // Model
@@ -35,8 +38,8 @@ function Cookie(props: any) {
 
   // Model Textures
   const texture = useTexture({
-    map: '/models/cookie/cookie_4px_compressed.png',
-    normalMap: '/models/cookie/cookie_normal_4px_compressed.png',
+    map: '/models/cookie/galleta_4px_adjusted.jpg',
+    normalMap: '/models/cookie/galleta_normal_4px_adjusted.jpg',
   });
 
   // Model Materials
@@ -63,6 +66,21 @@ function Cookie(props: any) {
     stiffness: 1000,
   });
 
+  const handleClick = useCallback(
+    (e: ThreeEvent<globalThis.MouseEvent>) => {
+      e.stopPropagation();
+
+      if (!selected) {
+        setSelected(true);
+
+        setTimeout(() => {
+          setSelected(false);
+        }, DURATION * 1000);
+      }
+    },
+    [selected],
+  );
+
   useFrame(({ mouse }) => {
     rotationX.set(Math.max(-1, mouse.y) * 0.25);
     rotationY.set(-mouse.x * 0.5);
@@ -87,17 +105,26 @@ function Cookie(props: any) {
       }}
       rotation-x={rX}
       rotation-y={rY}
+      onClick={handleClick}
     >
       <motion.mesh receiveShadow position={[0, -0.05, 0]}>
         <boxGeometry args={[5, 0.1, 5]} />
         <shadowMaterial opacity={0.25} />
       </motion.mesh>
 
-      <mesh
+      <motion.mesh
         castShadow
         receiveShadow
         geometry={nodes.Cookie.geometry}
         rotation={[Math.PI, Math.PI / 2, 0]}
+        initial={false}
+        animate={{
+          y: selected ? [0, 0.5, 0] : 0,
+        }}
+        transition={{
+          duration: DURATION,
+          ease: selected ? ['backIn', 'backOut'] : 'anticipate',
+        }}
       >
         <meshStandardMaterial
           {...texture}
@@ -114,11 +141,21 @@ function Cookie(props: any) {
             const n = nodes[node];
 
             return (
-              <mesh
+              <motion.mesh
                 key={node}
                 {...n}
                 geometry={n.geometry}
                 material={chipMaterial}
+                animate={{
+                  y: selected
+                    ? [n.position.y, n.position.y - (0.25 + Math.random() * 0.5), n.position.y]
+                    : n.position.y,
+                }}
+                transition={{
+                  duration: DURATION * 0.75,
+                  delay: DURATION * 0.25,
+                  ease: selected ? ['easeIn', 'easeOut'] : 'anticipate',
+                }}
                 castShadow
                 receiveShadow
               />
@@ -127,7 +164,7 @@ function Cookie(props: any) {
 
           return null;
         })}
-      </mesh>
+      </motion.mesh>
     </motion.group>
   );
 }

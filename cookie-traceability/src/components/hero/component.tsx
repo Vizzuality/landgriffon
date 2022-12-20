@@ -6,6 +6,7 @@ import { Canvas } from '@react-three/fiber';
 
 import Logo from 'components/logo';
 import Cookie from 'components/cookie';
+import Snow from 'components/snow';
 
 function Hero() {
   return (
@@ -65,6 +66,8 @@ function Hero() {
 
           <Suspense fallback={null}>
             <Cookie />
+
+            <Snow />
           </Suspense>
         </Canvas>
       </div>

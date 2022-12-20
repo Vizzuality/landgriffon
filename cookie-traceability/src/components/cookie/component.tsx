@@ -76,10 +76,6 @@ function Cookie(props: any) {
     [selected],
   );
 
-  useEffect(() => {
-    setSelected(true);
-  }, []);
-
   useFrame(({ mouse }) => {
     rotationX.set(Math.max(-1, mouse.y) * 0.25);
     rotationY.set(-mouse.x * 0.5);
@@ -93,10 +89,12 @@ function Cookie(props: any) {
       initial={{
         y: POSITIONS[breakpoint].y,
         scale: 0,
+        rotateY: Math.PI,
       }}
       animate={{
         y: POSITIONS[breakpoint].y,
         scale: POSITIONS[breakpoint].scale || 1,
+        rotateY: 0,
       }}
       transition={{
         duration: 0.4,
@@ -105,6 +103,11 @@ function Cookie(props: any) {
       rotation-x={rX}
       rotation-y={rY}
       onClick={handleClick}
+      // onPointerEnter={() => {
+      //   if (!selected) {
+      //     setSelected(true);
+      //   }
+      // }}
     >
       <motion.mesh receiveShadow position={[0, -0.05, 0]}>
         <boxGeometry args={[5, 0.1, 5]} />

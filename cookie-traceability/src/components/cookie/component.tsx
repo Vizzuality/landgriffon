@@ -7,8 +7,9 @@ import { Group, LinearEncoding, MeshStandardMaterial, sRGBEncoding } from 'three
 import { useMotionValue, useSpring } from 'framer-motion';
 import { motion } from 'framer-motion-3d';
 
-import BREAKPOINTS from 'constants/breakpoints';
 import useBreakpoint from 'use-breakpoint';
+
+import { BREAKPOINTS } from '../../constants';
 
 const POSITIONS = {
   xs: { x: 0, y: -2, z: 0, scale: 1.25 },

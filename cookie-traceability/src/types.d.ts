@@ -3,6 +3,8 @@ export type Ingredient = {
   name: string;
   Icon: typeof React.ReactElement;
   dataPath: string;
+  dataFlowPath: string;
+  dataLocationsPath: string;
 };
 
 export type IngredientDataItem = {
@@ -13,3 +15,16 @@ export type IngredientDataItem = {
 };
 
 export type IngredientPayload = IngredientDataItem[];
+
+export type LocationDatum = {
+  id: string;
+  name: string;
+  lon: number;
+  lat: number;
+};
+
+export type FlowDatum = {
+  origin: string;
+  dest: string;
+  count: number;
+};

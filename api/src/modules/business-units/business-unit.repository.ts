@@ -7,7 +7,7 @@ import {
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-unit.dto';
-import { Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetBusinessUnitTreeWithOptionsDto } from 'modules/business-units/dto/get-business-unit-tree-with-options.dto';
 import {
@@ -15,7 +15,7 @@ import {
   ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 
-@EntityRepository(BusinessUnit)
+@Injectable()
 export class BusinessUnitRepository extends ExtendedTreeRepository<
   BusinessUnit,
   CreateBusinessUnitDto

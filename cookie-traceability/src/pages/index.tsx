@@ -54,7 +54,7 @@ const Home: React.FC = () => {
           </h2>
           <Ranking ingredientId={ingredient} />
         </div>
-        <div className="hidden lg:block">
+        <div className="max-w-[1000px] hidden mx-auto lg:block">
           <Map ingredientId={ingredient} />
         </div>
       </main>

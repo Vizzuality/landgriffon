@@ -61,7 +61,7 @@ export const BREAKPOINTS = {
 export const INITIAL_VIEW_STATE = {
   longitude: 0,
   latitude: 10,
-  zoom: 1.3,
+  zoom: 1,
   bearing: 0,
   pitch: 0,
 };

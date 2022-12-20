@@ -3,7 +3,7 @@ import { useQueries } from '@tanstack/react-query';
 import axios from 'axios';
 import DeckGL from '@deck.gl/react/typed';
 import { Map as ReactMapGl } from 'react-map-gl';
-import { FlowMapLayer } from '@flowmap.gl/layers';
+import { FlowMapLayer } from 'lib/flowmap';
 
 import { INGREDIENTS, MAPBOX_TOKEN, INITIAL_VIEW_STATE } from '../../constants';
 import mapStyle from './map-style.json';
@@ -77,10 +77,15 @@ const Map: React.FC<MapProps> = ({ ingredientId }) => {
       new FlowMapLayer<LocationDatum, FlowDatum>({
         id: 'countries-tradings-layer',
         data,
+        darkMode: false,
         animationEnabled: true,
         colorScheme: 'Greys',
         clusteringEnabled: false,
         pickable: true,
+        fadeEnabled: false,
+        fadeOpacityEnabled: false,
+        adaptiveScalesEnabled: true,
+        locationTotalsEnabled: true,
         getLocationId: (loc) => loc.id,
         getFlowOriginId: (flow) => flow.origin,
         getLocationName: (loc) => loc.name,
@@ -98,9 +103,10 @@ const Map: React.FC<MapProps> = ({ ingredientId }) => {
         height="100%"
         initialViewState={INITIAL_VIEW_STATE}
         layers={layers}
-        controller={false}
+        controller={true}
       >
         <ReactMapGl
+          projection="mercator"
           interactive={false}
           mapStyle={JSON.parse(JSON.stringify(mapStyle))}
           mapboxAccessToken={MAPBOX_TOKEN}

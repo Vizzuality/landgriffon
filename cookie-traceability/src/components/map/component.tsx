@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import type { GeometryCollection } from 'topojson-specification';
 
-const fetchCountries = async () => axios.get('/data/countries.json');
+const fetchCountries = async () => axios.get('/data/updated_countries-50m.json');
 
 const WIDTH = 1000;
 const HEIGHT = 600;
@@ -27,7 +27,7 @@ const Map: React.FC = () => {
       return feature(data.data, data.data.objects.countries as GeometryCollection).features.map(
         (feature) => ({
           ...feature,
-          id: uuidv4(),
+          uuid: uuidv4(),
         }),
       );
     }
@@ -49,7 +49,7 @@ const Map: React.FC = () => {
         >
           {countries.map((country) => (
             <path
-              key={country.id}
+              key={country.uuid}
               d={countryPath(country) as string}
               className="stroke-primary fill-none"
             />

@@ -52,18 +52,6 @@ function Hero() {
             shadow-camera-bottom={-3}
           />
           <pointLight color="white" position={[0, 1, -2]} intensity={5} distance={5} decay={0} />
-          {/* <directionalLight
-            color="white"
-            position={[5, 1, 0]}
-            intensity={2}
-            // castShadow
-            // shadow-camera-far={10}
-            // shadow-camera-left={-3}
-            // shadow-camera-right={3}
-            // shadow-camera-top={3}
-            // shadow-camera-bottom={-3}
-          /> */}
-
           <Suspense fallback={null}>
             <Cookie />
 

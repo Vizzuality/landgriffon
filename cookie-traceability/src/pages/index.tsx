@@ -26,10 +26,10 @@ const Home: React.FC = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <header className="relative pb-10 space-y-10 text-secondary">
+      <header className="relative pb-10 text-secondary">
         <Hero />
 
-        <div className="relative z-10 space-y-6 max-w-[1200px] mx-auto px-4">
+        <div id="ingredients" className="relative z-10 pt-10 space-y-6 max-w-[1200px] mx-auto px-4">
           <p className="text-sm text-center">Average chocolate cookie ingredients</p>
           <ul className="grid grid-cols-4 gap-2 list-none xl:gap-6">
             {INGREDIENTS.map(({ id, name }) => (
@@ -46,6 +46,7 @@ const Home: React.FC = () => {
           </ul>
         </div>
       </header>
+
       <main className="flex-1 px-4 bg-secondary py-14">
         <div className="">
           <h2 className="text-xl font-extrabold text-center uppercase xl:text-4xl font-display text-gray-dark">

@@ -134,6 +134,16 @@ function Cookie(props: any) {
               setSelected(false);
             }, DURATION * 0.25 * 1000);
           }
+
+          // scrollTo #ingredients
+          const ingredients = document.querySelector('#ingredients');
+
+          if (ingredients) {
+            ingredients.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+            });
+          }
         }}
       >
         <meshStandardMaterial

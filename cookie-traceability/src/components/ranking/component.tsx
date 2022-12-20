@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import groupBy from 'lodash/groupBy';
@@ -12,6 +12,7 @@ import type { CountryTradingRanking, RankingProps } from './types';
 const fetchCocoaTrading = async (dataPath: string) => axios.get(dataPath).then((res) => res.data);
 
 const Ranking: React.FC<RankingProps> = ({ ingredientId }) => {
+  const currentCountry = useState<string | null>(null);
   const ingredient = useMemo<Ingredient>(
     () => INGREDIENTS.find((i) => i.id === ingredientId) || INGREDIENTS[0],
     [ingredientId],
@@ -50,22 +51,19 @@ const Ranking: React.FC<RankingProps> = ({ ingredientId }) => {
       {countryTradingRanking.length > 0 && (
         <ul className="max-w-[790px] mx-auto space-y-2">
           {countryTradingRanking.map(({ country, percentage, total }, index) => (
-            <li className="bg-[#ECE7C9] p-2 rounded-xl" key={`ranking-item-${country}`}>
-              <div className="flex items-center">
-                <div className="w-2/5 pl-4 text-xl font-medium font-display">{country}</div>
-                <div className="w-3/5">
-                  <div
-                    className="p-2 rounded-lg border border-[#C2BFAA] bg-secondary"
-                    style={{ width: `${percentage}%` }}
-                  >
-                    <div
-                      className="flex items-center h-8 px-2 leading-none text-white rounded p font-display"
-                      style={{ backgroundColor: RANKING_COLORS[index] }}
-                    >
-                      {numeral(total).format(NUMERAL_FORMAT)} tonnes
-                    </div>
-                  </div>
-                </div>
+            <li
+              className="cursor-pointer hover:bg-[#ECE7C9] p-4 rounded-xl"
+              key={`ranking-item-${country}`}
+            >
+              <div className="border-t border-[#C2BFAA]">
+                <div
+                  className="flex items-center h-2 px-2 leading-none text-white rounded-r-full p font-display"
+                  style={{ backgroundColor: RANKING_COLORS[index], width: `${percentage}%` }}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="text-lg font-medium font-display">{country}</div>
+                <div>{numeral(total).format(NUMERAL_FORMAT)} tonnes</div>
               </div>
             </li>
           ))}

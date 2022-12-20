@@ -31,6 +31,8 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "framer-motion-3d": "^7.10.2",
+    "glsl-noise": "0.0.0",
+    "glslify": "7.1.1",
     "lamina": "^1.1.23",
     "next": "13.0.3",
     "postcss": "^8.4.19",
@@ -43,5 +45,9 @@
     "typescript": "4.8.4",
     "use-breakpoint": "3.0.6",
     "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "glslify-loader": "2.0.0",
+    "raw-loader": "4.0.2"
   }
 }

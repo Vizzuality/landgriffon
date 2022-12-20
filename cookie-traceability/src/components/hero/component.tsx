@@ -37,7 +37,7 @@ function Hero() {
           }}
           shadows
         >
-          <ambientLight intensity={1} />
+          <ambientLight intensity={0.5} />
           <directionalLight
             color="white"
             position={[0, 5, -1]}
@@ -50,7 +50,8 @@ function Hero() {
             shadow-camera-top={3}
             shadow-camera-bottom={-3}
           />
-          <directionalLight
+          <pointLight color="white" position={[0, 1, -2]} intensity={5} distance={5} decay={0} />
+          {/* <directionalLight
             color="white"
             position={[5, 1, 0]}
             intensity={2}
@@ -60,7 +61,7 @@ function Hero() {
             // shadow-camera-right={3}
             // shadow-camera-top={3}
             // shadow-camera-bottom={-3}
-          />
+          /> */}
 
           <Suspense fallback={null}>
             <Cookie />

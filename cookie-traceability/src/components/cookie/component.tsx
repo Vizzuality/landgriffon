@@ -105,6 +105,7 @@ function Cookie(props: any) {
           map-encoding={sRGBEncoding}
           normalMap-flipY={false}
           normalMap-encoding={LinearEncoding}
+          roughness={0.75}
         />
 
         {Object.keys(nodes).map((node) => {

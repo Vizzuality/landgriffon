@@ -24,9 +24,12 @@ const Methodology = (req: NextApiRequest, res: NextApiResponse): void => {
       subject: `Landgriffon's Methodology`,
       text: `Hi ${name}\n\n
       Thank you for your interest in LandGriffon's Methodology!\n\n
-      You can download it here: ${DOWNLOAD_LINKS.fullMethodology}\n\n
-      You can also download the Executive summary here: ${DOWNLOAD_LINKS.executiveSummary}\n\n
-      The methodology is a work in progress. We want it to serve you and create real change in the sector. If you have any input you would like to share with us regarding the methodology, please let us know.\n\n
+      LandGriffon helps companies strategize the sustainable transformation of their supply chains by using technology, data and scientific-based analysis to manage environmental impacts. Similar to our philosophy around open-source, we are keeping our science open and transparent as well.\n\n
+      Our methodology is a work in progress and will continue to evolve. We will contact you when we release any updates.\n\n
+      You can access them again here:\n\n
+      ${DOWNLOAD_LINKS.fullMethodology}\n\n
+      ${DOWNLOAD_LINKS.executiveSummary}\n\n
+      We want LandGriffon to serve you and create real change in the sector. If you have anything you would like to share with us regarding the methodology, please let us know. We welcome feedback and input.\n\n
       All the best,\n\n
       The LandGriffon team\n\n
       `,
@@ -34,9 +37,10 @@ const Methodology = (req: NextApiRequest, res: NextApiResponse): void => {
         <p>Hi ${name}</p>
         <br/>
         <p>Thank you for your interest in LandGriffon's Methodology!</p>
-        <p><strong>You can download it here.</strong>: <a href="${DOWNLOAD_LINKS.fullMethodology}" download>Full Methodology document</a></p>
-        <p><strong>Also, you can download the <a href="${DOWNLOAD_LINKS.executiveSummary}" download>Executive summary document</a>.</strong></p>
-        <p>The methodology is a work in progress. We want it to serve you and create real change in the sector. If you have any input you would like to share with us regarding the methodology, please let us know.</p>
+        <p>LandGriffon helps companies strategize the <strong>sustainable transformation</strong> of their <strong>supply</strong> chains by using technology, data and scientific-based analysis to manage environmental impacts. Similar to our philosophy around <strong>open-source</strong>, we are keeping <strong>our science open and transparent</strong> as well.</p>
+        <p>Our methodology is a work in progress and will continue to evolve. We will contact you when we release any updates.</p>
+        <p>To access them again, here is the:<ul><li><a href="${DOWNLOAD_LINKS.fullMethodology}">Full Methodology Document</a></li><li><a href="${DOWNLOAD_LINKS.executiveSummary}">Executive Summary Document</a></li></ul></p>
+        <p>We want LandGriffon to serve you and create real change in the sector. <strong>If you have anything you would like to share with us regarding the methodology, please let us know</strong>. We welcome feedback and input.</p>
         <br/>
         <br/>
         <p>All the best,</p>

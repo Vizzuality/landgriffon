@@ -10,6 +10,31 @@
 }
 
 @layer base {
+  html {
+    font-family: 'Public Sans', system-ui, sans-serif;
+  }
+
+  body {
+    @apply antialiased text-gray-900;
+  }
+
+  /* Geomanist */
+  @font-face {
+    font-family: 'Geomanist';
+    src: url('/fonts/Geomanist-Medium.woff2') format('woff2'),
+      url('/fonts/Geomanist-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Geomanist';
+    src: url('/fonts/Geomanist-Black.woff2') format('woff2'),
+      url('/fonts/Geomanist-Black.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+  }
+
   input:-webkit-autofill,
   input:-webkit-autofill:focus {
       transition: background-color 0s 60000s, color 0s 60000s;
@@ -22,7 +47,7 @@
 @layer utilities {
   /* We want a blur effect without having a high opacity background, but we still want the
   background to be visible for the browsers that don't support backdrop-filter, so we double the
-  background opacity. This can be tested on Firefox. */ta
+  background opacity. This can be tested on Firefox. */
   .bg-blur {
     @apply bg-opacity-40;
   }
@@ -33,5 +58,4 @@
       backdrop-filter: blur(4px);
     }
   }
-
 }

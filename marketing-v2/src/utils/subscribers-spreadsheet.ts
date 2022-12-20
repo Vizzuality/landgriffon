@@ -20,10 +20,12 @@ export const saveContactToSubscribersSpreadsheet = async (data: SubscriberContac
   docData.append('entry.1734344997', data.newsletter || 'No');
 
   // TO-DO: solve CORS issue with google forms
-  return axios
-    .post(SCRIPT_URL, docData)
-    .then((response) => console.log(response))
-    .catch((error) => console.error(error));
+  return (
+    axios
+      .post(SCRIPT_URL, docData)
+      // .then((response) => console.log(response))
+      .catch((error) => console.error(error))
+  );
 };
 
 export default saveContactToSubscribersSpreadsheet;

@@ -1,6 +1,7 @@
 export type Ingredient = {
   id: string;
   name: string;
+  rankingKey: string;
   Icon: typeof React.ReactElement;
   dataPath: string;
   dataFlowPath: string;
@@ -10,11 +11,10 @@ export type Ingredient = {
 export type IngredientDataItem = {
   Exporter: string;
   Importer: string;
-  Volume_t: number;
-  Exporter_val_t: number;
+  Value: number;
 };
 
-export type IngredientPayload = IngredientDataItem[];
+export type IngredientPayload = Record<string, IngredientDataItem[]>;
 
 export type LocationDatum = {
   id: string;

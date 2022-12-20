@@ -1,39 +1,40 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useQueries } from '@tanstack/react-query';
 import axios from 'axios';
 import DeckGL from '@deck.gl/react/typed';
-import { Map as ReactMapGl, ViewState as ViewportProps } from 'react-map-gl';
-import { FlowMapLayer, PickingType } from '@flowmap.gl/layers';
+import { Map as ReactMapGl } from 'react-map-gl';
+import { FlowMapLayer } from '@flowmap.gl/layers';
 
 import { INGREDIENTS, MAPBOX_TOKEN, INITIAL_VIEW_STATE } from '../../constants';
+import mapStyle from './map-style.json';
 
 import type { LocationDatum, FlowDatum, Ingredient } from 'types';
 import type { MapProps } from './types';
 
-const colors = {
-  flows: {
-    scheme: [
-      'rgb(0, 22, 61)',
-      'rgb(0, 27, 62)',
-      'rgb(0, 36, 68)',
-      'rgb(0, 48, 77)',
-      'rgb(3, 65, 91)',
-      'rgb(48, 87, 109)',
-      'rgb(85, 115, 133)',
-      'rgb(129, 149, 162)',
-      'rgb(179, 191, 197)',
-      'rgb(240, 240, 240)',
-    ],
-  },
-  locationAreas: {
-    normal: '#334',
-  },
-  outlineColor: '#000',
-};
+// const colors = {
+//   flows: {
+//     scheme: [
+//       'rgb(0, 22, 61)',
+//       'rgb(0, 27, 62)',
+//       'rgb(0, 36, 68)',
+//       'rgb(0, 48, 77)',
+//       'rgb(3, 65, 91)',
+//       'rgb(48, 87, 109)',
+//       'rgb(85, 115, 133)',
+//       'rgb(129, 149, 162)',
+//       'rgb(179, 191, 197)',
+//       'rgb(240, 240, 240)',
+//     ],
+//   },
+//   locationAreas: {
+//     normal: '#334',
+//   },
+//   outlineColor: '#000',
+// };
 
 const fetchData = async (dataPath: string) => axios.get(dataPath).then((res) => res.data);
 
-const QUERY_OPTIONS = {
+const DEFAULT_QUERY_OPTIONS = {
   refetchOnWindowFocus: false,
   refetchOnReconnect: false,
   refetchOnMount: false,
@@ -49,12 +50,12 @@ const Map: React.FC<MapProps> = ({ ingredientId }) => {
       {
         queryKey: ['flows', ingredientId],
         queryFn: fetchData.bind(this, ingredient?.dataFlowPath),
-        ...QUERY_OPTIONS,
+        ...DEFAULT_QUERY_OPTIONS,
       },
       {
         queryKey: ['locations', ingredientId],
         queryFn: fetchData.bind(this, ingredient?.dataLocationsPath),
-        ...QUERY_OPTIONS,
+        ...DEFAULT_QUERY_OPTIONS,
       },
     ],
   });
@@ -77,7 +78,7 @@ const Map: React.FC<MapProps> = ({ ingredientId }) => {
         id: 'countries-tradings-layer',
         data,
         animationEnabled: true,
-        colorScheme: 'Oranges',
+        colorScheme: 'Greys',
         clusteringEnabled: false,
         pickable: true,
         getLocationId: (loc) => loc.id,
@@ -101,7 +102,7 @@ const Map: React.FC<MapProps> = ({ ingredientId }) => {
       >
         <ReactMapGl
           interactive={false}
-          mapStyle="mapbox://styles/mapbox/streets-v12"
+          mapStyle={JSON.parse(JSON.stringify(mapStyle))}
           mapboxAccessToken={MAPBOX_TOKEN}
           renderWorldCopies={false}
         />

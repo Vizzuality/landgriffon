@@ -5,7 +5,8 @@ export type RankingProps = {
 };
 
 export type CountryTradingRanking = {
-  country: string;
-  total: number;
+  exporter: string;
+  importer: string;
+  volume: number;
   percentage: number;
 }[];

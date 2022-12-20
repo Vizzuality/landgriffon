@@ -2,7 +2,6 @@ export type Ingredient = {
   id: string;
   name: string;
   rankingKey: string;
-  Icon: typeof React.ReactElement;
   dataPath: string;
   dataFlowPath: string;
   dataLocationsPath: string;

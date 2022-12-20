@@ -6,7 +6,7 @@ import IngredientButton from 'components/ingredient-button';
 import Map from 'components/map';
 import Ranking from 'components/ranking';
 
-import { INGREDIENTS } from '../constants';
+import { INGREDIENTS } from 'constants/ingredients';
 
 import type { Ingredient } from '../types';
 
@@ -32,12 +32,11 @@ const Home: React.FC = () => {
         <div className="relative z-10 space-y-6 max-w-[1200px] mx-auto px-4">
           <p className="text-sm text-center">Average chocolate cookie ingredients</p>
           <ul className="grid grid-cols-4 gap-2 list-none xl:gap-6">
-            {INGREDIENTS.map(({ id, name, Icon }) => (
+            {INGREDIENTS.map(({ id, name }) => (
               <li key={`ingredient-button-${id}`}>
                 <IngredientButton
-                  current={ingredient}
                   id={id}
-                  icon={Icon}
+                  current={ingredient}
                   onClick={handleSetIngredient.bind(this, { id })}
                 >
                   {name}

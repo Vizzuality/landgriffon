@@ -1,6 +1,6 @@
 import { typeOrmConfig } from 'typeorm.config';
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { DataSource, DataSourceOptions } from 'typeorm';
 
-const migrationConfig: TypeOrmModuleOptions = { ...typeOrmConfig };
+const migrationConfig: DataSourceOptions = { ...typeOrmConfig };
 
 export = migrationConfig;

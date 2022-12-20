@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import Hero from 'components/hero';
 import IngredientButton from 'components/ingredient-button';
 import Map from 'components/map';
+import Ranking from 'components/ranking';
 
 import { INGREDIENTS } from '../constants';
 
@@ -51,6 +52,7 @@ const Home: React.FC = () => {
           <h2 className="text-xl font-extrabold text-center uppercase xl:text-4xl font-display text-gray-dark">
             Top 5 exporter countries
           </h2>
+          <Ranking ingredientId={ingredient} />
         </div>
         <div className="hidden lg:block">
           <Map />

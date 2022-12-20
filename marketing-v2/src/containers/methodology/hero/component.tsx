@@ -4,6 +4,8 @@ import Wrapper from 'containers/wrapper';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import Icon from 'components/icon';
+import DOWNLOAD_SVG from 'svgs/ui/icn_download.svg?sprite';
 
 const Hero: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>();
@@ -39,9 +41,71 @@ const Hero: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, delay: 0.1 }}
         >
-          <h1 className="text-5xl font-black text-black uppercase font-display md:text-7xl">
-            Analyze impacts with world-renowned datasets.
-          </h1>
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="space-y-10 col-span-full xl:col-span-2">
+              <h1 className="text-5xl font-black text-black uppercase font-display md:text-7xl">
+                Analyze impacts with world-renowned datasets.
+              </h1>
+
+              <h2 className="text-2xl font-medium text-black font-display md:text-3xl">
+                Download our methodology and find out how LandGriffon works.
+              </h2>
+
+              <div className="flex flex-col space-y-6 sm:flex-row sm:space-y-0 sm:space-x-6 xl:justify-between">
+                <a
+                  href="https://bit.ly/3ONp1MJ"
+                  rel="noreferrer noopener"
+                  target="_blank"
+                  className="flex-1 p-5 border-2 border-black group hover:bg-black/10"
+                >
+                  <div className="flex space-x-3">
+                    <div className="relative block w-10 h-10 transition-colors bg-gray-100 rounded-full group-hover:bg-orange-500">
+                      <Icon
+                        icon={DOWNLOAD_SVG}
+                        className="absolute w-5 h-5 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <h4 className="text-base font-bold text-black">Full methodology</h4>
+                      <p className="text-sm text-black/40">
+                        In-depth description of every feature.
+                      </p>
+                    </div>
+                  </div>
+                </a>
+                <a
+                  href="https://bit.ly/3gIJq9n"
+                  rel="noreferrer noopener"
+                  target="_blank"
+                  className="flex-1 p-5 border-2 border-black group hover:bg-black/10"
+                >
+                  <div className="flex space-x-3">
+                    <div className="relative block w-10 h-10 transition-colors bg-gray-100 rounded-full group-hover:bg-orange-500">
+                      <Icon
+                        icon={DOWNLOAD_SVG}
+                        className="absolute w-5 h-5 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <h4 className="text-base font-bold text-black">Executive summary</h4>
+                      <p className="text-sm text-black/40">An overview of how it functions.</p>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            </div>
+            <div className="justify-center hidden w-full h-full xl:flex xl:visible">
+              <div className="relative w-full h-full">
+                <Image
+                  layout="fill"
+                  src="/images/methodology/methodology_front.svg"
+                  alt="methodology cover book"
+                />
+              </div>
+            </div>
+          </div>
         </motion.div>
 
         <motion.div
@@ -59,154 +123,10 @@ const Hero: React.FC = () => {
               {playing && <PauseIcon className="w-5 h-5 text-black" />}
             </button>
 
-            <h4 className="text-sm font-black uppercase font-display">Whatch demo</h4>
+            <h4 className="text-sm font-black uppercase font-display">Watch demo</h4>
           </header>
           <video ref={videoRef} src="/videos/truck.mp4" className="aspect-video" />
         </motion.div>
-
-        {/* <div className="mt-10 space-y-10 md:mt-20"> */}
-        <div className="">
-          <div className="space-y-5">
-            <h3 className="text-xl font-black text-black uppercase font-display">
-              BUILT ON TRUSTED SCIENTIFIC DATA:
-            </h3>
-            <p className="pb-3 text-2xl">
-              Landgriffon is built on open access data produced by leading researchers, NGOs, and
-              government programs such as Copernicus, making it easier for you to take advantage of
-              this scientific knowledge.
-            </p>
-          </div>
-
-          <div className="space-y-5">
-            <h4 className="text-xs uppercase">Data providers:</h4>
-
-            <ul className="grid grid-cols-2 gap-10 md:grid-cols-4 md:gap-20 lg:grid-cols-5 lg:gap-20">
-              <li className="flex items-center justify-center">
-                <a
-                  href="https://land.copernicus.eu/global/index.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Image
-                    layout="intrinsic"
-                    src="/images/logos/copernicus_logo.png"
-                    alt="GFW"
-                    width={133}
-                    height={32}
-                  />
-                </a>
-              </li>
-              <li className="flex items-center justify-center">
-                <a
-                  href="https://www.globalforestwatch.org/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Image
-                    layout="intrinsic"
-                    src="/images/logos/gfw.png"
-                    alt="GFW"
-                    width={62}
-                    height={62}
-                  />
-                </a>
-              </li>
-              <li className="flex items-center justify-center">
-                <a
-                  href="https://www.worldwildlife.org/pages/conservation-science-data-and-tools"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Image
-                    layout="intrinsic"
-                    src="/images/logos/WWF.png"
-                    alt="WWF"
-                    width={43}
-                    height={62}
-                  />
-                </a>
-              </li>
-              <li className="flex items-center justify-center">
-                <a href="https://satelligence.com/" target="_blank" rel="noopener noreferrer">
-                  <Image
-                    layout="intrinsic"
-                    src="/images/logos/satelligence.png"
-                    alt="satelligence"
-                    width={198}
-                    height={29}
-                  />
-                </a>
-              </li>
-              <li className="flex items-center justify-center">
-                <a href="https://www.wri.org/" target="_blank" rel="noopener noreferrer">
-                  <Image
-                    layout="intrinsic"
-                    src="/images/logos/WRI.png"
-                    alt="WRI"
-                    width={120}
-                    height={72}
-                  />
-                </a>
-              </li>
-              <li className="flex items-center justify-center">
-                <a href="https://waterfootprint.org/en/" target="_blank" rel="noopener noreferrer">
-                  <Image
-                    layout="intrinsic"
-                    src="/images/logos/water-footprint-network.png"
-                    alt="water-footprint-network"
-                    width={111}
-                    height={50}
-                  />
-                </a>
-              </li>
-
-              <li className="flex items-center justify-center">
-                <a href="https://www.mapspam.info/" target="_blank" rel="noopener noreferrer">
-                  <Image
-                    layout="intrinsic"
-                    src="/images/logos/mapspam.png"
-                    alt="mapspam"
-                    width={113}
-                    height={31}
-                  />
-                </a>
-              </li>
-              <li className="flex items-center justify-center">
-                <a href="https://www.fao.org/faostat/en/" target="_blank" rel="noopener noreferrer">
-                  <Image
-                    layout="intrinsic"
-                    src="/images/logos/FAO.png"
-                    alt="FAO"
-                    width={62}
-                    height={63}
-                  />
-                </a>
-              </li>
-              <li className="flex items-center justify-center">
-                <a href="https://www.wri.org/aqueduct" target="_blank" rel="noopener noreferrer">
-                  <Image
-                    layout="intrinsic"
-                    src="/images/logos/aqueduct.png"
-                    alt="aqueduct"
-                    width={166}
-                    height={34}
-                  />
-                </a>
-              </li>
-              <li className="flex items-center justify-center">
-                <a href="http://www.earthstat.org/" target="_blank" rel="noopener noreferrer">
-                  <Image
-                    layout="intrinsic"
-                    src="/images/logos/earthstat.png"
-                    alt="earthstat"
-                    width={149}
-                    height={37}
-                  />
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
       </Wrapper>
     </section>
   );

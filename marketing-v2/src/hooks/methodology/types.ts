@@ -6,10 +6,10 @@ export interface UseSaveContactProps {
 
 export interface SaveContactProps {
   data: {
-    name: string;
+    // name: string;
     email: string;
-    message: string;
-    company: string;
-    topic: string;
+    // message: string;
+    // company: string;
+    // topic: string;
   };
 }

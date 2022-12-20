@@ -52,7 +52,10 @@ const NewsLetter: React.FC = () => {
   );
 
   return (
-    <section className="overflow-hidden bg-orange-500 xl:overflow-visible xl:bg-white">
+    <section
+      id="subscribe"
+      className="overflow-hidden bg-orange-500 xl:overflow-visible xl:bg-white"
+    >
       <Wrapper>
         <div className="relative z-10 py-12 bg-orange-500 md:py-20 xl:-mt-10 xl:px-20 xl:-mx-20">
           {submitting && (
@@ -119,7 +122,7 @@ const NewsLetter: React.FC = () => {
                 <label className="font-light" htmlFor="terms">
                   I agree with LandGriffon’s{' '}
                   <Link href="/privacy-policy">
-                    <a className="underline font-semibold text-black">Privacy Policy</a>
+                    <a className="font-semibold text-black underline">Privacy Policy</a>
                   </Link>{' '}
                   and to receive the LandGriffon email newsletter.
                 </label>

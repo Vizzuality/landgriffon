@@ -12,7 +12,6 @@ import { MediaContextProvider } from 'components/media-query';
 import type { AppProps } from 'next/app';
 
 import 'styles/globals.css';
-import 'styles/fonts.css';
 import 'styles/flicking.css';
 
 const queryClient = new QueryClient();

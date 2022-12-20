@@ -1,18 +1,8 @@
 import cx from 'classnames';
-import Icon from 'components/icon';
-import Modal from 'components/modal';
-import MethodologyForm from 'containers/methodology-form';
-import useModal from 'hooks/modals';
 import Image from 'next/image';
 
-import DOWNLOAD_SVG from 'svgs/ui/icn_download.svg?sprite';
-
 const Step02: React.FC = () => {
-  const {
-    isOpen: isMethodologyFormModalOpen,
-    open: openMethodologyFormModal,
-    close: closeMethodologyFormModal,
-  } = useModal();
+  // const { isOpen: isMethodologyFormModalOpen, close: closeMethodologyFormModal } = useModal();
 
   return (
     <article
@@ -44,7 +34,7 @@ const Step02: React.FC = () => {
           </p>
         </div>
 
-        <div
+        {/* <div
           className="relative h-56 pt-5 pl-5 overflow-hidden text-white bg-blue-400 cursor-pointer group w-96"
           onClick={openMethodologyFormModal}
         >
@@ -74,16 +64,16 @@ const Step02: React.FC = () => {
               Learn more about our science-based approach
             </p>
           </div>
-        </div>
+        </div> */}
 
-        <Modal
+        {/* <Modal
           size="wide"
           open={isMethodologyFormModalOpen}
           onDismiss={closeMethodologyFormModal}
           dismissable
         >
           <MethodologyForm />
-        </Modal>
+        </Modal> */}
       </div>
 
       <div className="w-full space-y-20">
@@ -100,7 +90,7 @@ const Step02: React.FC = () => {
 
           <ul className="space-y-5 font-light">
             <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
-              <p className="font-semibold">Deforestation. </p>
+              <p className="font-semibold">Deforestation.</p>
               <p>
                 Hectares of forest loss within 50km of sourcing regions scaled by land use impact.
               </p>

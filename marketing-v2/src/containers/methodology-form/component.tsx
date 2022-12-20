@@ -30,7 +30,6 @@ const MethodologyForm: React.FC = () => {
 
   const onSubmit = useCallback(
     (data) => {
-      console.log(data);
       setSubmitting(true);
       saveContactToSubscribersSpreadsheet({
         ...data,

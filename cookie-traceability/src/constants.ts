@@ -10,6 +10,7 @@ export const INGREDIENTS: Ingredient[] = [
     id: 'cocoa',
     name: 'Cocoa',
     Icon: CocoaIcon,
+    rankingKey: 'Cocoa',
     dataPath: '/data/cocoa_trading.json',
     dataFlowPath: '/data/cocoa_flows.json',
     dataLocationsPath: '/data/cocoa_locations.json',
@@ -17,6 +18,7 @@ export const INGREDIENTS: Ingredient[] = [
   {
     id: 'wheat',
     name: 'Wheat',
+    rankingKey: 'Wheat',
     Icon: WheatIcon,
     dataPath: '/data/wheat_trading.json',
     dataFlowPath: '/data/wheat_flows.json',
@@ -25,6 +27,7 @@ export const INGREDIENTS: Ingredient[] = [
   {
     id: 'palm-oil',
     name: 'Palm oil',
+    rankingKey: 'Palm',
     Icon: PalmOilIcon,
     dataPath: '/data/palm_trading.json',
     dataFlowPath: '/data/palm_flows.json',
@@ -33,6 +36,7 @@ export const INGREDIENTS: Ingredient[] = [
   {
     id: 'butter',
     name: 'Butter',
+    rankingKey: 'Butter',
     Icon: ButterIcon,
     dataPath: '/data/butter_trading.json',
     dataFlowPath: '/data/butter_flows.json',

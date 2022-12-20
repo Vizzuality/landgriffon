@@ -1,0 +1,693 @@
+{
+  "name": "Mapbox Light Modified",
+  "sprite": "mapbox://sprites/mapbox/light-v11",
+  "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
+  "projection": {
+    "name": "globe"
+  },
+  "visibility": "public",
+  "version": 8,
+  "layers": [
+    {
+      "id": "land",
+      "type": "background",
+      "layout": {},
+      "minzoom": 0,
+      "paint": {
+        "background-color": "transparent"
+      },
+      "metadata": {
+        "mapbox:featureComponent": "land-and-water",
+        "mapbox:group": "Land & water, land"
+      }
+    },
+    {
+      "id": "water",
+      "type": "line",
+      "source": "composite",
+      "source-layer": "water",
+      "minzoom": 0,
+      "layout": {},
+      "paint": {
+        "line-color": "hsla(8, 55%, 50%, 0.5)"
+      },
+      "metadata": {
+        "mapbox:featureComponent": "land-and-water",
+        "mapbox:group": "Land & water, water"
+      }
+    },
+    {
+      "id": "admin-0-boundary-bg",
+      "type": "line",
+      "source": "composite",
+      "source-layer": "admin",
+      "minzoom": 1,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "admin_level"
+          ],
+          0
+        ],
+        [
+          "==",
+          [
+            "get",
+            "maritime"
+          ],
+          "false"
+        ],
+        [
+          "match",
+          [
+            "get",
+            "worldview"
+          ],
+          [
+            "all",
+            "US"
+          ],
+          true,
+          false
+        ]
+      ],
+      "paint": {
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          3,
+          5.2,
+          12,
+          10.4
+        ],
+        "line-color": "hsl(220, 0%, 87%)",
+        "line-opacity": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          3,
+          0,
+          4,
+          0.5
+        ],
+        "line-blur": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          3,
+          0,
+          12,
+          2.6
+        ]
+      },
+      "metadata": {
+        "mapbox:featureComponent": "admin-boundaries",
+        "mapbox:group": "Administrative boundaries, admin"
+      }
+    },
+    {
+      "id": "admin-1-boundary",
+      "type": "line",
+      "source": "composite",
+      "source-layer": "admin",
+      "minzoom": 2,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "admin_level"
+          ],
+          1
+        ],
+        [
+          "==",
+          [
+            "get",
+            "maritime"
+          ],
+          "false"
+        ],
+        [
+          "match",
+          [
+            "get",
+            "worldview"
+          ],
+          [
+            "all",
+            "US"
+          ],
+          true,
+          false
+        ]
+      ],
+      "layout": {},
+      "paint": {
+        "line-dasharray": [
+          "step",
+          [
+            "zoom"
+          ],
+          [
+            "literal",
+            [
+              2,
+              0
+            ]
+          ],
+          7,
+          [
+            "literal",
+            [
+              2,
+              2,
+              6,
+              2
+            ]
+          ]
+        ],
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          3,
+          0.3,
+          12,
+          1.5
+        ],
+        "line-opacity": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          2,
+          0,
+          3,
+          1
+        ],
+        "line-color": "hsl(220, 1%, 71%)"
+      },
+      "metadata": {
+        "mapbox:featureComponent": "admin-boundaries",
+        "mapbox:group": "Administrative boundaries, admin"
+      }
+    },
+    {
+      "id": "admin-0-boundary",
+      "type": "line",
+      "source": "composite",
+      "source-layer": "admin",
+      "minzoom": 1,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "admin_level"
+          ],
+          0
+        ],
+        [
+          "==",
+          [
+            "get",
+            "disputed"
+          ],
+          "false"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "maritime"
+          ],
+          "false"
+        ],
+        [
+          "match",
+          [
+            "get",
+            "worldview"
+          ],
+          [
+            "all",
+            "US"
+          ],
+          true,
+          false
+        ]
+      ],
+      "layout": {},
+      "paint": {
+        "line-color": "hsla(8, 55%, 50%, 0.5)",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          3,
+          0.65,
+          12,
+          2.6
+        ],
+        "line-dasharray": [
+          10,
+          0
+        ]
+      },
+      "metadata": {
+        "mapbox:featureComponent": "admin-boundaries",
+        "mapbox:group": "Administrative boundaries, admin"
+      }
+    },
+    {
+      "id": "admin-0-boundary-disputed",
+      "type": "line",
+      "source": "composite",
+      "source-layer": "admin",
+      "minzoom": 1,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "disputed"
+          ],
+          "true"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "admin_level"
+          ],
+          0
+        ],
+        [
+          "==",
+          [
+            "get",
+            "maritime"
+          ],
+          "false"
+        ],
+        [
+          "match",
+          [
+            "get",
+            "worldview"
+          ],
+          [
+            "all",
+            "US"
+          ],
+          true,
+          false
+        ]
+      ],
+      "paint": {
+        "line-color": "hsl(220, 0%, 70%)",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          3,
+          0.65,
+          12,
+          2.6
+        ],
+        "line-dasharray": [
+          "step",
+          [
+            "zoom"
+          ],
+          [
+            "literal",
+            [
+              3,
+              2,
+              5
+            ]
+          ],
+          7,
+          [
+            "literal",
+            [
+              2,
+              1.5
+            ]
+          ]
+        ]
+      },
+      "metadata": {
+        "mapbox:featureComponent": "admin-boundaries",
+        "mapbox:group": "Administrative boundaries, admin"
+      }
+    },
+    {
+      "minzoom": 3,
+      "layout": {
+        "text-size": [
+          "interpolate",
+          [
+            "cubic-bezier",
+            0.85,
+            0.7,
+            0.65,
+            1
+          ],
+          [
+            "zoom"
+          ],
+          4,
+          [
+            "step",
+            [
+              "get",
+              "symbolrank"
+            ],
+            9,
+            6,
+            8,
+            7,
+            7
+          ],
+          9,
+          [
+            "step",
+            [
+              "get",
+              "symbolrank"
+            ],
+            21,
+            6,
+            16,
+            7,
+            14
+          ]
+        ],
+        "text-transform": "uppercase",
+        "text-font": [
+          "DIN Pro Bold",
+          "Arial Unicode MS Bold"
+        ],
+        "text-field": [
+          "coalesce",
+          [
+            "get",
+            "name_en"
+          ],
+          [
+            "get",
+            "name"
+          ]
+        ],
+        "text-letter-spacing": 0.15,
+        "text-max-width": 6
+      },
+      "maxzoom": 9,
+      "filter": [
+        "match",
+        [
+          "get",
+          "class"
+        ],
+        [
+          "state",
+          "disputed_state"
+        ],
+        [
+          "match",
+          [
+            "get",
+            "worldview"
+          ],
+          [
+            "all",
+            "US"
+          ],
+          true,
+          false
+        ],
+        false
+      ],
+      "type": "symbol",
+      "source": "composite",
+      "id": "state-label",
+      "paint": {
+        "text-color": "hsl(220, 1%, 49%)",
+        "text-halo-color": "hsl(220, 0%, 100%)",
+        "text-halo-width": 1,
+        "text-opacity": 0.5
+      },
+      "source-layer": "place_label",
+      "metadata": {
+        "mapbox:featureComponent": "place-labels",
+        "mapbox:group": "Place labels, place-labels"
+      }
+    },
+    {
+      "minzoom": 1,
+      "layout": {
+        "text-line-height": 1.1,
+        "text-size": [
+          "interpolate",
+          [
+            "cubic-bezier",
+            0.2,
+            0,
+            0.7,
+            1
+          ],
+          [
+            "zoom"
+          ],
+          1,
+          [
+            "step",
+            [
+              "get",
+              "symbolrank"
+            ],
+            11,
+            4,
+            9,
+            5,
+            8
+          ],
+          9,
+          [
+            "step",
+            [
+              "get",
+              "symbolrank"
+            ],
+            22,
+            4,
+            19,
+            5,
+            17
+          ]
+        ],
+        "text-radial-offset": [
+          "step",
+          [
+            "zoom"
+          ],
+          0.6,
+          8,
+          0
+        ],
+        "icon-image": "",
+        "text-font": [
+          "DIN Pro Medium",
+          "Arial Unicode MS Regular"
+        ],
+        "text-field": [
+          "coalesce",
+          [
+            "get",
+            "name_en"
+          ],
+          [
+            "get",
+            "name"
+          ]
+        ],
+        "text-max-width": 6
+      },
+      "maxzoom": 10,
+      "filter": [
+        "match",
+        [
+          "get",
+          "class"
+        ],
+        [
+          "country",
+          "disputed_country"
+        ],
+        [
+          "match",
+          [
+            "get",
+            "worldview"
+          ],
+          [
+            "all",
+            "US"
+          ],
+          true,
+          false
+        ],
+        false
+      ],
+      "type": "symbol",
+      "source": "composite",
+      "id": "country-label",
+      "paint": {
+        "icon-opacity": [
+          "step",
+          [
+            "zoom"
+          ],
+          [
+            "case",
+            [
+              "has",
+              "text_anchor"
+            ],
+            1,
+            0
+          ],
+          7,
+          0
+        ],
+        "text-color": "hsla(8, 55%, 50%, 1)"
+      },
+      "source-layer": "place_label",
+      "metadata": {
+        "mapbox:featureComponent": "place-labels",
+        "mapbox:group": "Place labels, place-labels"
+      }
+    },
+    {
+      "minzoom": 0.75,
+      "layout": {
+        "text-field": [
+          "coalesce",
+          [
+            "get",
+            "name_en"
+          ],
+          [
+            "get",
+            "name"
+          ]
+        ],
+        "text-line-height": 1.1,
+        "text-max-width": 6,
+        "text-font": [
+          "DIN Pro Medium",
+          "Arial Unicode MS Regular"
+        ],
+        "text-size": [
+          "interpolate",
+          [
+            "exponential",
+            0.5
+          ],
+          [
+            "zoom"
+          ],
+          0,
+          10,
+          2.5,
+          15
+        ],
+        "text-transform": "uppercase",
+        "text-letter-spacing": 0.05
+      },
+      "maxzoom": 3,
+      "filter": [
+        "==",
+        [
+          "get",
+          "class"
+        ],
+        "continent"
+      ],
+      "type": "symbol",
+      "source": "composite",
+      "id": "continent-label",
+      "paint": {
+        "text-color": "hsla(8, 55%, 50%, 1)",
+        "text-opacity": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          0,
+          0.8,
+          1.5,
+          0.5,
+          2.5,
+          0
+        ]
+      },
+      "source-layer": "natural_label",
+      "metadata": {
+        "mapbox:featureComponent": "place-labels",
+        "mapbox:group": "Place labels, place-labels"
+      }
+    }
+  ],
+  "sources": {
+    "composite": {
+      "url": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",
+      "type": "vector"
+    }
+  },
+  "created": "1970-01-01T00:00:00.000Z",
+  "modified": "1970-01-01T00:00:00.000Z",
+  "owner": "mapbox",
+  "id": "light-v11",
+  "draft": false
+}

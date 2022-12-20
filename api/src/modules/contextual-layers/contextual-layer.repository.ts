@@ -56,7 +56,7 @@ export class ContextualLayerRepository extends Repository<ContextualLayer> {
           break;
       }
 
-      const query: SelectQueryBuilder<unknown> = getManager()
+      const query: SelectQueryBuilder<any> = getManager()
         .createQueryBuilder()
         .select(`h3_to_parent(h3index, ${resolution})`, 'h')
         .addSelect(aggregationSelect, 'v')

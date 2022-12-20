@@ -13,9 +13,6 @@ import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-c
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
-import { TinyTypeOf } from 'tiny-types';
-
-export class MaterialId extends TinyTypeOf<string>() {}
 
 export enum MATERIALS_STATUS {
   ACTIVE = 'active',

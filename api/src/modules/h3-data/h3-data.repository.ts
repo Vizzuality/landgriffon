@@ -74,7 +74,7 @@ export class H3DataRepository extends Repository<H3Data> {
       if (resolution) {
         selectStatement = `h3_to_parent(h3index, ${resolution})`;
       }
-      const query: SelectQueryBuilder<unknown> = getManager()
+      const query: SelectQueryBuilder<any> = getManager()
         .createQueryBuilder()
         .select(selectStatement, 'h')
         .addSelect(`sum("${h3ColumnName}")`, 'v')

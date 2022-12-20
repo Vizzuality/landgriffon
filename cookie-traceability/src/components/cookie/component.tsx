@@ -1,4 +1,4 @@
-import { MouseEvent, useCallback, useMemo, useRef, useState } from 'react';
+import { MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { ThreeEvent, useFrame } from '@react-three/fiber';
 import { useGLTF, useTexture } from '@react-three/drei';
@@ -30,7 +30,7 @@ function Cookie(props: any) {
 
   const cookieRef = useRef<Group>();
 
-  const DURATION = 0.75;
+  const DURATION = 0.9;
   const { breakpoint } = useBreakpoint(BREAKPOINTS, 'xs', false);
 
   // Model
@@ -72,14 +72,14 @@ function Cookie(props: any) {
 
       if (!selected) {
         setSelected(true);
-
-        setTimeout(() => {
-          setSelected(false);
-        }, DURATION * 1000);
       }
     },
     [selected],
   );
+
+  useEffect(() => {
+    setSelected(true);
+  }, []);
 
   useFrame(({ mouse }) => {
     rotationX.set(Math.max(-1, mouse.y) * 0.25);
@@ -100,8 +100,8 @@ function Cookie(props: any) {
         scale: POSITIONS[breakpoint].scale || 1,
       }}
       transition={{
-        duration: 0.5,
-        ease: 'backOut',
+        duration: 0.4,
+        ease: 'easeInOut',
       }}
       rotation-x={rX}
       rotation-y={rY}
@@ -125,6 +125,13 @@ function Cookie(props: any) {
           duration: DURATION,
           ease: selected ? ['backIn', 'backOut'] : 'anticipate',
         }}
+        onAnimationComplete={() => {
+          if (selected) {
+            setTimeout(() => {
+              setSelected(false);
+            }, DURATION * 0.25 * 1000);
+          }
+        }}
       >
         <meshStandardMaterial
           {...texture}
@@ -146,14 +153,15 @@ function Cookie(props: any) {
                 {...n}
                 geometry={n.geometry}
                 material={chipMaterial}
+                initial={false}
                 animate={{
                   y: selected
-                    ? [n.position.y, n.position.y - (0.25 + Math.random() * 0.5), n.position.y]
+                    ? [n.position.y, n.position.y - (0.3 + Math.random() * 0.7), n.position.y]
                     : n.position.y,
                 }}
                 transition={{
-                  duration: DURATION * 0.75,
-                  delay: DURATION * 0.25,
+                  duration: DURATION * 0.5,
+                  delay: DURATION * 0.33,
                   ease: selected ? ['easeIn', 'easeOut'] : 'anticipate',
                 }}
                 castShadow

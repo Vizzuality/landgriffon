@@ -19,7 +19,7 @@ function Hero() {
       <div className="space-y-14">
         <Logo className="m-auto fill-secondary" />
 
-        <h1 className="text-4xl leading-none md:text-[80px] md:leading-[80px] xl:text-[100px] xl:leading-[100px] 2xl:text-[112px] 2xl:leading-[101px] font-display font-extrabold text-center uppercase">
+        <h1 className="text-4xl leading-none md:text-[80px] md:leading-[70px] xl:text-[100px] xl:leading-[90px] 2xl:text-[112px] 2xl:leading-[100px] font-display font-extrabold text-center uppercase">
           Where does my <br /> cookie come
           <br /> from?
         </h1>
@@ -38,7 +38,7 @@ function Hero() {
           }}
           shadows
         >
-          <ambientLight intensity={0.5} />
+          <ambientLight intensity={1} />
           <directionalLight
             color="white"
             position={[0, 5, -1]}

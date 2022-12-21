@@ -14,10 +14,10 @@ import { BREAKPOINTS } from '../../constants';
 const POSITIONS = {
   xs: { x: 0, y: -2, z: 0, scale: 1.25 },
   sm: { x: 0, y: -2, z: 0, scale: 1.25 },
-  md: { x: 0, y: -2.25, z: 0, scale: 1.125 },
-  lg: { x: 0, y: -2.25, z: 0, scale: 1.125 },
-  xl: { x: 0, y: -2.23, z: 0, scale: 1.125 },
-  '2xl': { x: 0, y: -2.2, z: 0, scale: 1 },
+  md: { x: 0, y: -2, z: 0, scale: 1.25 },
+  lg: { x: 0, y: -2, z: 0, scale: 1.25 },
+  xl: { x: 0, y: -2, z: 0, scale: 1.125 },
+  '2xl': { x: 0, y: -2, z: 0, scale: 1.125 },
 };
 
 interface CookieProps {

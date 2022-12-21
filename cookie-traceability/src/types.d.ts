@@ -20,7 +20,8 @@ export type LocationDatum = {
   name: string;
   lon: number;
   lat: number;
-  iso: string;
+  iso2: string;
+  iso2: string;
 };
 
 export type FlowDatum = {

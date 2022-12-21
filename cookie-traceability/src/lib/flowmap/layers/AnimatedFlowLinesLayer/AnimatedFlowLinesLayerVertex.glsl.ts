@@ -19,7 +19,7 @@
 export default `\
 #define SHADER_NAME animated-flow-lines-layer-vertex-shader
 #define SPEED 0.015
-#define NUM_PARTS 1.5
+#define NUM_PARTS 1.0
 
 attribute vec3 positions;
 attribute vec3 instanceSourcePositions;

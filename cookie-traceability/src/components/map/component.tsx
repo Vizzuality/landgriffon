@@ -81,16 +81,51 @@ const Map: React.FC<MapProps> = ({ ingredientId }) => {
     return [];
   }, [data]);
 
-  const parkLayer: LayerProps = {
+  const highlightedCountriesBoundaries: LayerProps = {
     id: 'country-highlight-layer',
     type: 'line',
+    source: 'composite',
     'source-layer': 'country_boundaries',
-    // filter: ['in', 'iso_3166_1_alpha_3', 'ITA', 'NLD', 'DEU', 'FRA', 'ESP', 'GBR', 'USA'],
     filter: ['in', 'name_en', ...countryNames],
     paint: {
       'line-color': '#C54C39',
-      'line-opacity': 0.5,
+      'line-opacity': 0.8,
       'line-width': 2,
+    },
+  };
+
+  const highlightedCountriesLabels: LayerProps = {
+    id: 'country-label',
+    minzoom: 1,
+    layout: {
+      'text-line-height': 1.1,
+      'text-size': [
+        'interpolate',
+        ['cubic-bezier', 0.2, 0, 0.7, 1],
+        ['zoom'],
+        1,
+        ['step', ['get', 'symbolrank'], 11, 4, 9, 5, 8],
+        9,
+        ['step', ['get', 'symbolrank'], 22, 4, 19, 5, 17],
+      ],
+      'text-radial-offset': ['step', ['zoom'], 0.6, 8, 0],
+      'icon-image': '',
+      'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
+      'text-field': ['coalesce', ['get', 'name_en'], ['get', 'name']],
+      'text-max-width': 6,
+    },
+    maxzoom: 10,
+    filter: ['in', 'name_en', ...countryNames],
+    type: 'symbol',
+    source: 'composite',
+    paint: {
+      'icon-opacity': ['step', ['zoom'], ['case', ['has', 'text_anchor'], 1, 0], 7, 0],
+      'text-color': 'hsla(8, 55%, 50%, 0.8)',
+    },
+    'source-layer': 'place_label',
+    metadata: {
+      'mapbox:featureComponent': 'place-labels',
+      'mapbox:group': 'Place labels, place-labels',
     },
   };
 
@@ -108,9 +143,8 @@ const Map: React.FC<MapProps> = ({ ingredientId }) => {
           mapStyle={JSON.parse(JSON.stringify(mapStyle))}
           mapboxAccessToken={MAPBOX_TOKEN}
         >
-          <Source type="vector" url="mapbox://mapbox.country-boundaries-v1">
-            <Layer {...parkLayer} />
-          </Source>
+          <Layer {...highlightedCountriesLabels} />
+          <Layer {...highlightedCountriesBoundaries} />
         </ReactMapGl>
       </DeckGL>
     </div>

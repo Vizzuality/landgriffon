@@ -137,7 +137,7 @@ class FlowLinesLayer<F> extends Layer {
       .setUniforms({
         ...uniforms,
         outlineColor: outlineColor.map((x: number) => x / 255),
-        thicknessUnit: thicknessUnit * 2.0,
+        thicknessUnit: thicknessUnit * 1.0,
         gap: 0.5,
       })
       .draw();

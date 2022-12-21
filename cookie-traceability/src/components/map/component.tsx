@@ -97,20 +97,19 @@ const Map: React.FC<MapProps> = ({ ingredientId }) => {
   }
 
   return (
-    <div className="relative w-full h-[760px]">
+    <div className="relative w-full h-[630px]">
       <DeckGL
         width="100%"
         height="100%"
         initialViewState={INITIAL_VIEW_STATE}
         layers={layers}
-        controller={false}
+        controller={true}
       >
         <ReactMapGl
           projection="mercator"
-          interactive={false}
           mapStyle={JSON.parse(JSON.stringify(mapStyle))}
           mapboxAccessToken={MAPBOX_TOKEN}
-          renderWorldCopies={false}
+          // renderWorldCopies={false}
         />
       </DeckGL>
     </div>

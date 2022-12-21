@@ -25,7 +25,7 @@ import {
   schemeYlOrRd,
 } from 'd3-scale-chromatic';
 import { range } from 'd3-array';
-import { scalePow, scaleSequential, scaleQuantize, scaleSequentialPow } from 'd3-scale';
+import { scalePow, scaleSequential, scaleQuantize } from 'd3-scale';
 import { interpolateRgbBasis } from 'd3-interpolate';
 import { color as d3color, hcl } from 'd3-color';
 import { SettingsState } from './FlowMapState';

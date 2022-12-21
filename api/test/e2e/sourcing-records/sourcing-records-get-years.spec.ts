@@ -5,7 +5,7 @@ import { AppModule } from 'app.module';
 import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
 import { createSourcingRecord } from '../../entity-mocks';
-import { saveUserAndGetToken } from '../../utils/userAuth';
+import { saveAdminAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 
 describe('Sourcing records - Get years', () => {
@@ -24,7 +24,7 @@ describe('Sourcing records - Get years', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
   });
 
   afterEach(async () => {

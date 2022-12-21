@@ -5,7 +5,7 @@ import { AppModule } from 'app.module';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
 import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
-import { saveUserAndGetToken } from '../../utils/userAuth';
+import { saveAdminAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 import { createBusinessUnit, createSourcingLocation } from '../../entity-mocks';
 
@@ -29,7 +29,7 @@ describe('BusinessUnits - Get Trees', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
   });
 
   afterEach(async () => {

@@ -6,7 +6,7 @@ import { Supplier } from 'modules/suppliers/supplier.entity';
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { createSupplier } from '../../entity-mocks';
-import { saveUserAndGetToken } from '../../utils/userAuth';
+import { saveAdminAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 
 describe('Suppliers - Delete', () => {
@@ -24,7 +24,7 @@ describe('Suppliers - Delete', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
   });
 
   afterEach(async () => {

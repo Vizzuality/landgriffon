@@ -3,9 +3,15 @@ import {
   Post,
   UnauthorizedException,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiForbiddenResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ApiConsumesXLSX } from 'decorators/xlsx-upload.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { fileUploadInterceptor } from 'modules/import-data/file-upload.interceptor';
@@ -14,9 +20,13 @@ import { ImportDataService } from 'modules/import-data/import-data.service';
 import { Task } from 'modules/tasks/task.entity';
 import { GetUser } from 'decorators/get-user.decorator';
 import { User } from 'modules/users/user.entity';
+import { ROLES } from 'modules/authorization/roles/roles.enum';
+import { RequiredRoles } from 'decorators/roles.decorator';
+import { RolesGuard } from 'guards/roles.guard';
 
 @ApiTags('Import Data')
 @Controller(`/api/v1/import`)
+@UseGuards(RolesGuard)
 @ApiBearerAuth()
 export class ImportDataController {
   constructor(public readonly importDataService: ImportDataService) {}
@@ -26,6 +36,7 @@ export class ImportDataController {
     description:
       'Bad Request. A .XLSX file not provided as payload or contains missing or incorrect data',
   })
+  @ApiForbiddenResponse()
   @UseInterceptors(
     FileInterceptor(
       'file',
@@ -33,6 +44,7 @@ export class ImportDataController {
     ),
     XlsxPayloadInterceptor,
   )
+  @RequiredRoles(ROLES.ADMIN)
   @Post('/sourcing-data')
   async importSourcingRecords(
     @UploadedFile() xlsxFile: Express.Multer.File,

@@ -7,7 +7,7 @@ import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { createSupplier } from '../../entity-mocks';
 import { expectedJSONAPIAttributes } from './config';
-import { saveUserAndGetToken } from '../../utils/userAuth';
+import { saveAdminAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 
 describe('Suppliers - Update', () => {
@@ -25,7 +25,7 @@ describe('Suppliers - Update', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
   });
 
   afterEach(async () => {

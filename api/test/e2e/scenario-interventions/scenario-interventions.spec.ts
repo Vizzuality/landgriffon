@@ -23,7 +23,7 @@ import {
   createSourcingRecord,
   createSupplier,
 } from '../../entity-mocks';
-import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import { saveUserWithRoleAndGetTokenWithUserId } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { Material } from 'modules/materials/material.entity';
@@ -71,6 +71,7 @@ import { dropH3DataMock, h3DataMock } from '../h3-data/mocks/h3-data.mock';
 import { h3MaterialExampleDataFixture } from '../h3-data/mocks/h3-fixtures';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
+import { ROLES } from '../../../src/modules/authorization/roles/roles.enum';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -224,7 +225,11 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    const tokenWithId = await saveUserAndGetTokenWithUserId(moduleFixture, app);
+    const tokenWithId = await saveUserWithRoleAndGetTokenWithUserId(
+      moduleFixture,
+      app,
+      ROLES.ADMIN,
+    );
     jwtToken = tokenWithId.jwtToken;
     userId = tokenWithId.userId;
   });

@@ -5,7 +5,7 @@ import { AppModule } from 'app.module';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { SourcingLocationGroupsModule } from 'modules/sourcing-location-groups/sourcing-location-groups.module';
 import { SourcingLocationGroupRepository } from 'modules/sourcing-location-groups/sourcing-location-group.repository';
-import { saveUserAndGetToken } from '../../utils/userAuth';
+import { saveAdminAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 
 /**
@@ -29,7 +29,7 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
   });
 
   afterEach(async () => {

@@ -129,7 +129,9 @@ export class UsersController {
     if (!req?.user?.id) {
       throw new UnauthorizedException();
     }
-    const user: User = await this.service.getById(req.user.id);
+    const user: User = await this.service.getById(req.user.id, {
+      include: ['roles'],
+    });
     if (!user) {
       throw new UnauthorizedException();
     }

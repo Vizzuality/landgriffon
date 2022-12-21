@@ -30,7 +30,7 @@ import {
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
-import { saveUserAndGetToken } from '../../../utils/userAuth';
+import { saveAdminAndGetToken } from '../../../utils/userAuth';
 import { getApp } from '../../../utils/getApp';
 import {
   filteredByLocationTypeResponseData,
@@ -64,7 +64,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
   });
 
   afterEach(async () => {

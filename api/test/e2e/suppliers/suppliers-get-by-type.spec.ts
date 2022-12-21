@@ -5,7 +5,7 @@ import { AppModule } from 'app.module';
 import { Supplier, SUPPLIER_TYPES } from 'modules/suppliers/supplier.entity';
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
-import { saveUserAndGetToken } from '../../utils/userAuth';
+import { saveAdminAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 import { createSourcingLocation, createSupplier } from '../../entity-mocks';
 
@@ -24,7 +24,7 @@ describe('Suppliers - Get by type', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
   });
 
   afterEach(async () => {

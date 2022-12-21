@@ -10,7 +10,7 @@ import {
   createSourcingRecord,
 } from '../../entity-mocks';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { saveUserAndGetToken } from '../../utils/userAuth';
+import { saveAdminAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 
 describe('Sourcing records -Filters', () => {
@@ -29,7 +29,7 @@ describe('Sourcing records -Filters', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
   });
 
   afterEach(async () => {

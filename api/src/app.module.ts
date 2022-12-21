@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from 'typeorm.config';
 import { AuthenticationModule } from 'modules/authentication/authentication.module';
@@ -35,6 +35,7 @@ import { UrlParamsModule } from 'modules/url-params/url-params.module';
 import { ContextualLayersModule } from 'modules/contextual-layers/contextual-layers.module';
 import { CachedDataModule } from 'modules/cached-data/cached-data.module';
 import * as config from 'config';
+import { RoleSeeder } from 'modules/authorization/role.seeder';
 
 const queueConfig: any = config.get('queue');
 
@@ -84,7 +85,14 @@ const queueConfig: any = config.get('queue');
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
     },
+    RoleSeeder,
   ],
   controllers: [HealthController],
 })
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  constructor(private readonly roleSeeder: RoleSeeder) {}
+
+  async onModuleInit(): Promise<void> {
+    await this.roleSeeder.seedRoles();
+  }
+}

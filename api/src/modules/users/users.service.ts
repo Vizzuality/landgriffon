@@ -49,6 +49,7 @@ export class UsersService extends AppBaseService<
         'avatarDataUrl',
         'isActive',
         'isDeleted',
+        'roles',
       ],
       keyForAttribute: 'camelCase',
       projects: {

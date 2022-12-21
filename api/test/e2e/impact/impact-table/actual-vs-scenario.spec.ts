@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { ImpactModule } from 'modules/impact/impact.module';
 import { Indicator } from 'modules/indicators/indicator.entity';
-import { saveUserAndGetToken } from '../../../utils/userAuth';
+import { saveAdminAndGetToken } from '../../../utils/userAuth';
 import { getApp } from '../../../utils/getApp';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { createNewMaterialInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-material-intervention.preconditions';
@@ -45,7 +45,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
   });
 
   afterEach(async () => {

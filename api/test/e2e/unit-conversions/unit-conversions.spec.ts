@@ -5,7 +5,7 @@ import { AppModule } from 'app.module';
 import { UnitConversion } from 'modules/unit-conversions/unit-conversion.entity';
 import { UnitConversionsModule } from 'modules/unit-conversions/unit-conversions.module';
 import { UnitConversionRepository } from 'modules/unit-conversions/unit-conversion.repository';
-import { saveUserAndGetToken } from '../../utils/userAuth';
+import { saveAdminAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 
 /**
@@ -28,7 +28,7 @@ describe('UnitConversionsModule (e2e)', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
   });
 
   afterEach(async () => {

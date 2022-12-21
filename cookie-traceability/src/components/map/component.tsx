@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useQueryClient, useQueries } from '@tanstack/react-query';
+import Flag from 'react-country-flag';
 import axios from 'axios';
 import DeckGL from '@deck.gl/react/typed';
 import { Map as ReactMapGl, Layer } from 'react-map-gl';
 import { ScatterplotLayer } from '@deck.gl/layers/typed';
 import numeral from 'numeral';
+import { flip, useFloating } from '@floating-ui/react-dom';
 
 import { FlowMapLayer } from 'lib/flowmap/layers';
 
@@ -26,6 +28,12 @@ const DEFAULT_QUERY_OPTIONS = {
 const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
   const queryClient = useQueryClient();
   const [hoverInfo, setHoverInfo] = useState<any>(null);
+  const { x, y, reference, floating, strategy } = useFloating({
+    middleware: [flip()],
+    placement: 'bottom-start',
+    strategy: 'fixed',
+  });
+
   const ingredient = useMemo<Ingredient>(
     () => INGREDIENTS.find((i) => i.id === ingredientId) || INGREDIENTS[0],
     [ingredientId],
@@ -124,10 +132,13 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
     if (hoverInfo?.object) {
       const result = data?.flows
         .filter((flow) => flow.origin === hoverInfo.object.id)
-        .map((flow) => ({
-          ...flow,
-          countryName: data?.locations.find((loc) => loc.id === flow.origin)?.name,
-        }));
+        .map((flow) => {
+          const location = data?.locations.find((loc) => loc.id === flow.dest);
+          return {
+            ...flow,
+            countryName: location?.name,
+          };
+        });
       return result;
     }
     return null;
@@ -137,10 +148,13 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
     if (hoverInfo?.object) {
       const result = data?.flows
         .filter((flow) => flow.dest === hoverInfo.object.id)
-        .map((flow) => ({
-          ...flow,
-          countryName: data?.locations.find((loc) => loc.id === flow.origin)?.name,
-        }));
+        .map((flow) => {
+          const location = data?.locations.find((loc) => loc.id === flow.origin);
+          return {
+            ...flow,
+            countryName: location?.name,
+          };
+        });
       return result;
     }
     return null;
@@ -214,33 +228,52 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
         </ReactMapGl>
         {hoverInfo?.object && (
           <div
-            className="absolute z-10 px-2 py-1 text-white bg-black rounded pointer-events-none"
+            className="absolute z-10"
             style={{
               left: hoverInfo.x + 10,
               top: hoverInfo.y + 10,
             }}
+            ref={reference}
           >
-            <h3 className="text-sm font-medium font-display">{hoverInfo.object.name}</h3>
-            {importers && (
-              <ul>
-                {importers.map((importer) => (
-                  <li key={`tooltip-item-${importer.origin}-${importer.dest}`} className="text-xs">
-                    &rarr; {importer.countryName} {numeral(importer.count).format(NUMERAL_FORMAT)}{' '}
-                    tonnes
-                  </li>
-                ))}
-              </ul>
-            )}
-            {exporters && (
-              <ul>
-                {exporters.map((importer) => (
-                  <li key={`tooltip-item-${importer.origin}-${importer.dest}`} className="text-xs">
-                    &larr; {importer.countryName} {numeral(importer.count).format(NUMERAL_FORMAT)}{' '}
-                    tonnes
-                  </li>
-                ))}
-              </ul>
-            )}
+            <div
+              className="px-4 py-2 rounded pointer-events-none text-secondary bg-gray-dark"
+              ref={floating}
+              style={{
+                position: strategy,
+                top: y ?? 0,
+                left: x ?? 0,
+              }}
+            >
+              <h3 className="text-sm font-medium font-display">
+                <Flag countryCode={hoverInfo.object.iso2} svg /> {hoverInfo.object.name}
+              </h3>
+              {importers && (
+                <ul>
+                  {importers.map((importer) => (
+                    <li
+                      key={`tooltip-item-${importer.origin}-${importer.dest}`}
+                      className="flex justify-between space-x-4 text-xs"
+                    >
+                      <div>&rarr; {importer.countryName}</div>
+                      <div>{numeral(importer.count).format(NUMERAL_FORMAT)} tonnes</div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {exporters && (
+                <ul>
+                  {exporters.map((exporter) => (
+                    <li
+                      key={`tooltip-item-${exporter.origin}-${exporter.dest}`}
+                      className="flex justify-between space-x-4 text-xs"
+                    >
+                      <div>&larr; {exporter.countryName}</div>
+                      <div>{numeral(exporter.count).format(NUMERAL_FORMAT)} tonnes</div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         )}
       </DeckGL>

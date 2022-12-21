@@ -29,7 +29,7 @@
       "minzoom": 0,
       "layout": {},
       "paint": {
-        "line-color": "hsla(8, 55%, 50%, 0.5)"
+        "line-color": "hsla(8, 55%, 50%, 0.3)"
       },
       "metadata": {
         "mapbox:featureComponent": "land-and-water",
@@ -265,7 +265,7 @@
       ],
       "layout": {},
       "paint": {
-        "line-color": "hsla(8, 55%, 50%, 0.5)",
+        "line-color": "hsla(8, 55%, 50%, 0.3)",
         "line-width": [
           "interpolate",
           [
@@ -597,7 +597,7 @@
           7,
           0
         ],
-        "text-color": "hsla(8, 55%, 50%, 1)"
+        "text-color": "hsla(8, 55%, 50%, 0.4)"
       },
       "source-layer": "place_label",
       "metadata": {
@@ -655,7 +655,7 @@
       "source": "composite",
       "id": "continent-label",
       "paint": {
-        "text-color": "hsla(8, 55%, 50%, 1)",
+        "text-color": "hsla(8, 55%, 50%, 0.5)",
         "text-opacity": [
           "interpolate",
           [

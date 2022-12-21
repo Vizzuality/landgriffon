@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { useCallback, useState } from 'react';
+import React, { HTMLAttributes, useCallback, useRef, useState } from 'react';
 
 import Hero from 'components/hero';
 import IngredientButton from 'components/ingredient-button';
@@ -12,13 +12,16 @@ import type { RankingProps } from 'components/ranking/types';
 import type { Ingredient, CountryTrade } from '../types';
 
 const Home: React.FC = () => {
+  const mainElement = useRef<HTMLDivElement>(null);
   const [currentTradeFlow, setCurrentTradeFlow] = useState<CountryTrade | null>(null);
   const [ingredient, setIngredient] = useState<string>(INGREDIENTS[0].id);
 
-  const handleSetIngredient = useCallback(
-    ({ id }: { id: Ingredient['id'] }) => setIngredient(id),
-    [],
-  );
+  const handleSetIngredient = useCallback(({ id }: { id: Ingredient['id'] }) => {
+    setIngredient(id);
+    if (mainElement?.current) {
+      mainElement.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, []);
 
   const handleTradingFlowChange: RankingProps['onTradingFlowChange'] = useCallback(
     (countryTrade) => setCurrentTradeFlow(countryTrade),
@@ -54,8 +57,8 @@ const Home: React.FC = () => {
         </div>
       </header>
 
-      <main className="flex-1 px-4 bg-secondary py-14">
-        <div className="">
+      <main className="flex-1 px-4 bg-secondary py-14" ref={mainElement}>
+        <div>
           <h2 className="text-xl font-extrabold text-center uppercase xl:text-4xl font-display text-gray-dark">
             Top 5 trade flows
           </h2>

@@ -1,9 +1,4 @@
-import {
-  AggregateFlow,
-  Cluster,
-  ClusterNode,
-  LocationTotals,
-} from '@flowmap.gl/data';
+import { AggregateFlow, Cluster, ClusterNode, LocationTotals } from '@flowmap.gl/data';
 
 export type LayerProps = Record<string, unknown>;
 

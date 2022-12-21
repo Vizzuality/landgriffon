@@ -21,7 +21,7 @@ import GL from '@luma.gl/constants';
 import { Geometry, Model } from '@luma.gl/core';
 import FragmentShader from './FlowCirclesLayerFragment.glsl';
 import VertexShader from './FlowCirclesLayerVertex.glsl';
-import { FlowCirclesLayerAttributes, RGBA } from '@flowmap.gl/data';
+import { FlowCirclesLayerAttributes, RGBA } from '../../data';
 import { LayerProps } from '../types';
 
 export type FlowCirclesDatum = Record<string, unknown>;

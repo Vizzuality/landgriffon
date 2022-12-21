@@ -3,7 +3,7 @@ import { useQueries } from '@tanstack/react-query';
 import axios from 'axios';
 import DeckGL from '@deck.gl/react/typed';
 import { Map as ReactMapGl } from 'react-map-gl';
-import { FlowMapLayer } from 'lib/flowmap';
+import { FlowMapLayer } from 'lib/flowmap/layers';
 
 import { INGREDIENTS, MAPBOX_TOKEN, INITIAL_VIEW_STATE } from '../../constants';
 import mapStyle from './map-style.json';

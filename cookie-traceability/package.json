@@ -29,7 +29,6 @@
     "lodash": "^4.17.21",
     "mapbox-gl": "^2.11.1",
     "next": "13.0.3",
-    "next-transpile-modules": "^10.0.0",
     "numeral": "^2.0.6",
     "postcss": "^8.4.19",
     "prettier": "^2.8.1",
@@ -38,21 +37,26 @@
     "react-map-gl": "^7.0.20",
     "tailwindcss": "^3.2.3",
     "three": "^0.147.0",
-    "typescript": "4.8.4",
     "use-breakpoint": "3.0.6"
   },
   "devDependencies": {
+    "@types/d3": "^7.4.0",
+    "@types/d3-collection": "^1.0.10",
+    "@types/kdbush": "^3.0.2",
     "@types/lodash": "^4.14.191",
+    "@types/mapbox__geo-viewport": "^0.4.1",
     "@types/node": "18.11.9",
     "@types/numeral": "^2.0.2",
     "@types/react": "18.0.25",
     "@types/react-dom": "18.0.8",
+    "@types/seedrandom": "^3.0.2",
     "@types/three": "^0.146.0",
     "eslint": "8.27.0",
     "eslint-config-next": "13.0.3",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "glslify-loader": "2.0.0",
+    "typescript": "4.8.4",
     "raw-loader": "4.0.2"
   }
 }

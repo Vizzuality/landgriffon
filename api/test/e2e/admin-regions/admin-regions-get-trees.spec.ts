@@ -12,7 +12,7 @@ import {
 } from '../../entity-mocks';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { expectedJSONAPIAttributes } from './config';
-import { saveUserAndGetToken } from '../../utils/userAuth';
+import { saveAdminAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 import { Material } from '../../../src/modules/materials/material.entity';
 
@@ -36,7 +36,7 @@ describe('AdminRegions - Get trees', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
     await adminRegionRepository.delete({});
     await h3dataRepository.delete({});
   });

@@ -5,9 +5,9 @@ import { AppModule } from 'app.module';
 import { readdir } from 'fs/promises';
 import * as config from 'config';
 import { ImportDataModule } from 'modules/import-data/import-data.module';
-import { saveUserAndGetToken } from '../../../utils/userAuth';
+import { saveAdminAndGetToken } from '../../../utils/userAuth';
 import { getApp } from '../../../utils/getApp';
-import { sourcingDataValidationErrorResponse } from './import-mocks';
+('./import-mocks');
 
 jest.mock('config', () => {
   const config = jest.requireActual('config');
@@ -35,7 +35,7 @@ describe('XLSX Upload Feature Validation Tests', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
   });
 
   afterAll(async () => {
@@ -81,7 +81,7 @@ describe('XLSX Upload Feature Validation Tests', () => {
     }, 100000);
 
     test('When file with incorrect or missing inputs for upload is sent to API, proper error messages should be received', async () => {
-      const response = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .post('/api/v1/import/sourcing-data')
         .set('Authorization', `Bearer ${jwtToken}`)
         .attach('file', __dirname + '/base-dataset-location-errors.xlsx');

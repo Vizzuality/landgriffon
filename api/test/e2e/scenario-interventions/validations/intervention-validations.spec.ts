@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { ScenarioInterventionsModule } from '../../../../src/modules/scenario-interventions/scenario-interventions.module';
 import { getApp } from '../../../utils/getApp';
-import { saveUserAndGetTokenWithUserId } from '../../../utils/userAuth';
+import { saveUserWithRoleAndGetTokenWithUserId } from '../../../utils/userAuth';
 import { INestApplication } from '@nestjs/common';
 import {
   Indicator,
@@ -57,7 +57,10 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    const tokenWithId = await saveUserAndGetTokenWithUserId(moduleFixture, app);
+    const tokenWithId = await saveUserWithRoleAndGetTokenWithUserId(
+      moduleFixture,
+      app,
+    );
     jwtToken = tokenWithId.jwtToken;
   });
 

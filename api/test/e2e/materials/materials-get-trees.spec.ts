@@ -16,7 +16,7 @@ import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
-import { saveUserAndGetToken } from '../../utils/userAuth';
+import { saveAdminAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 
 //TODO: Allow these tests when feature fix is merged
@@ -41,7 +41,7 @@ describe('Materials - Get trees', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
 
     await materialToH3Service.delete({});
     await materialRepository.delete({});

@@ -10,7 +10,7 @@ import {
   createSourcingLocation,
   createSupplier,
 } from '../../entity-mocks';
-import { saveUserAndGetToken } from '../../utils/userAuth';
+import { saveAdminAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
@@ -40,7 +40,7 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
   });
 
   afterEach(async () => {

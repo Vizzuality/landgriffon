@@ -9,7 +9,7 @@ import {
   deleteImpactMapMockData,
   ImpactMapMockData,
 } from './mocks/h3-impact-map.mock';
-import { saveUserAndGetToken } from '../../utils/userAuth';
+import { saveAdminAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 
@@ -33,7 +33,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
 
     impactMapMockData = await createImpactMapMockData();
     await IndicatorRecord.updateImpactView();

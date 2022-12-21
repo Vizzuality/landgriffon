@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { ImpactModule } from 'modules/impact/impact.module';
 import { Indicator } from 'modules/indicators/indicator.entity';
-import { saveUserAndGetToken } from '../../../utils/userAuth';
+import { saveAdminAndGetToken } from '../../../utils/userAuth';
 import { getApp } from '../../../utils/getApp';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { clearEntityTables } from '../../../utils/database-test-helper';
@@ -38,7 +38,7 @@ describe('Scenario comparison test suite (e2e)', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
   });
 
   afterEach(async () => {

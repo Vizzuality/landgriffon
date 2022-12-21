@@ -5,7 +5,7 @@ import { AppModule } from 'app.module';
 import { Unit } from 'modules/units/unit.entity';
 import { UnitsModule } from 'modules/units/units.module';
 import { UnitRepository } from 'modules/units/unit.repository';
-import { saveUserAndGetToken } from '../../utils/userAuth';
+import { saveAdminAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 
 /**
@@ -26,7 +26,7 @@ describe('UnitsModule (e2e)', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
   });
 
   afterEach(async () => {

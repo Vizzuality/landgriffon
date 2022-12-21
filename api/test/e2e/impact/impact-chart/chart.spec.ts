@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { AppModule } from '../../../../src/app.module';
 import { ImpactModule } from '../../../../src/modules/impact/impact.module';
 import { getApp } from '../../../utils/getApp';
-import { saveUserAndGetToken } from '../../../utils/userAuth';
+import { saveAdminAndGetToken } from '../../../utils/userAuth';
 import { clearEntityTables } from '../../../utils/database-test-helper';
 import { IndicatorRecord } from '../../../../src/modules/indicator-records/indicator-record.entity';
 import { MaterialToH3 } from '../../../../src/modules/materials/material-to-h3.entity';
@@ -57,7 +57,7 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
   });
 
   afterEach(async () => {

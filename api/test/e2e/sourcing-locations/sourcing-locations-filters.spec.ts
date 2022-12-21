@@ -10,7 +10,7 @@ import {
   createSourcingLocation,
   createSourcingLocationGroup,
 } from '../../entity-mocks';
-import { saveUserAndGetToken } from '../../utils/userAuth';
+import { saveAdminAndGetToken } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 
 describe('SourcingLocationsModule (e2e)', () => {
@@ -29,7 +29,7 @@ describe('SourcingLocationsModule (e2e)', () => {
 
     app = getApp(moduleFixture);
     await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    jwtToken = await saveAdminAndGetToken(moduleFixture, app);
   });
 
   afterEach(async () => {

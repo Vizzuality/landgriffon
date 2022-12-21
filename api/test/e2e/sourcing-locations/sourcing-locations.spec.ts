@@ -14,7 +14,7 @@ import {
   createSourcingLocation,
 } from '../../entity-mocks';
 import { Material } from 'modules/materials/material.entity';
-import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import { saveUserWithRoleAndGetTokenWithUserId } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 
@@ -40,7 +40,10 @@ describe('SourcingLocationsModule (e2e)', () => {
     app = getApp(moduleFixture);
     await app.init();
 
-    const tokenWithId = await saveUserAndGetTokenWithUserId(moduleFixture, app);
+    const tokenWithId = await saveUserWithRoleAndGetTokenWithUserId(
+      moduleFixture,
+      app,
+    );
     jwtToken = tokenWithId.jwtToken;
     userId = tokenWithId.userId;
   });

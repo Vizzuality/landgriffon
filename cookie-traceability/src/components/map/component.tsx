@@ -236,7 +236,7 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
             ref={reference}
           >
             <div
-              className="px-4 py-2 rounded-md pointer-events-none text-secondary bg-gray-dark"
+              className="px-4 py-3 rounded-md pointer-events-none text-secondary bg-gray-dark"
               ref={floating}
               style={{
                 position: strategy,
@@ -248,36 +248,36 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
                 <Flag countryCode={hoverInfo.object.iso2} svg />
                 <span>{hoverInfo.object.name}</span>
               </h3>
-              {importers && (
-                <ul>
-                  {importers.map((importer) => (
+              <ul className="mt-2 space-y-1">
+                {importers &&
+                  importers.map((importer) => (
                     <li
                       key={`tooltip-item-${importer.origin}-${importer.dest}`}
                       className="flex justify-between space-x-4 text-xs"
                     >
-                      <div className="whitespace-nowrap">&rarr; {importer.countryName}</div>
+                      <div className="whitespace-nowrap">
+                        {importer.countryName} &rarr; {hoverInfo.object.name}{' '}
+                      </div>
                       <div className="whitespace-nowrap">
                         {numeral(importer.count).format(NUMERAL_FORMAT)} tonnes
                       </div>
                     </li>
                   ))}
-                </ul>
-              )}
-              {exporters && (
-                <ul>
-                  {exporters.map((exporter) => (
+                {exporters &&
+                  exporters.map((exporter) => (
                     <li
                       key={`tooltip-item-${exporter.origin}-${exporter.dest}`}
                       className="flex justify-between space-x-4 text-xs"
                     >
-                      <div className="whitespace-nowrap">&larr; {exporter.countryName}</div>
+                      <div className="whitespace-nowrap">
+                        {hoverInfo.object.name} &rarr; {exporter.countryName}
+                      </div>
                       <div className="whitespace-nowrap">
                         {numeral(exporter.count).format(NUMERAL_FORMAT)} tonnes
                       </div>
                     </li>
                   ))}
-                </ul>
-              )}
+              </ul>
             </div>
           </div>
         )}

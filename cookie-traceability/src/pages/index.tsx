@@ -8,13 +8,20 @@ import Ranking from 'components/ranking';
 
 import { INGREDIENTS } from '../constants';
 
-import type { Ingredient } from '../types';
+import type { RankingProps } from 'components/ranking/types';
+import type { Ingredient, CountryTrade } from '../types';
 
 const Home: React.FC = () => {
+  const [currentTradeFlow, setCurrentTradeFlow] = useState<CountryTrade | null>(null);
   const [ingredient, setIngredient] = useState<string>(INGREDIENTS[0].id);
 
   const handleSetIngredient = useCallback(
     ({ id }: { id: Ingredient['id'] }) => setIngredient(id),
+    [],
+  );
+
+  const handleTradingFlowChange: RankingProps['onTradingFlowChange'] = useCallback(
+    (countryTrade) => setCurrentTradeFlow(countryTrade),
     [],
   );
 
@@ -52,10 +59,10 @@ const Home: React.FC = () => {
           <h2 className="text-xl font-extrabold text-center uppercase xl:text-4xl font-display text-gray-dark">
             Top 5 trade flows countries
           </h2>
-          <Ranking ingredientId={ingredient} />
+          <Ranking ingredientId={ingredient} onTradingFlowChange={handleTradingFlowChange} />
         </div>
         <div className="max-w-[1000px] hidden mx-auto lg:block">
-          <Map ingredientId={ingredient} />
+          <Map ingredientId={ingredient} currentTradeFlow={currentTradeFlow} />
         </div>
       </main>
 

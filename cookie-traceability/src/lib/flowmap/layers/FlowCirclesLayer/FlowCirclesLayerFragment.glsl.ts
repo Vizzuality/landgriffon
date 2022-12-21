@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 /*
  * Copyright 2022 FlowmapBlue
  * Copyright 2018-2020 Teralytics, modified by FlowmapBlue
@@ -49,18 +50,18 @@ void main(void) {
     emptyOutlineColor / 255., vColor,
     when_gt(unitInRadius, unitOutRadius)
   );
-  
+
   float innerR = min(unitInRadius, unitOutRadius) * (1.0 - SOFT_OUTLINE);
-  
+
   // Inner circle
-  float step2 = innerR - EPS; 
+  float step2 = innerR - EPS;
   float step3 = innerR;
-  
+
   // Ring
   float step4 = innerR + EPS;
   float step5 = 1.0 - SOFT_OUTLINE - EPS*2.0;
   float step6 = 1.0 - SOFT_OUTLINE;
-  
+
   gl_FragColor = vColor;
   gl_FragColor = mix(gl_FragColor, emptyColor / 255., smoothstep(step2, step3, distToCenter));
   gl_FragColor = mix(gl_FragColor, ringColor, smoothstep(step3, step4, distToCenter));

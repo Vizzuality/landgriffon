@@ -59,7 +59,7 @@ const loopTime = loopLength / animationSpeed;
 export default class AnimatedFlowLinesLayer<F> extends Layer {
   static defaultProps = {
     currentTime: 0,
-    animationTailLength: 0.4,
+    animationTailLength: 0.5,
     getSourcePosition: { type: 'accessor', value: (d: any) => [0, 0] },
     getTargetPosition: { type: 'accessor', value: (d: any) => [0, 0] },
     getPickable: { type: 'accessor', value: (d: any) => 1.0 },

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 /*
  * Copyright 2022 FlowmapBlue
  * Copyright 2018-2020 Teralytics, modified by FlowmapBlue
@@ -18,7 +19,7 @@
 export default `\
 #define SHADER_NAME animated-flow-lines-layer-vertex-shader
 #define SPEED 0.015
-#define NUM_PARTS 8.0
+#define NUM_PARTS 1.5
 
 attribute vec3 positions;
 attribute vec3 instanceSourcePositions;
@@ -60,7 +61,8 @@ void main(void) {
   vec4 source = project_position_to_clipspace(instanceSourcePositions, instanceSourcePositions64Low, vec3(0.), source_commonspace);
   vec4 target = project_position_to_clipspace(instanceTargetPositions, instanceTargetPositions64Low, vec3(0.), target_commonspace);
 
-  float widthPixels = 1.0 * thicknessUnit;
+  // float widthPixels = 1.0 * thicknessUnit;
+  float widthPixels = instanceWidths * thicknessUnit;
 
 
   // linear interpolation of source & target to pick right coord

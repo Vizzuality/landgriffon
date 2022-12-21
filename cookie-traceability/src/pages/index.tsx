@@ -59,7 +59,7 @@ const Home: React.FC = () => {
         </div>
       </main>
 
-      <footer className="px-4 text-center bg-gray-dark text-secondary py-14 space-y-7">
+      <footer className="px-4 space-y-5 text-center bg-gray-dark text-secondary py-14">
         <p className="text-2xl font-extrabold leading-7 uppercase xl:text-7xl font-display">
           Turn supply chain
           <br /> knowledge into
@@ -72,6 +72,12 @@ const Home: React.FC = () => {
         >
           Go to Landgriffon
         </a>
+        <p className="pt-10">
+          A product developed by{' '}
+          <a href="https://vizzuality.com" className="font-semibold">
+            vizzuality
+          </a>
+        </p>
       </footer>
     </div>
   );

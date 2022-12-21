@@ -25,7 +25,7 @@ import {
   schemeYlOrRd,
 } from 'd3-scale-chromatic';
 import { range } from 'd3-array';
-import { scalePow, scaleSequential, scaleSequentialPow } from 'd3-scale';
+import { scalePow, scaleSequential, scaleQuantize, scaleSequentialPow } from 'd3-scale';
 import { interpolateRgbBasis } from 'd3-interpolate';
 import { color as d3color, hcl } from 'd3-color';
 import { SettingsState } from './FlowMapState';
@@ -158,6 +158,18 @@ export const COLOR_SCHEMES: { [key: string]: string[] } = {
   YlGnBu: asScheme(schemeYlGnBu),
   YlOrBr: asScheme(schemeYlOrBr),
   YlOrRd: asScheme(schemeYlOrRd),
+  Custom: [
+    '#000000',
+    '#161613',
+    '#2D2C26',
+    '#434239',
+    '#5B584D',
+    '#727060',
+    '#888573',
+    '#9F9B86',
+    '#B5B199',
+    '#CDC8AE',
+  ].reverse(),
 };
 
 export const COLOR_SCHEME_KEYS = Object.keys(COLOR_SCHEMES);
@@ -268,10 +280,12 @@ export function createFlowColorScale(
   scheme: string[],
   animate: boolean | undefined,
 ): ColorScale {
-  const scale = scaleSequentialPow(interpolateRgbBasis(scheme))
-    // @ts-ignore
-    .exponent(animate ? 1 / 2 : 1 / 3)
-    .domain(domain);
+  // @ts-ignore
+  const scale = scaleQuantize().domain(domain).range(scheme);
+  // const scale = scaleSequentialPow(interpolateRgbBasis(scheme))
+  //   .exponent(animate ? 1 / 2 : 1 / 3)
+  //   .domain(domain);
+  // @ts-ignore
   return (value: number) => colorAsRgba(scale(value));
 }
 
@@ -289,7 +303,11 @@ export function getFlowColorScale(
     return (magnitude: number) => (magnitude >= 0 ? posScale(magnitude) : negScale(magnitude));
   }
 
-  const scale = createFlowColorScale([0, maxMagnitude || 0], colors.flows.scheme, animate);
+  const scale = createFlowColorScale(
+    [minMagnitude || 0, maxMagnitude || 0],
+    colors.flows.scheme,
+    animate,
+  );
   return (magnitude: number) => scale(magnitude);
 }
 

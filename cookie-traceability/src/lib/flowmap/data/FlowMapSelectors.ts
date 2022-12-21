@@ -846,11 +846,11 @@ export default class FlowMapSelectors<L, F> {
     this.getLocationTotals,
     (circleSizeScale, locationTotals) => {
       return (locationId: string) => {
-        const total = locationTotals?.get(locationId);
-        if (total && circleSizeScale) {
-          return circleSizeScale(Math.abs(total.incomingCount + total.internalCount)) || 0;
-        }
-        return 0;
+        // const total = locationTotals?.get(locationId);
+        // if (total && circleSizeScale) {
+        //   return circleSizeScale(Math.abs(total.incomingCount + total.internalCount)) || 0;
+        // }
+        return 4;
       };
     },
   );
@@ -860,11 +860,11 @@ export default class FlowMapSelectors<L, F> {
     this.getLocationTotals,
     (circleSizeScale, locationTotals) => {
       return (locationId: string) => {
-        const total = locationTotals?.get(locationId);
-        if (total && circleSizeScale) {
-          return circleSizeScale(Math.abs(total.outgoingCount + total.internalCount)) || 0;
-        }
-        return 0;
+        // const total = locationTotals?.get(locationId);
+        // if (total && circleSizeScale) {
+        //   return circleSizeScale(Math.abs(total.outgoingCount + total.internalCount)) || 0;
+        // }
+        return 4;
       };
     },
   );
@@ -974,6 +974,7 @@ export default class FlowMapSelectors<L, F> {
       flows.map((d: F | AggregateFlow) =>
         flowThicknessScale ? flowThicknessScale(getFlowMagnitude(d)) || 0 : 0,
       ),
+      // flows.map(() => 0.1),
     );
     const endpointOffsets = new Float32Array(
       flatMap(flows, (d: F | AggregateFlow) => {
@@ -987,6 +988,7 @@ export default class FlowMapSelectors<L, F> {
     );
     const flowLineColors = new Uint8Array(
       flatMap(flows, (f: F | AggregateFlow) => flowColorScale(getFlowMagnitude(f))),
+      // flatMap(flows, (f: F | AggregateFlow) => [0, 0, 0, 255]),
     );
 
     const staggeringValues = settingsState.animationEnabled

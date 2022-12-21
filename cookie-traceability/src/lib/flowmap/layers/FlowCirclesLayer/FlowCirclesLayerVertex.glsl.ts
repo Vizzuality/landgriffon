@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 /*
  * Copyright 2022 FlowmapBlue
  * Copyright 2018-2020 Teralytics, modified by FlowmapBlue
@@ -40,7 +41,7 @@ varying float unitOutRadius;
 void main(void) {
   geometry.worldPosition = instancePositions;
 
-  float outerRadiusPixels = 4.0;
+  float outerRadiusPixels = max(instanceInRadius, instanceOutRadius);
   unitInRadius = instanceInRadius / outerRadiusPixels;
   unitOutRadius = instanceOutRadius / outerRadiusPixels;
 

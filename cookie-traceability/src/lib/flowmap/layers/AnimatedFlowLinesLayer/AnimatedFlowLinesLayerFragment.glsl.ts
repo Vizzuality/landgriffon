@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 /*
  * Copyright 2022 FlowmapBlue
  * Copyright 2018-2020 Teralytics, modified by FlowmapBlue
@@ -26,7 +27,7 @@ uniform float animationTailLength;
 varying vec4 vColor;
 varying float sourceToTarget;
 varying vec2 uv;
-                                   
+
 void main(void) {
   geometry.uv = uv;
 

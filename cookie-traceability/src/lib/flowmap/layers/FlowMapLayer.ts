@@ -341,7 +341,7 @@ export default class FlowMapLayer<L, F> extends CompositeLayer {
                 ...commonLineLayerProps,
                 id: 'animated-flow-lines',
                 drawOutline: false,
-                thicknessUnit: 2,
+                thicknessUnit: 10,
               }),
             }),
           );
@@ -390,9 +390,9 @@ export default class FlowMapLayer<L, F> extends CompositeLayer {
                 new FlowLinesLayer({
                   id: 'flow-highlight',
                   data: highlightedObject.lineAttributes,
-                  drawOutline: true,
-                  outlineColor: colorAsRgba('orange'),
-                  outlineThickness: 1,
+                  drawOutline: false,
+                  // outlineColor: colorAsRgba('orange'),
+                  // outlineThickness: 1,
                 }),
               );
               break;

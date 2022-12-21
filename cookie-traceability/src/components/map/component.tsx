@@ -6,7 +6,7 @@ import DeckGL from '@deck.gl/react/typed';
 import { Map as ReactMapGl, Layer } from 'react-map-gl';
 import { ScatterplotLayer } from '@deck.gl/layers/typed';
 import numeral from 'numeral';
-import { flip, useFloating } from '@floating-ui/react-dom';
+import { flip, offset, useFloating } from '@floating-ui/react-dom';
 
 import { FlowMapLayer } from 'lib/flowmap/layers';
 
@@ -29,9 +29,9 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
   const queryClient = useQueryClient();
   const [hoverInfo, setHoverInfo] = useState<any>(null);
   const { x, y, reference, floating, strategy } = useFloating({
-    middleware: [flip()],
-    placement: 'bottom-start',
-    strategy: 'fixed',
+    middleware: [flip(), offset(10)],
+    placement: 'top',
+    strategy: 'absolute',
   });
 
   const ingredient = useMemo<Ingredient>(
@@ -230,13 +230,13 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
           <div
             className="absolute z-10"
             style={{
-              left: hoverInfo.x + 10,
-              top: hoverInfo.y + 10,
+              left: hoverInfo.x,
+              top: hoverInfo.y,
             }}
             ref={reference}
           >
             <div
-              className="px-4 py-2 rounded pointer-events-none text-secondary bg-gray-dark"
+              className="px-4 py-2 rounded-md pointer-events-none text-secondary bg-gray-dark"
               ref={floating}
               style={{
                 position: strategy,
@@ -255,8 +255,10 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
                       key={`tooltip-item-${importer.origin}-${importer.dest}`}
                       className="flex justify-between space-x-4 text-xs"
                     >
-                      <div>&rarr; {importer.countryName}</div>
-                      <div>{numeral(importer.count).format(NUMERAL_FORMAT)} tonnes</div>
+                      <div className="whitespace-nowrap">&rarr; {importer.countryName}</div>
+                      <div className="whitespace-nowrap">
+                        {numeral(importer.count).format(NUMERAL_FORMAT)} tonnes
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -268,8 +270,10 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
                       key={`tooltip-item-${exporter.origin}-${exporter.dest}`}
                       className="flex justify-between space-x-4 text-xs"
                     >
-                      <div>&larr; {exporter.countryName}</div>
-                      <div>{numeral(exporter.count).format(NUMERAL_FORMAT)} tonnes</div>
+                      <div className="whitespace-nowrap">&larr; {exporter.countryName}</div>
+                      <div className="whitespace-nowrap">
+                        {numeral(exporter.count).format(NUMERAL_FORMAT)} tonnes
+                      </div>
                     </li>
                   ))}
                 </ul>

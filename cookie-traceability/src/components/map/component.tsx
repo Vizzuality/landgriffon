@@ -2,35 +2,15 @@ import React, { useMemo } from 'react';
 import { useQueries } from '@tanstack/react-query';
 import axios from 'axios';
 import DeckGL from '@deck.gl/react/typed';
-import { Map as ReactMapGl } from 'react-map-gl';
+import { Map as ReactMapGl, Source, Layer } from 'react-map-gl';
 import { FlowMapLayer } from 'lib/flowmap/layers';
 
 import { INGREDIENTS, MAPBOX_TOKEN, INITIAL_VIEW_STATE } from '../../constants';
 import mapStyle from './map-style.json';
 
+import type { LayerProps } from 'react-map-gl';
 import type { LocationDatum, FlowDatum, Ingredient } from 'types';
-import type { MapProps } from './types';
-
-// const colors = {
-//   flows: {
-//     scheme: [
-//       'rgb(0, 22, 61)',
-//       'rgb(0, 27, 62)',
-//       'rgb(0, 36, 68)',
-//       'rgb(0, 48, 77)',
-//       'rgb(3, 65, 91)',
-//       'rgb(48, 87, 109)',
-//       'rgb(85, 115, 133)',
-//       'rgb(129, 149, 162)',
-//       'rgb(179, 191, 197)',
-//       'rgb(240, 240, 240)',
-//     ],
-//   },
-//   locationAreas: {
-//     normal: '#334',
-//   },
-//   outlineColor: '#000',
-// };
+import type { MapProps, MapFlowData } from './types';
 
 const fetchData = async (dataPath: string) => axios.get(dataPath).then((res) => res.data);
 
@@ -59,7 +39,7 @@ const Map: React.FC<MapProps> = ({ ingredientId }) => {
       },
     ],
   });
-  const data = useMemo(() => {
+  const data = useMemo<MapFlowData>(() => {
     if (results[0].data && results[1].data) {
       return {
         flows: results[0].data,
@@ -96,6 +76,24 @@ const Map: React.FC<MapProps> = ({ ingredientId }) => {
     );
   }
 
+  const countryNames = useMemo<string[]>(() => {
+    if (data?.locations) return data.locations.map((loc) => loc.name);
+    return [];
+  }, [data]);
+
+  const parkLayer: LayerProps = {
+    id: 'country-highlight-layer',
+    type: 'line',
+    'source-layer': 'country_boundaries',
+    // filter: ['in', 'iso_3166_1_alpha_3', 'ITA', 'NLD', 'DEU', 'FRA', 'ESP', 'GBR', 'USA'],
+    filter: ['in', 'name_en', ...countryNames],
+    paint: {
+      'line-color': '#C54C39',
+      'line-opacity': 0.5,
+      'line-width': 2,
+    },
+  };
+
   return (
     <div className="relative w-full h-[630px]">
       <DeckGL
@@ -109,8 +107,11 @@ const Map: React.FC<MapProps> = ({ ingredientId }) => {
           projection="mercator"
           mapStyle={JSON.parse(JSON.stringify(mapStyle))}
           mapboxAccessToken={MAPBOX_TOKEN}
-          // renderWorldCopies={false}
-        />
+        >
+          <Source type="vector" url="mapbox://mapbox.country-boundaries-v1">
+            <Layer {...parkLayer} />
+          </Source>
+        </ReactMapGl>
       </DeckGL>
     </div>
   );

@@ -1,5 +1,4 @@
 /** @type {import('next').NextConfig} */
-const withTM = require('next-transpile-modules')(['@flowmap.gl/layers', '@flowmap.gl/data']);
 
 const nextConfig = {
   eslint: {
@@ -19,4 +18,4 @@ const nextConfig = {
   },
 };
 
-module.exports = withTM(nextConfig);
+module.exports = nextConfig;

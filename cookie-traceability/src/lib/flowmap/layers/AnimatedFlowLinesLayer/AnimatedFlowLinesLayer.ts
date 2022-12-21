@@ -21,7 +21,7 @@ import GL from '@luma.gl/constants';
 import { Geometry, Model } from '@luma.gl/core';
 import FragmentShader from './AnimatedFlowLinesLayerFragment.glsl';
 import VertexShader from './AnimatedFlowLinesLayerVertex.glsl';
-import { FlowLinesLayerAttributes, RGBA } from '@flowmap.gl/data';
+import { FlowLinesLayerAttributes, RGBA } from '../../data';
 import { LayerProps } from '../types';
 export interface Props<F> extends LayerProps {
   id: string;

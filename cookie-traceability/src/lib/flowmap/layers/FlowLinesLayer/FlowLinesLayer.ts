@@ -16,19 +16,19 @@
  *
  */
 
-import {Layer, picking, project32} from '@deck.gl/core';
+import { Layer, picking, project32 } from '@deck.gl/core';
 import GL from '@luma.gl/constants';
-import {Geometry, Model} from '@luma.gl/core';
+import { Geometry, Model } from '@luma.gl/core';
 import FragmentShader from './FlowLinesLayerFragment.glsl';
 import VertexShader from './FlowLinesLayerVertex.glsl';
-import {FlowLinesLayerAttributes, RGBA} from '@flowmap.gl/data';
-import {LayerProps} from '../types';
+import { FlowLinesLayerAttributes, RGBA } from '../../data';
+import { LayerProps } from '../types';
 
 export interface Props<F> extends LayerProps {
   id: string;
   opacity?: number;
   pickable?: boolean;
-  updateTriggers?: {[key: string]: Record<string, unknown>};
+  updateTriggers?: { [key: string]: Record<string, unknown> };
   data: F[] | FlowLinesLayerAttributes;
   drawOutline: boolean;
   outlineColor?: RGBA;
@@ -38,7 +38,7 @@ export interface Props<F> extends LayerProps {
   getTargetPosition?: (d: F) => [number, number];
   getColor?: (d: F) => RGBA;
   getThickness?: (d: F) => number;
-  getPickable?: (d: F, {index}: {index: number}) => number; // >= 1.0 -> true
+  getPickable?: (d: F, { index }: { index: number }) => number; // >= 1.0 -> true
   getEndpointOffsets?: (d: F) => [number, number];
 }
 
@@ -48,11 +48,11 @@ const INNER_SIDE_OUTLINE_THICKNESS = 1;
 class FlowLinesLayer<F> extends Layer {
   static layerName = 'FlowLinesLayer';
   static defaultProps = {
-    getSourcePosition: {type: 'accessor', value: (d: any) => [0, 0]},
-    getTargetPosition: {type: 'accessor', value: (d: any) => [0, 0]},
-    getColor: {type: 'accessor', value: DEFAULT_COLOR},
-    getThickness: {type: 'accessor', value: (d: any) => d.count}, // 0..0.5
-    getPickable: {type: 'accessor', value: (d: any) => 1.0},
+    getSourcePosition: { type: 'accessor', value: (d: any) => [0, 0] },
+    getTargetPosition: { type: 'accessor', value: (d: any) => [0, 0] },
+    getColor: { type: 'accessor', value: DEFAULT_COLOR },
+    getThickness: { type: 'accessor', value: (d: any) => d.count }, // 0..0.5
+    getPickable: { type: 'accessor', value: (d: any) => 1.0 },
     drawOutline: true,
     thicknessUnit: 12,
     outlineThickness: 1,
@@ -77,7 +77,7 @@ class FlowLinesLayer<F> extends Layer {
   }
 
   initializeState(): void {
-    const {attributeManager} = this.state;
+    const { attributeManager } = this.state;
 
     attributeManager.addInstanced({
       instanceSourcePositions: {
@@ -116,22 +116,22 @@ class FlowLinesLayer<F> extends Layer {
     });
   }
 
-  updateState({props, oldProps, changeFlags}: Record<string, any>): void {
-    super.updateState({props, oldProps, changeFlags});
+  updateState({ props, oldProps, changeFlags }: Record<string, any>): void {
+    super.updateState({ props, oldProps, changeFlags });
 
     if (changeFlags.extensionsChanged) {
-      const {gl} = this.context;
+      const { gl } = this.context;
       if (this.state.model) {
         this.state.model.delete();
       }
-      this.setState({model: this._getModel(gl)});
+      this.setState({ model: this._getModel(gl) });
       this.getAttributeManager().invalidateAll();
     }
   }
 
-  draw({uniforms}: Record<string, any>): void {
-    const {gl} = this.context;
-    const {outlineColor, thicknessUnit} = this.props;
+  draw({ uniforms }: Record<string, any>): void {
+    const { gl } = this.context;
+    const { outlineColor, thicknessUnit } = this.props;
     gl.lineWidth(1);
     this.state.model
       .setUniforms({
@@ -147,7 +147,7 @@ class FlowLinesLayer<F> extends Layer {
     let positions: number[] = [];
     let pixelOffsets: number[] = [];
 
-    const {drawOutline, outlineThickness} = this.props;
+    const { drawOutline, outlineThickness } = this.props;
     if (drawOutline) {
       // source_target_mix, perpendicular_offset_in_thickness_units, direction_of_travel_offset_in_thickness_units
       // prettier-ignore

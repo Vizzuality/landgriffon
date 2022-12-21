@@ -79,7 +79,7 @@ const Map: React.FC<MapProps> = ({ ingredientId }) => {
         data,
         darkMode: false,
         animationEnabled: true,
-        colorScheme: 'Greys',
+        colorScheme: 'Custom',
         clusteringEnabled: false,
         pickable: true,
         fadeEnabled: false,
@@ -103,7 +103,7 @@ const Map: React.FC<MapProps> = ({ ingredientId }) => {
         height="100%"
         initialViewState={INITIAL_VIEW_STATE}
         layers={layers}
-        controller={true}
+        controller={false}
       >
         <ReactMapGl
           projection="mercator"

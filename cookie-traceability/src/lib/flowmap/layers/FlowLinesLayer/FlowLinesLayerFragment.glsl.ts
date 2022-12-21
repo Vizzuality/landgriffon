@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 /*
  * Copyright 2022 FlowmapBlue
  * Copyright 2018-2020 Teralytics, modified by FlowmapBlue

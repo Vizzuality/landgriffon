@@ -73,7 +73,7 @@ const Home: React.FC = () => {
           Go to Landgriffon
         </a>
         <p className="pt-10">
-          A product developed by{' '}
+          A product by{' '}
           <a href="https://vizzuality.com" className="font-semibold">
             vizzuality
           </a>

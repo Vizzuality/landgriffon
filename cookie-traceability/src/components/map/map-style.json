@@ -480,131 +480,7 @@
         "mapbox:group": "Place labels, place-labels"
       }
     },
-    {
-      "minzoom": 1,
-      "layout": {
-        "text-line-height": 1.1,
-        "text-size": [
-          "interpolate",
-          [
-            "cubic-bezier",
-            0.2,
-            0,
-            0.7,
-            1
-          ],
-          [
-            "zoom"
-          ],
-          1,
-          [
-            "step",
-            [
-              "get",
-              "symbolrank"
-            ],
-            11,
-            4,
-            9,
-            5,
-            8
-          ],
-          9,
-          [
-            "step",
-            [
-              "get",
-              "symbolrank"
-            ],
-            22,
-            4,
-            19,
-            5,
-            17
-          ]
-        ],
-        "text-radial-offset": [
-          "step",
-          [
-            "zoom"
-          ],
-          0.6,
-          8,
-          0
-        ],
-        "icon-image": "",
-        "text-font": [
-          "DIN Pro Medium",
-          "Arial Unicode MS Regular"
-        ],
-        "text-field": [
-          "coalesce",
-          [
-            "get",
-            "name_en"
-          ],
-          [
-            "get",
-            "name"
-          ]
-        ],
-        "text-max-width": 6
-      },
-      "maxzoom": 10,
-      "filter": [
-        "match",
-        [
-          "get",
-          "class"
-        ],
-        [
-          "country",
-          "disputed_country"
-        ],
-        [
-          "match",
-          [
-            "get",
-            "worldview"
-          ],
-          [
-            "all",
-            "US"
-          ],
-          true,
-          false
-        ],
-        false
-      ],
-      "type": "symbol",
-      "source": "composite",
-      "id": "country-label",
-      "paint": {
-        "icon-opacity": [
-          "step",
-          [
-            "zoom"
-          ],
-          [
-            "case",
-            [
-              "has",
-              "text_anchor"
-            ],
-            1,
-            0
-          ],
-          7,
-          0
-        ],
-        "text-color": "hsla(8, 55%, 50%, 0.4)"
-      },
-      "source-layer": "place_label",
-      "metadata": {
-        "mapbox:featureComponent": "place-labels",
-        "mapbox:group": "Place labels, place-labels"
-      }
-    },
+
     {
       "minzoom": 0.75,
       "layout": {
@@ -681,7 +557,7 @@
   ],
   "sources": {
     "composite": {
-      "url": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",
+      "url": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2,mapbox.country-boundaries-v1",
       "type": "vector"
     }
   },

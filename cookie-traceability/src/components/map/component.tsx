@@ -70,7 +70,7 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
   const countryISOs = useMemo<string[]>(() => {
     if (data?.locations) return data.locations.map((loc) => loc.iso2).filter((iso) => !!iso);
     return [];
-  }, [data]);
+  }, [data?.locations]);
 
   const highlightedCountriesBoundaries: ReactMapGlLayers = {
     id: 'country-highlight-layer',
@@ -120,14 +120,31 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
     },
   };
 
-  const importers = useMemo(() => {
+  const exporters = useMemo(() => {
     if (hoverInfo?.object) {
-      const result = data?.flows.filter((flow) => flow.dest === hoverInfo.object.id);
+      const result = data?.flows
+        .filter((flow) => flow.origin === hoverInfo.object.id)
+        .map((flow) => ({
+          ...flow,
+          countryName: data?.locations.find((loc) => loc.id === flow.origin)?.name,
+        }));
       return result;
     }
     return null;
   }, [data, hoverInfo]);
-  console.log(importers);
+
+  const importers = useMemo(() => {
+    if (hoverInfo?.object) {
+      const result = data?.flows
+        .filter((flow) => flow.dest === hoverInfo.object.id)
+        .map((flow) => ({
+          ...flow,
+          countryName: data?.locations.find((loc) => loc.id === flow.origin)?.name,
+        }));
+      return result;
+    }
+    return null;
+  }, [data, hoverInfo]);
 
   // Layers for the map, there is not penalty for having an empty array
   const layers: any[] = [];
@@ -169,7 +186,7 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
         getPosition: (d) => [d.lon, d.lat],
         getRadius: 100,
         getFillColor: [0, 0, 0],
-        onHover: setHoverInfo,
+        onHover: (info) => setHoverInfo(info),
       }),
     );
   }
@@ -204,14 +221,26 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
             }}
           >
             <h3 className="text-sm font-medium font-display">{hoverInfo.object.name}</h3>
-            <ul>
-              {importers &&
-                importers.map((importer) => (
-                  <li key={`tooltip-item-${importer.dest}`} className="text-xs">
-                    {numeral(importer.count).format(NUMERAL_FORMAT)} tonnes
+            {importers && (
+              <ul>
+                {importers.map((importer) => (
+                  <li key={`tooltip-item-${importer.origin}-${importer.dest}`} className="text-xs">
+                    &rarr; {importer.countryName} {numeral(importer.count).format(NUMERAL_FORMAT)}{' '}
+                    tonnes
                   </li>
                 ))}
-            </ul>
+              </ul>
+            )}
+            {exporters && (
+              <ul>
+                {exporters.map((importer) => (
+                  <li key={`tooltip-item-${importer.origin}-${importer.dest}`} className="text-xs">
+                    &larr; {importer.countryName} {numeral(importer.count).format(NUMERAL_FORMAT)}{' '}
+                    tonnes
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
       </DeckGL>

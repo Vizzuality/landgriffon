@@ -37,7 +37,7 @@ const Home: React.FC = () => {
         <Hero />
 
         <div id="ingredients" className="relative z-10 pt-10 space-y-6 max-w-[1200px] mx-auto px-4">
-          <p className="text-sm text-center">Average chocolate cookie ingredients</p>
+          <p className="text-sm text-center">Average ingredients for a chocolate chip cookie</p>
           <ul className="grid grid-cols-4 gap-2 list-none xl:gap-6">
             {INGREDIENTS.map(({ id, name }) => (
               <li key={`ingredient-button-${id}`}>
@@ -57,7 +57,7 @@ const Home: React.FC = () => {
       <main className="flex-1 px-4 bg-secondary py-14">
         <div className="">
           <h2 className="text-xl font-extrabold text-center uppercase xl:text-4xl font-display text-gray-dark">
-            Top 5 trade flows countries
+            Top 5 trade flows
           </h2>
           <Ranking ingredientId={ingredient} onTradingFlowChange={handleTradingFlowChange} />
         </div>

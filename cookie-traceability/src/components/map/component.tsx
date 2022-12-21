@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useQueries } from '@tanstack/react-query';
+import React, { useEffect, useMemo } from 'react';
+import { useQueryClient, useQueries } from '@tanstack/react-query';
 import axios from 'axios';
 import DeckGL from '@deck.gl/react/typed';
 import { Map as ReactMapGl, Layer } from 'react-map-gl';
@@ -21,6 +21,7 @@ const DEFAULT_QUERY_OPTIONS = {
 };
 
 const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
+  const queryClient = useQueryClient();
   const ingredient = useMemo<Ingredient>(
     () => INGREDIENTS.find((i) => i.id === ingredientId) || INGREDIENTS[0],
     [ingredientId],
@@ -28,7 +29,7 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
   const results = useQueries({
     queries: [
       {
-        queryKey: ['flows', ingredientId, currentTradeFlow],
+        queryKey: ['flows', ingredientId],
         queryFn: fetchData.bind(this, ingredient?.dataFlowPath),
         ...DEFAULT_QUERY_OPTIONS,
       },
@@ -140,6 +141,10 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
       }),
     );
   }
+
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ['flows'] });
+  }, [currentTradeFlow, queryClient]);
 
   return (
     <div className="relative w-full h-[630px]">

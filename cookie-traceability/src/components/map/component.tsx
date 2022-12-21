@@ -64,7 +64,7 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
   }, [currentTradeFlow, results]);
 
   const countryISOs = useMemo<string[]>(() => {
-    if (data?.locations) return data.locations.map((loc) => loc.iso).filter((iso) => !!iso);
+    if (data?.locations) return data.locations.map((loc) => loc.iso2).filter((iso) => !!iso);
     return [];
   }, [data]);
 
@@ -73,7 +73,7 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
     type: 'line',
     source: 'composite',
     'source-layer': 'country_boundaries',
-    filter: ['in', 'iso_3166_1_alpha_3', ...countryISOs],
+    filter: ['in', 'iso_3166_1', ...countryISOs],
     paint: {
       'line-color': '#C54C39',
       'line-opacity': 0.8,

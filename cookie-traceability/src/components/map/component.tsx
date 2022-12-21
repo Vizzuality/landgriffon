@@ -1,14 +1,14 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useQueries } from '@tanstack/react-query';
 import axios from 'axios';
 import DeckGL from '@deck.gl/react/typed';
-import { Map as ReactMapGl, Source, Layer } from 'react-map-gl';
+import { Map as ReactMapGl, Layer } from 'react-map-gl';
 import { FlowMapLayer } from 'lib/flowmap/layers';
 
 import { INGREDIENTS, MAPBOX_TOKEN, INITIAL_VIEW_STATE } from '../../constants';
 import mapStyle from './map-style.json';
 
-import type { LayerProps } from 'react-map-gl';
+import type { LayerProps as ReactMapGlLayers } from 'react-map-gl';
 import type { LocationDatum, FlowDatum, Ingredient } from 'types';
 import type { MapProps, MapFlowData } from './types';
 
@@ -28,7 +28,7 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
   const results = useQueries({
     queries: [
       {
-        queryKey: ['flows', ingredientId],
+        queryKey: ['flows', ingredientId, currentTradeFlow],
         queryFn: fetchData.bind(this, ingredient?.dataFlowPath),
         ...DEFAULT_QUERY_OPTIONS,
       },
@@ -41,17 +41,82 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
   });
   const data = useMemo<MapFlowData>(() => {
     if (results[0].data && results[1].data) {
+      let flows = results[0].data;
+      // TO-DO: this should be better in a select on Query
+      if (currentTradeFlow) {
+        const exporterId = results[1].data.find(
+          (d: LocationDatum) => d.name === currentTradeFlow.exporter,
+        )?.id;
+        const importerId = results[1].data.find(
+          (d: LocationDatum) => d.name === currentTradeFlow.importer,
+        )?.id;
+        flows = results[0].data.filter(
+          (flow: FlowDatum) => flow.origin === exporterId && flow.dest === importerId,
+        );
+      }
       return {
-        flows: results[0].data,
+        flows,
         locations: results[1].data,
       };
     }
     return null;
-  }, [results]);
+  }, [currentTradeFlow, results]);
+
+  const countryISOs = useMemo<string[]>(() => {
+    if (data?.locations) return data.locations.map((loc) => loc.iso).filter((iso) => !!iso);
+    return [];
+  }, [data]);
+
+  const highlightedCountriesBoundaries: ReactMapGlLayers = {
+    id: 'country-highlight-layer',
+    type: 'line',
+    source: 'composite',
+    'source-layer': 'country_boundaries',
+    filter: ['in', 'iso_3166_1_alpha_3', ...countryISOs],
+    paint: {
+      'line-color': '#C54C39',
+      'line-opacity': 0.8,
+      'line-width': 2,
+    },
+  };
+
+  const highlightedCountriesLabels: ReactMapGlLayers = {
+    id: 'country-label',
+    minzoom: 1,
+    layout: {
+      'text-line-height': 1.1,
+      'text-size': [
+        'interpolate',
+        ['cubic-bezier', 0.2, 0, 0.7, 1],
+        ['zoom'],
+        1,
+        ['step', ['get', 'symbolrank'], 11, 4, 9, 5, 8],
+        9,
+        ['step', ['get', 'symbolrank'], 22, 4, 19, 5, 17],
+      ],
+      'text-radial-offset': ['step', ['zoom'], 0.6, 8, 0],
+      'icon-image': '',
+      'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
+      'text-field': ['coalesce', ['get', 'name_en'], ['get', 'name']],
+      'text-max-width': 6,
+    },
+    maxzoom: 10,
+    filter: ['in', 'iso_3166_1', ...countryISOs],
+    type: 'symbol',
+    source: 'composite',
+    paint: {
+      'icon-opacity': ['step', ['zoom'], ['case', ['has', 'text_anchor'], 1, 0], 7, 0],
+      'text-color': 'hsla(8, 55%, 50%, 0.8)',
+    },
+    'source-layer': 'place_label',
+    metadata: {
+      'mapbox:featureComponent': 'place-labels',
+      'mapbox:group': 'Place labels, place-labels',
+    },
+  };
 
   // Layers for the map, there is not penalty for having an empty array
   const layers: any[] = [];
-
   if (data) {
     layers.push(
       new FlowMapLayer<LocationDatum, FlowDatum>({
@@ -75,59 +140,6 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
       }),
     );
   }
-
-  const countryNames = useMemo<string[]>(() => {
-    if (data?.locations) return data.locations.map((loc) => loc.name);
-    return [];
-  }, [data]);
-
-  const highlightedCountriesBoundaries: LayerProps = {
-    id: 'country-highlight-layer',
-    type: 'line',
-    source: 'composite',
-    'source-layer': 'country_boundaries',
-    filter: ['in', 'name_en', ...countryNames],
-    paint: {
-      'line-color': '#C54C39',
-      'line-opacity': 0.8,
-      'line-width': 2,
-    },
-  };
-
-  const highlightedCountriesLabels: LayerProps = {
-    id: 'country-label',
-    minzoom: 1,
-    layout: {
-      'text-line-height': 1.1,
-      'text-size': [
-        'interpolate',
-        ['cubic-bezier', 0.2, 0, 0.7, 1],
-        ['zoom'],
-        1,
-        ['step', ['get', 'symbolrank'], 11, 4, 9, 5, 8],
-        9,
-        ['step', ['get', 'symbolrank'], 22, 4, 19, 5, 17],
-      ],
-      'text-radial-offset': ['step', ['zoom'], 0.6, 8, 0],
-      'icon-image': '',
-      'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
-      'text-field': ['coalesce', ['get', 'name_en'], ['get', 'name']],
-      'text-max-width': 6,
-    },
-    maxzoom: 10,
-    filter: ['in', 'name_en', ...countryNames],
-    type: 'symbol',
-    source: 'composite',
-    paint: {
-      'icon-opacity': ['step', ['zoom'], ['case', ['has', 'text_anchor'], 1, 0], 7, 0],
-      'text-color': 'hsla(8, 55%, 50%, 0.8)',
-    },
-    'source-layer': 'place_label',
-    metadata: {
-      'mapbox:featureComponent': 'place-labels',
-      'mapbox:group': 'Place labels, place-labels',
-    },
-  };
 
   return (
     <div className="relative w-full h-[630px]">

@@ -244,8 +244,9 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
                 left: x ?? 0,
               }}
             >
-              <h3 className="text-sm font-medium font-display">
-                <Flag countryCode={hoverInfo.object.iso2} svg /> {hoverInfo.object.name}
+              <h3 className="flex items-center space-x-2 text-sm font-medium font-display">
+                <Flag countryCode={hoverInfo.object.iso2} svg />
+                <span>{hoverInfo.object.name}</span>
               </h3>
               {importers && (
                 <ul>

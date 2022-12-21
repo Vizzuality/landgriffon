@@ -80,10 +80,11 @@ const Home: React.FC = () => {
           Go to Landgriffon
         </a>
         <p className="pt-10">
-          A product by{' '}
+          A{' '}
           <a href="https://vizzuality.com" className="font-semibold">
             vizzuality
-          </a>
+          </a>{' '}
+          product
         </p>
       </footer>
     </div>

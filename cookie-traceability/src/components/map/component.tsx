@@ -1,11 +1,14 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useQueryClient, useQueries } from '@tanstack/react-query';
 import axios from 'axios';
 import DeckGL from '@deck.gl/react/typed';
 import { Map as ReactMapGl, Layer } from 'react-map-gl';
+import { ScatterplotLayer } from '@deck.gl/layers/typed';
+import numeral from 'numeral';
+
 import { FlowMapLayer } from 'lib/flowmap/layers';
 
-import { INGREDIENTS, MAPBOX_TOKEN, INITIAL_VIEW_STATE } from '../../constants';
+import { INGREDIENTS, MAPBOX_TOKEN, INITIAL_VIEW_STATE, NUMERAL_FORMAT } from '../../constants';
 import mapStyle from './map-style.json';
 
 import type { LayerProps as ReactMapGlLayers } from 'react-map-gl';
@@ -22,6 +25,7 @@ const DEFAULT_QUERY_OPTIONS = {
 
 const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
   const queryClient = useQueryClient();
+  const [hoverInfo, setHoverInfo] = useState<any>(null);
   const ingredient = useMemo<Ingredient>(
     () => INGREDIENTS.find((i) => i.id === ingredientId) || INGREDIENTS[0],
     [ingredientId],
@@ -116,6 +120,15 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
     },
   };
 
+  const importers = useMemo(() => {
+    if (hoverInfo?.object) {
+      const result = data?.flows.filter((flow) => flow.dest === hoverInfo.object.id);
+      return result;
+    }
+    return null;
+  }, [data, hoverInfo]);
+  console.log(importers);
+
   // Layers for the map, there is not penalty for having an empty array
   const layers: any[] = [];
   if (data) {
@@ -127,17 +140,36 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
         animationEnabled: true,
         colorScheme: 'Custom',
         clusteringEnabled: false,
-        pickable: true,
+        pickable: false,
         fadeEnabled: false,
         fadeOpacityEnabled: false,
         adaptiveScalesEnabled: true,
-        locationTotalsEnabled: true,
+        locationTotalsEnabled: false,
+        locationLabelsEnabled: false,
         getLocationId: (loc) => loc.id,
         getFlowOriginId: (flow) => flow.origin,
         getLocationName: (loc) => loc.name,
         getFlowDestId: (flow) => flow.dest,
         getFlowMagnitude: (flow) => flow.count,
         getLocationCentroid: (loc) => [loc.lon, loc.lat],
+      }),
+    );
+    layers.push(
+      new ScatterplotLayer<LocationDatum>({
+        id: 'trading-locations-layer',
+        data: data.locations,
+        pickable: true,
+        opacity: 1,
+        stroked: false,
+        filled: true,
+        radiusScale: 1,
+        radiusMinPixels: 4,
+        radiusMaxPixels: 10,
+        lineWidthMinPixels: 1,
+        getPosition: (d) => [d.lon, d.lat],
+        getRadius: 100,
+        getFillColor: [0, 0, 0],
+        onHover: setHoverInfo,
       }),
     );
   }
@@ -163,6 +195,25 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
           <Layer {...highlightedCountriesLabels} />
           <Layer {...highlightedCountriesBoundaries} />
         </ReactMapGl>
+        {hoverInfo?.object && (
+          <div
+            className="absolute z-10 px-2 py-1 text-white bg-black rounded pointer-events-none"
+            style={{
+              left: hoverInfo.x + 10,
+              top: hoverInfo.y + 10,
+            }}
+          >
+            <h3 className="text-sm font-medium font-display">{hoverInfo.object.name}</h3>
+            <ul>
+              {importers &&
+                importers.map((importer) => (
+                  <li key={`tooltip-item-${importer.dest}`} className="text-xs">
+                    {numeral(importer.count).format(NUMERAL_FORMAT)} tonnes
+                  </li>
+                ))}
+            </ul>
+          </div>
+        )}
       </DeckGL>
     </div>
   );

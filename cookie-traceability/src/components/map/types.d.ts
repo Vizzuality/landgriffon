@@ -1,7 +1,8 @@
-import { Ingredient, LocationDatum, FlowDatum } from 'types';
+import { Ingredient, LocationDatum, FlowDatum, CountryTrade } from 'types';
 
 export type MapProps = {
   ingredientId: Ingredient['id'];
+  currentTradeFlow: CountryTrade | null;
 };
 
 export type MapFlowData = {

@@ -20,7 +20,7 @@ const DEFAULT_QUERY_OPTIONS = {
   refetchOnMount: false,
 };
 
-const Map: React.FC<MapProps> = ({ ingredientId }) => {
+const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
   const ingredient = useMemo<Ingredient>(
     () => INGREDIENTS.find((i) => i.id === ingredientId) || INGREDIENTS[0],
     [ingredientId],
@@ -136,7 +136,7 @@ const Map: React.FC<MapProps> = ({ ingredientId }) => {
         height="100%"
         initialViewState={INITIAL_VIEW_STATE}
         layers={layers}
-        controller={true}
+        controller={false}
       >
         <ReactMapGl
           projection="mercator"

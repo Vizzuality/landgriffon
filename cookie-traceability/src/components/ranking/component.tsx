@@ -1,17 +1,19 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import numeral from 'numeral';
 
 import { INGREDIENTS, RANKING_COLORS, NUMERAL_FORMAT } from '../../constants';
 
-import type { Ingredient, IngredientPayload } from 'types';
+import type { Ingredient, IngredientPayload, CountryTrade } from 'types';
 import type { CountryTradingRanking, RankingProps } from './types';
+import classNames from 'classnames';
 
 const fetchTopTradeFlows = async () =>
   axios.get('/data/top_trade_flows.json').then((res) => res.data);
 
-const Ranking: React.FC<RankingProps> = ({ ingredientId }) => {
+const Ranking: React.FC<RankingProps> = ({ ingredientId, onTradingFlowChange }) => {
+  const [currentTradingFlow, setCurrentTradingFlow] = useState<CountryTrade | null>(null);
   const ingredient = useMemo<Ingredient>(
     () => INGREDIENTS.find((i) => i.id === ingredientId) || INGREDIENTS[0],
     [ingredientId],
@@ -44,6 +46,31 @@ const Ranking: React.FC<RankingProps> = ({ ingredientId }) => {
     return [];
   }, [data, ingredient]);
 
+  const handleTradingFlowClick = useCallback(
+    (countryTrade: CountryTrade) => {
+      // Toggle selection if the same country is clicked
+      if (
+        currentTradingFlow?.exporter === countryTrade.exporter &&
+        currentTradingFlow?.importer === countryTrade.importer
+      ) {
+        setCurrentTradingFlow(null);
+        onTradingFlowChange(null);
+      } else {
+        setCurrentTradingFlow(countryTrade);
+        onTradingFlowChange(countryTrade);
+      }
+    },
+    [currentTradingFlow, onTradingFlowChange],
+  );
+
+  // Resetting selection when the ranking changes
+  useEffect(() => {
+    if (countryTradingRanking.length > 0) {
+      setCurrentTradingFlow(null);
+      onTradingFlowChange(null);
+    }
+  }, [countryTradingRanking, onTradingFlowChange]);
+
   return (
     <div className="my-10">
       {isLoading && <p>Loading...</p>}
@@ -51,8 +78,18 @@ const Ranking: React.FC<RankingProps> = ({ ingredientId }) => {
         <ul className="max-w-[790px] mx-auto space-y-2">
           {countryTradingRanking.map(({ exporter, importer, percentage, volume }, index) => (
             <li
-              className="cursor-pointer hover:bg-[#ECE7C9] p-4 rounded-xl"
+              className={classNames('cursor-pointer p-4 rounded-xl transition-bg', {
+                'bg-[#ECE7C9]':
+                  currentTradingFlow?.exporter === exporter &&
+                  currentTradingFlow?.importer === importer,
+              })}
               key={`ranking-item-${exporter}-${importer}`}
+              onClick={handleTradingFlowClick.bind(null, {
+                exporter,
+                importer,
+                percentage,
+                volume,
+              })}
             >
               <div className="border-t border-[#C2BFAA]">
                 <div

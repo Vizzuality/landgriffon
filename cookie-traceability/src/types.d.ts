@@ -27,3 +27,10 @@ export type FlowDatum = {
   dest: string;
   count: number;
 };
+
+export type CountryTrade = {
+  exporter: string;
+  importer: string;
+  volume: number;
+  percentage: number;
+};

@@ -357,16 +357,16 @@ export default class FlowMapLayer<L, F> extends CompositeLayer {
             }),
           );
         }
-        layers.push(
-          new FlowCirclesLayer(
-            this.getSubLayerProps({
-              id: 'circles',
-              data: circleAttributes,
-              emptyColor: [0, 0, 0, 255],
-              emptyOutlineColor: [0, 0, 0, 255],
-            }),
-          ),
-        );
+        // layers.push(
+        //   new FlowCirclesLayer(
+        //     this.getSubLayerProps({
+        //       id: 'circles',
+        //       data: circleAttributes,
+        //       emptyColor: [0, 0, 0, 255],
+        //       emptyOutlineColor: [0, 0, 0, 255],
+        //     }),
+        //   ),
+        // );
         if (highlightedObject) {
           switch (highlightedObject.type) {
             case HighlightType.LOCATION:

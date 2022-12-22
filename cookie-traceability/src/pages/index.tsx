@@ -85,7 +85,7 @@ const Home: React.FC = () => {
         <p className="pt-10">
           A{' '}
           <a href="https://vizzuality.com" className="font-semibold">
-            vizzuality
+            vizzuality.
           </a>{' '}
           product
         </p>

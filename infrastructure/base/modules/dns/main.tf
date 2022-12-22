@@ -34,3 +34,11 @@ resource "aws_route53_record" "bastion" {
   ttl     = "300"
   records = [var.bastion_hostname]
 }
+
+resource "aws_route53_record" "supply-chain" {
+  zone_id = aws_route53_zone.landgriffon-com.zone_id
+  name    = "supplychain.${var.domain}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["cname.vercel-dns.com."]
+}

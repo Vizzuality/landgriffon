@@ -31,6 +31,7 @@
     "lodash": "^4.17.21",
     "mapbox-gl": "^2.11.1",
     "next": "13.0.3",
+    "nextjs-google-analytics": "^2.2.2",
     "numeral": "^2.0.6",
     "postcss": "^8.4.19",
     "prettier": "^2.8.1",

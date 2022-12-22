@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
+  basePath: '/where-does-my-cookie-come-from',
   eslint: {
     dirs: ['src'],
   },

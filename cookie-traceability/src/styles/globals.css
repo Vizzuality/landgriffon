@@ -1,15 +1,15 @@
 @font-face {
   font-family: 'Geomanist';
-  src: url('/fonts/Geomanist-Medium.woff2') format('woff2'),
-    url('/fonts/Geomanist-Medium.woff') format('woff');
+  src: url('/where-does-my-cookie-come-from/fonts/Geomanist-Medium.woff2') format('woff2'),
+    url('/where-does-my-cookie-come-from/fonts/Geomanist-Medium.woff') format('woff');
   font-weight: 500;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Geomanist';
-  src: url('/fonts/Geomanist-Black.woff2') format('woff2'),
-    url('/fonts/Geomanist-Black.woff') format('woff');
+  src: url('/where-does-my-cookie-come-from/fonts/Geomanist-Black.woff2') format('woff2'),
+    url('/where-does-my-cookie-come-from/fonts/Geomanist-Black.woff') format('woff');
   font-weight: 900;
   font-style: normal;
 }

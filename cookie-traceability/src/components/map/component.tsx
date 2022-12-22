@@ -76,9 +76,60 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
   }, [currentTradeFlow, results]);
 
   const countryISOs = useMemo<string[]>(() => {
+    if (data?.locations && currentTradeFlow) {
+      return data.locations
+        .filter(
+          (loc) => loc.name === currentTradeFlow.exporter || loc.name === currentTradeFlow.importer,
+        )
+        .map((loc) => loc.iso2)
+        .filter((iso) => !!iso);
+    }
     if (data?.locations) return data.locations.map((loc) => loc.iso2).filter((iso) => !!iso);
     return [];
-  }, [data?.locations]);
+  }, [currentTradeFlow, data?.locations]);
+
+  const locationsFiltered = useMemo<LocationDatum[]>(() => {
+    if (currentTradeFlow) {
+      return (
+        data?.locations.filter(
+          (loc) => loc.name === currentTradeFlow.exporter || loc.name === currentTradeFlow.importer,
+        ) || []
+      );
+    }
+    return data?.locations || [];
+  }, [currentTradeFlow, data?.locations]);
+
+  const exporters = useMemo(() => {
+    if (hoverInfo?.object) {
+      const result = data?.flows
+        .filter((flow) => flow.origin === hoverInfo.object.id)
+        .map((flow) => {
+          const location = data?.locations.find((loc) => loc.id === flow.dest);
+          return {
+            ...flow,
+            countryName: location?.name,
+          };
+        });
+      return result;
+    }
+    return null;
+  }, [data, hoverInfo]);
+
+  const importers = useMemo(() => {
+    if (hoverInfo?.object) {
+      const result = data?.flows
+        .filter((flow) => flow.dest === hoverInfo.object.id)
+        .map((flow) => {
+          const location = data?.locations.find((loc) => loc.id === flow.origin);
+          return {
+            ...flow,
+            countryName: location?.name,
+          };
+        });
+      return result;
+    }
+    return null;
+  }, [data, hoverInfo]);
 
   const highlightedCountriesBoundaries: ReactMapGlLayers = {
     id: 'country-highlight-layer',
@@ -128,38 +179,6 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
     },
   };
 
-  const exporters = useMemo(() => {
-    if (hoverInfo?.object) {
-      const result = data?.flows
-        .filter((flow) => flow.origin === hoverInfo.object.id)
-        .map((flow) => {
-          const location = data?.locations.find((loc) => loc.id === flow.dest);
-          return {
-            ...flow,
-            countryName: location?.name,
-          };
-        });
-      return result;
-    }
-    return null;
-  }, [data, hoverInfo]);
-
-  const importers = useMemo(() => {
-    if (hoverInfo?.object) {
-      const result = data?.flows
-        .filter((flow) => flow.dest === hoverInfo.object.id)
-        .map((flow) => {
-          const location = data?.locations.find((loc) => loc.id === flow.origin);
-          return {
-            ...flow,
-            countryName: location?.name,
-          };
-        });
-      return result;
-    }
-    return null;
-  }, [data, hoverInfo]);
-
   // Layers for the map, there is not penalty for having an empty array
   const layers: any[] = [];
   if (data) {
@@ -188,7 +207,7 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
     layers.push(
       new ScatterplotLayer<LocationDatum>({
         id: 'trading-locations-layer',
-        data: data.locations,
+        data: locationsFiltered,
         pickable: true,
         opacity: 1,
         stroked: false,

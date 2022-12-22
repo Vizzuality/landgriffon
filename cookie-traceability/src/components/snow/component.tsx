@@ -3,7 +3,6 @@ import { useMemo, useRef } from 'react';
 import { Float32BufferAttribute, MathUtils, Points } from 'three';
 
 import SnowMaterial from './material';
-import { useControls } from 'leva';
 
 extend({ SnowMaterial });
 

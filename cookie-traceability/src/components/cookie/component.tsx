@@ -34,12 +34,14 @@ function Cookie(props: any) {
   const { breakpoint } = useBreakpoint(BREAKPOINTS, 'xs', false);
 
   // Model
-  const { nodes }: CookieProps = useGLTF('/models/cookie/cookie.gltf');
+  const { nodes }: CookieProps = useGLTF(
+    '/where-does-my-cookie-come-from/models/cookie/cookie.gltf',
+  );
 
   // Model Textures
   const texture = useTexture({
-    map: '/models/cookie/galleta_4px_adjusted.jpg',
-    normalMap: '/models/cookie/galleta_normal_4px_adjusted.jpg',
+    map: '/where-does-my-cookie-come-from/models/cookie/galleta_4px_adjusted.jpg',
+    normalMap: '/where-does-my-cookie-come-from/models/cookie/galleta_normal_4px_adjusted.jpg',
   });
 
   // Model Materials

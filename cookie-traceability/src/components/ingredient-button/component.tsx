@@ -12,7 +12,7 @@ const IngredientButton: React.FC<IngredientButtonProps> = ({
   ...restProps
 }) => {
   const { rive, RiveComponent } = useRive({
-    src: `/images/${id}.riv`,
+    src: `/where-does-my-cookie-come-from/images/${id}.riv`,
     autoplay: false,
   });
 

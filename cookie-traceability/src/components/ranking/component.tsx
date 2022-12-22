@@ -10,7 +10,7 @@ import type { CountryTradingRanking, RankingProps } from './types';
 import classNames from 'classnames';
 
 const fetchTopTradeFlows = async () =>
-  axios.get('/data/top_trade_flows.json').then((res) => res.data);
+  axios.get('/where-does-my-cookie-come-from/data/top_trade_flows.json').then((res) => res.data);
 
 const Ranking: React.FC<RankingProps> = ({ ingredientId, onTradingFlowChange }) => {
   const [currentTradingFlow, setCurrentTradingFlow] = useState<CountryTrade | null>(null);
@@ -78,11 +78,14 @@ const Ranking: React.FC<RankingProps> = ({ ingredientId, onTradingFlowChange }) 
         <ul className="max-w-[790px] mx-auto space-y-2">
           {countryTradingRanking.map(({ exporter, importer, percentage, volume }, index) => (
             <li
-              className={classNames('cursor-pointer p-4 rounded-xl transition-bg', {
-                'bg-[#ECE7C9]':
-                  currentTradingFlow?.exporter === exporter &&
-                  currentTradingFlow?.importer === importer,
-              })}
+              className={classNames(
+                'cursor-pointer p-4 rounded-xl transition-bg hover:bg-[#ECE7C9]',
+                {
+                  'bg-[#ECE7C9]':
+                    currentTradingFlow?.exporter === exporter &&
+                    currentTradingFlow?.importer === importer,
+                },
+              )}
               key={`ranking-item-${exporter}-${importer}`}
               onClick={handleTradingFlowClick.bind(null, {
                 exporter,

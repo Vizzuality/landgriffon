@@ -5,7 +5,7 @@ type SubscriberContact = {
   name?: string;
   company?: string;
   form: 'methodology' | 'newsletter' | 'contact';
-  newsletter: 'Yes' | 'No';
+  newsletter?: 'Yes' | 'No';
 };
 
 const SCRIPT_URL =

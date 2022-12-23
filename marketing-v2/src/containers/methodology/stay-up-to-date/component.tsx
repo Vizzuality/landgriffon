@@ -35,7 +35,7 @@ const StayUpToDate: FC = () => {
       setSubmitting(true);
       //? adds user to spreadsheet only if the newsletter's checkbox is checked
       if (data.newsletter) {
-        saveContactToSubscribersSpreadsheet({ ...data, form: 'methodology' });
+        saveContactToSubscribersSpreadsheet({ ...data, form: 'methodology', newsletter: 'Yes' });
       }
       saveContactMethodologyMutation.mutate(
         { data },

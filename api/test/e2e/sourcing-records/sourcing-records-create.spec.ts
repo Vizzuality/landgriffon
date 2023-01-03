@@ -43,9 +43,9 @@ describe('Sourcing records - Create', () => {
       })
       .expect(HttpStatus.CREATED);
 
-    const createdSourcingRecord = await sourcingRecordRepository.findOne(
+    const createdSourcingRecord = await sourcingRecordRepository.findOne({where: { id:
       response.body.data.id,
-    );
+     }});
 
     if (!createdSourcingRecord) {
       throw new Error('Error loading created Sourcing Record');

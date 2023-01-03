@@ -62,9 +62,9 @@ describe('IndicatorRecordsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdIndicatorRecord = await indicatorRecordRepository.findOne(
+      const createdIndicatorRecord = await indicatorRecordRepository.findOne({where: { id:
         response.body.data.id,
-      );
+       }});
 
       if (!createdIndicatorRecord) {
         throw new Error('Error loading created Indicator Record');
@@ -120,7 +120,7 @@ describe('IndicatorRecordsModule (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(
-        await indicatorRecordRepository.findOne(indicatorRecord.id),
+        await indicatorRecordRepository.findOne({where: { id: indicatorRecord.id }}),
       ).toBeUndefined();
     });
   });

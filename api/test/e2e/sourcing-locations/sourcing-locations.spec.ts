@@ -67,9 +67,9 @@ describe('SourcingLocationsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdSourcingLocation = await sourcingLocationRepository.findOne(
-        response.body.data.id,
-      );
+      const createdSourcingLocation = await sourcingLocationRepository.findOne({
+        where: { id: response.body.data.id },
+      });
 
       if (!createdSourcingLocation) {
         throw new Error('Error loading created Sourcing location');
@@ -116,7 +116,9 @@ describe('SourcingLocationsModule (e2e)', () => {
         .expect(HttpStatus.OK);
 
       const updatedSourcingLocation =
-        await sourcingLocationRepository.findOneOrFail(sourcingLocation.id);
+        await sourcingLocationRepository.findOneOrFail({
+          where: { id: sourcingLocation.id },
+        });
 
       expect(updatedSourcingLocation.updatedById).toEqual(userId);
 
@@ -137,7 +139,9 @@ describe('SourcingLocationsModule (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(
-        await sourcingLocationRepository.findOne(sourcingLocation.id),
+        await sourcingLocationRepository.findOne({
+          where: { id: sourcingLocation.id },
+        }),
       ).toBeUndefined();
     });
   });

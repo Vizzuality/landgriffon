@@ -44,6 +44,6 @@ describe('Suppliers - Delete', () => {
       .send()
       .expect(HttpStatus.OK);
 
-    expect(await supplierRepository.findOne(supplier.id)).toBeUndefined();
+    expect(await supplierRepository.findOne({where: { id: supplier.id }})).toBeUndefined();
   });
 });

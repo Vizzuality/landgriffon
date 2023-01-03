@@ -96,13 +96,17 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
 
       const activeIndicators: string[] = (
         await indicatorRepository.find({
-          status: INDICATOR_STATUS.ACTIVE,
+          where: {
+            status: INDICATOR_STATUS.ACTIVE,
+          },
         })
       ).map((i: Indicator) => i.nameCode);
 
       const inactiveIndicators: string[] = (
         await indicatorRepository.find({
-          status: INDICATOR_STATUS.INACTIVE,
+          where: {
+            status: INDICATOR_STATUS.INACTIVE,
+          },
         })
       ).map((i: Indicator) => i.nameCode);
 
@@ -278,13 +282,17 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
 
       const activeIndicators: string[] = (
         await indicatorRepository.find({
-          status: INDICATOR_STATUS.ACTIVE,
+          where: {
+            status: INDICATOR_STATUS.ACTIVE,
+          },
         })
       ).map((i: Indicator) => i.nameCode);
 
       const inactiveIndicators: string[] = (
         await indicatorRepository.find({
-          status: INDICATOR_STATUS.INACTIVE,
+          where: {
+            status: INDICATOR_STATUS.INACTIVE,
+          },
         })
       ).map((i: Indicator) => i.nameCode);
 

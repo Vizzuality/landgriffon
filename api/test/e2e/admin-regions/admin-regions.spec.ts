@@ -49,9 +49,9 @@ describe('AdminRegionsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdAdminRegion = await adminRegionRepository.findOne(
+      const createdAdminRegion = await adminRegionRepository.findOne({where: { id:
         response.body.data.id,
-      );
+       }});
 
       if (!createdAdminRegion) {
         throw new Error('Error loading created Admin region');
@@ -113,7 +113,7 @@ describe('AdminRegionsModule (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(
-        await adminRegionRepository.findOne(adminRegion.id),
+        await adminRegionRepository.findOne({where: { id: adminRegion.id }}),
       ).toBeUndefined();
     });
   });

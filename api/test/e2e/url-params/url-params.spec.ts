@@ -47,9 +47,9 @@ describe('UrlParamsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const savedParam = await urlParamRepository.findOne(
+      const savedParam = await urlParamRepository.findOne({where: { id:
         response.body.data.id,
-      );
+       }});
 
       if (!savedParam) {
         throw new Error('Error loading saved URL Param');
@@ -119,7 +119,7 @@ describe('UrlParamsModule (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(
-        await urlParamRepository.findOne(saveResponse.body.data.id),
+        await urlParamRepository.findOne({where: { id: saveResponse.body.data.id }}),
       ).toBeUndefined();
     });
   });

@@ -51,7 +51,7 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
         .expect(HttpStatus.CREATED);
 
       const createdSourcingRecordGroup =
-        await sourcingRecordGroupRepository.findOne(response.body.data.id);
+        await sourcingRecordGroupRepository.findOne({where: { id: response.body.data.id }});
 
       if (!createdSourcingRecordGroup) {
         throw new Error('Error loading created Sourcing location group');
@@ -117,7 +117,7 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(
-        await sourcingRecordGroupRepository.findOne(sourcingRecordGroup.id),
+        await sourcingRecordGroupRepository.findOne({where: { id: sourcingRecordGroup.id }}),
       ).toBeUndefined();
     });
   });

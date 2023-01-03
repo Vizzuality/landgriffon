@@ -52,9 +52,9 @@ describe('IndicatorsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdIndicator = await indicatorRepository.findOne(
+      const createdIndicator = await indicatorRepository.findOne({where: { id:
         response.body.data.id,
-      );
+       }});
 
       if (!createdIndicator) {
         throw new Error('Error loading created Indicator');
@@ -121,7 +121,7 @@ describe('IndicatorsModule (e2e)', () => {
         .send()
         .expect(HttpStatus.OK);
 
-      expect(await indicatorRepository.findOne(indicator.id)).toBeUndefined();
+      expect(await indicatorRepository.findOne({where: { id: indicator.id }})).toBeUndefined();
     });
   });
 

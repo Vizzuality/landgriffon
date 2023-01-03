@@ -47,7 +47,7 @@ describe('UnitsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdUnit = await unitRepository.findOne(response.body.data.id);
+      const createdUnit = await unitRepository.findOne({where: { id: response.body.data.id }});
 
       if (!createdUnit) {
         throw new Error('Error loading created Unit');
@@ -106,7 +106,7 @@ describe('UnitsModule (e2e)', () => {
         .send()
         .expect(HttpStatus.OK);
 
-      expect(await unitRepository.findOne(unit.id)).toBeUndefined();
+      expect(await unitRepository.findOne({where: { id: unit.id }})).toBeUndefined();
     });
   });
 

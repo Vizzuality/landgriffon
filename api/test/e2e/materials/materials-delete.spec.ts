@@ -44,6 +44,6 @@ describe('Materials - Delete', () => {
       .send()
       .expect(HttpStatus.OK);
 
-    expect(await materialRepository.findOne(material.id)).toBeUndefined();
+    expect(await materialRepository.findOne({where: { id: material.id }})).toBeUndefined();
   });
 });

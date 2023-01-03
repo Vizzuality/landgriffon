@@ -1,4 +1,4 @@
-import * as faker from 'faker';
+import { faker } from '@faker-js/faker';
 import { CreateUserDTO } from 'modules/users/dto/create.user.dto';
 import { UpdateUserDTO } from 'modules/users/dto/update.user.dto';
 
@@ -32,7 +32,7 @@ export const E2E_CONFIG: {
       bb: () => ({
         fname: faker.name.firstName(),
         lname: faker.name.lastName(),
-        displayName: `${faker.name.title()} ${faker.name.firstName()} ${faker.name.firstName()}`,
+        displayName: `${faker.name.prefix()} ${faker.name.firstName()} ${faker.name.firstName()}`,
       }),
     },
   },

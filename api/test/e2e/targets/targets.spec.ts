@@ -64,9 +64,9 @@ describe('Tasks Module (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdTarget = await targetsRepository.findOne(
+      const createdTarget = await targetsRepository.findOne({where: { id:
         response.body.data.id,
-      );
+       }});
 
       if (!createdTarget) {
         throw new Error('Error loading created Target');
@@ -134,7 +134,7 @@ describe('Tasks Module (e2e)', () => {
         .send()
         .expect(HttpStatus.OK);
 
-      expect(await targetsRepository.findOne(target.id)).toBeUndefined();
+      expect(await targetsRepository.findOne({where: { id: target.id }})).toBeUndefined();
     });
   });
 

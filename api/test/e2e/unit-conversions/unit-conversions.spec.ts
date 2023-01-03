@@ -49,9 +49,9 @@ describe('UnitConversionsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdUnitConversion = await unitConversionRepository.findOne(
+      const createdUnitConversion = await unitConversionRepository.findOne({where: { id:
         response.body.data.id,
-      );
+       }});
 
       if (!createdUnitConversion) {
         throw new Error('Error loading created Unit Conversion');
@@ -90,7 +90,7 @@ describe('UnitConversionsModule (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(
-        await unitConversionRepository.findOne(unitConversion.id),
+        await unitConversionRepository.findOne({where: { id: unitConversion.id }}),
       ).toBeUndefined();
     });
   });

@@ -49,9 +49,9 @@ describe('BusinessUnitsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdBusinessUnit = await businessUnitRepository.findOne(
+      const createdBusinessUnit = await businessUnitRepository.findOne({where: { id:
         response.body.data.id,
-      );
+       }});
 
       if (!createdBusinessUnit) {
         throw new Error('Error loading created Business Unit');
@@ -113,7 +113,7 @@ describe('BusinessUnitsModule (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(
-        await businessUnitRepository.findOne(businessUnit.id),
+        await businessUnitRepository.findOne({where: { id: businessUnit.id }}),
       ).toBeUndefined();
     });
   });

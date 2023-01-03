@@ -47,9 +47,9 @@ describe('Materials - Create', () => {
       })
       .expect(HttpStatus.CREATED);
 
-    const createdMaterial = await materialRepository.findOne(
+    const createdMaterial = await materialRepository.findOne({where: { id:
       response.body.data.id,
-    );
+     }});
 
     if (!createdMaterial) {
       throw new Error('Error loading created Material');

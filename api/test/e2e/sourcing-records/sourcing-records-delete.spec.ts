@@ -46,7 +46,7 @@ describe('Sourcing records - Delete', () => {
       .expect(HttpStatus.OK);
 
     expect(
-      await sourcingRecordRepository.findOne(sourcingRecord.id),
+      await sourcingRecordRepository.findOne({where: { id: sourcingRecord.id }}),
     ).toBeUndefined();
   });
 });

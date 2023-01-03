@@ -184,7 +184,7 @@ describe('AppController (e2e)', () => {
 
     describe('Signing in', () => {
       test('A user should not be able to log in until their account has been validated', async () => {
-        const user: User | undefined = await userRepository.findByEmail(
+        const user: User | null = await userRepository.findByEmail(
           E2E_CONFIG.users.signUp.email,
         );
         if (!user) {
@@ -235,7 +235,7 @@ describe('AppController (e2e)', () => {
     });
 
     describe('Account Validations', () => {
-      let newUser: User | undefined;
+      let newUser: User | null;
       let validationTokenEvent: ApiEventByTopicAndKind | undefined;
 
       test('A user should be able to validate their account (within the validity timeframe of the validationToken)', async () => {
@@ -250,7 +250,7 @@ describe('AppController (e2e)', () => {
         );
         expect(newUser).toBeDefined();
 
-        if (!newUser) {
+        if (newUser === null) {
           throw new Error('Cannot retrieve data for newly created user.');
         }
 
@@ -281,7 +281,7 @@ describe('AppController (e2e)', () => {
 
     describe('Sign-in and sign-up with the same email, after account was deleted', () => {
       let jwtToken: string;
-      let newUser: User | undefined;
+      let newUser: User | null;
       let validationTokenEvent: ApiEventByTopicAndKind | undefined;
 
       beforeAll(async () => {
@@ -339,7 +339,7 @@ describe('AppController (e2e)', () => {
         );
         expect(newUser).toBeDefined();
 
-        if (!newUser) {
+        if (newUser === null) {
           throw new Error('Cannot retrieve data for newly created user.');
         }
 

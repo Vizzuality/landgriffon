@@ -48,9 +48,9 @@ describe('GeoRegionsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdGeoRegion = await geoRegionRepository.findOne(
+      const createdGeoRegion = await geoRegionRepository.findOne({where: { id:
         response.body.data.id,
-      );
+       }});
 
       if (!createdGeoRegion) {
         throw new Error('Error loading created Geo region');
@@ -112,7 +112,7 @@ describe('GeoRegionsModule (e2e)', () => {
         .send()
         .expect(HttpStatus.OK);
 
-      expect(await geoRegionRepository.findOne(geoRegion.id)).toBeUndefined();
+      expect(await geoRegionRepository.findOne({where: { id: geoRegion.id }})).toBeUndefined();
     });
   });
 

@@ -110,18 +110,21 @@ jest.mock('config', () => {
 describe('ScenarioInterventionsModule (e2e)', () => {
   const geoCodingServiceMock = {
     geoCodeLocations: async (sourcingData: any): Promise<any> => {
-      const geoRegion: GeoRegion | undefined =
-        await geoRegionRepository.findOne({
+      const geoRegion: GeoRegion | null = await geoRegionRepository.findOne({
+        where: {
           name: 'ABC',
-        });
-      if (geoRegion === undefined) {
+        },
+      });
+      if (geoRegion === null) {
         throw new Error('Could not find expected mock GeoRegion with name=ABC');
       }
-      const adminRegion: AdminRegion | undefined =
+      const adminRegion: AdminRegion | null =
         await adminRegionRepository.findOne({
-          geoRegionId: geoRegion.id,
+          where: {
+            geoRegionId: geoRegion.id,
+          },
         });
-      if (adminRegion === undefined) {
+      if (adminRegion === null) {
         throw new Error(
           'Could not find expected mock AdminRegion for GeoRegion with name=ABC',
         );
@@ -139,18 +142,21 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         }));
     },
     geoCodeSourcingLocation: async (sourcingData: any): Promise<any> => {
-      const geoRegion: GeoRegion | undefined =
-        await geoRegionRepository.findOne({
+      const geoRegion: GeoRegion | null = await geoRegionRepository.findOne({
+        where: {
           name: 'ABC',
-        });
-      if (geoRegion === undefined) {
+        },
+      });
+      if (geoRegion === null) {
         throw new Error('Could not find expected mock GeoRegion with name=ABC');
       }
-      const adminRegion: AdminRegion | undefined =
+      const adminRegion: AdminRegion | null =
         await adminRegionRepository.findOne({
-          geoRegionId: geoRegion.id,
+          where: {
+            geoRegionId: geoRegion.id,
+          },
         });
-      if (adminRegion === undefined) {
+      if (adminRegion === null) {
         throw new Error(
           'Could not find expected mock AdminRegion for GeoRegion with name=ABC',
         );
@@ -1328,9 +1334,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(response.status).toBe(HttpStatus.OK);
       const updatedScenarioIntervention =
-        await scenarioInterventionRepository.findOneOrFail(
-          scenarioIntervention.id,
-        );
+        await scenarioInterventionRepository.findOneOrFail({
+          where: { id: scenarioIntervention.id },
+        });
       expect(updatedScenarioIntervention.updatedById).toEqual(userId);
 
       expect(response.body.data.attributes.title).toEqual(
@@ -1420,7 +1426,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(
-        await scenarioInterventionRepository.findOne(scenarioIntervention.id),
+        await scenarioInterventionRepository.findOne({
+          where: { id: scenarioIntervention.id },
+        }),
       ).toBeUndefined();
     });
   });
@@ -1674,8 +1682,10 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             },
           });
 
-        const intervention: ScenarioIntervention | undefined =
-          await scenarioInterventionRepository.findOne(response.body.data.id);
+        const intervention: ScenarioIntervention | null =
+          await scenarioInterventionRepository.findOne({
+            where: { id: response.body.data.id },
+          });
 
         // ASSERT
         expect(intervention).toBeTruthy();
@@ -2085,8 +2095,10 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             newMaterialId: newMaterial.id,
           });
 
-        const intervention: ScenarioIntervention | undefined =
-          await scenarioInterventionRepository.findOne(response.body.data.id);
+        const intervention: ScenarioIntervention | null =
+          await scenarioInterventionRepository.findOne({
+            where: { id: response.body.data.id },
+          });
 
         //ASSERT;
         expect(intervention).toBeTruthy();

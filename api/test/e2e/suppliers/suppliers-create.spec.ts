@@ -45,9 +45,9 @@ describe('Suppliers - Create', () => {
       })
       .expect(HttpStatus.CREATED);
 
-    const createdSupplier = await supplierRepository.findOne(
+    const createdSupplier = await supplierRepository.findOne({where: { id:
       response.body.data.id,
-    );
+     }});
 
     if (!createdSupplier) {
       throw new Error('Error loading created Supplier');
@@ -66,9 +66,9 @@ describe('Suppliers - Create', () => {
       })
       .expect(HttpStatus.CREATED);
 
-    const createdSupplier = await supplierRepository.findOne(
+    const createdSupplier = await supplierRepository.findOne({where: { id:
       response.body.data.id,
-    );
+     }});
 
     if (!createdSupplier) {
       throw new Error('Error loading created Supplier');

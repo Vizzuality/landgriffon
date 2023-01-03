@@ -93,11 +93,13 @@ describe('ScenariosModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdScenario = await scenarioRepository.findOne(
-        response.body.data.id,
+      const createdScenario: Scenario | null = await scenarioRepository.findOne(
+        {
+          where: { id: response.body.data.id },
+        },
       );
 
-      if (!createdScenario) {
+      if (createdScenario === null) {
         throw new Error('Error loading created Scenario');
       }
 
@@ -142,9 +144,9 @@ describe('ScenariosModule (e2e)', () => {
       expect(response.body.data.attributes.title).toEqual(
         'updated test scenario',
       );
-      const updatedScenario: Scenario = await scenarioRepository.findOneOrFail(
-        scenario.id,
-      );
+      const updatedScenario: Scenario = await scenarioRepository.findOneOrFail({
+        where: { id: scenario.id },
+      });
       expect(updatedScenario.updatedById).toEqual(userId);
 
       expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
@@ -161,7 +163,9 @@ describe('ScenariosModule (e2e)', () => {
         .send()
         .expect(HttpStatus.OK);
 
-      expect(await scenarioRepository.findOne(scenario.id)).toBeUndefined();
+      expect(
+        await scenarioRepository.findOne({ where: { id: scenario.id } }),
+      ).toBeUndefined();
     });
   });
 

@@ -53,7 +53,7 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
         .expect(HttpStatus.CREATED);
 
       const createdIndicatorCoefficient =
-        await indicatorCoefficientRepository.findOne(response.body.data.id);
+        await indicatorCoefficientRepository.findOne({where: { id: response.body.data.id }});
 
       if (!createdIndicatorCoefficient) {
         throw new Error('Error loading created Indicator Coefficient');
@@ -109,7 +109,9 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(
-        await indicatorCoefficientRepository.findOne(indicatorCoefficient.id),
+        await indicatorCoefficientRepository.findOne({
+          where: { id: indicatorCoefficient.id },
+        }),
       ).toBeUndefined();
     });
   });

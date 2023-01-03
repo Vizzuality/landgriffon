@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication, Logger } from '@nestjs/common';
-import * as faker from 'faker';
+import { faker } from '@faker-js/faker';
 import * as request from 'supertest';
 import { Response } from 'supertest';
 import { AppModule } from 'app.module';

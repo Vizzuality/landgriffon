@@ -51,10 +51,7 @@ import { createWorldToCalculateIndicatorRecords } from '../../../utils/indicator
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { Material } from 'modules/materials/material.entity';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
-import {
-  SourcingRecordsWithIndicatorRawDataDto,
-  SourcingRecordsWithIndicatorRawDataDtoV2,
-} from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
+import { SourcingRecordsWithIndicatorRawDataDtoV2 } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 
 let tablesToDrop: string[] = [];
@@ -101,18 +98,21 @@ describe('Sourcing Data import', () => {
    */
   const geoCodingServiceMock = {
     geoCodeLocations: async (sourcingData: any): Promise<any> => {
-      const geoRegion: GeoRegion | undefined =
-        await geoRegionRepository.findOne({
+      const geoRegion: GeoRegion | null = await geoRegionRepository.findOne({
+        where: {
           name: 'ABC',
-        });
-      if (geoRegion === undefined) {
+        },
+      });
+      if (geoRegion === null) {
         throw new Error('Could not find expected mock GeoRegion with name=ABC');
       }
-      const adminRegion: AdminRegion | undefined =
+      const adminRegion: AdminRegion | null =
         await adminRegionRepository.findOne({
-          geoRegionId: geoRegion.id,
+          where: {
+            geoRegionId: geoRegion.id,
+          },
         });
-      if (adminRegion === undefined) {
+      if (adminRegion === null) {
         throw new Error(
           'Could not find expected mock AdminRegion for GeoRegion with name=ABC',
         );
@@ -359,10 +359,10 @@ describe('Sourcing Data import', () => {
 
     const sourcingRecords: SourcingRecord[] =
       await sourcingRecordRepository.find();
-    const sourcingLocation: SourcingLocation | undefined =
-      await sourcingLocationRepository.findOne(
-        sourcingRecords[0].sourcingLocationId,
-      );
+    const sourcingLocation: SourcingLocation | null =
+      await sourcingLocationRepository.findOne({
+        where: { id: sourcingRecords[0].sourcingLocationId },
+      });
 
     expect(sourcingRecords[0]).toMatchObject(new SourcingRecord());
     expect(sourcingLocation).toMatchObject(new SourcingLocation());
@@ -469,7 +469,7 @@ describe('Sourcing Data import', () => {
     await sourcingDataImportService.cleanDataBeforeImport();
 
     expect(
-      await geoRegionRepository.find({ isCreatedByUser: true }),
+      await geoRegionRepository.find({ where: { isCreatedByUser: true } }),
     ).toHaveLength(0);
     expect(await geoRegionRepository.find()).toHaveLength(1);
     expect(await adminRegionRepository.find()).toHaveLength(2);

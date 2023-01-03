@@ -308,9 +308,7 @@ describe('Indicator Records Service', () => {
         sourcingRecord: randomSourcingRecord,
       };
 
-      jest
-        .spyOn(materialsToH3sService, 'findOne')
-        .mockResolvedValueOnce(undefined);
+      jest.spyOn(materialsToH3sService, 'findOne').mockResolvedValueOnce(null);
 
       const testStatement = async (): Promise<any> => {
         await impactCalculator.createIndicatorRecordsBySourcingRecords(
@@ -931,7 +929,7 @@ describe('Indicator Records Service', () => {
     value: number,
     type: CACHED_DATA_TYPE,
   ): Promise<void> {
-    const cachedData: CachedData | undefined =
+    const cachedData: CachedData | null =
       await cachedDataService.getCachedDataByKey(cacheKey, type);
 
     expect(cachedData).toBeDefined();

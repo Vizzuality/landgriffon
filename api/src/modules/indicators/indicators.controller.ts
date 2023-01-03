@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -35,10 +36,14 @@ import {
 import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto';
 import { UpdateIndicatorDto } from 'modules/indicators/dto/update.indicator.dto';
 import { PaginationMeta } from 'utils/app-base.service';
+import { RolesGuard } from 'guards/roles.guard';
+import { RequiredRoles } from 'decorators/roles.decorator';
+import { ROLES } from 'modules/authorization/roles/roles.enum';
 
 @Controller(`/api/v1/indicators`)
 @ApiTags(indicatorResource.className)
 @ApiBearerAuth()
+@UseGuards(RolesGuard)
 export class IndicatorsController {
   constructor(public readonly indicatorsService: IndicatorsService) {}
 
@@ -87,7 +92,8 @@ export class IndicatorsController {
       await this.indicatorsService.getById(id, fetchSpecification),
     );
   }
-
+  @RequiredRoles(ROLES.ADMIN)
+  @ApiForbiddenResponse()
   @ApiOperation({ description: 'Create a indicator' })
   @ApiOkResponse({ type: Indicator })
   @ApiBadRequestResponse({
@@ -101,6 +107,8 @@ export class IndicatorsController {
     );
   }
 
+  @RequiredRoles(ROLES.ADMIN)
+  @ApiForbiddenResponse()
   @ApiOperation({ description: 'Updates a indicator' })
   @ApiOkResponse({ type: Indicator })
   @ApiNotFoundResponse({ description: 'Indicator not found' })
@@ -114,7 +122,8 @@ export class IndicatorsController {
       await this.indicatorsService.update(id, dto),
     );
   }
-
+  @RequiredRoles(ROLES.ADMIN)
+  @ApiForbiddenResponse()
   @ApiOperation({ description: 'Deletes a indicator' })
   @ApiNotFoundResponse({ description: 'Indicator not found' })
   @ApiOkResponse()

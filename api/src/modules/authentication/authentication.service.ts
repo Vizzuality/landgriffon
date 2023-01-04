@@ -22,10 +22,11 @@ import { UserRepository } from 'modules/users/user.repository';
 import * as config from 'config';
 import { ApiProperty } from '@nestjs/swagger';
 import { ApiEventByTopicAndKind } from 'modules/api-events/api-event.topic+kind.entity';
-import { Role } from 'modules/authorization/role.entity';
+import { Role } from 'modules/authorization/roles/role.entity';
 import { ROLES } from 'modules/authorization/roles/roles.enum';
 import { CreateUserDTO } from 'modules/users/dto/create.user.dto';
 import ms = require('ms');
+import { AccessControl } from 'modules/authorization/access-control.service';
 
 /**
  * Access token for the app: key user data and access token
@@ -131,7 +132,7 @@ export class AuthenticationService {
     user.email = signupDto.email;
     user.isActive = !config.get('auth.requireUserAccountActivation');
     if ('roles' in signupDto && signupDto.roles) {
-      user.roles = Role.createRolesFromEnum(signupDto.roles);
+      user.roles = AccessControl.createRolesFromEnum(signupDto.roles);
     } else {
       const role: Role = new Role();
       role.name = ROLES.USER;

@@ -5,7 +5,7 @@ import { UsersService } from 'modules/users/users.service';
 import { AuthenticationModule } from 'modules/authentication/authentication.module';
 import { User } from 'modules/users/user.entity';
 import { UserCommand } from 'modules/users/user.command';
-import { Role } from 'modules/authorization/role.entity';
+import { Role } from 'modules/authorization/roles/role.entity';
 import { UserRepository } from 'modules/users/user.repository';
 
 @Module({

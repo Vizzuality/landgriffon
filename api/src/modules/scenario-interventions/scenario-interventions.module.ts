@@ -17,6 +17,9 @@ import { ChangeProductionEfficiencyIntervention } from 'modules/scenario-interve
 import { ScenarioInterventionsControllerV2 } from 'modules/scenario-interventions/interventions-controller-v2.controller';
 import { ActiveIndicatorValidator } from 'modules/indicators/validators/active-indicator.validator';
 import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
+import { AuthorizationModule } from 'modules/authorization/authorization.module';
+
+
 
 @Module({
   imports: [
@@ -28,6 +31,7 @@ import { ScenarioInterventionRepository } from 'modules/scenario-interventions/s
     BusinessUnitsModule,
     AdminRegionsModule,
     SuppliersModule,
+    AuthorizationModule,
   ],
   controllers: [ScenarioInterventionsControllerV2],
   providers: [

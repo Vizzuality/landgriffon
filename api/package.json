@@ -20,7 +20,7 @@
     "test:cov": "node --expose-gc ./node_modules/.bin/jest --config test/jest-config.json --coverage --forceExit",
     "test:debug": "node --inspect-brk --expose-gc -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --config test/jest-config.json --detectOpenHandles --forceExit",
     "test:integration": "node --expose-gc ./node_modules/.bin/jest --config test/jest-config.json --forceExit test/integration/",
-    "test:e2e": "node --expose-gc ./node_modules/.bin/jest --config test/jest-config.json --forceExit test/e2e/"
+    "test:e2e": "NODE_OPTIONS=\"--max-old-space-size=5135\" node --expose-gc ./node_modules/.bin/jest --config test/jest-config.json --forceExit test/e2e/"
   },
   "engines": {
     "node": "^18.12"
@@ -54,6 +54,7 @@
     "multer": "~1.4.5-lts.1",
     "nestjs-base-service": "~0.10.0",
     "nestjs-command": "^3.1.1",
+    "nj-request-scope": "^1.0.6",
     "object-hash": "~3.0.0",
     "passport": "~0.6.0",
     "passport-jwt": "~4.0.0",

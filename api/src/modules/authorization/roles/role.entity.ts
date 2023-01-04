@@ -16,11 +16,6 @@ export class Role extends BaseEntity {
 
   @ManyToMany(() => User, (user: User) => user.roles)
   user: User[];
-
-  // TODO: Move this to access control service in PR #3
-  static createRolesFromEnum(roles: ROLES[]): Role[] {
-    return roles.map((role: ROLES) => ({ name: role } as Role));
-  }
 }
 
 // TODO: Add a new entity permissions / actions, for more customised authorisation logics.

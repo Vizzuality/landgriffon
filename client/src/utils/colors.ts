@@ -1,5 +1,8 @@
 import { useMemo } from 'react';
 import chroma from 'chroma-js';
+import resolveConfig from 'tailwindcss/resolveConfig';
+
+import tailwindConfig from '../../tailwind.config';
 
 import type { RGBColor, ColorRamps } from 'types';
 
@@ -18,3 +21,5 @@ export function useColors(layerName: string, colorScale): RGBColor[] {
   );
   return colors;
 }
+
+export const themeColors = resolveConfig(tailwindConfig).theme.colors as Record<string, string>;

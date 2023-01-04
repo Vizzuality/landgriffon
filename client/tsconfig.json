@@ -16,6 +16,6 @@
     "jsx": "preserve",
     "incremental": true
   },
-  "include": ["*.d.ts", "src/**/*.ts", "src/**/*.tsx"],
+  "include": ["*.d.ts", "src/**/*.ts", "src/**/*.tsx", "tailwind.config.js"],
   "exclude": ["node_modules", ".storybook", "cypress"]
 }

@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
@@ -38,10 +39,14 @@ import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
 import { PaginationMeta } from 'utils/app-base.service';
 import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
 import { SetScenarioIdsInterceptor } from 'modules/impact/set-scenario-ids.interceptor';
+import { RolesGuard } from 'guards/roles.guard';
+import { RequiredRoles } from 'decorators/roles.decorator';
+import { ROLES } from 'modules/authorization/roles/roles.enum';
 
 @Controller(`/api/v1/materials`)
 @ApiTags(materialResource.className)
 @ApiBearerAuth()
+@UseGuards(RolesGuard)
 export class MaterialsController {
   constructor(
     public readonly materialsService: MaterialsService,
@@ -120,6 +125,7 @@ export class MaterialsController {
   @ApiBadRequestResponse({
     description: 'Bad Request. Incorrect or missing parameters',
   })
+  @RequiredRoles(ROLES.ADMIN)
   @Post()
   @UsePipes(ValidationPipe)
   async create(@Body() dto: CreateMaterialDto): Promise<Material> {
@@ -131,6 +137,7 @@ export class MaterialsController {
   @ApiOperation({ description: 'Updates a material' })
   @ApiNotFoundResponse({ description: 'Material not found' })
   @ApiOkResponse({ type: Material })
+  @RequiredRoles(ROLES.ADMIN)
   @Patch(':id')
   async update(
     @Body(new ValidationPipe()) dto: UpdateMaterialDto,
@@ -144,6 +151,7 @@ export class MaterialsController {
   @ApiOperation({ description: 'Deletes a material' })
   @ApiNotFoundResponse({ description: 'Material not found' })
   @ApiOkResponse()
+  @RequiredRoles(ROLES.ADMIN)
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     return await this.materialsService.remove(id);

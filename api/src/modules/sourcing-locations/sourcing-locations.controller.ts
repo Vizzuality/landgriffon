@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
@@ -44,10 +45,14 @@ import { SourcingLocationsMaterialsService } from 'modules/sourcing-locations/so
 import { SetUserInterceptor } from 'decorators/set-user.interceptor';
 import { LocationTypesDto } from 'modules/sourcing-locations/dto/location-type.sourcing-locations.dto';
 import { GetLocationTypesDto } from 'modules/sourcing-locations/dto/location-types-options.sourcing-locations.dto';
+import { RolesGuard } from 'guards/roles.guard';
+import { RequiredRoles } from 'decorators/roles.decorator';
+import { ROLES } from 'modules/authorization/roles/roles.enum';
 
 @Controller(`/api/v1/sourcing-locations`)
 @ApiTags(sourcingLocationResource.className)
 @ApiBearerAuth()
+@UseGuards(RolesGuard)
 export class SourcingLocationsController {
   constructor(
     public readonly sourcingLocationsService: SourcingLocationsService,
@@ -156,6 +161,7 @@ export class SourcingLocationsController {
   @ApiBadRequestResponse({
     description: 'Bad Request. Incorrect or missing parameters',
   })
+  @RequiredRoles(ROLES.ADMIN)
   @Post()
   @UsePipes(new ValidationPipe())
   async create(
@@ -169,6 +175,7 @@ export class SourcingLocationsController {
   @ApiOperation({ description: 'Updates a sourcing location' })
   @ApiOkResponse({ type: SourcingLocation })
   @ApiNotFoundResponse({ description: 'Sourcing location not found' })
+  @RequiredRoles(ROLES.ADMIN)
   @UseInterceptors(SetUserInterceptor)
   @Patch(':id')
   async update(
@@ -183,6 +190,7 @@ export class SourcingLocationsController {
   @ApiOperation({ description: 'Deletes a sourcing location' })
   @ApiOkResponse()
   @ApiNotFoundResponse({ description: 'Sourcing location not found' })
+  @RequiredRoles(ROLES.ADMIN)
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     return await this.sourcingLocationsService.remove(id);

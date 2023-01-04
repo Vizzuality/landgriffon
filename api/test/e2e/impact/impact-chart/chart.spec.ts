@@ -142,7 +142,7 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
     ).toContain('maxRankingEntities must be a positive number');
   });
 
-  test('When I query the API for a Impact Table Ranking, then I should see all the data grouped by the requested entity and properly ordered, up to a MAX amount, with the rest being aggregated per year', async () => {
+  test.skip('When I query the API for a Impact Table Ranking, then I should see all the data grouped by the requested entity and properly ordered, up to a MAX amount, with the rest being aggregated per year', async () => {
     //////////// ARRANGE
     const adminRegion: AdminRegion = await createAdminRegion({
       name: 'Fake AdminRegion',

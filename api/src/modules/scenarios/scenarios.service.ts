@@ -11,6 +11,7 @@ import { UpdateScenarioDto } from 'modules/scenarios/dto/update.scenario.dto';
 import { ScenarioInterventionsService } from 'modules/scenario-interventions/scenario-interventions.service';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { SelectQueryBuilder } from 'typeorm';
+import { AccessControl } from 'modules/authorization/access-control.service';
 
 @Injectable()
 export class ScenariosService extends AppBaseService<
@@ -22,6 +23,7 @@ export class ScenariosService extends AppBaseService<
   constructor(
     protected readonly scenarioRepository: ScenarioRepository,
     protected readonly scenarioInterventionService: ScenarioInterventionsService,
+    protected readonly accessControl: AccessControl,
   ) {
     super(
       scenarioRepository,
@@ -90,6 +92,11 @@ export class ScenariosService extends AppBaseService<
           titlePartialMatch: `%${titlePartialMatch}%`,
         });
       }
+    }
+    if (!this.accessControl.isUserAdmin()) {
+      query.andWhere(`${this.alias}.userId = :userId`, {
+        userId: this.accessControl.getUserId(),
+      });
     }
     return Promise.resolve(query);
   }

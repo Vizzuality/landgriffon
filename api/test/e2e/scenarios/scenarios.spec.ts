@@ -30,7 +30,7 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 import { JSONAPIEntityData } from 'utils/app-base.service';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
-
+import { ROLES } from '../../../src/modules/authorization/roles/roles.enum';
 const expectedJSONAPIAttributes: string[] = [
   'title',
   'description',
@@ -516,6 +516,57 @@ describe('ScenariosModule (e2e)', () => {
         expect(response.body.data[0].attributes.startYear).toEqual(2020);
       },
     );
+  });
+
+  describe('Role based', () => {
+    test('When I request scenarios using my token, Then I should receive only my scenarios, And I should receive all scenarios for the admin token', async () => {
+      const user1 = await setupTestUser(testApplication, ROLES.USER, {
+        email: 'user1@email.com',
+      });
+
+      const user2 = await setupTestUser(testApplication, ROLES.USER, {
+        email: 'user2@email.com',
+      });
+
+      await createScenario({
+        id: user1.user.id,
+        userId: user1.user.id,
+        title: user1.user.id,
+      });
+      await createScenario({
+        id: user2.user.id,
+        userId: user2.user.id,
+        title: user2.user.id,
+      });
+      const requests = [];
+
+      for (const token of [jwtToken, user1.jwtToken, user2.jwtToken]) {
+        requests.push(
+          request(testApplication.getHttpServer())
+            .get(`/api/v1/scenarios`)
+            .set('Authorization', `Bearer ${token}`)
+            .send(),
+        );
+      }
+      const response: any = await Promise.all(requests);
+
+      const adminRequest = response.find((res: any) =>
+        res.request.header.Authorization.includes(jwtToken),
+      );
+      expect(adminRequest.body.data).toHaveLength(2);
+
+      const user1Request = response.find((res: any) =>
+        res.request.header.Authorization.includes(user1.jwtToken),
+      );
+      expect(user1Request.body.data).toHaveLength(1);
+      expect(user1Request.body.data[0].id).toEqual(user1.user.id);
+
+      const user2Request = response.find((res: any) =>
+        res.request.header.Authorization.includes(user2.jwtToken),
+      );
+      expect(user2Request.body.data).toHaveLength(1);
+      expect(user2Request.body.data[0].id).toEqual(user2.user.id);
+    });
   });
   test(
     'When I filter Interventions by Scenario Id + ' +

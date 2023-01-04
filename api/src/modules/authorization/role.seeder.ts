@@ -1,5 +1,5 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { Role } from 'modules/authorization/role.entity';
+import { Injectable } from '@nestjs/common';
+import { Role } from 'modules/authorization/roles/role.entity';
 import { DataSource } from 'typeorm';
 import { ROLES } from 'modules/authorization/roles/roles.enum';
 

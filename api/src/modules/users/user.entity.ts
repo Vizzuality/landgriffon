@@ -14,7 +14,7 @@ import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.e
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
-import { Role } from 'modules/authorization/role.entity';
+import { Role } from 'modules/authorization/roles/role.entity';
 
 export const userResource: BaseServiceResource = {
   className: 'User',

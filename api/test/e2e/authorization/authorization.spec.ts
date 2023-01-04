@@ -7,7 +7,11 @@ import { getApp } from '../../utils/getApp';
 import { clearEntityTables } from '../../utils/database-test-helper';
 import { saveUserWithRoleAndGetTokenWithUserId } from '../../utils/userAuth';
 import { ROLES } from '../../../src/modules/authorization/roles/roles.enum';
-import { createIndicator, createSourcingLocation } from '../../entity-mocks';
+import {
+  createIndicator,
+  createMaterial,
+  createSourcingLocation,
+} from '../../entity-mocks';
 import {
   Indicator,
   INDICATOR_TYPES,
@@ -141,7 +145,7 @@ describe('Authorization Test (E2E)', () => {
           .send()
           .expect(HttpStatus.OK);
       });
-      test('When I want to create, update or delete a Indicator, And I have no Admin roles, Then I should get a error response', async () => {
+      test('When I want to create, update or delete a Sourcing Location, And I have no Admin roles, Then I should get a error response', async () => {
         const { jwtToken } = await saveUserWithRoleAndGetTokenWithUserId(
           moduleFixture,
           app,
@@ -163,6 +167,60 @@ describe('Authorization Test (E2E)', () => {
 
         await request(app.getHttpServer())
           .patch(`/api/v1/sourcing-locations/${sourcingLocation.id}`)
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send()
+          .expect(HttpStatus.FORBIDDEN);
+      });
+    });
+    describe('Materials', () => {
+      test('When I want to list of Materials, But I have no Admin roles, I should be allowed', async () => {
+        const { jwtToken } = await saveUserWithRoleAndGetTokenWithUserId(
+          moduleFixture,
+          app,
+          ROLES.USER,
+        );
+        await request(app.getHttpServer())
+          .get(`/api/v1/materials/`)
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send()
+          .expect(HttpStatus.OK);
+
+        await request(app.getHttpServer())
+          .get(`/api/v1/materials/trees`)
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send()
+          .expect(HttpStatus.OK);
+
+        const material = await createMaterial({});
+
+        await request(app.getHttpServer())
+          .get(`/api/v1/materials/${material.id}`)
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send()
+          .expect(HttpStatus.OK);
+      });
+      test('When I want to create, update or delete a Material, And I have no Admin roles, Then I should get a error response', async () => {
+        const { jwtToken } = await saveUserWithRoleAndGetTokenWithUserId(
+          moduleFixture,
+          app,
+          ROLES.USER,
+        );
+        await request(app.getHttpServer())
+          .post(`/api/v1/materials/`)
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send()
+          .expect(HttpStatus.FORBIDDEN);
+
+        const material = await createMaterial({});
+
+        await request(app.getHttpServer())
+          .delete(`/api/v1/materials/${material.id}`)
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send()
+          .expect(HttpStatus.FORBIDDEN);
+
+        await request(app.getHttpServer())
+          .patch(`/api/v1/materials/${material.id}`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
           .expect(HttpStatus.FORBIDDEN);

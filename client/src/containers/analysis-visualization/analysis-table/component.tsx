@@ -4,6 +4,7 @@ import { DownloadIcon } from '@heroicons/react/outline';
 import { uniq, omit } from 'lodash-es';
 
 import ComparisonCell from './comparison-cell/component';
+import ChartCell from './chart-cell';
 
 import { useAppSelector } from 'store/hooks';
 import { filtersForTabularAPI } from 'store/features/analysis/selector';
@@ -14,14 +15,13 @@ import { useImpactComparison, useImpactScenarioComparison } from 'hooks/impact/c
 import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
 import { Anchor } from 'components/button';
 import Table from 'components/table/component';
-import LineChart from 'components/chart/line';
 import { NUMBER_FORMAT } from 'utils/number-format';
 import { DEFAULT_PAGE_SIZES } from 'components/table/pagination/constants';
 
 import type { ExpandedState, PaginationState, SortingState } from '@tanstack/react-table';
 import type { TableProps } from 'components/table/component';
 import type { ColumnDefinition } from 'components/table/column';
-import type { LinesConfig } from 'components/chart/line/types';
+import type { ChartData } from './chart-cell/types';
 import type { ComparisonMode, ImpactRowType, ImpactTableValueItem } from './types';
 
 type AnalysisTableProps<Mode extends ComparisonMode> = TableProps<ImpactRowType<Mode>>;
@@ -163,34 +163,6 @@ const AnalysisTable = () => {
     setTotalRows(table.getRowModel().rows.length);
   }, []);
 
-  const datesRangeChartConfig = (
-    data,
-    { dataKey, ...config }: Pick<LinesConfig, 'dataKey' | 'className'>,
-  ) => {
-    const xAxisValues = data.map(({ x }) => x);
-    const xMaxValue = Math.max(...xAxisValues);
-    const xMinValue = Math.min(...xAxisValues);
-    const min = xMaxValue - xMinValue;
-
-    return {
-      lines: [
-        {
-          width: '100%',
-          strokeDasharray: '3 3',
-          dataKey: `${dataKey}_path`,
-          data,
-          ...config,
-        },
-        {
-          width: '100%',
-          dataKey: `${dataKey}_values`,
-          data: data.filter(({ x }) => x < xMinValue + min / 2),
-          ...config,
-        },
-      ],
-    };
-  };
-
   // Years from impact table
   const years = useMemo(() => {
     // TODO: do we have to check all rows or is the first one guaranteed to have all years?
@@ -208,7 +180,10 @@ const AnalysisTable = () => {
         children: rows,
         name: indicatorShortName,
         ...(yearSum && {
-          values: yearSum.map((sum) => ({ ...sum, isProjected: false })),
+          values: yearSum.map((sum) => ({
+            ...sum,
+            isProjected: rows[0]?.values.find((v) => v.year === sum.year)?.isProjected,
+          })),
         }),
       })),
     [impactTable],
@@ -318,61 +293,18 @@ const AnalysisTable = () => {
             original: { values },
           },
         }) => {
-          const baseData = values.map((value: ImpactTableValueItem<Mode>) => ({
-            x: value.year,
-            y: valueIsScenarioComparison(value) ? value.baseScenarioValue : value.value,
-          }));
-
-          const actualDataChartConfig = datesRangeChartConfig(baseData, {
-            dataKey: 'actual_data',
-            className: isComparison ? 'stroke-gray-400' : 'stroke-gray-500',
-          });
-
-          const interventionData = isComparison
-            ? (values as ImpactTableValueItem<true | 'scenario'>[]).map((value) => {
-                const isScenarioComparison = valueIsScenarioComparison(value);
-                if (isScenarioComparison) {
-                  return {
-                    x: value.year,
-                    y: value.comparedScenarioValue,
-                  };
-                }
-                return {
-                  x: value.year,
-                  y: value.comparedScenarioValue,
-                };
-              })
-            : [];
-          const interventionDataChartConfig = isComparison
-            ? datesRangeChartConfig(interventionData, {
-                dataKey: 'intervention',
-                className: 'stroke-gray-900',
-              })
-            : null;
+          const chartData = values as ChartData[];
 
           return (
             <div className="h-20 overflow-hidden">
-              <LineChart
-                margin={{
-                  left: 0,
-                  top: 20,
-                  bottom: 20,
-                  right: 20,
-                }}
-                chartConfig={{
-                  lines: [
-                    ...actualDataChartConfig.lines,
-                    ...(isComparison ? interventionDataChartConfig.lines : []),
-                  ],
-                }}
-              />
+              <ChartCell data={chartData} />
             </div>
           );
         },
       },
-      ...years.map((year) => comparisonColumn<Mode>(year)),
+      ...years.map((year) => comparisonColumn<Mode>(year as number)),
     ],
-    [years, isComparison, valueIsScenarioComparison, comparisonColumn],
+    [years, comparisonColumn],
   );
 
   const tableProps = useMemo(

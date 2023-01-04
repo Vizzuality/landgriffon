@@ -10,10 +10,8 @@ import { SignUpDto } from 'modules/authentication/dto/sign-up.dto';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApiEvent } from 'modules/api-events/api-event.entity';
 import { ApiEventsModule } from 'modules/api-events/api-events.module';
-import { ApiEventsService } from 'modules/api-events/api-events.service';
 import { UsersModule } from 'modules/users/users.module';
 import { LoginDto } from 'modules/authentication/dto/login.dto';
-import { UserRepository } from 'modules/users/user.repository';
 import { getApp } from '../../utils/getApp';
 
 /**
@@ -31,8 +29,6 @@ import { getApp } from '../../utils/getApp';
 
 describe('UsersModule (e2e)', () => {
   let app: INestApplication;
-  let apiEventsService: ApiEventsService;
-  let userRepository: UserRepository;
 
   const aNewPassword = 'aNewPassword123!';
 
@@ -56,9 +52,6 @@ describe('UsersModule (e2e)', () => {
         UsersModule,
       ],
     }).compile();
-
-    apiEventsService = moduleFixture.get<ApiEventsService>(ApiEventsService);
-    userRepository = moduleFixture.get<UserRepository>(UserRepository);
 
     app = getApp(moduleFixture);
 
@@ -94,12 +87,12 @@ describe('UsersModule (e2e)', () => {
       Logger.debug(`jwtToken: ${jwtToken}`);
     });
 
-    test('A user should be able to create new users', async () => {
+    test('A user should not be able to create new users', async () => {
       await request(app.getHttpServer())
         .post('/api/v1/users')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send(newUserDto)
-        .expect(HttpStatus.CREATED);
+        .expect(HttpStatus.FORBIDDEN);
     });
 
     test('A user should not be able to create users using an email address already in use', async () => {
@@ -107,7 +100,7 @@ describe('UsersModule (e2e)', () => {
         .post('/api/v1/users')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send(newUserDto)
-        .expect(HttpStatus.CONFLICT);
+        .expect(HttpStatus.FORBIDDEN);
     });
   });
 

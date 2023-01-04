@@ -7,6 +7,7 @@ import {
   Post,
   Request,
   UnauthorizedException,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { User, userResource, UserResult } from 'modules/users/user.entity';
@@ -32,10 +33,14 @@ import { UpdateUserDTO } from 'modules/users/dto/update.user.dto';
 import { UpdateUserPasswordDTO } from 'modules/users/dto/update.user-password';
 import { PaginationMeta } from 'utils/app-base.service';
 import { CreateUserDTO } from 'modules/users/dto/create.user.dto';
+import { RolesGuard } from 'guards/roles.guard';
+import { ROLES } from 'modules/authorization/roles/roles.enum';
+import { RequiredRoles } from 'decorators/roles.decorator';
 
 @ApiTags(userResource.className)
 @Controller(`/api/v1/users`)
 @ApiBearerAuth()
+@UseGuards(RolesGuard)
 export class UsersController {
   constructor(public readonly service: UsersService) {}
 
@@ -74,6 +79,7 @@ export class UsersController {
   @ApiOkResponse({
     type: User,
   })
+  @RequiredRoles(ROLES.ADMIN)
   @Post()
   async createUser(
     @Body(new ValidationPipe()) createUserDTO: CreateUserDTO,

@@ -11,8 +11,8 @@ import {
   createSourcingLocation,
   createSupplier,
 } from '../../entity-mocks';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import AppSingleton from '../../utils/getApp';
 import { Material } from 'modules/materials/material.entity';
 import { MaterialsModule } from 'modules/materials/materials.module';
 import {
@@ -26,23 +26,26 @@ import {
   ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
+import { DataSource } from 'typeorm';
+import { User } from 'modules/users/user.entity';
 
 describe('Materials - Get trees - Smart Filters', () => {
   let app: INestApplication;
   let jwtToken: string;
+  let dataSource: DataSource;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, MaterialsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
-    await clearEntityTables([
+    await clearEntityTables(dataSource, [
       Scenario,
       ScenarioIntervention,
       Supplier,
@@ -52,6 +55,7 @@ describe('Materials - Get trees - Smart Filters', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 

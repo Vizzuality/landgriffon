@@ -12,7 +12,7 @@ import {
   Indicator,
   INDICATOR_TYPES_NEW,
 } from 'modules/indicators/indicator.entity';
-import { getManager } from 'typeorm';
+import { DataSource } from 'typeorm';
 import {
   INDICATOR_RECORD_STATUS,
   IndicatorRecord,
@@ -30,7 +30,8 @@ import { CachedDataService } from 'modules/cached-data/cached-data.service';
 import {
   CACHED_DATA_TYPE,
   CachedData,
-} from 'modules/cached-data/cached.data.entity';
+} from 'modules/cached-data/cached-data.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 /**
  * @description: This is PoC (Proof of Concept) for the updated LG methodology v0.1
@@ -45,6 +46,7 @@ export interface CachedRawData {
 @Injectable()
 export class ImpactCalculator {
   logger: Logger = new Logger(ImpactCalculator.name);
+
   constructor(
     private readonly indicatorRecordRepository: IndicatorRecordRepository,
     private readonly materialToH3: MaterialsToH3sService,
@@ -52,6 +54,7 @@ export class ImpactCalculator {
     private readonly dependencyManager: IndicatorDependencyManager,
     private readonly h3DataService: H3DataService,
     private readonly cachedDataService: CachedDataService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async calculateImpactForAllSourcingRecords(
@@ -226,7 +229,7 @@ export class ImpactCalculator {
       this.dependencyManager.buildQueryForIntervention(indicators);
 
     try {
-      const res: any[] = await getManager().query(`SELECT ${dynamicQuery}`, [
+      const res: any[] = await this.dataSource.query(`SELECT ${dynamicQuery}`, [
         geoRegionId,
         materialId,
         adminRegionId,
@@ -243,7 +246,7 @@ export class ImpactCalculator {
     geoRegionId: string,
     materialId: string,
   ): Promise<number> {
-    const res: { production: number }[] = await getManager().query(
+    const res: { production: number }[] = await this.dataSource.query(
       `SELECT sum_material_over_georegion($1, $2, 'producer') as production`,
       [geoRegionId, materialId],
     );
@@ -391,7 +394,7 @@ export class ImpactCalculator {
     try {
       // TODO due to possible performance issues this query that makes use of the stored procedures for
       //      indicator value calculation has not been refactored. It remains to be reworked
-      const response: any = await getManager().query(
+      const response: any = await this.dataSource.query(
         `
         SELECT
           -- TODO: Hack to retrieve 1 materialH3Id for each sourcingRecord. This should include a year fallback strategy in the stored procedures

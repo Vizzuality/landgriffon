@@ -22,13 +22,13 @@ import {
   createSourcingRecord,
   createSupplier,
 } from '../entity-mocks';
-import { MATERIAL_TO_H3_TYPE } from '../../src/modules/materials/material-to-h3.entity';
+import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { h3DataMock } from '../e2e/h3-data/mocks/h3-data.mock';
 import {
   h3IndicatorExampleDataFixture,
   h3MaterialExampleDataFixture,
 } from '../e2e/h3-data/mocks/h3-fixtures';
-import { getManager } from 'typeorm';
+import { DataSource } from 'typeorm';
 
 export interface ScenarioInterventionPreconditions {
   scenario: Scenario;
@@ -52,7 +52,9 @@ export interface ScenarioInterventionPreconditions {
   indicator4: Indicator;
 }
 
-export async function createInterventionPreconditions(): Promise<ScenarioInterventionPreconditions> {
+export async function createInterventionPreconditions(
+  dataSource: DataSource,
+): Promise<ScenarioInterventionPreconditions> {
   const scenario: Scenario = await createScenario();
 
   const material1: Material = await createMaterial();
@@ -137,7 +139,7 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
     weightedDeforestationH3Data,
     waterStressH3Data,
   ]) {
-    await getManager().query(
+    await dataSource.query(
       `CREATE TABLE "${H3Data.h3tableName}" (h3index h3index, "${H3Data.h3columnName}" float4);`,
     );
     let query = `INSERT INTO ${H3Data.h3tableName} (h3index, "${H3Data.h3columnName}") VALUES `;
@@ -146,11 +148,11 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
       queryArr.push(`('${key}', ${value})`);
     }
     query = query.concat(queryArr.join());
-    await getManager().query(query);
+    await dataSource.query(query);
   }
   // creating h3 data for material to be able to get scaler for new indicator records
 
-  const h3Material = await h3DataMock({
+  const h3Material = await h3DataMock(dataSource, {
     h3TableName: 'fakeMaterialTable2002',
     h3ColumnName: 'fakeMaterialColumn2002',
     additionalH3Data: h3MaterialExampleDataFixture,
@@ -293,9 +295,11 @@ export async function createInterventionPreconditions(): Promise<ScenarioInterve
   };
 }
 
-export async function createInterventionPreconditionsWithMultipleYearRecords(): Promise<ScenarioInterventionPreconditions> {
+export async function createInterventionPreconditionsWithMultipleYearRecords(
+  dataSource: DataSource,
+): Promise<ScenarioInterventionPreconditions> {
   const scenarioInterventionPreconditions: ScenarioInterventionPreconditions =
-    await createInterventionPreconditions();
+    await createInterventionPreconditions(dataSource);
   const newSourcingRecord1: SourcingRecord = await createSourcingRecord({
     sourcingLocationId: scenarioInterventionPreconditions.sourcingLocation1.id,
     year: 2019,
@@ -326,9 +330,11 @@ export async function createInterventionPreconditionsWithMultipleYearRecords(): 
   return scenarioInterventionPreconditions;
 }
 
-export async function createInterventionPreconditionsForSupplierChange(): Promise<ScenarioInterventionPreconditions> {
+export async function createInterventionPreconditionsForSupplierChange(
+  dataSource: DataSource,
+): Promise<ScenarioInterventionPreconditions> {
   const scenarioInterventionPreconditions: ScenarioInterventionPreconditions =
-    await createInterventionPreconditionsWithMultipleYearRecords();
+    await createInterventionPreconditionsWithMultipleYearRecords(dataSource);
 
   const newSourcingLocation1: SourcingLocation = await createSourcingLocation({
     materialId: scenarioInterventionPreconditions.material1Descendant.id,

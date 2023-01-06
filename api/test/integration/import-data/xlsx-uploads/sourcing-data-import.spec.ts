@@ -53,6 +53,8 @@ import { Material } from 'modules/materials/material.entity';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { SourcingRecordsWithIndicatorRawDataDtoV2 } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
+import { DataSource } from 'typeorm';
+import { TasksRepository } from '../../../../src/modules/tasks/tasks.repository';
 
 let tablesToDrop: string[] = [];
 
@@ -153,6 +155,7 @@ describe('Sourcing Data import', () => {
     }
   }
 
+  let dataSource: DataSource;
   let businessUnitRepository: BusinessUnitRepository;
   let materialRepository: MaterialRepository;
   let materialToH3Service: MaterialsToH3sService;
@@ -167,6 +170,7 @@ describe('Sourcing Data import', () => {
   let h3DataRepository: H3DataRepository;
   let sourcingDataImportService: SourcingDataImportService;
   let impactCalculatorService: ImpactCalculator;
+  let tasksRepository: TasksRepository;
   let moduleFixture: TestingModule;
 
   beforeAll(async () => {
@@ -218,6 +222,9 @@ describe('Sourcing Data import', () => {
     );
     impactCalculatorService =
       moduleFixture.get<ImpactCalculator>(ImpactCalculator);
+    tasksRepository = moduleFixture.get<TasksRepository>(TasksRepository);
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
   });
 
   afterEach(async () => {
@@ -233,9 +240,10 @@ describe('Sourcing Data import', () => {
     await sourcingLocationRepository.delete({});
     await sourcingLocationGroupRepository.delete({});
     await h3DataRepository.delete({});
+    await tasksRepository.delete({});
 
     if (tablesToDrop.length > 0) {
-      await dropH3DataMock(tablesToDrop);
+      await dropH3DataMock(dataSource, tablesToDrop);
       tablesToDrop = [];
     }
   });
@@ -268,13 +276,14 @@ describe('Sourcing Data import', () => {
       geoRegion,
     });
 
-    const indicatorPreconditions =
-      await createWorldToCalculateIndicatorRecords();
+    const indicatorPreconditions = await createWorldToCalculateIndicatorRecords(
+      dataSource,
+    );
 
     const task = await createTask();
 
     tablesToDrop = [
-      ...(await createMaterialTreeForXLSXImport()),
+      ...(await createMaterialTreeForXLSXImport(dataSource)),
       ...indicatorPreconditions.h3tableNames,
     ];
 
@@ -293,10 +302,11 @@ describe('Sourcing Data import', () => {
       geoRegion,
     });
 
-    const indicatorPreconditions =
-      await createWorldToCalculateIndicatorRecords();
+    const indicatorPreconditions = await createWorldToCalculateIndicatorRecords(
+      dataSource,
+    );
     tablesToDrop = [
-      ...(await createMaterialTreeForXLSXImport()),
+      ...(await createMaterialTreeForXLSXImport(dataSource)),
       ...indicatorPreconditions.h3tableNames,
     ];
 
@@ -343,10 +353,11 @@ describe('Sourcing Data import', () => {
       geoRegion,
     });
 
-    const indicatorPreconditions =
-      await createWorldToCalculateIndicatorRecords();
+    const indicatorPreconditions = await createWorldToCalculateIndicatorRecords(
+      dataSource,
+    );
     tablesToDrop = [
-      ...(await createMaterialTreeForXLSXImport()),
+      ...(await createMaterialTreeForXLSXImport(dataSource)),
       ...indicatorPreconditions.h3tableNames,
     ];
 
@@ -377,8 +388,13 @@ describe('Sourcing Data import', () => {
       geoRegion,
     });
 
-    await createMaterialTreeForXLSXImport();
-    const preconditions = await createWorldToCalculateIndicatorRecords();
+    const indicatorPreconditions = await createWorldToCalculateIndicatorRecords(
+      dataSource,
+    );
+    tablesToDrop = [
+      ...(await createMaterialTreeForXLSXImport(dataSource)),
+      ...indicatorPreconditions.h3tableNames,
+    ];
 
     const materials: Material[] = await materialRepository.find();
 
@@ -412,7 +428,7 @@ describe('Sourcing Data import', () => {
 
     const indicatorRawDataForImport: SourcingRecordsWithIndicatorRawDataDtoV2[] =
       await impactCalculatorService.getIndicatorRawDataForAllSourcingRecordsV2(
-        preconditions.indicators,
+        indicatorPreconditions.indicators,
       );
 
     expect(indicatorRawDataForImport.length).toEqual(1);
@@ -488,15 +504,17 @@ describe('Sourcing Data import', () => {
         isoA2: 'ABC',
         geoRegion,
       });
-      await h3DataMock({
+      await h3DataMock(dataSource, {
         h3TableName: 'h3_grid_deforestation_global',
         h3ColumnName: 'hansen_loss_2019',
         year: 2019,
         additionalH3Data: h3BasicFixture,
       });
       tablesToDrop = [
-        ...(await createMaterialTreeForXLSXImport({ startYear: 2020 })),
-        ...(await createIndicatorsForXLSXImport()),
+        ...(await createMaterialTreeForXLSXImport(dataSource, {
+          startYear: 2020,
+        })),
+        ...(await createIndicatorsForXLSXImport(dataSource)),
         'h3_grid_deforestation_global',
       ];
 
@@ -520,15 +538,17 @@ describe('Sourcing Data import', () => {
         isoA2: 'ABC',
         geoRegion,
       });
-      await h3DataMock({
+      await h3DataMock(dataSource, {
         h3TableName: 'h3_grid_deforestation_global',
         h3ColumnName: 'hansen_loss_2019',
         year: 2019,
         additionalH3Data: h3BasicFixture,
       });
       tablesToDrop = [
-        ...(await createMaterialTreeForXLSXImport({ startYear: 2020 })),
-        ...(await createIndicatorsForXLSXImport()),
+        ...(await createMaterialTreeForXLSXImport(dataSource, {
+          startYear: 2020,
+        })),
+        ...(await createIndicatorsForXLSXImport(dataSource)),
         'h3_grid_deforestation_global',
       ];
 
@@ -572,15 +592,17 @@ describe('Sourcing Data import', () => {
         isoA2: 'ABC',
         geoRegion,
       });
-      await h3DataMock({
+      await h3DataMock(dataSource, {
         h3TableName: 'h3_grid_deforestation_global',
         h3ColumnName: 'hansen_loss_2019',
         year: 2019,
         additionalH3Data: h3BasicFixture,
       });
       tablesToDrop = [
-        ...(await createMaterialTreeForXLSXImport({ startYear: 2020 })),
-        ...(await createIndicatorsForXLSXImport()),
+        ...(await createMaterialTreeForXLSXImport(dataSource, {
+          startYear: 2020,
+        })),
+        ...(await createIndicatorsForXLSXImport(dataSource)),
         'h3_grid_deforestation_global',
       ];
 

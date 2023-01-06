@@ -1,14 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
-import { IndicatorCoefficientsModule } from 'modules/indicator-coefficients/indicator-coefficients.module';
 import { IndicatorCoefficientRepository } from 'modules/indicator-coefficients/indicator-coefficient.repository';
 
 import { createIndicatorCoefficient } from '../../entity-mocks';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import AppSingleton from '../../utils/getApp';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { User } from 'modules/users/user.entity';
+import { DataSource } from 'typeorm';
 
 /**
  * Tests for the IndicatorCoefficientsModule.
@@ -16,22 +16,23 @@ import { getApp } from '../../utils/getApp';
 
 describe('IndicatorCoefficientsModule (e2e)', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let indicatorCoefficientRepository: IndicatorCoefficientRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, IndicatorCoefficientsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     indicatorCoefficientRepository =
       moduleFixture.get<IndicatorCoefficientRepository>(
         IndicatorCoefficientRepository,
       );
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
@@ -39,6 +40,7 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 
@@ -53,7 +55,9 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
         .expect(HttpStatus.CREATED);
 
       const createdIndicatorCoefficient =
-        await indicatorCoefficientRepository.findOne({where: { id: response.body.data.id }});
+        await indicatorCoefficientRepository.findOne({
+          where: { id: response.body.data.id },
+        });
 
       if (!createdIndicatorCoefficient) {
         throw new Error('Error loading created Indicator Coefficient');
@@ -112,7 +116,7 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
         await indicatorCoefficientRepository.findOne({
           where: { id: indicatorCoefficient.id },
         }),
-      ).toBeUndefined();
+      ).toBeNull();
     });
   });
 

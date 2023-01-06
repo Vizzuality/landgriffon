@@ -8,7 +8,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CACHE_MANAGER } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { AppModule } from 'app.module';
-import { GeoCodingModule } from 'modules/geo-coding/geo-coding.module';
 import { CacheGeocoder } from 'modules/geo-coding/geocoders/cache.geocoder';
 import { GoogleMapsGeocoder } from 'modules/geo-coding/geocoders/google-maps.geocoder';
 import { Geocoder } from 'modules/geo-coding/geocoders/geocoder.interface';
@@ -33,7 +32,7 @@ describe('GeoCoding Service (Integration Testing)', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, GeoCodingModule],
+      imports: [AppModule],
     })
       .overrideProvider(GoogleMapsGeocoder)
       .useClass(GoogleMapsGeocoderMock)
@@ -67,7 +66,7 @@ describe('GeoCoding Service (Integration Testing)', () => {
       cacheKey,
     );
 
-    expect(cachedDataBefore).toBe(null);
+    expect(cachedDataBefore).toBeFalsy();
     expect(cachedDataAfter).toEqual(geocodingResult);
   });
 });

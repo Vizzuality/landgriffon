@@ -1,19 +1,16 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from 'app.module';
 import { Material } from 'modules/materials/material.entity';
-import { MaterialsModule } from 'modules/materials/materials.module';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { createMaterial } from '../../entity-mocks';
 import { MaterialsService } from 'modules/materials/materials.service';
+import AppSingleton from '../../utils/getApp';
 
 describe('materials - Get descendants by Material Ids', () => {
   let materialRepository: MaterialRepository;
   let materialsService: MaterialsService;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, MaterialsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    const moduleFixture = appSingleton.moduleFixture;
 
     materialRepository =
       moduleFixture.get<MaterialRepository>(MaterialRepository);

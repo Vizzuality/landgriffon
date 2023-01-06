@@ -68,7 +68,7 @@ export class ApiEvent {
    * to validate an expired token).
    */
   @ApiProperty()
-  @IsEnum(Object.values(API_EVENT_KINDS))
+  @IsEnum(API_EVENT_KINDS)
   @Column('enum', { enum: Object.values(API_EVENT_KINDS) })
   @Index()
   kind!: string;

@@ -1,5 +1,4 @@
 import * as config from 'config';
-import { ImpactMaterializedView } from 'modules/impact/views/impact.materialized-view.entity';
 import { DataSourceOptions } from 'typeorm';
 
 const dbConfig: any = config.get('db');
@@ -11,7 +10,7 @@ export const typeOrmConfig: DataSourceOptions = {
   username: dbConfig.username,
   password: dbConfig.password,
   database: dbConfig.database,
-  logging: dbConfig.logging === true || dbConfig.logging === 'true',
+  logging: dbConfig.logging,
   maxQueryExecutionTime: dbConfig.maxQueryExecutionTime,
   synchronize: dbConfig.synchronize === true || dbConfig.synchronize === 'true',
   migrations: [__dirname + '/migrations/*.{ts,js}'],
@@ -30,7 +29,8 @@ export const typeOrmConfig: DataSourceOptions = {
         }
       : false,
   uuidExtension: 'pgcrypto',
-  //entities: [ImpactMaterializedView],
+  entities: [
+    __dirname + '/modules/**/**.entity.ts',
+    __dirname + '/modules/**/**.entity.js',
+  ],
 };
-
-console.log(typeOrmConfig);

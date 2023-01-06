@@ -17,10 +17,7 @@ export class TargetsService extends AppBaseService<
   UpdateTargetDto,
   AppInfoDTO
 > {
-  constructor(
-    @InjectRepository(TargetsRepository)
-    public readonly targetsRepository: TargetsRepository,
-  ) {
+  constructor(public readonly targetsRepository: TargetsRepository) {
     super(
       targetsRepository,
       targetResource.name.singular,

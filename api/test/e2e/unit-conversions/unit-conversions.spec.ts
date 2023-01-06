@@ -5,8 +5,11 @@ import { AppModule } from 'app.module';
 import { UnitConversion } from 'modules/unit-conversions/unit-conversion.entity';
 import { UnitConversionsModule } from 'modules/unit-conversions/unit-conversions.module';
 import { UnitConversionRepository } from 'modules/unit-conversions/unit-conversion.repository';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import AppSingleton from '../../utils/getApp';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { User } from 'modules/users/user.entity';
+import { DataSource } from 'typeorm';
 
 /**
  * Tests for the UnitConversionsModule.
@@ -14,21 +17,22 @@ import { getApp } from '../../utils/getApp';
 
 describe('UnitConversionsModule (e2e)', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let unitConversionRepository: UnitConversionRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, UnitConversionsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     unitConversionRepository = moduleFixture.get<UnitConversionRepository>(
       UnitConversionRepository,
     );
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
@@ -36,6 +40,7 @@ describe('UnitConversionsModule (e2e)', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 
@@ -49,9 +54,9 @@ describe('UnitConversionsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdUnitConversion = await unitConversionRepository.findOne({where: { id:
-        response.body.data.id,
-       }});
+      const createdUnitConversion = await unitConversionRepository.findOne({
+        where: { id: response.body.data.id },
+      });
 
       if (!createdUnitConversion) {
         throw new Error('Error loading created Unit Conversion');
@@ -90,8 +95,10 @@ describe('UnitConversionsModule (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(
-        await unitConversionRepository.findOne({where: { id: unitConversion.id }}),
-      ).toBeUndefined();
+        await unitConversionRepository.findOne({
+          where: { id: unitConversion.id },
+        }),
+      ).toBeNull();
     });
   });
 

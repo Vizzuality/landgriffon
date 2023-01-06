@@ -13,12 +13,13 @@
     "<rootDir>/src/",
     "<rootDir>/test/"
   ],
-  "testEnvironment": "node",
   "testRegex": ".spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "setupFilesAfterEnv": ["./test/jest-custom-matchers.ts"],
+  "setupFilesAfterEnv": [
+    "./test/jest-custom-matchers.ts"
+  ],
   "coverageReporters": [
     [
       "lcov",
@@ -31,6 +32,9 @@
   "coveragePathIgnorePatterns": [
     "<rootDir>/node_modules/",
     "<rootDir>/test/"
+  ],
+  "collectCoverageFrom": [
+    "**/*.(t|j)s"
   ],
   "testTimeout": 50000
 }

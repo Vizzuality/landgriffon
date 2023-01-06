@@ -1,28 +1,29 @@
+require('leaked-handles').set({
+  fullStack: true, // use full stack traces
+  debugSockets: true, // pretty print tcp thrown exceptions.
+});
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { v4 as uuidv4 } from 'uuid';
-import { AppModule } from '../../../../src/app.module';
-import { ImpactModule } from '../../../../src/modules/impact/impact.module';
-import { getApp } from '../../../utils/getApp';
-import { saveUserAndGetToken } from '../../../utils/userAuth';
+import AppSingleton from '../../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../../utils/userAuth';
 import { clearEntityTables } from '../../../utils/database-test-helper';
-import { IndicatorRecord } from '../../../../src/modules/indicator-records/indicator-record.entity';
-import { MaterialToH3 } from '../../../../src/modules/materials/material-to-h3.entity';
-import { H3Data } from '../../../../src/modules/h3-data/h3-data.entity';
-import { Material } from '../../../../src/modules/materials/material.entity';
+import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
+import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
+import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { Material } from 'modules/materials/material.entity';
 import {
   Indicator,
   INDICATOR_TYPES,
-} from '../../../../src/modules/indicators/indicator.entity';
-import { Unit } from '../../../../src/modules/units/unit.entity';
-import { BusinessUnit } from '../../../../src/modules/business-units/business-unit.entity';
-import { AdminRegion } from '../../../../src/modules/admin-regions/admin-region.entity';
-import { GeoRegion } from '../../../../src/modules/geo-regions/geo-region.entity';
-import { Supplier } from '../../../../src/modules/suppliers/supplier.entity';
-import { SourcingRecord } from '../../../../src/modules/sourcing-records/sourcing-record.entity';
-import { SourcingLocation } from '../../../../src/modules/sourcing-locations/sourcing-location.entity';
-import { SourcingLocationGroup } from '../../../../src/modules/sourcing-location-groups/sourcing-location-group.entity';
+} from 'modules/indicators/indicator.entity';
+import { Unit } from 'modules/units/unit.entity';
+import { BusinessUnit } from 'modules/business-units/business-unit.entity';
+import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
+import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import { Supplier } from 'modules/suppliers/supplier.entity';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import {
   ImpactTableDataAggregatedValue,
   ImpactTableDataAggregationInfo,
@@ -45,23 +46,26 @@ import { range } from 'lodash';
 import { createNewMaterialInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-material-intervention.preconditions';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { rankingTableWithScenario } from '../mocks/response-mocks.impact';
+import { DataSource } from 'typeorm';
+import { User } from 'modules/users/user.entity';
 
 describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
   let app: INestApplication;
   let jwtToken: string;
+  let dataSource: DataSource;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, ImpactModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
-    await clearEntityTables([
+    await clearEntityTables(dataSource, [
       IndicatorRecord,
       MaterialToH3,
       H3Data,
@@ -79,6 +83,7 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 

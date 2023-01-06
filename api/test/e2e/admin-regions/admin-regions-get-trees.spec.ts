@@ -12,21 +12,27 @@ import {
 } from '../../entity-mocks';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { expectedJSONAPIAttributes } from './config';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
-import { Material } from '../../../src/modules/materials/material.entity';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import AppSingleton from '../../utils/getApp';
+import { Material } from 'modules/materials/material.entity';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { User } from 'modules/users/user.entity';
+import { DataSource } from 'typeorm';
 
 //TODO: Allow these tests when feature fix is merged
 describe('AdminRegions - Get trees', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let adminRegionRepository: AdminRegionRepository;
   let h3dataRepository: H3DataRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, AdminRegionsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     adminRegionRepository = moduleFixture.get<AdminRegionRepository>(
       AdminRegionRepository,
@@ -34,9 +40,7 @@ describe('AdminRegions - Get trees', () => {
 
     h3dataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
     await adminRegionRepository.delete({});
     await h3dataRepository.delete({});
   });
@@ -47,6 +51,7 @@ describe('AdminRegions - Get trees', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 

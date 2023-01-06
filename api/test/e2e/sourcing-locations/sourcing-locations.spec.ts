@@ -15,8 +15,11 @@ import {
 } from '../../entity-mocks';
 import { Material } from 'modules/materials/material.entity';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import AppSingleton from '../../utils/getApp';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { User } from 'modules/users/user.entity';
+import { DataSource } from 'typeorm';
 
 /**
  * Tests for the SourcingLocationsModule.
@@ -24,21 +27,21 @@ import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-in
 
 describe('SourcingLocationsModule (e2e)', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let sourcingLocationRepository: SourcingLocationRepository;
   let jwtToken: string;
   let userId: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, SourcingLocationsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     sourcingLocationRepository = moduleFixture.get<SourcingLocationRepository>(
       SourcingLocationRepository,
     );
-
-    app = getApp(moduleFixture);
-    await app.init();
 
     const tokenWithId = await saveUserAndGetTokenWithUserId(moduleFixture, app);
     jwtToken = tokenWithId.jwtToken;
@@ -50,6 +53,7 @@ describe('SourcingLocationsModule (e2e)', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 
@@ -142,7 +146,7 @@ describe('SourcingLocationsModule (e2e)', () => {
         await sourcingLocationRepository.findOne({
           where: { id: sourcingLocation.id },
         }),
-      ).toBeUndefined();
+      ).toBeNull();
     });
   });
 

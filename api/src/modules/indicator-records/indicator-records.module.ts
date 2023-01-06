@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { IndicatorRecordsController } from 'modules/indicator-records/indicator-records.controller';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
-import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
+import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { H3DataModule } from 'modules/h3-data/h3-data.module';
 import { IndicatorsModule } from 'modules/indicators/indicators.module';
 import { MaterialsModule } from 'modules/materials/materials.module';
@@ -10,10 +10,11 @@ import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records
 import { CachedDataModule } from 'modules/cached-data/cached-data.module';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 import { IndicatorDependencyManager } from 'modules/indicator-records/services/indicator-dependency-manager.service';
+import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([IndicatorRecordRepository]),
+    TypeOrmModule.forFeature([IndicatorRecord]),
     IndicatorsModule,
     H3DataModule,
     MaterialsModule,
@@ -23,11 +24,13 @@ import { IndicatorDependencyManager } from 'modules/indicator-records/services/i
   controllers: [IndicatorRecordsController],
   providers: [
     IndicatorRecordsService,
+    IndicatorRecordRepository,
     ImpactCalculator,
     IndicatorDependencyManager,
   ],
   exports: [
     IndicatorRecordsService,
+    IndicatorRecordRepository,
     ImpactCalculator,
     IndicatorDependencyManager,
   ],

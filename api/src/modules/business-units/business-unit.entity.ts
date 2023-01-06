@@ -28,7 +28,7 @@ export const businessUnitResource: BaseServiceResource = {
   columnsAllowedAsFilter: ['name', 'description', 'status'],
 };
 
-@Entity('business_units')
+@Entity('business_unit')
 @Tree('materialized-path')
 export class BusinessUnit extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')

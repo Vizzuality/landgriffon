@@ -36,7 +36,6 @@ export class SuppliersService extends AppBaseService<
   AppInfoDTO
 > {
   constructor(
-    @InjectRepository(SupplierRepository)
     protected readonly supplierRepository: SupplierRepository,
     @Inject(forwardRef(() => AdminRegionsService))
     protected readonly adminRegionService: AdminRegionsService,

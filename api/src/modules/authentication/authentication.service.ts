@@ -13,7 +13,6 @@ import { User } from 'modules/users/user.entity';
 import { UsersService } from 'modules/users/users.service';
 import { compare, genSalt, hash } from 'bcrypt';
 
-import { InjectRepository } from '@nestjs/typeorm';
 import { IssuedAuthnToken } from 'modules/authentication/issued-authn-token';
 import { SignUpDto } from 'modules/authentication//dto/sign-up.dto';
 import { ApiEventsService } from 'modules/api-events/api-events.service';
@@ -79,7 +78,6 @@ export class AuthenticationService {
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-    @InjectRepository(UserRepository)
     private userRepository: UserRepository,
   ) {}
 

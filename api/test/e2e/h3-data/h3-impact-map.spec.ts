@@ -1,19 +1,19 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
-import { H3DataModule } from 'modules/h3-data/h3-data.module';
 import { dropH3DataMock } from './mocks/h3-data.mock';
 import {
   createImpactMapMockData,
   deleteImpactMapMockData,
   ImpactMapMockData,
 } from './mocks/h3-impact-map.mock';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import AppSingleton from '../../utils/getApp';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
-
-import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
+import { DataSource } from 'typeorm';
+import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { User } from 'modules/users/user.entity';
+import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 
 /**
  * Tests for the h3 impact map.
@@ -21,27 +21,32 @@ import { IndicatorRecord } from 'modules/indicator-records/indicator-record.enti
 
 describe('H3 Data Module (e2e) - Impact map', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let impactMapMockData: ImpactMapMockData;
   let jwtToken: string;
 
   const fakeTable = 'faketable';
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, H3DataModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+    const indicatorRecordsService = moduleFixture.get<IndicatorRecordsService>(
+      IndicatorRecordsService,
+    );
 
-    impactMapMockData = await createImpactMapMockData();
-    await IndicatorRecord.updateImpactView();
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+
+    impactMapMockData = await createImpactMapMockData(dataSource);
+    await indicatorRecordsService.updateImpactView();
   });
 
   afterAll(async () => {
-    await dropH3DataMock([fakeTable]);
-    await deleteImpactMapMockData();
+    await dropH3DataMock(dataSource, [fakeTable]);
+    await deleteImpactMapMockData(dataSource);
+    await clearEntityTables(dataSource, [User, SourcingRecord]);
     await app.close();
   });
 

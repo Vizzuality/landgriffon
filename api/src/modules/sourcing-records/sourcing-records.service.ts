@@ -39,7 +39,6 @@ export class SourcingRecordsService extends AppBaseService<
   AppInfoDTO
 > {
   constructor(
-    @InjectRepository(SourcingRecordRepository)
     protected readonly sourcingRecordRepository: SourcingRecordRepository,
   ) {
     super(

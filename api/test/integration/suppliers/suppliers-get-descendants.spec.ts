@@ -1,19 +1,16 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from 'app.module';
 import { Supplier } from 'modules/suppliers/supplier.entity';
-import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { createSupplier } from '../../entity-mocks';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
+import AppSingleton from '../../utils/getApp';
 
 describe('suppliers - Get descendants by supplier Ids', () => {
   let supplierRepository: SupplierRepository;
   let suppliersService: SuppliersService;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, SuppliersModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    const moduleFixture = appSingleton.moduleFixture;
 
     supplierRepository =
       moduleFixture.get<SupplierRepository>(SupplierRepository);

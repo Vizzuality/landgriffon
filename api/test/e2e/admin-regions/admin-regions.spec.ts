@@ -5,8 +5,11 @@ import { AppModule } from 'app.module';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import AppSingleton from '../../utils/getApp';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { User } from 'modules/users/user.entity';
+import { DataSource } from 'typeorm';
 
 /**
  * Tests for the AdminRegionsModule.
@@ -14,21 +17,22 @@ import { getApp } from '../../utils/getApp';
 
 describe('AdminRegionsModule (e2e)', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let adminRegionRepository: AdminRegionRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, AdminRegionsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     adminRegionRepository = moduleFixture.get<AdminRegionRepository>(
       AdminRegionRepository,
     );
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
@@ -36,6 +40,7 @@ describe('AdminRegionsModule (e2e)', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 
@@ -49,9 +54,9 @@ describe('AdminRegionsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdAdminRegion = await adminRegionRepository.findOne({where: { id:
-        response.body.data.id,
-       }});
+      const createdAdminRegion = await adminRegionRepository.findOne({
+        where: { id: response.body.data.id },
+      });
 
       if (!createdAdminRegion) {
         throw new Error('Error loading created Admin region');
@@ -113,8 +118,8 @@ describe('AdminRegionsModule (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(
-        await adminRegionRepository.findOne({where: { id: adminRegion.id }}),
-      ).toBeUndefined();
+        await adminRegionRepository.findOne({ where: { id: adminRegion.id } }),
+      ).toBeNull();
     });
   });
 

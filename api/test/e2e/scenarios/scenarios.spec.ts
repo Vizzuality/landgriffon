@@ -1,9 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { Scenario, SCENARIO_STATUS } from 'modules/scenarios/scenario.entity';
-import { ScenariosModule } from 'modules/scenarios/scenarios.module';
 import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
 import {
   createAdminRegion,
@@ -15,7 +12,7 @@ import {
   createSourcingRecord,
 } from '../../entity-mocks';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import AppSingleton from '../../utils/getApp';
 import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
@@ -28,8 +25,10 @@ import {
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
-import { ScenarioInterventionsModule } from '../../../src/modules/scenario-interventions/scenario-interventions.module';
-import { JSONAPIEntityData } from '../../../src/utils/app-base.service';
+import { JSONAPIEntityData } from 'utils/app-base.service';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { User } from 'modules/users/user.entity';
+import { DataSource } from 'typeorm';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -42,6 +41,7 @@ const expectedJSONAPIAttributes: string[] = [
 
 describe('ScenariosModule (e2e)', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let scenarioRepository: ScenarioRepository;
   let scenarioInterventionRepository: ScenarioInterventionRepository;
   let sourcingLocationRepository: SourcingLocationRepository;
@@ -50,9 +50,11 @@ describe('ScenariosModule (e2e)', () => {
   let userId: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, ScenariosModule, ScenarioInterventionsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     scenarioRepository =
       moduleFixture.get<ScenarioRepository>(ScenarioRepository);
@@ -67,8 +69,6 @@ describe('ScenariosModule (e2e)', () => {
       SourcingRecordRepository,
     );
 
-    app = getApp(moduleFixture);
-    await app.init();
     const tokenWithId = await saveUserAndGetTokenWithUserId(moduleFixture, app);
     jwtToken = tokenWithId.jwtToken;
     userId = tokenWithId.userId;
@@ -76,10 +76,12 @@ describe('ScenariosModule (e2e)', () => {
 
   afterEach(async () => {
     await scenarioRepository.delete({});
+    await sourcingRecordRepository.delete({});
     await scenarioInterventionRepository.delete({});
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 
@@ -165,7 +167,7 @@ describe('ScenariosModule (e2e)', () => {
 
       expect(
         await scenarioRepository.findOne({ where: { id: scenario.id } }),
-      ).toBeUndefined();
+      ).toBeNull();
     });
   });
 

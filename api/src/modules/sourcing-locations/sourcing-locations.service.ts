@@ -40,7 +40,6 @@ export class SourcingLocationsService extends AppBaseService<
   AppInfoDTO
 > {
   constructor(
-    @InjectRepository(SourcingLocationRepository)
     protected readonly sourcingLocationRepository: SourcingLocationRepository,
     @Inject(forwardRef(() => AdminRegionsService))
     protected readonly adminRegionService: AdminRegionsService,

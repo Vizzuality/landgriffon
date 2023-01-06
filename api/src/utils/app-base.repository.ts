@@ -1,20 +1,21 @@
-import { Connection, getConnection, QueryRunner, Repository } from 'typeorm';
+import { DataSource, QueryRunner, Repository } from 'typeorm';
 import { SaveOptions } from 'typeorm/repository/SaveOptions';
 import { chunk } from 'lodash';
-import { Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as config from 'config';
 const dbConfig: any = config.get('db');
 const batchChunkSize: number = parseInt(`${dbConfig.batchChunkSize}`, 10);
 
+@Injectable()
 export abstract class AppBaseRepository<Entity> extends Repository<Entity> {
   logger: Logger = new Logger(this.constructor.name);
+  protected dataSource: DataSource;
 
   async saveChunks<Entity>(
     entities: Entity[],
     options?: SaveOptions,
   ): Promise<Entity[]> {
-    const connection: Connection = getConnection();
-    const queryRunner: QueryRunner = connection.createQueryRunner();
+    const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     const result: Entity[][] = [];

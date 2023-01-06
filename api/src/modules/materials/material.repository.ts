@@ -1,13 +1,13 @@
 import {
   Brackets,
-  EntityRepository,
+  DataSource,
   SelectQueryBuilder,
   WhereExpressionBuilder,
 } from 'typeorm';
 import { Material } from 'modules/materials/material.entity';
 import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
-import { Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
 import {
@@ -15,11 +15,15 @@ import {
   ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 
-@EntityRepository(Material)
+@Injectable()
 export class MaterialRepository extends ExtendedTreeRepository<
   Material,
   CreateMaterialDto
 > {
+  constructor(private dataSource: DataSource) {
+    super(Material, dataSource.createEntityManager());
+  }
+
   logger: Logger = new Logger(MaterialRepository.name);
 
   /**

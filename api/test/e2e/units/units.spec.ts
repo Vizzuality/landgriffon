@@ -5,8 +5,11 @@ import { AppModule } from 'app.module';
 import { Unit } from 'modules/units/unit.entity';
 import { UnitsModule } from 'modules/units/units.module';
 import { UnitRepository } from 'modules/units/unit.repository';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import AppSingleton from '../../utils/getApp';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { User } from 'modules/users/user.entity';
+import { DataSource } from 'typeorm';
 
 /**
  * Tests for the UnitsModule.
@@ -14,19 +17,20 @@ import { getApp } from '../../utils/getApp';
 
 describe('UnitsModule (e2e)', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let unitRepository: UnitRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, UnitsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     unitRepository = moduleFixture.get<UnitRepository>(UnitRepository);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
@@ -34,6 +38,7 @@ describe('UnitsModule (e2e)', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 
@@ -47,7 +52,9 @@ describe('UnitsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdUnit = await unitRepository.findOne({where: { id: response.body.data.id }});
+      const createdUnit = await unitRepository.findOne({
+        where: { id: response.body.data.id },
+      });
 
       if (!createdUnit) {
         throw new Error('Error loading created Unit');
@@ -106,7 +113,9 @@ describe('UnitsModule (e2e)', () => {
         .send()
         .expect(HttpStatus.OK);
 
-      expect(await unitRepository.findOne({where: { id: unit.id }})).toBeUndefined();
+      expect(
+        await unitRepository.findOne({ where: { id: unit.id } }),
+      ).toBeNull();
     });
   });
 

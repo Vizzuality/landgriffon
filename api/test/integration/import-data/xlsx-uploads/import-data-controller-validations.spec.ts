@@ -5,9 +5,12 @@ import { AppModule } from 'app.module';
 import { readdir } from 'fs/promises';
 import * as config from 'config';
 import { ImportDataModule } from 'modules/import-data/import-data.module';
-import { saveUserAndGetToken } from '../../../utils/userAuth';
-import { getApp } from '../../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../../utils/userAuth';
+import AppSingleton from '../../../utils/getApp';
 import { sourcingDataValidationErrorResponse } from './import-mocks';
+import { clearEntityTables } from '../../../utils/database-test-helper';
+import { User } from '../../../../src/modules/users/user.entity';
+import { DataSource } from 'typeorm';
 
 jest.mock('config', () => {
   const config = jest.requireActual('config');
@@ -26,19 +29,21 @@ jest.mock('config', () => {
 
 describe('XLSX Upload Feature Validation Tests', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, ImportDataModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
   describe('XLSX Upload Feature File Validation Tests', () => {

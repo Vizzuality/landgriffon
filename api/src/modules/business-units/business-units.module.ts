@@ -6,7 +6,7 @@ import { BusinessUnitsService } from 'modules/business-units/business-units.serv
 import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { MaterialsModule } from 'modules/materials/materials.module';
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
-import { BusinessUnit } from './business-unit.entity';
+import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 
 @Module({
   imports: [

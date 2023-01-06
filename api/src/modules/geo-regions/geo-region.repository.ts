@@ -1,15 +1,19 @@
 import {
-  EntityRepository,
-  getManager,
+  DataSource,
   InsertResult,
   Repository,
   SelectQueryBuilder,
 } from 'typeorm';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { LocationGeoRegionDto } from 'modules/geo-regions/dto/location.geo-region.dto';
+import { Injectable } from '@nestjs/common';
 
-@EntityRepository(GeoRegion)
+@Injectable()
 export class GeoRegionRepository extends Repository<GeoRegion> {
+  constructor(private dataSource: DataSource) {
+    super(GeoRegion, dataSource.createEntityManager());
+  }
+
   /**
    * Saves a new geo-regions with theGeom as a 50KM radius around given coordinates
    * @param newGeoRegionValues
@@ -29,7 +33,7 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
   async saveGeoRegionAsRadius(
     newGeoRegionValues: LocationGeoRegionDto,
   ): Promise<string> {
-    const selectQuery: SelectQueryBuilder<any> = getManager()
+    const selectQuery: SelectQueryBuilder<any> = this.dataSource
       .createQueryBuilder()
       .select(`hashtext(concat($3::text, points.radius))`)
       .addSelect(`points.radius`)

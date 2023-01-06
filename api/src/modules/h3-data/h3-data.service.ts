@@ -24,7 +24,6 @@ export class H3DataService {
   logger: Logger = new Logger(H3DataService.name);
 
   constructor(
-    @InjectRepository(H3DataRepository)
     protected readonly h3DataRepository: H3DataRepository,
     protected readonly materialService: MaterialsService,
     protected readonly materialToH3Service: MaterialsToH3sService,

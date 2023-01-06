@@ -4,7 +4,7 @@ import {
 } from 'modules/indicators/indicator.entity';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
-import { getManager, SelectQueryBuilder } from 'typeorm';
+import { DataSource, SelectQueryBuilder } from 'typeorm';
 import { NotFoundException } from '@nestjs/common';
 
 /**
@@ -20,6 +20,7 @@ import { NotFoundException } from '@nestjs/common';
  */
 
 type PrepareIndicatorRecordValueSQL = (
+  dataSource: DataSource,
   geoRegionId: string,
   indicatorH3s: Map<INDICATOR_TYPES, H3Data>,
   materialH3s: Map<MATERIAL_TO_H3_TYPE, H3Data>,
@@ -43,6 +44,7 @@ const strategies: Record<INDICATOR_TYPES, PrepareIndicatorRecordValueSQL> = {
  * @param materialH3s
  */
 function prepareUnsupportedSQL(
+  dataSource: DataSource,
   geoRegionId: string,
   indicatorH3s: Map<INDICATOR_TYPES, H3Data>,
   materialH3s: Map<MATERIAL_TO_H3_TYPE, H3Data>,
@@ -51,6 +53,7 @@ function prepareUnsupportedSQL(
 }
 
 function prepareBioDiversitySQL(
+  dataSource: DataSource,
   geoRegionId: string,
   indicatorH3s: Map<INDICATOR_TYPES, H3Data>,
   materialH3s: Map<MATERIAL_TO_H3_TYPE, H3Data>,
@@ -77,6 +80,7 @@ function prepareBioDiversitySQL(
   )!;
 
   return prepareBaseIndicatorRecordValueSQLBody(
+    dataSource,
     geoRegionId,
     materialH3Harvest.h3resolution,
     indicatorH3s,
@@ -90,6 +94,7 @@ function prepareBioDiversitySQL(
 }
 
 function prepareCarbonSQL(
+  dataSource: DataSource,
   geoRegionId: string,
   indicatorH3s: Map<INDICATOR_TYPES, H3Data>,
   materialH3s: Map<MATERIAL_TO_H3_TYPE, H3Data>,
@@ -116,6 +121,7 @@ function prepareCarbonSQL(
   )!;
 
   return prepareBaseIndicatorRecordValueSQLBody(
+    dataSource,
     geoRegionId,
     materialH3Harvest.h3resolution,
     indicatorH3s,
@@ -128,6 +134,7 @@ function prepareCarbonSQL(
 }
 
 function prepareDeforestationSQL(
+  dataSource: DataSource,
   geoRegionId: string,
   indicatorH3s: Map<INDICATOR_TYPES, H3Data>,
   materialH3s: Map<MATERIAL_TO_H3_TYPE, H3Data>,
@@ -151,6 +158,7 @@ function prepareDeforestationSQL(
   )!;
 
   return prepareBaseIndicatorRecordValueSQLBody(
+    dataSource,
     geoRegionId,
     materialH3Harvest.h3resolution,
     indicatorH3s,
@@ -161,6 +169,7 @@ function prepareDeforestationSQL(
 }
 
 function prepareWaterSQL(
+  dataSource: DataSource,
   geoRegionId: string,
   indicatorH3s: Map<INDICATOR_TYPES, H3Data>,
   materialH3s: Map<MATERIAL_TO_H3_TYPE, H3Data>,
@@ -178,6 +187,7 @@ function prepareWaterSQL(
   )!.h3columnName;
 
   return prepareBaseIndicatorRecordValueSQLBody(
+    dataSource,
     geoRegionId,
     6, //Hardcoded resolution, since it doesn't use material info
     indicatorH3s,
@@ -188,19 +198,20 @@ function prepareWaterSQL(
 }
 
 function prepareBaseIndicatorRecordValueSQLBody(
+  dataSource: DataSource,
   geoRegionId: string,
   resolution: number,
   indicatorH3s: Map<INDICATOR_TYPES, H3Data>,
   materialH3s: Map<MATERIAL_TO_H3_TYPE, H3Data>,
 ): SelectQueryBuilder<any> {
-  const query: SelectQueryBuilder<any> = getManager()
+  const query: SelectQueryBuilder<any> = dataSource
     .createQueryBuilder()
     .from(
       `( select * from get_h3_uncompact_geo_region('${geoRegionId}', ${resolution}) )`,
       'geo_region',
     );
 
-  //Add Material JOINs
+  // Add Material JOINs
   // Since the material Type is static and won't change, it will be used as an alias
   materialH3s.forEach((value: H3Data, key: MATERIAL_TO_H3_TYPE) => {
     query.innerJoin(

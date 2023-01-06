@@ -1,13 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { Target } from 'modules/targets/target.entity';
-import { TargetsModule } from 'modules/targets/targets.module';
 import { TargetsRepository } from 'modules/targets/targets.repository';
 import { createIndicator, createTarget } from '../../entity-mocks';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { User } from 'modules/users/user.entity';
+import { DataSource } from 'typeorm';
+import AppSingleton from '../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
 
 /**
  * Tests for Targets Module.
@@ -15,27 +17,24 @@ import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 
 describe('Tasks Module (e2e)', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let targetsRepository: TargetsRepository;
   let indicatorRepository: IndicatorRepository;
+  let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, TargetsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     targetsRepository = moduleFixture.get<TargetsRepository>(TargetsRepository);
     indicatorRepository =
       moduleFixture.get<IndicatorRepository>(IndicatorRepository);
 
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
-    await app.init();
+    const tokenWithId = await saveUserAndGetTokenWithUserId(moduleFixture, app);
+    jwtToken = tokenWithId.jwtToken;
   });
 
   afterEach(async () => {
@@ -45,6 +44,7 @@ describe('Tasks Module (e2e)', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 
@@ -56,6 +56,7 @@ describe('Tasks Module (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .post('/api/v1/targets')
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           baseLineYear: 2020,
           targetYear: 2023,
@@ -64,9 +65,9 @@ describe('Tasks Module (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdTarget = await targetsRepository.findOne({where: { id:
-        response.body.data.id,
-       }});
+      const createdTarget = await targetsRepository.findOne({
+        where: { id: response.body.data.id },
+      });
 
       if (!createdTarget) {
         throw new Error('Error loading created Target');
@@ -80,6 +81,7 @@ describe('Tasks Module (e2e)', () => {
   test('Creating a target without required fields should return a 400 error', async () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/targets')
+      .set('Authorization', `Bearer ${jwtToken}`)
       .send()
       .expect(HttpStatus.BAD_REQUEST);
 
@@ -105,6 +107,7 @@ describe('Tasks Module (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .patch(`/api/v1/targets/${target.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           targetYear: 2025,
           value: 30,
@@ -120,6 +123,7 @@ describe('Tasks Module (e2e)', () => {
 
       await request(app.getHttpServer())
         .patch(`/api/v1/targets`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.NOT_FOUND);
     });
@@ -131,10 +135,13 @@ describe('Tasks Module (e2e)', () => {
 
       await request(app.getHttpServer())
         .delete(`/api/v1/targets/${target.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
-      expect(await targetsRepository.findOne({where: { id: target.id }})).toBeUndefined();
+      expect(
+        await targetsRepository.findOne({ where: { id: target.id } }),
+      ).toBeNull();
     });
   });
 
@@ -149,6 +156,7 @@ describe('Tasks Module (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/targets`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -169,6 +177,7 @@ describe('Tasks Module (e2e)', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/api/v1/targets/${target.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
         .send()
         .expect(HttpStatus.OK);
 

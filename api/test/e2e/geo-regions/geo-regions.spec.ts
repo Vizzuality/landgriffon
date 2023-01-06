@@ -5,8 +5,11 @@ import { AppModule } from 'app.module';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { GeoRegionsModule } from 'modules/geo-regions/geo-regions.module';
 import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import AppSingleton from '../../utils/getApp';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { User } from 'modules/users/user.entity';
+import { DataSource } from 'typeorm';
 
 /**
  * Tests for the GeoRegionsModule.
@@ -14,20 +17,21 @@ import { getApp } from '../../utils/getApp';
 
 describe('GeoRegionsModule (e2e)', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let geoRegionRepository: GeoRegionRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, GeoRegionsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     geoRegionRepository =
       moduleFixture.get<GeoRegionRepository>(GeoRegionRepository);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
@@ -35,6 +39,7 @@ describe('GeoRegionsModule (e2e)', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 
@@ -48,9 +53,9 @@ describe('GeoRegionsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdGeoRegion = await geoRegionRepository.findOne({where: { id:
-        response.body.data.id,
-       }});
+      const createdGeoRegion = await geoRegionRepository.findOne({
+        where: { id: response.body.data.id },
+      });
 
       if (!createdGeoRegion) {
         throw new Error('Error loading created Geo region');
@@ -112,7 +117,9 @@ describe('GeoRegionsModule (e2e)', () => {
         .send()
         .expect(HttpStatus.OK);
 
-      expect(await geoRegionRepository.findOne({where: { id: geoRegion.id }})).toBeUndefined();
+      expect(
+        await geoRegionRepository.findOne({ where: { id: geoRegion.id } }),
+      ).toBeNull();
     });
   });
 

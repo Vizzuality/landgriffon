@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
-import { SourcingLocationGroupsModule } from 'modules/sourcing-location-groups/sourcing-location-groups.module';
 import { SourcingLocationGroupRepository } from 'modules/sourcing-location-groups/sourcing-location-group.repository';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import AppSingleton from '../../utils/getApp';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { User } from 'modules/users/user.entity';
+import { DataSource } from 'typeorm';
 
 /**
  * Tests for the SourcingLocationGroupsModule.
@@ -14,22 +14,23 @@ import { getApp } from '../../utils/getApp';
 
 describe('SourcingLocationGroupsModule (e2e)', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let sourcingRecordGroupRepository: SourcingLocationGroupRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, SourcingLocationGroupsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     sourcingRecordGroupRepository =
       moduleFixture.get<SourcingLocationGroupRepository>(
         SourcingLocationGroupRepository,
       );
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
@@ -37,6 +38,7 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 
@@ -51,7 +53,9 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
         .expect(HttpStatus.CREATED);
 
       const createdSourcingRecordGroup =
-        await sourcingRecordGroupRepository.findOne({where: { id: response.body.data.id }});
+        await sourcingRecordGroupRepository.findOne({
+          where: { id: response.body.data.id },
+        });
 
       if (!createdSourcingRecordGroup) {
         throw new Error('Error loading created Sourcing location group');
@@ -117,8 +121,10 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(
-        await sourcingRecordGroupRepository.findOne({where: { id: sourcingRecordGroup.id }}),
-      ).toBeUndefined();
+        await sourcingRecordGroupRepository.findOne({
+          where: { id: sourcingRecordGroup.id },
+        }),
+      ).toBeNull();
     });
   });
 

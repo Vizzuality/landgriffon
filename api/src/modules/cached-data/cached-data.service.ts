@@ -3,16 +3,13 @@ import { CachedDataRepository } from 'modules/cached-data/cached-data.repository
 import {
   CachedData,
   CACHED_DATA_TYPE,
-} from 'modules/cached-data/cached.data.entity';
+} from 'modules/cached-data/cached-data.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import objectHash = require('object-hash');
 
 @Injectable()
 export class CachedDataService {
-  constructor(
-    @InjectRepository(CachedDataRepository)
-    private readonly cachedDataRepository: CachedDataRepository,
-  ) {}
+  constructor(private readonly cachedDataRepository: CachedDataRepository) {}
 
   /**
    * Generates a MD5 hash string from the incoming object. UnorderedArrays is to true so that objectHash

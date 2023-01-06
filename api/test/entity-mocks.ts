@@ -230,7 +230,7 @@ async function createSupplier(
   additionalData: Partial<Supplier> = {},
 ): Promise<Supplier> {
   const defaultData: DeepPartial<Supplier> = {
-    name: 'Material name',
+    name: 'Supplier name',
   };
 
   const supplier = Supplier.merge(new Supplier(), defaultData, additionalData);

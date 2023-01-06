@@ -1,19 +1,16 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from 'app.module';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
-import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
 import { createAdminRegion } from '../../entity-mocks';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
+import AppSingleton from '../../utils/getApp';
 
 describe('AdminRegions - Get descendants by Admin Region Ids', () => {
   let adminRegionRepository: AdminRegionRepository;
   let adminRegionService: AdminRegionsService;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, AdminRegionsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    const moduleFixture = appSingleton.moduleFixture;
 
     adminRegionRepository = moduleFixture.get<AdminRegionRepository>(
       AdminRegionRepository,

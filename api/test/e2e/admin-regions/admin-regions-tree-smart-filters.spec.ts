@@ -10,8 +10,8 @@ import {
   createSourcingLocation,
   createSupplier,
 } from '../../entity-mocks';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import AppSingleton from '../../utils/getApp';
 import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { Material } from 'modules/materials/material.entity';
@@ -28,23 +28,25 @@ import {
   ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
+import { DataSource } from 'typeorm';
+import { User } from 'modules/users/user.entity';
 
 describe('Admin Regions - Get trees - Smart Filters', () => {
   let app: INestApplication;
   let jwtToken: string;
+  let dataSource: DataSource;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, BusinessUnitsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
-    await clearEntityTables([
+    await clearEntityTables(dataSource, [
       Scenario,
       ScenarioIntervention,
       AdminRegion,
@@ -56,6 +58,7 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 

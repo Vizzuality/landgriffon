@@ -21,7 +21,6 @@ export class UnitConversionsService extends AppBaseService<
   AppInfoDTO
 > {
   constructor(
-    @InjectRepository(UnitConversionRepository)
     protected readonly unitConversionRepository: UnitConversionRepository,
   ) {
     super(

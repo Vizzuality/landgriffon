@@ -21,7 +21,6 @@ export class ScenariosService extends AppBaseService<
   AppInfoDTO
 > {
   constructor(
-    @InjectRepository(ScenarioRepository)
     protected readonly scenarioRepository: ScenarioRepository,
     protected readonly scenarioInterventionService: ScenarioInterventionsService,
   ) {

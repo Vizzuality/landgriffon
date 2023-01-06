@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GeoCodingModule } from 'modules/geo-coding/geo-coding.module';
-
-import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
+import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { ScenarioInterventionsController } from 'modules/scenario-interventions/scenario-interventions.controller';
 import { ScenarioInterventionsService } from 'modules/scenario-interventions/scenario-interventions.service';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
@@ -18,13 +17,14 @@ import { ChangeProductionEfficiencyIntervention } from 'modules/scenario-interve
 import * as config from 'config';
 import { ScenarioInterventionsControllerV2 } from 'modules/scenario-interventions/interventions-controller-v2.controller';
 import { ActiveIndicatorValidator } from 'modules/indicators/validators/active-indicator.validator';
+import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
 
 const useNewMethodology: boolean =
   `${config.get('newMethodology')}`.toLowerCase() === 'true';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ScenarioInterventionRepository]),
+    TypeOrmModule.forFeature([ScenarioIntervention]),
     IndicatorRecordsModule,
     GeoCodingModule,
     SourcingLocationsModule,
@@ -39,6 +39,7 @@ const useNewMethodology: boolean =
       : [ScenarioInterventionsController]),
   ],
   providers: [
+    ScenarioInterventionRepository,
     ScenarioInterventionsService,
     InterventionBuilder,
     NewMaterialIntervention,
@@ -46,6 +47,6 @@ const useNewMethodology: boolean =
     ChangeProductionEfficiencyIntervention,
     ActiveIndicatorValidator,
   ],
-  exports: [ScenarioInterventionsService],
+  exports: [ScenarioInterventionRepository, ScenarioInterventionsService],
 })
 export class ScenarioInterventionsModule {}

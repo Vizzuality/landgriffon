@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import AppSingleton from '../../utils/getApp';
 import { ContextualLayersModule } from 'modules/contextual-layers/contextual-layers.module';
 import { clearEntityTables } from '../../utils/database-test-helper';
 import {
@@ -13,9 +13,11 @@ import {
   ContextualLayerByCategory,
 } from 'modules/contextual-layers/contextual-layer.entity';
 import { createContextualLayer } from '../../entity-mocks';
-import { H3Data } from '../../../src/modules/h3-data/h3-data.entity';
+import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { dropH3DataMock, h3DataMock } from '../h3-data/mocks/h3-data.mock';
 import { h3ContextualLayerExampleDataFixture } from '../h3-data/mocks/h3-fixtures';
+import { DataSource } from 'typeorm';
+import { User } from 'modules/users/user.entity';
 
 /**
  * Tests for the GeoRegionsModule.
@@ -23,27 +25,29 @@ import { h3ContextualLayerExampleDataFixture } from '../h3-data/mocks/h3-fixture
 
 describe('ContextualLayersModule (e2e)', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, ContextualLayersModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
-    await clearEntityTables([H3Data, ContextualLayer]);
+    await clearEntityTables(dataSource, [H3Data, ContextualLayer]);
     const layerTables: string[] = Object.values(CONTEXTUAL_LAYER_AGG_TYPE).map(
       (value: CONTEXTUAL_LAYER_AGG_TYPE) => 'layerTable' + value,
     );
-    await dropH3DataMock(['layerTable', ...layerTables]);
+    await dropH3DataMock(dataSource, ['layerTable', ...layerTables]);
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 
@@ -109,7 +113,7 @@ describe('ContextualLayersModule (e2e)', () => {
         metadata: { test: 'no aggType' } as unknown as JSON,
       });
 
-      await h3DataMock({
+      await h3DataMock(dataSource, {
         h3TableName: 'layerTable',
         h3ColumnName: 'layerColumn',
         additionalH3Data: h3ContextualLayerExampleDataFixture,
@@ -135,7 +139,7 @@ describe('ContextualLayersModule (e2e)', () => {
         metadata: { test: 'metadata' } as unknown as JSON,
       });
 
-      await h3DataMock({
+      await h3DataMock(dataSource, {
         h3TableName: 'layerTable',
         h3ColumnName: 'layerColumn',
         additionalH3Data: h3ContextualLayerExampleDataFixture,
@@ -179,7 +183,7 @@ describe('ContextualLayersModule (e2e)', () => {
 
         layers.set(aggType, layer);
 
-        await h3DataMock({
+        await h3DataMock(dataSource, {
           h3TableName: 'layerTable' + aggType,
           h3ColumnName: 'layerColumn',
           additionalH3Data: h3ContextualLayerExampleDataFixture,
@@ -262,7 +266,7 @@ describe('ContextualLayersModule (e2e)', () => {
         metadata: { test: 'metadata' } as unknown as JSON,
       });
 
-      await h3DataMock({
+      await h3DataMock(dataSource, {
         h3TableName: 'layerTable',
         h3ColumnName: 'layerColumn',
         additionalH3Data: h3ContextualLayerExampleDataFixture,

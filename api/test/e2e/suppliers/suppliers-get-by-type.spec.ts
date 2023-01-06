@@ -1,37 +1,45 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { Supplier, SUPPLIER_TYPES } from 'modules/suppliers/supplier.entity';
-import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import AppSingleton from '../../utils/getApp';
 import { createSourcingLocation, createSupplier } from '../../entity-mocks';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { User } from 'modules/users/user.entity';
+import { DataSource } from 'typeorm';
+import { MaterialRepository } from '../../../src/modules/materials/material.repository';
 
 describe('Suppliers - Get by type', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let supplierRepository: SupplierRepository;
+  let materialRepository: MaterialRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, SuppliersModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     supplierRepository =
       moduleFixture.get<SupplierRepository>(SupplierRepository);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    materialRepository =
+      moduleFixture.get<MaterialRepository>(MaterialRepository);
+
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
     await supplierRepository.delete({});
+    await materialRepository.delete({});
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 
@@ -61,9 +69,13 @@ describe('Suppliers - Get by type', () => {
           .send()
           .expect(HttpStatus.OK);
 
-        t1SupplierResponse.body.data.forEach((supplier: any, i: number) => {
-          expect(supplier.attributes.name).toEqual(`T1 Supplier ${i + 1}`);
-        });
+        t1SupplierResponse.body.data
+          .sort((a: Record<string, any>, b: Record<string, any>) =>
+            a.attributes.name < b.attributes.name ? -1 : a > b ? 1 : 0,
+          )
+          .forEach((supplier: any, i: number) => {
+            expect(supplier.attributes.name).toEqual(`T1 Supplier ${i + 1}`);
+          });
 
         const producerResponse = await request(app.getHttpServer())
           .get(`/api/v1/suppliers/types`)

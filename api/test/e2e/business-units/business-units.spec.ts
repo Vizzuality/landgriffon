@@ -5,8 +5,11 @@ import { AppModule } from 'app.module';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
 import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import AppSingleton from '../../utils/getApp';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { User } from 'modules/users/user.entity';
+import { DataSource } from 'typeorm';
 
 /**
  * Tests for the BusinessUnitsModule.
@@ -14,21 +17,22 @@ import { getApp } from '../../utils/getApp';
 
 describe('BusinessUnitsModule (e2e)', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let businessUnitRepository: BusinessUnitRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, BusinessUnitsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     businessUnitRepository = moduleFixture.get<BusinessUnitRepository>(
       BusinessUnitRepository,
     );
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
@@ -36,6 +40,7 @@ describe('BusinessUnitsModule (e2e)', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 
@@ -49,9 +54,9 @@ describe('BusinessUnitsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdBusinessUnit = await businessUnitRepository.findOne({where: { id:
-        response.body.data.id,
-       }});
+      const createdBusinessUnit = await businessUnitRepository.findOne({
+        where: { id: response.body.data.id },
+      });
 
       if (!createdBusinessUnit) {
         throw new Error('Error loading created Business Unit');
@@ -113,8 +118,10 @@ describe('BusinessUnitsModule (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(
-        await businessUnitRepository.findOne({where: { id: businessUnit.id }}),
-      ).toBeUndefined();
+        await businessUnitRepository.findOne({
+          where: { id: businessUnit.id },
+        }),
+      ).toBeNull();
     });
   });
 

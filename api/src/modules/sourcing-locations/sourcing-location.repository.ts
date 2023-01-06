@@ -1,20 +1,24 @@
 import {
   Brackets,
-  EntityRepository,
+  DataSource,
   SelectQueryBuilder,
   WhereExpressionBuilder,
 } from 'typeorm';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetLocationTypesDto } from 'modules/sourcing-locations/dto/location-types-options.sourcing-locations.dto';
 import { AppBaseRepository } from 'utils/app-base.repository';
-import { NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   SCENARIO_INTERVENTION_STATUS,
   ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 
-@EntityRepository(SourcingLocation)
+@Injectable()
 export class SourcingLocationRepository extends AppBaseRepository<SourcingLocation> {
+  constructor(protected dataSource: DataSource) {
+    super(SourcingLocation, dataSource.createEntityManager());
+  }
+
   async getAvailableLocationTypes(
     locationTypesOptions: GetLocationTypesDto,
   ): Promise<{ locationType: string }[]> {

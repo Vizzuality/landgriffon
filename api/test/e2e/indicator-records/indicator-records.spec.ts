@@ -12,8 +12,13 @@ import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-r
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import AppSingleton from '../../utils/getApp';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { User } from 'modules/users/user.entity';
+import { DataSource } from 'typeorm';
+import { Material } from 'modules/materials/material.entity';
+import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
 
 /**
  * Tests for the IndicatorRecordsModule.
@@ -21,21 +26,22 @@ import { getApp } from '../../utils/getApp';
 
 describe('IndicatorRecordsModule (e2e)', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let indicatorRecordRepository: IndicatorRecordRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, IndicatorRecordsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     indicatorRecordRepository = moduleFixture.get<IndicatorRecordRepository>(
       IndicatorRecordRepository,
     );
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
@@ -43,6 +49,12 @@ describe('IndicatorRecordsModule (e2e)', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [
+      User,
+      MaterialToH3,
+      Material,
+      SourcingRecord,
+    ]);
     await app.close();
   });
 
@@ -62,9 +74,9 @@ describe('IndicatorRecordsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdIndicatorRecord = await indicatorRecordRepository.findOne({where: { id:
-        response.body.data.id,
-       }});
+      const createdIndicatorRecord = await indicatorRecordRepository.findOne({
+        where: { id: response.body.data.id },
+      });
 
       if (!createdIndicatorRecord) {
         throw new Error('Error loading created Indicator Record');
@@ -120,8 +132,10 @@ describe('IndicatorRecordsModule (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(
-        await indicatorRecordRepository.findOne({where: { id: indicatorRecord.id }}),
-      ).toBeUndefined();
+        await indicatorRecordRepository.findOne({
+          where: { id: indicatorRecord.id },
+        }),
+      ).toBeNull();
     });
   });
 

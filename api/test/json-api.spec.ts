@@ -4,8 +4,13 @@ import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { omit } from 'lodash';
 import * as config from 'config';
+import { clearEntityTables } from './utils/database-test-helper';
+import { User } from '../src/modules/users/user.entity';
+import AppSingleton from './utils/getApp';
+import { DataSource } from 'typeorm';
 
 describe('JSON API Specs (e2e)', () => {
+  let dataSource: DataSource;
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -15,15 +20,19 @@ describe('JSON API Specs (e2e)', () => {
       );
     }
 
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
 
-    app = moduleFixture.createNestApplication();
-    await app.init();
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+
+    //
+    // app = moduleFixture.createNestApplication();
+    // await app.init();
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 

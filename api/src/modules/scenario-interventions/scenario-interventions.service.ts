@@ -50,7 +50,6 @@ export class ScenarioInterventionsService extends AppBaseService<
   logger: Logger = new Logger(ScenarioInterventionsService.name);
 
   constructor(
-    @InjectRepository(ScenarioInterventionRepository)
     protected readonly scenarioInterventionRepository: ScenarioInterventionRepository,
     protected readonly interventionBuilder: InterventionBuilder,
     protected readonly geoCodingService: GeoCodingAbstractClass,

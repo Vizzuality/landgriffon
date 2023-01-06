@@ -1,5 +1,10 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { UrlParam } from 'modules/url-params/url-param.entity';
+import { Injectable } from '@nestjs/common';
 
-@EntityRepository(UrlParam)
-export class UrlParamRepository extends Repository<UrlParam> {}
+@Injectable()
+export class UrlParamRepository extends Repository<UrlParam> {
+  constructor(private dataSource: DataSource) {
+    super(UrlParam, dataSource.createEntityManager());
+  }
+}

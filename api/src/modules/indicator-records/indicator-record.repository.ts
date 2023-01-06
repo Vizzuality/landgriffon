@@ -1,6 +1,10 @@
-import { EntityRepository, SelectQueryBuilder } from 'typeorm';
+import { DataSource, SelectQueryBuilder } from 'typeorm';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
-import { Logger, ServiceUnavailableException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { SourcingRecordsWithIndicatorRawDataDto } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
@@ -8,9 +12,14 @@ import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { IndicatorRecordValueSQLStrategies } from 'modules/indicator-records/strategies/indicator-record-value.strategies';
 import { AppBaseRepository } from 'utils/app-base.repository';
+import { IMPACT_VIEW_NAME } from 'modules/impact/views/impact.materialized-view.entity';
 
-@EntityRepository(IndicatorRecord)
+@Injectable()
 export class IndicatorRecordRepository extends AppBaseRepository<IndicatorRecord> {
+  constructor(protected dataSource: DataSource) {
+    super(IndicatorRecord, dataSource.createEntityManager());
+  }
+
   logger: Logger = new Logger(IndicatorRecordRepository.name);
 
   async getIndicatorRawDataForAllSourcingRecords(): Promise<
@@ -94,7 +103,7 @@ export class IndicatorRecordRepository extends AppBaseRepository<IndicatorRecord
   ): Promise<number> {
     const query: SelectQueryBuilder<any> = IndicatorRecordValueSQLStrategies[
       indicatorType
-    ](geoRegionId, indicatorH3s, materialH3s);
+    ](this.dataSource, geoRegionId, indicatorH3s, materialH3s);
 
     try {
       const res: { sum: number }[] = await query.getRawMany();
@@ -135,5 +144,11 @@ export class IndicatorRecordRepository extends AppBaseRepository<IndicatorRecord
         `Could not calculate H3 sum over georegion: ${error.message}`,
       );
     }
+  }
+
+  async updateImpactView(): Promise<void> {
+    return this.dataSource.query(
+      `REFRESH MATERIALIZED VIEW CONCURRENTLY ${IMPACT_VIEW_NAME} WITH DATA`,
+    );
   }
 }

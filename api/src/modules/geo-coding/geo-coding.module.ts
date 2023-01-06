@@ -33,7 +33,7 @@ const geocodingCacheEnabled: boolean =
     GeoRegionsModule,
     SourcingLocationsModule,
     CacheModule.register({
-      store: redisStore,
+      store: geocodingCacheConfig.store === 'redis' ? redisStore : 'memory',
       host: geocodingCacheConfig.host,
       port: geocodingCacheConfig.port,
       db: geocodingCacheConfig.database,

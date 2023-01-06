@@ -21,10 +21,7 @@ export class GeoRegionsService extends AppBaseService<
   UpdateGeoRegionDto,
   AppInfoDTO
 > {
-  constructor(
-    @InjectRepository(GeoRegionRepository)
-    protected readonly geoRegionRepository: GeoRegionRepository,
-  ) {
+  constructor(protected readonly geoRegionRepository: GeoRegionRepository) {
     super(
       geoRegionRepository,
       geoRegionResource.name.singular,

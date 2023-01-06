@@ -35,7 +35,6 @@ export class AdminRegionsService extends AppBaseService<
   AppInfoDTO
 > {
   constructor(
-    @InjectRepository(AdminRegionRepository)
     protected readonly adminRegionRepository: AdminRegionRepository,
     @Inject(forwardRef(() => MaterialsService))
     protected readonly materialService: MaterialsService,

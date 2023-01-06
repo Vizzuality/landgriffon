@@ -21,7 +21,6 @@ export class SourcingLocationGroupsService extends AppBaseService<
   AppInfoDTO
 > {
   constructor(
-    @InjectRepository(SourcingLocationGroupRepository)
     protected readonly sourcingLocationGroupRepository: SourcingLocationGroupRepository,
   ) {
     super(

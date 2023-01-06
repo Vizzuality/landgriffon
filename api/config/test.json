@@ -1,9 +1,4 @@
 {
-  "server": {
-    "loggerLevel": [
-      "error"
-    ]
-  },
   "db": {
     "type": "postgres",
     "host": "localhost",
@@ -11,9 +6,10 @@
     "username": "landgriffon",
     "password": "",
     "database": "landgriffon_test",
-    "synchronize": true,
-    "dropSchema": true,
-    "logging": ["error"],
+    "synchronize": false,
+    "dropSchema": false,
+    "logging": false,
+    "migrationsRun": true,
     "cacheEnabled": false
   },
   "auth": {
@@ -26,6 +22,14 @@
   "geolocation": {
     "gmapsApiKey": "myVeryBadJWTSecretForTests"
   },
-
-  "newMethodology": "false"
+  "newMethodology": "false",
+  "server": {
+    "loggerLevel": []
+  },
+  "geocodingCache": {
+    "store": "memory"
+  },
+  "queue": {
+    "enabled": false
+  }
 }

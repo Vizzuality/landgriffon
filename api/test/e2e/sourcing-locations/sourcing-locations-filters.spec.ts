@@ -1,42 +1,49 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import {
   createSourcingLocation,
   createSourcingLocationGroup,
 } from '../../entity-mocks';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import AppSingleton from '../../utils/getApp';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { User } from 'modules/users/user.entity';
+import { DataSource } from 'typeorm';
+import { MaterialRepository } from '../../../src/modules/materials/material.repository';
 
 describe('SourcingLocationsModule (e2e)', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let sourcingLocationRepository: SourcingLocationRepository;
+  let materialRepository: MaterialRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, SourcingLocationsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
 
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+
+    materialRepository =
+      moduleFixture.get<MaterialRepository>(MaterialRepository);
     sourcingLocationRepository = moduleFixture.get<SourcingLocationRepository>(
       SourcingLocationRepository,
     );
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
     await sourcingLocationRepository.delete({});
+    await materialRepository.delete({});
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 

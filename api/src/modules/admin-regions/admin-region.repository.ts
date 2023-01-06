@@ -1,5 +1,6 @@
 import {
   Brackets,
+  DataSource,
   EntityRepository,
   SelectQueryBuilder,
   WhereExpressionBuilder,
@@ -7,7 +8,7 @@ import {
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-region.dto';
-import { Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetAdminRegionTreeWithOptionsDto } from 'modules/admin-regions/dto/get-admin-region-tree-with-options.dto';
 import {
@@ -16,12 +17,16 @@ import {
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 
-@EntityRepository(AdminRegion)
+@Injectable()
 export class AdminRegionRepository extends ExtendedTreeRepository<
   AdminRegion,
   CreateAdminRegionDto
 > {
   logger: Logger = new Logger(AdminRegionRepository.name);
+
+  constructor(private dataSource: DataSource) {
+    super(AdminRegion, dataSource.createEntityManager());
+  }
 
   async getAdminRegionAndGeoRegionIdByCoordinatesAndLevel(
     searchParams: {

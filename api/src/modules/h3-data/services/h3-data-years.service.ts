@@ -5,7 +5,7 @@
  */
 
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { LAYER_TYPES } from 'modules/h3-data/h3-data.entity';
+import { H3Data, LAYER_TYPES } from 'modules/h3-data/h3-data.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { MaterialsService } from 'modules/materials/materials.service';
@@ -20,7 +20,6 @@ import {
 @Injectable()
 export class H3DataYearsService {
   constructor(
-    @InjectRepository(H3DataRepository)
     protected readonly h3DataRepository: H3DataRepository,
     protected readonly materialService: MaterialsService,
     protected readonly materialToH3Service: MaterialsToH3sService,

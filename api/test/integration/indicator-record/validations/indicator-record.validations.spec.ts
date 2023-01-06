@@ -11,22 +11,25 @@ import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-reco
 
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { clearEntityTables } from '../../../utils/database-test-helper';
-import { MaterialToH3 } from '../../../../src/modules/materials/material-to-h3.entity';
+import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
 
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
-import { getConnection } from 'typeorm';
+import { DataSource } from 'typeorm';
 
 describe('Indicator Records Service', () => {
   let testingModule: TestingModule;
+  let dataSource: DataSource;
 
   beforeAll(async () => {
     testingModule = await Test.createTestingModule({
       imports: [AppModule, IndicatorRecordsModule],
     }).compile();
+
+    dataSource = testingModule.get<DataSource>(DataSource);
   });
 
   afterEach(async () => {
-    await clearEntityTables([
+    await clearEntityTables(dataSource, [
       IndicatorRecord,
       SourcingRecord,
       MaterialToH3,
@@ -42,7 +45,7 @@ describe('Indicator Records Service', () => {
       value: NaN,
     }).catch((e: any) => e);
 
-    const indicatorRecords: IndicatorRecord[] = await getConnection()
+    const indicatorRecords: IndicatorRecord[] = await dataSource
       .getRepository(IndicatorRecord)
       .find();
 

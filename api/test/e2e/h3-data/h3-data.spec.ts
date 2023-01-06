@@ -1,9 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
-import { H3DataModule } from 'modules/h3-data/h3-data.module';
 import {
   h3DataMock,
   createRandomNamesForH3TableAndColumns,
@@ -24,10 +21,14 @@ import { Indicator } from 'modules/indicators/indicator.entity';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { h3BasicFixture } from './mocks/h3-fixtures';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import AppSingleton from '../../utils/getApp';
 import { Material } from 'modules/materials/material.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { DataSource } from 'typeorm';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { User } from 'modules/users/user.entity';
+import { IndicatorRepository } from '../../../src/modules/indicators/indicator.repository';
 
 /**
  * Tests for the H3DataModule.
@@ -35,17 +36,19 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 
 describe('H3-Data Module (e2e) - Get H3 data', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let h3DataRepository: H3DataRepository;
   let materialRepository: MaterialRepository;
+  let indicatorRepository: IndicatorRepository;
   let materialToH3Service: MaterialsToH3sService;
   const fakeTable = 'faketable';
   const fakeColumn = 'fakecolumn';
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, H3DataModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
 
     h3DataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
     materialToH3Service = moduleFixture.get<MaterialsToH3sService>(
@@ -53,20 +56,24 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
     );
     materialRepository =
       moduleFixture.get<MaterialRepository>(MaterialRepository);
+    indicatorRepository =
+      moduleFixture.get<IndicatorRepository>(IndicatorRepository);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
     await materialToH3Service.delete({});
     await materialRepository.delete({});
+    await indicatorRepository.delete({});
     await h3DataRepository.delete({});
-    await dropH3DataMock([fakeTable]);
+    await dropH3DataMock(dataSource, [fakeTable]);
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 
@@ -82,7 +89,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
   });
 
   test('Given the H3 Data table is populated, when I query the API, then I should get its data in with h3index as key, and column values as value', async () => {
-    await h3DataMock({
+    await h3DataMock(dataSource, {
       h3TableName: fakeTable,
       h3ColumnName: fakeColumn,
       additionalH3Data: h3BasicFixture,
@@ -246,7 +253,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
     const materialTwo = await createMaterial();
 
     for await (const year of yearsOne) {
-      const h3Data: H3Data = await h3DataMock({
+      const h3Data: H3Data = await h3DataMock(dataSource, {
         h3TableName: createRandomNamesForH3TableAndColumns(),
         h3ColumnName: createRandomNamesForH3TableAndColumns(),
         additionalH3Data: h3BasicFixture,
@@ -261,7 +268,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
     }
 
     for await (const year of yearsTwo) {
-      const h3Data: H3Data = await h3DataMock({
+      const h3Data: H3Data = await h3DataMock(dataSource, {
         h3TableName: createRandomNamesForH3TableAndColumns(),
         h3ColumnName: createRandomNamesForH3TableAndColumns(),
         additionalH3Data: h3BasicFixture,

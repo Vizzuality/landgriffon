@@ -4,8 +4,8 @@ import * as request from 'supertest';
 import { AppModule } from 'app.module';
 import { ImpactModule } from 'modules/impact/impact.module';
 import { Indicator } from 'modules/indicators/indicator.entity';
-import { saveUserAndGetToken } from '../../../utils/userAuth';
-import { getApp } from '../../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../../utils/userAuth';
+import AppSingleton from '../../../utils/getApp';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { createNewMaterialInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-material-intervention.preconditions';
 import { createNewCoefficientsInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-coefficients-intervention.preconditions';
@@ -33,23 +33,26 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { createScenario } from '../../../entity-mocks';
+import { DataSource } from 'typeorm';
+import { User } from 'modules/users/user.entity';
 
 describe('Impact Table and Charts test suite (e2e)', () => {
   let app: INestApplication;
   let jwtToken: string;
+  let dataSource: DataSource;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, ImpactModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
-    await clearEntityTables([
+    await clearEntityTables(dataSource, [
       Scenario,
       IndicatorRecord,
       MaterialToH3,
@@ -68,6 +71,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 

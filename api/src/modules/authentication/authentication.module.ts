@@ -9,7 +9,7 @@ import { AuthenticationService } from 'modules/authentication/authentication.ser
 import { JwtStrategy } from 'modules/authentication/strategies/jwt.strategy';
 import { LocalStrategy } from 'modules/authentication/strategies/local.strategy';
 import { ApiEventsModule } from 'modules/api-events/api-events.module';
-import { UserRepository } from 'modules/users/user.repository';
+import { User } from 'modules/users/user.entity';
 
 export const logger: Logger = new Logger('Authentication');
 
@@ -22,7 +22,7 @@ export const logger: Logger = new Logger('Authentication');
       secret: config.get('auth.jwt.secret'),
       signOptions: { expiresIn: config.get('auth.jwt.expiresIn') },
     }),
-    TypeOrmModule.forFeature([UserRepository]),
+    TypeOrmModule.forFeature([User]),
   ],
   providers: [AuthenticationService, LocalStrategy, JwtStrategy],
   controllers: [AuthenticationController],

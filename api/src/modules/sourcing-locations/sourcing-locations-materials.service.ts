@@ -24,7 +24,6 @@ export class SourcingLocationsMaterialsService extends AppBaseService<
   AppInfoDTO
 > {
   constructor(
-    @InjectRepository(SourcingLocationRepository)
     protected readonly sourcingLocationRepository: SourcingLocationRepository,
   ) {
     super(

@@ -10,26 +10,30 @@ import {
   createSourcingRecord,
 } from '../../entity-mocks';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import AppSingleton from '../../utils/getApp';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { User } from 'modules/users/user.entity';
+import { DataSource } from 'typeorm';
 
 describe('Sourcing records -Filters', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let sourcingRecordRepository: SourcingRecordRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, SourcingRecordsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     sourcingRecordRepository = moduleFixture.get<SourcingRecordRepository>(
       SourcingRecordRepository,
     );
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
@@ -37,13 +41,14 @@ describe('Sourcing records -Filters', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 
   /**
    * @debt: Right now we can add sourcing-data with no sourcing-location. This opens a door with new many use cases that worth testing
    * but we will most likely restrict this behaviour, and related test will require an update
-   * Thats the reason I see no value adding these use cases
+   * That's the reason I see no value adding these use cases
    */
 
   test('When I fetch a sourcing-record and I include its sourcing-location relation in the query, then I should receive said sourcing-record and its sourcing-location', async () => {

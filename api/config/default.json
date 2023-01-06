@@ -27,6 +27,7 @@
     "missingDataFallbackStrategy": "fallback"
   },
   "queue": {
+    "enabled": true,
     "host": "localhost",
     "port": 6379,
     "database": 1,
@@ -34,6 +35,7 @@
   },
   "geocodingCache": {
     "enabled": true,
+    "store": "redis",
     "host": "localhost",
     "port": 6379,
     "database": 2,

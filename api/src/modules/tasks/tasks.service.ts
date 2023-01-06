@@ -13,7 +13,6 @@ import { CreateTaskDto } from 'modules/tasks/dto/create-task.dto';
 import { UpdateJobEventDto } from 'modules/tasks/dto/update-task.dto';
 import { TasksRepository } from 'modules/tasks/tasks.repository';
 import { AppInfoDTO } from 'dto/info.dto';
-import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class TasksService extends AppBaseService<
@@ -22,10 +21,7 @@ export class TasksService extends AppBaseService<
   UpdateJobEventDto,
   AppInfoDTO
 > {
-  constructor(
-    @InjectRepository(TasksRepository)
-    public readonly taskRepository: TasksRepository,
-  ) {
+  constructor(public readonly taskRepository: TasksRepository) {
     super(
       taskRepository,
       taskResource.name.singular,

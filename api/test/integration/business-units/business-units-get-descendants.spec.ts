@@ -1,19 +1,16 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from 'app.module';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
-import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
 import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
 import { createBusinessUnit } from '../../entity-mocks';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
+import AppSingleton from '../../utils/getApp';
 
 describe('BusinessUnits - Get descendants by BusinessUnit Ids', () => {
   let businessUnitRepository: BusinessUnitRepository;
   let businessUnitsService: BusinessUnitsService;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, BusinessUnitsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    const moduleFixture = appSingleton.moduleFixture;
 
     businessUnitRepository = moduleFixture.get<BusinessUnitRepository>(
       BusinessUnitRepository,

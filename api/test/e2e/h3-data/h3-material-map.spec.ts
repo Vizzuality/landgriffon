@@ -10,8 +10,11 @@ import { MaterialRepository } from 'modules/materials/material.repository';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { h3MaterialExampleDataFixture } from './mocks/h3-fixtures';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import AppSingleton from '../../utils/getApp';
+import { DataSource } from 'typeorm';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { User } from 'modules/users/user.entity';
 
 /**
  * Tests for the H3DataModule.
@@ -19,6 +22,7 @@ import { getApp } from '../../utils/getApp';
 
 describe('H3 Data Module (e2e) - Material map', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let h3DataRepository: H3DataRepository;
   let materialRepository: MaterialRepository;
   let materialToH3Service: MaterialsToH3sService;
@@ -28,9 +32,9 @@ describe('H3 Data Module (e2e) - Material map', () => {
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, H3DataModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
 
     materialToH3Service = moduleFixture.get<MaterialsToH3sService>(
       MaterialsToH3sService,
@@ -39,19 +43,20 @@ describe('H3 Data Module (e2e) - Material map', () => {
     materialRepository =
       moduleFixture.get<MaterialRepository>(MaterialRepository);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
     await materialToH3Service.delete({});
     await materialRepository.delete({});
     await h3DataRepository.delete({});
-    await dropH3DataMock([fakeTable]);
+    await dropH3DataMock(dataSource, [fakeTable]);
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 
@@ -118,7 +123,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
   });
 
   test('When I query same H3 data at different resolutions I expect 4 indexes at resolution 1 and 7 indexes at resolution 3, 0 and null values ignored', async () => {
-    const h3Data = await h3DataMock({
+    const h3Data = await h3DataMock(dataSource, {
       h3TableName: fakeTable,
       h3ColumnName: fakeColumn,
       additionalH3Data: h3MaterialExampleDataFixture,

@@ -33,7 +33,6 @@ import {
 import { Material, materialResource } from 'modules/materials/material.entity';
 import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { UpdateMaterialDto } from 'modules/materials/dto/update.material.dto';
-import { MaterialRepository } from 'modules/materials/material.repository';
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
 import { PaginationMeta } from 'utils/app-base.service';
 import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
@@ -43,10 +42,7 @@ import { SetScenarioIdsInterceptor } from 'modules/impact/set-scenario-ids.inter
 @ApiTags(materialResource.className)
 @ApiBearerAuth()
 export class MaterialsController {
-  constructor(
-    public readonly materialsService: MaterialsService,
-    public readonly materialsRepository: MaterialRepository,
-  ) {}
+  constructor(public readonly materialsService: MaterialsService) {}
 
   @ApiOperation({
     description: 'Find all materials and return them in a list format',

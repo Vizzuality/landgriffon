@@ -1,7 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import {
   createAdminRegion,
   createBusinessUnit,
@@ -11,9 +9,8 @@ import {
   createSourcingLocation,
   createSupplier,
 } from '../../entity-mocks';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
-import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import AppSingleton from '../../utils/getApp';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import {
@@ -23,28 +20,36 @@ import {
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { clearEntityTables } from '../../utils/database-test-helper';
-import { Material } from '../../../src/modules/materials/material.entity';
-import { SCENARIO_INTERVENTION_STATUS } from '../../../src/modules/scenario-interventions/scenario-intervention.entity';
+import { Material } from 'modules/materials/material.entity';
+import { SCENARIO_INTERVENTION_STATUS } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { DataSource } from 'typeorm';
+import { User } from 'modules/users/user.entity';
 
 describe('Business Units - Get trees - Smart Filters', () => {
   let app: INestApplication;
   let jwtToken: string;
+  let dataSource: DataSource;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, BusinessUnitsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
-    await clearEntityTables([Supplier, BusinessUnit, SourcingLocation]);
+    await clearEntityTables(dataSource, [
+      Supplier,
+      BusinessUnit,
+      SourcingLocation,
+    ]);
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 

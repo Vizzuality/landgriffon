@@ -17,10 +17,7 @@ export class UnitsService extends AppBaseService<
   UpdateUnitDto,
   AppInfoDTO
 > {
-  constructor(
-    @InjectRepository(UnitRepository)
-    protected readonly unitRepository: UnitRepository,
-  ) {
+  constructor(protected readonly unitRepository: UnitRepository) {
     super(unitRepository, unitResource.name.singular, unitResource.name.plural);
   }
 

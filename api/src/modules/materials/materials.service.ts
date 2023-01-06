@@ -5,7 +5,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
@@ -30,7 +29,6 @@ export class MaterialsService extends AppBaseService<
   AppInfoDTO
 > {
   constructor(
-    @InjectRepository(MaterialRepository)
     protected readonly materialRepository: MaterialRepository,
     @Inject(forwardRef(() => AdminRegionsService))
     protected readonly adminRegionService: AdminRegionsService,

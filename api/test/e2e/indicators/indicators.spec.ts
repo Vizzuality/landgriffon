@@ -8,8 +8,11 @@ import {
 } from 'modules/indicators/indicator.entity';
 import { IndicatorsModule } from 'modules/indicators/indicators.module';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import AppSingleton from '../../utils/getApp';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { User } from 'modules/users/user.entity';
+import { DataSource } from 'typeorm';
 
 /**
  * Tests for the IndicatorsModule.
@@ -17,20 +20,21 @@ import { getApp } from '../../utils/getApp';
 
 describe('IndicatorsModule (e2e)', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let indicatorRepository: IndicatorRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, IndicatorsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     indicatorRepository =
       moduleFixture.get<IndicatorRepository>(IndicatorRepository);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
@@ -38,6 +42,7 @@ describe('IndicatorsModule (e2e)', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 
@@ -52,9 +57,9 @@ describe('IndicatorsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const createdIndicator = await indicatorRepository.findOne({where: { id:
-        response.body.data.id,
-       }});
+      const createdIndicator = await indicatorRepository.findOne({
+        where: { id: response.body.data.id },
+      });
 
       if (!createdIndicator) {
         throw new Error('Error loading created Indicator');
@@ -121,7 +126,9 @@ describe('IndicatorsModule (e2e)', () => {
         .send()
         .expect(HttpStatus.OK);
 
-      expect(await indicatorRepository.findOne({where: { id: indicator.id }})).toBeUndefined();
+      expect(
+        await indicatorRepository.findOne({ where: { id: indicator.id } }),
+      ).toBeNull();
     });
   });
 

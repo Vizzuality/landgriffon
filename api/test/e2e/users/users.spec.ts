@@ -14,7 +14,10 @@ import { ApiEventsService } from 'modules/api-events/api-events.service';
 import { UsersModule } from 'modules/users/users.module';
 import { LoginDto } from 'modules/authentication/dto/login.dto';
 import { UserRepository } from 'modules/users/user.repository';
-import { getApp } from '../../utils/getApp';
+import AppSingleton from '../../utils/getApp';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { User } from 'modules/users/user.entity';
+import { DataSource } from 'typeorm';
 
 /**
  * Tests for the UsersModule.
@@ -31,8 +34,7 @@ import { getApp } from '../../utils/getApp';
 
 describe('UsersModule (e2e)', () => {
   let app: INestApplication;
-  let apiEventsService: ApiEventsService;
-  let userRepository: UserRepository;
+  let dataSource: DataSource;
 
   const aNewPassword = 'aNewPassword123!';
 
@@ -48,21 +50,11 @@ describe('UsersModule (e2e)', () => {
   };
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        AppModule,
-        ApiEventsModule,
-        TypeOrmModule.forFeature([ApiEvent]),
-        UsersModule,
-      ],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
 
-    apiEventsService = moduleFixture.get<ApiEventsService>(ApiEventsService);
-    userRepository = moduleFixture.get<UserRepository>(UserRepository);
-
-    app = getApp(moduleFixture);
-
-    await app.init();
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     await request(app.getHttpServer())
       .post('/auth/sign-up')
@@ -71,6 +63,7 @@ describe('UsersModule (e2e)', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 

@@ -19,10 +19,7 @@ export class UrlParamsService extends AppBaseService<
   Record<string, any>,
   AppInfoDTO
 > {
-  constructor(
-    @InjectRepository(UrlParamRepository)
-    protected readonly urlParamRepository: UrlParamRepository,
-  ) {
+  constructor(protected readonly urlParamRepository: UrlParamRepository) {
     super(
       urlParamRepository,
       urlParamResource.name.singular,

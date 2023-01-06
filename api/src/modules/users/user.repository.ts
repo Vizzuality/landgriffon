@@ -1,8 +1,13 @@
-import { EntityRepository, ILike, Repository } from 'typeorm';
+import { DataSource, ILike, Repository } from 'typeorm';
 import { User } from 'modules/users/user.entity';
+import { Injectable } from '@nestjs/common';
 
-@EntityRepository(User)
+@Injectable()
 export class UserRepository extends Repository<User> {
+  constructor(private dataSource: DataSource) {
+    super(User, dataSource.createEntityManager());
+  }
+
   /**
    * Select one user by email address.
    *

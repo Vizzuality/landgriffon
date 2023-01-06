@@ -19,7 +19,7 @@ import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto';
 import { UpdateIndicatorDto } from 'modules/indicators/dto/update.indicator.dto';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
-import { getManager, In, SelectQueryBuilder } from 'typeorm';
+import { In, SelectQueryBuilder } from 'typeorm';
 import { IndicatorNameCodeWithRelatedH3 } from 'modules/indicators/dto/indicator-namecode-with-related-h3.dto';
 import { FetchSpecification } from 'nestjs-base-service';
 
@@ -30,10 +30,7 @@ export class IndicatorsService extends AppBaseService<
   UpdateIndicatorDto,
   AppInfoDTO
 > {
-  constructor(
-    @InjectRepository(IndicatorRepository)
-    protected readonly indicatorRepository: IndicatorRepository,
-  ) {
+  constructor(protected readonly indicatorRepository: IndicatorRepository) {
     super(
       indicatorRepository,
       indicatorResource.name.singular,
@@ -92,7 +89,7 @@ export class IndicatorsService extends AppBaseService<
       throw new NotFoundException(
         'No Deforestation Indicator data found in database',
       );
-    const deforestationH3Data: any = await getManager()
+    const deforestationH3Data: any = await this.indicatorRepository
       .createQueryBuilder()
       .select()
       .from('h3_data', 'h3_data')

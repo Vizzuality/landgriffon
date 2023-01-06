@@ -21,7 +21,6 @@ export class IndicatorCoefficientsService extends AppBaseService<
   AppInfoDTO
 > {
   constructor(
-    @InjectRepository(IndicatorCoefficientRepository)
     protected readonly indicatorCoefficientRepository: IndicatorCoefficientRepository,
   ) {
     super(

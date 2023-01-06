@@ -1,5 +1,6 @@
 import {
   Brackets,
+  DataSource,
   EntityRepository,
   SelectQueryBuilder,
   WhereExpressionBuilder,
@@ -7,7 +8,7 @@ import {
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
-import { Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetSupplierTreeWithOptions } from 'modules/suppliers/dto/get-supplier-tree-with-options.dto';
 import {
@@ -15,12 +16,16 @@ import {
   ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 
-@EntityRepository(Supplier)
+@Injectable()
 export class SupplierRepository extends ExtendedTreeRepository<
   Supplier,
   CreateSupplierDto
 > {
   logger: Logger = new Logger(SupplierRepository.name);
+
+  constructor(private dataSource: DataSource) {
+    super(Supplier, dataSource.createEntityManager());
+  }
 
   /**
    * @description Get all suppliers that are present in Sourcing Locations with given filters

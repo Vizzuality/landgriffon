@@ -1,26 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing';
-
-import { ScenarioInterventionsModule } from '../../../../src/modules/scenario-interventions/scenario-interventions.module';
-import { getApp } from '../../../utils/getApp';
-import { saveUserAndGetTokenWithUserId } from '../../../utils/userAuth';
 import { INestApplication } from '@nestjs/common';
 import {
   Indicator,
   INDICATOR_STATUS,
   INDICATOR_TYPES_NEW,
-} from '../../../../src/modules/indicators/indicator.entity';
-import { AppModule } from '../../../../src/app.module';
+} from 'modules/indicators/indicator.entity';
+import { AppModule } from 'app.module';
 import {
   createIndicator,
   createScenarioIntervention,
 } from '../../../entity-mocks';
 import { clearEntityTables } from '../../../utils/database-test-helper';
 import * as request from 'supertest';
-import { SCENARIO_INTERVENTION_TYPE } from '../../../../src/modules/scenario-interventions/scenario-intervention.entity';
+import { SCENARIO_INTERVENTION_TYPE } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { v4 as uuidv4 } from 'uuid';
-import { IndicatorsModule } from '../../../../src/modules/indicators/indicators.module';
-import { getConnection } from 'typeorm';
-import { ScenarioInterventionsService } from '../../../../src/modules/scenario-interventions/scenario-interventions.service';
+import { DataSource } from 'typeorm';
+import { ScenarioInterventionsService } from 'modules/scenario-interventions/scenario-interventions.service';
+import { User } from 'modules/users/user.entity';
+import { saveUserAndGetTokenWithUserId } from '../../../utils/userAuth';
+import { getApp } from '../../../utils/getApp';
 
 jest.mock('config', () => {
   const config = jest.requireActual('config');
@@ -41,9 +39,11 @@ jest.mock('config', () => {
 describe('Interventions E2E Tests (Controller Validations)', () => {
   let jwtToken: string;
   let app: INestApplication;
+  let dataSource: DataSource;
+
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, IndicatorsModule, ScenarioInterventionsModule],
+      imports: [AppModule],
     })
       .overrideProvider(ScenarioInterventionsService)
       .useValue({
@@ -55,6 +55,8 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
       })
       .compile();
 
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+
     app = getApp(moduleFixture);
     await app.init();
     const tokenWithId = await saveUserAndGetTokenWithUserId(moduleFixture, app);
@@ -62,11 +64,12 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
   });
 
   afterEach(() => {
-    return clearEntityTables([Indicator]);
+    return clearEntityTables(dataSource, [Indicator]);
   });
 
-  afterAll(() => {
-    return app.close();
+  afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
+    await app.close();
   });
 
   test(
@@ -92,7 +95,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
         }
       }
 
-      const indicatorRepository = getConnection().getRepository(Indicator);
+      const indicatorRepository = dataSource.getRepository(Indicator);
 
       const activeIndicators: string[] = (
         await indicatorRepository.find({
@@ -278,7 +281,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
         }
       }
 
-      const indicatorRepository = getConnection().getRepository(Indicator);
+      const indicatorRepository = dataSource.getRepository(Indicator);
 
       const activeIndicators: string[] = (
         await indicatorRepository.find({

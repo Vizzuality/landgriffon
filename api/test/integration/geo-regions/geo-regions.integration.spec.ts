@@ -1,25 +1,26 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from 'app.module';
 import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
 import { clearEntityTables } from '../../utils/database-test-helper';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { LocationGeoRegionDto } from 'modules/geo-regions/dto/location.geo-region.dto';
-import { GeoRegionsModule } from 'modules/geo-regions/geo-regions.module';
+import { DataSource } from 'typeorm';
+import AppSingleton from '../../utils/getApp';
 
 describe('GeoRegions - IntegrationTests', () => {
   let geoRegionRepository: GeoRegionRepository;
+  let dataSource: DataSource;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, GeoRegionsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    const moduleFixture = appSingleton.moduleFixture;
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     geoRegionRepository =
       moduleFixture.get<GeoRegionRepository>(GeoRegionRepository);
   });
 
   afterEach(async () => {
-    await clearEntityTables([GeoRegion]);
+    await clearEntityTables(dataSource, [GeoRegion]);
   });
 
   test(

@@ -7,7 +7,6 @@ import {
   SCENARIO_INTERVENTION_TYPE,
   ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
-import { ScenarioInterventionsModule } from 'modules/scenario-interventions/scenario-interventions.module';
 import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
 import {
   createAdminRegion,
@@ -23,8 +22,6 @@ import {
   createSourcingRecord,
   createSupplier,
 } from '../../entity-mocks';
-import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { Material } from 'modules/materials/material.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
@@ -36,8 +33,6 @@ import {
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
-import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
-import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
@@ -51,10 +46,8 @@ import {
   ScenarioInterventionPreconditions,
 } from '../../utils/scenario-interventions-preconditions';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
-import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-records.module';
 import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
-import { ScenariosModule } from 'modules/scenarios/scenarios.module';
-import { In } from 'typeorm';
+import { DataSource, In } from 'typeorm';
 import { range } from 'lodash';
 import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
 import { clearEntityTables } from '../../utils/database-test-helper';
@@ -71,6 +64,10 @@ import { dropH3DataMock, h3DataMock } from '../h3-data/mocks/h3-data.mock';
 import { h3MaterialExampleDataFixture } from '../h3-data/mocks/h3-fixtures';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
+import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
+import { User } from 'modules/users/user.entity';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import { getApp } from '../../utils/getApp';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -170,15 +167,15 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     },
   };
 
-  jest.spyOn(IndicatorRecord, 'updateImpactView').mockResolvedValue('' as any);
-
   let app: INestApplication;
+  let dataSource: DataSource;
   let scenarioInterventionRepository: ScenarioInterventionRepository;
   let scenarioRepository: ScenarioRepository;
   let sourcingLocationRepository: SourcingLocationRepository;
   let sourcingRecordRepository: SourcingRecordRepository;
   let adminRegionRepository: AdminRegionRepository;
   let indicatorRecordRepository: IndicatorRecordRepository;
+  let indicatorRecordsService: IndicatorRecordsService;
   let indicatorRepository: IndicatorRepository;
   let geoRegionRepository: GeoRegionRepository;
   let impactCalculatorService: ImpactCalculator;
@@ -187,14 +184,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        AppModule,
-        ScenarioInterventionsModule,
-        ScenariosModule,
-        SourcingLocationsModule,
-        SourcingRecordsModule,
-        IndicatorRecordsModule,
-      ],
+      imports: [AppModule],
     })
       .overrideProvider(GeoCodingAbstractClass)
       .useValue(geoCodingServiceMock)
@@ -227,6 +217,15 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       moduleFixture.get<IndicatorRepository>(IndicatorRepository);
     impactCalculatorService =
       moduleFixture.get<ImpactCalculator>(ImpactCalculator);
+    indicatorRecordsService = moduleFixture.get<IndicatorRecordsService>(
+      IndicatorRecordsService,
+    );
+
+    jest
+      .spyOn(indicatorRecordsService, 'updateImpactView')
+      .mockResolvedValue('' as any);
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     app = getApp(moduleFixture);
     await app.init();
@@ -236,7 +235,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   });
 
   afterEach(async () => {
-    await clearEntityTables([
+    await clearEntityTables(dataSource, [
       ScenarioIntervention,
       IndicatorRecord,
       MaterialToH3,
@@ -253,7 +252,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       SourcingLocationGroup,
       Scenario,
     ]);
-    await dropH3DataMock([
+    await dropH3DataMock(dataSource, [
       'fake_material_table2002',
       'fake_replacing_material_table',
       'h3_grid_spam2010v2r0_global_ha',
@@ -265,13 +264,14 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
     jest.clearAllMocks();
   });
 
   describe('Scenario interventions - Creating intervention of type - Change of production efficiency', () => {
     test('Create a scenario intervention of type Change of production efficiency, with correct data should be successful', async () => {
-      const preconditions = await createInterventionPreconditions();
+      const preconditions = await createInterventionPreconditions(dataSource);
 
       const response = await request(app.getHttpServer())
         .post('/api/v1/scenario-interventions')
@@ -408,7 +408,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   describe('Scenario interventions - Creating intervention of type - Change of supplier location', () => {
     test('Create a scenario intervention of type Change of supplier location, with correct data should be successful', async () => {
       const preconditions: ScenarioInterventionPreconditions =
-        await createInterventionPreconditions();
+        await createInterventionPreconditions(dataSource);
 
       const geoRegion: GeoRegion = await createGeoRegion();
       await createAdminRegion({
@@ -528,7 +528,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           .mockResolvedValue(100);
 
         const preconditions: ScenarioInterventionPreconditions =
-          await createInterventionPreconditionsForSupplierChange();
+          await createInterventionPreconditionsForSupplierChange(dataSource);
 
         const geoRegion: GeoRegion = await createGeoRegion();
         await createAdminRegion({
@@ -587,7 +587,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
     test('Create a scenario intervention of type Change of supplier location with start year for which there are multiple years, should be successful', async () => {
       const preconditions: ScenarioInterventionPreconditions =
-        await createInterventionPreconditionsForSupplierChange();
+        await createInterventionPreconditionsForSupplierChange(dataSource);
 
       const geoRegion: GeoRegion = await createGeoRegion();
       await createAdminRegion({
@@ -696,7 +696,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   describe('Scenario interventions - Creating intervention of type - Change of material', () => {
     test('Create a scenario intervention of type Change of material, with correct data should be successful', async () => {
       const preconditions: ScenarioInterventionPreconditions =
-        await createInterventionPreconditions();
+        await createInterventionPreconditions(dataSource);
 
       const geoRegion: GeoRegion = await createGeoRegion();
       await createAdminRegion({
@@ -706,7 +706,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       const replacingMaterial: Material = await createMaterial();
 
-      const h3ReplacingMaterial = await h3DataMock({
+      const h3ReplacingMaterial = await h3DataMock(dataSource, {
         h3TableName: 'fakeReplacingMaterialTable',
         h3ColumnName: 'fakeReplacingMaterialColumn',
         additionalH3Data: h3MaterialExampleDataFixture,
@@ -811,7 +811,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         'And the Intervention should be created successfully',
       async () => {
         const preconditions: ScenarioInterventionPreconditions =
-          await createInterventionPreconditions();
+          await createInterventionPreconditions(dataSource);
 
         const geoRegion: GeoRegion = await createGeoRegion();
         await createAdminRegion({
@@ -820,7 +820,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
         const replacingMaterial: Material = await createMaterial();
-        const h3ReplacingMaterial = await h3DataMock({
+        const h3ReplacingMaterial = await h3DataMock(dataSource, {
           h3TableName: 'fakeReplacingMaterialTable',
           h3ColumnName: 'fakeReplacingMaterialColumn',
           additionalH3Data: h3MaterialExampleDataFixture,
@@ -891,7 +891,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         'And the Intervention should be created successfully',
       async () => {
         const preconditions: ScenarioInterventionPreconditions =
-          await createInterventionPreconditions();
+          await createInterventionPreconditions(dataSource);
 
         const geoRegion: GeoRegion = await createGeoRegion();
         await createAdminRegion({
@@ -918,7 +918,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
         const replacingMaterial: Material = await createMaterial();
-        const h3ReplacingMaterial = await h3DataMock({
+        const h3ReplacingMaterial = await h3DataMock(dataSource, {
           h3TableName: 'fakeReplacingMaterialTable',
           h3ColumnName: 'fakeReplacingMaterialColumn',
           additionalH3Data: h3MaterialExampleDataFixture,
@@ -987,7 +987,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   describe('Scenario interventions - Missing data for requested filters', () => {
     test('Create a scenario intervention of type Change of production efficiency with start year for which there is no sourcing data, should return an error', async () => {
       const preconditions: ScenarioInterventionPreconditions =
-        await createInterventionPreconditions();
+        await createInterventionPreconditions(dataSource);
 
       const response = await request(app.getHttpServer())
         .post('/api/v1/scenario-interventions')
@@ -1013,7 +1013,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
     test('Create a scenario intervention of type Change of production efficiency, when there are no sourcing locations matching the filters, should return an error', async () => {
       const preconditions: ScenarioInterventionPreconditions =
-        await createInterventionPreconditions();
+        await createInterventionPreconditions(dataSource);
 
       const response = await request(app.getHttpServer())
         .post('/api/v1/scenario-interventions')
@@ -1062,7 +1062,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           'startYear must be a number conforming to the specified constraints',
           'startYear should not be empty',
           'type must be a string',
-          'type must be a valid enum value',
+          'type must be one of the following values: default, Source from new supplier or location, Change production efficiency, Switch to a new material',
           'type should not be empty',
         ],
       );
@@ -1353,7 +1353,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     // TODO: Skipping this tests since the FE will send a new full DTO when editing a intervention
     test.skip('Update a scenario intervention needing recalculation should be successful', async () => {
       const preconditions: ScenarioInterventionPreconditions =
-        await createInterventionPreconditionsWithMultipleYearRecords();
+        await createInterventionPreconditionsWithMultipleYearRecords(
+          dataSource,
+        );
 
       await request(app.getHttpServer())
         .post('/api/v1/scenario-interventions')
@@ -1429,7 +1431,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         await scenarioInterventionRepository.findOne({
           where: { id: scenarioIntervention.id },
         }),
-      ).toBeUndefined();
+      ).toBeNull();
     });
   });
 
@@ -1533,7 +1535,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     });
 
     beforeEach(async () => {
-      preconditions = await createInterventionPreconditions();
+      preconditions = await createInterventionPreconditions(dataSource);
     });
     afterAll(() => jest.clearAllMocks());
 
@@ -1868,9 +1870,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           });
 
         const createdScenarioIntervention1 =
-          await scenarioInterventionRepository.findOneOrFail(
-            responseAdminRegions.body.data.id,
-          );
+          await scenarioInterventionRepository.findOneOrFail({
+            where: { id: responseAdminRegions.body.data.id },
+          });
 
         expect(createdScenarioIntervention1.replacedAdminRegions).toHaveLength(
           0,
@@ -1909,9 +1911,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           });
 
         const createdScenarioIntervention2 =
-          await scenarioInterventionRepository.findOneOrFail(
-            responseBusinessUnits.body.data.id,
-          );
+          await scenarioInterventionRepository.findOneOrFail({
+            where: { id: responseBusinessUnits.body.data.id },
+          });
 
         expect(createdScenarioIntervention2.replacedBusinessUnits).toHaveLength(
           0,
@@ -1937,9 +1939,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           });
 
         const createdScenarioIntervention3 =
-          await scenarioInterventionRepository.findOneOrFail(
-            responseSuppliers.body.data.id,
-          );
+          await scenarioInterventionRepository.findOneOrFail({
+            where: { id: responseSuppliers.body.data.id },
+          });
         expect(createdScenarioIntervention3.replacedSuppliers).toHaveLength(0);
       },
     );
@@ -1982,7 +1984,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
         // childMaterial Indicator calculation dependencies
 
-        const h3DataChild = await h3DataMock({
+        const h3DataChild = await h3DataMock(dataSource, {
           h3TableName: 'fakeChildMaterialTable',
           h3ColumnName: 'fakeChildMaterialColumn',
           additionalH3Data: h3MaterialExampleDataFixture,
@@ -2144,7 +2146,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           parent: parentMaterial,
         });
         // childMaterial Indicator calculation dependencies
-        const h3DataChild = await h3DataMock({
+        const h3DataChild = await h3DataMock(dataSource, {
           h3TableName: 'fakeChildMaterialTable',
           h3ColumnName: 'fakeChildMaterialColumn',
           additionalH3Data: h3MaterialExampleDataFixture,
@@ -2348,7 +2350,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       jest
         .spyOn(indicatorRecordRepository, 'getIndicatorRecordRawValue')
         .mockResolvedValue(1000);
-      const preconditions = await createInterventionPreconditions();
+      const preconditions = await createInterventionPreconditions(dataSource);
       const geoRegion: GeoRegion = await createGeoRegion();
       await createAdminRegion({
         isoA2: 'ABC',

@@ -30,7 +30,6 @@ export class BusinessUnitsService extends AppBaseService<
   AppInfoDTO
 > {
   constructor(
-    @InjectRepository(BusinessUnitRepository)
     protected readonly businessUnitRepository: BusinessUnitRepository,
     @Inject(forwardRef(() => AdminRegionsService))
     protected readonly adminRegionService: AdminRegionsService,

@@ -13,8 +13,11 @@ import { snakeCase } from 'typeorm/util/StringUtils';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { range } from 'lodash';
 import { h3BasicFixture } from '../../../e2e/h3-data/mocks/h3-fixtures';
+import { DataSource } from 'typeorm';
 
-async function createIndicatorsForXLSXImport(): Promise<string[]> {
+async function createIndicatorsForXLSXImport(
+  dataSource: DataSource,
+): Promise<string[]> {
   const indicatorSpec = [
     {
       name: 'Deforestation loss due to land use change',
@@ -43,7 +46,7 @@ async function createIndicatorsForXLSXImport(): Promise<string[]> {
     });
 
     for (const year of range(2010, 2020)) {
-      await h3DataMock({
+      await h3DataMock(dataSource, {
         h3TableName: `${spec.name
           .replace(/[^a-zA-Z]/g, '')
           .substring(0, 10)}_indicator_table_${year}`,
@@ -66,10 +69,13 @@ async function createIndicatorsForXLSXImport(): Promise<string[]> {
   return tableList;
 }
 
-async function createMaterialTreeForXLSXImport(args?: {
-  startYear?: number;
-  endYear?: number;
-}): Promise<string[]> {
+async function createMaterialTreeForXLSXImport(
+  dataSource: DataSource,
+  args?: {
+    startYear?: number;
+    endYear?: number;
+  },
+): Promise<string[]> {
   const argsWithDefaults: Record<string, any> = {
     startYear: 2010,
     endYear: 2022,
@@ -127,7 +133,7 @@ async function createMaterialTreeForXLSXImport(args?: {
   const tableList: string[] = [];
 
   for (const spec of materialSpec) {
-    await h3DataMock({
+    await h3DataMock(dataSource, {
       h3TableName: `${spec.name
         .replace(/[^a-zA-Z]/g, '')
         .substring(0, 10)}HarvestTable`,
@@ -137,7 +143,7 @@ async function createMaterialTreeForXLSXImport(args?: {
       additionalH3Data: h3BasicFixture,
       year: 2020,
     });
-    await h3DataMock({
+    await h3DataMock(dataSource, {
       h3TableName: `${spec.name
         .replace(/[^a-zA-Z]/g, '')
         .substring(0, 10)}ProductionTable`,
@@ -174,7 +180,7 @@ async function createMaterialTreeForXLSXImport(args?: {
       argsWithDefaults.startYear,
       argsWithDefaults.endYear,
     )) {
-      const materialHarvestH3Table = await h3DataMock({
+      const materialHarvestH3Table = await h3DataMock(dataSource, {
         h3TableName: `${spec.name
           .replace(/[^a-zA-Z]/g, '')
           .substring(0, 10)}HarvestTable_${year}`,
@@ -184,7 +190,7 @@ async function createMaterialTreeForXLSXImport(args?: {
         additionalH3Data: h3BasicFixture,
         year,
       });
-      const materialProductionH3Table = await h3DataMock({
+      const materialProductionH3Table = await h3DataMock(dataSource, {
         h3TableName: `${spec.name
           .replace(/[^a-zA-Z]/g, '')
           .substring(0, 10)}ProductionTable_${year}`,

@@ -2,10 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from 'app.module';
-import { saveUserAndGetToken } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
+import AppSingleton from '../../utils/getApp';
 import { UrlParamRepository } from 'modules/url-params/url-param.repository';
 import { UrlParamsModule } from 'modules/url-params/url-params.module';
+import { clearEntityTables } from '../../utils/database-test-helper';
+import { User } from 'modules/users/user.entity';
+import { DataSource } from 'typeorm';
 
 /**
  * Tests for the BusinessUnitsModule.
@@ -13,20 +16,21 @@ import { UrlParamsModule } from 'modules/url-params/url-params.module';
 
 describe('UrlParamsModule (e2e)', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let urlParamRepository: UrlParamRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, UrlParamsModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     urlParamRepository =
       moduleFixture.get<UrlParamRepository>(UrlParamRepository);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
@@ -34,6 +38,7 @@ describe('UrlParamsModule (e2e)', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 
@@ -47,9 +52,9 @@ describe('UrlParamsModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      const savedParam = await urlParamRepository.findOne({where: { id:
-        response.body.data.id,
-       }});
+      const savedParam = await urlParamRepository.findOne({
+        where: { id: response.body.data.id },
+      });
 
       if (!savedParam) {
         throw new Error('Error loading saved URL Param');
@@ -119,8 +124,10 @@ describe('UrlParamsModule (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(
-        await urlParamRepository.findOne({where: { id: saveResponse.body.data.id }}),
-      ).toBeUndefined();
+        await urlParamRepository.findOne({
+          where: { id: saveResponse.body.data.id },
+        }),
+      ).toBeNull();
     });
   });
 });

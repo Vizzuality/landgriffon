@@ -9,11 +9,13 @@ import { UserRepository } from 'modules/users/user.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from 'typeorm.config';
 import { UsersModule } from 'modules/users/users.module';
-import { ApiEventByTopicAndKind } from '../../../src/modules/api-events/api-event.topic+kind.entity';
-import { API_EVENT_KINDS } from '../../../src/modules/api-events/api-event.entity';
+import { ApiEventByTopicAndKind } from 'modules/api-events/api-event.topic+kind.entity';
+import { API_EVENT_KINDS } from 'modules/api-events/api-event.entity';
 import { ApiEventsService } from 'modules/api-events/api-events.service';
 import { Response } from 'supertest';
-import { getApp } from '../../utils/getApp';
+import AppSingleton from '../../utils/getApp';
+import { DataSource } from 'typeorm';
+import { clearEntityTables } from '../../utils/database-test-helper';
 
 jest.mock('config', () => {
   const config = jest.requireActual('config');
@@ -39,28 +41,23 @@ jest.mock('config', () => {
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
+  let dataSource: DataSource;
   let userRepository: UserRepository;
   let apiEventsService: ApiEventsService;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        AppModule,
-        TypeOrmModule.forRoot(typeOrmConfig),
-        UsersModule,
-        TypeOrmModule.forFeature([UserRepository]),
-      ],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
 
-    app = getApp(moduleFixture);
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     userRepository = moduleFixture.get<UserRepository>(UserRepository);
     apiEventsService = moduleFixture.get<ApiEventsService>(ApiEventsService);
-
-    await app.init();
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 

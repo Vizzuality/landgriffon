@@ -1,4 +1,4 @@
-import { LOCATION_TYPES } from '../../../../src/modules/sourcing-locations/sourcing-location.entity';
+import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 
 export const groupByMaterialResponseData = {
   rows: [

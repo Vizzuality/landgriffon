@@ -4,27 +4,29 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import {
   Indicator,
   INDICATOR_STATUS,
 } from 'modules/indicators/indicator.entity';
 import { difference } from 'lodash';
 import { CreateScenarioInterventionDtoV2 } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
-import { getConnection } from 'typeorm';
+import { DataSource } from 'typeorm';
 
 /**
- * @description: Validates de IndicatorCoefficient DTO agains currently active indicators
+ * @description: Validates the IndicatorCoefficient DTO against currently active indicators
  */
 
 @ValidatorConstraint({ name: 'ActiveIndicators', async: true })
 @Injectable()
 export class ActiveIndicatorValidator implements ValidatorConstraintInterface {
+  constructor(private dataSource: DataSource) {}
+
   differentNameCodes: string[];
   indicatorNameCodes: string[];
 
   async validate(coefficientDto: Record<string, any>): Promise<boolean> {
-    const activeIndicators: Indicator[] = await getConnection()
+    const activeIndicators: Indicator[] = await this.dataSource
       .getRepository(Indicator)
       .find({ where: { status: INDICATOR_STATUS.ACTIVE } });
     if (!activeIndicators.length) {
@@ -41,6 +43,7 @@ export class ActiveIndicatorValidator implements ValidatorConstraintInterface {
 
     return !this.differentNameCodes.length;
   }
+
   defaultMessage(): string {
     return `Provided coefficients should match currently active indicators: ${this.indicatorNameCodes.join(
       ', ',

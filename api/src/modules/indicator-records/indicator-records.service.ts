@@ -33,9 +33,11 @@ import { CachedDataService } from 'modules/cached-data/cached-data.service';
 import {
   CACHED_DATA_TYPE,
   CachedData,
-} from 'modules/cached-data/cached.data.entity';
+} from 'modules/cached-data/cached-data.entity';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { IMPACT_VIEW_NAME } from 'modules/impact/views/impact.materialized-view.entity';
+import { DataSource } from 'typeorm';
 
 export interface CachedRawValue {
   rawValue: number;
@@ -49,7 +51,6 @@ export class IndicatorRecordsService extends AppBaseService<
   AppInfoDTO
 > {
   constructor(
-    @InjectRepository(IndicatorRecordRepository)
     private readonly indicatorRecordRepository: IndicatorRecordRepository,
     private readonly indicatorService: IndicatorsService,
     private readonly impactCalculator: ImpactCalculator,
@@ -57,6 +58,7 @@ export class IndicatorRecordsService extends AppBaseService<
     private readonly materialsToH3sService: MaterialsToH3sService,
     private readonly h3DataYearsService: H3DataYearsService,
     private readonly cachedDataService: CachedDataService,
+    private readonly dataSource: DataSource,
   ) {
     super(
       indicatorRecordRepository,
@@ -612,6 +614,12 @@ export class IndicatorRecordsService extends AppBaseService<
   ): Promise<void> {
     return this.impactCalculator.calculateImpactForAllSourcingRecords(
       activeIndicators,
+    );
+  }
+
+  async updateImpactView(): Promise<void> {
+    return this.dataSource.query(
+      `REFRESH MATERIALIZED VIEW CONCURRENTLY ${IMPACT_VIEW_NAME} WITH DATA`,
     );
   }
 }

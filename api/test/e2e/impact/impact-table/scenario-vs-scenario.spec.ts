@@ -1,11 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
-import { ImpactModule } from 'modules/impact/impact.module';
 import { Indicator } from 'modules/indicators/indicator.entity';
-import { saveUserAndGetToken } from '../../../utils/userAuth';
-import { getApp } from '../../../utils/getApp';
+import { saveUserAndGetTokenWithUserId } from '../../../utils/userAuth';
+import AppSingleton from '../../../utils/getApp';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { clearEntityTables } from '../../../utils/database-test-helper';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
@@ -26,23 +23,26 @@ import {
   getScenarioComparisonResponseBySupplier,
 } from '../mocks/scenario-vs-scenario-responses/same-materials-scenarios.reponse';
 import { createSameMaterialScenariosPreconditions } from '../mocks/scenario-vs-scenario-preconditions/same-materials-scenarios.preconditions';
+import { DataSource } from 'typeorm';
+import { User } from 'modules/users/user.entity';
 
 describe('Scenario comparison test suite (e2e)', () => {
   let app: INestApplication;
   let jwtToken: string;
+  let dataSource: DataSource;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, ImpactModule],
-    }).compile();
+    const appSingleton = await AppSingleton.init();
+    app = appSingleton.app;
+    const moduleFixture = appSingleton.moduleFixture;
 
-    app = getApp(moduleFixture);
-    await app.init();
-    jwtToken = await saveUserAndGetToken(moduleFixture, app);
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
 
   afterEach(async () => {
-    await clearEntityTables([
+    await clearEntityTables(dataSource, [
       IndicatorRecord,
       MaterialToH3,
       H3Data,
@@ -61,6 +61,7 @@ describe('Scenario comparison test suite (e2e)', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables(dataSource, [User]);
     await app.close();
   });
 

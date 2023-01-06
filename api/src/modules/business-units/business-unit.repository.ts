@@ -1,13 +1,13 @@
 import {
   Brackets,
-  EntityRepository,
+  DataSource,
   SelectQueryBuilder,
   WhereExpressionBuilder,
 } from 'typeorm';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-unit.dto';
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetBusinessUnitTreeWithOptionsDto } from 'modules/business-units/dto/get-business-unit-tree-with-options.dto';
 import {
@@ -22,6 +22,9 @@ export class BusinessUnitRepository extends ExtendedTreeRepository<
 > {
   logger: Logger = new Logger(BusinessUnitRepository.name);
 
+  constructor(private dataSource: DataSource) {
+    super(BusinessUnit, dataSource.createEntityManager());
+  }
   /**
    * @description Get all business units that are present in Sourcing Locations with given filters
    *              Additionally if withAncestry set to true (default) it will return the ancestry of each

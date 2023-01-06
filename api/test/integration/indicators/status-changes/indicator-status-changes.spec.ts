@@ -7,9 +7,10 @@ import {
   INDICATOR_STATUS,
   INDICATOR_TYPES_NEW,
 } from 'modules/indicators/indicator.entity';
-import { IndicatorsService } from '../../../../src/modules/indicators/indicators.service';
+import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { createIndicator } from '../../../entity-mocks';
-import { CreateIndicatorDto } from '../../../../src/modules/indicators/dto/create.indicator.dto';
+import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto';
+import { DataSource } from 'typeorm';
 
 /**
  * @description: LG heavily depends on each Indicator status to calculate impact during either XLSXL Imports or Intervention calculations
@@ -17,6 +18,7 @@ import { CreateIndicatorDto } from '../../../../src/modules/indicators/dto/creat
  */
 
 describe('Indicators - Status (Integration Tests', () => {
+  let dataSource: DataSource;
   let moduleFixture: TestingModule;
   let indicatorService: IndicatorsService;
   beforeAll(async () => {
@@ -25,10 +27,11 @@ describe('Indicators - Status (Integration Tests', () => {
     }).compile();
 
     indicatorService = moduleFixture.get<IndicatorsService>(IndicatorsService);
+    dataSource = moduleFixture.get<DataSource>(DataSource);
   });
 
   afterEach(async () => {
-    await clearEntityTables([Indicator]);
+    await clearEntityTables(dataSource, [Indicator]);
   });
 
   afterAll(() => moduleFixture.close());

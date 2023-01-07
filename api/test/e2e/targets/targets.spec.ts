@@ -1,12 +1,11 @@
-import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { Target } from 'modules/targets/target.entity';
 import { TargetsRepository } from 'modules/targets/targets.repository';
 import { createIndicator, createTarget } from '../../entity-mocks';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
-import { clearEntityTables } from '../../utils/database-test-helper';
-import { User } from 'modules/users/user.entity';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 import AppSingleton from '../../utils/getApp';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
@@ -44,7 +43,7 @@ describe('Tasks Module (e2e)', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

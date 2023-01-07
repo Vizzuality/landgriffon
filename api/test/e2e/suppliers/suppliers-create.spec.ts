@@ -6,8 +6,7 @@ import { expectedJSONAPIAttributes } from './config';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
 import AppSingleton from '../../utils/getApp';
-import { clearEntityTables } from '../../utils/database-test-helper';
-import { User } from 'modules/users/user.entity';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
 describe('Suppliers - Create', () => {
@@ -34,7 +33,7 @@ describe('Suppliers - Create', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

@@ -5,8 +5,7 @@ import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
 import AppSingleton from '../../utils/getApp';
 import { createSourcingLocation, createSupplier } from '../../entity-mocks';
-import { clearEntityTables } from '../../utils/database-test-helper';
-import { User } from 'modules/users/user.entity';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 import { MaterialRepository } from '../../../src/modules/materials/material.repository';
 
@@ -39,7 +38,7 @@ describe('Suppliers - Get by type', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

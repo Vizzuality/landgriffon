@@ -31,7 +31,6 @@ import {
   CACHED_DATA_TYPE,
   CachedData,
 } from 'modules/cached-data/cached-data.entity';
-import { InjectRepository } from '@nestjs/typeorm';
 
 /**
  * @description: This is PoC (Proof of Concept) for the updated LG methodology v0.1

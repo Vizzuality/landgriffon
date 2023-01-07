@@ -43,14 +43,12 @@ const queueConfig: any = config.get('queue');
     HttpModule,
     TypeOrmModule.forRoot({ ...typeOrmConfig, autoLoadEntities: true }),
     BullModule.forRoot({
-      redis: queueConfig.host
-        ? {
-            host: queueConfig.host,
-            port: queueConfig.port,
-            db: queueConfig.database,
-          }
-        : undefined,
-      settings: { lockDuration: 10000000, maxStalledCount: 0 },
+      redis: {
+        host: queueConfig.host,
+        port: queueConfig.port,
+        db: queueConfig.database,
+      },
+      // settings: { lockDuration: 10000000, maxStalledCount: 0 },
     }),
     AdminRegionsModule,
     AuthenticationModule,

@@ -26,8 +26,7 @@ import {
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { JSONAPIEntityData } from 'utils/app-base.service';
-import { clearEntityTables } from '../../utils/database-test-helper';
-import { User } from 'modules/users/user.entity';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
 const expectedJSONAPIAttributes: string[] = [
@@ -81,7 +80,7 @@ describe('ScenariosModule (e2e)', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

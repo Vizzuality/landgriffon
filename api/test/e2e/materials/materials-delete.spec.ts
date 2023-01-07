@@ -1,15 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { Material } from 'modules/materials/material.entity';
-import { MaterialsModule } from 'modules/materials/materials.module';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { createMaterial } from '../../entity-mocks';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
 import AppSingleton from '../../utils/getApp';
-import { clearEntityTables } from '../../utils/database-test-helper';
-import { User } from 'modules/users/user.entity';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
 describe('Materials - Delete', () => {
@@ -36,7 +32,7 @@ describe('Materials - Delete', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

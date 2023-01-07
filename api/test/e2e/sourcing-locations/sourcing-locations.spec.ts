@@ -1,12 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import {
   SourcingLocation,
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
 } from 'modules/sourcing-locations/sourcing-location.entity';
-import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import {
   createMaterial,
@@ -17,9 +14,9 @@ import { Material } from 'modules/materials/material.entity';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
 import AppSingleton from '../../utils/getApp';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
-import { clearEntityTables } from '../../utils/database-test-helper';
-import { User } from 'modules/users/user.entity';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
+import { MaterialRepository } from '../../../src/modules/materials/material.repository';
 
 /**
  * Tests for the SourcingLocationsModule.
@@ -29,6 +26,7 @@ describe('SourcingLocationsModule (e2e)', () => {
   let app: INestApplication;
   let dataSource: DataSource;
   let sourcingLocationRepository: SourcingLocationRepository;
+  let materialRepository: MaterialRepository;
   let jwtToken: string;
   let userId: string;
 
@@ -42,6 +40,8 @@ describe('SourcingLocationsModule (e2e)', () => {
     sourcingLocationRepository = moduleFixture.get<SourcingLocationRepository>(
       SourcingLocationRepository,
     );
+    materialRepository =
+      moduleFixture.get<MaterialRepository>(MaterialRepository);
 
     const tokenWithId = await saveUserAndGetTokenWithUserId(moduleFixture, app);
     jwtToken = tokenWithId.jwtToken;
@@ -50,10 +50,11 @@ describe('SourcingLocationsModule (e2e)', () => {
 
   afterEach(async () => {
     await sourcingLocationRepository.delete({});
+    await materialRepository.delete({});
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

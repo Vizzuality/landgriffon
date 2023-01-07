@@ -11,7 +11,6 @@ import {
 import { CreateIndicatorRecordDto } from 'modules/indicator-records/dto/create.indicator-record.dto';
 import { UpdateIndicatorRecordDto } from 'modules/indicator-records/dto/update.indicator-record.dto';
 import { AppInfoDTO } from 'dto/info.dto';
-import { InjectRepository } from '@nestjs/typeorm';
 import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import {

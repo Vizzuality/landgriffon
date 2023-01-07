@@ -1,9 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
-import { H3DataModule } from 'modules/h3-data/h3-data.module';
 import { h3DataMock, dropH3DataMock } from './mocks/h3-data.mock';
 import { createMaterial, createMaterialToH3 } from '../../entity-mocks';
 import { MaterialRepository } from 'modules/materials/material.repository';
@@ -13,8 +10,7 @@ import { h3MaterialExampleDataFixture } from './mocks/h3-fixtures';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
 import AppSingleton from '../../utils/getApp';
 import { DataSource } from 'typeorm';
-import { clearEntityTables } from '../../utils/database-test-helper';
-import { User } from 'modules/users/user.entity';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 
 /**
  * Tests for the H3DataModule.
@@ -56,7 +52,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

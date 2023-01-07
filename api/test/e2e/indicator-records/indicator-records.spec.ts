@@ -1,13 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import {
   createIndicator,
   createIndicatorRecord,
   createSourcingRecord,
 } from '../../entity-mocks';
-import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-records.module';
 import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { Indicator } from 'modules/indicators/indicator.entity';

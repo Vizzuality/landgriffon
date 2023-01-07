@@ -1,13 +1,12 @@
-require('leaked-handles').set({
-  fullStack: true, // use full stack traces
-  debugSockets: true, // pretty print tcp thrown exceptions.
-});
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { v4 as uuidv4 } from 'uuid';
 import AppSingleton from '../../../utils/getApp';
 import { saveUserAndGetTokenWithUserId } from '../../../utils/userAuth';
-import { clearEntityTables } from '../../../utils/database-test-helper';
+import {
+  clearEntityTables,
+  clearTestDataFromDatabase,
+} from '../../../utils/database-test-helper';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
@@ -47,7 +46,6 @@ import { createNewMaterialInterventionPreconditions } from '../mocks/actual-vs-s
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { rankingTableWithScenario } from '../mocks/response-mocks.impact';
 import { DataSource } from 'typeorm';
-import { User } from 'modules/users/user.entity';
 
 describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
   let app: INestApplication;
@@ -83,7 +81,7 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

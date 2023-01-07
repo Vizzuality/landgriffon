@@ -3,14 +3,19 @@ import { AdminRegionRepository } from 'modules/admin-regions/admin-region.reposi
 import { createAdminRegion, createGeoRegion } from '../../entity-mocks';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import AppSingleton from '../../utils/getApp';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
 
 describe('AdminRegions - Get Admin Regions (Integration Tests)', () => {
   let adminRegionRepository: AdminRegionRepository;
   let adminRegionService: AdminRegionsService;
+  let dataSource: DataSource;
 
   beforeAll(async () => {
     const appSingleton = await AppSingleton.init();
     const moduleFixture = appSingleton.moduleFixture;
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     adminRegionRepository = moduleFixture.get<AdminRegionRepository>(
       AdminRegionRepository,
@@ -21,7 +26,7 @@ describe('AdminRegions - Get Admin Regions (Integration Tests)', () => {
   });
 
   afterEach(async () => {
-    await adminRegionRepository.delete({});
+    await clearTestDataFromDatabase(dataSource);
   });
 
   test('When I provide a AdminRegion name, Then I should get that AdminRegion Id with its GeoRegion Id', async () => {

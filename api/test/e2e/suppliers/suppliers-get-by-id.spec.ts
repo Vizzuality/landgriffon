@@ -1,15 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { Supplier } from 'modules/suppliers/supplier.entity';
-import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { expectedJSONAPIAttributes } from './config';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
 import AppSingleton from '../../utils/getApp';
-import { clearEntityTables } from '../../utils/database-test-helper';
-import { User } from 'modules/users/user.entity';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
 describe('Suppliers - Get by id', () => {
@@ -36,7 +32,7 @@ describe('Suppliers - Get by id', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

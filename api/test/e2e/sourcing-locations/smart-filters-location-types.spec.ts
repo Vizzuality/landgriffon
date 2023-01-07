@@ -20,10 +20,12 @@ import { Material } from 'modules/materials/material.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
-import { clearEntityTables } from '../../utils/database-test-helper';
+import {
+  clearEntityTables,
+  clearTestDataFromDatabase,
+} from '../../utils/database-test-helper';
 import { SCENARIO_INTERVENTION_STATUS } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { DataSource } from 'typeorm';
-import { User } from 'modules/users/user.entity';
 
 describe('SourcingLocationsModule (e2e)', () => {
   let app: INestApplication;
@@ -51,7 +53,7 @@ describe('SourcingLocationsModule (e2e)', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 
@@ -370,16 +372,21 @@ describe('SourcingLocationsModule (e2e)', () => {
           .set('Authorization', `Bearer ${jwtToken}`);
         expect(HttpStatus.OK);
         expect(response.body.data).toHaveLength(3);
-        expect(response.body.data).toEqual([
-          { label: 'Unknown', value: 'unknown' },
-          {
-            label: 'Production aggregation point',
-            value: `${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT}`,
-          },
+        expect(
+          response.body.data.sort(
+            (a: Record<string, any>, b: Record<string, any>) =>
+              a.label < b.label ? -1 : a > b ? 1 : 0,
+          ),
+        ).toEqual([
           {
             label: 'Country of production',
             value: `${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}`,
           },
+          {
+            label: 'Production aggregation point',
+            value: `${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT}`,
+          },
+          { label: 'Unknown', value: 'unknown' },
         ]);
       },
     );

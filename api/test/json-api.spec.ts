@@ -1,13 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { omit } from 'lodash';
 import * as config from 'config';
-import { clearEntityTables } from './utils/database-test-helper';
-import { User } from '../src/modules/users/user.entity';
 import AppSingleton from './utils/getApp';
 import { DataSource } from 'typeorm';
+import { clearTestDataFromDatabase } from './utils/database-test-helper';
 
 describe('JSON API Specs (e2e)', () => {
   let dataSource: DataSource;
@@ -25,14 +22,10 @@ describe('JSON API Specs (e2e)', () => {
     const moduleFixture = appSingleton.moduleFixture;
 
     dataSource = moduleFixture.get<DataSource>(DataSource);
-
-    //
-    // app = moduleFixture.createNestApplication();
-    // await app.init();
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

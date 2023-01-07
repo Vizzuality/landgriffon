@@ -1,14 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
-import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
 import { createSourcingRecord } from '../../entity-mocks';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
 import AppSingleton from '../../utils/getApp';
-import { clearEntityTables } from '../../utils/database-test-helper';
-import { User } from 'modules/users/user.entity';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
 describe('Sourcing records - Get years', () => {
@@ -36,7 +32,7 @@ describe('Sourcing records - Get years', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

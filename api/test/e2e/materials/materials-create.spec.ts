@@ -1,8 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
-import { MaterialsModule } from 'modules/materials/materials.module';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { createMaterial } from '../../entity-mocks';
 import { Material } from 'modules/materials/material.entity';
@@ -10,8 +7,7 @@ import { expectedJSONAPIAttributes } from './config';
 import { v4 as uuidv4 } from 'uuid';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
 import AppSingleton from '../../utils/getApp';
-import { clearEntityTables } from '../../utils/database-test-helper';
-import { User } from 'modules/users/user.entity';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
 describe('Materials - Create', () => {
@@ -38,7 +34,7 @@ describe('Materials - Create', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

@@ -1,15 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { readdir } from 'fs/promises';
 import * as config from 'config';
-import { ImportDataModule } from 'modules/import-data/import-data.module';
 import { saveUserAndGetTokenWithUserId } from '../../../utils/userAuth';
 import AppSingleton from '../../../utils/getApp';
-import { sourcingDataValidationErrorResponse } from './import-mocks';
-import { clearEntityTables } from '../../../utils/database-test-helper';
-import { User } from '../../../../src/modules/users/user.entity';
+import { clearTestDataFromDatabase } from '../../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
 jest.mock('config', () => {
@@ -43,7 +38,7 @@ describe('XLSX Upload Feature Validation Tests', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
   describe('XLSX Upload Feature File Validation Tests', () => {
@@ -86,7 +81,7 @@ describe('XLSX Upload Feature Validation Tests', () => {
     }, 100000);
 
     test('When file with incorrect or missing inputs for upload is sent to API, proper error messages should be received', async () => {
-      const response = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .post('/api/v1/import/sourcing-data')
         .set('Authorization', `Bearer ${jwtToken}`)
         .attach('file', __dirname + '/base-dataset-location-errors.xlsx');

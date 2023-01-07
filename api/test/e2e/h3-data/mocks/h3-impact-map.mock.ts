@@ -55,11 +55,14 @@ export interface ImpactMapMockData {
   harvestH3DataTwoId: string;
   scenarioId: string;
   scenarioTwoId: string;
+  tablesToDrop: string[];
 }
 
 export const createImpactMapMockData = async (
   dataSource: DataSource,
 ): Promise<ImpactMapMockData> => {
+  const tablesToDrop: string[] = [];
+
   const unit: Unit = new Unit();
   unit.name = 'test unit';
   unit.symbol = 'tonnes';
@@ -84,6 +87,8 @@ export const createImpactMapMockData = async (
     year: 2020,
   });
 
+  tablesToDrop.push(harvestH3Data.h3tableName);
+
   const productionH3Data = await h3DataMock(dataSource, {
     h3TableName: 'productionTable',
     h3ColumnName: 'productionColumn',
@@ -91,6 +96,8 @@ export const createImpactMapMockData = async (
     indicatorId: indicator.id,
     year: 2020,
   });
+
+  tablesToDrop.push(productionH3Data.h3tableName);
 
   const materialOne: Material = await createMaterial({
     name: 'MaterialOne',
@@ -460,6 +467,7 @@ export const createImpactMapMockData = async (
     harvestH3DataTwoId: harvestH3Data.id,
     scenarioId: scenario.id,
     scenarioTwoId: scenarioTwo.id,
+    tablesToDrop,
   };
 };
 

@@ -45,6 +45,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
   afterAll(async () => {
     await dropH3DataMock(dataSource, [fakeTable]);
+    await dropH3DataMock(dataSource, impactMapMockData.tablesToDrop);
     await deleteImpactMapMockData(dataSource);
     await clearEntityTables(dataSource, [User, SourcingRecord]);
     await app.close();

@@ -39,7 +39,7 @@ import { createWorldToCalculateIndicatorRecords } from '../../../utils/indicator
 import { v4 as UUIDv4 } from 'uuid';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import {
-  clearEntityTables,
+  clearTestDataFromDatabase,
   dropH3GridTables,
 } from '../../../utils/database-test-helper';
 import {
@@ -68,7 +68,6 @@ import { CachedDataRepository } from 'modules/cached-data/cached-data.repository
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 import { DataSource } from 'typeorm';
-import { User } from 'modules/users/user.entity';
 
 describe('Indicator Records Service', () => {
   let dataSource: DataSource;
@@ -151,7 +150,7 @@ describe('Indicator Records Service', () => {
   });
 
   afterAll(async () => {
-    return clearEntityTables(dataSource, [User]);
+    return clearTestDataFromDatabase(dataSource);
   });
 
   describe('createIndicatorRecordsBySourcingRecords', () => {
@@ -657,7 +656,7 @@ describe('Indicator Records Service', () => {
         h3MaterialProducer.id,
         MATERIAL_TO_H3_TYPE.PRODUCER,
       );
-      const materialH3DataHarvest = await createMaterialToH3(
+      await createMaterialToH3(
         indicatorPreconditions.material2.id,
         h3MaterialHarvest.id,
         MATERIAL_TO_H3_TYPE.HARVEST,
@@ -847,10 +846,9 @@ describe('Indicator Records Service', () => {
       );
 
       //ACT
-      const calculatedRecords =
-        await impactCalculator.createIndicatorRecordsBySourcingRecords(
-          sourcingData,
-        );
+      await impactCalculator.createIndicatorRecordsBySourcingRecords(
+        sourcingData,
+      );
 
       //ASSERT
 
@@ -889,13 +887,6 @@ describe('Indicator Records Service', () => {
 
   /**
    * Does expect checks on all relevant fields of IndicatorRecord
-   * @param indicatorType
-   * @param h3Data
-   * @param materialH3Data
-   * @param sourcingRecordId
-   * @param recordValue
-   * @param scalerValue
-   * @param calculatedIndicatorRecords
    */
   async function checkCreatedIndicatorRecord(
     indicatorType: INDICATOR_TYPES_NEW,
@@ -1103,6 +1094,7 @@ describe('Indicator Records Service', () => {
       deforestationIndicator,
       waterUseIndicator,
       unsustWaterUseIndicator,
+      tablesToDrop: h3Data.tablesToDrop,
     };
   }
 });

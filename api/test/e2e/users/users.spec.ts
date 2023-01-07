@@ -1,23 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication, Logger } from '@nestjs/common';
 import { faker } from '@faker-js/faker';
 import * as request from 'supertest';
 import { Response } from 'supertest';
-import { AppModule } from 'app.module';
 import { E2E_CONFIG } from '../../e2e.config';
 import { v4 } from 'uuid';
 import { SignUpDto } from 'modules/authentication/dto/sign-up.dto';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ApiEvent } from 'modules/api-events/api-event.entity';
-import { ApiEventsModule } from 'modules/api-events/api-events.module';
-import { ApiEventsService } from 'modules/api-events/api-events.service';
-import { UsersModule } from 'modules/users/users.module';
 import { LoginDto } from 'modules/authentication/dto/login.dto';
-import { UserRepository } from 'modules/users/user.repository';
 import AppSingleton from '../../utils/getApp';
-import { clearEntityTables } from '../../utils/database-test-helper';
-import { User } from 'modules/users/user.entity';
 import { DataSource } from 'typeorm';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 
 /**
  * Tests for the UsersModule.
@@ -63,7 +54,7 @@ describe('UsersModule (e2e)', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

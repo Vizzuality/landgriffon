@@ -1,8 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-
 import { DeleteResult, Repository } from 'typeorm';
-
 import {
   ApiEvent,
   apiEventResource,
@@ -51,7 +49,7 @@ export class ApiEventsService extends AppBaseService<
 
   /**
    * Given a `QualifiedEventTopic` (topic qualified by `kind` and `apiEvent`),
-   * return the matching event with latest timestamp.
+   * return the matching event with the latest timestamp.
    */
   public async getLatestEventForTopic(
     qualifiedTopic: QualifiedEventTopic,

@@ -1,21 +1,16 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { E2E_CONFIG } from '../../e2e.config';
 import { User } from 'modules/users/user.entity';
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from 'modules/users/user.repository';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeOrmConfig } from 'typeorm.config';
-import { UsersModule } from 'modules/users/users.module';
 import { ApiEventByTopicAndKind } from 'modules/api-events/api-event.topic+kind.entity';
 import { API_EVENT_KINDS } from 'modules/api-events/api-event.entity';
 import { ApiEventsService } from 'modules/api-events/api-events.service';
 import { Response } from 'supertest';
 import AppSingleton from '../../utils/getApp';
 import { DataSource } from 'typeorm';
-import { clearEntityTables } from '../../utils/database-test-helper';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 
 jest.mock('config', () => {
   const config = jest.requireActual('config');
@@ -57,7 +52,7 @@ describe('AppController (e2e)', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

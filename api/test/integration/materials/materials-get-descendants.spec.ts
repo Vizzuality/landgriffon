@@ -15,8 +15,6 @@ describe('materials - Get descendants by Material Ids', () => {
     materialRepository =
       moduleFixture.get<MaterialRepository>(MaterialRepository);
     materialsService = moduleFixture.get(MaterialsService);
-
-    await materialRepository.delete({});
   });
 
   afterEach(async () => {

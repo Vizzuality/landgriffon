@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from 'app.module';
 import { IndicatorsModule } from 'modules/indicators/indicators.module';
-import { clearEntityTables } from '../../../utils/database-test-helper';
+import { clearTestDataFromDatabase } from '../../../utils/database-test-helper';
 import {
   Indicator,
   INDICATOR_STATUS,
@@ -31,7 +31,7 @@ describe('Indicators - Status (Integration Tests', () => {
   });
 
   afterEach(async () => {
-    await clearEntityTables(dataSource, [Indicator]);
+    await clearTestDataFromDatabase(dataSource);
   });
 
   afterAll(() => moduleFixture.close());

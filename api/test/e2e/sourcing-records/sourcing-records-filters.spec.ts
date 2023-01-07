@@ -1,9 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
-import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
 import {
   createSourcingLocation,
@@ -12,8 +9,7 @@ import {
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
 import AppSingleton from '../../utils/getApp';
-import { clearEntityTables } from '../../utils/database-test-helper';
-import { User } from 'modules/users/user.entity';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
 describe('Sourcing records -Filters', () => {
@@ -41,7 +37,7 @@ describe('Sourcing records -Filters', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

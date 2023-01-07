@@ -3,7 +3,6 @@ import {
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import {
   AppBaseService,
   JSONAPISerializerConfig,

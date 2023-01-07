@@ -31,7 +31,6 @@ import { Scenario } from 'modules/scenarios/scenario.entity';
 export async function createNewMaterialInterventionPreconditions(
   customScenario?: Scenario,
   customIndicator?: Indicator,
-  customMaterials?: Record<string, Material>,
 ): Promise<{
   indicator: Indicator;
   scenarioIntervention: ScenarioIntervention;

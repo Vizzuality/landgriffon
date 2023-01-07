@@ -4,10 +4,13 @@ import { JwtAuthGuard } from 'guards/jwt-auth.guard';
 import { Test, TestingModule } from '@nestjs/testing';
 import { useContainer } from 'class-validator';
 import { AppModule } from '../../src/app.module';
-import { ImpactModule } from '../../src/modules/impact/impact.module';
+import * as config from 'config';
 
 export function getApp(moduleFixture: TestingModule): INestApplication {
-  const app = moduleFixture.createNestApplication();
+  const serverConfig: any = config.get('server');
+  const app = moduleFixture.createNestApplication({
+    logger: serverConfig.loggerLevel,
+  });
   useContainer(app, { fallbackOnErrors: true });
   app.useGlobalPipes(
     new ValidationPipe({
@@ -34,7 +37,10 @@ export default class AppSingleton {
       imports: [AppModule],
     }).compile();
 
-    AppSingleton.app = AppSingleton.moduleFixture.createNestApplication();
+    const serverConfig: any = config.get('server');
+    AppSingleton.app = AppSingleton.moduleFixture.createNestApplication({
+      logger: serverConfig.loggerLevel,
+    });
     useContainer(AppSingleton.app, { fallbackOnErrors: true });
     AppSingleton.app.useGlobalPipes(
       new ValidationPipe({

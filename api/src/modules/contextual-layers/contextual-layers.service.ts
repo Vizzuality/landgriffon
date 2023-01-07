@@ -9,7 +9,6 @@ import { ContextualLayer } from 'modules/contextual-layers/contextual-layer.enti
 import { groupBy } from 'lodash';
 import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 import { H3DataService } from 'modules/h3-data/h3-data.service';
-import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ContextualLayersService {

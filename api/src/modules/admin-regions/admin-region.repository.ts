@@ -1,7 +1,6 @@
 import {
   Brackets,
   DataSource,
-  EntityRepository,
   SelectQueryBuilder,
   WhereExpressionBuilder,
 } from 'typeorm';

@@ -55,6 +55,7 @@ import { SourcingRecordsWithIndicatorRawDataDtoV2 } from 'modules/sourcing-recor
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 import { DataSource } from 'typeorm';
 import { TasksRepository } from '../../../../src/modules/tasks/tasks.repository';
+import { clearTestDataFromDatabase } from '../../../utils/database-test-helper';
 
 let tablesToDrop: string[] = [];
 
@@ -250,6 +251,7 @@ describe('Sourcing Data import', () => {
 
   afterAll(async () => {
     jest.clearAllTimers();
+    await clearTestDataFromDatabase(dataSource);
     return moduleFixture.close();
   });
 

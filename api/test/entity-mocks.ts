@@ -31,7 +31,7 @@ import {
   CONTEXTUAL_LAYER_CATEGORY,
   ContextualLayer,
 } from '../src/modules/contextual-layers/contextual-layer.entity';
-import { BaseEntity, DeepPartial } from 'typeorm';
+import { DeepPartial } from 'typeorm';
 
 async function createAdminRegion(
   additionalData: Partial<AdminRegion> = {},

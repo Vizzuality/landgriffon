@@ -1,9 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { Material } from 'modules/materials/material.entity';
-import { MaterialsModule } from 'modules/materials/materials.module';
 import {
   createMaterial,
   createScenarioIntervention,
@@ -21,11 +18,11 @@ import {
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { SourcingLocationMaterial } from 'modules/sourcing-locations/dto/materials.sourcing-location.dto';
-import { clearEntityTables } from '../../utils/database-test-helper';
-import { User } from 'modules/users/user.entity';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
 import { MaterialRepository } from '../../../src/modules/materials/material.repository';
+import { SupplierRepository } from '../../../src/modules/suppliers/supplier.repository';
 
 describe('Materials - Get the list of Materials uploaded by User with details', () => {
   let app: INestApplication;
@@ -33,6 +30,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
   let sourcingLocationRepository: SourcingLocationRepository;
   let sourcingRecordRepository: SourcingRecordRepository;
   let materialRepository: MaterialRepository;
+  let supplierRepository: SupplierRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
@@ -50,6 +48,8 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     );
     materialRepository =
       moduleFixture.get<MaterialRepository>(MaterialRepository);
+    supplierRepository =
+      moduleFixture.get<SupplierRepository>(SupplierRepository);
 
     ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
   });
@@ -57,11 +57,12 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
   afterEach(async () => {
     await sourcingLocationRepository.delete({});
     await sourcingRecordRepository.delete({});
+    await supplierRepository.delete({});
     await materialRepository.delete({});
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

@@ -26,8 +26,7 @@ import AppSingleton from '../../utils/getApp';
 import { Material } from 'modules/materials/material.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { DataSource } from 'typeorm';
-import { clearEntityTables } from '../../utils/database-test-helper';
-import { User } from 'modules/users/user.entity';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { IndicatorRepository } from '../../../src/modules/indicators/indicator.repository';
 
 /**
@@ -73,7 +72,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

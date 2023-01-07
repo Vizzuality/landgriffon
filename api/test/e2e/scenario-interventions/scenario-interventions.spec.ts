@@ -50,7 +50,10 @@ import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
 import { DataSource, In } from 'typeorm';
 import { range } from 'lodash';
 import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
-import { clearEntityTables } from '../../utils/database-test-helper';
+import {
+  clearEntityTables,
+  clearTestDataFromDatabase,
+} from '../../utils/database-test-helper';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import {
   MATERIAL_TO_H3_TYPE,
@@ -65,7 +68,6 @@ import { h3MaterialExampleDataFixture } from '../h3-data/mocks/h3-fixtures';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
-import { User } from 'modules/users/user.entity';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
 import { getApp } from '../../utils/getApp';
 
@@ -264,7 +266,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
     jest.clearAllMocks();
   });

@@ -10,13 +10,15 @@ import {
   createIndicator,
   createScenarioIntervention,
 } from '../../../entity-mocks';
-import { clearEntityTables } from '../../../utils/database-test-helper';
+import {
+  clearEntityTables,
+  clearTestDataFromDatabase,
+} from '../../../utils/database-test-helper';
 import * as request from 'supertest';
 import { SCENARIO_INTERVENTION_TYPE } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { DataSource } from 'typeorm';
 import { ScenarioInterventionsService } from 'modules/scenario-interventions/scenario-interventions.service';
-import { User } from 'modules/users/user.entity';
 import { saveUserAndGetTokenWithUserId } from '../../../utils/userAuth';
 import { getApp } from '../../../utils/getApp';
 
@@ -68,7 +70,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

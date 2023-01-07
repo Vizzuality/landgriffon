@@ -4,7 +4,10 @@ import { Indicator } from 'modules/indicators/indicator.entity';
 import { saveUserAndGetTokenWithUserId } from '../../../utils/userAuth';
 import AppSingleton from '../../../utils/getApp';
 import { Scenario } from 'modules/scenarios/scenario.entity';
-import { clearEntityTables } from '../../../utils/database-test-helper';
+import {
+  clearEntityTables,
+  clearTestDataFromDatabase,
+} from '../../../utils/database-test-helper';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
@@ -24,7 +27,6 @@ import {
 } from '../mocks/scenario-vs-scenario-responses/same-materials-scenarios.reponse';
 import { createSameMaterialScenariosPreconditions } from '../mocks/scenario-vs-scenario-preconditions/same-materials-scenarios.preconditions';
 import { DataSource } from 'typeorm';
-import { User } from 'modules/users/user.entity';
 
 describe('Scenario comparison test suite (e2e)', () => {
   let app: INestApplication;
@@ -61,7 +63,7 @@ describe('Scenario comparison test suite (e2e)', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

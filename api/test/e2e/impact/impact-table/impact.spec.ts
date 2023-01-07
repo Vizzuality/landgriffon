@@ -42,7 +42,10 @@ import {
 } from '../mocks/response-mocks.impact';
 import { PaginationMeta } from 'utils/app-base.service';
 import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
-import { clearEntityTables } from '../../../utils/database-test-helper';
+import {
+  clearEntityTables,
+  clearTestDataFromDatabase,
+} from '../../../utils/database-test-helper';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
@@ -50,7 +53,6 @@ import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing
 import { createNewMaterialInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-material-intervention.preconditions';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { DataSource } from 'typeorm';
-import { User } from 'modules/users/user.entity';
 
 describe('Impact Table and Charts test suite (e2e)', () => {
   let app: INestApplication;
@@ -86,7 +88,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

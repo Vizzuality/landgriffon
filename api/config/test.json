@@ -12,6 +12,12 @@
     "migrationsRun": true,
     "cacheEnabled": false
   },
+  "server": {
+    "loggerLevel": [
+      "error",
+      "warn"
+    ]
+  },
   "auth": {
     "requireUserAccountActivation": false,
     "jwt": {

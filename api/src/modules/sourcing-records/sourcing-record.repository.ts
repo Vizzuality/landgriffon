@@ -1,7 +1,6 @@
 import {
   Brackets,
   DataSource,
-  EntityRepository,
   Repository,
   SelectQueryBuilder,
   WhereExpressionBuilder,
@@ -28,7 +27,6 @@ import {
   SCENARIO_INTERVENTION_STATUS,
   ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
-import { User } from '../users/user.entity';
 
 export class ImpactTableData {
   year: number;

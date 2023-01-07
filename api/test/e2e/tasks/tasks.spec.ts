@@ -3,8 +3,7 @@ import * as request from 'supertest';
 import { Task, TASK_STATUS, TASK_TYPE } from 'modules/tasks/task.entity';
 import { TasksRepository } from 'modules/tasks/tasks.repository';
 import { createTask } from '../../entity-mocks';
-import { clearEntityTables } from '../../utils/database-test-helper';
-import { User } from 'modules/users/user.entity';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 import AppSingleton from '../../utils/getApp';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
@@ -39,7 +38,7 @@ describe('Tasks Module (e2e)', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 
@@ -71,7 +70,7 @@ describe('Tasks Module (e2e)', () => {
   });
 
   test('Creating a task without being authenticated should return a 401 error', async () => {
-    const response = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post('/api/v1/tasks')
       .send()
       .expect(HttpStatus.UNAUTHORIZED);

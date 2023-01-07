@@ -3,14 +3,19 @@ import { AdminRegionRepository } from 'modules/admin-regions/admin-region.reposi
 import { createAdminRegion } from '../../entity-mocks';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import AppSingleton from '../../utils/getApp';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import { DataSource } from 'typeorm';
 
 describe('AdminRegions - Get descendants by Admin Region Ids', () => {
   let adminRegionRepository: AdminRegionRepository;
   let adminRegionService: AdminRegionsService;
+  let dataSource: DataSource;
 
   beforeAll(async () => {
     const appSingleton = await AppSingleton.init();
     const moduleFixture = appSingleton.moduleFixture;
+
+    dataSource = moduleFixture.get<DataSource>(DataSource);
 
     adminRegionRepository = moduleFixture.get<AdminRegionRepository>(
       AdminRegionRepository,
@@ -21,7 +26,7 @@ describe('AdminRegions - Get descendants by Admin Region Ids', () => {
   });
 
   afterEach(async () => {
-    await adminRegionRepository.delete({});
+    await clearTestDataFromDatabase(dataSource);
   });
 
   test('Get Admin Region descendants ids service should return ids of the requested Admin regions and the ids of their descendants', async () => {

@@ -4,7 +4,6 @@ import {
   JSONAPISerializerConfig,
 } from 'utils/app-base.service';
 import { AppInfoDTO } from 'dto/info.dto';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Target, targetResource } from 'modules/targets/target.entity';
 import { TargetsRepository } from 'modules/targets/targets.repository';
 import { CreateTargetDto } from 'modules/targets/dto/create-target.dto';

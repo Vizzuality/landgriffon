@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 
 import { UrlParamRepository } from 'modules/url-params/url-param.repository';
 import {

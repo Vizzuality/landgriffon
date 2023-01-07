@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
 import AppSingleton from '../../utils/getApp';
-import { ContextualLayersModule } from 'modules/contextual-layers/contextual-layers.module';
-import { clearEntityTables } from '../../utils/database-test-helper';
+import {
+  clearEntityTables,
+  clearTestDataFromDatabase,
+} from '../../utils/database-test-helper';
 import {
   CONTEXTUAL_LAYER_AGG_TYPE,
   CONTEXTUAL_LAYER_CATEGORY,
@@ -17,7 +17,6 @@ import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { dropH3DataMock, h3DataMock } from '../h3-data/mocks/h3-data.mock';
 import { h3ContextualLayerExampleDataFixture } from '../h3-data/mocks/h3-fixtures';
 import { DataSource } from 'typeorm';
-import { User } from 'modules/users/user.entity';
 
 /**
  * Tests for the GeoRegionsModule.
@@ -47,7 +46,7 @@ describe('ContextualLayersModule (e2e)', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

@@ -1,8 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
-import { ImpactModule } from 'modules/impact/impact.module';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { saveUserAndGetTokenWithUserId } from '../../../utils/userAuth';
 import AppSingleton from '../../../utils/getApp';
@@ -19,7 +16,10 @@ import {
   mixedInterventionsScenarioTable,
   mixedInterventionsScenarioTable2019,
 } from '../mocks/actual-vs-scenario-responses/mixed-interventions-scenario.response';
-import { clearEntityTables } from '../../../utils/database-test-helper';
+import {
+  clearTestDataFromDatabase,
+  clearEntityTables,
+} from '../../../utils/database-test-helper';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
@@ -34,7 +34,6 @@ import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.e
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { createScenario } from '../../../entity-mocks';
 import { DataSource } from 'typeorm';
-import { User } from 'modules/users/user.entity';
 
 describe('Impact Table and Charts test suite (e2e)', () => {
   let app: INestApplication;
@@ -71,7 +70,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

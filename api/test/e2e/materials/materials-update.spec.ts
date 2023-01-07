@@ -5,8 +5,7 @@ import { MaterialRepository } from 'modules/materials/material.repository';
 import { createMaterial } from '../../entity-mocks';
 import { expectedJSONAPIAttributes } from './config';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import { clearEntityTables } from '../../utils/database-test-helper';
-import { User } from 'modules/users/user.entity';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 import AppSingleton from '../../utils/getApp';
 
@@ -34,7 +33,7 @@ describe('Materials - Update', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

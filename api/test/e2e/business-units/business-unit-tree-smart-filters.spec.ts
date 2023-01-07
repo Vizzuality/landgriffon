@@ -19,11 +19,13 @@ import {
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
-import { clearEntityTables } from '../../utils/database-test-helper';
+import {
+  clearEntityTables,
+  clearTestDataFromDatabase,
+} from '../../utils/database-test-helper';
 import { Material } from 'modules/materials/material.entity';
 import { SCENARIO_INTERVENTION_STATUS } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { DataSource } from 'typeorm';
-import { User } from 'modules/users/user.entity';
 
 describe('Business Units - Get trees - Smart Filters', () => {
   let app: INestApplication;
@@ -49,7 +51,7 @@ describe('Business Units - Get trees - Smart Filters', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

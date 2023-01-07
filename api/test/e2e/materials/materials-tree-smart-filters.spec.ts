@@ -1,7 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import {
   createAdminRegion,
@@ -14,20 +12,21 @@ import {
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
 import AppSingleton from '../../utils/getApp';
 import { Material } from 'modules/materials/material.entity';
-import { MaterialsModule } from 'modules/materials/materials.module';
 import {
   LOCATION_TYPES,
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
-import { clearEntityTables } from '../../utils/database-test-helper';
+import {
+  clearEntityTables,
+  clearTestDataFromDatabase,
+} from '../../utils/database-test-helper';
 import {
   SCENARIO_INTERVENTION_STATUS,
   ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { DataSource } from 'typeorm';
-import { User } from 'modules/users/user.entity';
 
 describe('Materials - Get trees - Smart Filters', () => {
   let app: INestApplication;
@@ -55,7 +54,7 @@ describe('Materials - Get trees - Smart Filters', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

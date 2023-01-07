@@ -1,7 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import {
   createAdminRegion,
   createMaterial,
@@ -12,7 +10,6 @@ import {
 } from '../../entity-mocks';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
 import AppSingleton from '../../utils/getApp';
-import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { Material } from 'modules/materials/material.entity';
 import {
@@ -20,7 +17,10 @@ import {
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
-import { clearEntityTables } from '../../utils/database-test-helper';
+import {
+  clearEntityTables,
+  clearTestDataFromDatabase,
+} from '../../utils/database-test-helper';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import {
@@ -29,7 +29,6 @@ import {
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { DataSource } from 'typeorm';
-import { User } from 'modules/users/user.entity';
 
 describe('Admin Regions - Get trees - Smart Filters', () => {
   let app: INestApplication;
@@ -58,7 +57,7 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

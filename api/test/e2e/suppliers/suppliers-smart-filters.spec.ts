@@ -1,9 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import { Supplier } from 'modules/suppliers/supplier.entity';
-import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import {
   createMaterial,
@@ -22,8 +19,7 @@ import {
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SCENARIO_INTERVENTION_STATUS } from 'modules/scenario-interventions/scenario-intervention.entity';
-import { clearEntityTables } from '../../utils/database-test-helper';
-import { User } from 'modules/users/user.entity';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
 describe('Suppliers - Get trees - Smart Filters', () => {
@@ -59,7 +55,7 @@ describe('Suppliers - Get trees - Smart Filters', () => {
   });
 
   afterAll(async () => {
-    await clearEntityTables(dataSource, [User]);
+    await clearTestDataFromDatabase(dataSource);
     await app.close();
   });
 

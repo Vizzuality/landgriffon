@@ -8,7 +8,6 @@ import { createH3Data, createIndicator } from '../entity-mocks';
 import { h3IndicatorExampleDataFixture } from '../e2e/h3-data/mocks/h3-fixtures';
 import {
   Indicator,
-  INDICATOR_TYPES,
   INDICATOR_TYPES_NEW,
 } from 'modules/indicators/indicator.entity';
 import { DataSource } from 'typeorm';

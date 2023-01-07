@@ -4,7 +4,6 @@ import {
   CachedData,
   CACHED_DATA_TYPE,
 } from 'modules/cached-data/cached-data.entity';
-import { InjectRepository } from '@nestjs/typeorm';
 import objectHash = require('object-hash');
 
 @Injectable()

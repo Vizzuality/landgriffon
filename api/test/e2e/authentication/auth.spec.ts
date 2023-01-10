@@ -1,4 +1,5 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { E2E_CONFIG } from '../../e2e.config';
 import { User } from 'modules/users/user.entity';
@@ -8,52 +9,43 @@ import { ApiEventByTopicAndKind } from 'modules/api-events/api-event.topic+kind.
 import { API_EVENT_KINDS } from 'modules/api-events/api-event.entity';
 import { ApiEventsService } from 'modules/api-events/api-events.service';
 import { Response } from 'supertest';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { DataSource } from 'typeorm';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
-
-jest.mock('config', () => {
-  const config = jest.requireActual('config');
-
-  const configGet = config.get;
-
-  config.get = function (key: string): any {
-    switch (key) {
-      case 'auth.password.minLength':
-        return 8;
-      case 'auth.password.includeNumerics':
-        return true;
-      case 'auth.password.includeUpperCase':
-        return true;
-      case 'auth.password.includeSpecialCharacters':
-        return true;
-      default:
-        return configGet.call(config, key);
-    }
-  };
-  return config;
-});
+import { AppModule } from 'app.module';
 
 describe('AppController (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let dataSource: DataSource;
   let userRepository: UserRepository;
   let apiEventsService: ApiEventsService;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init(
+      Test.createTestingModule({
+        imports: [AppModule],
+      })
+        .overrideProvider('PASSWORD_INCLUDE_UPPER_CASE')
+        .useValue(true)
+        .overrideProvider('PASSWORD_INCLUDE_NUMERICS')
+        .useValue(true)
+        .overrideProvider('PASSWORD_INCLUDE_SPECIAL_CHARACTERS')
+        .useValue(true)
+        .overrideProvider('PASSWORD_MIN_LENGTH')
+        .useValue(8),
+    );
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
-    userRepository = moduleFixture.get<UserRepository>(UserRepository);
-    apiEventsService = moduleFixture.get<ApiEventsService>(ApiEventsService);
+    userRepository = testApplication.get<UserRepository>(UserRepository);
+    apiEventsService = testApplication.get<ApiEventsService>(ApiEventsService);
   });
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   describe('Authentication', () => {
@@ -74,7 +66,7 @@ describe('AppController (e2e)', () => {
 
     describe('Creating new account', () => {
       test('Fails to sign up user with password without upper case character', async () => {
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .post('/auth/sign-up')
           .send({
             email: E2E_CONFIG.users.signUp.email,
@@ -89,7 +81,7 @@ describe('AppController (e2e)', () => {
       });
 
       test('Fails to sign up user with password without numeric', async () => {
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .post('/auth/sign-up')
           .send({
             email: E2E_CONFIG.users.signUp.email,
@@ -104,7 +96,7 @@ describe('AppController (e2e)', () => {
       });
 
       test('Fails to sign up user with password without special character', async () => {
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .post('/auth/sign-up')
           .send({
             email: E2E_CONFIG.users.signUp.email,
@@ -119,7 +111,7 @@ describe('AppController (e2e)', () => {
       });
 
       test('Fails to sign up user with short password', async () => {
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .post('/auth/sign-up')
           .send({
             email: E2E_CONFIG.users.signUp.email,
@@ -134,7 +126,7 @@ describe('AppController (e2e)', () => {
       });
 
       test('Fails to sign up user with invalid password', async () => {
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .post('/auth/sign-up')
           .send({
             email: E2E_CONFIG.users.signUp.email,
@@ -154,7 +146,7 @@ describe('AppController (e2e)', () => {
       });
 
       test('Signs up user with valid password', async () => {
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .post('/auth/sign-up')
           .send({
             email: E2E_CONFIG.users.signUp.email,
@@ -164,7 +156,7 @@ describe('AppController (e2e)', () => {
       });
 
       test('A user should not be able to create an account using an email address already in use', async () => {
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .post('/auth/sign-up')
           .send({
             email: E2E_CONFIG.users.signUp.email,
@@ -185,7 +177,7 @@ describe('AppController (e2e)', () => {
         user.isActive = false;
         await user.save();
 
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .post('/auth/sign-in')
           .send({
             email: E2E_CONFIG.users.signUp.email,
@@ -195,7 +187,7 @@ describe('AppController (e2e)', () => {
       });
 
       test('Retrieves a JWT token when authenticating with valid credentials', async () => {
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .post('/auth/sign-in')
           .send({
             username: E2E_CONFIG.users.basic.aa.username,
@@ -205,7 +197,7 @@ describe('AppController (e2e)', () => {
       });
 
       test('Fails to authenticate a user with an incorrect password', async () => {
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .post('/auth/sign-in')
           .send({
             email: E2E_CONFIG.users.basic.aa.username,
@@ -217,7 +209,7 @@ describe('AppController (e2e)', () => {
       });
 
       test('Fails to authenticate a non-existing user', async () => {
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .post('/auth/sign-in')
           .send({ email: 'test@example.com', password: 'wrong' })
           .expect(401);
@@ -251,7 +243,7 @@ describe('AppController (e2e)', () => {
           kind: API_EVENT_KINDS.user__accountActivationTokenGenerated__v1alpha1,
         });
 
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .get(
             `/auth/validate-account/${newUser.id}/${validationTokenEvent?.data?.validationToken}`,
           )
@@ -263,7 +255,7 @@ describe('AppController (e2e)', () => {
           throw new Error('Cannot retrieve data for newly created user.');
         }
 
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .get(
             `/auth/validate-account/${newUser.id}/${validationTokenEvent?.data?.validationToken}`,
           )
@@ -277,7 +269,7 @@ describe('AppController (e2e)', () => {
       let validationTokenEvent: ApiEventByTopicAndKind | undefined;
 
       beforeAll(async () => {
-        jwtToken = await request(app.getHttpServer())
+        jwtToken = await request(testApplication.getHttpServer())
           .post('/auth/sign-in')
           .send({
             username: E2E_CONFIG.users.signUp.email,
@@ -286,21 +278,21 @@ describe('AppController (e2e)', () => {
           .expect(HttpStatus.CREATED)
           .then((response: Response) => response.body.accessToken);
 
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .delete('/api/v1/users/me')
           .set('Authorization', `Bearer ${jwtToken}`)
           .expect(HttpStatus.OK);
       });
 
       test('Once a user account is marked as deleted, the user should be logged out', async () => {
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .get('/api/v1/users/me')
           .set('Authorization', `Bearer ${jwtToken}`)
           .expect(HttpStatus.UNAUTHORIZED);
       });
 
       test('Once a user account is marked as deleted, the user should not be able to log back in', async () => {
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .post('/auth/sign-in')
           .send({
             username: E2E_CONFIG.users.signUp.email,
@@ -310,7 +302,7 @@ describe('AppController (e2e)', () => {
       });
 
       test('A user should be able to sign up using the same email address as that of an account that has been deleted', async () => {
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .post('/auth/sign-up')
           .send({
             email: E2E_CONFIG.users.signUp.email,
@@ -340,7 +332,7 @@ describe('AppController (e2e)', () => {
           kind: API_EVENT_KINDS.user__accountActivationTokenGenerated__v1alpha1,
         });
 
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .get(
             `/auth/validate-account/${newUser.id}/${validationTokenEvent?.data?.validationToken}`,
           )
@@ -348,7 +340,7 @@ describe('AppController (e2e)', () => {
       });
 
       test('A user should be able to log in once their account has been validated', async () => {
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .post('/auth/sign-in')
           .send({
             username: E2E_CONFIG.users.signUp.email,

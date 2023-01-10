@@ -1,4 +1,4 @@
-import { HttpStatus, INestApplication, Logger } from '@nestjs/common';
+import { HttpStatus, Logger } from '@nestjs/common';
 import { faker } from '@faker-js/faker';
 import * as request from 'supertest';
 import { Response } from 'supertest';
@@ -6,7 +6,9 @@ import { E2E_CONFIG } from '../../e2e.config';
 import { v4 } from 'uuid';
 import { SignUpDto } from 'modules/authentication/dto/sign-up.dto';
 import { LoginDto } from 'modules/authentication/dto/login.dto';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { DataSource } from 'typeorm';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 
@@ -24,7 +26,7 @@ import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
  */
 
 describe('UsersModule (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let dataSource: DataSource;
 
   const aNewPassword = 'aNewPassword123!';
@@ -41,13 +43,11 @@ describe('UsersModule (e2e)', () => {
   };
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
-    await request(app.getHttpServer())
+    await request(testApplication.getHttpServer())
       .post('/auth/sign-up')
       .send(signUpDto)
       .expect(HttpStatus.CREATED);
@@ -55,7 +55,7 @@ describe('UsersModule (e2e)', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   describe('Users - User creation', () => {
@@ -70,7 +70,7 @@ describe('UsersModule (e2e)', () => {
     };
 
     beforeAll(async () => {
-      jwtToken = await request(app.getHttpServer())
+      jwtToken = await request(testApplication.getHttpServer())
         .post('/auth/sign-in')
         .send(loginDto)
         .expect(HttpStatus.CREATED)
@@ -79,7 +79,7 @@ describe('UsersModule (e2e)', () => {
     });
 
     test('A user should be able to create new users', async () => {
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .post('/api/v1/users')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send(newUserDto)
@@ -87,7 +87,7 @@ describe('UsersModule (e2e)', () => {
     });
 
     test('A user should not be able to create users using an email address already in use', async () => {
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .post('/api/v1/users')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send(newUserDto)
@@ -99,7 +99,7 @@ describe('UsersModule (e2e)', () => {
     let jwtToken: string;
 
     beforeAll(async () => {
-      jwtToken = await request(app.getHttpServer())
+      jwtToken = await request(testApplication.getHttpServer())
         .post('/auth/sign-in')
         .send(loginDto)
         .expect(HttpStatus.CREATED)
@@ -107,7 +107,7 @@ describe('UsersModule (e2e)', () => {
     });
 
     test('A user should be able to read their own metadata', async () => {
-      const results = await request(app.getHttpServer())
+      const results = await request(testApplication.getHttpServer())
         .get('/api/v1/users/me')
         .set('Authorization', `Bearer ${jwtToken}`)
         .expect(HttpStatus.OK);
@@ -116,7 +116,7 @@ describe('UsersModule (e2e)', () => {
     });
 
     test('A user should be able to update their own metadata', async () => {
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .patch('/api/v1/users/me')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send(E2E_CONFIG.users.updated.bb())
@@ -128,7 +128,7 @@ describe('UsersModule (e2e)', () => {
     let jwtToken: string;
 
     beforeAll(async () => {
-      jwtToken = await request(app.getHttpServer())
+      jwtToken = await request(testApplication.getHttpServer())
         .post('/auth/sign-in')
         .send(loginDto)
         .expect(HttpStatus.CREATED)
@@ -136,7 +136,7 @@ describe('UsersModule (e2e)', () => {
     });
 
     test('A user should not be able to change their password as part of the user update lifecycle', async () => {
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .patch('/api/v1/users/me/')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -147,7 +147,7 @@ describe('UsersModule (e2e)', () => {
     });
 
     test('A user should not be able to change their password if they provide an incorrect current password', async () => {
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .patch('/api/v1/users/me/password')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -162,7 +162,7 @@ describe('UsersModule (e2e)', () => {
     let jwtToken: string;
 
     beforeAll(async () => {
-      jwtToken = await request(app.getHttpServer())
+      jwtToken = await request(testApplication.getHttpServer())
         .post('/auth/sign-in')
         .send(loginDto)
         .expect(HttpStatus.CREATED)
@@ -170,7 +170,7 @@ describe('UsersModule (e2e)', () => {
     });
 
     test('A user should be able to change their password if they provide the correct current password', async () => {
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .patch('/api/v1/users/me/password')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -181,7 +181,7 @@ describe('UsersModule (e2e)', () => {
     });
 
     test('A user should be able to change their password if they provide the correct current password (take 2, back to initial password)', async () => {
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .patch('/api/v1/users/me/password')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -196,7 +196,7 @@ describe('UsersModule (e2e)', () => {
     let jwtToken: string;
 
     beforeAll(async () => {
-      jwtToken = await request(app.getHttpServer())
+      jwtToken = await request(testApplication.getHttpServer())
         .post('/auth/sign-in')
         .send(loginDto)
         .expect(HttpStatus.CREATED)
@@ -205,14 +205,14 @@ describe('UsersModule (e2e)', () => {
     });
 
     test('A user should be able to delete their own account', async () => {
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete('/api/v1/users/me')
         .set('Authorization', `Bearer ${jwtToken}`)
         .expect(HttpStatus.OK);
     });
 
     test('Once a user account is marked as deleted, the user should be logged out', async () => {
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .get('/api/v1/users/me')
         .set('Authorization', `Bearer ${jwtToken}`)
         .expect(HttpStatus.UNAUTHORIZED);

@@ -2,19 +2,21 @@ import { Material } from 'modules/materials/material.entity';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { createMaterial } from '../../entity-mocks';
 import { MaterialsService } from 'modules/materials/materials.service';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 
 describe('materials - Get descendants by Material Ids', () => {
+  let testApplication: TestApplication;
   let materialRepository: MaterialRepository;
   let materialsService: MaterialsService;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
     materialRepository =
-      moduleFixture.get<MaterialRepository>(MaterialRepository);
-    materialsService = moduleFixture.get(MaterialsService);
+      testApplication.get<MaterialRepository>(MaterialRepository);
+    materialsService = testApplication.get(MaterialsService);
   });
 
   afterEach(async () => {

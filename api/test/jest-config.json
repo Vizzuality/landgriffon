@@ -18,7 +18,7 @@
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "setupFilesAfterEnv": [
-    "./test/jest-custom-matchers.ts"
+    "./test/jest-extensions.ts"
   ],
   "coverageReporters": [
     [

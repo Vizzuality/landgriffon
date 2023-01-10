@@ -15,11 +15,14 @@ import { AdminRegionRepository } from 'modules/admin-regions/admin-region.reposi
 import { PointOfProductionGeocodingStrategy } from 'modules/geo-coding/strategies/point-of-production.geocoding.service';
 import { UnknownLocationGeoCodingStrategy } from 'modules/geo-coding/strategies/unknown-location.geocoding.service';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 
 // TODO: Re-organize properly tests. Handle all use cases
 
 describe('GeoCoding Service (Integration Testing)', () => {
+  let testApplication: TestApplication;
   let geoCodingService: GeoCodingService;
   let pointOfProductionService: PointOfProductionGeocodingStrategy;
   let adminRegionService: AdminRegionsService;
@@ -30,21 +33,20 @@ describe('GeoCoding Service (Integration Testing)', () => {
   let unknownLocationService: UnknownLocationGeoCodingStrategy;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    adminRegionRepository = moduleFixture.get(AdminRegionRepository);
-    geoCodingService = moduleFixture.get(GeoCodingAbstractClass);
-    adminRegionService = moduleFixture.get(AdminRegionsService);
-    geoRegionRepository = moduleFixture.get(GeoRegionRepository);
-    sourcingLocationService = moduleFixture.get(SourcingLocationsService);
-    aggregationPointService = moduleFixture.get(
+    adminRegionRepository = testApplication.get(AdminRegionRepository);
+    geoCodingService = testApplication.get(GeoCodingAbstractClass);
+    adminRegionService = testApplication.get(AdminRegionsService);
+    geoRegionRepository = testApplication.get(GeoRegionRepository);
+    sourcingLocationService = testApplication.get(SourcingLocationsService);
+    aggregationPointService = testApplication.get(
       AggregationPointGeocodingStrategy,
     );
-    pointOfProductionService = moduleFixture.get(
+    pointOfProductionService = testApplication.get(
       PointOfProductionGeocodingStrategy,
     );
-    unknownLocationService = moduleFixture.get(
+    unknownLocationService = testApplication.get(
       UnknownLocationGeoCodingStrategy,
     );
   });

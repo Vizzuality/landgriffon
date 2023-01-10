@@ -1,7 +1,9 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import {
   LOCATION_TYPES,
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
@@ -28,18 +30,16 @@ import { SCENARIO_INTERVENTION_STATUS } from 'modules/scenario-interventions/sce
 import { DataSource } from 'typeorm';
 
 describe('SourcingLocationsModule (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let jwtToken: string;
   let dataSource: DataSource;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
   });
 
   afterEach(async () => {
@@ -54,7 +54,7 @@ describe('SourcingLocationsModule (e2e)', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   describe('Sourcing locations - No filters', () => {
@@ -68,7 +68,7 @@ describe('SourcingLocationsModule (e2e)', () => {
         ),
       );
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/sourcing-locations/location-types`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .expect(HttpStatus.OK);
@@ -159,7 +159,9 @@ describe('SourcingLocationsModule (e2e)', () => {
 
       // Materials Filters
 
-      const responseParentMaterialFilter = await request(app.getHttpServer())
+      const responseParentMaterialFilter = await request(
+        testApplication.getHttpServer(),
+      )
         .get(`/api/v1/sourcing-locations/location-types`)
         .query({ 'materialIds[]': parentMaterial.id })
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -184,7 +186,9 @@ describe('SourcingLocationsModule (e2e)', () => {
         ]),
       );
 
-      const responseChildMaterialFilter = await request(app.getHttpServer())
+      const responseChildMaterialFilter = await request(
+        testApplication.getHttpServer(),
+      )
         .get(`/api/v1/sourcing-locations/location-types`)
         .query({ 'materialIds[]': childMaterialTwo.id })
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -203,7 +207,9 @@ describe('SourcingLocationsModule (e2e)', () => {
 
       // Supplier filter
 
-      const responseSupplierFilter = await request(app.getHttpServer())
+      const responseSupplierFilter = await request(
+        testApplication.getHttpServer(),
+      )
         .get(`/api/v1/sourcing-locations/location-types`)
         .query({
           'supplierIds[]': supplierOne.id,
@@ -227,7 +233,9 @@ describe('SourcingLocationsModule (e2e)', () => {
 
       // Business Unit Filter
 
-      const responseBusinessUnitFilter = await request(app.getHttpServer())
+      const responseBusinessUnitFilter = await request(
+        testApplication.getHttpServer(),
+      )
         .get(`/api/v1/sourcing-locations/location-types`)
         .query({
           'businessUnitIds[]': businessUnitOne.id,
@@ -252,7 +260,7 @@ describe('SourcingLocationsModule (e2e)', () => {
 
       // Mixed Filter
 
-      const responseMixedFilter = await request(app.getHttpServer())
+      const responseMixedFilter = await request(testApplication.getHttpServer())
         .get(`/api/v1/sourcing-locations/location-types`)
         .query({
           'materialIds[]': childMaterialTwo.id,
@@ -275,7 +283,7 @@ describe('SourcingLocationsModule (e2e)', () => {
 
   describe('Supported Location Types', () => {
     test('When I query the API for all location types, Then I should get a list of all location types supported by the platform', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/sourcing-locations/location-types/supported`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .expect(HttpStatus.OK);
@@ -364,7 +372,7 @@ describe('SourcingLocationsModule (e2e)', () => {
           locationType: LOCATION_TYPES.UNKNOWN,
         });
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get('/api/v1/sourcing-locations/location-types')
           .query({
             scenarioId: scenario.id,
@@ -461,7 +469,7 @@ describe('SourcingLocationsModule (e2e)', () => {
           materialId: material3.id,
         });
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get('/api/v1/sourcing-locations/location-types')
           .query({
             scenarioId: scenario.id,
@@ -515,7 +523,7 @@ describe('SourcingLocationsModule (e2e)', () => {
           scenarioInterventionId: interventionInactive.id,
         });
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get('/api/v1/sourcing-locations/location-types')
           .query({
             scenarioId: scenario.id,

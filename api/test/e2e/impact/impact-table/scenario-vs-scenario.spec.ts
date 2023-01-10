@@ -1,8 +1,10 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { saveUserAndGetTokenWithUserId } from '../../../utils/userAuth';
-import AppSingleton from '../../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../../utils/application-manager';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import {
   clearEntityTables,
@@ -29,18 +31,16 @@ import { createSameMaterialScenariosPreconditions } from '../mocks/scenario-vs-s
 import { DataSource } from 'typeorm';
 
 describe('Scenario comparison test suite (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let jwtToken: string;
   let dataSource: DataSource;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
   });
 
   afterEach(async () => {
@@ -64,7 +64,7 @@ describe('Scenario comparison test suite (e2e)', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   test('When I request scenario comparison for 2 Scenarios, then I should get the correct response within expected structure', async () => {
@@ -74,7 +74,9 @@ describe('Scenario comparison test suite (e2e)', () => {
       indicator: Indicator;
     } = await createSameMaterialScenariosPreconditions();
 
-    const responseGroupByMaterial = await request(app.getHttpServer())
+    const responseGroupByMaterial = await request(
+      testApplication.getHttpServer(),
+    )
       .get('/api/v1/impact/compare/scenario/vs/scenario')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -105,7 +107,9 @@ describe('Scenario comparison test suite (e2e)', () => {
       expect.arrayContaining(expectedScenariosTableMByMaterial.purchasedTonnes),
     );
 
-    const responseGroupBySupplier = await request(app.getHttpServer())
+    const responseGroupBySupplier = await request(
+      testApplication.getHttpServer(),
+    )
       .get('/api/v1/impact/compare/scenario/vs/scenario')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -142,7 +146,7 @@ describe('Scenario comparison test suite (e2e)', () => {
         indicator: Indicator;
       } = await createSameMaterialScenariosPreconditions();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/impact/compare/scenario/vs/scenario')
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({

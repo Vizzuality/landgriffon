@@ -1,4 +1,4 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
@@ -10,33 +10,33 @@ import {
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { expectedJSONAPIAttributes } from './config';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { Material } from 'modules/materials/material.entity';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
 //TODO: Allow these tests when feature fix is merged
 describe('AdminRegions - Get trees', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let dataSource: DataSource;
   let adminRegionRepository: AdminRegionRepository;
   let h3dataRepository: H3DataRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
-    adminRegionRepository = moduleFixture.get<AdminRegionRepository>(
+    adminRegionRepository = testApplication.get<AdminRegionRepository>(
       AdminRegionRepository,
     );
 
-    h3dataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
+    h3dataRepository = testApplication.get<H3DataRepository>(H3DataRepository);
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
     await adminRegionRepository.delete({});
     await h3dataRepository.delete({});
   });
@@ -48,11 +48,11 @@ describe('AdminRegions - Get trees', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   test('When I request admin regions trees, and the DB is empty, then I should get empty array', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/admin-regions/trees`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -76,7 +76,7 @@ describe('AdminRegions - Get trees', () => {
       parent: rootAdminRegion,
     });
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/admin-regions/trees`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -109,7 +109,7 @@ describe('AdminRegions - Get trees', () => {
       parent: rootOneAdminRegion,
     });
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/admin-regions/trees`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -158,7 +158,7 @@ describe('AdminRegions - Get trees', () => {
       parent: branchTwoAdminRegion,
     });
 
-    const responseDepthZero = await request(app.getHttpServer())
+    const responseDepthZero = await request(testApplication.getHttpServer())
       .get(`/api/v1/admin-regions/trees`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -174,7 +174,7 @@ describe('AdminRegions - Get trees', () => {
       'children',
     ]);
 
-    const responseDepthOne = await request(app.getHttpServer())
+    const responseDepthOne = await request(testApplication.getHttpServer())
       .get(`/api/v1/admin-regions/trees`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -208,7 +208,7 @@ describe('AdminRegions - Get trees', () => {
       },
     );
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/admin-regions/trees`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -268,7 +268,7 @@ describe('AdminRegions - Get trees', () => {
         await createSourcingLocation({ adminRegionId: adminRegion.id });
       }
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/admin-regions/trees')
         .query({ withSourcingLocations: true })
         .set('Authorization', `Bearer ${jwtToken}`);

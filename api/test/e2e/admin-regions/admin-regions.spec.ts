@@ -1,9 +1,11 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { AdminRegionRepository } from 'modules/admin-regions/admin-region.repository';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
@@ -12,23 +14,21 @@ import { DataSource } from 'typeorm';
  */
 
 describe('AdminRegionsModule (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let dataSource: DataSource;
   let adminRegionRepository: AdminRegionRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
-    adminRegionRepository = moduleFixture.get<AdminRegionRepository>(
+    adminRegionRepository = testApplication.get<AdminRegionRepository>(
       AdminRegionRepository,
     );
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
   });
 
   afterEach(async () => {
@@ -37,12 +37,12 @@ describe('AdminRegionsModule (e2e)', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   describe('Admin regions - Create', () => {
     test('Create a admin region should be successful (happy case)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/admin-regions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -63,7 +63,7 @@ describe('AdminRegionsModule (e2e)', () => {
   });
 
   test('Create a admin region without the required fields should fail with a 400 error', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .post('/api/v1/admin-regions')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -87,7 +87,7 @@ describe('AdminRegionsModule (e2e)', () => {
       adminRegion.name = 'test admin region';
       await adminRegion.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/admin-regions/${adminRegion.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -107,7 +107,7 @@ describe('AdminRegionsModule (e2e)', () => {
       adminRegion.name = 'test admin region';
       await adminRegion.save();
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete(`/api/v1/admin-regions/${adminRegion.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -125,7 +125,7 @@ describe('AdminRegionsModule (e2e)', () => {
       adminRegion.name = 'test admin region';
       await adminRegion.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/admin-regions`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -141,7 +141,7 @@ describe('AdminRegionsModule (e2e)', () => {
       adminRegion.name = 'test admin region';
       await adminRegion.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/admin-regions/${adminRegion.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()

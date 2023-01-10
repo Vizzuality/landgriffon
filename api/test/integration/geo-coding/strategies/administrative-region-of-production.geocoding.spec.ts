@@ -1,6 +1,3 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from 'app.module';
-import { GeoCodingModule } from 'modules/geo-coding/geo-coding.module';
 import { AdminRegionOfProductionService } from 'modules/geo-coding/strategies/admin-region-of-production.service';
 import { clearEntityTables } from '../../../utils/database-test-helper';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
@@ -10,21 +7,22 @@ import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.se
 import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 import { createAdminRegion, createGeoRegion } from '../../../entity-mocks';
 import { DataSource } from 'typeorm';
+import ApplicationManager, {
+  TestApplication,
+} from '../../../utils/application-manager';
 
 describe('Administrative Region of Production GeoCoding Service (Integration Testing)', () => {
   let adminRegionProductionService: AdminRegionOfProductionService;
   let dataSource: DataSource;
-  let moduleFixture: TestingModule;
+  let testApplication: TestApplication;
 
   beforeAll(async () => {
-    moduleFixture = await Test.createTestingModule({
-      imports: [AppModule, GeoCodingModule],
-    }).compile();
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
     adminRegionProductionService =
-      moduleFixture.get<AdminRegionOfProductionService>(
+      testApplication.get<AdminRegionOfProductionService>(
         AdminRegionOfProductionService,
       );
     await clearEntityTables(dataSource, [GeoRegion, AdminRegion]);
@@ -34,7 +32,7 @@ describe('Administrative Region of Production GeoCoding Service (Integration Tes
     await clearEntityTables(dataSource, [AdminRegion, GeoRegion]);
   });
 
-  afterAll(() => moduleFixture.close());
+  afterAll(() => testApplication.close());
 
   test(
     'When I send a Admin Region of Production type to be geocoded ' +

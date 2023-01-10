@@ -1,7 +1,9 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { v4 as uuidv4 } from 'uuid';
-import AppSingleton from '../../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../../utils/application-manager';
 import { saveUserAndGetTokenWithUserId } from '../../../utils/userAuth';
 import {
   clearEntityTables,
@@ -48,18 +50,16 @@ import { rankingTableWithScenario } from '../mocks/response-mocks.impact';
 import { DataSource } from 'typeorm';
 
 describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let jwtToken: string;
   let dataSource: DataSource;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
   });
 
   afterEach(async () => {
@@ -82,11 +82,11 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   test('When I query the API for an Impact Table Ranking with an invalid sort order, a proper validation error should be returned', async () => {
-    const invalidResponse = await request(app.getHttpServer())
+    const invalidResponse = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/ranking')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -110,7 +110,7 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
 
   test('When I query the API for an Impact Table Ranking with an invalid maxRankingEntities (missing or non positive), a proper validation error should be returned', async () => {
     // ARRANGE / ACT
-    const missingResponse = await request(app.getHttpServer())
+    const missingResponse = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/ranking')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -121,7 +121,7 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
       //ASSERT
       .expect(HttpStatus.BAD_REQUEST);
 
-    const nonPositivegResponse = await request(app.getHttpServer())
+    const nonPositiveResponse = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/ranking')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -138,7 +138,7 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
       missingResponse.body.errors[0].meta.rawError.response.message,
     ).toContain('maxRankingEntities should not be empty');
     expect(
-      nonPositivegResponse.body.errors[0].meta.rawError.response.message,
+      nonPositiveResponse.body.errors[0].meta.rawError.response.message,
     ).toContain('maxRankingEntities must be a positive number');
   });
 
@@ -241,7 +241,7 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
     const maxRankingEntities = 2;
 
     //////////// ACT
-    const response1 = await request(app.getHttpServer())
+    const response1 = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/ranking')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -387,7 +387,7 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
     const maxRankingEntities = 5;
 
     //ACT
-    const response1 = await request(app.getHttpServer())
+    const response1 = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/ranking')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -452,7 +452,7 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
         const { replacedMaterials, replacingMaterials, indicator } =
           await createNewMaterialInterventionPreconditions(newScenario);
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get('/api/v1/impact/ranking')
           .set('Authorization', `Bearer ${jwtToken}`)
           .query({

@@ -1,9 +1,11 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { UnitConversion } from 'modules/unit-conversions/unit-conversion.entity';
 import { UnitConversionRepository } from 'modules/unit-conversions/unit-conversion.repository';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
@@ -12,23 +14,21 @@ import { DataSource } from 'typeorm';
  */
 
 describe('UnitConversionsModule (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let dataSource: DataSource;
   let unitConversionRepository: UnitConversionRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
-    unitConversionRepository = moduleFixture.get<UnitConversionRepository>(
+    unitConversionRepository = testApplication.get<UnitConversionRepository>(
       UnitConversionRepository,
     );
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
   });
 
   afterEach(async () => {
@@ -37,12 +37,12 @@ describe('UnitConversionsModule (e2e)', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   describe('Unit conversions - Create', () => {
     test('Create a unit conversion should be successful (happy case)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/unit-conversions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -67,7 +67,7 @@ describe('UnitConversionsModule (e2e)', () => {
       const unitConversion: UnitConversion = new UnitConversion();
       await unitConversion.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/unit-conversions/${unitConversion.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -84,7 +84,7 @@ describe('UnitConversionsModule (e2e)', () => {
       const unitConversion: UnitConversion = new UnitConversion();
       await unitConversion.save();
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete(`/api/v1/unit-conversions/${unitConversion.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -103,7 +103,7 @@ describe('UnitConversionsModule (e2e)', () => {
       const unitConversion: UnitConversion = new UnitConversion();
       await unitConversion.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/unit-conversions`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -118,7 +118,7 @@ describe('UnitConversionsModule (e2e)', () => {
       const unitConversion: UnitConversion = new UnitConversion();
       await unitConversion.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/unit-conversions/${unitConversion.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()

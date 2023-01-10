@@ -1,31 +1,31 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { Supplier, SUPPLIER_STATUS } from 'modules/suppliers/supplier.entity';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { createSupplier } from '../../entity-mocks';
 import { expectedJSONAPIAttributes } from './config';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
 describe('Suppliers - Get all', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let dataSource: DataSource;
   let supplierRepository: SupplierRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
     supplierRepository =
-      moduleFixture.get<SupplierRepository>(SupplierRepository);
+      testApplication.get<SupplierRepository>(SupplierRepository);
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
   });
 
   afterEach(async () => {
@@ -34,13 +34,13 @@ describe('Suppliers - Get all', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   test('Get all suppliers should be successful (happy case)', async () => {
     const supplier: Supplier = await createSupplier();
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/suppliers`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -64,7 +64,7 @@ describe('Suppliers - Get all', () => {
       status: SUPPLIER_STATUS.DELETED,
     });
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/suppliers`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -87,7 +87,7 @@ describe('Suppliers - Get all', () => {
   test('Get suppliers in pages should return a partial list of suppliers', async () => {
     await Promise.all(Array.from(Array(10).keys()).map(() => createSupplier()));
 
-    const responseOne = await request(app.getHttpServer())
+    const responseOne = await request(testApplication.getHttpServer())
       .get(`/api/v1/suppliers`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -101,7 +101,7 @@ describe('Suppliers - Get all', () => {
     expect(responseOne.body.data).toHaveLength(3);
     expect(responseOne).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
 
-    const responseTwo = await request(app.getHttpServer())
+    const responseTwo = await request(testApplication.getHttpServer())
       .get(`/api/v1/suppliers`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -126,7 +126,7 @@ describe('Suppliers - Get all', () => {
       parent: rootSupplier,
     });
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/suppliers`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({

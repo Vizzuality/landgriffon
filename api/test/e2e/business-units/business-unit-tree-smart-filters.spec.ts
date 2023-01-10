@@ -1,4 +1,4 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import {
   createAdminRegion,
@@ -10,7 +10,9 @@ import {
   createSupplier,
 } from '../../entity-mocks';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import {
@@ -28,18 +30,16 @@ import { SCENARIO_INTERVENTION_STATUS } from 'modules/scenario-interventions/sce
 import { DataSource } from 'typeorm';
 
 describe('Business Units - Get trees - Smart Filters', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let jwtToken: string;
   let dataSource: DataSource;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
   });
 
   afterEach(async () => {
@@ -52,11 +52,11 @@ describe('Business Units - Get trees - Smart Filters', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   test('When I request business units trees, and the DB is empty, then I should get empty array', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/business-units/trees`)
       .query({
         withSourcingLocations: true,
@@ -108,7 +108,7 @@ describe('Business Units - Get trees - Smart Filters', () => {
         adminRegionId: adminRegion2.id,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/business-units/trees')
         .query({
           withSourcingLocations: true,
@@ -162,7 +162,7 @@ describe('Business Units - Get trees - Smart Filters', () => {
         locationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/business-units/trees')
         .query({
           withSourcingLocations: true,
@@ -228,7 +228,7 @@ describe('Business Units - Get trees - Smart Filters', () => {
           businessUnit: businessUnitThatShouldNotAppear,
         });
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get('/api/v1/business-units/trees')
           .query({
             withSourcingLocations: true,
@@ -332,7 +332,7 @@ describe('Business Units - Get trees - Smart Filters', () => {
           adminRegion: adminRegion2,
         });
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get('/api/v1/business-units/trees')
           .query({
             withSourcingLocations: true,
@@ -401,7 +401,7 @@ describe('Business Units - Get trees - Smart Filters', () => {
           businessUnit: businessUnitInactive,
         });
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get('/api/v1/business-units/trees')
           .query({
             withSourcingLocations: true,

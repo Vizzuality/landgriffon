@@ -1,35 +1,35 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { Supplier, SUPPLIER_TYPES } from 'modules/suppliers/supplier.entity';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { createSourcingLocation, createSupplier } from '../../entity-mocks';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 import { MaterialRepository } from '../../../src/modules/materials/material.repository';
 
 describe('Suppliers - Get by type', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let dataSource: DataSource;
   let supplierRepository: SupplierRepository;
   let materialRepository: MaterialRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
     supplierRepository =
-      moduleFixture.get<SupplierRepository>(SupplierRepository);
+      testApplication.get<SupplierRepository>(SupplierRepository);
 
     materialRepository =
-      moduleFixture.get<MaterialRepository>(MaterialRepository);
+      testApplication.get<MaterialRepository>(MaterialRepository);
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
   });
 
   afterEach(async () => {
@@ -39,7 +39,7 @@ describe('Suppliers - Get by type', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   describe('Suppliers - Get by type', () => {
@@ -61,7 +61,9 @@ describe('Suppliers - Get by type', () => {
           await createSourcingLocation({ producerId: supplier.id });
         }
 
-        const t1SupplierResponse = await request(app.getHttpServer())
+        const t1SupplierResponse = await request(
+          testApplication.getHttpServer(),
+        )
           .get(`/api/v1/suppliers/types`)
           .query({ type: SUPPLIER_TYPES.T1SUPPLIER })
           .set('Authorization', `Bearer ${jwtToken}`)
@@ -76,16 +78,20 @@ describe('Suppliers - Get by type', () => {
             expect(supplier.attributes.name).toEqual(`T1 Supplier ${i + 1}`);
           });
 
-        const producerResponse = await request(app.getHttpServer())
+        const producerResponse = await request(testApplication.getHttpServer())
           .get(`/api/v1/suppliers/types`)
           .query({ type: SUPPLIER_TYPES.PRODUCER })
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()
           .expect(HttpStatus.OK);
 
-        producerResponse.body.data.forEach((supplier: any, i: number) => {
-          expect(supplier.attributes.name).toEqual(`Producer ${i + 1}`);
-        });
+        producerResponse.body.data
+          .sort((a: Record<string, any>, b: Record<string, any>) =>
+            a.attributes.name < b.attributes.name ? -1 : a > b ? 1 : 0,
+          )
+          .forEach((supplier: any, i: number) => {
+            expect(supplier.attributes.name).toEqual(`Producer ${i + 1}`);
+          });
       },
     );
     test(
@@ -93,7 +99,7 @@ describe('Suppliers - Get by type', () => {
         'And I filter by a wrong type of Supplier' +
         'Then I should get a proper error message',
       async () => {
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get(`/api/v1/suppliers/types`)
           .query({ type: 'I have not sell anything in my life' })
           .set('Authorization', `Bearer ${jwtToken}`)

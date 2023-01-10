@@ -2,6 +2,7 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import {

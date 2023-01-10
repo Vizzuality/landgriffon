@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
@@ -19,6 +19,10 @@ export class IndicatorCoefficientsService extends AppBaseService<
   UpdateIndicatorCoefficientDto,
   AppInfoDTO
 > {
+  protected readonly logger: Logger = new Logger(
+    IndicatorCoefficientsService.name,
+  );
+
   constructor(
     protected readonly indicatorCoefficientRepository: IndicatorCoefficientRepository,
   ) {

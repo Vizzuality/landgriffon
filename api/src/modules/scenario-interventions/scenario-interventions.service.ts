@@ -46,8 +46,6 @@ export class ScenarioInterventionsService extends AppBaseService<
     'status',
   ];
 
-  logger: Logger = new Logger(ScenarioInterventionsService.name);
-
   constructor(
     protected readonly scenarioInterventionRepository: ScenarioInterventionRepository,
     protected readonly interventionBuilder: InterventionBuilder,

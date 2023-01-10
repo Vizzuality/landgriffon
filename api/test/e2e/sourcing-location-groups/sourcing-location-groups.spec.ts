@@ -1,9 +1,11 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { SourcingLocationGroupRepository } from 'modules/sourcing-location-groups/sourcing-location-group.repository';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
@@ -12,24 +14,22 @@ import { DataSource } from 'typeorm';
  */
 
 describe('SourcingLocationGroupsModule (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let dataSource: DataSource;
   let sourcingRecordGroupRepository: SourcingLocationGroupRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
     sourcingRecordGroupRepository =
-      moduleFixture.get<SourcingLocationGroupRepository>(
+      testApplication.get<SourcingLocationGroupRepository>(
         SourcingLocationGroupRepository,
       );
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
   });
 
   afterEach(async () => {
@@ -38,12 +38,12 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   describe('Sourcing location groups - Create', () => {
     test('Create a sourcing location group should be successful (happy case)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/sourcing-location-groups')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -66,7 +66,7 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
     });
 
     test('Create a sourcing location group without the required fields should fail with a 400 error', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/sourcing-location-groups')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -92,7 +92,7 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
       sourcingRecordGroup.title = 'sourcing location group test name';
       await sourcingRecordGroup.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/sourcing-location-groups/${sourcingRecordGroup.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -113,7 +113,7 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
       sourcingRecordGroup.title = 'sourcing location group test name';
       await sourcingRecordGroup.save();
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete(`/api/v1/sourcing-location-groups/${sourcingRecordGroup.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -134,7 +134,7 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
       sourcingRecordGroup.title = 'sourcing location group test name';
       await sourcingRecordGroup.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/sourcing-location-groups`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -151,7 +151,7 @@ describe('SourcingLocationGroupsModule (e2e)', () => {
       sourcingRecordGroup.title = 'sourcing location group test name';
       await sourcingRecordGroup.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/sourcing-location-groups/${sourcingRecordGroup.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()

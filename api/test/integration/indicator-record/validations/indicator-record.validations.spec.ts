@@ -9,19 +9,18 @@ import {
 import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { DataSource } from 'typeorm';
-import AppSingleton from '../../../utils/getApp';
-import { INestApplication } from '@nestjs/common';
+import ApplicationManager, {
+  TestApplication,
+} from '../../../utils/application-manager';
 
 describe('Indicator Records Service', () => {
+  let testApplication: TestApplication;
   let dataSource: DataSource;
-  let app: INestApplication;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
   });
 
   afterEach(async () => {
@@ -35,7 +34,7 @@ describe('Indicator Records Service', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await testApplication.close();
     await clearTestDataFromDatabase(dataSource);
   });
 

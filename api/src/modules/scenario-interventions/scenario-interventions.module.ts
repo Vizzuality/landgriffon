@@ -14,13 +14,9 @@ import { InterventionBuilder } from 'modules/scenario-interventions/services/int
 import { NewMaterialIntervention } from 'modules/scenario-interventions/strategies/new-material.intervention.strategy';
 import { NewSupplierLocationIntervention } from 'modules/scenario-interventions/strategies/new-supplier-location.intervention.strategy';
 import { ChangeProductionEfficiencyIntervention } from 'modules/scenario-interventions/strategies/change-production-efficiency.intervention.strategy';
-import * as config from 'config';
 import { ScenarioInterventionsControllerV2 } from 'modules/scenario-interventions/interventions-controller-v2.controller';
 import { ActiveIndicatorValidator } from 'modules/indicators/validators/active-indicator.validator';
 import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
-
-const useNewMethodology: boolean =
-  `${config.get('newMethodology')}`.toLowerCase() === 'true';
 
 @Module({
   imports: [
@@ -33,11 +29,7 @@ const useNewMethodology: boolean =
     AdminRegionsModule,
     SuppliersModule,
   ],
-  controllers: [
-    ...(useNewMethodology
-      ? [ScenarioInterventionsControllerV2]
-      : [ScenarioInterventionsController]),
-  ],
+  controllers: [ScenarioInterventionsControllerV2],
   providers: [
     ScenarioInterventionRepository,
     ScenarioInterventionsService,

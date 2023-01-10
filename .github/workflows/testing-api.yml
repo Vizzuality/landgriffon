@@ -47,6 +47,10 @@ jobs:
         working-directory: api
         run: yarn install
 
+      - name: Prepare database
+        working-directory: api
+        run: yarn test:db-prepare
+
       - name: Run API tests + coverage
         working-directory: api
         run: yarn test:e2e
@@ -90,6 +94,10 @@ jobs:
       - name: Install API dependencies
         working-directory: api
         run: yarn install
+
+      - name: Prepare database
+        working-directory: api
+        run: yarn test:db-prepare
 
       - name: Run API tests + coverage
         working-directory: api

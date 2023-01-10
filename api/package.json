@@ -10,17 +10,17 @@
     "start": "nest start",
     "start:watch": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "NODE_OPTIONS=\"--max-old-space-size=8192\" NODE_PATH=dist/src node dist/src/main",
+    "start:prod": "NODE_PATH=dist/src node dist/src/main",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/data-source.ts",
     "build": "rm -rf dist && tsc",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test:db-prepare": "yarn typeorm schema:drop && yarn typeorm schema:sync",
-    "test": "NODE_OPTIONS=\"--max-old-space-size=8192\" node ./node_modules/.bin/jest --config test/jest-config.json -i --logHeapUsage --detectOpenHandles --forceExit",
+    "test": "node --expose-gc ./node_modules/.bin/jest --config test/jest-config.json -i --logHeapUsage --forceExit",
     "test:watch": "jest --config test/jest-config.json --watch",
-    "test:cov": "NODE_OPTIONS=\"--max-old-space-size=8192\" node ./node_modules/.bin/jest --config test/jest-config.json --coverage -i --logHeapUsage --detectOpenHandles --forceExit",
-    "test:debug": "node --inspect-brk --expose-gc -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --config test/jest-config.json --runInBand --detectOpenHandles --forceExit",
-    "test:integration": "NODE_OPTIONS=\"--max-old-space-size=8192\" node ./node_modules/.bin/jest --config test/jest-config.json -i --logHeapUsage --detectOpenHandles --forceExit test/integration/",
-    "test:e2e": "NODE_OPTIONS=\"--max-old-space-size=8192\" node ./node_modules/.bin/jest --config test/jest-config.json -i --logHeapUsage --detectOpenHandles --forceExit test/e2e/"
+    "test:cov": "node --expose-gc ./node_modules/.bin/jest --config test/jest-config.json --coverage --forceExit",
+    "test:debug": "node --inspect-brk --expose-gc -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --config test/jest-config.json --detectOpenHandles --forceExit",
+    "test:integration": "node --expose-gc ./node_modules/.bin/jest --config test/jest-config.json --forceExit test/integration/",
+    "test:e2e": "node --expose-gc ./node_modules/.bin/jest --config test/jest-config.json --forceExit test/e2e/"
   },
   "engines": {
     "node": "^18.12"
@@ -100,7 +100,6 @@
     "eslint-plugin-mocha": "10.1.0",
     "eslint-plugin-prettier": "4.0.0",
     "jest": "^29.3.1",
-    "leaked-handles": "^5.2.0",
     "nyc": "^15.1.0",
     "prettier": "^2.4.1",
     "supertest": "^6.1.6",

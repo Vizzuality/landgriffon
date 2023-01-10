@@ -1,4 +1,4 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { createMaterial } from '../../entity-mocks';
@@ -6,27 +6,27 @@ import { Material } from 'modules/materials/material.entity';
 import { expectedJSONAPIAttributes } from './config';
 import { v4 as uuidv4 } from 'uuid';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
 describe('Materials - Create', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let dataSource: DataSource;
   let materialRepository: MaterialRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
     materialRepository =
-      moduleFixture.get<MaterialRepository>(MaterialRepository);
+      testApplication.get<MaterialRepository>(MaterialRepository);
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
   });
 
   afterEach(async () => {
@@ -35,11 +35,11 @@ describe('Materials - Create', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   test('Create a material should be successful (happy case)', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .post('/api/v1/materials')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send({
@@ -61,7 +61,7 @@ describe('Materials - Create', () => {
   });
 
   test('Create a material without the required fields should fail with a 400 error', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .post('/api/v1/materials')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -81,7 +81,7 @@ describe('Materials - Create', () => {
 
   describe('Tree structure', () => {
     test('Create a material without a parent should be successful', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/materials')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -95,7 +95,7 @@ describe('Materials - Create', () => {
 
     test('Create a material with a parent id that does not exist should fail with a 400 error', async () => {
       const uuid = uuidv4();
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/materials')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -114,7 +114,7 @@ describe('Materials - Create', () => {
     test('Create a material with a parent id that exists should be successful and return the associated parent id', async () => {
       const material: Material = await createMaterial();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/materials')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({

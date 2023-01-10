@@ -1,4 +1,4 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import {
@@ -10,7 +10,9 @@ import {
   createSupplier,
 } from '../../entity-mocks';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { Material } from 'modules/materials/material.entity';
 import {
   LOCATION_TYPES,
@@ -29,18 +31,16 @@ import { Scenario } from 'modules/scenarios/scenario.entity';
 import { DataSource } from 'typeorm';
 
 describe('Materials - Get trees - Smart Filters', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let jwtToken: string;
   let dataSource: DataSource;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
   });
 
   afterEach(async () => {
@@ -55,11 +55,11 @@ describe('Materials - Get trees - Smart Filters', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   test('When I request material trees, and the DB is empty, then I should get empty array', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/materials/trees`)
       .query({
         withSourcingLocations: true,
@@ -123,7 +123,7 @@ describe('Materials - Get trees - Smart Filters', () => {
         materialId: material3.id,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/materials/trees')
         .query({
           withSourcingLocations: true,
@@ -185,7 +185,7 @@ describe('Materials - Get trees - Smart Filters', () => {
         materialId: material3.id,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/materials/trees')
         .query({
           withSourcingLocations: true,
@@ -270,7 +270,7 @@ describe('Materials - Get trees - Smart Filters', () => {
           materialId: material3.id,
         });
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get('/api/v1/materials/trees')
           .query({
             withSourcingLocations: true,
@@ -368,7 +368,7 @@ describe('Materials - Get trees - Smart Filters', () => {
           materialId: material3.id,
         });
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get('/api/v1/materials/trees')
           .query({
             withSourcingLocations: true,
@@ -447,7 +447,7 @@ describe('Materials - Get trees - Smart Filters', () => {
           scenarioInterventionId: interventionInactive.id,
         });
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get('/api/v1/materials/trees')
           .query({
             withSourcingLocations: true,

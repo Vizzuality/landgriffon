@@ -10,6 +10,7 @@ import { JwtStrategy } from 'modules/authentication/strategies/jwt.strategy';
 import { LocalStrategy } from 'modules/authentication/strategies/local.strategy';
 import { ApiEventsModule } from 'modules/api-events/api-events.module';
 import { User } from 'modules/users/user.entity';
+import { PasswordValidation } from 'decorators/password-validator.decorator';
 
 export const logger: Logger = new Logger('Authentication');
 
@@ -24,7 +25,35 @@ export const logger: Logger = new Logger('Authentication');
     }),
     TypeOrmModule.forFeature([User]),
   ],
-  providers: [AuthenticationService, LocalStrategy, JwtStrategy],
+  providers: [
+    AuthenticationService,
+    LocalStrategy,
+    JwtStrategy,
+    PasswordValidation,
+    {
+      provide: 'PASSWORD_INCLUDE_UPPER_CASE',
+      useValue:
+        `${config.get('auth.password.includeUpperCase')}`.toLowerCase() ===
+        'true',
+    },
+    {
+      provide: 'PASSWORD_INCLUDE_NUMERICS',
+      useValue:
+        `${config.get('auth.password.includeNumerics')}`.toLowerCase() ===
+        'true',
+    },
+    {
+      provide: 'PASSWORD_INCLUDE_SPECIAL_CHARACTERS',
+      useValue:
+        `${config.get(
+          'auth.password.includeSpecialCharacters',
+        )}`.toLowerCase() === 'true',
+    },
+    {
+      provide: 'PASSWORD_MIN_LENGTH',
+      useValue: parseInt(`${config.get('auth.password.minLength')}`),
+    },
+  ],
   controllers: [AuthenticationController],
   exports: [AuthenticationService],
 })

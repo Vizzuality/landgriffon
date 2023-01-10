@@ -1,6 +1,7 @@
 import CustomMatcherResult = jest.CustomMatcherResult;
 import { Response } from 'supertest';
 import { isEqual, xor } from 'lodash';
+import ApplicationManager from './utils/application-manager';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -18,6 +19,8 @@ declare global {
     }
   }
 }
+
+afterAll(async () => ApplicationManager.tearDown());
 
 expect.extend({
   toHaveErrorMessage(

@@ -1,30 +1,30 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { expectedJSONAPIAttributes } from './config';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
 describe('Suppliers - Get by id', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let dataSource: DataSource;
   let supplierRepository: SupplierRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
     supplierRepository =
-      moduleFixture.get<SupplierRepository>(SupplierRepository);
+      testApplication.get<SupplierRepository>(SupplierRepository);
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
   });
 
   afterEach(async () => {
@@ -33,7 +33,7 @@ describe('Suppliers - Get by id', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   describe('Suppliers - Get by id', () => {
@@ -42,7 +42,7 @@ describe('Suppliers - Get by id', () => {
       supplier.name = 'test supplier';
       await supplier.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/suppliers/${supplier.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()

@@ -1,11 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
 import {
   Indicator,
   INDICATOR_STATUS,
   INDICATOR_TYPES_NEW,
 } from 'modules/indicators/indicator.entity';
-import { AppModule } from 'app.module';
 import {
   createIndicator,
   createScenarioIntervention,
@@ -18,50 +15,37 @@ import * as request from 'supertest';
 import { SCENARIO_INTERVENTION_TYPE } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { DataSource } from 'typeorm';
-import { ScenarioInterventionsService } from 'modules/scenario-interventions/scenario-interventions.service';
 import { saveUserAndGetTokenWithUserId } from '../../../utils/userAuth';
-import { getApp } from '../../../utils/getApp';
-
-jest.mock('config', () => {
-  const config = jest.requireActual('config');
-
-  const configGet = config.get;
-
-  config.get = function (key: string): any {
-    switch (key) {
-      case 'newMethodology':
-        return true;
-      default:
-        return configGet.call(config, key);
-    }
-  };
-  return config;
-});
+import ApplicationManager, {
+  TestApplication,
+} from '../../../utils/application-manager';
+import { Test } from '@nestjs/testing';
+import { AppModule } from 'app.module';
+import { ScenarioInterventionsService } from 'modules/scenario-interventions/scenario-interventions.service';
 
 describe('Interventions E2E Tests (Controller Validations)', () => {
   let jwtToken: string;
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let dataSource: DataSource;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-      .overrideProvider(ScenarioInterventionsService)
-      .useValue({
-        createScenarioIntervention: () => true,
-        serialize: () => ({
-          mockResponse: true,
-        }),
-        updateIntervention: () => true,
+    testApplication = await ApplicationManager.init(
+      Test.createTestingModule({
+        imports: [AppModule],
       })
-      .compile();
+        .overrideProvider(ScenarioInterventionsService)
+        .useValue({
+          createScenarioIntervention: () => true,
+          serialize: () => ({
+            mockResponse: true,
+          }),
+          updateIntervention: () => true,
+        }),
+    );
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    const tokenWithId = await saveUserAndGetTokenWithUserId(moduleFixture, app);
+    const tokenWithId = await saveUserAndGetTokenWithUserId(testApplication);
     jwtToken = tokenWithId.jwtToken;
   });
 
@@ -71,7 +55,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   test(
@@ -115,7 +99,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
         })
       ).map((i: Indicator) => i.nameCode);
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -157,7 +141,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
         name: INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -196,7 +180,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
         name: INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/scenario-interventions/${intervention.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -234,7 +218,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
         name: INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/scenario-interventions/${intervention.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -301,7 +285,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
         })
       ).map((i: Indicator) => i.nameCode);
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/scenario-interventions/${intervention.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({

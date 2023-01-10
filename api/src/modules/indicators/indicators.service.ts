@@ -206,7 +206,7 @@ export class IndicatorsService extends AppBaseService<
 
   async extendFindAllQuery(
     queryBuilder: SelectQueryBuilder<Indicator>,
-    fetchSpecificacion: FetchSpecification,
+    fetchSpecification: FetchSpecification,
   ): Promise<SelectQueryBuilder<Indicator>> {
     queryBuilder.andWhere(`${this.alias}.status = :status`, {
       status: INDICATOR_STATUS.ACTIVE,

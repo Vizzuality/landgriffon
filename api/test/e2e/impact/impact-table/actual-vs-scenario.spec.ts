@@ -1,8 +1,10 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { saveUserAndGetTokenWithUserId } from '../../../utils/userAuth';
-import AppSingleton from '../../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../../utils/application-manager';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { createNewMaterialInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-material-intervention.preconditions';
 import { createNewCoefficientsInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-coefficients-intervention.preconditions';
@@ -36,18 +38,16 @@ import { createScenario } from '../../../entity-mocks';
 import { DataSource } from 'typeorm';
 
 describe('Impact Table and Charts test suite (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let jwtToken: string;
   let dataSource: DataSource;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
   });
 
   afterEach(async () => {
@@ -71,7 +71,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   test('When I request data for Impact table for a Scenario with Intervention of type New Coefficients I should get the expected results ignoring INACTIVE interventions', async () => {
@@ -81,7 +81,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       scenarioIntervention: ScenarioIntervention;
     } = await createNewCoefficientsInterventionPreconditions(scenario);
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/compare/scenario/vs/actual')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -111,7 +111,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       scenarioIntervention: ScenarioIntervention;
     } = await createNewMaterialInterventionPreconditions(scenario);
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/compare/scenario/vs/actual')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -135,7 +135,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       scenarioIntervention: ScenarioIntervention;
     } = await createNewSupplierInterventionPreconditions(scenario);
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/compare/scenario/vs/actual')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -161,7 +161,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         newScenario: Scenario;
       } = await createMultipleInterventionsPreconditions();
 
-      const response1 = await request(app.getHttpServer())
+      const response1 = await request(testApplication.getHttpServer())
         .get('/api/v1/impact/compare/scenario/vs/actual')
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -177,7 +177,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         mixedInterventionsScenarioTable.impactTable[0].rows,
       );
 
-      const response2 = await request(app.getHttpServer())
+      const response2 = await request(testApplication.getHttpServer())
         .get('/api/v1/impact/compare/scenario/vs/actual')
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -195,13 +195,13 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     },
   );
 
-  test('When I request data for Comparison Impact table for a Scenario with various Interventions of different types Grouped by Suppliers, I should receive the table Groued by Suppliers', async () => {
+  test('When I request data for Comparison Impact table for a Scenario with various Interventions of different types grouped by Suppliers, I should receive the table grouped by Suppliers', async () => {
     const preconditions: {
       indicator: Indicator;
       newScenario: Scenario;
     } = await createMultipleInterventionsPreconditions();
 
-    const response1 = await request(app.getHttpServer())
+    const response1 = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/compare/scenario/vs/actual')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -220,7 +220,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       'Supplier B',
     );
 
-    const response2 = await request(app.getHttpServer())
+    const response2 = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/compare/scenario/vs/actual')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({

@@ -1,4 +1,4 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import {
   Indicator,
@@ -6,7 +6,9 @@ import {
 } from 'modules/indicators/indicator.entity';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
@@ -15,22 +17,20 @@ import { DataSource } from 'typeorm';
  */
 
 describe('IndicatorsModule (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let dataSource: DataSource;
   let indicatorRepository: IndicatorRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
     indicatorRepository =
-      moduleFixture.get<IndicatorRepository>(IndicatorRepository);
+      testApplication.get<IndicatorRepository>(IndicatorRepository);
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
   });
 
   afterEach(async () => {
@@ -39,12 +39,12 @@ describe('IndicatorsModule (e2e)', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   describe('Indicators - Create', () => {
     test('Create an indicator should be successful (happy case)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/indicators')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -66,7 +66,7 @@ describe('IndicatorsModule (e2e)', () => {
   });
 
   test('Create an indicator without the required fields should fail with a 400 error', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .post('/api/v1/indicators')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send();
@@ -94,7 +94,7 @@ describe('IndicatorsModule (e2e)', () => {
       indicator.nameCode = 'Midiclorian';
       await indicator.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/indicators/${indicator.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -115,7 +115,7 @@ describe('IndicatorsModule (e2e)', () => {
       indicator.nameCode = 'Midiclorian';
       await indicator.save();
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete(`/api/v1/indicators/${indicator.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
 
@@ -135,7 +135,7 @@ describe('IndicatorsModule (e2e)', () => {
       indicator.nameCode = 'Midiclorian';
       await indicator.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/indicators`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -152,7 +152,7 @@ describe('IndicatorsModule (e2e)', () => {
       indicator.nameCode = 'Midiclorian';
       await indicator.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/indicators/${indicator.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()

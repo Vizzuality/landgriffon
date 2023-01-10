@@ -1,4 +1,3 @@
-import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { h3DataMock, dropH3DataMock } from './mocks/h3-data.mock';
@@ -8,7 +7,9 @@ import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { h3MaterialExampleDataFixture } from './mocks/h3-fixtures';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { DataSource } from 'typeorm';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 
@@ -17,7 +18,7 @@ import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
  */
 
 describe('H3 Data Module (e2e) - Material map', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let dataSource: DataSource;
   let h3DataRepository: H3DataRepository;
   let materialRepository: MaterialRepository;
@@ -28,20 +29,18 @@ describe('H3 Data Module (e2e) - Material map', () => {
   let jwtToken: string;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    materialToH3Service = moduleFixture.get<MaterialsToH3sService>(
+    materialToH3Service = testApplication.get<MaterialsToH3sService>(
       MaterialsToH3sService,
     );
-    h3DataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
+    h3DataRepository = testApplication.get<H3DataRepository>(H3DataRepository);
     materialRepository =
-      moduleFixture.get<MaterialRepository>(MaterialRepository);
+      testApplication.get<MaterialRepository>(MaterialRepository);
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
   });
 
   afterEach(async () => {
@@ -53,11 +52,11 @@ describe('H3 Data Module (e2e) - Material map', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   test('When I query a material H3 with a non available resolution, then I should get a proper error message', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/h3/map/material?materialId=${FAKE_UUID}&resolution=0`)
       .set('Authorization', `Bearer ${jwtToken}`);
     expect(response.body.errors[0].meta.rawError.response.message[0]).toEqual(
@@ -66,7 +65,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
   });
 
   test('When I query a material H3 data with a resolution value that is not a number, then I should get a proper error message', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(
         `/api/v1/h3/map/material?materialId=${FAKE_UUID}&resolution=definitelyNotANumber`,
       )
@@ -78,7 +77,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
 
   test('When I query a material H3 data but it has no year value, then I should get a proper error message', async () => {
     const material = await createMaterial({ name: 'Material with no H3' });
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/h3/map/material`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -94,7 +93,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
 
   test('When I query a material H3 data but it has no H3 data available, then I should get a proper error message', async () => {
     const material = await createMaterial({ name: 'Material with no H3' });
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/h3/map/material`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -110,7 +109,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
 
   test('When I query a material H3 data with no resolution provided, then I should get a proper error message', async () => {
     const material = await createMaterial();
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/h3/map/material?materialId=${material.id}`)
       .set('Authorization', `Bearer ${jwtToken}`);
     expect(response.body.errors[0].meta.rawError.response.message[2]).toEqual(
@@ -131,7 +130,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
       h3Data.id,
       MATERIAL_TO_H3_TYPE.PRODUCER,
     );
-    const responseRes1 = await request(app.getHttpServer())
+    const responseRes1 = await request(testApplication.getHttpServer())
       .get(`/api/v1/h3/map/material`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -140,7 +139,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
         year: 2020,
       });
 
-    const responseRes3 = await request(app.getHttpServer())
+    const responseRes3 = await request(testApplication.getHttpServer())
       .get(`/api/v1/h3/map/material`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 import { UrlParamRepository } from 'modules/url-params/url-param.repository';
 import {

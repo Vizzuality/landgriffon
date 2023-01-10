@@ -1,6 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { AppModule } from 'app.module';
-import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
 import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { MaterialRepository } from 'modules/materials/material.repository';
@@ -54,13 +53,22 @@ import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-in
 import { SourcingRecordsWithIndicatorRawDataDtoV2 } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 import { DataSource } from 'typeorm';
-import { TasksRepository } from '../../../../src/modules/tasks/tasks.repository';
+import { TasksRepository } from 'modules/tasks/tasks.repository';
 import { clearTestDataFromDatabase } from '../../../utils/database-test-helper';
+import ApplicationManager, {
+  TestApplication,
+} from '../../../utils/application-manager';
 
 let tablesToDrop: string[] = [];
 
 let missingDataFallbackPolicy: string = 'error';
 
+/**
+ * @TODO: swap this for injecting config into the DIC
+ * and replacing that.
+ * It will require refactoring the test as well to use different DIC instances
+ * per test.
+ */
 jest.mock('config', () => {
   const config = jest.requireActual('config');
 
@@ -70,22 +78,6 @@ jest.mock('config', () => {
     switch (key) {
       case 'import.missingDataFallbackStrategy':
         return missingDataFallbackPolicy;
-      default:
-        return configGet.call(config, key);
-    }
-  };
-  return config;
-});
-
-jest.mock('config', () => {
-  const config = jest.requireActual('config');
-
-  const configGet = config.get;
-
-  config.get = function (key: string): any {
-    switch (key) {
-      case 'newMethodology':
-        return true;
       default:
         return configGet.call(config, key);
     }
@@ -172,60 +164,62 @@ describe('Sourcing Data import', () => {
   let sourcingDataImportService: SourcingDataImportService;
   let impactCalculatorService: ImpactCalculator;
   let tasksRepository: TasksRepository;
-  let moduleFixture: TestingModule;
+  let testApplication: TestApplication;
 
   beforeAll(async () => {
     jest.setTimeout(10000);
-    moduleFixture = await Test.createTestingModule({
-      imports: [AppModule, SourcingRecordsModule],
-    })
-      .overrideProvider(FileService)
-      .useClass(MockFileService)
-      .overrideProvider(GeoCodingAbstractClass)
-      .useValue(geoCodingServiceMock)
-      .overrideProvider(UnknownLocationGeoCodingStrategy)
-      .useClass(UnknownLocationServiceMock)
-      .compile();
+    testApplication = await ApplicationManager.init(
+      Test.createTestingModule({
+        imports: [AppModule],
+      })
+        .overrideProvider(FileService)
+        .useClass(MockFileService)
+        .overrideProvider(GeoCodingAbstractClass)
+        .useValue(geoCodingServiceMock)
+        .overrideProvider(UnknownLocationGeoCodingStrategy)
+        .useClass(UnknownLocationServiceMock),
+    );
 
-    businessUnitRepository = moduleFixture.get<BusinessUnitRepository>(
+    businessUnitRepository = testApplication.get<BusinessUnitRepository>(
       BusinessUnitRepository,
     );
     materialRepository =
-      moduleFixture.get<MaterialRepository>(MaterialRepository);
-    materialToH3Service = moduleFixture.get<MaterialsToH3sService>(
+      testApplication.get<MaterialRepository>(MaterialRepository);
+    materialToH3Service = testApplication.get<MaterialsToH3sService>(
       MaterialsToH3sService,
     );
     supplierRepository =
-      moduleFixture.get<SupplierRepository>(SupplierRepository);
-    adminRegionRepository = moduleFixture.get<AdminRegionRepository>(
+      testApplication.get<SupplierRepository>(SupplierRepository);
+    adminRegionRepository = testApplication.get<AdminRegionRepository>(
       AdminRegionRepository,
     );
-    sourcingLocationRepository = moduleFixture.get<SourcingLocationRepository>(
-      SourcingLocationRepository,
-    );
-    sourcingRecordRepository = moduleFixture.get<SourcingRecordRepository>(
+    sourcingLocationRepository =
+      testApplication.get<SourcingLocationRepository>(
+        SourcingLocationRepository,
+      );
+    sourcingRecordRepository = testApplication.get<SourcingRecordRepository>(
       SourcingRecordRepository,
     );
     sourcingLocationGroupRepository =
-      moduleFixture.get<SourcingLocationGroupRepository>(
+      testApplication.get<SourcingLocationGroupRepository>(
         SourcingLocationGroupRepository,
       );
     geoRegionRepository =
-      moduleFixture.get<GeoRegionRepository>(GeoRegionRepository);
-    indicatorRecordRepository = moduleFixture.get<IndicatorRecordRepository>(
+      testApplication.get<GeoRegionRepository>(GeoRegionRepository);
+    indicatorRecordRepository = testApplication.get<IndicatorRecordRepository>(
       IndicatorRecordRepository,
     );
     indicatorRepository =
-      moduleFixture.get<IndicatorRepository>(IndicatorRepository);
-    h3DataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
-    sourcingDataImportService = moduleFixture.get<SourcingDataImportService>(
+      testApplication.get<IndicatorRepository>(IndicatorRepository);
+    h3DataRepository = testApplication.get<H3DataRepository>(H3DataRepository);
+    sourcingDataImportService = testApplication.get<SourcingDataImportService>(
       SourcingDataImportService,
     );
     impactCalculatorService =
-      moduleFixture.get<ImpactCalculator>(ImpactCalculator);
-    tasksRepository = moduleFixture.get<TasksRepository>(TasksRepository);
+      testApplication.get<ImpactCalculator>(ImpactCalculator);
+    tasksRepository = testApplication.get<TasksRepository>(TasksRepository);
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
   });
 
   afterEach(async () => {
@@ -252,14 +246,14 @@ describe('Sourcing Data import', () => {
   afterAll(async () => {
     jest.clearAllTimers();
     await clearTestDataFromDatabase(dataSource);
-    return moduleFixture.close();
+    return testApplication.close();
   });
 
   test('When a file is processed by the API and there are no materials in the database, an error should be displayed', async () => {
     expect.assertions(1);
     try {
       await sourcingDataImportService.importSourcingData(
-        __dirname + '/test-base-dataset.xlsx',
+        __dirname + '/files/test-base-dataset.xlsx',
         '',
       );
     } catch (err: any) {
@@ -290,7 +284,7 @@ describe('Sourcing Data import', () => {
     ];
 
     await sourcingDataImportService.importSourcingData(
-      __dirname + '/test-base-dataset.xlsx',
+      __dirname + '/files/test-base-dataset.xlsx',
       task.id,
     );
   }, 100000);
@@ -315,7 +309,7 @@ describe('Sourcing Data import', () => {
     const task = await createTask();
 
     await sourcingDataImportService.importSourcingData(
-      __dirname + '/test-base-dataset.xlsx',
+      __dirname + '/files/test-base-dataset.xlsx',
       task.id,
     );
 
@@ -366,7 +360,7 @@ describe('Sourcing Data import', () => {
     const task = await createTask();
 
     await sourcingDataImportService.importSourcingData(
-      __dirname + '/test-base-dataset.xlsx',
+      __dirname + '/files/test-base-dataset.xlsx',
       task.id,
     );
 
@@ -463,14 +457,14 @@ describe('Sourcing Data import', () => {
     const material: Material = await createMaterial({
       name: 'Material 1',
     });
-    const sourcinRecord: SourcingRecord = await createSourcingRecord({
+    const sourcingRecord: SourcingRecord = await createSourcingRecord({
       year: 2019,
     });
     const sourcingRecord2: SourcingRecord = await createSourcingRecord({
       year: 2020,
     });
     await createSourcingLocation({
-      sourcingRecords: [sourcinRecord],
+      sourcingRecords: [sourcingRecord],
       adminRegion,
       businessUnit,
       t1Supplier: supplier,
@@ -522,7 +516,7 @@ describe('Sourcing Data import', () => {
 
       try {
         await sourcingDataImportService.importSourcingData(
-          __dirname + '/base-dataset-one-material.xlsx',
+          __dirname + '/files/base-base-dataset-dataset-one-material.xlsx',
           '',
         );
       } catch (err: any) {
@@ -555,7 +549,7 @@ describe('Sourcing Data import', () => {
       ];
 
       await sourcingDataImportService.importSourcingData(
-        __dirname + '/base-dataset.xlsx',
+        __dirname + '/files/base-base-dataset-dataset.xlsx',
         '',
       );
 
@@ -609,7 +603,7 @@ describe('Sourcing Data import', () => {
       ];
 
       await sourcingDataImportService.importSourcingData(
-        __dirname + '/base-dataset.xlsx',
+        __dirname + '/files/base-base-dataset-dataset.xlsx',
         '',
       );
 

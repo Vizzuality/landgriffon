@@ -28,11 +28,8 @@ import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-c
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 import { TasksService } from 'modules/tasks/tasks.service';
 import { ScenariosService } from 'modules/scenarios/scenarios.service';
-import * as config from 'config';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { Indicator } from 'modules/indicators/indicator.entity';
-const useNewMethodology: boolean =
-  `${config.get('newMethodology')}`.toLowerCase() === 'true';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -161,13 +158,9 @@ export class SourcingDataImportService {
       //       Getting H3 data for calculations is done within DB so we need to improve the error handling
       //       TBD: What to do when there is no H3 for a Material
       try {
-        if (useNewMethodology) {
-          await this.indicatorRecordsService.calculateImpactWithNewMethodology(
-            activeIndicators,
-          );
-        } else {
-          await this.indicatorRecordsService.createIndicatorRecordsForAllSourcingRecords();
-        }
+        await this.indicatorRecordsService.calculateImpactWithNewMethodology(
+          activeIndicators,
+        );
 
         this.logger.log('Indicator Records generated');
         // TODO: Hack to force m.view refresh once Indicator Records are persisted. This should be automagically

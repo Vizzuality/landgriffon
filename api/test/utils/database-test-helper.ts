@@ -27,7 +27,6 @@ export async function dropTables(
 
 /**
  * Clear all tables of given Entities defined in the API
- * @param entityList
  */
 export async function clearEntityTables(
   dataSource: DataSource,

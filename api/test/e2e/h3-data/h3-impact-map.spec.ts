@@ -1,4 +1,3 @@
-import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { dropH3DataMock } from './mocks/h3-data.mock';
 import {
@@ -7,7 +6,9 @@ import {
   ImpactMapMockData,
 } from './mocks/h3-impact-map.mock';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 import { DataSource } from 'typeorm';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
@@ -20,7 +21,7 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
  */
 
 describe('H3 Data Module (e2e) - Impact map', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let dataSource: DataSource;
   let impactMapMockData: ImpactMapMockData;
   let jwtToken: string;
@@ -28,16 +29,13 @@ describe('H3 Data Module (e2e) - Impact map', () => {
   const fakeTable = 'faketable';
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
-    const indicatorRecordsService = moduleFixture.get<IndicatorRecordsService>(
-      IndicatorRecordsService,
-    );
+    dataSource = testApplication.get<DataSource>(DataSource);
+    const indicatorRecordsService =
+      testApplication.get<IndicatorRecordsService>(IndicatorRecordsService);
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
 
     impactMapMockData = await createImpactMapMockData(dataSource);
     await indicatorRecordsService.updateImpactView();
@@ -48,12 +46,12 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     await dropH3DataMock(dataSource, impactMapMockData.tablesToDrop);
     await deleteImpactMapMockData(dataSource);
     await clearEntityTables(dataSource, [User, SourcingRecord]);
-    await app.close();
+    await testApplication.close();
   });
 
   describe('Missing required parameters', () => {
     test('When I get a calculated H3 Impact Map without any of the required parameters, then I should get a proper error message', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`);
       expect(response.body.errors[0].meta.rawError.response.message).toEqual([
@@ -70,7 +68,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     });
 
     test('When I get a calculated H3 Impact Map without a year value, then I should get a proper error message', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -91,7 +89,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     });
 
     test('When I get a calculated H3 Impact Map without a resolution value, then I should get a proper error message', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -109,7 +107,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
   });
 
   test('When I get a calculated H3 Water Impact Map with the necessary input values, then I should get the h3 data (happy case)', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/h3/map/impact`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -137,7 +135,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
   describe('Zoom levels', () => {
     test('When I get a calculated H3 Water Impact Map different zoom levels, then I should get the projected h3 data (zoom 2)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -156,7 +154,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     });
 
     test('When I get a calculated H3 Water Impact Map different zoom levels, then I should get the projected h3 data (zoom 4)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -175,7 +173,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     });
 
     test('When I get a calculated H3 Water Impact Map different zoom levels, then I should get the projected h3 data (zoom 6)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -204,7 +202,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
   describe('Optional query parameters', () => {
     test('When I get a calculated H3 Water Impact Map with the necessary input values and materials filter, then I should get the correct h3 data', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -239,7 +237,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     });
 
     test('When I get a calculated H3 Water Impact Map with the necessary input values and origins filter, then I should get the correct h3 data', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -262,7 +260,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     });
 
     test('When I get a calculated H3 Water Impact Map with the necessary input values and supplier (t1Supplier) filter, then I should get the correct h3 data', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -285,7 +283,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     });
 
     test('When I get a calculated H3 Water Impact Map with the necessary input values and supplier (producer) filter, then I should get the correct h3 data', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -308,7 +306,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     });
 
     test('When I get a calculated H3 Water Impact Map with the necessary input values and supplier (producer) filter, then I should get the correct h3 data', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -331,7 +329,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     });
 
     test('When I get a calculated H3 Water Impact Map with the necessary input values and Location Type filter, then I should get the correct h3 data', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -354,7 +352,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     });
 
     test('When I get a calculated H3 Water Impact Map with the necessary input values and Scenario Id property, then the response should include both actual data and Scenario data for the given id (ignoring INACTIVE interventions), and the quantiles should be calculated differently', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -388,7 +386,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
   });
   describe('Actual vs Scenario Comparison Map', () => {
     test('When I request a comparison map betwen actual H3 Water Impact Map data, and the data including a scenario with a given Id, then the response should have the difference between actual data and Scenario data (ignoring INACTIVE interventions)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact/compare/actual/vs/scenario`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -422,7 +420,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     });
 
     test('When I request a comparison map betwen actual H3 Water Impact Map data, and the data including a scenario with a given Id with relative property set to true, then the response should have the difference between actual data and Scenario data in percentages (ignoring INACTIVE interventions)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact/compare/actual/vs/scenario`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -458,7 +456,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
   describe('Scenario vs Scenario Comparison Map', () => {
     test('When I request a comparison map between two scenarios (a baseScenario and a comparedScenario ids), then the response should have the difference between the data of of both scenarios (ignoring INACTIVE interventions)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact/compare/scenario/vs/scenario`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -494,7 +492,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     });
 
     test('When I request a comparison map between two scenarios (a baseScenario and a comparedScenario ids) with relative property set to true, then the response should have the difference between the data of of both scenarios in percentages (ignoring INACTIVE interventions)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact/compare/scenario/vs/scenario`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -532,7 +530,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 });
 
 /**
- * Check that the numbers on all elements of the received array are close to to the
+ * Check that the numbers on all elements of the received array are close to the
  * corresponding elements of the expected array
  * @param receivedNumbers
  * @param expectedNumbers

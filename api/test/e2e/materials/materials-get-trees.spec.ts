@@ -1,4 +1,4 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { Material } from 'modules/materials/material.entity';
 import { MaterialRepository } from 'modules/materials/material.repository';
@@ -14,13 +14,15 @@ import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
 //TODO: Allow these tests when feature fix is merged
 describe('Materials - Get trees', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let dataSource: DataSource;
   let materialRepository: MaterialRepository;
   let materialToH3Service: MaterialsToH3sService;
@@ -28,20 +30,18 @@ describe('Materials - Get trees', () => {
   let jwtToken: string;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
-    materialToH3Service = moduleFixture.get<MaterialsToH3sService>(
+    dataSource = testApplication.get<DataSource>(DataSource);
+    materialToH3Service = testApplication.get<MaterialsToH3sService>(
       MaterialsToH3sService,
     );
     materialRepository =
-      moduleFixture.get<MaterialRepository>(MaterialRepository);
+      testApplication.get<MaterialRepository>(MaterialRepository);
 
-    h3dataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
+    h3dataRepository = testApplication.get<H3DataRepository>(H3DataRepository);
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
 
     await materialToH3Service.delete({});
     await materialRepository.delete({});
@@ -56,11 +56,11 @@ describe('Materials - Get trees', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   test('When I request material trees, and the DB is empty, then I should get empty array', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/materials/trees`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -99,7 +99,7 @@ describe('Materials - Get trees', () => {
       MATERIAL_TO_H3_TYPE.PRODUCER,
     );
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/materials/trees`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -154,7 +154,7 @@ describe('Materials - Get trees', () => {
       parent: rootMaterial,
     });
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/materials/trees`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -209,7 +209,7 @@ describe('Materials - Get trees', () => {
       MATERIAL_TO_H3_TYPE.HARVEST,
     );
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/materials/trees`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -262,7 +262,7 @@ describe('Materials - Get trees', () => {
       MATERIAL_TO_H3_TYPE.PRODUCER,
     );
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/materials/trees`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -336,7 +336,7 @@ describe('Materials - Get trees', () => {
       MATERIAL_TO_H3_TYPE.PRODUCER,
     );
 
-    const responseDepthZero = await request(app.getHttpServer())
+    const responseDepthZero = await request(testApplication.getHttpServer())
       .get(`/api/v1/materials/trees`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -352,7 +352,7 @@ describe('Materials - Get trees', () => {
       'children',
     ]);
 
-    const responseDepthOne = await request(app.getHttpServer())
+    const responseDepthOne = await request(testApplication.getHttpServer())
       .get(`/api/v1/materials/trees`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -386,7 +386,7 @@ describe('Materials - Get trees', () => {
       },
     );
 
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/materials/trees`)
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -465,7 +465,7 @@ describe('Materials - Get trees', () => {
         await createSourcingLocation({ materialId: material.id });
       }
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/materials/trees')
         .query({ withSourcingLocations: true })
         .set('Authorization', `Bearer ${jwtToken}`);

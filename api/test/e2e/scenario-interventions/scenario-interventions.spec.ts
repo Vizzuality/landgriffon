@@ -1,7 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from 'app.module';
 import {
   SCENARIO_INTERVENTION_STATUS,
   SCENARIO_INTERVENTION_TYPE,
@@ -69,7 +67,11 @@ import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import { getApp } from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
+import { Test } from '@nestjs/testing';
+import { AppModule } from 'app.module';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -87,24 +89,6 @@ const expectedJSONAPIAttributes: string[] = [
   'newLocationLatitudeInput',
   'newLocationLongitudeInput',
 ];
-
-// TODO: Refactor after new methodology is final
-
-jest.mock('config', () => {
-  const config = jest.requireActual('config');
-
-  const configGet = config.get;
-
-  config.get = function (key: string): any {
-    switch (key) {
-      case 'newMethodology':
-        return true;
-      default:
-        return configGet.call(config, key);
-    }
-  };
-  return config;
-});
 
 describe('ScenarioInterventionsModule (e2e)', () => {
   const geoCodingServiceMock = {
@@ -169,7 +153,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     },
   };
 
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let dataSource: DataSource;
   let scenarioInterventionRepository: ScenarioInterventionRepository;
   let scenarioRepository: ScenarioRepository;
@@ -185,41 +169,43 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   let userId: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-      .overrideProvider(GeoCodingAbstractClass)
-      .useValue(geoCodingServiceMock)
-      .compile();
+    testApplication = await ApplicationManager.init(
+      Test.createTestingModule({
+        imports: [AppModule],
+      })
+        .overrideProvider(GeoCodingAbstractClass)
+        .useValue(geoCodingServiceMock),
+    );
 
     scenarioInterventionRepository =
-      moduleFixture.get<ScenarioInterventionRepository>(
+      testApplication.get<ScenarioInterventionRepository>(
         ScenarioInterventionRepository,
       );
 
     scenarioRepository =
-      moduleFixture.get<ScenarioRepository>(ScenarioRepository);
-    sourcingLocationRepository = moduleFixture.get<SourcingLocationRepository>(
-      SourcingLocationRepository,
-    );
-    sourcingRecordRepository = moduleFixture.get<SourcingRecordRepository>(
+      testApplication.get<ScenarioRepository>(ScenarioRepository);
+    sourcingLocationRepository =
+      testApplication.get<SourcingLocationRepository>(
+        SourcingLocationRepository,
+      );
+    sourcingRecordRepository = testApplication.get<SourcingRecordRepository>(
       SourcingRecordRepository,
     );
-    adminRegionRepository = moduleFixture.get<AdminRegionRepository>(
+    adminRegionRepository = testApplication.get<AdminRegionRepository>(
       AdminRegionRepository,
     );
     geoRegionRepository =
-      moduleFixture.get<GeoRegionRepository>(GeoRegionRepository);
+      testApplication.get<GeoRegionRepository>(GeoRegionRepository);
 
-    indicatorRecordRepository = moduleFixture.get<IndicatorRecordRepository>(
+    indicatorRecordRepository = testApplication.get<IndicatorRecordRepository>(
       IndicatorRecordRepository,
     );
 
     indicatorRepository =
-      moduleFixture.get<IndicatorRepository>(IndicatorRepository);
+      testApplication.get<IndicatorRepository>(IndicatorRepository);
     impactCalculatorService =
-      moduleFixture.get<ImpactCalculator>(ImpactCalculator);
-    indicatorRecordsService = moduleFixture.get<IndicatorRecordsService>(
+      testApplication.get<ImpactCalculator>(ImpactCalculator);
+    indicatorRecordsService = testApplication.get<IndicatorRecordsService>(
       IndicatorRecordsService,
     );
 
@@ -227,11 +213,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       .spyOn(indicatorRecordsService, 'updateImpactView')
       .mockResolvedValue('' as any);
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
-    app = getApp(moduleFixture);
-    await app.init();
-    const tokenWithId = await saveUserAndGetTokenWithUserId(moduleFixture, app);
+    const tokenWithId = await saveUserAndGetTokenWithUserId(testApplication);
     jwtToken = tokenWithId.jwtToken;
     userId = tokenWithId.userId;
   });
@@ -267,7 +251,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
     jest.clearAllMocks();
   });
 
@@ -275,7 +259,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     test('Create a scenario intervention of type Change of production efficiency, with correct data should be successful', async () => {
       const preconditions = await createInterventionPreconditions(dataSource);
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -418,7 +402,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         geoRegion,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -538,7 +522,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           geoRegion,
         });
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({
@@ -597,7 +581,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         geoRegion,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -727,7 +711,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         MATERIAL_TO_H3_TYPE.PRODUCER,
       );
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -841,7 +825,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           MATERIAL_TO_H3_TYPE.PRODUCER,
         );
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({
@@ -939,7 +923,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           MATERIAL_TO_H3_TYPE.PRODUCER,
         );
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({
@@ -991,7 +975,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const preconditions: ScenarioInterventionPreconditions =
         await createInterventionPreconditions(dataSource);
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1017,7 +1001,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const preconditions: ScenarioInterventionPreconditions =
         await createInterventionPreconditions(dataSource);
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1042,7 +1026,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
   describe('Missing data and validations', () => {
     test('Create a scenario intervention without the required fields should fail with a 400 error', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send();
@@ -1076,7 +1060,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const supplier: Supplier = await createSupplier();
       const adminRegion: AdminRegion = await createAdminRegion();
       const businessUnit: BusinessUnit = await createBusinessUnit();
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1109,7 +1093,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const supplier: Supplier = await createSupplier();
       const businessUnit: BusinessUnit = await createBusinessUnit();
       const adminRegion: AdminRegion = await createAdminRegion();
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1134,7 +1118,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         ],
       );
 
-      const response2 = await request(app.getHttpServer())
+      const response2 = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1165,7 +1149,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const material: Material = await createMaterial();
       const supplier: Supplier = await createSupplier();
       const businessUnit: BusinessUnit = await createBusinessUnit();
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1192,7 +1176,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         ],
       );
 
-      const response2 = await request(app.getHttpServer())
+      const response2 = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1219,7 +1203,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         ],
       );
 
-      const response3 = await request(app.getHttpServer())
+      const response3 = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1256,7 +1240,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const supplier: Supplier = await createSupplier();
       const businessUnit: BusinessUnit = await createBusinessUnit();
       const adminRegion: AdminRegion = await createAdminRegion();
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1294,7 +1278,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const supplier: Supplier = await createSupplier();
       const businessUnit: BusinessUnit = await createBusinessUnit();
       const adminRegion: AdminRegion = await createAdminRegion();
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1326,7 +1310,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const scenarioIntervention: ScenarioIntervention =
         await createScenarioIntervention();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/scenario-interventions/${scenarioIntervention.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1359,7 +1343,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           dataSource,
         );
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1392,7 +1376,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         await sourcingRecordRepository.count();
       expect(sourcingRecordsCountBeforeUpdate).toEqual(8);
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/scenario-interventions/${allInterventions[0][0].id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -1423,7 +1407,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const scenarioIntervention: ScenarioIntervention =
         await createScenarioIntervention();
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete(`/api/v1/scenario-interventions/${scenarioIntervention.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -1442,7 +1426,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const scenarioIntervention: ScenarioIntervention =
         await createScenarioIntervention();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenario-interventions`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -1458,7 +1442,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         Array.from(Array(10).keys()).map(() => createScenarioIntervention()),
       );
 
-      const responseOne = await request(app.getHttpServer())
+      const responseOne = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenario-interventions`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -1472,7 +1456,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       expect(responseOne.body.data).toHaveLength(3);
       expect(responseOne).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
 
-      const responseTwo = await request(app.getHttpServer())
+      const responseTwo = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenario-interventions`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -1504,7 +1488,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         status: SCENARIO_INTERVENTION_STATUS.DELETED,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenario-interventions`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
@@ -1664,7 +1648,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         const scenario: Scenario = await createScenario();
 
         // ACT
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({
@@ -1850,7 +1834,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
         const scenario: Scenario = await createScenario();
 
-        const responseAdminRegions = await request(app.getHttpServer())
+        const responseAdminRegions = await request(
+          testApplication.getHttpServer(),
+        )
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({
@@ -1892,7 +1878,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           createdScenarioIntervention1.replacedBusinessUnits[0].id,
         ).toEqual(parentBusinessUnit.id);
 
-        const responseBusinessUnits = await request(app.getHttpServer())
+        const responseBusinessUnits = await request(
+          testApplication.getHttpServer(),
+        )
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({
@@ -1921,7 +1909,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           0,
         );
 
-        const responseSuppliers = await request(app.getHttpServer())
+        const responseSuppliers = await request(testApplication.getHttpServer())
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({
@@ -2081,7 +2069,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
         const scenario: Scenario = await createScenario();
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({
@@ -2106,8 +2094,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
         //ASSERT;
         expect(intervention).toBeTruthy();
-        expect(intervention!.newMaterial.id).toEqual(newMaterial.id);
-        expect(intervention!.newAdminRegion.id).toEqual(newAdminRegion.id);
+        expect((intervention as ScenarioIntervention).newMaterial.id).toEqual(
+          newMaterial.id,
+        );
+        expect(
+          (intervention as ScenarioIntervention).newAdminRegion.id,
+        ).toEqual(newAdminRegion.id);
       },
     );
 
@@ -2242,7 +2234,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
         const scenario: Scenario = await createScenario();
 
-        await request(app.getHttpServer())
+        await request(testApplication.getHttpServer())
           .post('/api/v1/scenario-interventions')
           .set('Authorization', `Bearer ${jwtToken}`)
           .send({
@@ -2291,7 +2283,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const scenarioIntervention: ScenarioIntervention =
         await createScenarioIntervention();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenario-interventions/${scenarioIntervention.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -2360,7 +2352,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       });
 
       //CREATE
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -2380,7 +2372,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
       // GET
-      const response2 = await request(app.getHttpServer())
+      const response2 = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenario-interventions/${response.body.data.id}`)
         .set('Authorization', `Bearer ${jwtToken}`);
 

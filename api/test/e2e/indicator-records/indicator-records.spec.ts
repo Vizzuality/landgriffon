@@ -1,4 +1,4 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import {
   createIndicator,
@@ -10,7 +10,9 @@ import { IndicatorRecord } from 'modules/indicator-records/indicator-record.enti
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { clearEntityTables } from '../../utils/database-test-helper';
 import { User } from 'modules/users/user.entity';
 import { DataSource } from 'typeorm';
@@ -22,23 +24,21 @@ import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
  */
 
 describe('IndicatorRecordsModule (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let dataSource: DataSource;
   let indicatorRecordRepository: IndicatorRecordRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
-    indicatorRecordRepository = moduleFixture.get<IndicatorRecordRepository>(
+    indicatorRecordRepository = testApplication.get<IndicatorRecordRepository>(
       IndicatorRecordRepository,
     );
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
   });
 
   afterEach(async () => {
@@ -52,7 +52,7 @@ describe('IndicatorRecordsModule (e2e)', () => {
       Material,
       SourcingRecord,
     ]);
-    await app.close();
+    await testApplication.close();
   });
 
   describe.skip('Indicator record - Create', () => {
@@ -61,7 +61,7 @@ describe('IndicatorRecordsModule (e2e)', () => {
       const indicator: Indicator = await createIndicator({
         nameCode: 'GAMMA_RADIATION',
       });
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/indicator-records')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -84,7 +84,7 @@ describe('IndicatorRecordsModule (e2e)', () => {
   });
 
   test('Create a indicator records without the required fields should fail with a 400 error', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .post('/api/v1/indicator-records')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -106,7 +106,7 @@ describe('IndicatorRecordsModule (e2e)', () => {
     test('Update a indicator records should be successful (happy case)', async () => {
       const indicatorRecord: IndicatorRecord = await createIndicatorRecord();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/indicator-records/${indicatorRecord.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -122,7 +122,7 @@ describe('IndicatorRecordsModule (e2e)', () => {
     test('Delete a indicator records should be successful (happy case)', async () => {
       const indicatorRecord: IndicatorRecord = await createIndicatorRecord();
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete(`/api/v1/indicator-records/${indicatorRecord.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -140,7 +140,7 @@ describe('IndicatorRecordsModule (e2e)', () => {
     test('Get all indicator records should be successful (happy case)', async () => {
       const indicatorRecord: IndicatorRecord = await createIndicatorRecord();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/indicator-records')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -154,7 +154,7 @@ describe('IndicatorRecordsModule (e2e)', () => {
     test('Get a indicator record by id should be successful (happy case)', async () => {
       const indicatorRecord: IndicatorRecord = await createIndicatorRecord();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/indicator-records/${indicatorRecord.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()

@@ -1,9 +1,11 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
@@ -12,22 +14,20 @@ import { DataSource } from 'typeorm';
  */
 
 describe('GeoRegionsModule (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let dataSource: DataSource;
   let geoRegionRepository: GeoRegionRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
     geoRegionRepository =
-      moduleFixture.get<GeoRegionRepository>(GeoRegionRepository);
+      testApplication.get<GeoRegionRepository>(GeoRegionRepository);
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
   });
 
   afterEach(async () => {
@@ -36,12 +36,12 @@ describe('GeoRegionsModule (e2e)', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   describe('Geo regions - Create', () => {
     test('Create a geo region should be successful (happy case)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/geo-regions')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -63,7 +63,7 @@ describe('GeoRegionsModule (e2e)', () => {
   });
 
   test('Create a geo region without the required fields should fail with a 400 error', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .post('/api/v1/geo-regions')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -87,7 +87,7 @@ describe('GeoRegionsModule (e2e)', () => {
       geoRegion.name = 'test geo region';
       await geoRegion.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/geo-regions/${geoRegion.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -107,7 +107,7 @@ describe('GeoRegionsModule (e2e)', () => {
       geoRegion.name = 'test geo region';
       await geoRegion.save();
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete(`/api/v1/geo-regions/${geoRegion.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -125,7 +125,7 @@ describe('GeoRegionsModule (e2e)', () => {
       geoRegion.name = 'test geo region';
       await geoRegion.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/geo-regions`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -141,7 +141,7 @@ describe('GeoRegionsModule (e2e)', () => {
       geoRegion.name = 'test geo region';
       await geoRegion.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/geo-regions/${geoRegion.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()

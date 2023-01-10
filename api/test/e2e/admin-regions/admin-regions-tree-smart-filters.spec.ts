@@ -1,4 +1,4 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import {
   createAdminRegion,
@@ -9,7 +9,9 @@ import {
   createSupplier,
 } from '../../entity-mocks';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { Material } from 'modules/materials/material.entity';
 import {
@@ -31,17 +33,16 @@ import { Scenario } from 'modules/scenarios/scenario.entity';
 import { DataSource } from 'typeorm';
 
 describe('Admin Regions - Get trees - Smart Filters', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let jwtToken: string;
   let dataSource: DataSource;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    testApplication = await ApplicationManager.init();
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    dataSource = testApplication.get<DataSource>(DataSource);
+
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
   });
 
   afterEach(async () => {
@@ -58,11 +59,11 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   test('When I request admin region trees, and the DB is empty, then I should get empty array', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get(`/api/v1/admin-regions/trees`)
       .query({
         withSourcingLocations: true,
@@ -128,7 +129,7 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
         materialId: material3.id,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/admin-regions/trees')
         .query({
           withSourcingLocations: true,
@@ -202,7 +203,7 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
         locationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/admin-regions/trees')
         .query({
           withSourcingLocations: true,
@@ -276,7 +277,7 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
           adminRegion: childAdminRegion2,
         });
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get('/api/v1/admin-regions/trees')
           .query({
             withSourcingLocations: true,
@@ -371,7 +372,7 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
           adminRegion: adminRegion2,
         });
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get('/api/v1/admin-regions/trees')
           .query({
             withSourcingLocations: true,
@@ -412,7 +413,7 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
         });
 
         const parentAdminRegion2 = await createAdminRegion({
-          name: 'parentAdmingRegion2',
+          name: 'parentAdminRegion2',
         });
         const childAdminRegion2 = await createAdminRegion({
           name: 'child material that is part of an inactive intervention',
@@ -446,7 +447,7 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
           adminRegion: childAdminRegion2,
         });
 
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get('/api/v1/admin-regions/trees')
           .query({
             withSourcingLocations: true,

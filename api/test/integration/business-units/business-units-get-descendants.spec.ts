@@ -2,20 +2,22 @@ import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { BusinessUnitRepository } from 'modules/business-units/business-unit.repository';
 import { createBusinessUnit } from '../../entity-mocks';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 
 describe('BusinessUnits - Get descendants by BusinessUnit Ids', () => {
+  let testApplication: TestApplication;
   let businessUnitRepository: BusinessUnitRepository;
   let businessUnitsService: BusinessUnitsService;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    businessUnitRepository = moduleFixture.get<BusinessUnitRepository>(
+    businessUnitRepository = testApplication.get<BusinessUnitRepository>(
       BusinessUnitRepository,
     );
-    businessUnitsService = moduleFixture.get(BusinessUnitsService);
+    businessUnitsService = testApplication.get(BusinessUnitsService);
 
     await businessUnitRepository.delete({});
   });

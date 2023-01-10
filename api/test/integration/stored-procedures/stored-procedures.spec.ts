@@ -1,5 +1,3 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from 'app.module';
 import {
   createGeoRegion,
   createMaterial,
@@ -14,22 +12,22 @@ import {
   dropH3DataMock,
   h3DataMock,
 } from '../../e2e/h3-data/mocks/h3-data.mock';
-import { H3DataModule } from 'modules/h3-data/h3-data.module';
 import { createWorldToCalculateIndicatorRecords } from '../../utils/indicator-records-preconditions';
-import { IndicatorsModule } from 'modules/indicators/indicators.module';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { Material } from 'modules/materials/material.entity';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { MaterialRepository } from 'modules/materials/material.repository';
-import { MaterialsModule } from 'modules/materials/materials.module';
 import { snakeCase } from 'typeorm/util/StringUtils';
-import { GeoRegionsModule } from 'modules/geo-regions/geo-regions.module';
 import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
 import { DataSource } from 'typeorm';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 
 // TODO: Restore when new methodology validated
 describe.skip('Stored Procedures Tests', () => {
+  let testApplication: TestApplication;
   let dataSource: DataSource;
   let h3DataRepository: H3DataRepository;
   let geoRegionRepository: GeoRegionRepository;
@@ -41,28 +39,21 @@ describe.skip('Stored Procedures Tests', () => {
   const h3MockColumnName = 'h3columnName';
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        AppModule,
-        IndicatorsModule,
-        H3DataModule,
-        MaterialsModule,
-        GeoRegionsModule,
-      ],
-    }).compile();
-    h3DataRepository = moduleFixture.get<H3DataRepository>(H3DataRepository);
+    testApplication = await ApplicationManager.init();
+
+    h3DataRepository = testApplication.get<H3DataRepository>(H3DataRepository);
     indicatorRepository =
-      moduleFixture.get<IndicatorRepository>(IndicatorRepository);
-    materialToH3Service = moduleFixture.get<MaterialsToH3sService>(
+      testApplication.get<IndicatorRepository>(IndicatorRepository);
+    materialToH3Service = testApplication.get<MaterialsToH3sService>(
       MaterialsToH3sService,
     );
     materialRepository =
-      moduleFixture.get<MaterialRepository>(MaterialRepository);
+      testApplication.get<MaterialRepository>(MaterialRepository);
 
     geoRegionRepository =
-      moduleFixture.get<GeoRegionRepository>(GeoRegionRepository);
+      testApplication.get<GeoRegionRepository>(GeoRegionRepository);
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
   });
 
   afterEach(async () => {

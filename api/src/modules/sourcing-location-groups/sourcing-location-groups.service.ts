@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
@@ -19,6 +19,10 @@ export class SourcingLocationGroupsService extends AppBaseService<
   UpdateSourcingLocationGroupDto,
   AppInfoDTO
 > {
+  protected readonly logger: Logger = new Logger(
+    SourcingLocationGroupsService.name,
+  );
+
   constructor(
     protected readonly sourcingLocationGroupRepository: SourcingLocationGroupRepository,
   ) {

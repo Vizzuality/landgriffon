@@ -1,11 +1,13 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
 import { IndicatorCoefficientRepository } from 'modules/indicator-coefficients/indicator-coefficient.repository';
 
 import { createIndicatorCoefficient } from '../../entity-mocks';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
@@ -14,24 +16,22 @@ import { DataSource } from 'typeorm';
  */
 
 describe('IndicatorCoefficientsModule (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let dataSource: DataSource;
   let indicatorCoefficientRepository: IndicatorCoefficientRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
     indicatorCoefficientRepository =
-      moduleFixture.get<IndicatorCoefficientRepository>(
+      testApplication.get<IndicatorCoefficientRepository>(
         IndicatorCoefficientRepository,
       );
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
   });
 
   afterEach(async () => {
@@ -40,12 +40,12 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   describe('Indicator coefficients - Create', () => {
     test('Create an indicator coefficient should be successful (happy case)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/indicator-coefficients')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -67,7 +67,7 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
   });
 
   test('Create a indicator coefficient without the required fields should fail with a 400 error', async () => {
-    const response = await request(app.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .post('/api/v1/indicator-coefficients')
       .set('Authorization', `Bearer ${jwtToken}`)
       .send()
@@ -88,7 +88,7 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
       const indicatorCoefficient: IndicatorCoefficient =
         await createIndicatorCoefficient();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/indicator-coefficients/${indicatorCoefficient.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -105,7 +105,7 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
       const indicatorCoefficient: IndicatorCoefficient =
         await createIndicatorCoefficient();
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete(`/api/v1/indicator-coefficients/${indicatorCoefficient.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -124,7 +124,7 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
       const indicatorCoefficient: IndicatorCoefficient =
         await createIndicatorCoefficient();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/indicator-coefficients`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -139,7 +139,7 @@ describe('IndicatorCoefficientsModule (e2e)', () => {
       const indicatorCoefficient: IndicatorCoefficient =
         await createIndicatorCoefficient();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/indicator-coefficients/${indicatorCoefficient.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()

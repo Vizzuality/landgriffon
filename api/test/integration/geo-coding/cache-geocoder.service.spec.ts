@@ -4,7 +4,7 @@ import {
   GeocodeResult,
   Status,
 } from '@googlemaps/google-maps-services-js';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { CACHE_MANAGER } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { AppModule } from 'app.module';
@@ -12,8 +12,12 @@ import { CacheGeocoder } from 'modules/geo-coding/geocoders/cache.geocoder';
 import { GoogleMapsGeocoder } from 'modules/geo-coding/geocoders/google-maps.geocoder';
 import { Geocoder } from 'modules/geo-coding/geocoders/geocoder.interface';
 import { geocodeResponses } from './mocks/geo-coding.mock-response';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 
 describe('GeoCoding Service (Integration Testing)', () => {
+  let testApplication: TestApplication;
   let cacheGeocoder: CacheGeocoder;
   let cacheManager: Cache;
 
@@ -31,15 +35,16 @@ describe('GeoCoding Service (Integration Testing)', () => {
   }
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-      .overrideProvider(GoogleMapsGeocoder)
-      .useClass(GoogleMapsGeocoderMock)
-      .compile();
+    testApplication = await ApplicationManager.init(
+      Test.createTestingModule({
+        imports: [AppModule],
+      })
+        .overrideProvider(GoogleMapsGeocoder)
+        .useClass(GoogleMapsGeocoderMock),
+    );
 
-    cacheGeocoder = moduleFixture.get<CacheGeocoder>(Geocoder);
-    cacheManager = moduleFixture.get<Cache>(CACHE_MANAGER);
+    cacheGeocoder = testApplication.get<CacheGeocoder>(Geocoder);
+    cacheManager = testApplication.get<Cache>(CACHE_MANAGER);
   });
 
   afterEach(async () => {

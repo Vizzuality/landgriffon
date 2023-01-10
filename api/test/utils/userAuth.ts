@@ -1,17 +1,15 @@
-import { TestingModule } from '@nestjs/testing';
 import { E2E_CONFIG } from '../e2e.config';
 import { genSalt, hash } from 'bcrypt';
 import * as request from 'supertest';
-import { INestApplication } from '@nestjs/common';
 import { User } from 'modules/users/user.entity';
 import { EntityManager } from 'typeorm';
+import { TestApplication } from './application-manager';
 
 export async function saveUserAndGetTokenWithUserId(
-  moduleFixture: TestingModule,
-  app: INestApplication,
+  applicationManager: TestApplication,
 ): Promise<{ jwtToken: string; userId: string }> {
   const salt = await genSalt();
-  const entityManager = moduleFixture.get<EntityManager>(EntityManager);
+  const entityManager = applicationManager.get<EntityManager>(EntityManager);
   const userRepository = entityManager.getRepository(User);
   await userRepository.save({
     ...E2E_CONFIG.users.signUp,
@@ -20,7 +18,7 @@ export async function saveUserAndGetTokenWithUserId(
     isActive: true,
     isDeleted: false,
   });
-  const response = await request(app.getHttpServer())
+  const response = await request(applicationManager.application.getHttpServer())
     .post('/auth/sign-in')
     .send(E2E_CONFIG.users.signIn);
 

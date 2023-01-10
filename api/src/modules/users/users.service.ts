@@ -3,6 +3,7 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  Logger,
   NotImplementedException,
 } from '@nestjs/common';
 import { User, userResource } from 'modules/users/user.entity';

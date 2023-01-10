@@ -30,8 +30,6 @@ export class ApiEventsService extends AppBaseService<
   UpdateApiEventDTO,
   AppInfoDTO
 > {
-  protected readonly logger: Logger = new Logger(ApiEventsService.name);
-
   constructor(
     @InjectRepository(ApiEvent) readonly repo: Repository<ApiEvent>,
     @InjectRepository(LatestApiEventByTopicAndKind)

@@ -3,6 +3,7 @@ import {
   HttpException,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import {

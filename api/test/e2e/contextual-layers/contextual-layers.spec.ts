@@ -1,7 +1,9 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import {
   clearEntityTables,
   clearTestDataFromDatabase,
@@ -23,18 +25,16 @@ import { DataSource } from 'typeorm';
  */
 
 describe('ContextualLayersModule (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let dataSource: DataSource;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
   });
 
   afterEach(async () => {
@@ -47,27 +47,29 @@ describe('ContextualLayersModule (e2e)', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   describe('Contextual Layers - Get all contextual layers by category', () => {
     test('When I query the API to get all the contextual layer info, Then I should get all available layers grouped by category', async () => {
-      for (const num of [1, 2]) {
-        await Promise.all(
-          Object.values(CONTEXTUAL_LAYER_CATEGORY).map(
-            async (category: string) => {
-              return createContextualLayer({
-                category: category as CONTEXTUAL_LAYER_CATEGORY,
-              });
-            },
-          ),
-        );
-      }
+      await Promise.all(
+        Array.from(Array(2)).map(() => {
+          return Promise.all(
+            Object.values(CONTEXTUAL_LAYER_CATEGORY).map(
+              async (category: string) => {
+                return createContextualLayer({
+                  category: category as CONTEXTUAL_LAYER_CATEGORY,
+                });
+              },
+            ),
+          );
+        }),
+      );
 
       await createContextualLayer({
         category: CONTEXTUAL_LAYER_CATEGORY.DEFAULT,
       });
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get('/api/v1/contextual-layers/categories')
         .set('Authorization', `Bearer ${jwtToken}`);
 
@@ -96,7 +98,7 @@ describe('ContextualLayersModule (e2e)', () => {
         category: CONTEXTUAL_LAYER_CATEGORY.BUSINESS_DATASETS,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/contextual-layers/${contextualLayer.id}/h3Data`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .expect(HttpStatus.NOT_FOUND);
@@ -120,7 +122,7 @@ describe('ContextualLayersModule (e2e)', () => {
         contextualLayerId: contextualLayer.id,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(
           `/api/v1/contextual-layers/${contextualLayer.id}/h3Data?resolution=2`,
         )
@@ -146,7 +148,7 @@ describe('ContextualLayersModule (e2e)', () => {
         contextualLayerId: contextualLayer.id,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/contextual-layers/${contextualLayer.id}/h3Data`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .expect(HttpStatus.OK);
@@ -194,7 +196,7 @@ describe('ContextualLayersModule (e2e)', () => {
       const responses: Map<CONTEXTUAL_LAYER_AGG_TYPE, request.Response> =
         new Map();
       for (const layer of layers.entries()) {
-        const response = await request(app.getHttpServer())
+        const response = await request(testApplication.getHttpServer())
           .get(`/api/v1/contextual-layers/${layer[1].id}/h3Data?resolution=2`)
           .set('Authorization', `Bearer ${jwtToken}`)
           .expect(HttpStatus.OK);
@@ -273,7 +275,7 @@ describe('ContextualLayersModule (e2e)', () => {
         contextualLayerId: contextualLayer.id,
       });
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/contextual-layers/${contextualLayer.id}/h3Data?year=2019`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .expect(HttpStatus.OK);

@@ -1,9 +1,11 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { Unit } from 'modules/units/unit.entity';
 import { UnitRepository } from 'modules/units/unit.repository';
 import { saveUserAndGetTokenWithUserId } from '../../utils/userAuth';
-import AppSingleton from '../../utils/getApp';
+import ApplicationManager, {
+  TestApplication,
+} from '../../utils/application-manager';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
@@ -12,21 +14,19 @@ import { DataSource } from 'typeorm';
  */
 
 describe('UnitsModule (e2e)', () => {
-  let app: INestApplication;
+  let testApplication: TestApplication;
   let dataSource: DataSource;
   let unitRepository: UnitRepository;
   let jwtToken: string;
 
   beforeAll(async () => {
-    const appSingleton = await AppSingleton.init();
-    app = appSingleton.app;
-    const moduleFixture = appSingleton.moduleFixture;
+    testApplication = await ApplicationManager.init();
 
-    dataSource = moduleFixture.get<DataSource>(DataSource);
+    dataSource = testApplication.get<DataSource>(DataSource);
 
-    unitRepository = moduleFixture.get<UnitRepository>(UnitRepository);
+    unitRepository = testApplication.get<UnitRepository>(UnitRepository);
 
-    ({ jwtToken } = await saveUserAndGetTokenWithUserId(moduleFixture, app));
+    ({ jwtToken } = await saveUserAndGetTokenWithUserId(testApplication));
   });
 
   afterEach(async () => {
@@ -35,12 +35,12 @@ describe('UnitsModule (e2e)', () => {
 
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
-    await app.close();
+    await testApplication.close();
   });
 
   describe('Units - Create', () => {
     test('Create a unit should be successful (happy case)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/units')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -60,7 +60,7 @@ describe('UnitsModule (e2e)', () => {
     });
 
     test('Create a unit without the required fields should fail with a 400 error', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .post('/api/v1/units')
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -85,7 +85,7 @@ describe('UnitsModule (e2e)', () => {
       unit.name = 'test unit';
       await unit.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/units/${unit.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
@@ -103,7 +103,7 @@ describe('UnitsModule (e2e)', () => {
       unit.name = 'test unit';
       await unit.save();
 
-      await request(app.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete(`/api/v1/units/${unit.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -121,7 +121,7 @@ describe('UnitsModule (e2e)', () => {
       unit.name = 'test unit';
       await unit.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/units`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()
@@ -137,7 +137,7 @@ describe('UnitsModule (e2e)', () => {
       unit.name = 'test unit';
       await unit.save();
 
-      const response = await request(app.getHttpServer())
+      const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/units/${unit.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send()

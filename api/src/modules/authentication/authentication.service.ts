@@ -23,8 +23,11 @@ import * as ApiEventsUserData from 'modules/api-events/dto/apiEvents.user.data.d
 import { UserRepository } from 'modules/users/user.repository';
 import * as config from 'config';
 import { ApiProperty } from '@nestjs/swagger';
-import ms = require('ms');
 import { ApiEventByTopicAndKind } from 'modules/api-events/api-event.topic+kind.entity';
+import { Role } from 'modules/authorization/role.entity';
+import { ROLES } from 'modules/authorization/roles/roles.enum';
+import { CreateUserDTO } from 'modules/users/dto/create.user.dto';
+import ms = require('ms');
 
 /**
  * Access token for the app: key user data and access token
@@ -121,13 +124,22 @@ export class AuthenticationService {
    * @todo Allow to set all of a user's data on signup, if needed.
    * @todo Implement email verification.
    */
-  async createUser(signupDto: SignUpDto): Promise<Partial<User>> {
+  async createUser(
+    signupDto: CreateUserDTO | SignUpDto,
+  ): Promise<Partial<User>> {
     const user: User = new User();
     user.displayName = signupDto.displayName;
     user.salt = await genSalt();
     user.password = await hash(signupDto.password, user.salt);
     user.email = signupDto.email;
     user.isActive = !config.get('auth.requireUserAccountActivation');
+    if ('roles' in signupDto && signupDto.roles) {
+      user.roles = Role.createRolesFromEnum(signupDto.roles);
+    } else {
+      const role: Role = new Role();
+      role.name = ROLES.USER;
+      user.roles = [role];
+    }
 
     await this.checkEmail(user.email);
     const newUser: Omit<User, 'password' | 'salt' | 'isActive' | 'isDeleted'> =

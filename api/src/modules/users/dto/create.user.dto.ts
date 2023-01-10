@@ -1,6 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEmail, IsOptional, MaxLength, Validate } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  MaxLength,
+  Validate,
+} from 'class-validator';
 import { PasswordValidation } from 'decorators/password-validator.decorator';
+import { ROLES } from 'modules/authorization/roles/roles.enum';
 
 export class CreateUserDTO {
   @ApiProperty()
@@ -39,4 +46,14 @@ export class CreateUserDTO {
   // Limit the data URI of the avatar to a sensible size.
   @MaxLength(1e5)
   avatarDataUrl?: string;
+
+  @ApiPropertyOptional({
+    enum: ROLES,
+    type: ROLES,
+    example: Object.values(ROLES),
+    isArray: true,
+  })
+  @IsOptional()
+  @IsEnum(ROLES, { each: true })
+  roles?: ROLES[];
 }

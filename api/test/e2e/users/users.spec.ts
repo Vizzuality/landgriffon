@@ -13,6 +13,11 @@ import { ApiEventsModule } from 'modules/api-events/api-events.module';
 import { UsersModule } from 'modules/users/users.module';
 import { LoginDto } from 'modules/authentication/dto/login.dto';
 import { getApp } from '../../utils/getApp';
+import { saveAdminAndGetToken } from '../../utils/userAuth';
+import { ROLES } from '../../../src/modules/authorization/roles/roles.enum';
+import { getManager } from 'typeorm';
+import { User } from '../../../src/modules/users/user.entity';
+import { clearEntityTables } from '../../utils/database-test-helper';
 
 /**
  * Tests for the UsersModule.
@@ -29,7 +34,8 @@ import { getApp } from '../../utils/getApp';
 
 describe('UsersModule (e2e)', () => {
   let app: INestApplication;
-
+  let moduleFixture: TestingModule;
+  let adminToken: string;
   const aNewPassword = 'aNewPassword123!';
 
   const signUpDto: SignUpDto = {
@@ -44,7 +50,7 @@ describe('UsersModule (e2e)', () => {
   };
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
+    moduleFixture = await Test.createTestingModule({
       imports: [
         AppModule,
         ApiEventsModule,
@@ -56,6 +62,7 @@ describe('UsersModule (e2e)', () => {
     app = getApp(moduleFixture);
 
     await app.init();
+    adminToken = await saveAdminAndGetToken(moduleFixture, app);
 
     await request(app.getHttpServer())
       .post('/auth/sign-up')
@@ -64,6 +71,7 @@ describe('UsersModule (e2e)', () => {
   });
 
   afterAll(async () => {
+    await clearEntityTables([User]);
     await app.close();
   });
 
@@ -93,6 +101,78 @@ describe('UsersModule (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .send(newUserDto)
         .expect(HttpStatus.FORBIDDEN);
+    });
+
+    test('A admin should be able to create a user with default user role if none provided ', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/users')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ email: 'test@test.com', password: '12345678' })
+        .expect(HttpStatus.CREATED);
+
+      expect(response.body.data.attributes.email).toEqual('test@test.com');
+      expect(response.body.data.attributes.roles).toEqual([
+        { name: ROLES.USER },
+      ]);
+
+      await getManager().getRepository(User).delete({ email: 'test@test.com' });
+    });
+
+    test('A admin user should be able to create a user with roles ', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/users')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          email: 'test@test.com',
+          password: '12345678',
+          roles: [ROLES.ADMIN, ROLES.USER],
+        })
+        .expect(HttpStatus.CREATED);
+
+      expect(response.body.data.attributes.email).toEqual('test@test.com');
+      expect(response.body.data.attributes.roles).toEqual([
+        { name: ROLES.ADMIN },
+        { name: ROLES.USER },
+      ]);
+
+      await getManager().getRepository(User).delete({ email: 'test@test.com' });
+    });
+
+    test('A user should not be able to update its own role ', async () => {
+      const response = await request(app.getHttpServer())
+        .patch('/api/v1/users/me')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          email: newUserDto.email,
+          roles: [ROLES.ADMIN, ROLES.USER],
+        })
+        .expect(HttpStatus.BAD_REQUEST);
+
+      expect(response.body.errors[0].meta.rawError.response.message[0]).toEqual(
+        'property roles should not exist',
+      );
+    });
+
+    test('A admin should be able to update any users role', async () => {
+      const userId = await request(app.getHttpServer())
+        .post('/auth/sign-in')
+        .send(loginDto)
+        .expect(HttpStatus.CREATED)
+        .then((response: Response) => response.body.user.id);
+
+      const response = await request(app.getHttpServer())
+        .patch(`/api/v1/users/update/${userId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          roles: [ROLES.ADMIN, ROLES.USER],
+        })
+        .expect(HttpStatus.OK);
+
+      // TODO: nestjs-base-service transforms role property from array of objects to array of strings. decide approach for everything (post, patch...) and be consistent
+      expect(response.body.data.attributes.roles).toEqual([
+        ROLES.ADMIN,
+        ROLES.USER,
+      ]);
     });
 
     test('A user should not be able to create users using an email address already in use', async () => {
@@ -152,7 +232,7 @@ describe('UsersModule (e2e)', () => {
           ...E2E_CONFIG.users.updated.bb(),
           password: 'newPassword123!!',
         })
-        .expect(HttpStatus.FORBIDDEN);
+        .expect(HttpStatus.BAD_REQUEST);
     });
 
     test('A user should not be able to change their password if they provide an incorrect current password', async () => {

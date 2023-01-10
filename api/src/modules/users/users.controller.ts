@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Patch,
   Post,
   Request,
@@ -29,7 +30,10 @@ import {
   FetchSpecification,
   ProcessFetchSpecification,
 } from 'nestjs-base-service';
-import { UpdateUserDTO } from 'modules/users/dto/update.user.dto';
+import {
+  UpdateOwnUserDTO,
+  UpdateUserDTO,
+} from 'modules/users/dto/update.user.dto';
 import { UpdateUserPasswordDTO } from 'modules/users/dto/update.user-password';
 import { PaginationMeta } from 'utils/app-base.service';
 import { CreateUserDTO } from 'modules/users/dto/create.user.dto';
@@ -87,6 +91,23 @@ export class UsersController {
     return this.service.serialize(await this.service.createUser(createUserDTO));
   }
 
+  @ApiOperation({ description: 'Update a user as admin' })
+  @ApiCreatedResponse({ description: 'User created successfully' })
+  @ApiOkResponse({
+    type: User,
+  })
+  @ApiForbiddenResponse()
+  @RequiredRoles(ROLES.ADMIN)
+  @Patch('update/:id')
+  async updateUser(
+    @Body(new ValidationPipe()) updateUser: UpdateUserDTO,
+    @Param('id') userId: string,
+  ): Promise<User> {
+    return this.service.serialize(
+      await this.service.update(userId, updateUser),
+    );
+  }
+
   @ApiOperation({
     description:
       'Update the password of a user, if they can present the current one.',
@@ -100,12 +121,12 @@ export class UsersController {
     return await this.service.updateOwnPassword(req.user.id, dto);
   }
 
-  @ApiOperation({ description: 'Update a user.' })
+  @ApiOperation({ description: 'Update own user.' })
   @ApiOkResponse({ type: UserResult })
   @Patch('me')
   async update(
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
-    dto: UpdateUserDTO,
+    dto: UpdateOwnUserDTO,
     @Request() req: RequestWithAuthenticatedUser,
   ): Promise<UserResult> {
     return this.service.serialize(

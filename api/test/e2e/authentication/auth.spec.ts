@@ -14,6 +14,8 @@ import { API_EVENT_KINDS } from '../../../src/modules/api-events/api-event.entit
 import { ApiEventsService } from 'modules/api-events/api-events.service';
 import { Response } from 'supertest';
 import { getApp } from '../../utils/getApp';
+import { getManager } from 'typeorm';
+import { ROLES } from '../../../src/modules/authorization/roles/roles.enum';
 
 jest.mock('config', () => {
   const config = jest.requireActual('config');
@@ -161,7 +163,7 @@ describe('AppController (e2e)', () => {
         );
       });
 
-      test('Signs up user with valid password', async () => {
+      test('Signs up user with valid password and with a default user role', async () => {
         await request(app.getHttpServer())
           .post('/auth/sign-up')
           .send({
@@ -169,6 +171,30 @@ describe('AppController (e2e)', () => {
             password: E2E_CONFIG.users.signUp.password,
           })
           .expect(HttpStatus.CREATED);
+
+        const users: User[] = await getManager()
+          .getRepository(User)
+          .find({ where: { email: E2E_CONFIG.users.signUp.email } });
+
+        expect(users).toHaveLength(1);
+        expect(users[0].email).toEqual(E2E_CONFIG.users.signUp.email);
+        expect(users[0].roles).toHaveLength(1);
+        expect(users[0].roles[0].name).toEqual(ROLES.USER);
+      });
+
+      test('Signing up a user with a role should throw an error', async () => {
+        const response = await request(app.getHttpServer())
+          .post('/auth/sign-up')
+          .send({
+            email: E2E_CONFIG.users.signUp.email,
+            password: E2E_CONFIG.users.signUp.password,
+            roles: [ROLES.ADMIN],
+          })
+          .expect(HttpStatus.BAD_REQUEST);
+
+        expect(
+          response.body.errors[0].meta.rawError.response.message[0],
+        ).toEqual('property roles should not exist');
       });
 
       test('A user should not be able to create an account using an email address already in use', async () => {

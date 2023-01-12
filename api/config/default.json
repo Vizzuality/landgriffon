@@ -48,8 +48,6 @@
     "username": "landgriffon",
     "password": "",
     "database": "landgriffon",
-    "synchronize": false,
-    "migrationsRun": true,
     "dropSchema": false,
     "logging": false,
     "batchChunkSize": 2000,

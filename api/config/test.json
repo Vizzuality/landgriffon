@@ -6,10 +6,8 @@
     "username": "landgriffon",
     "password": "",
     "database": "landgriffon_test",
-    "synchronize": false,
     "dropSchema": false,
     "logging": false,
-    "migrationsRun": true,
     "cacheEnabled": false
   },
   "server": {

@@ -17,6 +17,11 @@ const nextConfig = {
         destination: '/analysis/map',
         permanent: false,
       },
+      {
+        source: '/data/targets',
+        destination: '/data',
+        permanent: false,
+      },
     ];
   },
 };

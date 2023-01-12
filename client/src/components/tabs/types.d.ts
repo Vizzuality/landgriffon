@@ -3,6 +3,7 @@ export type TabType = {
   name: string;
   /** Tab href / where to link */
   href: string;
+  disabled?: boolean;
 };
 
 export type TabsType = {

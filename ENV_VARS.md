@@ -14,8 +14,6 @@ for the API app.
 * `DB_USERNAME` (string): username to use when connecting to the database.
 * `DB_PASSWORD` (string): password to use when connecting to the database.
 * `DB_DATABASE` (string): database name to use.
-* `DB_SYNCHRONIZE` (boolean): if set to "true", model changes will be automatically applied to the database on app startup. Defaults to "false".
-* `DB_MIGRATIONS_RUN` (boolean): if set to "true", pending migrations will be automatically applied to the database on app startup. Defaults to "true".
 * `CHUNK_SIZE_FOR_BATCH_DB_OPERATIONS` (number): when batch-saving data, determines how many records are saved per operation. Defaults to "50".
 * `DB_DEBUG_LOGGING` (boolean): if the database debug logging should be enabled. Defaults to "false".
 * `DB_CACHE_ENABLED` (boolean): if the database cache is enabled. Defaults to "true".

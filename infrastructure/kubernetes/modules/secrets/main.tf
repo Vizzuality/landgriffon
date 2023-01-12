@@ -100,7 +100,6 @@ resource "kubernetes_secret" "db_secret" {
     DB_USERNAME             = sensitive(local.postgres_secret_json.username)
     DB_PASSWORD             = sensitive(local.postgres_secret_json.password)
     DB_DATABASE             = sensitive(local.postgres_secret_json.database)
-    DB_SYNCHRONIZE          = "true"
     REDIS_HOST              = "redis-master.${var.namespace}.svc.cluster.local"
   }
 }

@@ -12,10 +12,8 @@ export const typeOrmConfig: DataSourceOptions = {
   database: dbConfig.database,
   logging: dbConfig.logging,
   maxQueryExecutionTime: dbConfig.maxQueryExecutionTime,
-  synchronize: dbConfig.synchronize === true || dbConfig.synchronize === 'true',
   migrations: [__dirname + '/migrations/*.{ts,js}'],
-  migrationsRun:
-    dbConfig.migrationsRun === true || dbConfig.migrationsRun === 'true',
+  migrationsRun: true,
   dropSchema: dbConfig.dropSchema === true || dbConfig.dropSchema === 'true',
   cache:
     dbConfig.cacheEnabled === true || dbConfig.cacheEnabled === 'true'

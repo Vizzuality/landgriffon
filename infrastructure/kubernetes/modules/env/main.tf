@@ -80,10 +80,6 @@ module "k8s_api" {
       value = 3000
     },
     {
-      name  = "DB_SYNCHRONIZE"
-      value = "true"
-    },
-    {
       name  = "JWT_EXPIRES_IN"
       value = "2h"
     },
@@ -97,10 +93,6 @@ module "k8s_api" {
     },
     {
       name  = "REQUIRE_USER_ACCOUNT_ACTIVATION"
-      value = "true"
-    },
-    {
-      name  = "DB_MIGRATIONS_RUN"
       value = "true"
     }
   ])

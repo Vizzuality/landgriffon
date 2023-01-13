@@ -63,6 +63,13 @@ const schemaValidation = yup.object({
     })
     .label('Start year')
     .required(),
+  endYear: yup
+    .object({
+      label: yup.string(),
+      value: yup.number(),
+    })
+    .label('End year')
+    .optional(),
   percentage: yup.number().label('Percentage').moreThan(0).max(100).required(),
   scenarioId: yup.string().label('Scenario ID').required(),
 
@@ -624,7 +631,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
         </div>
         <div>
           <label className={LABEL_CLASSNAMES}>
-            Year of implementation <sup>*</sup>
+            Start year of implementation <sup>*</sup>
           </label>
           <Controller
             name="startYear"
@@ -641,6 +648,29 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                   onChange={(value) => setValue('startYear', value)}
                   loading={isLoadingYears}
                   error={!!errors?.startYear}
+                />
+              </div>
+            )}
+          />
+        </div>
+        <div>
+          <label className={LABEL_CLASSNAMES}>End year of implementation</label>
+          <Controller
+            name="endYear"
+            control={control}
+            render={({ field: { value, ...field } }) => (
+              <div data-testid="endYear-select">
+                <Select
+                  {...field}
+                  instanceId="endYear"
+                  showSearch
+                  current={value}
+                  options={[]}
+                  placeholder="Select a year"
+                  onChange={(value) => setValue('endYear', value)}
+                  loading={isLoadingYears}
+                  error={!!errors?.endYear}
+                  disabled
                 />
               </div>
             )}

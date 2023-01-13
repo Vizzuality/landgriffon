@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Disable action buttons in the targets page [LANDGRIF-1109](https://vizzuality.atlassian.net/browse/LANDGRIF-1109)
 ### Added
 
+- Added a end year field in the intervention form [LANDGRIF-1113](https://vizzuality.atlassian.net/browse/LANDGRIF-1113)
 - Added a volume field in the intervention form [LANDGRIF-1112](https://vizzuality.atlassian.net/browse/LANDGRIF-1112)
 
 ## [v0.3.5]

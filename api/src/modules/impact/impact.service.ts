@@ -16,6 +16,7 @@ import {
   ImpactTableRows,
   ImpactTableRowsValues,
   PaginatedImpactTable,
+  YearSumData,
 } from 'modules/impact/dto/response-impact-table.dto';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
@@ -72,34 +73,22 @@ export class ImpactService {
       paginatedEntities.entities,
     );
 
-    const dataForImpactTable: ImpactTableData[] =
+    let dataForImpactTable: ImpactTableData[] =
       await this.getDataForImpactTable(
         impactTableDto,
         paginatedEntities.entities,
       );
 
     if (impactTableDto.scenarioId) {
-      const dataForImpactTableWithScenario: ImpactTableData[] =
+      dataForImpactTable =
         ImpactService.processImpactDataWithScenario(dataForImpactTable);
-
-      const impactTableWithScenario: ImpactTable = this.buildImpactTable(
-        impactTableDto,
-        indicators,
-        dataForImpactTableWithScenario,
-        this.buildImpactTableRowsSkeleton(paginatedEntities.entities),
-      );
-
-      return {
-        data: impactTableWithScenario,
-        metadata: paginatedEntities.metadata,
-      };
     }
 
     const impactTable: ImpactTable = this.buildImpactTable(
       impactTableDto,
       indicators,
       dataForImpactTable,
-      this.buildImpactTableRowsSkeleton(paginatedEntities.entities),
+      paginatedEntities.entities,
     );
 
     return { data: impactTable, metadata: paginatedEntities.metadata };
@@ -133,31 +122,19 @@ export class ImpactService {
     this.updateGroupByCriteriaFromEntityTree(rankedImpactTableDto, entities);
 
     // Construct Impact Data Table
-    const dataForImpactTable: ImpactTableData[] =
+    let dataForImpactTable: ImpactTableData[] =
       await this.getDataForImpactTable(rankedImpactTableDto, entities);
 
     if (rankedImpactTableDto.scenarioId) {
-      const dataForImpactTableWithScenario: ImpactTableData[] =
+      dataForImpactTable =
         ImpactService.processImpactDataWithScenario(dataForImpactTable);
-
-      const impactTableWithScenario: ImpactTable = this.buildImpactTable(
-        rankedImpactTableDto,
-        indicators,
-        dataForImpactTableWithScenario,
-        this.buildImpactTableRowsSkeleton(entities),
-      );
-
-      return await this.applyRankingProcessing(
-        rankedImpactTableDto,
-        impactTableWithScenario,
-      );
     }
 
     const impactTable: ImpactTable = this.buildImpactTable(
       rankedImpactTableDto,
       indicators,
       dataForImpactTable,
-      this.buildImpactTableRowsSkeleton(entities),
+      entities,
     );
 
     // Cap the results to the Ranking Max, and aggregate the rest of the results
@@ -366,110 +343,66 @@ export class ImpactService {
     queryDto: GetImpactTableDto,
     indicators: Indicator[],
     dataForImpactTable: ImpactTableData[],
-    entities: ImpactTableRows[],
+    entityTree: ImpactTableEntityType[],
   ): ImpactTable {
     this.logger.log('Building Impact Table...');
     const { groupBy, startYear, endYear } = queryDto;
-    const impactTable: ImpactTableDataByIndicator[] = [];
+
+    const auxIndicatorMap: Map<string, Indicator> = new Map(
+      indicators.map((value: Indicator) => [value.id, value]),
+    );
 
     // Create a range of years by start and endYears
     const rangeOfYears: number[] = range(startYear, endYear + 1);
 
-    // NOTE: the impact Table Data can be quite large, so to calculate the maximum number of years is not as trivial
-    // as using Math.max(...impactTable.map(...)) since the call stack will be exceeded because of no of arguments
-    const yearsWithData: Set<number> = new Set();
-    for (const impactTableData of dataForImpactTable) {
-      yearsWithData.add(impactTableData.year);
-    }
-    const lastYearWithData: number = Math.max(...yearsWithData.values());
+    //Auxiliary structure in order to avoid scanning the whole table more than once
+    const [indicatorEntityMap, lastYearWithData]: [
+      Map<string, Map<string, Map<number, ImpactTableRowsValues>>>,
+      number,
+    ] = this.impactTableDataArrayToAuxMap(dataForImpactTable);
 
-    // Append data by indicator and add its unit.symbol as metadata. We need awareness of this loop during the whole process
-    indicators.forEach((indicator: Indicator, indicatorValuesIndex: number) => {
-      const calculatedData: ImpactTableRows[] = [];
-      impactTable.push({
+    // construct result impact Table
+    const impactTable: ImpactTableDataByIndicator[] = [];
+
+    for (const [indicatorId, entityMap] of indicatorEntityMap.entries()) {
+      const indicator: Indicator = auxIndicatorMap.get(
+        indicatorId,
+      ) as Indicator;
+      const impactTableDataByIndicator: ImpactTableDataByIndicator = {
         indicatorShortName: indicator.shortName as string,
         indicatorId: indicator.id,
         groupBy: groupBy,
         rows: [],
         yearSum: [],
         metadata: { unit: indicator.unit.symbol },
-      });
-      // Filter the raw data by Indicator
-      const dataByIndicator: ImpactTableData[] = dataForImpactTable.filter(
-        (data: ImpactTableData) => data.indicatorId === indicator.id,
-      );
-      // Get unique entity names for aggregations from raw data
-      const namesByIndicator: string[] = [
-        ...new Set(dataByIndicator.map((el: ImpactTableData) => el.name)),
-      ];
-      // For each unique name, append values by year
-      for (const [namesByIndicatorIndex, name] of namesByIndicator.entries()) {
-        calculatedData.push({
-          name,
-          values: [],
-          children: [],
-        });
-        let rowValuesIndex: number = 0;
-        for (const year of rangeOfYears) {
-          const dataForYear: ImpactTableData | undefined = dataByIndicator.find(
-            (data: ImpactTableData) => data.year === year && data.name === name,
-          );
-          //If the year requested by the users exist in the raw data, append its value. There will always be a first valid value to start with
-          if (dataForYear) {
-            calculatedData[namesByIndicatorIndex].values.push({
-              year: dataForYear.year,
-              value: dataForYear.impact || 0,
-              isProjected: false,
-            });
-            // If the year requested does no exist in the raw data, project its value getting the latest value (previous year which comes in ascendant order)
-          } else {
-            const lastYearsValue: number =
-              rowValuesIndex > 0
-                ? calculatedData[namesByIndicatorIndex].values[
-                    rowValuesIndex - 1
-                  ].value
-                : 0;
-            const isProjected: boolean = year > lastYearWithData;
+      };
+      impactTable.push(impactTableDataByIndicator);
 
-            calculatedData[namesByIndicatorIndex].values.push({
-              year: year,
-              value: lastYearsValue + (lastYearsValue * this.growthRate) / 100,
-              isProjected,
-            });
-          }
-          ++rowValuesIndex;
-        }
+      // since some entities may be missing values for any given year, we need to do another pass to calculate
+      // values for missing or projected years, and also calculates the total sum for each year
+      const yearSumMap: Map<number, number> = this.postProcessYearIndicatorData(
+        rangeOfYears,
+        lastYearWithData,
+        entityMap,
+      );
+
+      // copy and populate tree skeleton for each indicator
+      const impactTableEntitySkeleton: ImpactTableRows[] =
+        this.buildImpactTableRowsSkeleton(entityTree);
+
+      for (const entity of impactTableEntitySkeleton) {
+        this.populateValuesRecursively(entity, entityMap, rangeOfYears);
       }
 
-      // Once we have all data, projected or not, append the total sum of impact by year and indicator
+      impactTableDataByIndicator.rows = impactTableEntitySkeleton;
 
-      rangeOfYears.forEach((year: number, indexOfYear: number) => {
-        const totalSumByYear: number = calculatedData.reduce(
-          (accumulator: number, currentValue: ImpactTableRows): number => {
-            if (currentValue.values[indexOfYear].year === year)
-              accumulator += Number.isFinite(
-                currentValue.values[indexOfYear].value,
-              )
-                ? currentValue.values[indexOfYear].value
-                : 0;
-            return accumulator;
-          },
-          0,
-        );
+      impactTableDataByIndicator.yearSum.push(
+        ...Array.from(yearSumMap).map(([year, sum]: [number, number]) => {
+          return { year, value: sum } as YearSumData;
+        }),
+      );
+    }
 
-        impactTable[indicatorValuesIndex].yearSum.push({
-          year,
-          value: totalSumByYear,
-        });
-      });
-      // copy and populate tree skeleton for each indicator
-      const skeleton: ImpactTableRows[] = JSON.parse(JSON.stringify(entities));
-      skeleton.forEach((entity: any) => {
-        this.populateValuesRecursively(entity, calculatedData, rangeOfYears);
-      });
-
-      impactTable[indicatorValuesIndex].rows = skeleton;
-    });
     const purchasedTonnes: ImpactTablePurchasedTonnes[] =
       this.getTotalPurchasedVolumeByYear(
         rangeOfYears,
@@ -487,47 +420,190 @@ export class ImpactService {
     lastYearWithData: number,
     scenarioId?: string,
   ): ImpactTablePurchasedTonnes[] {
+    // First scan the whole table to accumulate the values for each year
+    const purchasedTonnesYearMap: Map<number, number> = new Map();
+
+    for (const impactTableData of dataForImpactTable) {
+      const accumulatedPurchasedTonnes: number | undefined =
+        purchasedTonnesYearMap.get(impactTableData.year) || 0;
+
+      const currentPurchasedTonnes: number = Number.isFinite(
+        +impactTableData.tonnes,
+      )
+        ? +impactTableData.tonnes // TODO!!!!!!
+        : 0;
+
+      purchasedTonnesYearMap.set(
+        impactTableData.year,
+        currentPurchasedTonnes + accumulatedPurchasedTonnes,
+      );
+    }
+
+    //Calculate projected data for missing years and construct result array
     const purchasedTonnes: ImpactTablePurchasedTonnes[] = [];
     rangeOfYears.forEach((year: number) => {
-      const valueOfPurchasedTonnesByYear: number = dataForImpactTable.reduce(
-        (accumulator: number, currentValue: ImpactTableData): number => {
-          if (currentValue.year === year) {
-            accumulator += Number.isFinite(+currentValue.tonnes)
-              ? +currentValue.tonnes // TODO!!!!!!!!!!!!!!!!!!
-              : 0;
-          }
-          return accumulator;
-        },
-        0,
-      );
+      let currentPurchasedTonnesByYear: number | undefined =
+        purchasedTonnesYearMap.get(year);
+      let isProjected: boolean = false;
+
       // If value exist for that year, append it. There will always be a first valid value to start with
-      if (valueOfPurchasedTonnesByYear) {
-        purchasedTonnes.push({
-          year,
-          value: valueOfPurchasedTonnesByYear,
-          isProjected: false,
-        });
-        // If it does not exist, get the previous value and project it
-      } else {
+      // If it does not exist, get the previous value and project it
+      if (!currentPurchasedTonnesByYear) {
         // TODO: this is hotfix for situations where we receive a start year for which we don't have data
         const previousYearTonnage: number =
           purchasedTonnes.length > 0
             ? purchasedTonnes[purchasedTonnes.length - 1].value
             : 0;
-        const isProjected: boolean = year > lastYearWithData;
         const tonnesToProject: number =
           dataForImpactTable.length > 0 ? previousYearTonnage : 0;
-        purchasedTonnes.push({
-          year,
-          value: tonnesToProject + (tonnesToProject * this.growthRate) / 100,
-          isProjected,
-        });
+
+        currentPurchasedTonnesByYear =
+          tonnesToProject + (tonnesToProject * this.growthRate) / 100;
+        isProjected = year > lastYearWithData;
       }
+
+      purchasedTonnes.push({
+        year,
+        value: currentPurchasedTonnesByYear,
+        isProjected,
+      });
     });
+
     if (scenarioId)
       purchasedTonnes.map((el: ImpactTablePurchasedTonnes) => (el.value /= 2));
 
     return purchasedTonnes;
+  }
+
+  /**
+   * Converts an array of flat Impact Table Data to a pseudo-tree structure based on maps
+   * for easier/faster access, like this
+   *    Map<
+   *      indicatorId:string,
+   *      Map<
+   *        entityName:string,
+   *        Map<
+   *          year:number,
+   *          ImpactTableRowsValues
+   *        >
+   *      >
+   *    >
+   *   {
+   *     "deforestationRiskId": {
+   *       "Brazil": {
+   *         2010: {
+   *           year: 2010
+   *           value: 12483
+   *           ....
+   *         },
+   *         2011: {...},
+   *         ......
+   *       },
+   *       "Paraná": {...},
+   *       ....
+   *     },
+   *     "waterUseIndicatorId": {....},
+   *     .....
+   *   }
+   * It also determines the last year with Data, so that another full sweep of the database can be avoided for
+   * optimization
+   * @param dataForImpactTable
+   * @private
+   */
+  private impactTableDataArrayToAuxMap(
+    dataForImpactTable: ImpactTableData[],
+  ): [Map<string, Map<string, Map<number, ImpactTableRowsValues>>>, number] {
+    // NOTE: the impact Table Data can be quite large, so to calculate the maximum number of years is not as trivial
+    // as using Math.max(...impactTable.map(...)) since the call stack will be exceeded because of no of arguments
+    const yearsWithData: Set<number> = new Set();
+
+    const indicatorEntityMap: Map<
+      string,
+      Map<string, Map<number, ImpactTableRowsValues>>
+    > = new Map();
+
+    // Convert the flat structure on array to tree of Maps for easier access
+    for (const impactTableData of dataForImpactTable) {
+      let entityMap:
+        | Map<string, Map<number, ImpactTableRowsValues>>
+        | undefined = indicatorEntityMap.get(impactTableData.indicatorId);
+
+      if (!entityMap) {
+        entityMap = new Map();
+        indicatorEntityMap.set(impactTableData.indicatorId, entityMap);
+      }
+
+      let yearMap: Map<number, ImpactTableRowsValues> | undefined =
+        entityMap.get(impactTableData.name);
+      if (!yearMap) {
+        yearMap = new Map();
+        entityMap.set(impactTableData.name, yearMap);
+      }
+
+      yearMap.set(impactTableData.year, {
+        year: impactTableData.year,
+        value: impactTableData.impact,
+        isProjected: false,
+      });
+
+      yearsWithData.add(impactTableData.year);
+    }
+
+    const lastYearWithData: number = Math.max(...yearsWithData.values());
+
+    return [indicatorEntityMap, lastYearWithData];
+  }
+
+  /**
+   * This functions does 2 things
+   * - fill any missing years in the entityies' yearMap, with the calculation based on previous years' data
+   * - calculate the value sum for all years, across all entities
+   * @param rangeOfYears
+   * @param lastYearWithData
+   * @param entityMap
+   * @private
+   */
+  private postProcessYearIndicatorData(
+    rangeOfYears: number[],
+    lastYearWithData: number,
+    entityMap: Map<string, Map<number, ImpactTableRowsValues>>,
+  ): Map<number, number> {
+    //We also calculate the yearsum for each indicator
+    const yearSumMap: Map<number, number> = new Map();
+
+    for (const [entityName, yearMap] of entityMap.entries()) {
+      const auxYearValues: number[] = [];
+
+      for (const [index, year] of rangeOfYears.entries()) {
+        let dataForYear: ImpactTableRowsValues | undefined = yearMap.get(year);
+
+        //If the year requested by the users exist in the raw data, append its value. There will always be a first valid value to start with
+        if (!dataForYear) {
+          // If the year requested does no exist in the raw data, project its value getting the latest value (previous year which comes in ascendant order)
+          const isProjected: boolean = year > lastYearWithData;
+
+          const lastYearsValue: number =
+            index > 0 ? auxYearValues[index - 1] : 0;
+          const value: number =
+            lastYearsValue + (lastYearsValue * this.growthRate) / 100;
+
+          dataForYear = {
+            year,
+            value,
+            isProjected,
+          };
+          yearMap.set(year, dataForYear);
+        }
+
+        auxYearValues.push(dataForYear.value);
+
+        //Append to the sumYear total
+        const yearSum: number = yearSumMap.get(year) || 0;
+        yearSumMap.set(year, yearSum + dataForYear.value);
+      }
+    }
+
+    return yearSumMap;
   }
 
   /**
@@ -536,7 +612,7 @@ export class ImpactService {
    */
   private populateValuesRecursively(
     entity: ImpactTableRows,
-    calculatedRows: ImpactTableRows[],
+    entityMap: Map<string, Map<number, ImpactTableRowsValues>>,
     rangeOfYears: number[],
     scenarioId?: string,
   ): ImpactTableRowsValues[] {
@@ -551,10 +627,16 @@ export class ImpactService {
     }
 
     const valuesToAggregate: ImpactTableRowsValues[][] = [];
-    const selfData: ImpactTableRows | undefined = calculatedRows.find(
-      (item: ImpactTableRows) => item.name === entity.name,
-    );
-    if (selfData) valuesToAggregate.push(selfData.values);
+    const selfData: Map<number, ImpactTableRowsValues> | undefined =
+      entityMap.get(entity.name);
+    if (selfData) {
+      const sortedSelfData: ImpactTableRowsValues[] = Array.from(
+        selfData.values(),
+      ).sort(
+        (a: ImpactTableRowsValues, b: ImpactTableRowsValues) => a.year - b.year,
+      );
+      valuesToAggregate.push(sortedSelfData);
+    }
     entity.children.forEach((childEntity: ImpactTableRows) => {
       valuesToAggregate.push(
         /*
@@ -563,16 +645,16 @@ export class ImpactService {
          */
         this.populateValuesRecursively(
           childEntity,
-          calculatedRows,
+          entityMap,
           rangeOfYears,
           scenarioId,
         ),
       );
     });
-    for (const [valueIndex, ImpactTableRowsValues] of entity.values.entries()) {
+    for (const [valueIndex, impactTableRowsValues] of entity.values.entries()) {
       valuesToAggregate.forEach((item: ImpactTableRowsValues[]) => {
         entity.values[valueIndex].value =
-          ImpactTableRowsValues.value + item[valueIndex].value;
+          impactTableRowsValues.value + item[valueIndex].value;
         entity.values[valueIndex].isProjected =
           item[valueIndex].isProjected || entity.values[valueIndex].isProjected;
       });

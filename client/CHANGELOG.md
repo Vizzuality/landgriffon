@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added a end year field in the intervention form [LANDGRIF-1113](https://vizzuality.atlassian.net/browse/LANDGRIF-1113)
 - Added a volume field in the intervention form [LANDGRIF-1112](https://vizzuality.atlassian.net/browse/LANDGRIF-1112)
 
+### Fixed
+
+- Profile page requires to be logged
+
 ## [v0.3.5]
 
 ### Fixed

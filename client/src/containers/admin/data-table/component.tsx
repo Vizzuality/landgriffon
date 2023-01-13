@@ -175,6 +175,8 @@ const AdminDataPage: React.FC = () => {
               placeholder="Search table"
               onChange={handleSearch}
               autoFocus
+              disabled
+              data-testid="data-search-input"
             />
           </div>
           <YearsRangeFilter

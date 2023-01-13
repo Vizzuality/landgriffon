@@ -54,6 +54,7 @@ const locationTypeSchema = yup
 
 const schemaValidation = yup.object({
   title: yup.string().label('Title').max(60).required(),
+  volume: yup.number().optional(),
   interventionType: yup.string().label('Intervention type').required(),
   startYear: yup
     .object({
@@ -505,6 +506,16 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
             type="text"
             data-testid="title-input"
             error={errors?.title?.message}
+          />
+        </div>
+        <div>
+          <label className={LABEL_CLASSNAMES}>Volume</label>
+          <Input
+            {...register('volume')}
+            type="text"
+            data-testid="volume-input"
+            error={errors?.volume?.message}
+            disabled
           />
         </div>
         <div>

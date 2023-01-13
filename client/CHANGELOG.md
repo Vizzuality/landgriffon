@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Disable the filter in the manage data page [LANDGRIF-1110](https://vizzuality.atlassian.net/browse/LANDGRIF-1110)
 - Disable action buttons in the targets page [LANDGRIF-1109](https://vizzuality.atlassian.net/browse/LANDGRIF-1109)
+### Added
+
+- Added a volume field in the intervention form [LANDGRIF-1112](https://vizzuality.atlassian.net/browse/LANDGRIF-1112)
 
 ## [v0.3.5]
 

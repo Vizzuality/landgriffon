@@ -34,6 +34,12 @@ beforeEach(() => {
   cy.visit('/data/scenarios/some-random-id/interventions/new');
 });
 
+describe('Intervention form', () => {
+  it('volume field should be disabled', () => {
+    cy.get('[data-testid="volume-input"]').should('be.disabled');
+  });
+});
+
 describe('Intervention creation', () => {
   it('a user creates an intervetion – Switch to new material flow (successful creation)', () => {
     cy.intercept('POST', '/api/v1/scenario-interventions', {

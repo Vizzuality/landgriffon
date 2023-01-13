@@ -23,9 +23,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         <input
           className={classnames(
-            'block w-full px-4 py-2.5 leading-5 rounded-md bg-white text-sm border placeholder:text-gray-200 focus:outline-none focus:ring-0',
+            'block w-full px-4 py-2.5 leading-5 rounded-md text-sm border placeholder:text-gray-200 focus:outline-none focus:ring-0',
             error ? 'border-red-400 focus:border-red-400' : 'border-gray-200 focus:border-navy-400',
-            inputProps.disabled ? 'bg-gray-300/20 text-gray-300' : 'text-gray-900',
+            inputProps.disabled ? 'bg-gray-300/20 text-gray-300' : 'bg-white text-gray-900',
             {
               'pl-8': icon,
               'pr-10': unit && !error,

@@ -6,7 +6,6 @@ import * as config from 'config';
 import * as helmet from 'helmet';
 import * as compression from 'compression';
 import { JwtAuthGuard } from 'guards/jwt-auth.guard';
-import { useContainer } from 'class-validator';
 
 async function bootstrap(): Promise<void> {
   const logger: Logger = new Logger('bootstrap');
@@ -14,7 +13,6 @@ async function bootstrap(): Promise<void> {
   const app: INestApplication = await NestFactory.create(AppModule, {
     logger: serverConfig.loggerLevel,
   });
-  useContainer(app, { fallbackOnErrors: true });
 
   app.use(helmet());
   app.enableCors();

@@ -48,7 +48,6 @@
     "username": "landgriffon",
     "password": "",
     "database": "landgriffon",
-    "dropSchema": false,
     "logging": false,
     "batchChunkSize": 2000,
     "maxQueryExecutionTime": null,

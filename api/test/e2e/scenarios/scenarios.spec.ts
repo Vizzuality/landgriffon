@@ -48,7 +48,7 @@ describe('ScenariosModule (e2e)', () => {
   let sourcingLocationRepository: SourcingLocationRepository;
   let sourcingRecordRepository: SourcingRecordRepository;
   let jwtToken: string;
-  let userId: string;
+  let adminUserId: string;
 
   beforeAll(async () => {
     testApplication = await ApplicationManager.init();
@@ -71,7 +71,7 @@ describe('ScenariosModule (e2e)', () => {
 
     const tokenWithId = await setupTestUser(testApplication);
     jwtToken = tokenWithId.jwtToken;
-    userId = tokenWithId.user.id;
+    adminUserId = tokenWithId.user.id;
   });
 
   afterEach(async () => {
@@ -106,7 +106,7 @@ describe('ScenariosModule (e2e)', () => {
       }
 
       expect(createdScenario.title).toEqual('test scenario');
-      expect(createdScenario.userId).toEqual(userId);
+      expect(createdScenario.userId).toEqual(adminUserId);
 
       expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
     });
@@ -129,6 +129,21 @@ describe('ScenariosModule (e2e)', () => {
         ],
       );
     });
+    test('When I create a scenario And I dont specify if its published or not Then it should be private by default', async () => {
+      const response = await request(testApplication.getHttpServer())
+        .post('/api/v1/scenarios')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'test scenario',
+        })
+        .expect(HttpStatus.CREATED);
+
+      const createdScenario: Scenario = await scenarioRepository.findOneOrFail({
+        where: { id: response.body.data.id },
+      });
+
+      expect(createdScenario?.isPublic).toBe(false);
+    });
   });
 
   describe('Scenarios - Update', () => {
@@ -149,9 +164,45 @@ describe('ScenariosModule (e2e)', () => {
       const updatedScenario: Scenario = await scenarioRepository.findOneOrFail({
         where: { id: scenario.id },
       });
-      expect(updatedScenario.updatedById).toEqual(userId);
+      expect(updatedScenario.updatedById).toEqual(adminUserId);
 
       expect(response).toHaveJSONAPIAttributes(expectedJSONAPIAttributes);
+    });
+
+    test('When I want to publish a Scenario, But I dont use a correct value to do so, Then I should get a proper error message', async () => {
+      const scenario: Scenario = await createScenario();
+
+      const response = await request(testApplication.getHttpServer())
+        .patch(`/api/v1/scenarios/${scenario.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'updated test scenario',
+          isPublic: 'Make it public please',
+        });
+
+      expect(response).toHaveErrorMessage(
+        HttpStatus.BAD_REQUEST,
+        'Bad Request Exception',
+        ['isPublic must be a boolean value'],
+      );
+    });
+
+    test('When I want to make a scenario public, Then I said scenario should me marked as so', async () => {
+      const scenario: Scenario = await createScenario();
+
+      await request(testApplication.getHttpServer())
+        .patch(`/api/v1/scenarios/${scenario.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'updated test scenario',
+          isPublic: true,
+        })
+        .expect(HttpStatus.OK);
+
+      const updatedScenario: Scenario = await scenarioRepository.findOneOrFail({
+        where: { id: scenario.id },
+      });
+      expect(updatedScenario.isPublic).toEqual(true);
     });
   });
 
@@ -529,6 +580,12 @@ describe('ScenariosModule (e2e)', () => {
       });
 
       await createScenario({
+        id: adminUserId,
+        userId: adminUserId,
+        title: adminUserId,
+      });
+
+      await createScenario({
         id: user1.user.id,
         userId: user1.user.id,
         title: user1.user.id,
@@ -553,7 +610,7 @@ describe('ScenariosModule (e2e)', () => {
       const adminRequest = response.find((res: any) =>
         res.request.header.Authorization.includes(jwtToken),
       );
-      expect(adminRequest.body.data).toHaveLength(2);
+      expect(adminRequest.body.data).toHaveLength(3);
 
       const user1Request = response.find((res: any) =>
         res.request.header.Authorization.includes(user1.jwtToken),

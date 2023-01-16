@@ -27,8 +27,6 @@ case "$1" in
     start:prod)
         echo "Synchronizing database..."
         yarn start:prod
-#        echo "Running api application in production mode"
-#        exec yarn start:prod
         ;;
     *)
         echo "Usage: service.sh {develop|test|build|start:watch|start:prod}" >&2

@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsBoolean,
   IsEnum,
   IsJSON,
   IsNotEmpty,
@@ -29,6 +30,11 @@ export class CreateScenarioDto {
   @IsEnum(SCENARIO_STATUS)
   @ApiPropertyOptional()
   status?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  @ApiPropertyOptional()
+  isPublic: boolean;
 
   @IsNotEmpty()
   @IsUUID()

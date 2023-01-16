@@ -6,7 +6,6 @@
     "username": "landgriffon",
     "password": "",
     "database": "landgriffon_test",
-    "dropSchema": false,
     "logging": false,
     "cacheEnabled": false
   },
@@ -27,9 +26,6 @@
     "gmapsApiKey": "myVeryBadJWTSecretForTests"
   },
   "newMethodology": "false",
-  "server": {
-    "loggerLevel": []
-  },
   "geocodingCache": {
     "store": "memory"
   },

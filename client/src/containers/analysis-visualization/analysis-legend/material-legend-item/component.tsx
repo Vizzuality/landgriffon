@@ -88,8 +88,17 @@ const MaterialLayer = () => {
     );
   }, [handleMaterialChange, material]);
 
+  const onToggleLayer = useCallback(
+    (active: boolean) => {
+      dispatch(setLayer({ id: layer.id, layer: { active } }));
+    },
+    [dispatch, layer.id],
+  );
+
   return (
     <LegendItem
+      isActive={layer.active}
+      onToggle={onToggleLayer}
       name={Selector}
       info={material?.metadata?.name}
       {...data?.metadata?.legend}

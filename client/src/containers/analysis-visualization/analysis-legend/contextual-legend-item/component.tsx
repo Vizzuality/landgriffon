@@ -56,8 +56,17 @@ const ContextualLegendItem = ({ layer }: ContextualLegendItemProps) => {
     }
   }, [layer.metadata]);
 
+  const onToggleLayer = useCallback(
+    (active: boolean) => {
+      dispatch(setLayer({ id: layer.id, layer: { active } }));
+    },
+    [dispatch, layer.id],
+  );
+
   return (
     <LegendItem
+      isActive={layer.active}
+      onToggle={onToggleLayer}
       id={layer.id}
       isLoading={areLayersLoading || isLoadingData}
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

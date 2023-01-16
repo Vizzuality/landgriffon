@@ -26,7 +26,7 @@ case "$1" in
         ;;
     start:prod)
         echo "Synchronizing database..."
-        exec yarn typeorm schema:sync && yarn start:prod
+        yarn start:prod
 #        echo "Running api application in production mode"
 #        exec yarn start:prod
         ;;

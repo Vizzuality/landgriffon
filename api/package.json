@@ -8,9 +8,9 @@
   "scripts": {
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "start:watch": "nest start --watch",
+    "start:watch": "yarn typeorm schema:sync && nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "NODE_PATH=dist/src node dist/src/main",
+    "start:prod": "yarn typeorm schema:sync && NODE_PATH=dist/src node dist/src/main",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/data-source.ts",
     "build": "rm -rf dist && tsc",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",

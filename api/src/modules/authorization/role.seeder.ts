@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { Role } from 'modules/authorization/roles/role.entity';
 import { DataSource } from 'typeorm';
 import { ROLES } from 'modules/authorization/roles/roles.enum';
+import { Permission } from 'modules/authorization/permissions/permissions.entity';
+import { PERMISSIONS } from 'modules/authorization/permissions/permissions.enum';
 
 /**
  * @description: Service to create roles in the DB at API init
@@ -18,6 +20,16 @@ export class RoleSeeder {
           name: role,
         } as Role),
     );
+
+    const permissions: Permission[] = Object.values(PERMISSIONS).map(
+      (permission: PERMISSIONS) =>
+        ({
+          action: permission,
+        } as Permission),
+    );
+
+    await this.dataSource.getRepository(Permission).save(permissions);
+
     return this.dataSource.getRepository(Role).save(roles);
   }
 }

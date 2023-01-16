@@ -27,11 +27,16 @@ export class AccessControl {
     return roles.map((role: ROLES) => ({ name: role } as Role));
   }
 
+  /**
+   * @description: We can use this to build more complex or more module / entity specific layers of authorisation
+   */
+
   getUser(): User {
     return this.request.user;
   }
 
   isUserAdmin(): boolean {
+    console.log(this.request.user);
     return this.request.user.roles.some(
       (role: Role) => role.name === ROLES.ADMIN,
     );

@@ -96,7 +96,7 @@ export const Legend: React.FC = () => {
       >
         {orderedLayers.map((layer) => (
           <SortableItem
-            className={classNames({ hidden: !layer.active })}
+            className={classNames({ hidden: !layer.active && layer.id !== 'impact' })}
             key={layer.id}
             id={layer.id}
           >

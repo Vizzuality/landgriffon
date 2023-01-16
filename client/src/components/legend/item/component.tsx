@@ -8,6 +8,7 @@ import InfoToolTip from 'components/info-tooltip/component';
 import Loading from 'components/loading';
 import { useAppSelector } from 'store/hooks';
 import { scenarios } from 'store/features/analysis';
+import Toggle from 'components/toggle';
 
 import type { Dispatch } from 'react';
 
@@ -15,7 +16,6 @@ export type LegendItemProps = {
   name: React.ReactNode;
   info?: string;
   unit?: string;
-  id: string;
   description?: string;
   isLoading?: boolean;
   showToolbar?: boolean;
@@ -24,6 +24,8 @@ export type LegendItemProps = {
   onChangeOpacity: Dispatch<number>;
   main?: boolean;
   showComparisonModeToggle?: boolean;
+  onToggle: Dispatch<boolean>;
+  isActive: boolean;
 };
 
 export const LegendItem = ({
@@ -37,6 +39,8 @@ export const LegendItem = ({
   onChangeOpacity,
   main = false,
   showComparisonModeToggle = false,
+  onToggle,
+  isActive,
 }: LegendItemProps) => {
   const { isComparisonEnabled } = useAppSelector(scenarios);
 
@@ -65,6 +69,7 @@ export const LegendItem = ({
                 <div className="flex items-center gap-x-1 mt-0.5">
                   <OpacityControl opacity={opacity} onChange={onChangeOpacity} />
                   {info && <InfoToolTip icon="outline" info={info} />}
+                  <Toggle active={isActive} onChange={onToggle} />
                 </div>
               </div>
             )}

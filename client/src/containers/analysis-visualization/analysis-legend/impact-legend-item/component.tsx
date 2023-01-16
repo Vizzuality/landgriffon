@@ -50,10 +50,19 @@ const ImpactLayer = () => {
     return layer.metadata.legend.name;
   }, [isComparisonEnabled, layer.metadata?.legend]);
 
+  const onToggleLayer = useCallback(
+    (active: boolean) => {
+      dispatch(setLayer({ id: LAYER_ID, layer: { active } }));
+    },
+    [dispatch],
+  );
+
   if (!layer.metadata) return null;
-  // TO-DO: add Loading component
+  // TODO: add Loading component
   return (
     <LegendItem
+      isActive={layer.active}
+      onToggle={onToggleLayer}
       info={indicator?.metadata?.description}
       {...layer.metadata.legend}
       name={name}

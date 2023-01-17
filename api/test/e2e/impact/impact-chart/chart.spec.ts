@@ -28,6 +28,7 @@ import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing
 import {
   ImpactTableDataAggregatedValue,
   ImpactTableDataAggregationInfo,
+  ImpactTableDataByIndicator,
   ImpactTableRowsValues,
 } from 'modules/impact/dto/response-impact-table.dto';
 import {
@@ -142,7 +143,7 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
     ).toContain('maxRankingEntities must be a positive number');
   });
 
-  test.skip('When I query the API for a Impact Table Ranking, then I should see all the data grouped by the requested entity and properly ordered, up to a MAX amount, with the rest being aggregated per year', async () => {
+  test('When I query the API for a Impact Table Ranking, then I should see all the data grouped by the requested entity and properly ordered, up to a MAX amount, with the rest being aggregated per year', async () => {
     //////////// ARRANGE
     const adminRegion: AdminRegion = await createAdminRegion({
       name: 'Fake AdminRegion',
@@ -241,7 +242,7 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
     const maxRankingEntities = 2;
 
     //////////// ACT
-    const response1 = await request(testApplication.getHttpServer())
+    const response = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/ranking')
       .set('Authorization', `Bearer ${jwtToken}`)
       .query({
@@ -257,8 +258,18 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
     //////////// ASSERT
     // Check aggregation for each indicator
     //Number of aggregated entities should be 2 because it's the top level entities, not counting children
+    const impactTableIndicatorData1: ImpactTableDataByIndicator =
+      response.body.impactTable.find(
+        (element: ImpactTableDataByIndicator) =>
+          element.indicatorId === indicator.id,
+      );
+    const impactTableIndicatorData2: ImpactTableDataByIndicator =
+      response.body.impactTable.find(
+        (element: ImpactTableDataByIndicator) =>
+          element.indicatorId === indicator2.id,
+      );
     checkAggregatedInformation(
-      response1.body.impactTable[0].others,
+      impactTableIndicatorData1.others as ImpactTableDataAggregationInfo,
       numberOfTopMaterials - maxRankingEntities,
       [
         {
@@ -278,7 +289,7 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
     );
 
     checkAggregatedInformation(
-      response1.body.impactTable[1].others,
+      impactTableIndicatorData2.others as ImpactTableDataAggregationInfo,
       numberOfTopMaterials - maxRankingEntities,
       [
         {
@@ -298,41 +309,41 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
     );
 
     // Check that each indicator only has the expected number of maxRankingEntities and sorted appropriately
-    expect(response1.body.impactTable[0].rows).toHaveLength(maxRankingEntities);
-    expect(response1.body.impactTable[1].rows).toHaveLength(maxRankingEntities);
+    expect(impactTableIndicatorData1.rows).toHaveLength(maxRankingEntities);
+    expect(impactTableIndicatorData2.rows).toHaveLength(maxRankingEntities);
 
     //Check order and values of ranked entities  for each indicator
     //Inidicator1
-    expect(response1.body.impactTable[0].rows[0].name).toEqual(
+    expect(impactTableIndicatorData1.rows[0].name).toEqual(
       materialParents[2].name,
     );
-    expect(response1.body.impactTable[0].rows[1].name).toEqual(
+    expect(impactTableIndicatorData1.rows[1].name).toEqual(
       materialParents[1].name,
     );
-    expect(response1.body.impactTable[0].rows[0].values[0]).toEqual({
+    expect(impactTableIndicatorData1.rows[0].values[0]).toEqual({
       year: 2010,
       value: 1000,
       isProjected: false,
     });
-    expect(response1.body.impactTable[0].rows[1].values[0]).toEqual({
+    expect(impactTableIndicatorData1.rows[1].values[0]).toEqual({
       year: 2010,
       value: 170,
       isProjected: false,
     });
 
     //Inidicator2
-    expect(response1.body.impactTable[1].rows[0].name).toEqual(
+    expect(impactTableIndicatorData2.rows[0].name).toEqual(
       materialParents[3].name,
     );
-    expect(response1.body.impactTable[1].rows[1].name).toEqual(
+    expect(impactTableIndicatorData2.rows[1].name).toEqual(
       materialParents[2].name,
     );
-    expect(response1.body.impactTable[1].rows[0].values[0]).toEqual({
+    expect(impactTableIndicatorData2.rows[0].values[0]).toEqual({
       year: 2010,
       value: 500,
       isProjected: false,
     });
-    expect(response1.body.impactTable[1].rows[1].values[0]).toEqual({
+    expect(impactTableIndicatorData2.rows[1].values[0]).toEqual({
       year: 2010,
       value: 200,
       isProjected: false,

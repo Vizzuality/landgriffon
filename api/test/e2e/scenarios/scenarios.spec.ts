@@ -31,6 +31,7 @@ import { JSONAPIEntityData } from 'utils/app-base.service';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 import { ROLES } from '../../../src/modules/authorization/roles/roles.enum';
+
 const expectedJSONAPIAttributes: string[] = [
   'title',
   'description',
@@ -38,6 +39,7 @@ const expectedJSONAPIAttributes: string[] = [
   'metadata',
   'createdAt',
   'updatedAt',
+  'isPublic',
 ];
 
 describe('ScenariosModule (e2e)', () => {
@@ -623,6 +625,59 @@ describe('ScenariosModule (e2e)', () => {
       );
       expect(user2Request.body.data).toHaveLength(1);
       expect(user2Request.body.data[0].id).toEqual(user2.user.id);
+    });
+    test('When I request scenarios as a normal user, Then I should get the ones that are mine and the ones that are public', async () => {
+      const user1 = await setupTestUser(testApplication, ROLES.USER, {
+        email: 'testuser1@email.com',
+      });
+      const user2 = await setupTestUser(testApplication, ROLES.USER, {
+        email: 'testuser2@email.com',
+      });
+
+      await createScenario({
+        userId: user1.user.id,
+        title: 'user private scenario',
+      });
+
+      await createScenario({
+        userId: user1.user.id,
+        title: 'user public scenario',
+        isPublic: true,
+      });
+      const user2PrivateScenario = await createScenario({
+        userId: user2.user.id,
+        title: 'private scenario',
+      });
+
+      await createScenario({
+        userId: user2.user.id,
+        title: 'public scenario 1',
+        isPublic: true,
+      });
+      await createScenario({
+        userId: user2.user.id,
+        title: 'public scenario 2',
+        isPublic: true,
+      });
+
+      const response = await request(testApplication.getHttpServer())
+        .get(`/api/v1/scenarios`)
+        .set('Authorization', `Bearer ${user1.jwtToken}`)
+        .send();
+
+      const scenarios = response.body.data.map(
+        (scenario: JSONAPIEntityData) => ({
+          id: scenario.id,
+          ...scenario.attributes,
+        }),
+      );
+
+      expect(scenarios).toHaveLength(4);
+      expect(
+        scenarios.find(
+          (scenario: Scenario) => scenario.title === user2PrivateScenario.title,
+        ),
+      ).toBe(undefined);
     });
   });
   test(

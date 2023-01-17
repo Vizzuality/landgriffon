@@ -36,7 +36,6 @@ export class AccessControl {
   }
 
   isUserAdmin(): boolean {
-    console.log(this.request.user);
     return this.request.user.roles.some(
       (role: Role) => role.name === ROLES.ADMIN,
     );

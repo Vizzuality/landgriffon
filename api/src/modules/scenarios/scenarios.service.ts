@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
@@ -41,6 +41,7 @@ export class ScenariosService extends AppBaseService<
         'metadata',
         'createdAt',
         'updatedAt',
+        'isPublic',
         'scenarioInterventions',
       ],
       keyForAttribute: 'camelCase',
@@ -96,6 +97,9 @@ export class ScenariosService extends AppBaseService<
     if (!this.accessControl.isUserAdmin()) {
       query.andWhere(`${this.alias}.userId = :userId`, {
         userId: this.accessControl.getUserId(),
+      });
+      query.orWhere(`${this.alias}.isPublic = :isPublicValue`, {
+        isPublicValue: true,
       });
     }
     return Promise.resolve(query);

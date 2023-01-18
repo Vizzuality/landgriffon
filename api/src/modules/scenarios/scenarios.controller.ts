@@ -35,6 +35,7 @@ import { UpdateScenarioDto } from 'modules/scenarios/dto/update.scenario.dto';
 import { PaginationMeta } from 'utils/app-base.service';
 import { SetUserInterceptor } from 'decorators/set-user.interceptor';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { UserOwnsScenario } from 'modules/authorization/modules/scenario-ownership.interceptor';
 
 @Controller(`/api/v1/scenarios`)
 @ApiTags(scenarioResource.className)
@@ -95,6 +96,7 @@ export class ScenariosController {
       }),
     ),
   })
+  @UserOwnsScenario({ isPublic: true })
   @Get(':id')
   async findOne(
     @Param('id') id: string,
@@ -114,6 +116,7 @@ export class ScenariosController {
   @ApiOkResponse({ type: Scenario })
   @ApiNotFoundResponse({ description: 'Scenario not found' })
   @JSONAPISingleEntityQueryParams()
+  @UserOwnsScenario({ isPublic: true })
   @Get(':id/interventions')
   async findInterventionsByScenario(
     @Param('id') id: string,
@@ -138,6 +141,7 @@ export class ScenariosController {
   @ApiOkResponse({ type: Scenario })
   @ApiNotFoundResponse({ description: 'Scenario not found' })
   @UseInterceptors(SetUserInterceptor)
+  @UserOwnsScenario()
   @Patch(':id')
   async update(
     @Body(new ValidationPipe()) dto: UpdateScenarioDto,
@@ -151,6 +155,7 @@ export class ScenariosController {
   @ApiOperation({ description: 'Deletes a scenario' })
   @ApiOkResponse()
   @ApiNotFoundResponse({ description: 'Scenario not found' })
+  @UserOwnsScenario()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     return await this.scenariosService.remove(id);

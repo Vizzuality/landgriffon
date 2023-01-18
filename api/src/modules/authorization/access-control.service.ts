@@ -1,9 +1,18 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Inject,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { NJRS_REQUEST } from 'nj-request-scope';
 import { User } from 'modules/users/user.entity';
 import { ROLES } from 'modules/authorization/roles/roles.enum';
 import { Role } from 'modules/authorization/roles/role.entity';
 import { RequestWithAuthenticatedUser } from 'app.controller';
+import { BaseEntity, DataSource, Repository } from 'typeorm';
+import { PERMISSIONS } from 'modules/authorization/permissions/permissions.enum';
+import { Permission } from 'modules/authorization/permissions/permissions.entity';
 
 /**
  * @description: Singleton injectable service that will hold the current async context's request, using
@@ -21,6 +30,7 @@ export class AccessControl {
   constructor(
     @Inject(NJRS_REQUEST)
     private readonly request: RequestWithAuthenticatedUser,
+    private readonly dataSource: DataSource,
   ) {}
 
   static createRolesFromEnum(roles: ROLES[]): Role[] {
@@ -35,6 +45,34 @@ export class AccessControl {
     return this.request.user;
   }
 
+  getUserRoles(): Role[] {
+    return this.request.user.roles;
+  }
+
+  canUser(permissionsToCheck: PERMISSIONS[]): any {
+    if (!this.request.user.roles.length) {
+      throw new UnauthorizedException(
+        `User with Id: ${this.getUserId()} has no assigned roles`,
+      );
+    }
+    const allowedActions: PERMISSIONS[] = this.request.user.roles
+      .map((role: Role): Permission[] => role.permissions)
+      .reduce((acc: any[], cur: any): Permission[] => acc.concat(cur), [])
+      .map((permission: Permission) => permission.action as PERMISSIONS);
+
+    if (
+      allowedActions.some((action: PERMISSIONS) =>
+        permissionsToCheck.includes(action),
+      )
+    ) {
+      const forbiddenMessage: string = `User with Id: ${this.getUserId()} has no ${permissionsToCheck.join(
+        ', ',
+      )} assigned`;
+      this.logger.warn(forbiddenMessage);
+      throw new ForbiddenException(forbiddenMessage);
+    }
+  }
+
   isUserAdmin(): boolean {
     return this.request.user.roles.some(
       (role: Role) => role.name === ROLES.ADMIN,
@@ -43,5 +81,9 @@ export class AccessControl {
 
   getUserId(): string {
     return this.request.user.id;
+  }
+
+  getBaseRepositoryFor(entity: typeof BaseEntity): Repository<any> {
+    return this.dataSource.getRepository(entity);
   }
 }

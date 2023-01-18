@@ -49,7 +49,7 @@ describe('ScenariosModule (e2e)', () => {
   let scenarioInterventionRepository: ScenarioInterventionRepository;
   let sourcingLocationRepository: SourcingLocationRepository;
   let sourcingRecordRepository: SourcingRecordRepository;
-  let jwtToken: string;
+  let adminToken: string;
   let adminUserId: string;
 
   beforeAll(async () => {
@@ -72,7 +72,7 @@ describe('ScenariosModule (e2e)', () => {
     );
 
     const tokenWithId = await setupTestUser(testApplication);
-    jwtToken = tokenWithId.jwtToken;
+    adminToken = tokenWithId.jwtToken;
     adminUserId = tokenWithId.user.id;
   });
 
@@ -91,7 +91,7 @@ describe('ScenariosModule (e2e)', () => {
     test('Create a scenario should be successful (happy case)', async () => {
       const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenarios')
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send({
           title: 'test scenario',
         })
@@ -116,7 +116,7 @@ describe('ScenariosModule (e2e)', () => {
     test('Create a scenario without the required fields should fail with a 400 error', async () => {
       const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenarios')
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send()
         .expect(HttpStatus.BAD_REQUEST);
 
@@ -134,7 +134,7 @@ describe('ScenariosModule (e2e)', () => {
     test('When I create a scenario And I dont specify if its published or not Then it should be private by default', async () => {
       const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenarios')
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send({
           title: 'test scenario',
         })
@@ -154,7 +154,7 @@ describe('ScenariosModule (e2e)', () => {
 
       const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/scenarios/${scenario.id}`)
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send({
           title: 'updated test scenario',
         })
@@ -176,7 +176,7 @@ describe('ScenariosModule (e2e)', () => {
 
       const response = await request(testApplication.getHttpServer())
         .patch(`/api/v1/scenarios/${scenario.id}`)
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send({
           title: 'updated test scenario',
           isPublic: 'Make it public please',
@@ -194,7 +194,7 @@ describe('ScenariosModule (e2e)', () => {
 
       await request(testApplication.getHttpServer())
         .patch(`/api/v1/scenarios/${scenario.id}`)
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send({
           title: 'updated test scenario',
           isPublic: true,
@@ -206,6 +206,33 @@ describe('ScenariosModule (e2e)', () => {
       });
       expect(updatedScenario.isPublic).toEqual(true);
     });
+
+    test(
+      'When I filter Interventions by Scenario Id + ' +
+        'Then I should receive said Interventions in the response' +
+        'And they should be ordered by creation date in a DESC order',
+      async () => {
+        const interventions: ScenarioIntervention[] = [];
+
+        const scenario: Scenario = await createScenario();
+
+        for (const n of [1, 2, 3, 4, 5]) {
+          const intervention = await createScenarioIntervention({
+            scenario,
+            title: `inter ${n}`,
+          });
+          interventions.push(intervention);
+        }
+        const response = await request(testApplication.getHttpServer())
+          .get(`/api/v1/scenarios/${scenario.id}/interventions`)
+          .set('Authorization', `Bearer ${adminToken}`)
+          .send();
+
+        expect(
+          interventions.map((i: ScenarioIntervention) => i.id).reverse(),
+        ).toEqual(response.body.data.map((i: ScenarioIntervention) => i.id));
+      },
+    );
   });
 
   describe('Scenarios - Delete', () => {
@@ -214,7 +241,7 @@ describe('ScenariosModule (e2e)', () => {
 
       await request(testApplication.getHttpServer())
         .delete(`/api/v1/scenarios/${scenario.id}`)
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -269,7 +296,7 @@ describe('ScenariosModule (e2e)', () => {
 
       const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenarios`)
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -343,7 +370,7 @@ describe('ScenariosModule (e2e)', () => {
 
       const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenarios`)
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .query({
           hasActiveInterventions: true,
         })
@@ -399,7 +426,7 @@ describe('ScenariosModule (e2e)', () => {
       //ACT
       const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenarios`)
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .query({
           search: {
             title: 'JEDI',
@@ -432,7 +459,7 @@ describe('ScenariosModule (e2e)', () => {
 
       const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenarios`)
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .query({
           filter: {
             status: SCENARIO_STATUS.ACTIVE,
@@ -457,7 +484,7 @@ describe('ScenariosModule (e2e)', () => {
 
       const responseOne = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenarios`)
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .query({
           page: {
             size: 3,
@@ -471,7 +498,7 @@ describe('ScenariosModule (e2e)', () => {
 
       const responseTwo = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenarios`)
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .query({
           page: {
             size: 3,
@@ -492,7 +519,7 @@ describe('ScenariosModule (e2e)', () => {
 
       const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/scenarios/${scenario.id}`)
-        .set('Authorization', `Bearer ${jwtToken}`)
+        .set('Authorization', `Bearer ${adminToken}`)
         .send()
         .expect(HttpStatus.OK);
 
@@ -545,7 +572,7 @@ describe('ScenariosModule (e2e)', () => {
 
         const response = await request(testApplication.getHttpServer())
           .get(`/api/v1/scenarios/${scenario.id}/interventions`)
-          .set('Authorization', `Bearer ${jwtToken}`)
+          .set('Authorization', `Bearer ${adminToken}`)
           .send();
 
         expect(
@@ -599,7 +626,7 @@ describe('ScenariosModule (e2e)', () => {
       });
       const requests = [];
 
-      for (const token of [jwtToken, user1.jwtToken, user2.jwtToken]) {
+      for (const token of [adminToken, user1.jwtToken, user2.jwtToken]) {
         requests.push(
           request(testApplication.getHttpServer())
             .get(`/api/v1/scenarios`)
@@ -610,7 +637,7 @@ describe('ScenariosModule (e2e)', () => {
       const response: any = await Promise.all(requests);
 
       const adminRequest = response.find((res: any) =>
-        res.request.header.Authorization.includes(jwtToken),
+        res.request.header.Authorization.includes(adminToken),
       );
       expect(adminRequest.body.data).toHaveLength(3);
 
@@ -679,31 +706,100 @@ describe('ScenariosModule (e2e)', () => {
         ),
       ).toBe(undefined);
     });
+    test('Given I am a user, When I want to GET/PATCH/DELETE a Scenario, But its not mine, Then I should get an error', async () => {
+      const { user } = await setupTestUser(testApplication, ROLES.USER, {
+        email: 'scenariouser@email.com',
+      });
+      const scenario = await createScenario({ user });
+      const requestingUser = await setupTestUser(testApplication, ROLES.USER, {
+        email: 'requestinguser@email.com',
+      });
+
+      await request(testApplication.getHttpServer())
+        .get(`/api/v1/scenarios/${scenario.id}`)
+        .set('Authorization', `Bearer ${requestingUser.jwtToken}`)
+        .send()
+        .expect(HttpStatus.FORBIDDEN);
+
+      await request(testApplication.getHttpServer())
+        .patch(`/api/v1/scenarios/${scenario.id}`)
+        .set('Authorization', `Bearer ${requestingUser.jwtToken}`)
+        .send({ title: 'another name' })
+        .expect(HttpStatus.FORBIDDEN);
+
+      await request(testApplication.getHttpServer())
+        .delete(`/api/v1/scenarios/${scenario.id}`)
+        .set('Authorization', `Bearer ${requestingUser.jwtToken}`)
+        .send()
+        .expect(HttpStatus.FORBIDDEN);
+    });
+
+    test('Given I am a user, When I want to GET other users Scenario, And its public, Then I should be allowed', async () => {
+      const { user } = await setupTestUser(testApplication, ROLES.USER, {
+        email: 'publicscenariouser@email.com',
+      });
+      const scenario = await createScenario({ user, isPublic: true });
+      const requestingUser = await setupTestUser(testApplication, ROLES.USER, {
+        email: 'requestinpublicscenariouser@email.com',
+      });
+
+      await request(testApplication.getHttpServer())
+        .get(`/api/v1/scenarios/${scenario.id}`)
+        .set('Authorization', `Bearer ${requestingUser.jwtToken}`)
+        .send()
+        .expect(HttpStatus.OK);
+    });
   });
-  test(
-    'When I filter Interventions by Scenario Id + ' +
-      'Then I should receive said Interventions in the response' +
-      'And they should be ordered by creation date in a DESC order',
-    async () => {
-      const interventions: ScenarioIntervention[] = [];
+  test('Given I am a user, When I want to GET/PATCH/DELETE a Scenario, And its mine, Then I should be allowed', async () => {
+    const myUser = await setupTestUser(testApplication, ROLES.USER, {
+      email: 'myUser@email.com',
+    });
+    const scenario = await createScenario({
+      user: myUser.user,
+      title: 'Best scenario',
+    });
 
-      const scenario: Scenario = await createScenario();
+    await request(testApplication.getHttpServer())
+      .get(`/api/v1/scenarios/${scenario.id}`)
+      .set('Authorization', `Bearer ${myUser.jwtToken}`)
+      .send()
+      .expect(HttpStatus.OK);
 
-      for (const n of [1, 2, 3, 4, 5]) {
-        const intervention = await createScenarioIntervention({
-          scenario,
-          title: `inter ${n}`,
-        });
-        interventions.push(intervention);
-      }
-      const response = await request(testApplication.getHttpServer())
-        .get(`/api/v1/scenarios/${scenario.id}/interventions`)
-        .set('Authorization', `Bearer ${jwtToken}`)
-        .send();
+    await request(testApplication.getHttpServer())
+      .patch(`/api/v1/scenarios/${scenario.id}`)
+      .set('Authorization', `Bearer ${myUser.jwtToken}`)
+      .send({ title: 'another name' })
+      .expect(HttpStatus.OK);
 
-      expect(
-        interventions.map((i: ScenarioIntervention) => i.id).reverse(),
-      ).toEqual(response.body.data.map((i: ScenarioIntervention) => i.id));
-    },
-  );
+    await request(testApplication.getHttpServer())
+      .delete(`/api/v1/scenarios/${scenario.id}`)
+      .set('Authorization', `Bearer ${myUser.jwtToken}`)
+      .send()
+      .expect(HttpStatus.OK);
+  });
+
+  test('Given I am a Admin, When I want to GET/PATCH/DELETE a Scenario, And its not mine, Then I should be allowed', async () => {
+    const scenario = await createScenario({
+      userId: adminUserId,
+      title: 'Admin scenario',
+    });
+
+    await request(testApplication.getHttpServer())
+      .get(`/api/v1/scenarios/${scenario.id}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send()
+      .expect(HttpStatus.OK);
+
+    await request(testApplication.getHttpServer())
+      .patch(`/api/v1/scenarios/${scenario.id}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ title: 'another name' })
+      .expect(HttpStatus.OK);
+
+    await request(testApplication.getHttpServer())
+      .delete(`/api/v1/scenarios/${scenario.id}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send()
+      .expect(HttpStatus.OK);
+  });
 });

@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Styles of the legend were not applied correctly
 - Styles of the opacity control were not applied correctly
 
+### Added
+
+- New hook to check user role and permissions [LANDGRIF-1123](https://vizzuality.atlassian.net/browse/LANDGRIF-1123)
+
 ## [v0.3.4]
 
 ### Added

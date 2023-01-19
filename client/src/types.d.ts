@@ -1,3 +1,4 @@
+import type { Permission, RoleName } from 'hooks/permissions/enums/enums';
 import type { Scenario } from 'containers/scenarios/types';
 
 export type RGBColor = [number, number, number];
@@ -209,6 +210,11 @@ export type PaginationMetadata = {
   totalPages?: number;
 };
 
+export type Role = {
+  name: RoleName;
+  permissions: Permission[];
+};
+
 /**
  * User profile
  */
@@ -219,6 +225,8 @@ export type ProfilePayload = {
   lname?: string;
   email: string;
   password?: string;
+  roles: Role[];
+  id: string;
 };
 
 // Password payload for API

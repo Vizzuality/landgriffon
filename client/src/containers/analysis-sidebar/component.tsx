@@ -16,10 +16,10 @@ import { useInfiniteScenarios } from 'hooks/scenarios';
 import useBottomScrollListener from 'hooks/scroll';
 import { usePermissions } from 'hooks/permissions';
 import ScenariosFilters from 'containers/scenarios/filters';
-import { Anchor } from 'components/button';
 import Loading from 'components/loading';
 import ScenarioItem from 'containers/scenarios/item';
 import { Permission } from 'hooks/permissions/enums';
+import LinkButton from 'components/button/component';
 
 import type { MutableRefObject } from 'react';
 import type { Scenario } from 'containers/scenarios/types';
@@ -37,9 +37,6 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
 }) => {
   const { query, push } = useRouter();
   const { scenarioId = ACTUAL_DATA.id } = query;
-  const { hasPermissions } = usePermissions();
-
-  const canCreateScenario = hasPermissions(Permission.CAN_CREATE_SCENARIO);
 
   const { hasPermission } = usePermissions();
   const canCreateScenario = hasPermission(Permission.CAN_CREATE_SCENARIO);
@@ -144,8 +141,8 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
                 </p>
                 <p>Create a scenario to get started.</p>
               </div>
-              <Link href="/data/scenarios/new">
-                <Anchor
+              <Link href="/data/scenarios/new" passHref>
+                <LinkButton
                   className="block w-full"
                   variant="primary"
                   size="xl"
@@ -161,7 +158,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
                   }
                 >
                   Add new scenario
-                </Anchor>
+                </LinkButton>
               </Link>
             </div>
           )}
@@ -175,8 +172,8 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
 
       {scenariosList?.length > 0 && (
         <div className="sticky bottom-0 left-0 z-20 w-full pb-6 bg-white before:bg-gradient-to-t before:from-white before:w-full before:h-16 before:content before:-top-16 before:left-0 before:absolute">
-          <Link href="/data/scenarios/new">
-            <Anchor
+          <Link href="/data/scenarios/new" passHref>
+            <LinkButton
               className="w-full"
               variant="secondary"
               icon={
@@ -191,7 +188,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
               disabled={!canCreateScenario}
             >
               Add new scenario
-            </Anchor>
+            </LinkButton>
           </Link>
         </div>
       )}

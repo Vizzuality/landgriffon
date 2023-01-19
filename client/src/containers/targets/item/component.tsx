@@ -4,7 +4,7 @@ import AdminEditTargetModal from 'containers/admin/edit-target-modal';
 
 import type { Target } from 'types';
 
-const TargetItem: React.FC<Target> = ({ id, name, years }) => {
+const TargetItem: React.FC<Target> = ({ id, name, years, unit }) => {
   const {
     isOpen: isUploadEditTargetModalOpen,
     open: openEditTargetModal,
@@ -25,7 +25,7 @@ const TargetItem: React.FC<Target> = ({ id, name, years }) => {
         <div className="grid grid-cols-4 gap-4">
           {years.map(({ year, value }) => (
             <div key={`target-item-${id}-${year}`} className="py-4 text-center">
-              {value} tCO<sub>2</sub>
+              {value} <span>{unit}</span>
             </div>
           ))}
           <div className="flex items-center justify-end">

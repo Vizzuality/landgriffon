@@ -4,9 +4,6 @@ import AdminEditTargetModal from 'containers/admin/edit-target-modal';
 
 import type { Target } from 'types';
 
-const TARGET_PILL_TITLE_CLASSNAMES = 'text-green-700 text-sm uppercase font-bold';
-const TARGET_PILL_VALUE_CLASSNAMES = '';
-
 const TargetItem: React.FC<Target> = ({ id, name, years }) => {
   const {
     isOpen: isUploadEditTargetModalOpen,
@@ -15,22 +12,34 @@ const TargetItem: React.FC<Target> = ({ id, name, years }) => {
   } = useModal();
 
   return (
-    <div className="grid grid-cols-12 gap-4 items-center justify-between rounded-md bg-white shadow-sm p-4">
+    <div className="grid items-center grid-cols-12 gap-4 p-4 text-sm bg-white rounded-md shadow-sm">
       <div className="col-span-3">{name}</div>
-      <div className="col-span-9 flex items-center justify-between">
-        <div className="bg-green-50 rounded-md py-4 px-6 text-center">
-          <div className={TARGET_PILL_TITLE_CLASSNAMES}>Baseline</div>
-          <div className={TARGET_PILL_VALUE_CLASSNAMES}>2.37Mt</div>
-        </div>
-        {years.map(({ year, value }) => (
-          <div key={`${id}-${year}`} className="py-4 text-center">
-            <div className={TARGET_PILL_TITLE_CLASSNAMES}>{year}</div>
-            <div className={TARGET_PILL_VALUE_CLASSNAMES}>{value}</div>
+      <div className="col-span-2">
+        <div className="flex justify-center">
+          <div className="p-4 text-sm font-semibold text-center text-green-800 rounded-md bg-green-50">
+            2.37Mt
           </div>
-        ))}
-        <Button variant="secondary" onClick={openEditTargetModal}>
-          Edit
-        </Button>
+        </div>
+      </div>
+      <div className="col-span-7">
+        <div className="grid grid-cols-4 gap-4">
+          {years.map(({ year, value }) => (
+            <div key={`target-item-${id}-${year}`} className="py-4 text-center">
+              {value} tCO<sub>2</sub>
+            </div>
+          ))}
+          <div className="flex items-center justify-end">
+            <Button
+              variant="white"
+              size="xs"
+              onClick={openEditTargetModal}
+              disabled
+              className="h-8"
+            >
+              Edit
+            </Button>
+          </div>
+        </div>
       </div>
       <AdminEditTargetModal
         title={name}

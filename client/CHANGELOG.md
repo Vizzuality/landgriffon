@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 - Added `*` to Type of Intervention title to indicate the selection is mandatory. Also, a hint when it is not selected. [LANDGRIF-1142](https://vizzuality.atlassian.net/browse/LANDGRIF-1142)
+- New hook to check user role and permissions [LANDGRIF-1123](https://vizzuality.atlassian.net/browse/LANDGRIF-1123)
 - Switch to toggle layers from the legend itself [LANDGRIF-991](https://vizzuality.atlassian.net/browse/LANDGRIF-991)
 - Added a end year field in the intervention form [LANDGRIF-1113](https://vizzuality.atlassian.net/browse/LANDGRIF-1113)
 - Added a volume field in the intervention form [LANDGRIF-1112](https://vizzuality.atlassian.net/browse/LANDGRIF-1112)
@@ -30,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Contextual layers request are not including `indicatorId` param [LANDGRIF-1134](https://vizzuality.atlassian.net/browse/LANDGRIF-1134)
 - Contextual layers should render in resolution 4 [LANDGRIF-1130](https://vizzuality.atlassian.net/browse/LANDGRIF-1130)
 
+
 ## [v0.3.5]
 
 ### Fixed
@@ -37,6 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Contextual layers were not showed in the map
 - Styles of the legend were not applied correctly
 - Styles of the opacity control were not applied correctly
+
+### Added
 
 ## [v0.3.4]
 

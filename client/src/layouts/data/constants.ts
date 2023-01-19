@@ -12,7 +12,6 @@ export const ADMIN_TABS: TabsType = {
   TARGETS: {
     name: 'Targets',
     href: '/data/targets',
-    disabled: true,
   },
   USERS: {
     name: 'Users',

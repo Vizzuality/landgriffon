@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Fixed
 
 - Disable the filter in the manage data page [LANDGRIF-1110](https://vizzuality.atlassian.net/browse/LANDGRIF-1110)
-- Disable targets in the data page [LANDGRIF-1109](https://vizzuality.atlassian.net/browse/LANDGRIF-1109)
+- Disable action buttons in the targets page [LANDGRIF-1109](https://vizzuality.atlassian.net/browse/LANDGRIF-1109)
 
 ## [v0.3.5]
 

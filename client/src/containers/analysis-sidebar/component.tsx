@@ -14,10 +14,12 @@ import {
 } from 'store/features/analysis/scenarios';
 import { useInfiniteScenarios } from 'hooks/scenarios';
 import useBottomScrollListener from 'hooks/scroll';
+import { usePermissions } from 'hooks/permissions';
 import ScenariosFilters from 'containers/scenarios/filters';
 import { Anchor } from 'components/button';
 import Loading from 'components/loading';
 import ScenarioItem from 'containers/scenarios/item';
+import { Permission } from 'hooks/permissions/enums';
 
 import type { MutableRefObject } from 'react';
 import type { Scenario } from 'containers/scenarios/types';
@@ -35,6 +37,9 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
 }) => {
   const { query, push } = useRouter();
   const { scenarioId = ACTUAL_DATA.id } = query;
+  const { hasPermissions } = usePermissions();
+
+  const canCreateScenario = hasPermissions(Permission.CAN_CREATE_SCENARIO);
 
   const { sort, searchTerm } = useAppSelector(scenarios);
   const dispatch = useAppDispatch();
@@ -141,6 +146,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
                   className="block w-full"
                   variant="primary"
                   size="xl"
+                  disabled={!canCreateScenario}
                   icon={
                     <div
                       aria-hidden="true"

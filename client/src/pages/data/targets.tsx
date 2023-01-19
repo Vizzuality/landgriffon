@@ -25,6 +25,7 @@ const AdminTargetsPage: React.FC = () => {
       return indicators.map((indicator) => ({
         id: indicator.id,
         name: indicator.name.toString(),
+        unit: indicator.metadata.units,
         indicatorId: indicator.id,
         baselineYear: 2020,
         baselineValue: 1,

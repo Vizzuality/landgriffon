@@ -48,7 +48,7 @@ import { SourcingDataImportService } from 'modules/import-data/sourcing-data/sou
 import { FileService } from 'modules/import-data/file.service';
 import { createWorldToCalculateIndicatorRecords } from '../../../utils/indicator-records-preconditions';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
-import { Material } from 'modules/materials/material.entity';
+import { Material, MATERIALS_STATUS } from 'modules/materials/material.entity';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { SourcingRecordsWithIndicatorRawDataDtoV2 } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
@@ -301,6 +301,7 @@ describe('Sourcing Data import', () => {
     const indicatorPreconditions = await createWorldToCalculateIndicatorRecords(
       dataSource,
     );
+
     tablesToDrop = [
       ...(await createMaterialTreeForXLSXImport(dataSource)),
       ...indicatorPreconditions.h3tableNames,
@@ -338,6 +339,22 @@ describe('Sourcing Data import', () => {
     sourcingLocations.forEach((sourcingLocation: SourcingLocation) => {
       expect(sourcingLocation.materialId).not.toEqual(null);
     });
+
+    const activatedMaterial: Material | null = await materialRepository.findOne(
+      {
+        where: {
+          hsCodeId: '1005',
+        },
+      },
+    );
+    expect(activatedMaterial?.status).toBe(MATERIALS_STATUS.ACTIVE);
+    const notActivatedMaterial: Material | null =
+      await materialRepository.findOne({
+        where: {
+          hsCodeId: '10',
+        },
+      });
+    expect(notActivatedMaterial?.status).toBe(MATERIALS_STATUS.INACTIVE);
   }, 100000);
 
   test('When a file is processed by the API and gets processed, then a request to Sourcing-Records should return an existing Sourcing-Location ID', async () => {
@@ -352,6 +369,7 @@ describe('Sourcing Data import', () => {
     const indicatorPreconditions = await createWorldToCalculateIndicatorRecords(
       dataSource,
     );
+
     tablesToDrop = [
       ...(await createMaterialTreeForXLSXImport(dataSource)),
       ...indicatorPreconditions.h3tableNames,

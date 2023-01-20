@@ -64,9 +64,9 @@ export class Material extends TimestampedBaseEntity {
   @ApiPropertyOptional()
   description?: string;
 
-  @Column()
+  @Column({ nullable: false, unique: true })
   @ApiPropertyOptional()
-  hsCodeId?: string;
+  hsCodeId: string;
 
   @Column({ nullable: true })
   @ApiPropertyOptional()
@@ -80,7 +80,7 @@ export class Material extends TimestampedBaseEntity {
   @Column({
     type: 'enum',
     enum: MATERIALS_STATUS,
-    default: MATERIALS_STATUS.ACTIVE,
+    default: MATERIALS_STATUS.INACTIVE,
   })
   status!: MATERIALS_STATUS;
 

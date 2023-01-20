@@ -98,11 +98,11 @@ describe('Indicators - Status (Integration Tests', () => {
     for (const nameCode of nameCodeArray) {
       await createIndicator({
         nameCode,
-        status: INDICATOR_STATUS.INACTIVE,
+        status: INDICATOR_STATUS.ACTIVE,
         name: nameCode,
       });
     }
-    await indicatorService.resetIndicators();
+    await indicatorService.deactivateAllIndicators();
 
     const allIndicators: Indicator[] =
       await indicatorService.findAllUnpaginated();

@@ -35,6 +35,7 @@ import { DeepPartial } from 'typeorm';
 import { User } from '../src/modules/users/user.entity';
 import { faker } from '@faker-js/faker';
 import { genSalt, hash } from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 
 async function createAdminRegion(
   additionalData: Partial<AdminRegion> = {},
@@ -266,7 +267,7 @@ async function createMaterial(
 ): Promise<Material> {
   const defaultData: DeepPartial<Material> = {
     name: 'Material name',
-    hsCodeId: '1',
+    hsCodeId: uuidv4(),
   };
 
   const material = Material.merge(new Material(), defaultData, additionalData);

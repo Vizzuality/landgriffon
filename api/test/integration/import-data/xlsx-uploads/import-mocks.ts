@@ -99,7 +99,7 @@ async function createMaterialTreeForXLSXImport(
     },
     {
       name: 'Bananas, including plantains; fresh or dried',
-      hsCodeId: '0803',
+      hsCodeId: '803',
       parentHsCodeId: '08',
     },
     {

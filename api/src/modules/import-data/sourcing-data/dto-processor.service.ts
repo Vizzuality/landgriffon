@@ -323,6 +323,7 @@ export class SourcingRecordsDtoProcessorService {
     materialDto.hsCodeId = materialData.hs_2017_code;
     materialDto.mpath = materialData.path_id;
     materialDto.datasetId = materialData.datasetId;
+    materialDto.status = materialData.status;
     return materialDto;
   }
 

@@ -112,12 +112,18 @@ export class SourcingDataImportService {
         await this.indicatorService.activateIndicators(
           dtoMatchedData.indicators,
         );
+      this.logger.log('Activating Materials...');
+      const activeMaterials: Material[] =
+        await this.materialService.activateMaterials(dtoMatchedData.materials);
 
       await this.tasksService.updateImportJobEvent({
         taskId,
         newLogs: [
           `Activated indicators: ${activeIndicators
             .map((i: Indicator) => i.name)
+            .join(', ')}`,
+          `Activated materials: ${activeMaterials
+            .map((i: Material) => i.hsCodeId)
             .join(', ')}`,
         ],
       });
@@ -211,7 +217,8 @@ export class SourcingDataImportService {
   async cleanDataBeforeImport(): Promise<void> {
     this.logger.log('Cleaning database before import...');
     try {
-      await this.indicatorService.resetIndicators();
+      await this.indicatorService.deactivateAllIndicators();
+      await this.materialService.deactivateAllMaterials();
       await this.scenarioService.clearTable();
       await this.indicatorRecordsService.clearTable();
       await this.businessUnitService.clearTable();

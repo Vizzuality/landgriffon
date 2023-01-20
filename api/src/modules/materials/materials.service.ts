@@ -4,12 +4,17 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  ServiceUnavailableException,
 } from '@nestjs/common';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
 } from 'utils/app-base.service';
-import { Material, materialResource } from 'modules/materials/material.entity';
+import {
+  Material,
+  materialResource,
+  MATERIALS_STATUS,
+} from 'modules/materials/material.entity';
 import { AppInfoDTO } from 'dto/info.dto';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
@@ -20,6 +25,8 @@ import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-materia
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
+import { In } from 'typeorm';
+import { getDiffForEntitiesToBeActivated } from 'utils/helpers/array-diff.helper';
 
 @Injectable()
 export class MaterialsService extends AppBaseService<
@@ -218,5 +225,60 @@ export class MaterialsService extends AppBaseService<
     }
 
     return materials.map((material: Material) => material.id);
+  }
+
+  async activateMaterials(
+    materialsFromSheet: CreateMaterialDto[],
+  ): Promise<Material[]> {
+    const hsCodeToActivateMaterialsBy: string[] = materialsFromSheet
+      .filter((i: CreateMaterialDto) => i.status === MATERIALS_STATUS.ACTIVE)
+      .map((i: CreateMaterialDto) => i.hsCodeId);
+    this.logger.log(`Found ${hsCodeToActivateMaterialsBy.length} to activate`);
+    const materialsFoundByProvidedHsCodes: Material[] =
+      await this.materialRepository.find({
+        where: {
+          hsCodeId: In(hsCodeToActivateMaterialsBy),
+        },
+      });
+    if (!materialsFoundByProvidedHsCodes.length) {
+      throw new ServiceUnavailableException(
+        'No Materials found matching provided hs codes. Unable to calculate impact. Aborting Import',
+      );
+    }
+    if (
+      materialsFoundByProvidedHsCodes.length !==
+      hsCodeToActivateMaterialsBy.length
+    ) {
+      const codesNotFoundInDb: string[] = getDiffForEntitiesToBeActivated(
+        hsCodeToActivateMaterialsBy,
+        materialsFoundByProvidedHsCodes.map((m: Material) => m.hsCodeId),
+      );
+      this.logger.warn(`Mismatch in materials meant to be activated: `);
+      this.logger.warn(
+        `Provided hsCodes with no matching Materials in DB: ${codesNotFoundInDb.join(
+          ', ',
+        )}`,
+      );
+      this.logger.warn(`Activating matching materials...`);
+    }
+    const activatedMaterials: Material[] = materialsFoundByProvidedHsCodes.map(
+      (i: Material) =>
+        ({
+          ...i,
+          status: MATERIALS_STATUS.ACTIVE,
+        } as Material),
+    );
+    return this.materialRepository.save(activatedMaterials);
+  }
+
+  async deactivateAllMaterials(): Promise<void> {
+    this.logger.log(`Setting all Indicators to Inactive...`);
+    const allMaterials: Material[] = await this.materialRepository.find();
+    await this.materialRepository.save(
+      allMaterials.map((i: Material) => ({
+        ...i,
+        status: MATERIALS_STATUS.INACTIVE,
+      })),
+    );
   }
 }

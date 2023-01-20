@@ -21,6 +21,7 @@ import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { In, SelectQueryBuilder } from 'typeorm';
 import { IndicatorNameCodeWithRelatedH3 } from 'modules/indicators/dto/indicator-namecode-with-related-h3.dto';
 import { FetchSpecification } from 'nestjs-base-service';
+import { getDiffForEntitiesToBeActivated } from 'utils/helpers/array-diff.helper';
 
 @Injectable()
 export class IndicatorsService extends AppBaseService<
@@ -149,43 +150,49 @@ export class IndicatorsService extends AppBaseService<
   async activateIndicators(
     indicatorsFromSheet: CreateIndicatorDto[],
   ): Promise<Indicator[]> {
-    const activeIndicatorsNameCodes: string[] = indicatorsFromSheet
+    const nameCodesToActivateIndicatorsBy: string[] = indicatorsFromSheet
       .filter((i: CreateIndicatorDto) => i.status === INDICATOR_STATUS.ACTIVE)
       .map((i: CreateIndicatorDto) => i.nameCode);
-    this.logger.log(`Found ${activeIndicatorsNameCodes.length} to activate`);
-    const indicatorsToActivate: Indicator[] =
+    this.logger.log(
+      `Found ${nameCodesToActivateIndicatorsBy.length} to activate`,
+    );
+    const indicatorsFoundByProvidedNameCodes: Indicator[] =
       await this.indicatorRepository.find({
         where: {
-          nameCode: In(activeIndicatorsNameCodes),
+          nameCode: In(nameCodesToActivateIndicatorsBy),
         },
       });
-    if (!indicatorsToActivate.length) {
+    if (!indicatorsFoundByProvidedNameCodes.length) {
       throw new ServiceUnavailableException(
         'No Indicators found matching provided NameCodes. Unable to calculate impact. Aborting Import',
       );
     }
-    if (indicatorsToActivate.length !== activeIndicatorsNameCodes.length) {
+    if (
+      indicatorsFoundByProvidedNameCodes.length !==
+      nameCodesToActivateIndicatorsBy.length
+    ) {
+      const codesWithNoMatchingIndicatorInDb: string[] =
+        getDiffForEntitiesToBeActivated(
+          nameCodesToActivateIndicatorsBy,
+          indicatorsFoundByProvidedNameCodes.map((i: Indicator) => i.nameCode),
+        );
       this.logger.warn(`Mismatch in indicators meant to be activated: `);
       this.logger.warn(
-        `Indicators meant to be activated: ${activeIndicatorsNameCodes.join(
+        `Provided nameCodes with no matching Indicators in DB: ${codesWithNoMatchingIndicatorInDb.join(
           ', ',
         )}`,
       );
-      this.logger.warn(
-        `Indicators found in the DB by these namecodes: ${indicatorsToActivate
-          .map((i: Indicator) => i.nameCode)
-          .join(', ')}`,
-      );
-      this.logger.warn(`Activating found ones...`);
+      this.logger.warn(`Activating found Indicators...`);
     }
-    const activeIndicators: Indicator[] = indicatorsToActivate.map(
-      (i: Indicator) =>
-        ({
-          ...i,
-          status: INDICATOR_STATUS.ACTIVE,
-        } as Indicator),
-    );
-    return this.indicatorRepository.save(activeIndicators);
+    const activatedIndicators: Indicator[] =
+      indicatorsFoundByProvidedNameCodes.map(
+        (i: Indicator) =>
+          ({
+            ...i,
+            status: INDICATOR_STATUS.ACTIVE,
+          } as Indicator),
+      );
+    return this.indicatorRepository.save(activatedIndicators);
   }
 
   /**
@@ -193,7 +200,7 @@ export class IndicatorsService extends AppBaseService<
    *               as requested by the user
    * @note: TypeORM does not seem to support bulk updates without filtering criteria
    */
-  async resetIndicators(): Promise<void> {
+  async deactivateAllIndicators(): Promise<void> {
     this.logger.log(`Setting all Indicators to Inactive...`);
     const allIndicators: Indicator[] = await this.indicatorRepository.find();
     await this.indicatorRepository.save(

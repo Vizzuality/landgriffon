@@ -64,6 +64,7 @@ export class UsersController {
   @JSONAPIQueryParams({
     entitiesAllowedAsIncludes: userResource.entitiesAllowedAsIncludes,
   })
+  @RequiredRoles(ROLES.ADMIN)
   @Get()
   async findAll(
     @ProcessFetchSpecification({
@@ -74,7 +75,10 @@ export class UsersController {
     const results: {
       data: (Partial<User> | undefined)[];
       metadata: PaginationMeta | undefined;
-    } = await this.service.findAllPaginated(fetchSpecification);
+    } = await this.service.findAllPaginated({
+      ...fetchSpecification,
+      include: ['roles', 'roles.permissions'],
+    });
     return this.service.serialize(results.data, results.metadata);
   }
 
@@ -157,7 +161,7 @@ export class UsersController {
       throw new UnauthorizedException();
     }
     const user: User = await this.service.getById(req.user.id, {
-      include: ['roles'],
+      include: ['roles', 'roles.permissions'],
     });
     if (!user) {
       throw new UnauthorizedException();

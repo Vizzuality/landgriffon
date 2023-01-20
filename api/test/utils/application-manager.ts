@@ -51,9 +51,12 @@ export default class ApplicationManager {
       ApplicationManager.testApplication.moduleFixture.createNestApplication({
         logger: serverConfig.loggerLevel,
       });
-    useContainer(ApplicationManager.testApplication.application, {
-      fallbackOnErrors: true,
-    });
+    useContainer(
+      ApplicationManager.testApplication.application.select(AppModule),
+      {
+        fallbackOnErrors: true,
+      },
+    );
     ApplicationManager.testApplication.application.useGlobalPipes(
       new ValidationPipe({
         transform: true,

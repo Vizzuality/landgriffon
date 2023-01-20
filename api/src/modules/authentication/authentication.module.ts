@@ -11,6 +11,7 @@ import { LocalStrategy } from 'modules/authentication/strategies/local.strategy'
 import { ApiEventsModule } from 'modules/api-events/api-events.module';
 import { User } from 'modules/users/user.entity';
 import { PasswordValidation } from 'decorators/password-validator.decorator';
+import { AuthorizationModule } from 'modules/authorization/authorization.module';
 
 export const logger: Logger = new Logger('Authentication');
 
@@ -24,6 +25,7 @@ export const logger: Logger = new Logger('Authentication');
       signOptions: { expiresIn: config.get('auth.jwt.expiresIn') },
     }),
     TypeOrmModule.forFeature([User]),
+    AuthorizationModule,
   ],
   providers: [
     AuthenticationService,

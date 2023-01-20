@@ -4,7 +4,6 @@ import { typeOrmConfig } from 'typeorm.config';
 import { AuthenticationModule } from 'modules/authentication/authentication.module';
 import { UsersModule } from 'modules/users/users.module';
 import { APP_FILTER } from '@nestjs/core';
-import { RequestScopeModule } from 'nj-request-scope';
 import { AllExceptionsFilter } from 'filters/all-exceptions.exception.filter';
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
@@ -36,7 +35,8 @@ import { UrlParamsModule } from 'modules/url-params/url-params.module';
 import { ContextualLayersModule } from 'modules/contextual-layers/contextual-layers.module';
 import { CachedDataModule } from 'modules/cached-data/cached-data.module';
 import * as config from 'config';
-import { RoleSeeder } from 'modules/authorization/role.seeder';
+import { AuthorizationModule } from 'modules/authorization/authorization.module';
+import { AuthorizationService } from 'modules/authorization/authorization.service';
 
 const queueConfig: any = config.get('queue');
 
@@ -52,7 +52,6 @@ const queueConfig: any = config.get('queue');
       },
       settings: { lockDuration: 10000000, maxStalledCount: 0 },
     }),
-    RequestScopeModule,
     AdminRegionsModule,
     AuthenticationModule,
     BusinessUnitsModule,
@@ -81,20 +80,20 @@ const queueConfig: any = config.get('queue');
     UnitsModule,
     UrlParamsModule,
     UsersModule,
+    AuthorizationModule,
   ],
   providers: [
     {
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
     },
-    RoleSeeder,
   ],
   controllers: [HealthController],
 })
 export class AppModule implements OnModuleInit {
-  constructor(private readonly roleSeeder: RoleSeeder) {}
+  constructor(private readonly authorizationService: AuthorizationService) {}
 
   async onModuleInit(): Promise<void> {
-    await this.roleSeeder.seedRoles();
+    await this.authorizationService.seedRolesAndPermissions();
   }
 }

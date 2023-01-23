@@ -4,7 +4,7 @@ import { useDebounceCallback } from '@react-hook/debounce';
 import { PlusIcon } from '@heroicons/react/solid';
 
 import { useUsers } from 'hooks/users';
-import AdminLayout from 'layouts/data';
+import ProfileLayout from 'layouts/profile';
 import Button from 'components/button';
 import Search from 'components/search';
 import Table from 'components/table';
@@ -64,7 +64,7 @@ const AdminUsersPage: React.FC = () => {
   );
 
   return (
-    <AdminLayout>
+    <ProfileLayout title="Users">
       <Head>
         <title>Admin users | Landgriffon</title>
       </Head>
@@ -90,7 +90,7 @@ const AdminUsersPage: React.FC = () => {
         </div>
       </div>
       <Table {...tableProps} isLoading={isFetching} />
-    </AdminLayout>
+    </ProfileLayout>
   );
 };
 

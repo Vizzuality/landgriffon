@@ -13,7 +13,11 @@ import ApplicationLayout from 'layouts/application';
 
 import type { AdminLayoutProps } from './types';
 
-const AdminLayout: React.FC<AdminLayoutProps> = ({ title = 'Admin', children }) => {
+const AdminLayout: React.FC<AdminLayoutProps> = ({
+  title = 'Admin',
+  children,
+  adminTabs = ADMIN_TABS,
+}) => {
   const { pathname } = useRouter();
 
   return (
@@ -27,7 +31,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ title = 'Admin', children }) 
             <h1 className="mt-8 text-left">{title}</h1>
 
             <nav className="flex mt-12 space-x-10 text-sm" data-testid="admin-menu-list">
-              {Object.values(ADMIN_TABS).map((tab) => {
+              {Object.values(adminTabs).map((tab) => {
                 if (tab.disabled) {
                   return (
                     <span

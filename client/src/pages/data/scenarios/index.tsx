@@ -12,7 +12,7 @@ import ButtonGroup, { LinkGroupItem } from 'components/button-group';
 import Select from 'components/forms/select';
 import Search from 'components/search';
 import { useScenarios } from 'hooks/scenarios';
-import AdminLayout from 'layouts/data';
+import AdminLayout from 'layouts/admin';
 import ScenarioCard from 'containers/scenarios/card';
 import { Anchor } from 'components/button';
 import Loading from 'components/loading';

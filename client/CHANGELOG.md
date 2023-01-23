@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [v0.4.0 Unreleased]
 
+### Changed
+
+- Show the scenario name in the charts [LANDGRIF-1116](https://vizzuality.atlassian.net/browse/LANDGRIF-1116)
+
 ### Fixed
 
 - Disable the filter in the manage data page [LANDGRIF-1110](https://vizzuality.atlassian.net/browse/LANDGRIF-1110)

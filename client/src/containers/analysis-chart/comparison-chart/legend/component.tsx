@@ -1,6 +1,10 @@
 import { useCallback } from 'react';
 import classNames from 'classnames';
 
+import { useAppSelector } from 'store/hooks';
+import { scenarios } from 'store/features/analysis';
+import { useScenario } from 'hooks/scenarios';
+
 import type { Props as LegendProps } from 'recharts/types/component/Legend';
 import type { Payload } from 'recharts/types/component/DefaultLegendContent';
 
@@ -19,6 +23,9 @@ export interface ExtendedLegendProps extends LegendProps {
 
 const LegendChart: React.FC<ExtendedLegendProps> = ({ payload, onClick = () => null }) => {
   const handleClick = useCallback(onClick, [onClick]);
+  const { currentScenario, scenarioToCompare } = useAppSelector(scenarios);
+  const { data: scenario } = useScenario(currentScenario);
+  const { data: comparedScenario } = useScenario(scenarioToCompare);
 
   return (
     <div className="flex justify-between">
@@ -38,8 +45,16 @@ const LegendChart: React.FC<ExtendedLegendProps> = ({ payload, onClick = () => n
                 style={{ borderColor: `${item.color}` }}
               />
               <div className="overflow-hidden text-xs whitespace-nowrap text-ellipsis max-w-[150px]">
-                {item.value === 'scenarioOneValue' && 'Scenario'}
-                {item.value === 'scenarioTwoValue' && 'Scenario compared'}
+                {item.value === 'scenarioOneValue' && (
+                  <span className="capitalize">
+                    {scenario?.title || comparedScenario?.title || 'Scenario'}
+                  </span>
+                )}
+                {item.value === 'scenarioTwoValue' && (
+                  <span className="capitalize">
+                    {comparedScenario?.title || 'Scenario compared'}
+                  </span>
+                )}
                 {item.value === 'value' && 'Actual data'}
               </div>
             </li>

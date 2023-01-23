@@ -21,5 +21,5 @@ export function usePermissions() {
     return !isLoading && !!permissions?.includes(permission);
   };
 
-  return { roles, hasRole, permissions, hasPermission, permissionsLoading: isLoading };
+  return { roles, hasRole, permissions, hasPermission, isLoading };
 }

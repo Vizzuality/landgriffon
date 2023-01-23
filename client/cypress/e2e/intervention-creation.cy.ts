@@ -34,12 +34,6 @@ beforeEach(() => {
   cy.visit('/data/scenarios/some-random-id/interventions/new');
 });
 
-describe('Intervention form', () => {
-  it('volume field should be disabled', () => {
-    cy.get('[data-testid="volume-input"]').should('be.disabled');
-  });
-});
-
 describe('Intervention creation', () => {
   it('a user creates an intervetion – Switch to new material flow (successful creation)', () => {
     cy.intercept('POST', '/api/v1/scenario-interventions', {
@@ -87,6 +81,9 @@ describe('Intervention creation', () => {
       $inputSelect.click();
       $inputSelect.find('.rc-tree-list').contains('Fruits, berries and nuts').click();
     });
+
+    // checking volume field is disabled
+    cy.get('[data-testid="volume-input"]').should('be.disabled');
 
     // waits for scenario location types request and selects an option
     cy.wait('@scenarioLocationTypes');

@@ -1,4 +1,4 @@
-import { ADMIN_TABS, MENU_ITEM_DISABLED_STYLE } from '../../src/layouts/data/constants';
+import { ADMIN_TABS, MENU_ITEM_DISABLED_STYLE } from '../../src/layouts/admin/constants';
 
 import type { TabType } from '../../src/components/tabs/types';
 

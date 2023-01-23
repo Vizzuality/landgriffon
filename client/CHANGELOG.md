@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [v0.4.0 Unreleased]
 
+### Added
+
+- Switch to toggle layers from the legend itself [LANDGRIF-991](https://vizzuality.atlassian.net/browse/LANDGRIF-991)
+
 ### Changed
 
 - Show the scenario name in the charts [LANDGRIF-1116](https://vizzuality.atlassian.net/browse/LANDGRIF-1116)
@@ -18,10 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Disable action buttons in the targets page [LANDGRIF-1109](https://vizzuality.atlassian.net/browse/LANDGRIF-1109)
 
 ## [v0.3.5]
-
-### Added
-
-- Switch to toggle layers from the legend itself [LANDGRIF-991](https://vizzuality.atlassian.net/browse/LANDGRIF-991)
 
 ### Fixed
 
@@ -78,7 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - In tables the columns are not sortable by default, it should be specified in each column configuration [LANDGRIF-965](https://vizzuality.atlassian.net/browse/LANDGRIF-965)
 - Updated styles for tree-selectors according the design
 
-### Fixed
+###  Fixed
 
 - Changed key value for items in Impact chart tooltip. [LANDGRIF-1056](https://vizzuality.atlassian.net/browse/LANDGRIF-1056)
 - Analysis sidebar: removed "no results" message triggered when there weren't scenarios available to list. [LANDGRIF-1029](https://vizzuality.atlassian.net/browse/LANDGRIF-1029)

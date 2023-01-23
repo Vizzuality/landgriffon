@@ -20,8 +20,8 @@ import { Permission } from 'modules/authorization/permissions/permissions.entity
 
 @Entity('roles')
 export class Role extends BaseEntity {
-  @ApiProperty({ type: ROLES, enum: ROLES })
-  @PrimaryColumn({ type: 'varchar', enum: ROLES, default: ROLES.USER })
+  @ApiProperty({ type: 'varchar' })
+  @PrimaryColumn({ type: 'varchar', unique: true })
   name!: ROLES;
 
   @ManyToMany(() => User, (user: User) => user.roles)

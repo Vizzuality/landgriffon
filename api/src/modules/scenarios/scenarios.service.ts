@@ -11,7 +11,8 @@ import { UpdateScenarioDto } from 'modules/scenarios/dto/update.scenario.dto';
 import { ScenarioInterventionsService } from 'modules/scenario-interventions/scenario-interventions.service';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { SelectQueryBuilder } from 'typeorm';
-import { AccessControl } from 'modules/authorization/access-control.service';
+import { FindOptions } from '@nestjs/schematics';
+import { ScenariosAccessControl } from 'modules/authorization/modules/scenarios.access-control.service';
 
 @Injectable()
 export class ScenariosService extends AppBaseService<
@@ -23,7 +24,7 @@ export class ScenariosService extends AppBaseService<
   constructor(
     protected readonly scenarioRepository: ScenarioRepository,
     protected readonly scenarioInterventionService: ScenarioInterventionsService,
-    protected readonly accessControl: AccessControl,
+    protected readonly scenarioAccessControl: ScenariosAccessControl,
   ) {
     super(
       scenarioRepository,
@@ -77,7 +78,6 @@ export class ScenariosService extends AppBaseService<
   extendFindAllQuery(
     query: SelectQueryBuilder<Scenario>,
     fetchSpecification: Record<string, unknown>,
-    info: AppInfoDTO,
   ): Promise<SelectQueryBuilder<Scenario>> {
     if (fetchSpecification.hasActiveInterventions) {
       query.andWhere(
@@ -94,9 +94,9 @@ export class ScenariosService extends AppBaseService<
         });
       }
     }
-    if (!this.accessControl.isUserAdmin()) {
+    if (!this.scenarioAccessControl.isUserAdmin()) {
       query.andWhere(`${this.alias}.userId = :userId`, {
-        userId: this.accessControl.getUserId(),
+        userId: this.scenarioAccessControl.getUserId(),
       });
       query.orWhere(`${this.alias}.isPublic = :isPublicValue`, {
         isPublicValue: true,

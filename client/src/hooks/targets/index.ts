@@ -13,6 +13,7 @@ const TARGETS_DATA: Target[] = [
     indicatorId: '234',
     baselineYear: 0,
     baselineValue: 1,
+    unit: 'Tons',
     years: [
       {
         year: 2020,

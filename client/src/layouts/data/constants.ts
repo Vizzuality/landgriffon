@@ -18,3 +18,7 @@ export const ADMIN_TABS: TabsType = {
     href: '/data/users',
   },
 };
+
+export const MENU_ITEM_STYLE = 'flex items-center pb-5 -mb-[2px]';
+export const MENU_ITEM_ACTIVE_STYLE = 'text-navy-400 border-b-2 border-navy-400';
+export const MENU_ITEM_DISABLED_STYLE = 'text-gray-300';

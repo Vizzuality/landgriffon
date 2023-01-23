@@ -318,6 +318,7 @@ export type TargetYear = {
 export type Target = {
   id: string;
   name: Indicator['name'];
+  unit: Indicator['metadata']['unit'];
   indicatorId: Indicator['id'];
   baselineYear: number;
   baselineValue: number;

@@ -1,6 +1,7 @@
 import Head from 'next/head';
-import { useCallback, useMemo } from 'react';
-import { InformationCircleIcon } from '@heroicons/react/solid';
+import { useMemo } from 'react';
+import { InformationCircleIcon } from '@heroicons/react/outline';
+import { PlusIcon } from '@heroicons/react/solid';
 
 import Button from 'components/button';
 import Radio from 'components/forms/radio';
@@ -16,15 +17,15 @@ import type { Target } from 'types';
 const AdminTargetsPage: React.FC = () => {
   const { data: indicators } = useIndicators({}, { select: (data) => data.data });
   const { isLoading } = useTargets();
-  const hasData = indicators?.length > 0;
+  const hasData = useMemo(() => indicators?.length > 0, [indicators]);
 
-  const handleCreateTarget = useCallback(() => console.log('create a new target'), []);
   // TO-DO: temporal targets
   const targets = useMemo<Target[]>(() => {
     if (indicators) {
       return indicators.map((indicator) => ({
         id: indicator.id,
         name: indicator.name.toString(),
+        unit: indicator.metadata.units,
         indicatorId: indicator.id,
         baselineYear: 2020,
         baselineValue: 1,
@@ -44,10 +45,35 @@ const AdminTargetsPage: React.FC = () => {
         <title>Admin targets | Landgriffon</title>
       </Head>
 
-      <div className="flex justify-end gap-3">
-        <Button variant="primary" onClick={handleCreateTarget}>
-          Create a new target
-        </Button>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center py-2 text-xs text-black">
+          <InformationCircleIcon className="w-4 h-4 mr-1 text-black" aria-hidden="true" />
+          Target value for each indicator by year
+        </div>
+        <div className="flex space-x-4">
+          <Radio name="absolutePercentage" id="absolute" checked>
+            Absolute value
+          </Radio>
+          <Radio name="absolutePercentage" id="percentage" disabled>
+            Percentage of reduction
+          </Radio>
+        </div>
+        <div className="flex space-x-4">
+          <Button
+            icon={
+              <div
+                aria-hidden="true"
+                className="flex items-center justify-center w-5 h-5 rounded-full bg-navy-400"
+              >
+                <PlusIcon className="w-4 h-4 text-white" />
+              </div>
+            }
+            variant="secondary"
+            disabled
+          >
+            Create a new target
+          </Button>
+        </div>
       </div>
 
       {!isLoading && !hasData && <NoData />}
@@ -59,25 +85,9 @@ const AdminTargetsPage: React.FC = () => {
       )}
 
       {hasData && (
-        <>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center py-2 text-sm text-black">
-              <InformationCircleIcon className="w-5 h-5 mr-3 text-black" aria-hidden="true" />
-              Target value for each indicator by year
-            </div>
-            <div className="flex justify-end space-x-4 text-sm">
-              <Radio name="absolutePercentage" id="absolute">
-                Absolute value
-              </Radio>
-              <Radio name="absolutePercentage" id="percentage">
-                Percentage of reduction
-              </Radio>
-            </div>
-          </div>
-          <div className="mt-4 space-y-4">
-            <TargetsList data={targets} />
-          </div>
-        </>
+        <div className="my-6">
+          <TargetsList data={targets} />
+        </div>
       )}
     </AdminLayout>
   );

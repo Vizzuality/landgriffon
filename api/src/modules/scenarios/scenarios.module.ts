@@ -8,7 +8,11 @@ import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
 import { AuthorizationModule } from 'modules/authorization/authorization.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Scenario]), ScenarioInterventionsModule,  AuthorizationModule],
+  imports: [
+    TypeOrmModule.forFeature([Scenario]),
+    ScenarioInterventionsModule,
+    AuthorizationModule,
+  ],
   controllers: [ScenariosController],
   providers: [ScenariosService, ScenarioRepository],
   exports: [ScenariosService, ScenarioRepository],

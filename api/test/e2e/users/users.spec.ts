@@ -1,4 +1,4 @@
-import { HttpStatus, Logger } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import { faker } from '@faker-js/faker';
 import * as request from 'supertest';
 import { E2E_CONFIG } from '../../e2e.config';
@@ -77,7 +77,20 @@ describe('UsersModule (e2e)', () => {
 
       expect(response.body.data.attributes.email).toEqual('test@test.com');
       expect(response.body.data.attributes.roles).toEqual([
-        { name: ROLES.USER },
+        {
+          name: ROLES.USER,
+          permissions: [
+            {
+              action: 'canCreateScenario',
+            },
+            {
+              action: 'canEditScenario',
+            },
+            {
+              action: 'canDeleteScenario',
+            },
+          ],
+        },
       ]);
 
       await userRepository.delete({ email: 'test@test.com' });
@@ -96,8 +109,21 @@ describe('UsersModule (e2e)', () => {
 
       expect(response.body.data.attributes.email).toEqual('test@test.com');
       expect(response.body.data.attributes.roles).toEqual([
-        { name: ROLES.ADMIN },
-        { name: ROLES.USER },
+        { name: ROLES.ADMIN, permissions: [] },
+        {
+          name: ROLES.USER,
+          permissions: [
+            {
+              action: 'canCreateScenario',
+            },
+            {
+              action: 'canEditScenario',
+            },
+            {
+              action: 'canDeleteScenario',
+            },
+          ],
+        },
       ]);
 
       await userRepository.delete({ email: 'test@test.com' });

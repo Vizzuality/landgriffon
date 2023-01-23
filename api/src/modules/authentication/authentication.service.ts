@@ -22,11 +22,9 @@ import { UserRepository } from 'modules/users/user.repository';
 import * as config from 'config';
 import { ApiProperty } from '@nestjs/swagger';
 import { ApiEventByTopicAndKind } from 'modules/api-events/api-event.topic+kind.entity';
-import { Role } from 'modules/authorization/roles/role.entity';
-import { ROLES } from 'modules/authorization/roles/roles.enum';
 import { CreateUserDTO } from 'modules/users/dto/create.user.dto';
 import ms = require('ms');
-import { AccessControl } from 'modules/authorization/access-control.service';
+import { AuthorizationService } from 'modules/authorization/authorization.service';
 
 /**
  * Access token for the app: key user data and access token
@@ -81,6 +79,7 @@ export class AuthenticationService {
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly authorizationService: AuthorizationService,
     private userRepository: UserRepository,
   ) {}
 
@@ -132,15 +131,18 @@ export class AuthenticationService {
     user.email = signupDto.email;
     user.isActive = !config.get('auth.requireUserAccountActivation');
     if ('roles' in signupDto && signupDto.roles) {
-      user.roles = AccessControl.createRolesFromEnum(signupDto.roles);
+      user.roles = this.authorizationService.createRolesFromEnum(
+        signupDto.roles,
+      );
     } else {
-      const role: Role = new Role();
-      role.name = ROLES.USER;
-      user.roles = [role];
+      user.roles = await this.authorizationService.assignDefaultAuthorization();
     }
 
     await this.checkEmail(user.email);
     const newUser: Omit<User, 'password' | 'salt' | 'isActive' | 'isDeleted'> =
+      /**
+       * @note: TypeORM does not seem to handle updating nested N to N relations, so we
+       */
       UsersService.getSanitizedUserMetadata(
         await this.userRepository.save(user),
       );
@@ -173,7 +175,7 @@ export class AuthenticationService {
         `An account was created for ${newUser.email}. Please validate the account via GET /auth/validate-account/${newUser.id}/${validationToken}.`,
       );
     }
-    return newUser;
+    return this.userRepository.findOneOrFail({ where: { id: newUser.id } });
   }
 
   /**

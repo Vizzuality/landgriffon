@@ -516,16 +516,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
           />
         </div>
         <div>
-          <label className={LABEL_CLASSNAMES}>Volume</label>
-          <Input
-            {...register('volume')}
-            type="text"
-            data-testid="volume-input"
-            error={errors?.volume?.message}
-            disabled
-          />
-        </div>
-        <div>
           <label className={LABEL_CLASSNAMES}>
             Percentage <sup>*</sup>
           </label>
@@ -760,6 +750,17 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                         />
                       </div>
                     )}
+                  />
+                </div>
+                <div>
+                  <label className={LABEL_CLASSNAMES}>Tons of new material per tone</label>
+                  <Input
+                    {...register('volume')}
+                    type="text"
+                    data-testid="volume-input"
+                    error={errors?.volume?.message}
+                    placeholder="0"
+                    disabled
                   />
                 </div>
               </div>

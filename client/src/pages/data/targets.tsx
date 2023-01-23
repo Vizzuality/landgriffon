@@ -10,7 +10,7 @@ import NoData from 'containers/admin/no-data';
 import TargetsList from 'containers/targets/list';
 import { useIndicators } from 'hooks/indicators';
 import { useTargets } from 'hooks/targets';
-import AdminLayout from 'layouts/data';
+import AdminLayout from 'layouts/admin';
 
 import type { Target } from 'types';
 

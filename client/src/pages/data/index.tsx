@@ -3,7 +3,7 @@ import Head from 'next/head';
 
 import { useSourcingLocations } from 'hooks/sourcing-locations';
 import { useTasks } from 'hooks/tasks';
-import AdminLayout from 'layouts/data';
+import AdminLayout from 'layouts/admin';
 import AdminDataUploader from 'containers/admin/data-uploader';
 import AdminDataTable from 'containers/admin/data-table';
 import Loading from 'components/loading';

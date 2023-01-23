@@ -13,10 +13,6 @@ export const ADMIN_TABS: TabsType = {
     name: 'Targets',
     href: '/data/targets',
   },
-  USERS: {
-    name: 'Users',
-    href: '/data/users',
-  },
 };
 
 export const MENU_ITEM_STYLE = 'flex items-center pb-5 -mb-[2px]';

@@ -24,6 +24,6 @@ describe('Data page', () => {
   it('should search input be disabled', () => {
     cy.get('input[data-testid="data-search-input"]')
       .should('be.disabled')
-      .should('have.class', 'opacity-50');
+      .should('have.class', 'bg-gray-300/20');
   });
 });

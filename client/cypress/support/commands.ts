@@ -30,6 +30,15 @@ Cypress.Commands.add(
   },
 );
 
+Cypress.Commands.add('loginAsUser', (): Cypress.Chainable => {
+  cy.log('🔐 Sign in as user with Next Auth');
+
+  return cy.login({
+    username: Cypress.env('USERNAME_USER'),
+    password: Cypress.env('PASSWORD_USER'),
+  });
+});
+
 Cypress.Commands.add('createScenario', (): void => {
   cy.log('Creates a scenario');
 

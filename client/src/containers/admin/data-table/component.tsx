@@ -16,6 +16,8 @@ import Search from 'components/search';
 import Modal from 'components/modal';
 import Table from 'components/table';
 import { DEFAULT_PAGE_SIZES } from 'components/table/pagination/constants';
+import { usePermissions } from 'hooks/permissions';
+import { RoleName } from 'hooks/permissions/enums';
 
 import type { PaginationState, SortingState, VisibilityState } from '@tanstack/react-table';
 import type { TableProps } from 'components/table/component';
@@ -23,6 +25,10 @@ import type { TableProps } from 'components/table/component';
 const AdminDataPage: React.FC = () => {
   const { push, query } = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
+
+  // Permissions
+  const { hasRole } = usePermissions();
+  const canUploadDataSource = hasRole(RoleName.ADMIN);
 
   // Search
   const [searchText, setSearchText] = useState<string>('');
@@ -189,6 +195,8 @@ const AdminDataPage: React.FC = () => {
           <Button
             variant="primary"
             onClick={openUploadDataSourceModal}
+            disabled={!canUploadDataSource}
+            data-testid="upload-data-source-btn"
             icon={
               <div
                 aria-hidden="true"

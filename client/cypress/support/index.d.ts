@@ -10,6 +10,7 @@ declare global {
        * @example cy.login()
        */
       login(credentials?: { username?: string; password?: string }): Chainable<null>;
+      loginAsUser(): Chainable<null>;
       logout(): Chainable<Element>;
       createScenario(): Chainable<Element>;
     }

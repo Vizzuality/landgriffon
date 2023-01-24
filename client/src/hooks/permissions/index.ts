@@ -10,7 +10,7 @@ export function usePermissions() {
 
   data?.roles?.forEach((role) => {
     roles.push(role.name);
-    role.permissions?.forEach((permission) => permissions.push(permission));
+    role.permissions?.forEach((permission) => permissions.push(permission.action));
   });
 
   const hasRole = (role: RoleName) => {

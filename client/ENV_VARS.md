@@ -8,8 +8,6 @@ by Landgriffon client application.
 * `NEXTAUTH_URL`: URL including protocol of the client application.
 * `NEXTAUTH_SECRET`: Secret used for cryptographic operations in the client application. Generate using `openssl rand -base64 32`
 
-* `CYPRESS_USERNAME`: email for login as admin in the test tasks
-* `CYPRESS_PASSWORD`: password for login as admin in the test tasks
-* `CYPRESS_USERNAME_USER`: email for login as user in the test tasks
-* `CYPRESS_PASSWORD_USER`: password for login as user in the test tasks
+* `CYPRESS_USERNAME`: email for login in the test tasks
+* `CYPRESS_PASSWORD`: password for login in the test tasks
 * `CYPRESS_API_URL`: URL including protocol of the api application, only for testing.

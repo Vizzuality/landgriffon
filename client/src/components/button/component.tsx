@@ -85,7 +85,7 @@ type Overload = {
   (props: AnchorProps): JSX.Element;
 };
 
-// Guard to check if href exists in props and if it's not disabled
+// Guard to check if href exists in props
 const hasHref = (props: ButtonProps | AnchorProps): props is AnchorProps => 'href' in props;
 const buildClassName = ({
   className,
@@ -146,22 +146,16 @@ export const Anchor = forwardRef<HTMLAnchorElement, AnchorProps>(
       ...restProps
     }: AnchorProps,
     ref,
-  ) =>
-    disabled ? (
-      <div className={buildClassName({ className, danger, disabled, icon, size, variant })}>
-        <ButtonTemplate {...{ danger, icon, size, variant }} />
-        <div className="whitespace-nowrap">{children}</div>
-      </div>
-    ) : (
-      <a
-        className={buildClassName({ className, danger, disabled, icon, size, variant })}
-        {...restProps}
-        ref={ref}
-      >
-        <ButtonTemplate {...{ danger, icon, size, variant }} />
-        <div className="whitespace-nowrap">{children}</div>
-      </a>
-    ),
+  ) => (
+    <a
+      className={buildClassName({ className, danger, disabled, icon, size, variant })}
+      {...restProps}
+      ref={ref}
+    >
+      <ButtonTemplate {...{ danger, icon, size, variant }} />
+      <div className="whitespace-nowrap">{children}</div>
+    </a>
+  ),
 );
 
 Anchor.displayName = 'Anchor';

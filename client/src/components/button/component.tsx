@@ -144,16 +144,22 @@ export const Anchor = forwardRef<HTMLAnchorElement, AnchorProps>(
       ...restProps
     }: AnchorProps,
     ref,
-  ) => (
-    <a
-      className={buildClassName({ className, danger, disabled, icon, size, variant })}
-      {...restProps}
-      ref={ref}
-    >
-      <ButtonTemplate {...{ danger, icon, size, variant }} />
-      <div className="whitespace-nowrap">{children}</div>
-    </a>
-  ),
+  ) =>
+    disabled ? (
+      <div className={buildClassName({ className, danger, disabled, icon, size, variant })}>
+        <ButtonTemplate {...{ danger, icon, size, variant }} />
+        <div className="whitespace-nowrap">{children}</div>
+      </div>
+    ) : (
+      <a
+        className={buildClassName({ className, danger, disabled, icon, size, variant })}
+        {...restProps}
+        ref={ref}
+      >
+        <ButtonTemplate {...{ danger, icon, size, variant }} />
+        <div className="whitespace-nowrap">{children}</div>
+      </a>
+    ),
 );
 
 Anchor.displayName = 'Anchor';

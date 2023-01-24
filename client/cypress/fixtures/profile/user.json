@@ -1,0 +1,21 @@
+{
+  "data": {
+    "type": "users",
+    "id": "0bc5ac96-f8cd-4ad3-a665-f0b885ff98e1",
+    "attributes": {
+      "fname": null,
+      "lname": null,
+      "email": "user@vizzuality.com",
+      "displayName": null,
+      "avatarDataUrl": null,
+      "isActive": true,
+      "isDeleted": false,
+      "roles": [
+        {
+          "name": "user",
+          "permissions": []
+        }
+      ]
+    }
+  }
+}

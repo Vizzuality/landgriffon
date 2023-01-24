@@ -53,7 +53,7 @@ describe('Scenarios', () => {
   it('should allow user with permissions create new scenarios and come back', () => {
     cy.intercept('api/v1/users/me', { fixture: 'profiles/all-permissions' }).as('profile');
     cy.wait('@profile');
-    cy.get('[data-testid="scenario-add-button"]').click();
+    cy.get('a[data-testid="scenario-add-button"]').click();
 
     cy.url().should('contain', '/data/scenarios/new');
 
@@ -112,7 +112,7 @@ describe('Scenarios', () => {
     cy.wait('@profile');
     cy.get('[data-testid="scenario-card"]')
       .first()
-      .find('[data-testid="scenario-edit-btn"]')
+      .find('a[data-testid="scenario-edit-btn"]')
       .click();
     cy.url().should('contain', '/data/scenarios/').should('contain', '/edit');
   });
@@ -121,15 +121,6 @@ describe('Scenarios', () => {
     cy.intercept('api/v1/users/me', { fixture: 'profiles/no-permissions' }).as('profile');
     cy.wait('@profile');
 
-    cy.get('[data-testid="scenario-card"]')
-      .first()
-      .find('[data-testid="scenario-edit-btn"]')
-      .should('be.disabled');
-  });
-
-  it('a user without authorship or permission can not edit a scenario', () => {
-    cy.intercept('api/v1/users/me', { fixture: 'profiles/no-permissions' }).as('profile');
-    cy.wait('@profile');
     cy.get('[data-testid="scenario-card"]')
       .first()
       .find('[data-testid="scenario-edit-btn"]')

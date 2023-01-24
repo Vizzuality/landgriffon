@@ -146,6 +146,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
                   className="block w-full"
                   variant="primary"
                   size="xl"
+                  data-testid="create-scenario"
                   disabled={!canCreateScenario}
                   icon={
                     <div
@@ -183,6 +184,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
                   <PlusIcon className="w-4 h-4 text-white" />
                 </div>
               }
+              data-testid="create-scenario"
               disabled={!canCreateScenario}
             >
               Add new scenario

@@ -1,9 +1,9 @@
 import React, { forwardRef } from 'react';
 import classNames from 'classnames';
 import { omit } from 'lodash-es';
+import Link from 'next/link';
 
 import Loading from 'components/loading';
-import Link from 'next/link';
 
 const classes = {
   base: 'inline-flex justify-center items-center min-w-content hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1',

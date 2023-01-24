@@ -8,10 +8,10 @@ export type Scenario = {
   scenarioInterventions?: Intervention[];
   // ! this property might change in the future as it is not defined in the API yet
   visibility?: 'public' | 'private';
-  user: ProfilePayload;
-  userId: string;
-  updatedBy: ProfilePayload;
-  updatedById: string;
+  user?: ProfilePayload;
+  userId?: string;
+  updatedBy?: ProfilePayload;
+  updatedById?: string;
 };
 
 export type ScenarioFormData = {

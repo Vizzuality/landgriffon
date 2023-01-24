@@ -1,4 +1,4 @@
-import type { Permission, RoleName } from 'hooks/permissions/enums/enums';
+import type { Permission, RoleName } from 'hooks/permissions/enums';
 import type { Scenario } from 'containers/scenarios/types';
 
 export type RGBColor = [number, number, number];

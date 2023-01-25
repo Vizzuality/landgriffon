@@ -6,6 +6,7 @@ import type { Layer } from 'types';
 
 const DEFAULT_LAYER_ATTRIBUTES = {
   order: 0,
+  visible: false,
   active: false,
   opacity: 0.7,
   loading: false,
@@ -63,6 +64,7 @@ export const initialState: AnalysisMapState = {
       id: 'impact',
       order: 0,
       active: true,
+      visible: true,
       isContextual: false,
     },
     material: {

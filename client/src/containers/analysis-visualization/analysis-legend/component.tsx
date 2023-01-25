@@ -14,8 +14,9 @@ import { analysisMap, setLayer } from 'store/features/analysis/map';
 import useContextualLayers from 'hooks/layers/getContextualLayers';
 import Modal from 'components/modal';
 import SandwichIcon from 'components/icons/sandwich';
+import { setFilter } from 'store/features/analysis';
 
-import type { Layer } from 'types';
+import type { Layer, Material } from 'types';
 
 const sortByOrder: (layers: Record<string, Layer>) => Layer[] = (layers) => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -29,6 +30,7 @@ export const Legend: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const { layers } = useAppSelector(analysisMap);
+
   const nonContextualLayersNumber = useMemo(
     () => Object.values(layers).filter((layer) => !layer.isContextual).length,
     [layers],
@@ -62,11 +64,31 @@ export const Legend: React.FC = () => {
     setShowLegend((show) => !show);
   }, []);
 
-  const handleToggleShowLegendSettinngs = useCallback(() => {
+  const handleToggleShowLegendSettings = useCallback(() => {
     setShowSettings((show) => !show);
   }, []);
 
   const dismissLegendSettings = useCallback(() => setShowSettings(false), []);
+
+  const applyLegendSettings = useCallback(
+    ({ layers: newLayers, material }: { layers: Layer[]; material: Material['id'] }) => {
+      newLayers.forEach((layer) => {
+        const prevLayer = layers[layer.id];
+        dispatch(
+          setLayer({
+            id: layer.id,
+            layer: {
+              ...layer,
+              ...(layer.visible && !prevLayer.visible ? { active: true } : {}),
+            },
+          }),
+        );
+      });
+      dispatch(setFilter({ id: 'materialId', value: material }));
+      setShowSettings(false);
+    },
+    [dispatch, layers],
+  );
 
   const orderedLayers = useMemo(() => {
     return sortByOrder(layers);
@@ -96,7 +118,9 @@ export const Legend: React.FC = () => {
       >
         {orderedLayers.map((layer) => (
           <SortableItem
-            className={classNames({ hidden: !layer.active && layer.id !== 'impact' })}
+            className={classNames({
+              hidden: !layer.visible,
+            })}
             key={layer.id}
             id={layer.id}
           >
@@ -122,7 +146,7 @@ export const Legend: React.FC = () => {
                     type="button"
                     aria-expanded={showSettings}
                     className="disabled:cursor-not-allowed disabled:text-gray-500 text-navy-400 py-1.5 px-1.5 flex flex-row gap-2 place-items-center"
-                    onClick={handleToggleShowLegendSettinngs}
+                    onClick={handleToggleShowLegendSettings}
                   >
                     <span className="my-auto text-xs font-semibold underline underline-offset-2">
                       Contextual Layers
@@ -155,7 +179,7 @@ export const Legend: React.FC = () => {
         onDismiss={dismissLegendSettings}
       >
         <LegendSettings
-          onApply={dismissLegendSettings}
+          onApply={applyLegendSettings}
           onDismiss={dismissLegendSettings}
           categories={layersByCategory || []}
         />

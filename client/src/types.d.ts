@@ -245,6 +245,7 @@ export type Layer = {
   isContextual: boolean;
   order?: number;
   active: boolean;
+  visible: boolean;
   opacity: number;
   metadata?: WithRequiredProperty<Partial<LayerMetadata>, 'legend'>;
   loading?: boolean;

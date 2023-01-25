@@ -10,10 +10,12 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useDeleteScenario, useUpdateScenario } from 'hooks/scenarios';
 import { useScenarioInterventions } from 'hooks/interventions';
 import Loading from 'components/loading';
-import { Anchor, Button } from 'components/button';
+import { Anchor, Button, LinkAnchor } from 'components/button';
 import DeleteDialog from 'components/dialogs/delete';
 import Pill from 'components/pill';
 import Toggle from 'components/toggle';
+import { usePermissions } from 'hooks/permissions';
+import { Permission } from 'hooks/permissions/enums';
 
 import type { ErrorResponse } from 'types';
 import type { ScenarioCardProps } from './types';
@@ -26,6 +28,10 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data, display = 'grid' }) =
   const { data: interventions, isLoading: isInterventionsLoading } = useScenarioInterventions({
     scenarioId: data?.id,
   });
+
+  const { hasPermission } = usePermissions(data?.userId);
+  const canEditScenario = hasPermission(Permission.CAN_EDIT_SCENARIO);
+  const canDeleteScenario = hasPermission(Permission.CAN_DELETE_SCENARIO);
 
   const handleChangeVisibility = useCallback(
     (isActive) => {
@@ -159,6 +165,7 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data, display = 'grid' }) =
               active
               onChange={handleChangeVisibility}
               disabled // ! <-- this feature is disabled until the API allows to change the visibility of a scenario
+              // disabled={!canEditScenario}
             />
             <span className="text-sm text-gray-500 peer-disabled:text-gray-300">
               Make scenario public
@@ -175,6 +182,7 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data, display = 'grid' }) =
               onClick={handleDeleteClick}
               icon={<TrashIcon />}
               data-testid="scenario-delete-btn"
+              disabled={!canDeleteScenario}
             >
               Delete
             </Button>
@@ -184,16 +192,17 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data, display = 'grid' }) =
                 'justify-end': display === 'grid',
               })}
             >
-              <Link href={`/data/scenarios/${data.id}/edit`} passHref>
-                <Anchor
-                  variant="secondary"
-                  className={classNames({
-                    grow: display === 'list',
-                  })}
-                >
-                  Edit Scenario
-                </Anchor>
-              </Link>
+              <LinkAnchor
+                href={`/data/scenarios/${data.id}/edit`}
+                variant="secondary"
+                className={classNames({
+                  grow: display === 'list',
+                })}
+                disabled={!canEditScenario}
+                data-testid="scenario-edit-btn"
+              >
+                Edit Scenario
+              </LinkAnchor>
               <Link href={{ pathname: `/analysis/table`, query: { scenarioId: data.id } }} passHref>
                 <Anchor
                   variant="primary"

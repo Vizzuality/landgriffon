@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { omit } from 'lodash-es';
 
 import Loading from 'components/loading';
+import Link from 'next/link';
 
 const classes = {
   base: 'inline-flex justify-center items-center min-w-content hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1',
@@ -85,8 +86,7 @@ type Overload = {
 };
 
 // Guard to check if href exists in props and if it's not disabled
-const hasHref = (props: ButtonProps | AnchorProps): props is AnchorProps =>
-  'href' in props && !props.disabled;
+const hasHref = (props: ButtonProps | AnchorProps): props is AnchorProps => 'href' in props;
 const buildClassName = ({
   className,
   danger,
@@ -146,16 +146,22 @@ export const Anchor = forwardRef<HTMLAnchorElement, AnchorProps>(
       ...restProps
     }: AnchorProps,
     ref,
-  ) => (
-    <a
-      className={buildClassName({ className, danger, disabled, icon, size, variant })}
-      {...restProps}
-      ref={ref}
-    >
-      <ButtonTemplate {...{ danger, icon, size, variant }} />
-      <div className="whitespace-nowrap">{children}</div>
-    </a>
-  ),
+  ) =>
+    disabled ? (
+      <div className={buildClassName({ className, danger, disabled, icon, size, variant })}>
+        <ButtonTemplate {...{ danger, icon, size, variant }} />
+        <div className="whitespace-nowrap">{children}</div>
+      </div>
+    ) : (
+      <a
+        className={buildClassName({ className, danger, disabled, icon, size, variant })}
+        {...restProps}
+        ref={ref}
+      >
+        <ButtonTemplate {...{ danger, icon, size, variant }} />
+        <div className="whitespace-nowrap">{children}</div>
+      </a>
+    ),
 );
 
 Anchor.displayName = 'Anchor';
@@ -171,18 +177,45 @@ export const Button: React.FC<ButtonProps> = ({
   danger = false,
   ...restProps
 }) => {
-  const buttonProps = omit(restProps, 'href');
   return (
     <button
       type="button"
       className={buildClassName({ className, danger, disabled, icon, loading, size, variant })}
       disabled={loading || disabled}
-      {...buttonProps}
+      {...restProps}
     >
       <ButtonTemplate {...{ danger, icon, loading, size, variant }} />
       <div className="whitespace-nowrap">{children}</div>
     </button>
   );
+};
+
+const hasLink = (props: ButtonProps | AnchorProps): props is AnchorProps =>
+  'href' in props && !props.disabled;
+
+export const LinkAnchor = (props: AnchorProps | ButtonProps) => {
+  if (hasLink(props)) {
+    const {
+      children,
+      variant = 'primary',
+      size = 'base',
+      className,
+      icon,
+      href,
+      danger = false,
+      ...restProps
+    } = props;
+    return (
+      <Link href={href} passHref>
+        <a className={buildClassName({ className, danger, icon, size, variant })} {...restProps}>
+          <ButtonTemplate {...{ danger, icon, size, variant }} />
+          <div className="whitespace-nowrap">{children}</div>
+        </a>
+      </Link>
+    );
+  }
+  const buttonProps = omit(props, 'href');
+  return <Button {...buttonProps} />;
 };
 
 export const LinkButton: Overload = (props: AnchorProps | ButtonProps) => {

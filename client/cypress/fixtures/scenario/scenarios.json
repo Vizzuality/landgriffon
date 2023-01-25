@@ -10,6 +10,7 @@
         "metadata": null,
         "createdAt": "2022-07-14T14:28:25.552Z",
         "updatedAt": "2022-07-22T17:37:23.505Z",
+        "userId": "368bbd1f-8c37-4999-9c01-da0ac7750599",
         "scenarioInterventions": [
           [
             {
@@ -94,6 +95,7 @@
         "metadata": null,
         "createdAt": "2022-07-21T09:42:00.862Z",
         "updatedAt": "2022-07-22T16:06:05.291Z",
+        "userId": "368bbd1f-8c37-4999-9c01-da0ac7750599",
         "scenarioInterventions": []
       }
     },
@@ -107,6 +109,7 @@
         "metadata": null,
         "createdAt": "2022-07-22T15:29:55.390Z",
         "updatedAt": "2022-07-22T15:33:35.069Z",
+        "userId": "368bbd1f-8c37-4999-9c01-da0ac7750599",
         "scenarioInterventions": []
       }
     },
@@ -120,6 +123,7 @@
         "metadata": null,
         "createdAt": "2022-07-12T09:38:37.169Z",
         "updatedAt": "2022-07-15T07:46:21.730Z",
+        "userId": "368bbd1f-8c37-4999-9c01-da0ac7750599",
         "scenarioInterventions": []
       }
     },
@@ -133,6 +137,7 @@
         "metadata": null,
         "createdAt": "2022-07-21T09:42:00.862Z",
         "updatedAt": "2022-07-22T16:06:05.291Z",
+        "userId": "368bbd1f-8c37-4999-9c01-da0ac7750599",
         "scenarioInterventions": []
       }
     },
@@ -146,6 +151,7 @@
         "metadata": null,
         "createdAt": "2022-07-22T15:29:55.390Z",
         "updatedAt": "2022-07-22T15:33:35.069Z",
+        "userId": "368bbd1f-8c37-4999-9c01-da0ac7750599",
         "scenarioInterventions": []
       }
     },
@@ -159,6 +165,7 @@
         "metadata": null,
         "createdAt": "2022-07-12T09:38:37.169Z",
         "updatedAt": "2022-07-15T07:46:21.730Z",
+        "userId": "368bbd1f-8c37-4999-9c01-da0ac7750599",
         "scenarioInterventions": []
       }
     },
@@ -172,6 +179,7 @@
         "metadata": null,
         "createdAt": "2022-07-21T09:42:00.862Z",
         "updatedAt": "2022-07-22T16:06:05.291Z",
+        "userId": "368bbd1f-8c37-4999-9c01-da0ac7750599",
         "scenarioInterventions": []
       }
     },
@@ -185,6 +193,7 @@
         "metadata": null,
         "createdAt": "2022-07-22T15:29:55.390Z",
         "updatedAt": "2022-07-22T15:33:35.069Z",
+        "userId": "368bbd1f-8c37-4999-9c01-da0ac7750599",
         "scenarioInterventions": []
       }
     },
@@ -198,6 +207,7 @@
         "metadata": null,
         "createdAt": "2022-07-12T09:38:37.169Z",
         "updatedAt": "2022-07-15T07:46:21.730Z",
+        "userId": "368bbd1f-8c37-4999-9c01-da0ac7750599",
         "scenarioInterventions": []
       }
     }

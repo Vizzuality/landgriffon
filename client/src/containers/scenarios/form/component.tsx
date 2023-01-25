@@ -7,6 +7,8 @@ import Input from 'components/forms/input';
 import Textarea from 'components/forms/textarea';
 import { Anchor, Button } from 'components/button';
 import Toggle from 'components/toggle';
+import { usePermissions } from 'hooks/permissions';
+import { Permission } from 'hooks/permissions/enums';
 
 import type { Scenario, ScenarioFormData } from '../types';
 
@@ -41,6 +43,13 @@ const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
       visibility: true,
     },
   });
+
+  const { hasPermission } = usePermissions(scenario?.userId);
+  // If scenario exists, check if the user can edit,
+  // else, check if the user can create a scenario
+  const canSave = hasPermission(
+    scenario?.id ? Permission.CAN_EDIT_SCENARIO : Permission.CAN_CREATE_SCENARIO,
+  );
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid w-full grid-cols-1 gap-6 mt-6">
@@ -103,7 +112,12 @@ const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
         <Link href="/data/scenarios" passHref>
           <Anchor variant="secondary">Cancel</Anchor>
         </Link>
-        <Button loading={isSubmitting} type="submit" data-testid="create-scenario-button">
+        <Button
+          disabled={!canSave}
+          loading={isSubmitting}
+          type="submit"
+          data-testid="create-scenario-button"
+        >
           Save scenario
         </Button>
       </div>

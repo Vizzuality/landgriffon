@@ -1,4 +1,4 @@
-import type { SelectProps } from 'components/select';
+import type { SelectProps } from 'components/forms/select';
 
 export type YearsRangeParams = {
   /** Start year option in the filter */

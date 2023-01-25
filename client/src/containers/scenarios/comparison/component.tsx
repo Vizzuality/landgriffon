@@ -8,11 +8,11 @@ import {
   setComparisonEnabled,
   setScenarioToCompare as setScenarioToCompareAction,
 } from 'store/features/analysis/scenarios';
-import Select from 'components/select';
+import { AutoCompleteSelect } from 'components/forms/select';
 import useEffectOnce from 'hooks/once';
 
+import type { Option } from 'components/forms/select';
 import type { Dispatch, FC } from 'react';
-import type { SelectOption } from 'components/select/types';
 
 const ScenariosComparison: FC = () => {
   const { query, push } = useRouter();
@@ -26,16 +26,17 @@ const ScenariosComparison: FC = () => {
     },
   });
 
-  const options = useMemo<SelectOption[]>(() => {
+  const options = useMemo<Option[]>(() => {
     const filteredData = scenarios.filter(({ id }) => id !== scenarioId);
     return filteredData.map(({ id, title }) => ({ label: title, value: id }));
   }, [scenarioId, scenarios]);
+
   const selected = useMemo(
     () => options.find(({ value }) => value === compareScenarioId),
     [compareScenarioId, options],
   );
 
-  const handleOnChange = useCallback<Dispatch<SelectOption>>(
+  const handleOnChange = useCallback<Dispatch<Option>>(
     (current) => {
       // TODO: deprecated, we'll keep only for retro-compatibility
       dispatch(setComparisonEnabled(!!current));
@@ -75,12 +76,10 @@ const ScenariosComparison: FC = () => {
   return (
     <div data-testid="comparison-select">
       <label className="block mb-1 text-sm text-gray-500">Compare with:</label>
-      <Select
-        showSearch
-        current={selected}
+      <AutoCompleteSelect
+        value={selected}
         options={options}
         placeholder="Select what to compare"
-        allowEmpty
         onChange={handleOnChange}
       />
     </div>

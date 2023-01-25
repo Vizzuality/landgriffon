@@ -19,7 +19,7 @@ import ScenarioForm from 'containers/scenarios/form';
 import { LocationStatus } from 'containers/interventions/enums';
 import BackLink from 'components/back-link';
 import Loading from 'components/loading';
-import Select from 'components/select';
+import Select from 'components/forms/select';
 import { Anchor, Button } from 'components/button';
 import Input from 'components/forms/input';
 import Toggle from 'components/toggle';
@@ -113,7 +113,7 @@ const UpdateScenarioPage: React.FC = () => {
             >
               {/* TO-DO: Promote to a specific component */}
               <div>
-                <div className="flex items-baseline space-x-1 mb-4">
+                <div className="flex items-baseline mb-4 space-x-1">
                   <h2>Growth rates</h2>
                   <InfoTooltip
                     icon="outline"
@@ -123,7 +123,7 @@ const UpdateScenarioPage: React.FC = () => {
                 <div className="grid grid-cols-8 gap-4">
                   <div className="col-span-4">
                     <label className="block mb-2 text-sm">Business unit</label>
-                    <Select current={null} disabled options={[]} />
+                    <Select value={null} disabled options={[]} onChange={null} />
                   </div>
                   <div className="col-span-2">
                     <label className="block mb-2 text-sm">Growth rate (linear)</label>
@@ -149,7 +149,7 @@ const UpdateScenarioPage: React.FC = () => {
               </div>
 
               <div>
-                <div className="flex mb-4 justify-between items-center">
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-baseline space-x-1">
                     <h2 className="flex-1">Interventions</h2>
                     <InfoTooltip

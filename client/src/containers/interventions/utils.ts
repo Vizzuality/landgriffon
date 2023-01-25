@@ -1,13 +1,13 @@
 import { InterventionTypes, LocationTypes } from './enums';
 
 import type { InterventionDto, InterventionFormData } from './types';
-import type { SelectOption } from 'components/select/types';
+import type { Option } from 'components/forms/select';
 
 function emptyStringIsNull(value: string): string | null {
   return value === '' ? null : value;
 }
 
-function getValue<T>(option: SelectOption<T>): SelectOption<T>['value'] {
+function getValue<T>(option: Option<T>): Option<T>['value'] {
   return option?.value;
 }
 
@@ -39,7 +39,7 @@ export function parseInterventionFormDataToDto(
   const result: InterventionDto = {
     ...rest,
     type: interventionType,
-    startYear: getValue(startYear) as unknown as number,
+    startYear: getValue(startYear),
 
     materialIds: materialIds?.map(getValue).map(emptyStringIsNull) as string[],
     businessUnitIds: businessUnitIds?.map(getValue).map(emptyStringIsNull) as string[],

@@ -7,7 +7,7 @@ import { analysisFilters, setFilters } from 'store/features/analysis/filters';
 import { useYears } from 'hooks/years';
 import YearsRangeFilter, { useYearsRange } from 'containers/filters/years-range';
 
-const YearsFilter: React.FC = () => {
+const YearsRange: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const [years, setYears] = useState<number[]>([]);
@@ -68,4 +68,4 @@ const YearsFilter: React.FC = () => {
   );
 };
 
-export default YearsFilter;
+export default YearsRange;

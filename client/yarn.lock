@@ -2204,13 +2204,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@headlessui/react@npm:1.7.3":
-  version: 1.7.3
-  resolution: "@headlessui/react@npm:1.7.3"
+"@headlessui/react@npm:1.7.8":
+  version: 1.7.8
+  resolution: "@headlessui/react@npm:1.7.8"
+  dependencies:
+    client-only: ^0.0.1
   peerDependencies:
     react: ^16 || ^17 || ^18
     react-dom: ^16 || ^17 || ^18
-  checksum: c9391e15e63dc7e459d42125a94e22f964419c440d9f37fd85f6f501612aad42b3e30e79f712e8097c66e08891c26dcd662863e572ff21cc6cf34a3185ae4aa5
+  checksum: 2baf0686b846a9adf38828c95dab370353149234b81a24a2f4f399c8a635027fe3cd04624e52597a7d9b4a1ceebef0508450d625f62ae05433647d403cecd608
   languageName: node
   linkType: hard
 
@@ -8733,6 +8735,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"client-only@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "client-only@npm:0.0.1"
+  checksum: 0c16bf660dadb90610553c1d8946a7fdfb81d624adea073b8440b7d795d5b5b08beb3c950c6a2cf16279365a3265158a236876d92bce16423c485c322d7dfaf8
+  languageName: node
+  linkType: hard
+
 "cliui@npm:^6.0.0":
   version: 6.0.0
   resolution: "cliui@npm:6.0.0"
@@ -10493,14 +10502,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-prettier@npm:8.3.0":
-  version: 8.3.0
-  resolution: "eslint-config-prettier@npm:8.3.0"
+"eslint-config-prettier@npm:8.6.0":
+  version: 8.6.0
+  resolution: "eslint-config-prettier@npm:8.6.0"
   peerDependencies:
     eslint: ">=7.0.0"
   bin:
     eslint-config-prettier: bin/cli.js
-  checksum: df4cea3032671995bb5ab07e016169072f7fa59f44a53251664d9ca60951b66cdc872683b5c6a3729c91497c11490ca44a79654b395dd6756beb0c3903a37196
+  checksum: ff0d0dfc839a556355422293428637e8d35693de58dabf8638bf0b6529131a109d0b2ade77521aa6e54573bb842d7d9d322e465dd73dd61c7590fa3834c3fa81
   languageName: node
   linkType: hard
 
@@ -10606,18 +10615,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-prettier@npm:3.4.0":
-  version: 3.4.0
-  resolution: "eslint-plugin-prettier@npm:3.4.0"
+"eslint-plugin-prettier@npm:4.2.1":
+  version: 4.2.1
+  resolution: "eslint-plugin-prettier@npm:4.2.1"
   dependencies:
     prettier-linter-helpers: ^1.0.0
   peerDependencies:
-    eslint: ">=5.0.0"
-    prettier: ">=1.13.0"
+    eslint: ">=7.28.0"
+    prettier: ">=2.0.0"
   peerDependenciesMeta:
     eslint-config-prettier:
       optional: true
-  checksum: 30a07e8d12637d2988e371f6a20ff4c86fd7fdc3596d1d18d62c0367804f38e06a65052d0281234aeb2552e4d1908dcb2de20543413e038251a2717a46400a9d
+  checksum: b9e839d2334ad8ec7a5589c5cb0f219bded260839a857d7a486997f9870e95106aa59b8756ff3f37202085ebab658de382b0267cae44c3a7f0eb0bcc03a4f6d6
   languageName: node
   linkType: hard
 
@@ -13975,7 +13984,7 @@ __metadata:
     "@floating-ui/core": 1.0.0
     "@floating-ui/react-dom": 1.0.0
     "@floating-ui/react-dom-interactions": 0.9.0
-    "@headlessui/react": 1.7.3
+    "@headlessui/react": 1.7.8
     "@heroicons/react": 1.0.6
     "@hookform/resolvers": 2.8.8
     "@loaders.gl/core": 3.2.5
@@ -14019,10 +14028,10 @@ __metadata:
     date-fns: 2.22.1
     eslint: 8.23.1
     eslint-config-next: 12.2.3
-    eslint-config-prettier: 8.3.0
+    eslint-config-prettier: 8.6.0
     eslint-import-resolver-typescript: ^3.5.1
     eslint-plugin-import: ^2.26.0
-    eslint-plugin-prettier: 3.4.0
+    eslint-plugin-prettier: 4.2.1
     eslint-plugin-storybook: ^0.6.4
     framer-motion: 7.2.0
     fuse.js: 6.4.6
@@ -14036,7 +14045,7 @@ __metadata:
     nyc-report-lcov-absolute: 1.0.0
     pino: 8.1.0
     postcss: 8.3.6
-    prettier: 2.3.1
+    prettier: 2.8.3
     rc-tree: 5.7.0
     react: 18.2.0
     react-csv: 2.2.2
@@ -16660,12 +16669,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:2.3.1":
-  version: 2.3.1
-  resolution: "prettier@npm:2.3.1"
+"prettier@npm:2.8.3":
+  version: 2.8.3
+  resolution: "prettier@npm:2.8.3"
   bin:
     prettier: bin-prettier.js
-  checksum: 3b37731ff7150feecf19736c77c790e7e276b404ac9af81cbaf87cfecefc48ef9a864f34c2a5caf5955378b8f2525984b8611703a0d9c1f052b4cfa6eb35899f
+  checksum: 92f2ceb522d454370e02082aa74ad27388672f7cee8975028b59517c069fe643bdc73e322675c8faf2ff173d7a626d1a6389f26b474000308e793aa25fff46e5
   languageName: node
   linkType: hard
 

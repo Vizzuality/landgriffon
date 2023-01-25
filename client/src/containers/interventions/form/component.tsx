@@ -7,7 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { PlusIcon, MinusIcon } from '@heroicons/react/solid';
 import * as yup from 'yup';
 import classNames from 'classnames';
-import { sortBy } from 'lodash-es';
+import { sortBy, omit } from 'lodash-es';
 
 import { InterventionTypes, LocationTypes, InfoTooltip } from '../enums';
 
@@ -24,11 +24,11 @@ import LocationsSelect from 'containers/locations/select';
 import SuppliersSelect from 'containers/suppliers/select';
 import Input from 'components/forms/input';
 import { Anchor, Button } from 'components/button';
-import Select from 'components/select';
+import Select, { AutoCompleteSelect } from 'components/forms/select';
 import InfoToolTip from 'components/info-tooltip/component';
 import { isCoordinates } from 'utils/coordinates';
 
-import type { SelectOption } from 'components/select/types';
+import type { Option } from 'components/forms/select';
 import type { Intervention, InterventionFormData } from '../types';
 
 type InterventionFormProps = {
@@ -207,7 +207,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   const { data: suppliers, isLoading: isLoadingSuppliers } = useSuppliersTypes({
     type: 't1supplier',
   });
-  const optionsSuppliers = useMemo<SelectOption[]>(
+  const optionsSuppliers = useMemo<Option[]>(
     () =>
       suppliers?.map((supplier) => ({
         label: supplier.name,
@@ -220,7 +220,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   const { data: producers, isLoading: isLoadingProducers } = useSuppliersTypes({
     type: 'producer',
   });
-  const optionsProducers = useMemo<SelectOption[]>(
+  const optionsProducers = useMemo<Option[]>(
     () =>
       producers?.map((producer) => ({
         label: producer.name,
@@ -234,7 +234,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
 
   // Countries
   const { data: countries, isLoading: isLoadingCountries } = useAdminRegionsTrees({ depth: 0 });
-  const optionsCountries = useMemo<SelectOption[]>(
+  const optionsCountries = useMemo<Option[]>(
     () =>
       sortBy(
         countries.map(({ name, id }) => ({
@@ -248,7 +248,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
 
   // Years
   const { data: years, isLoading: isLoadingYears } = useSourcingRecordsYears();
-  const optionsYears: SelectOption<number>[] = useMemo(
+  const optionsYears: Option<number>[] = useMemo(
     () =>
       years.map((year) => ({
         label: year.toString(),
@@ -628,16 +628,16 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
             control={control}
             render={({ field: { value, ...field } }) => (
               <div data-testid="startYear-select">
-                <Select
-                  {...field}
-                  instanceId="startYear"
-                  showSearch
-                  current={value}
+                <Select<number>
+                  {...omit(field, 'ref')}
+                  id="startYear"
+                  // showSearch
+                  defaultValue={value}
                   options={optionsYears}
                   placeholder="Select a year"
                   onChange={(value) => setValue('startYear', value)}
                   loading={isLoadingYears}
-                  error={!!errors?.startYear}
+                  error={errors?.startYear?.value?.message}
                 />
               </div>
             )}
@@ -650,16 +650,15 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
             control={control}
             render={({ field: { value, ...field } }) => (
               <div data-testid="endYear-select">
-                <Select
-                  {...field}
-                  instanceId="endYear"
-                  showSearch
-                  current={value}
+                <Select<number>
+                  {...omit(field, 'ref')}
+                  id="endYear"
+                  value={value}
                   options={[]}
                   placeholder="Select a year"
                   onChange={(value) => setValue('endYear', value)}
                   loading={isLoadingYears}
-                  error={!!errors?.endYear}
+                  error={errors?.endYear?.value?.message}
                   disabled
                 />
               </div>
@@ -810,18 +809,17 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                             control={control}
                             render={({ field, fieldState: { invalid } }) => (
                               <div data-testid="new-location-select">
-                                <Select
-                                  {...field}
-                                  showSearch
+                                <AutoCompleteSelect<LocationTypes>
+                                  {...omit(field, 'ref')}
                                   loading={isLoadingLocationTypes}
-                                  current={field.value}
+                                  value={field.value}
                                   options={locationTypes}
                                   placeholder="Select"
                                   onChange={(value) => {
                                     if (invalid) clearErrors('newLocationType');
                                     setValue('newLocationType', value);
                                   }}
-                                  error={!!errors?.newLocationType}
+                                  error={errors?.newLocationType?.value?.message}
                                   data-testid="new-location-select"
                                 />
                               </div>
@@ -837,18 +835,17 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                             control={control}
                             render={({ field, fieldState: { invalid } }) => (
                               <div data-testid="new-location-country-select">
-                                <Select
-                                  {...field}
-                                  showSearch
+                                <AutoCompleteSelect
+                                  {...omit(field, 'ref')}
                                   loading={isLoadingCountries}
-                                  current={field.value}
+                                  value={field.value}
                                   options={optionsCountries}
                                   placeholder="Select"
                                   onChange={(value) => {
                                     if (invalid) clearErrors('newLocationCountryInput');
                                     setValue('newLocationCountryInput', value);
                                   }}
-                                  error={!!errors?.newLocationCountryInput}
+                                  error={errors?.newLocationCountryInput?.value?.message}
                                 />
                               </div>
                             )}
@@ -946,16 +943,14 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                               defaultValue={null}
                               render={({ field }) => (
                                 <div data-testid="new-t1-supplier-select">
-                                  <Select
-                                    {...field}
-                                    showSearch
+                                  <AutoCompleteSelect
+                                    {...omit(field, 'ref')}
                                     loading={isLoadingSuppliers}
-                                    current={field.value}
+                                    value={field.value}
                                     options={optionsSuppliers}
                                     placeholder="Select"
                                     onChange={(value) => setValue('newT1SupplierId', value)}
-                                    error={!!errors?.newT1SupplierId}
-                                    allowEmpty
+                                    error={errors?.newT1SupplierId}
                                   />
                                 </div>
                               )}
@@ -969,16 +964,14 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                               defaultValue={null}
                               render={({ field }) => (
                                 <div data-testid="new-producer-select">
-                                  <Select
-                                    {...field}
-                                    showSearch
+                                  <AutoCompleteSelect
+                                    {...omit(field, 'ref')}
                                     loading={isLoadingProducers}
-                                    current={field.value}
+                                    value={field.value}
                                     options={optionsProducers}
                                     placeholder="Select"
                                     onChange={(value) => setValue('newProducerId', value)}
-                                    error={!!errors?.newProducerId}
-                                    allowEmpty
+                                    error={errors?.newProducerId}
                                   />
                                 </div>
                               )}

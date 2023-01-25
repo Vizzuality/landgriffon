@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useEffect, useRef } from 'react';
+import { useCallback, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
@@ -17,7 +17,6 @@ const ALL = {
 };
 
 const IndicatorsFilter = () => {
-  const ref = useRef(null);
   const { query = {}, replace } = useRouter();
   const { indicator } = query;
   const { visualizationMode } = useAppSelector(analysisUI);
@@ -76,7 +75,6 @@ const IndicatorsFilter = () => {
       options={options}
       loading={isFetching}
       disabled={!!error}
-      ref={ref}
     />
   );
 };

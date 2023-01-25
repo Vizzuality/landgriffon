@@ -13,9 +13,9 @@ import {
 import { Transition } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/solid';
 
-import Select from 'components/select';
+import Select from 'components/forms/select';
 
-import type { SelectOption } from 'components/select/types';
+import type { Option } from 'components/forms/select';
 import type { YearsRangeFilterProps } from './types';
 
 export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
@@ -39,8 +39,8 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
-  const [startYearOptions, setStartYearOptions] = useState<SelectOption<number>[]>();
-  const [endYearOptions, setEndYearOptions] = useState<SelectOption<number>[]>();
+  const [startYearOptions, setStartYearOptions] = useState<Option<number>[]>();
+  const [endYearOptions, setEndYearOptions] = useState<Option<number>[]>();
 
   useEffect(() => {
     if (!years.length) return;
@@ -142,25 +142,18 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
             <div className="p-4 bg-white rounded-md shadow-md ring-1 ring-gray-200">
               <div className="grid grid-cols-1 gap-2">
                 <div>From</div>
-                <Select
-                  numeric
-                  hideValueWhenMenuOpen
+                <Select<number>
                   loading={loading}
-                  showSearch={showSearch ?? showStartYearSearch}
                   options={startYearOptions}
-                  current={startYearOption}
+                  value={startYearOption}
                   onChange={({ value }) => {
                     onChange?.({ startYear: Number(value), endYear });
                   }}
-                  onSearch={onStartYearSearch}
                   placeholder={placeholderFrom}
                 />
                 <div>To</div>
-                <Select
-                  numeric
-                  hideValueWhenMenuOpen
+                <Select<number>
                   loading={loading}
-                  showSearch={showSearch ?? showEndYearSearch}
                   options={endYearOptions.map((option) => ({
                     ...option,
                     extraInfo:
@@ -168,11 +161,10 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
                         ? 'projected data'
                         : undefined,
                   }))}
-                  current={endYearOption}
+                  value={endYearOption}
                   onChange={({ value }) => {
                     onChange?.({ startYear, endYear: Number(value) });
                   }}
-                  onSearch={onEndYearSearch}
                   placeholder={placeholderTo}
                 />
               </div>

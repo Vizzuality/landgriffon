@@ -171,7 +171,7 @@ const AdminDataPage: React.FC = () => {
         <div className="flex w-full gap-2">
           <div className="flex-1">
             <Search
-              defaultValue={searchText}
+              value={searchText}
               placeholder="Search table"
               onChange={handleSearch}
               autoFocus

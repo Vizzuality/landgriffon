@@ -5,12 +5,12 @@ import { useTargets } from 'hooks/targets';
 import TargetInputList from 'containers/targets/input-list';
 import InfoTooltip from 'components/info-tooltip';
 import Modal from 'components/modal';
-import Select from 'components/select';
+import Select from 'components/forms/select';
 import Button from 'components/button';
 
+import type { Option } from 'components/forms/select';
 import type { TargetYear } from 'types';
 import type { ModalProps } from 'components/modal';
-import type { SelectProps } from 'components/select';
 
 type EditTargetModalProps = ModalProps;
 
@@ -18,7 +18,7 @@ const AdminEditTargetModal: React.FC<EditTargetModalProps> = ({ title, open, onD
   const { data, isLoading } = useSourcingRecordsYears();
   const { data: targets } = useTargets();
 
-  const [selectedOption, setSelectedOption] = useState<SelectProps<number>['current']>(null);
+  const [selectedOption, setSelectedOption] = useState<Option<number>>(null);
 
   const targetYearsArray: TargetYear[] = useMemo(
     // TO-DO: use indicatorID to filter the target years needed in each case
@@ -31,7 +31,7 @@ const AdminEditTargetModal: React.FC<EditTargetModalProps> = ({ title, open, onD
 
   const [targetYears, setTargetYearsValues] = useState<TargetYear[]>(targetYearsArray);
 
-  const yearOptions: SelectProps<number>['options'] = useMemo(
+  const yearOptions: Option<number>[] = useMemo(
     () =>
       data?.map((year) => ({
         label: year.toString(),
@@ -75,11 +75,9 @@ const AdminEditTargetModal: React.FC<EditTargetModalProps> = ({ title, open, onD
       </legend>
       <div className="grid grid-cols-2 pb-4 mt-5 gap-y-4 gap-x-6 sm:grid-cols-2">
         <div className="block font-medium text-gray-900">
-          <Select
-            numeric
-            hideValueWhenMenuOpen
+          <Select<number>
             loading={isLoading}
-            current={selectedOption}
+            value={selectedOption}
             options={yearOptions}
             placeholder="Select a year"
             onChange={handleDropdown}

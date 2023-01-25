@@ -5,7 +5,7 @@ import { analysisFilters, setFilter, setFilters } from 'store/features/analysis/
 import { useYears } from 'hooks/years';
 import Select from 'components/forms/select';
 
-import type { SelectProps } from 'components/forms/select/types';
+import type { SelectProps, Option } from 'components/forms/select';
 
 const YearsFilter: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -16,7 +16,7 @@ const YearsFilter: React.FC = () => {
   const { data: years, isLoading } = useYears(layer, materialsIds, indicator?.value, {
     enabled: !!(layer === 'impact' && indicator?.value) || true,
   });
-  const [selectedOption, setSelectedOption] = useState<SelectProps['value']>(null);
+  const [selectedOption, setSelectedOption] = useState<SelectProps<number>['value']>(null);
 
   useEffect(() => {
     setSelectedOption({
@@ -25,7 +25,7 @@ const YearsFilter: React.FC = () => {
     });
   }, [startYear]);
 
-  const yearOptions: SelectProps['options'] = useMemo(
+  const yearOptions: SelectProps<number>['options'] = useMemo(
     () =>
       years?.map((year) => ({
         label: year.toString(),
@@ -34,7 +34,7 @@ const YearsFilter: React.FC = () => {
     [years],
   );
 
-  const handleChange: SelectProps['onChange'] = useCallback(
+  const handleChange: SelectProps<number>['onChange'] = useCallback(
     (option) => {
       setSelectedOption(option);
       dispatch(setFilter({ id: 'startYear', value: option.value }));
@@ -52,7 +52,7 @@ const YearsFilter: React.FC = () => {
   }, [dispatch, isLoading, years, startYear]);
 
   return (
-    <Select
+    <Select<number>
       icon={<span className="text-sm text-gray-400">in</span>}
       loading={isLoading}
       value={selectedOption}

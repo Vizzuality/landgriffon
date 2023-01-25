@@ -13,7 +13,7 @@ import {
   SortableContext,
 } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import React from 'react';
+import React, { useId } from 'react';
 import { CSS } from '@dnd-kit/utilities';
 import classNames from 'classnames';
 
@@ -29,9 +29,11 @@ const Sortable: React.FC<SortableProps> = ({ onChangeOrder, children, items, ...
   const mouseSensor = useSensor(MouseSensor);
 
   const sensors = useSensors(touchSensor, mouseSensor);
+  const id = useId();
 
   return (
     <DndContext
+      id={id}
       sensors={sensors}
       collisionDetection={closestCenter}
       modifiers={[restrictToVerticalAxis]}

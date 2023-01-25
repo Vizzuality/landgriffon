@@ -1,19 +1,20 @@
-export type Option = {
+export type Option<T = string> = {
   label: string;
-  value: string | number;
+  value: T;
+  disabled?: boolean;
 };
 
-export type SelectProps = Omit<
+export type SelectProps<T = string> = Omit<
   React.SelectHTMLAttributes<HTMLSelectElement>,
   'className' | 'onChange' | 'value' | 'defaultValue'
 > & {
-  defaultValue?: Option;
-  value?: Option;
+  defaultValue?: Option<T>;
+  value?: Option<T>;
   error?: string;
   icon?: React.ReactElement<SVGElement | HTMLDivElement>;
   label?: React.ReactNode;
   loading?: boolean;
-  options: Option[];
+  options: Option<T>[];
   showHint?: boolean;
-  onChange: (value: Option) => void;
+  onChange: (value: Option<T>) => void;
 };

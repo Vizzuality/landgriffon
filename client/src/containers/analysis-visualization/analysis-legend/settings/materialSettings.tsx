@@ -11,7 +11,7 @@ import { useMaterial } from 'hooks/materials';
 import Loading from 'components/loading';
 
 import type { LayerSettingsProps } from './component';
-import type { SelectOption } from 'components/select';
+import type { Option } from 'components/forms/select';
 import type { Dispatch } from 'react';
 import type { Material } from 'types';
 
@@ -41,8 +41,8 @@ const MaterialSettings = ({
   );
 
   const handleMaterialChange = useCallback(
-    (material: SelectOption | null) => {
-      onChangeMaterial(material?.value || null);
+    (material: Option | null) => {
+      onChangeMaterial((material?.value as string) || null);
     },
     [onChangeMaterial],
   );
@@ -68,7 +68,7 @@ const MaterialSettings = ({
       header={
         <div className="flex flex-row justify-between">
           <div className="text-sm font-semibold text-gray-500">Food and agriculture</div>
-          <div className="flex flex-row place-items-center gap-2">
+          <div className="flex flex-row gap-2 place-items-center">
             <InfoToolTip
               icon="solid"
               info="Food and agriculture represents agricultural production and global livestock distribution for all commodities incorporated in LandGriffon."
@@ -80,7 +80,7 @@ const MaterialSettings = ({
               enabled={!canPreview}
               theme="dark"
               content={
-                <div className="bg-black rounded-md text-white text-sm p-2 w-36 text-center">
+                <div className="p-2 text-sm text-center text-white bg-black rounded-md w-36">
                   A material must be selected in order to see the preview
                 </div>
               }
@@ -101,7 +101,7 @@ const MaterialSettings = ({
         </div>
       }
     >
-      <div className="flex flex-row justify-between gap-5 p-2 pl-8 place-items-center max-w-full">
+      <div className="flex flex-row justify-between max-w-full gap-5 p-2 pl-8 place-items-center">
         <div className="flex-grow">
           <Materials current={current ?? null} onChange={handleMaterialChange} />
         </div>

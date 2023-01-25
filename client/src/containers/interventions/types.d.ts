@@ -1,5 +1,5 @@
 import type { InterventionTypes, LocationStatus, LocationTypes } from './enums';
-import type { SelectOption } from 'components/select/types';
+import type { Option } from 'components/forms/select';
 
 export type IndicatorCoefficients = Record<string, number>;
 
@@ -45,28 +45,28 @@ export type Intervention = {
 
 export type InterventionFormData = {
   interventionType: string;
-  startYear: SelectOption<number>;
-  endYear: SelectOption<number>;
+  startYear: Option<number>;
+  endYear: Option<number>;
   percentage: number;
   scenarioId: string;
 
-  materialIds: SelectOption[];
-  businessUnitIds?: SelectOption[];
-  supplierIds?: SelectOption[];
-  adminRegionIds: SelectOption[];
+  materialIds: Option[];
+  businessUnitIds?: Option[];
+  supplierIds?: Option[];
+  adminRegionIds: Option[];
 
-  newT1SupplierId?: SelectOption;
-  newProducerId?: SelectOption;
+  newT1SupplierId?: Option;
+  newProducerId?: Option;
 
-  newLocationType?: SelectOption;
-  newLocationCountryInput?: SelectOption;
-  newLocationAdminRegionInput?: SelectOption;
+  newLocationType?: Option;
+  newLocationCountryInput?: Option;
+  newLocationAdminRegionInput?: Option;
   cityAddressCoordinates: string;
   newLocationAddressInput?: string;
   newLocationLatitude?: number;
   newLocationLongitude?: number;
 
-  newMaterialId?: SelectOption[];
+  newMaterialId?: Option[];
 
   coefficients: IndicatorCoefficients;
 };

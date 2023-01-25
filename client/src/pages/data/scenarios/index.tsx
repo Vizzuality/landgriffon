@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from 'react';
 import Head from 'next/head';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { PlusIcon, SortDescendingIcon } from '@heroicons/react/solid';
 import { useDebounceCallback } from '@react-hook/debounce';
@@ -14,8 +13,10 @@ import Search from 'components/search';
 import { useScenarios } from 'hooks/scenarios';
 import AdminLayout from 'layouts/admin';
 import ScenarioCard from 'containers/scenarios/card';
-import { Anchor } from 'components/button';
+import { LinkAnchor } from 'components/button';
 import Loading from 'components/loading';
+import { usePermissions } from 'hooks/permissions';
+import { Permission } from 'hooks/permissions/enums';
 
 import type { ScenarioCardProps } from 'containers/scenarios/card/types';
 
@@ -42,6 +43,9 @@ const SORT_OPTIONS = [
 const ScenariosAdminPage: React.FC = () => {
   const router = useRouter();
   const { query } = router;
+
+  const { hasPermission } = usePermissions();
+  const canCreateScenario = hasPermission(Permission.CAN_CREATE_SCENARIO);
 
   const handleSort = useCallback(
     ({ value }) => {
@@ -133,22 +137,22 @@ const ScenariosAdminPage: React.FC = () => {
             </ButtonGroup>
           </div>
           <div>
-            <Link href="/data/scenarios/new" passHref>
-              <Anchor
-                variant="secondary"
-                data-testid="scenario-add-button"
-                icon={
-                  <div
-                    aria-hidden="true"
-                    className="flex items-center justify-center w-5 h-5 rounded-full bg-navy-400"
-                  >
-                    <PlusIcon className="w-4 h-4 text-white" />
-                  </div>
-                }
-              >
-                Add scenario
-              </Anchor>
-            </Link>
+            <LinkAnchor
+              href="/data/scenarios/new"
+              variant="secondary"
+              data-testid="scenario-add-button"
+              disabled={!canCreateScenario}
+              icon={
+                <div
+                  aria-hidden="true"
+                  className="flex items-center justify-center w-5 h-5 rounded-full bg-navy-400"
+                >
+                  <PlusIcon className="w-4 h-4 text-white" />
+                </div>
+              }
+            >
+              Add scenario
+            </LinkAnchor>
           </div>
         </div>
       </div>

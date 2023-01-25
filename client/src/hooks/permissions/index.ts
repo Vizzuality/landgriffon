@@ -1,8 +1,8 @@
 import { useProfile } from 'hooks/profile';
 
-import type { Permission, RoleName } from './enums';
+import { Permission, RoleName } from './enums';
 
-export function usePermissions() {
+export function usePermissions(creatorId?: string) {
   const { data, isLoading } = useProfile();
 
   const roles: RoleName[] = [];
@@ -22,7 +22,13 @@ export function usePermissions() {
   };
 
   const hasPermission = (permission: Permission) => {
-    return !isLoading && !!permissions?.includes(permission);
+    // If is admin or if has the permission or if is the creator of the entity
+    return (
+      !isLoading &&
+      (hasRole(RoleName.ADMIN) ||
+        permissions?.includes(permission) ||
+        (!!creatorId && creatorId === data.id))
+    );
   };
 
   return { roles, hasRole, permissions, hasPermission, isLoading };

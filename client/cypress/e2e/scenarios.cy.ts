@@ -50,8 +50,10 @@ describe('Scenarios', () => {
       .should('have.length', 2);
   });
 
-  it('should allow create new scenarios and come back', () => {
-    cy.get('[data-testid="scenario-add-button"]').should('have.text', 'Add scenario').click();
+  it('should allow user with permissions create new scenarios and come back', () => {
+    cy.intercept('api/v1/users/me', { fixture: 'profiles/all-permissions' }).as('profile');
+    cy.wait('@profile');
+    cy.get('[data-testid="scenario-add-button"]').click();
 
     cy.url().should('contain', '/data/scenarios/new');
 
@@ -61,7 +63,14 @@ describe('Scenarios', () => {
       .should('contain', '/data/scenarios');
   });
 
-  it('a user removes a scenario succesfully', () => {
+  it('should not allow user without permissions to create a scenarios', () => {
+    cy.intercept('api/v1/users/me', { fixture: 'profiles/no-permissions' }).as('profile');
+    cy.wait('@profile');
+    cy.get('[data-testid="scenario-add-button"]').should('be.disabled');
+  });
+
+  it('a user with permission removes a scenario succesfully', () => {
+    cy.intercept('api/v1/users/me', { fixture: 'profiles/all-permissions' });
     // ? check there are, initially, 10 scenarios available before deletion
     cy.get('[data-testid="scenario-card"]').should('have.length', 10);
 
@@ -87,6 +96,44 @@ describe('Scenarios', () => {
 
     // ? checks the toast message triggered after deletion
     cy.get('[data-testid="toast-message"]').should('contain', 'Scenario deleted successfully');
+  });
+
+  it('a user without authorship or permission can not remove a scenario', () => {
+    cy.intercept('api/v1/users/me', { fixture: 'profiles/no-permissions' }).as('profile');
+    cy.wait('@profile');
+    cy.get('[data-testid="scenario-card"]')
+      .first()
+      .find('[data-testid="scenario-delete-btn"]')
+      .should('be.disabled');
+  });
+
+  it('a user with authorship or permission can edit a scenario', () => {
+    cy.intercept('api/v1/users/me', { fixture: 'profiles/all-permissions' }).as('profile');
+    cy.wait('@profile');
+    cy.get('[data-testid="scenario-card"]')
+      .first()
+      .find('[data-testid="scenario-edit-btn"]')
+      .click();
+    cy.url().should('contain', '/data/scenarios/').should('contain', '/edit');
+  });
+
+  it('a user without authorship or permission can not edit a scenario', () => {
+    cy.intercept('api/v1/users/me', { fixture: 'profiles/no-permissions' }).as('profile');
+    cy.wait('@profile');
+
+    cy.get('[data-testid="scenario-card"]')
+      .first()
+      .find('[data-testid="scenario-edit-btn"]')
+      .should('be.disabled');
+  });
+
+  it('a user without authorship or permission can not edit a scenario', () => {
+    cy.intercept('api/v1/users/me', { fixture: 'profiles/no-permissions' }).as('profile');
+    cy.wait('@profile');
+    cy.get('[data-testid="scenario-card"]')
+      .first()
+      .find('[data-testid="scenario-edit-btn"]')
+      .should('be.disabled');
   });
 
   it('a user sorts scenarios alphabetically', () => {

@@ -63,6 +63,10 @@ const ContextualLegendItem = ({ layer }: ContextualLegendItemProps) => {
     [dispatch, layer.id],
   );
 
+  const handleHideLayer = useCallback(() => {
+    dispatch(setLayer({ id: layer.id, layer: { visible: false } }));
+  }, [dispatch, layer.id]);
+
   return (
     <LegendItem
       isActive={layer.active}
@@ -75,6 +79,7 @@ const ContextualLegendItem = ({ layer }: ContextualLegendItemProps) => {
       opacity={layer.opacity}
       {...layer.metadata?.legend}
       onChangeOpacity={handleOpacity}
+      onHideLayer={handleHideLayer}
     >
       {Legend}
     </LegendItem>

@@ -33,8 +33,8 @@ const MaterialSettings = ({
   const [isAccordionOpen, setIsAccordionOpen] = useState(!!materialId || layer.active);
 
   const handleToggleActive = useCallback(
-    (active: boolean) => {
-      onChange?.(layer.id, { active });
+    (visible: boolean) => {
+      onChange?.(layer.id, { visible });
       setIsAccordionOpen(true);
     },
     [layer.id, onChange],
@@ -96,7 +96,7 @@ const MaterialSettings = ({
               )}
             </ToolTip>
 
-            <Toggle active={!!layer.active} onChange={handleToggleActive} />
+            <Toggle active={!!layer.visible} onChange={handleToggleActive} />
           </div>
         </div>
       }

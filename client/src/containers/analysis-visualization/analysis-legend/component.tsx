@@ -220,7 +220,7 @@ const ToggleShowLegendButton = ({
       <div className="group-hover:hidden">
         <SandwichIcon />
       </div>
-      {activeLayerNumber && (
+      {activeLayerNumber > 0 && (
         <div
           className={classNames(
             showLegend ? 'bg-inherit' : 'bg-navy-400',

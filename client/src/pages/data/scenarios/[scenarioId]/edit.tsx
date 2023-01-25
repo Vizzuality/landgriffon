@@ -19,7 +19,7 @@ import ScenarioForm from 'containers/scenarios/form';
 import { LocationStatus } from 'containers/interventions/enums';
 import BackLink from 'components/back-link';
 import Loading from 'components/loading';
-import Select from 'components/select';
+import Select from 'components/forms/select';
 import { Anchor, Button } from 'components/button';
 import Input from 'components/forms/input';
 import Toggle from 'components/toggle';
@@ -121,7 +121,7 @@ const UpdateScenarioPage: React.FC = () => {
                 <div className="grid grid-cols-8 gap-4">
                   <div className="col-span-4">
                     <label className="block mb-2 text-sm">Business unit</label>
-                    <Select current={null} disabled options={[]} />
+                    <Select value={null} disabled options={[]} onChange={null} />
                   </div>
                   <div className="col-span-2">
                     <label className="block mb-2 text-sm">Growth rate (linear)</label>

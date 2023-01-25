@@ -17,7 +17,7 @@ export const useIndicators = <T = ResponseData>(
   queryParams: Record<string, unknown> = {},
   options: UseQueryOptions<ResponseData, unknown, T, ['indicators']> = {},
 ) => {
-  const query = useQuery(
+  return useQuery(
     ['indicators', queryParams],
     () =>
       apiService
@@ -33,8 +33,6 @@ export const useIndicators = <T = ResponseData>(
       ...options,
     },
   );
-
-  return query;
 };
 
 export const useIndicator = <T = Indicator>(

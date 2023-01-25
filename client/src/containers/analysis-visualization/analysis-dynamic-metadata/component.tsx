@@ -10,7 +10,7 @@ import { analysisFilters, setFilters } from 'store/features/analysis/filters';
 import Badge from 'components/badge/component';
 import { ComparisonToggle } from 'components/legend/item/comparisonModeToggle';
 
-import type { SelectOption } from 'components/select';
+import type { Option } from 'components/forms/select';
 import type { FC } from 'react';
 
 const values = 'absolute';
@@ -45,7 +45,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
     useAppSelector(analysisFilters);
 
   const handleRemoveBadge = useCallback(
-    (id: string, list: SelectOption[], option: SelectOption) => {
+    (id: string, list: Option[], option: Option) => {
       const filteredKeys = list.filter((key) => option.label !== key.label);
       dispatch(setFilters({ [id]: filteredKeys }));
     },

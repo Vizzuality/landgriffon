@@ -1,8 +1,8 @@
-import Component from '.';
+import Component from './component';
 
 import type { SelectProps, Option } from './types';
 
-const data: Option[] = [
+const data: Option<number>[] = [
   { value: 1, label: 'Wade Cooper' },
   { value: 2, label: 'Arlene Mccoy' },
   { value: 3, label: 'Devon Webb' },
@@ -38,9 +38,9 @@ export default {
   },
 };
 
-const Template = (args: SelectProps) => {
+const Template = (args: SelectProps<number>) => {
   return (
-    <Component
+    <Component<number>
       {...args}
       error={args.error ? 'This is an example of error message' : null}
       name="people"

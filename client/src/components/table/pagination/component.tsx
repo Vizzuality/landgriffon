@@ -12,7 +12,7 @@ import { DEFAULT_PAGE_SIZES } from './constants';
 
 import Select from 'components/forms/select';
 
-import type { SelectProps } from 'components/forms/select/types';
+import type { SelectProps } from 'components/forms/select';
 import type { PaginationProps } from './types';
 
 const Pagination: React.FC<PaginationProps> = ({
@@ -62,9 +62,9 @@ const Pagination: React.FC<PaginationProps> = ({
     onPageChange?.(totalPages);
   }, [onPageChange, totalPages]);
 
-  const handlePageSizeChange = useCallback<SelectProps['onChange']>(
+  const handlePageSizeChange = useCallback<SelectProps<number>['onChange']>(
     (nextPageSize) => {
-      onChangePageSize(nextPageSize?.value as number);
+      onChangePageSize(nextPageSize?.value);
     },
     [onChangePageSize],
   );
@@ -83,7 +83,11 @@ const Pagination: React.FC<PaginationProps> = ({
     >
       <div className="flex items-center space-x-2">
         <label className="text-sm text-gray-500">Rows per page</label>
-        <Select value={currentPageSize} options={pageSizeOptions} onChange={handlePageSizeChange} />
+        <Select<number>
+          value={currentPageSize}
+          options={pageSizeOptions}
+          onChange={handlePageSizeChange}
+        />
       </div>
       <div className="flex-1 text-sm text-center text-gray-500">
         {itemsRange.start}-{itemsRange.end} of {totalItems}

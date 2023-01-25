@@ -12,8 +12,8 @@ import InfoToolTip from 'components/info-tooltip';
 import Search from 'components/search';
 import Toggle from 'components/toggle';
 import useFuse from 'hooks/fuse';
-import { analysisMap, setFilter, setLayer } from 'store/features/analysis';
-import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { analysisMap } from 'store/features/analysis';
+import { useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
 import Loading from 'components/loading';
 import Callout from 'components/callout';
@@ -22,11 +22,11 @@ import type { UseQueryResult } from '@tanstack/react-query';
 import type { UseFuseOptions } from 'hooks/fuse';
 import type { CategoryWithLayers } from 'hooks/layers/getContextualLayers';
 import type { Dispatch } from 'react';
-import type { Layer } from 'types';
+import type { Layer, Material } from 'types';
 
 interface LegendSettingsProps {
   categories: CategoryWithLayers[];
-  onApply?: Dispatch<Layer[]>;
+  onApply?: Dispatch<{ layers: Layer[]; material: Material['id'] }>;
   onDismiss?: () => void;
 }
 
@@ -47,9 +47,9 @@ const LayerSettings = ({
   isPreviewActive,
   previewStatus,
 }: LayerSettingsProps) => {
-  const onToggleActive = useCallback(
-    (active: boolean) => {
-      onChange(layer.id, { active });
+  const onToggleVisible = useCallback(
+    (visible: boolean) => {
+      onChange(layer.id, { visible });
     },
     [layer.id, onChange],
   );
@@ -75,7 +75,7 @@ const LayerSettings = ({
               onPreviewChange={handlePreviewToggle}
             />
           )}
-          <Toggle onChange={onToggleActive} active={!!layer.active} />
+          <Toggle onChange={onToggleVisible} active={!!layer.visible} />
         </div>
       </div>
       <div>
@@ -92,18 +92,18 @@ const LayerSettings = ({
 
 const CategoryHeader: React.FC<{
   category: CategoryWithLayers['category'];
-  activeLayers: number;
-}> = ({ category, activeLayers }) => {
+  visibleLayers: number;
+}> = ({ category, visibleLayers }) => {
   return (
     <div className="flex flex-row justify-between">
       <div className="text-sm font-semibold text-gray-500">{category}</div>
       <div
         className={classNames(
           'w-4 h-4 my-auto text-xs font-semibold text-center text-white rounded-full',
-          activeLayers === 0 ? 'bg-gray-200' : 'bg-navy-400',
+          visibleLayers === 0 ? 'bg-gray-200' : 'bg-navy-400',
         )}
       >
-        {activeLayers}
+        {visibleLayers}
       </div>
     </div>
   );
@@ -113,8 +113,8 @@ interface CategorySettingsProps
   extends Pick<LayerSettingsProps, 'onPreviewChange' | 'previewStatus'> {
   category: CategoryWithLayers['category'];
   layers: Layer[];
-  activeLayers: number;
   onLayerStateChange: (id: Layer['id'], state: Partial<Layer>) => void;
+  visibleLayers: number;
   activePreviewLayerId?: Layer['id'];
 }
 
@@ -128,12 +128,12 @@ const CategorySettings = ({
   category,
   layers,
   onLayerStateChange,
-  activeLayers,
+  visibleLayers,
   activePreviewLayerId,
   ...rest
 }: CategorySettingsProps) => {
   return (
-    <Accordion.Entry header={<CategoryHeader activeLayers={activeLayers} category={category} />}>
+    <Accordion.Entry header={<CategoryHeader visibleLayers={visibleLayers} category={category} />}>
       {layers.length ? (
         layers.map((layer) => (
           <LayerSettings
@@ -185,21 +185,9 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
     [],
   );
 
-  const dispatch = useAppDispatch();
   const handleApply = useCallback(() => {
-    Object.values(localLayerState).forEach((layer) => {
-      dispatch(
-        setLayer({
-          id: layer.id,
-          layer,
-        }),
-      );
-    });
-
-    dispatch(setFilter({ id: 'materialId', value: localMaterial }));
-
-    onApply?.(Object.values(localLayerState));
-  }, [dispatch, localLayerState, localMaterial, onApply]);
+    onApply?.({ layers: Object.values(localLayerState), material: localMaterial });
+  }, [localLayerState, localMaterial, onApply]);
 
   const flatLayers = useMemo(() => categories.flatMap(({ layers }) => layers), [categories]);
 
@@ -233,7 +221,7 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
         <CategorySettings
           previewStatus={previewStatus}
           activePreviewLayerId={selectedLayerForPreview}
-          activeLayers={cat.layers.filter((layer) => localLayerState[layer.id].active).length}
+          visibleLayers={cat.layers.filter((layer) => localLayerState[layer.id].visible).length}
           layers={layerStateByCategory[cat.category]}
           onLayerStateChange={handleLayerStateChange}
           onPreviewChange={handleTogglePreview}

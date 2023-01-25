@@ -95,6 +95,10 @@ const MaterialLayer = () => {
     [dispatch, layer.id],
   );
 
+  const handleHideLayer = useCallback(() => {
+    dispatch(setLayer({ id: layer.id, layer: { visible: false } }));
+  }, [dispatch, layer.id]);
+
   return (
     <LegendItem
       isActive={layer.active}
@@ -107,6 +111,7 @@ const MaterialLayer = () => {
       opacity={layer.opacity}
       onChangeOpacity={handleOpacity}
       isLoading={isFetching}
+      onHideLayer={handleHideLayer}
       main
     >
       {isSuccess && (

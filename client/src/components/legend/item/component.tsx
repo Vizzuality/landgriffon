@@ -1,4 +1,6 @@
 import classNames from 'classnames';
+import { EyeIcon, EyeOffIcon, XIcon } from '@heroicons/react/solid';
+import { useCallback } from 'react';
 
 import OpacityControl from './opacityControl';
 import DragHandle from './dragHandle';
@@ -8,7 +10,6 @@ import InfoToolTip from 'components/info-tooltip/component';
 import Loading from 'components/loading';
 import { useAppSelector } from 'store/hooks';
 import { scenarios } from 'store/features/analysis';
-import Toggle from 'components/toggle';
 
 import type { Dispatch } from 'react';
 
@@ -25,6 +26,7 @@ export type LegendItemProps = {
   main?: boolean;
   showComparisonModeToggle?: boolean;
   onToggle: Dispatch<boolean>;
+  onHideLayer?: () => void;
   isActive: boolean;
 };
 
@@ -39,10 +41,15 @@ export const LegendItem = ({
   onChangeOpacity,
   main = false,
   showComparisonModeToggle = false,
+  onHideLayer,
   onToggle,
   isActive,
 }: LegendItemProps) => {
   const { isComparisonEnabled } = useAppSelector(scenarios);
+
+  const handleToggleActive = useCallback(() => {
+    onToggle(!isActive);
+  }, [isActive, onToggle]);
 
   return (
     <div
@@ -69,7 +76,18 @@ export const LegendItem = ({
                 <div className="flex items-center gap-x-1 mt-0.5">
                   <OpacityControl opacity={opacity} onChange={onChangeOpacity} />
                   {info && <InfoToolTip icon="outline" info={info} />}
-                  <Toggle active={isActive} onChange={onToggle} />
+                  <button type="button" onClick={handleToggleActive}>
+                    {isActive ? (
+                      <EyeOffIcon className="w-4 h-4"></EyeOffIcon>
+                    ) : (
+                      <EyeIcon className="w-4 h-4"></EyeIcon>
+                    )}
+                  </button>
+                  {onHideLayer && (
+                    <button type="button" onClick={onHideLayer}>
+                      <XIcon className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               </div>
             )}

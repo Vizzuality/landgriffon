@@ -98,7 +98,9 @@ export const useAllContextualLayersData = <T = { layerId: Layer['id'] } & H3APIR
     'context' | 'queryKey' | 'queryFn'
   >,
 ) => {
-  const { layers } = useAppSelector(analysisMap);
+  const {
+    layers: { impact, material, ...layers },
+  } = useAppSelector(analysisMap);
   const { startYear, materials, indicator, suppliers, origins, locationTypes } =
     useAppSelector(analysisFilters);
 

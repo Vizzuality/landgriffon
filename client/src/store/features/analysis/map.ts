@@ -112,7 +112,7 @@ export const analysisMapSlice = createSlice({
             ...DEFAULT_DECKGL_PROPS,
             id: action.payload.id,
             ...state.layerDeckGLProps[action.payload.id],
-            visible: layers[action.payload.id].active,
+            visible: layers[action.payload.id].active && layers[action.payload.id].visible,
             opacity: layers[action.payload.id].opacity,
           },
         },

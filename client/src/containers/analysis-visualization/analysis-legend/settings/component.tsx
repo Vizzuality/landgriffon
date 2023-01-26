@@ -241,7 +241,7 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
   );
 
   const localSelectedLayerNumber = useMemo(
-    () => Object.values(localLayerState).filter((l) => l.active).length,
+    () => Object.values(localLayerState).filter((l) => l.visible).length,
     [localLayerState],
   );
 

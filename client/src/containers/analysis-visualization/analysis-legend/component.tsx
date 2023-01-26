@@ -50,14 +50,14 @@ export const Legend: React.FC = () => {
     },
   });
 
-  const activeLayerNumber = useMemo(
-    () => Object.values(layers).filter((l) => l.active).length,
+  const visibleLayerNumber = useMemo(
+    () => Object.values(layers).filter((l) => l.visible).length,
     [layers],
   );
-  const activeContextualLayers = useMemo(
+  const visibleContextualLayers = useMemo(
     () =>
-      activeLayerNumber - Object.values(layers).filter((l) => !l.isContextual && l.active).length,
-    [activeLayerNumber, layers],
+      visibleLayerNumber - Object.values(layers).filter((l) => !l.isContextual && l.visible).length,
+    [visibleLayerNumber, layers],
   );
 
   const handleShowLegend = useCallback(() => {
@@ -151,9 +151,9 @@ export const Legend: React.FC = () => {
                     <span className="my-auto text-xs font-semibold underline underline-offset-2">
                       Contextual Layers
                     </span>
-                    {activeContextualLayers > 0 && (
+                    {visibleContextualLayers > 0 && (
                       <div className="w-4 h-4 text-xs font-semibold text-center text-white rounded-full bg-navy-400">
-                        {activeContextualLayers}
+                        {visibleContextualLayers}
                       </div>
                     )}
                   </button>
@@ -167,7 +167,7 @@ export const Legend: React.FC = () => {
           <ToggleShowLegendButton
             showLegend={showLegend}
             toggleLegend={handleShowLegend}
-            activeLayerNumber={activeLayerNumber}
+            activeLayerNumber={visibleLayerNumber}
           />
         </div>
       </div>

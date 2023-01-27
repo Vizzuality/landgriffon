@@ -5,6 +5,7 @@ const nextConfig = {
   eslint: {
     dirs: ['src'],
   },
+  swcMinify: true,
   redirects() {
     return [
       {

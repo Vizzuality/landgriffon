@@ -19,6 +19,7 @@ import { Material } from 'modules/materials/material.entity';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
+import { Unit } from 'modules/units/unit.entity';
 
 /**
  * @debt: Check if we actually need extending nestjs-base-service over this module.
@@ -26,6 +27,13 @@ import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
  * by abstraction (via nestjs-base-service), check if we can apply to the actual target tables since are not related to this entity
 
  */
+
+// Hardcoded Units whit yet no place in DB
+
+export const MATERIAL_UNIT: string = 'tonnes';
+
+export const RELATIVE_UNIT_MAP_RESPONSE: string = '%';
+
 @Injectable()
 export class H3DataMapService {
   logger: Logger = new Logger(H3DataMapService.name);
@@ -50,7 +58,7 @@ export class H3DataMapService {
      * As all material-maps share the same unit, and we have no way no retrieve this unit from DB
      * as it does not exist, we hardcode it here and send it back as response
      */
-    const MATERIAL_UNIT: string = 'tonnes';
+
     /**
      * @note To generate a Material Map, a producerId is required
      */
@@ -121,10 +129,18 @@ export class H3DataMapService {
       impactMap = await this.h3DataRepository.getImpactMap(getImpactMapDto);
     }
 
+    /**
+     * Type guard to avoid having a conditional check, otherwise TS cries
+     */
+    const { relative } = getImpactMapDto as GetScenarioVsScenarioImpactMapDto &
+      GetActualVsScenarioImpactMapDto &
+      GetImpactMapDto;
+
     return this.constructH3MapResponse(
       impactMap.impactMap,
       impactMap.quantiles,
-      indicator,
+      indicator.unit,
+      relative,
       materialsH3DataYears,
     );
   }
@@ -208,17 +224,25 @@ export class H3DataMapService {
     return materialsH3DataYears;
   }
 
+  /**
+   * @description: Build final response. The unit shown must represent the magnitude of
+   * the selected indicator, unless it's a relative comparison. Then a percentage must be shown
+   *
+   * @private
+   */
+
   private constructH3MapResponse(
     impactMap: H3IndexValueData[],
     quantiles: number[],
-    indicator: Indicator,
+    unit: Unit,
+    comparisonIsRelative: boolean,
     materialsH3DataYears: MaterialsH3DataYears[],
   ): H3MapResponse {
     return {
       data: impactMap,
       metadata: {
         quantiles: quantiles,
-        unit: indicator.unit.symbol,
+        unit: comparisonIsRelative ? RELATIVE_UNIT_MAP_RESPONSE : unit.symbol,
         ...(materialsH3DataYears.length ? { materialsH3DataYears } : {}),
       },
     };

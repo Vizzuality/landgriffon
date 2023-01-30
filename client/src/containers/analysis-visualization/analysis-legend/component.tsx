@@ -147,6 +147,7 @@ export const Legend: React.FC = () => {
                     aria-expanded={showSettings}
                     className="disabled:cursor-not-allowed disabled:text-gray-500 text-navy-400 py-1.5 px-1.5 flex flex-row gap-2 place-items-center"
                     onClick={handleToggleShowLegendSettings}
+                    data-testid="contextual-layer-modal-toggle"
                   >
                     <span className="my-auto text-xs font-semibold underline underline-offset-2">
                       Contextual Layers

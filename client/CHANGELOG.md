@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 
 - Switch to toggle layers from the legend itself [LANDGRIF-991](https://vizzuality.atlassian.net/browse/LANDGRIF-991)
+- Added a end year field in the intervention form [LANDGRIF-1113](https://vizzuality.atlassian.net/browse/LANDGRIF-1113)
+- Added a volume field in the intervention form [LANDGRIF-1112](https://vizzuality.atlassian.net/browse/LANDGRIF-1112)
 
 ### Changed
 
@@ -20,14 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Disable the filter in the manage data page [LANDGRIF-1110](https://vizzuality.atlassian.net/browse/LANDGRIF-1110)
 - Disable action buttons in the targets page [LANDGRIF-1109](https://vizzuality.atlassian.net/browse/LANDGRIF-1109)
-### Added
-
-- Added a end year field in the intervention form [LANDGRIF-1113](https://vizzuality.atlassian.net/browse/LANDGRIF-1113)
-- Added a volume field in the intervention form [LANDGRIF-1112](https://vizzuality.atlassian.net/browse/LANDGRIF-1112)
-
-### Fixed
-
 - Profile page requires to be logged
+- Contextual layers request are not including `indicatorId` param [LANDGRIF-1134](https://vizzuality.atlassian.net/browse/LANDGRIF-1134)
+- Contextual layers should render in resolution 4 [LANDGRIF-1130](https://vizzuality.atlassian.net/browse/LANDGRIF-1130)
 
 ## [v0.3.5]
 

@@ -33,6 +33,7 @@ const Toggle: React.FC<ToggleProps> = ({ active, onChange, disabled = false }) =
       onClick={handleClick}
       disabled={disabled}
       aria-disabled={disabled}
+      data-testid="switch-button"
     >
       <span className="sr-only">Use setting</span>
       <span

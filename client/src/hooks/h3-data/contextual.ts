@@ -41,16 +41,11 @@ const useH3ContextualData = <T = H3APIResponse>(
   >,
 ) => {
   const filters = useAppSelector(analysisFilters);
-  const { startYear, materials, indicator, suppliers, origins, locationTypes } = filters;
+  const { startYear } = filters;
 
   const params = {
     year: startYear,
-    indicatorId: indicator?.value && indicator?.value === 'all' ? null : indicator?.value,
-    ...(materials?.length ? { materialIds: materials?.map(({ value }) => value) } : {}),
-    ...(suppliers?.length ? { supplierIds: suppliers?.map(({ value }) => value) } : {}),
-    ...(origins?.length ? { originIds: origins?.map(({ value }) => value) } : {}),
-    ...(locationTypes?.length ? { locationTypes: locationTypes?.map(({ value }) => value) } : {}),
-    resolution: origins?.length ? 6 : 4,
+    resolution: 4,
   };
 
   const query = useQuery(
@@ -98,20 +93,12 @@ export const useAllContextualLayersData = <T = { layerId: Layer['id'] } & H3APIR
     'context' | 'queryKey' | 'queryFn'
   >,
 ) => {
-  const {
-    layers: { impact, material, ...layers },
-  } = useAppSelector(analysisMap);
-  const { startYear, materials, indicator, suppliers, origins, locationTypes } =
-    useAppSelector(analysisFilters);
+  const { layers } = useAppSelector(analysisMap);
+  const { startYear } = useAppSelector(analysisFilters);
 
   const urlParams: Omit<ContextualH3APIParams, 'relative'> = {
     year: startYear,
-    indicatorId: indicator?.value && indicator?.value === 'all' ? null : indicator?.value,
-    ...(materials?.length ? { materialIds: materials?.map(({ value }) => value) } : {}),
-    ...(suppliers?.length ? { supplierIds: suppliers?.map(({ value }) => value) } : {}),
-    ...(origins?.length ? { originIds: origins?.map(({ value }) => value) } : {}),
-    ...(locationTypes?.length ? { locationTypes: locationTypes?.map(({ value }) => value) } : {}),
-    resolution: origins?.length ? 6 : 4,
+    resolution: 4,
   };
 
   const queryList = Object.values(layers)

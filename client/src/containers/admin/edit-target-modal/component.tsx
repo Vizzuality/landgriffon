@@ -53,7 +53,7 @@ const AdminEditTargetModal: React.FC<EditTargetModalProps> = ({ title, open, onD
         if (year === target.year && isPercentage) {
           const targetCalculation = (target.value * baseline) / 100;
           return { ...target, value: targetCalculation };
-        } else if (year == target.year && isValue) {
+        } else if (year === target.year && isValue) {
           const percentageCalculation = (target.value * 100) / baseline;
           return { ...target, percentage: percentageCalculation };
         }

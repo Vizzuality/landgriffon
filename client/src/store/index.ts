@@ -17,7 +17,7 @@ import analysisScenarios, {
   setScenarioToCompare,
 } from 'store/features/analysis/scenarios';
 
-import type { ReducersMapObject, Middleware } from '@reduxjs/toolkit';
+import type { Action, ReducersMapObject, Middleware } from '@reduxjs/toolkit';
 import type { AnalysisState } from './features/analysis';
 
 const staticReducers = {
@@ -44,7 +44,7 @@ const createReducer = (reducers: ReducersMapObject) =>
 type QueryParam = {
   stateName: string;
   rootState: string;
-  action: any; // TO-DO: set the correct type
+  action: Action; // TO-DO: set the correct type
   defaultValue: unknown;
 };
 

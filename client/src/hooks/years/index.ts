@@ -33,7 +33,7 @@ export const useYears = <T = YearsData>(
           params: {
             layer,
             materialIds,
-            indicatorId: indicatorId === 'all' ? undefined : indicatorId,
+            indicatorId: indicatorId && indicatorId === 'all' ? undefined : indicatorId,
           },
         })
         .then((response) => response.data.data),

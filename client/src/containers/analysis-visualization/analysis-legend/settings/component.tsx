@@ -62,7 +62,7 @@ const LayerSettings = ({
   );
 
   return (
-    <div className="p-2 pl-8">
+    <div className="p-2 pl-8" data-testid={`layer-settings-item-${layer.metadata?.name}`}>
       <div className="flex flex-row justify-between gap-5 place-items-center">
         <div className="flex-grow text-sm">{layer.metadata?.name}</div>
         <div className="flex flex-row gap-2 place-items-center">
@@ -95,7 +95,7 @@ const CategoryHeader: React.FC<{
   visibleLayers: number;
 }> = ({ category, visibleLayers }) => {
   return (
-    <div className="flex flex-row justify-between">
+    <div className="flex flex-row justify-between" data-testid={`category-header-${category}`}>
       <div className="text-sm font-semibold text-gray-500">{category}</div>
       <div
         className={classNames(
@@ -277,7 +277,11 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
           <Button variant="secondary" onClick={onDismiss}>
             Cancel
           </Button>
-          <Button onClick={handleApply} variant="primary">
+          <Button
+            onClick={handleApply}
+            variant="primary"
+            data-testid="contextual-layer-apply-button"
+          >
             Apply
           </Button>
         </div>

@@ -65,7 +65,7 @@ export type ImpactH3APIParams = CommonH3APIParams & {
   locationTypes?: string[];
 };
 
-export type ContextualH3APIParams = ImpactH3APIParams;
+export type ContextualH3APIParams = CommonH3APIParams;
 
 export type ImpactTabularAPIParams = {
   groupBy: string;

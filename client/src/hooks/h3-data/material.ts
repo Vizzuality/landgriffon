@@ -21,7 +21,7 @@ const useH3MaterialData = <T = H3APIResponse>(
   const filters = useAppSelector(analysisFilters);
   const { materialId, origins } = filters;
 
-  const { data: year } = useYears('material', [materialId], 'all', {
+  const { data: year } = useYears('material', [materialId], null, {
     enabled: !!materialId,
     select: (years) => years?.[years?.length - 1],
   });

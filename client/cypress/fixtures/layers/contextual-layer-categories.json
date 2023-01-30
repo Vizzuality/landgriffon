@@ -1,0 +1,160 @@
+{
+  "data": [
+    {
+      "category": "Environmental datasets",
+      "layers": [
+        {
+          "id": "86dfd6ee-ec5a-4412-b434-1f3aef20bd55",
+          "name": "UWU_T",
+          "metadata": {
+            "name": "Agriculture blue water footprint",
+            "legend": {
+              "id": "",
+              "min": 1.37,
+              "name": "Agriculture blue water footprint",
+              "type": "range",
+              "unit": "m3",
+              "items": [
+                {
+                  "color": "#0ffffb",
+                  "label": "",
+                  "value": 1000
+                },
+                {
+                  "color": "#00d8ec",
+                  "label": "",
+                  "value": 10000
+                },
+                {
+                  "color": "#00afd8",
+                  "label": "",
+                  "value": 1000000
+                },
+                {
+                  "color": "#0084be",
+                  "label": "",
+                  "value": 100000000
+                },
+                {
+                  "color": "#00559e",
+                  "label": "",
+                  "value": 10000000000
+                },
+                {
+                  "color": "#00187a",
+                  "label": "",
+                  "value": 2000000000000
+                }
+              ]
+            },
+            "source": "Water Footprint Network",
+            "$schema": "./contextual_metadata_schema.json",
+            "aggType": "sum",
+            "license": "CC BY 4.0",
+            "description": "Agriculture blue water footprint (m3) measures the volume of surface and groundwater consumed as result of the production of a agriculture good o service. Consumption refers to the volume of freshwater used and then evaporated or incorporated into a product. It also includes water abstracted from surface or groundwater in a catchemnt and returned to another catchment or the sea. It is the amount of water abstracted from groundwater or surface water that does not return to the catchment from which it was withdrawn."
+          },
+          "category": "Environmental datasets"
+        },
+        {
+          "id": "06655a49-ef76-4dad-aaa6-ec85b1b58adc",
+          "name": "aqueduct",
+          "metadata": {
+            "name": "Baseline water stress",
+            "legend": {
+              "id": "",
+              "min": -1,
+              "name": "Baseline water stress",
+              "type": "category",
+              "unit": null,
+              "items": [
+                {
+                  "color": "#e0e0e0",
+                  "label": "Arid and Low Water Use",
+                  "value": -1
+                },
+                {
+                  "color": "#ffff99",
+                  "label": "Low (<10%)",
+                  "value": 0
+                },
+                {
+                  "color": "#ffe600",
+                  "label": "Low - medium (10-20%)",
+                  "value": 1
+                },
+                {
+                  "color": "#ff9900",
+                  "label": "Medium - high (20-40%)",
+                  "value": 2
+                },
+                {
+                  "color": "#ff1900",
+                  "label": "High (40-80%)",
+                  "value": 3
+                },
+                {
+                  "color": "#cc0014",
+                  "label": "Extremely High (>80%)",
+                  "value": 4
+                }
+              ]
+            },
+            "source": "Hofste, R., S. Kuzma, S. Walker, E.H. Sutanudjaja, et. al. 2019. “Aqueduct 3.0: Updated DecisionRelevant Global Water Risk Indicators.” Technical Note. Washington, DC: World Resources Institute. Available online at: https://www.wri.org/publication/aqueduct-30",
+            "$schema": "./contextual_metadata_schema.json",
+            "aggType": "mode",
+            "license": "Creative Commons",
+            "description": "Baseline water stress measures the ratio of total water withdrawals to available renewable surface and groundwater supplies."
+          },
+          "category": "Environmental datasets"
+        }
+      ]
+    },
+    {
+      "category": "Social",
+      "layers": [
+        {
+          "id": "8badd621-038e-4e9c-8054-98eaba79f867",
+          "name": "HDI",
+          "metadata": {
+            "name": "Human Development Index",
+            "legend": {
+              "id": "",
+              "min": 0.394,
+              "name": "Human Development Index (HDI)",
+              "type": "range",
+              "unit": "",
+              "items": [
+                {
+                  "color": "#B30000",
+                  "label": "Low",
+                  "value": 0.546
+                },
+                {
+                  "color": "#E34A33",
+                  "label": "Medium",
+                  "value": 0.697
+                },
+                {
+                  "color": "#FC8D59",
+                  "label": "High",
+                  "value": 0.796
+                },
+                {
+                  "color": "#FDBB84",
+                  "label": "Very High",
+                  "value": 0.957
+                }
+              ]
+            },
+            "source": "https://hdr.undp.org/data-center/documentation-and-downloads",
+            "$schema": "./contextual_metadata_schema.json",
+            "aggType": "mode",
+            "license": "",
+            "description": "The HDI is a measure of human development."
+          },
+          "category": "Social"
+        }
+      ]
+    }
+  ]
+}

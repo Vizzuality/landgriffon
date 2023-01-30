@@ -1,13 +1,14 @@
 import { differenceInDays, format, formatDistanceToNowStrict } from 'date-fns';
 import { RadioGroup } from '@headlessui/react';
 import classNames from 'classnames';
-import Link from 'next/link';
 import { DatabaseIcon } from '@heroicons/react/outline';
 import { useMemo } from 'react';
 
 import ScenariosComparison from 'containers/scenarios/comparison';
-import { Anchor } from 'components/button';
+import { LinkAnchor } from 'components/button';
 import Pill from 'components/pill';
+import { usePermissions } from 'hooks/permissions';
+import { Permission } from 'hooks/permissions/enums';
 
 import type { Scenario } from '../types';
 
@@ -44,6 +45,9 @@ const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
     () => (updatedAt ? formatTimeAgo(new Date(updatedAt)) : null),
     [updatedAt],
   );
+
+  const { hasPermission } = usePermissions(scenario?.userId);
+  const canEdit = hasPermission(Permission.CAN_EDIT_SCENARIO);
 
   return (
     <div data-testid={`scenario-item-${scenario.id || 'null'}`}>
@@ -109,11 +113,14 @@ const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
                     </div>
                     {isSelected && (
                       <div>
-                        <Link href={`/data/scenarios/${scenario.id}/edit`}>
-                          <Anchor variant="white" size="xs">
-                            Edit
-                          </Anchor>
-                        </Link>
+                        <LinkAnchor
+                          href={`/data/scenarios/${scenario.id}/edit`}
+                          variant="white"
+                          size="xs"
+                          disabled={canEdit}
+                        >
+                          Edit
+                        </LinkAnchor>
                       </div>
                     )}
                   </div>

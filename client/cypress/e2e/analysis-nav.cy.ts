@@ -26,18 +26,21 @@ describe('Analysis navigation and common behaviors', () => {
     cy.url().should('contain', '/analysis/map');
 
     cy.get('[data-testid="mode-control-table"]').click();
+    cy.wait('@fetchImpactTable');
     cy.get('[data-testid="analysis-table"]', {
       timeout: 5000,
     }).should('be.visible');
     cy.url().should('contain', '/analysis/table');
 
     cy.get('[data-testid="mode-control-chart"]').click();
+    cy.wait('@fetchChartRanking');
     cy.get('[data-testid="analysis-charts"]', {
       timeout: 5000,
     }).should('be.visible');
     cy.url().should('contain', '/analysis/chart');
 
     cy.get('[data-testid="mode-control-map"]').click();
+    cy.wait('@fetchImpactMap');
     cy.get('[data-testid="analysis-map"]', {
       timeout: 5000,
     }).should('be.visible');

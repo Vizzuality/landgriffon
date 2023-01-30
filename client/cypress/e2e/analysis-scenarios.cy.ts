@@ -51,10 +51,11 @@ describe('Analysis and scenarios', () => {
   });
 
   it('users with "canCreateScenario" permission should be able to click add new scenario button', () => {
-    cy.intercept('/api/v1/users/me', { fixture: '/profiles/all-permissions.json' });
+    cy.intercept('/api/v1/users/me', { fixture: '/profiles/all-permissions.json' }).as('profile');
     cy.visit('/analysis/map');
+    cy.wait('@profile');
     cy.get('a[data-testid="create-scenario"]').click();
-    cy.wait(300);
+    cy.wait('@profile');
     cy.url().should('contain', '/data/scenarios/new');
   });
 

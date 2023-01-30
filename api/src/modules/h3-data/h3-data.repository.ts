@@ -11,7 +11,6 @@ import {
   LAYER_TYPES,
 } from 'modules/h3-data/h3-data.entity';
 import {
-  Inject,
   Injectable,
   Logger,
   NotFoundException,
@@ -72,7 +71,7 @@ export class H3DataRepository extends Repository<H3Data> {
         .from(`${h3TableName}`, 'h3')
         .getRawMany();
 
-      if (result === undefined) {
+      if (!result) {
         throw new Error();
       }
       return result;
@@ -123,10 +122,9 @@ export class H3DataRepository extends Repository<H3Data> {
 
   /** Retrieves single crop data by a given resolution
    *
-   * @param materialH3Data: H3 Data table and column name for a specific material
-   * @param resolution: An integer between 1 (min resolution) and 6 (max resolution).
    * Resolution validation done at route handler
    *
+   * @param yearsRequestParams
    */
 
   async getAvailableYearsForContextualLayer(yearsRequestParams: {
@@ -498,7 +496,7 @@ export class H3DataRepository extends Repository<H3Data> {
         // TODO "edge" case when sumDataWithoutScenario is 0, the result will always be 200%, pending to search for a more accurate formula by Elena
         aggregateExpression = `100 * ( ABS(${sumDataWitComparedScenario}) - ABS(${sumDataWithBaseScenario}) ) / ( ( ABS(${sumDataWitComparedScenario}) + ABS(${sumDataWithBaseScenario}) ) / 2 ) / ir.scaler `;
       } else {
-        aggregateExpression = `( ${sumDataWitComparedScenario} - ${sumDataWithBaseScenario} ) / ir.scaler `;
+        aggregateExpression = `( ${sumDataWithBaseScenario} - ${sumDataWitComparedScenario} ) / ir.scaler `;
       }
 
       baseQuery.addSelect(aggregateExpression, 'scaled_value');

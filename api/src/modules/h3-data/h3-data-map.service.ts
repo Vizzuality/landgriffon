@@ -130,17 +130,16 @@ export class H3DataMapService {
     }
 
     /**
-     * Type guard to avoid having a conditional check, otherwise TS cries
+     * Check if requested map's should show a relative magnitude
      */
-    const { relative } = getImpactMapDto as GetScenarioVsScenarioImpactMapDto &
-      GetActualVsScenarioImpactMapDto &
-      GetImpactMapDto;
+    const isRelative: boolean =
+      this.requestedComparisonIsRelative(getImpactMapDto);
 
     return this.constructH3MapResponse(
       impactMap.impactMap,
       impactMap.quantiles,
       indicator.unit,
-      relative,
+      isRelative,
       materialsH3DataYears,
     );
   }
@@ -246,5 +245,9 @@ export class H3DataMapService {
         ...(materialsH3DataYears.length ? { materialsH3DataYears } : {}),
       },
     };
+  }
+
+  private requestedComparisonIsRelative(getImpactDto: any): boolean {
+    return getImpactDto.relative ?? false;
   }
 }

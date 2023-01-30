@@ -1,8 +1,6 @@
 import * as request from 'supertest';
-import { dropH3DataMock } from './mocks/h3-data.mock';
 import {
   createImpactMapMockData,
-  deleteImpactMapMockData,
   ImpactMapMockData,
 } from './mocks/h3-impact-map.mock';
 import { setupTestUser } from '../../utils/userAuth';
@@ -12,12 +10,7 @@ import ApplicationManager, {
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 import { DataSource } from 'typeorm';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
-import {
-  clearEntityTables,
-  clearTestDataFromDatabase,
-} from '../../utils/database-test-helper';
-import { User } from 'modules/users/user.entity';
-import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { RELATIVE_UNIT_MAP_RESPONSE } from 'modules/h3-data/h3-data-map.service';
 
 /**
@@ -29,8 +22,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
   let dataSource: DataSource;
   let impactMapMockData: ImpactMapMockData;
   let jwtToken: string;
-
-  const fakeTable = 'faketable';
 
   beforeAll(async () => {
     testApplication = await ApplicationManager.init();
@@ -46,10 +37,6 @@ describe('H3 Data Module (e2e) - Impact map', () => {
   });
 
   afterAll(async () => {
-    await dropH3DataMock(dataSource, [fakeTable]);
-    await dropH3DataMock(dataSource, impactMapMockData.tablesToDrop);
-    await deleteImpactMapMockData(dataSource);
-    await clearEntityTables(dataSource, [User, SourcingRecord]);
     await clearTestDataFromDatabase(dataSource);
     await testApplication.close();
   });
@@ -479,18 +466,19 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a4fffffff', v: '-75.00' },
-          { h: '861203a5fffffff', v: '-125.00' },
-          { h: '861203a6fffffff', v: '50.00' },
-          { h: '861203a7fffffff', v: '150.00' },
+          { h: '861203a7fffffff', v: '-150.00' },
+          { h: '861203a6fffffff', v: '-50.00' },
+          { h: '861203a5fffffff', v: '125.00' },
+          { h: '861203a4fffffff', v: '75.00' },
         ]),
       );
+
       expect(response.body.metadata).toBeDefined();
       expect(response.body.metadata.unit).toEqual('tonnes');
       expect(
         toBeCloseToArray(
           response.body.metadata.quantiles,
-          [-125, -108.3335, -91.6665, 0, 83.333, 116.667, 150],
+          [-150, -116.667, -83.333, 0, 91.6665, 108.3335, 125],
           5,
         ),
       ).toBeTruthy();

@@ -12,9 +12,13 @@ import ApplicationManager, {
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 import { DataSource } from 'typeorm';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
-import { clearEntityTables } from '../../utils/database-test-helper';
+import {
+  clearEntityTables,
+  clearTestDataFromDatabase,
+} from '../../utils/database-test-helper';
 import { User } from 'modules/users/user.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
+import { RELATIVE_UNIT_MAP_RESPONSE } from 'modules/h3-data/h3-data-map.service';
 
 /**
  * Tests for the h3 impact map.
@@ -46,6 +50,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     await dropH3DataMock(dataSource, impactMapMockData.tablesToDrop);
     await deleteImpactMapMockData(dataSource);
     await clearEntityTables(dataSource, [User, SourcingRecord]);
+    await clearTestDataFromDatabase(dataSource);
     await testApplication.close();
   });
 
@@ -443,7 +448,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         ]),
       );
       expect(response.body.metadata).toBeDefined();
-      expect(response.body.metadata.unit).toEqual('tonnes');
+      expect(response.body.metadata.unit).toEqual(RELATIVE_UNIT_MAP_RESPONSE);
       expect(
         toBeCloseToArray(
           response.body.metadata.quantiles,
@@ -517,7 +522,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         ]),
       );
       expect(response.body.metadata).toBeDefined();
-      expect(response.body.metadata.unit).toEqual('tonnes');
+      expect(response.body.metadata.unit).toEqual(RELATIVE_UNIT_MAP_RESPONSE);
       expect(
         toBeCloseToArray(
           response.body.metadata.quantiles,

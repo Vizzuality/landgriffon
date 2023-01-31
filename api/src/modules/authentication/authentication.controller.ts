@@ -81,6 +81,15 @@ export class AuthenticationController {
   }
 
   /**
+   * @description: This endpoint is exclusively to validate requests sent to the tiler
+   *               service
+   */
+  @Get('validate-token')
+  async validateToken(): Promise<any> {
+    return { message: 'valid token' };
+  }
+
+  /**
    * @debt Make sure (and add e2e tests to check for regressions) that we
    * gracefully handle situations where a user's username has changed between
    * the time the JWT token being presented was issued and the attempt to

@@ -47,6 +47,11 @@
     "cachePort": "DB_CACHE_PORT",
     "cacheDatabase": "DB_CACHE_DATABASE"
   },
+
+  "tiler": {
+    "host": "TILER_HOST",
+    "port": "TILER_PORT"
+  },
   "fileUploads": {
     "sizeLimit": "FILE_SIZE_LIMIT",
     "storagePath": "FILE_STORAGE_PATH"

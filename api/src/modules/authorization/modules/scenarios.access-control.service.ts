@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 
 /**
- * @desciption: Service extending base AccessControl which receives a fresh request object from it each time.
+ * @description: Service extending base AccessControl which receives a fresh request object from it each time.
  *              Use this class ta perform user's specific authorisation over scenarios, based on roles/permissions
  */
 

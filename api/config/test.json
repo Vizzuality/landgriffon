@@ -9,6 +9,11 @@
     "logging": false,
     "cacheEnabled": false
   },
+
+  "tiler": {
+    "host": "localhost",
+    "port": 4000
+  },
   "server": {
     "loggerLevel": [
       "error",

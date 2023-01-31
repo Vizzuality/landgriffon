@@ -42,11 +42,14 @@ export class Scenario extends TimestampedBaseEntity {
   @Column({ nullable: true })
   description?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    type: 'boolean',
+    description: 'Make a Scenario public to all users',
+  })
   @Column({ type: 'boolean', default: false, nullable: false })
   isPublic!: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ enum: SCENARIO_STATUS })
   @Column({
     type: 'enum',
     enum: SCENARIO_STATUS,

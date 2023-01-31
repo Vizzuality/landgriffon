@@ -14,6 +14,11 @@
       "log"
     ]
   },
+
+  "tiler": {
+    "host": "localhost",
+    "port": 4000
+  },
   "auth": {
     "requireUserAccountActivation": false,
     "jwt": {

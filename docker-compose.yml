@@ -40,6 +40,24 @@ services:
       - postgresql
       - redis
 
+  tiler:
+    container_name: landgriffon-tiler
+    build:
+      context: ./tiler
+      args:
+        - TILER_TEST_COG_FILENAME=${TILER_TEST_COG_FILENAME}
+
+    env_file: ${ENVFILE}
+    environment:
+      - API_URL=${API_URL}
+      - API_PORT=${API_PORT}
+      - S3_BUCKET_URL=${S3_BUCKET_URL}
+    ports:
+      - "${TILER_SERVICE_PORT}:4000"
+    volumes:
+      - ./tiler:/opt/landgriffon-tiler/data/local-dev
+    restart: unless-stopped
+
   redis:
     build:
       context: ./redis

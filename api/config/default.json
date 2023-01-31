@@ -55,6 +55,12 @@
     "cacheHost": "localhost",
     "cacheDatabase": 3
   },
+
+  "tiler": {
+    "host": "localhost",
+    "port": 4000
+  },
+
   "fileUploads": {
     "sizeLimit": 8388608,
     "storagePath": "/tmp/csv-uploads"

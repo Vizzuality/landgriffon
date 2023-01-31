@@ -94,10 +94,10 @@ export const LegendItem = ({
           </div>
         )}
         {!isLoading && (
-          <div className="overflow-hidden">
+          <div className="space-y-2 overflow-hidden">
             {showComparisonModeToggle && isComparisonEnabled && <ComparisonToggle />}
             {children && (
-              <div className="flex justify-between w-full flex-row gap-2 text-gray-500">
+              <div className="flex flex-row justify-between w-full gap-2 text-gray-500">
                 <div className="flex-grow">{children}</div>
                 <div className="-mt-0.5 px text-2xs">{unit && `(${unit})`}</div>
               </div>

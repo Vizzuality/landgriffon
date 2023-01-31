@@ -8,7 +8,7 @@ case "$1" in
         ;;
     test)
         echo "Running Tests"
-        exec yarn test
+        exec yarn test:docker
         ;;
     build)
         echo "Build web application"

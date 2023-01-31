@@ -1,4 +1,4 @@
-FROM node:18.3-bullseye-slim
+FROM ubuntu:22.04
 
 ARG UID=5000
 ARG GID=5000
@@ -20,6 +20,11 @@ ENV NEXT_TELEMETRY_DISABLED 1
 ENV CYPRESS_USERNAME $CYPRESS_USERNAME
 ENV CYPRESS_PASSWORD $CYPRESS_PASSWORD
 ENV CYPRESS_API_URL $NEXT_PUBLIC_API_URL
+
+RUN apt update && apt install -y git curl
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash
+RUN apt update && apt install -y nodejs
+RUN npm i -g yarn
 
 RUN groupadd -g $GID $USER && adduser --uid $UID --gid $GID $USER
 

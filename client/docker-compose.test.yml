@@ -8,6 +8,7 @@ services:
         - NEXTAUTH_URL=http://localhost:3000
         - NEXTAUTH_SECRET=secret
         - NEXT_PUBLIC_MAPBOX_API_TOKEN=token
+        - NEXT_PUBLIC_API_URL=https://api.staging.landgriffon.com
     ports:
       - "3000:3000"
     container_name: landgriffon-client

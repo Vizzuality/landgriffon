@@ -102,7 +102,10 @@ describe('Intervention creation', () => {
 
     // selects a year
     cy.wait('@scenarioYears');
-    cy.get('[data-testid="startYear-select"]').click().find('input:visible').type('2017{enter}');
+    cy.get('[data-testid="startYear-select"]').type(
+      '{enter}{downArrow}{downArrow}{downArrow}{downArrow}{enter}',
+    );
+
     // selects the first intervention type: Switch to new material
     cy.get('[data-testid="intervention-type-option"]').first().click();
 
@@ -177,7 +180,9 @@ describe('Intervention creation', () => {
 
     // selects a year
     cy.wait('@scenarioYears');
-    cy.get('[data-testid="startYear-select"]').click().find('input:visible').type('2017{enter}');
+    cy.get('[data-testid="startYear-select"]').type(
+      '{enter}{downArrow}{downArrow}{downArrow}{downArrow}{enter}',
+    );
 
     // selects the first intervention type: Switch to new material
     cy.get('[data-testid="intervention-type-option"]').first().click();

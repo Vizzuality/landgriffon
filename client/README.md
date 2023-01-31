@@ -21,3 +21,16 @@ Run the development server:
 ```bash
 yarn dev
 ```
+### Running tests
+
+Run the tests locally:
+
+```bash
+yarn cypress:headless
+```
+
+Run the tests in a Dockerfile:
+
+```bash
+docker compose -f docker-compose.test.yml up --build --exit-code-from cypress --arg NEXT_PUBLIC_API_URL=https://apiUrl
+```

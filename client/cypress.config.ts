@@ -6,7 +6,6 @@ export default defineConfig({
     screenshotOnRunFailure: false,
     video: false,
     videoUploadOnPasses: false,
-    experimentalSessionAndOrigin: true,
     viewportWidth: 1280,
     viewportHeight: 920,
   },

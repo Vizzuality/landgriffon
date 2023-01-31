@@ -1,0 +1,32 @@
+version: "3.8"
+services:
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - NEXTAUTH_URL=http://localhost:3000
+        - NEXTAUTH_SECRET=secret
+        - NEXT_PUBLIC_MAPBOX_API_TOKEN=token
+    ports:
+      - "3000:3000"
+    container_name: landgriffon-client
+    command: start:prod
+    user: "5000:5000"
+    env_file: .env.local
+  # e2e/docker-compose.yml from repo
+  # https://github.com/bahmutov/cypress-open-from-docker-compose
+  # Cypress container
+  cypress:
+    # the Docker image to use from https://github.com/cypress-io/cypress-docker-images
+    image: "cypress/included:12.5.0"
+    depends_on:
+      - client
+    command: cypress run --browser chrome --headless
+    environment:
+      # pass base url to test pointing at the web application
+      - CYPRESS_baseUrl=http://client:3000
+    # share the current folder as volume to avoid copying
+    working_dir: /cypress
+    volumes:
+      - ./:/cypress

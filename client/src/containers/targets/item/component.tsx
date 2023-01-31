@@ -33,7 +33,7 @@ const TargetItem: React.FC<Target> = ({ id, name, years, unit }) => {
               variant="white"
               size="xs"
               onClick={openEditTargetModal}
-              // disabled
+              disabled
               className="h-8"
             >
               Edit

@@ -2,14 +2,18 @@ import { cloneElement, useCallback, useEffect, useMemo, useState } from 'react';
 import classnames from 'classnames';
 import { Transition, Combobox } from '@headlessui/react';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/solid';
-import { flip, useFloating, size } from '@floating-ui/react-dom';
+import { flip, useFloating, size, autoUpdate, offset } from '@floating-ui/react-dom';
 import { FloatingPortal } from '@floating-ui/react-dom-interactions';
+import { List as VirtualizedList } from 'react-virtualized';
 
 import Hint from 'components/forms/hint';
 import Loading from 'components/loading';
 
-import type { SelectProps, Option } from '../types';
+import type { AutoCompleteSelectProps } from './types';
+import type { Option } from '../types';
 import type { ChangeEvent } from 'react';
+
+const DEFAULT_ROW_HEIGHT = 36;
 
 const AutoCompleteSelect = <T = string,>({
   value,
@@ -19,35 +23,42 @@ const AutoCompleteSelect = <T = string,>({
   label,
   loading = false,
   placeholder = 'Select an option',
+  rowHeight = DEFAULT_ROW_HEIGHT,
   options,
   showHint,
+  onChange,
   ...props
-}: SelectProps<T>) => {
-  const { onChange, ...selectProps } = props;
-
+}: AutoCompleteSelectProps<T>) => {
+  const [virtualizedListWidth, setVirtualizedListWidth] = useState(0);
   const [selected, setSelected] = useState<Option<T> | Option<string>>(
     defaultValue || value || { label: '', value: '' },
   );
   const [query, setQuery] = useState('');
   const { x, y, reference, floating, strategy } = useFloating<HTMLButtonElement>({
     middleware: [
+      offset(5),
       flip(),
       size({
         apply({ elements }) {
-          const referenceWidth = elements.reference.getBoundingClientRect().width;
-          const floatingWidth = elements.floating.getBoundingClientRect().width;
+          const { width: referenceWidth } = elements.reference.getBoundingClientRect();
+          const { width: floatingWidth } = elements.floating.getBoundingClientRect();
+
+          const finalWidth = floatingWidth > referenceWidth ? floatingWidth : referenceWidth;
 
           Object.assign(elements.floating.style, {
-            width: `${floatingWidth > referenceWidth ? floatingWidth : referenceWidth}px`,
+            width: `${finalWidth}px`,
           });
+
+          setVirtualizedListWidth(finalWidth);
         },
       }),
     ],
     placement: 'bottom-start',
     strategy: 'fixed',
+    whileElementsMounted: autoUpdate,
   });
 
-  const handleChange = useCallback<SelectProps<T>['onChange']>(
+  const handleChange = useCallback<AutoCompleteSelectProps<T>['onChange']>(
     (current: Option<T>) => {
       if (onChange) onChange(current);
       setSelected(current);
@@ -70,6 +81,45 @@ const AutoCompleteSelect = <T = string,>({
     [options, query],
   );
 
+  const renderOption = useCallback(
+    ({ index, key, style }) => {
+      return (
+        <Combobox.Option
+          key={key}
+          style={style}
+          className={({ active, disabled }) =>
+            classnames(
+              'relative cursor-default text-sm select-none py-2 pl-3 pr-9 hover:cursor-pointer',
+              {
+                'bg-navy-50': active,
+                'pointer-events-none cursor-default': disabled,
+              },
+            )
+          }
+          value={filteredOptions[index]}
+          disabled={filteredOptions[index].disabled}
+        >
+          {({ selected, disabled }) => (
+            <div
+              className={classnames('block truncate text-gray-900', {
+                'text-navy-400': selected,
+                'text-gray-300': disabled,
+              })}
+            >
+              {filteredOptions[index].label}
+            </div>
+          )}
+        </Combobox.Option>
+      );
+    },
+    [filteredOptions],
+  );
+
+  const virtualizedListHeight = useMemo(() => {
+    if (!filteredOptions.length) return rowHeight;
+    return filteredOptions.length * rowHeight < 240 ? filteredOptions.length * rowHeight : 240;
+  }, [filteredOptions, rowHeight]);
+
   // ? in case the value is not set in the hook initialization, it will be set here after first render.
   useEffect(() => {
     if (value) setSelected(value);
@@ -81,7 +131,6 @@ const AutoCompleteSelect = <T = string,>({
         by="value"
         value={selected}
         onChange={handleChange}
-        // {...selectProps}
         disabled={props.disabled || loading}
       >
         {({ open }) => (
@@ -149,40 +198,20 @@ const AutoCompleteSelect = <T = string,>({
                 }}
                 ref={floating}
               >
-                <Combobox.Options className="mt-2 overflow-auto text-base bg-white rounded-md shadow-sm max-h-60 ring-1 ring-gray-200 focus:outline-none">
-                  {filteredOptions.length === 0 && query !== '' ? (
-                    <div className="relative px-4 py-2 text-sm text-gray-300 cursor-default select-none">
-                      No results
-                    </div>
-                  ) : (
-                    filteredOptions.map((option) => (
-                      <Combobox.Option
-                        key={`option-item-${option.value}`}
-                        className={({ active, disabled }) =>
-                          classnames(
-                            'relative cursor-default text-sm select-none py-2 pl-3 pr-9 hover:cursor-pointer',
-                            {
-                              'bg-navy-50': active,
-                              'pointer-events-none cursor-default': disabled,
-                            },
-                          )
-                        }
-                        value={option}
-                        disabled={option.disabled}
-                      >
-                        {({ selected, disabled }) => (
-                          <div
-                            className={classnames('block truncate text-gray-900', {
-                              'text-navy-400': selected,
-                              'text-gray-300': disabled,
-                            })}
-                          >
-                            {option.label}
-                          </div>
-                        )}
-                      </Combobox.Option>
-                    ))
-                  )}
+                <Combobox.Options>
+                  <VirtualizedList
+                    className="w-full overflow-auto text-base bg-white rounded-md shadow-sm max-h-60 ring-1 ring-gray-200 focus:outline-none"
+                    width={virtualizedListWidth}
+                    height={virtualizedListHeight}
+                    rowCount={filteredOptions.length}
+                    rowHeight={rowHeight}
+                    rowRenderer={renderOption}
+                    noRowsRenderer={() => (
+                      <div className="relative px-4 py-2 text-sm text-gray-300 cursor-default select-none">
+                        No results
+                      </div>
+                    )}
+                  />
                 </Combobox.Options>
               </Transition>
             </FloatingPortal>
@@ -196,6 +225,7 @@ const AutoCompleteSelect = <T = string,>({
     </div>
   );
 };
+
 AutoCompleteSelect.displayName = 'AutoCompleteSelect';
 
 export default AutoCompleteSelect;

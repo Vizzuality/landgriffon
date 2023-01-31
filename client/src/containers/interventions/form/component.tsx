@@ -631,7 +631,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                 <Select<number>
                   {...omit(field, 'ref')}
                   id="startYear"
-                  // showSearch
                   defaultValue={value}
                   options={optionsYears}
                   placeholder="Select a year"

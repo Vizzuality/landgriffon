@@ -21,10 +21,9 @@ const Select = <T = string,>({
   options,
   placeholder = 'Select an option',
   showHint,
+  onChange,
   ...props
 }: SelectProps<T>) => {
-  const { onChange, ...selectProps } = props;
-
   const [selected, setSelected] = useState<Option<T> | Option<string>>(
     defaultValue || value || { label: '', value: '' },
   );
@@ -65,7 +64,6 @@ const Select = <T = string,>({
         by="value"
         value={selected}
         onChange={handleChange}
-        // {...selectProps}
         disabled={props.disabled || loading}
       >
         {({ open }) => (

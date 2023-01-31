@@ -8,7 +8,7 @@ case "$1" in
         ;;
     test)
         echo "Running Tests"
-        exec yarn cypress:run
+        exec yarn test
         ;;
     build)
         echo "Build web application"

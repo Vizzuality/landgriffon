@@ -1,5 +1,4 @@
-FROM node:18.12.1-alpine3.16
-LABEL maintainer="hello@vizzuality.com"
+FROM node:18.3-bullseye-slim
 
 ARG UID=5000
 ARG GID=5000
@@ -22,8 +21,7 @@ ENV CYPRESS_USERNAME $CYPRESS_USERNAME
 ENV CYPRESS_PASSWORD $CYPRESS_PASSWORD
 ENV CYPRESS_API_URL $NEXT_PUBLIC_API_URL
 
-RUN apk add --no-cache libc6-compat git
-RUN addgroup -g $GID $USER && adduser -u $UID -D -G $USER $USER
+RUN groupadd -g $GID $USER && adduser --uid $UID --gid $GID $USER
 
 WORKDIR $APP_HOME
 RUN chown $USER:$USER $APP_HOME
@@ -37,11 +35,10 @@ RUN yarn install --immutable
 # NextJS project folders
 COPY --chown=$USER:$USER src ./src
 COPY --chown=$USER:$USER public ./public
-COPY --chown=$USER:$USER cypress ./cypress
 
-# NextJS config files
+# NextJS required files
 COPY --chown=$USER:$USER next.config.js next-env.d.ts local.d.ts \
-	postcss.config.js tailwind.config.js cypress.config.ts entrypoint.sh \
+	postcss.config.js tailwind.config.js entrypoint.sh \
 	tsconfig.json .browserlistrc .eslintrc.js .prettierrc.json ./
 
 RUN yarn build

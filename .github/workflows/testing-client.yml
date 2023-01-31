@@ -11,19 +11,19 @@ env:
 jobs:
   testing-client:
     name: Running client tests
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 15
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Use Node.js 16.15
-        uses: actions/setup-node@v2
+      - name: Use Node.js 18.13
+        uses: actions/setup-node@v3
         with:
-          node-version: '16.15'
+          node-version: '18.13'
 
       - name: Cypress run
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v5
         with:
           working-directory: client
           install-command: yarn install --immutable
@@ -33,7 +33,7 @@ jobs:
           wait-on: http://localhost:3000/auth/signin
           config-file: cypress.config.ts
           command-prefix: yarn dlx
-          command: yarn cypress:headless
+          command: "yarn cypress:headless"
         env:
           NEXT_PUBLIC_MAPBOX_API_TOKEN: ${{ secrets.NEXT_PUBLIC_MAPBOX_API_TOKEN }}
           NEXT_PUBLIC_API_URL: ${{ secrets.CYPRESS_API_URL }}

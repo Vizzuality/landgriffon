@@ -6,6 +6,7 @@ const nextConfig = {
     dirs: ['src'],
   },
   swcMinify: false,
+  output: 'standalone',
   redirects() {
     return [
       {

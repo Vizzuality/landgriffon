@@ -20,10 +20,8 @@ export const useYears = <T = YearsData>(
   materialIds: Material['id'][],
   indicatorId: Indicator['id'],
   options: UseQueryOptions<YearsData, unknown, T> = {},
-) => {
-  const enabled = (options.enabled ?? true) && !!indicatorId;
-
-  const query = useQuery(
+) =>
+  useQuery(
     ['years', layer, materialIds, indicatorId],
     () =>
       apiRawService
@@ -40,9 +38,5 @@ export const useYears = <T = YearsData>(
     {
       ...DEFAULT_QUERY_OPTIONS,
       ...options,
-      enabled,
     },
   );
-
-  return query;
-};

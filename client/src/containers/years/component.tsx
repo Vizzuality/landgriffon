@@ -13,7 +13,9 @@ const YearsFilter: React.FC = () => {
   const { layer, materials, indicator, startYear } = filters;
 
   const materialsIds = useMemo(() => materials.map((mat) => mat.value), [materials]);
-  const { data: years, isLoading } = useYears(layer, materialsIds, indicator?.value);
+  const { data: years, isLoading } = useYears(layer, materialsIds, indicator?.value, {
+    enabled: !!(layer === 'impact' && indicator?.value) || true,
+  });
   const [selectedOption, setSelectedOption] = useState<SelectProps['value']>(null);
 
   useEffect(() => {

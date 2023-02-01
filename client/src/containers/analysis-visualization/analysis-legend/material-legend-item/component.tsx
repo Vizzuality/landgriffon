@@ -97,6 +97,7 @@ const MaterialLayer = () => {
 
   const handleHideLayer = useCallback(() => {
     dispatch(setLayer({ id: layer.id, layer: { visible: false } }));
+    dispatch(setFilter({ id: 'materialId', value: null }));
   }, [dispatch, layer.id]);
 
   return (

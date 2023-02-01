@@ -96,7 +96,7 @@ export class ScenariosController {
       }),
     ),
   })
-  @UserOwnsScenario({ isPublic: true })
+  @UserOwnsScenario({ bypassIfScenarioIsPublic: true })
   @Get(':id')
   async findOne(
     @Param('id') id: string,
@@ -116,7 +116,7 @@ export class ScenariosController {
   @ApiOkResponse({ type: Scenario })
   @ApiNotFoundResponse({ description: 'Scenario not found' })
   @JSONAPISingleEntityQueryParams()
-  @UserOwnsScenario({ isPublic: true })
+  @UserOwnsScenario({ bypassIfScenarioIsPublic: true })
   @Get(':id/interventions')
   async findInterventionsByScenario(
     @Param('id') id: string,

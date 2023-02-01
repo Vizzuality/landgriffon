@@ -14,7 +14,7 @@ import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 
 interface ScenarioCheckWhiteListOptions {
-  isPublic: boolean;
+  bypassIfScenarioIsPublic: boolean;
 }
 
 const SCENARIO_CHECK_METADATA_KEY: string = 'scenarioChecks';
@@ -42,7 +42,7 @@ export class ScenarioOwnershipInterceptor implements NestInterceptor {
     }
     let isPublic: boolean = false;
     const isOwned: boolean = await this.scenarioAcl.ownsScenario(scenarioId);
-    if (additionalChecks?.isPublic) {
+    if (additionalChecks?.bypassIfScenarioIsPublic) {
       isPublic = await this.scenarioAcl.isScenarioPublic(scenarioId);
     }
 
@@ -53,11 +53,9 @@ export class ScenarioOwnershipInterceptor implements NestInterceptor {
   }
 }
 
-export function UserOwnsScenario(
-  whiteListIf?: ScenarioCheckWhiteListOptions,
-): any {
+export function UserOwnsScenario(options?: ScenarioCheckWhiteListOptions): any {
   return applyDecorators(
-    SetMetadata(SCENARIO_CHECK_METADATA_KEY, whiteListIf),
+    SetMetadata(SCENARIO_CHECK_METADATA_KEY, options),
     UseInterceptors(ScenarioOwnershipInterceptor),
   );
 }

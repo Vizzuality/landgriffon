@@ -1,4 +1,4 @@
-import { SelectQueryBuilder, TreeRepository } from 'typeorm';
+import { ObjectLiteral, SelectQueryBuilder, TreeRepository } from 'typeorm';
 import { isEqual } from 'lodash';
 import { Logger, ServiceUnavailableException } from '@nestjs/common';
 import { camelToSnake } from 'utils/helpers/camel-to-underscore.helper';
@@ -12,7 +12,7 @@ export interface FindTreesWithOptionsArgs {
 }
 
 export class ExtendedTreeRepository<
-  Entity,
+  Entity extends ObjectLiteral,
   CreateDto extends { parent?: Entity },
 > extends TreeRepository<Entity> {
   logger: Logger = new Logger(this.constructor.name);
@@ -21,7 +21,7 @@ export class ExtendedTreeRepository<
    * @description: Returns a flat array of given elements Ids ancestry up to the root
    *
    */
-  async getEntityAncestry<Entity>(
+  async getEntityAncestry<Entity extends ObjectLiteral>(
     queryBuilder: SelectQueryBuilder<Entity>,
     entityName: string,
   ): Promise<Entity[]> {

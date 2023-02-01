@@ -97,6 +97,33 @@ export class AdminRegionsController {
     return this.adminRegionsService.serialize(results);
   }
 
+  @ApiOperation({
+    description:
+      'Find all admin regions given a country and return data in a tree format. Data in the "children" will recursively extend for the full depth of the tree',
+  })
+  @ApiOkTreeResponse({
+    treeNodeType: AdminRegion,
+  })
+  @ApiNotFoundResponse({ description: 'Admin region not found' })
+  @ApiUnauthorizedResponse()
+  @Get(':countryId/regions')
+  async findRegionsByCountry(
+    @Param('countryId') countryId: string,
+  ): Promise<AdminRegion[]> {
+    const foundCountry: AdminRegion =
+      await this.adminRegionsService.getAdminRegionById(countryId, {
+        isCountry: true,
+      });
+    return this.adminRegionsService.serialize(
+      await this.adminRegionsService.getAdminRegionDescendants(
+        [foundCountry.id],
+        {
+          treeResponse: true,
+        },
+      ),
+    );
+  }
+
   @ApiOperation({ description: 'Find admin region by id' })
   @ApiOkResponse({ type: AdminRegion })
   @ApiNotFoundResponse({ description: 'Admin region not found' })

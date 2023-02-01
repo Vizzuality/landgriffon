@@ -10,7 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [v0.3.6]
 
 ### Added
+- Added disabled option styles for single and autocomplete selects. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
+- Added DOM virtualization (with `react-virtualized`) to autocomplete select to avoid lagging and low performance. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
+- Added new select components: single and autocomplete, based on `headless-ui` and `floating-ui` libraries. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
 - Added new location types coming from API and region handling. [LANDGRIF-1143](https://vizzuality.atlassian.net/browse/LANDGRIF-1143)
+- Added a end year field in the intervention form [LANDGRIF-1113](https://vizzuality.atlassian.net/browse/LANDGRIF-1113)
+- Added a volume field in the intervention form [LANDGRIF-1112](https://vizzuality.atlassian.net/browse/LANDGRIF-1112)
 - Added `*` to Type of Intervention title to indicate the selection is mandatory. Also, a hint when it is not selected. [LANDGRIF-1142](https://vizzuality.atlassian.net/browse/LANDGRIF-1142)
 - New hook to check user role and permissions [LANDGRIF-1123](https://vizzuality.atlassian.net/browse/LANDGRIF-1123)
 - Switch to toggle layers from the legend itself [LANDGRIF-991](https://vizzuality.atlassian.net/browse/LANDGRIF-991)
@@ -20,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 - Bumps `react-hook-form` fixing several validation issues. [LANDGRIF-1142](https://vizzuality.atlassian.net/browse/LANDGRIF-1142)
 - Bumps `browserslist-db` dependency.
+- Updated `prettier` and its dependencies [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
 - Show the scenario name in the charts [LANDGRIF-1116](https://vizzuality.atlassian.net/browse/LANDGRIF-1116)
 - Move the users page from data to user [LANDGRIF-1122](https://vizzuality.atlassian.net/browse/LANDGRIF-1122)
 
@@ -28,12 +34,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Fixed condition to fetch available years for material layer. [LANDGRIF-1141](https://vizzuality.atlassian.net/browse/LANDGRIF-1141)
 - Undefined `endYear` value sent to API regardless being deactivated. [LANDGRIF-1145](https://vizzuality.atlassian.net/browse/LANDGRIF-1145)
 - Undefined value of coefficients. [LANDGRIF-1142](https://vizzuality.atlassian.net/browse/LANDGRIF-1142)
+- Fixed several warnings involving missing references and ids through SSR. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
+- Fixed margin in map legend [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
+- Profile page requires to be logged
 - Disable the filter in the manage data page [LANDGRIF-1110](https://vizzuality.atlassian.net/browse/LANDGRIF-1110)
 - Disable action buttons in the targets page [LANDGRIF-1109](https://vizzuality.atlassian.net/browse/LANDGRIF-1109)
 - Profile page requires to be logged
 - Contextual layers request are not including `indicatorId` param [LANDGRIF-1134](https://vizzuality.atlassian.net/browse/LANDGRIF-1134)
 - Contextual layers should render in resolution 4 [LANDGRIF-1130](https://vizzuality.atlassian.net/browse/LANDGRIF-1130)
 
+### Removed
+- Removed `components/select` and `react-select` library. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
 
 ## [v0.3.5]
 

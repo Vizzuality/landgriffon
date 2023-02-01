@@ -288,4 +288,58 @@ describe('AdminRegions - Get trees', () => {
       ).toBe(undefined);
     },
   );
+  test('When I want to get regions given a country, but the admin-region received is not a country, then I should see an error', async () => {
+    const notACountry: AdminRegion = await createAdminRegion({
+      level: 1,
+      name: 'not a country',
+    });
+
+    const response = await request(testApplication.getHttpServer())
+      .get(`/api/v1/admin-regions/${notACountry.id}/regions`)
+      .set('Authorization', `Bearer ${jwtToken}`);
+
+    expect(response.body.errors[0].title).toEqual(
+      `Admin region with ID "${notACountry.id}" not found`,
+    );
+  });
+  test('When I want to get regions given a country, I should receive the regions that are within said country', async () => {
+    const country1: AdminRegion = await createAdminRegion({
+      name: 'country1',
+      level: 0,
+    });
+    const country2: AdminRegion = await createAdminRegion({
+      name: 'country2',
+      level: 0,
+    });
+    const region1: AdminRegion = await createAdminRegion({
+      name: 'region1',
+      parent: country1,
+    });
+    await createAdminRegion({
+      name: 'regionw',
+      parent: country1,
+    });
+    const subregion1 = await createAdminRegion({
+      name: 'subregion1',
+      parent: region1,
+    });
+    await createAdminRegion({
+      name: 'subregion2',
+      parent: country2,
+    });
+
+    const response = await request(testApplication.getHttpServer())
+      .get(`/api/v1/admin-regions/${country1.id}/regions`)
+      .set('Authorization', `Bearer ${jwtToken}`);
+
+    expect(response.body.data[0].id).toEqual(country1.id);
+    expect(response.body.data[0].attributes.children).toHaveLength(2);
+    expect(response.body.data[0].attributes.children[0].id).toEqual(region1.id);
+    expect(response.body.data[0].attributes.children[0].children).toHaveLength(
+      1,
+    );
+    expect(response.body.data[0].attributes.children[0].children[0].id).toEqual(
+      subregion1.id,
+    );
+  });
 });

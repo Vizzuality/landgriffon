@@ -2,7 +2,6 @@ import {
   forwardRef,
   Inject,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import {
@@ -26,6 +25,7 @@ import { BusinessUnitsService } from 'modules/business-units/business-units.serv
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { SelectQueryBuilder } from 'typeorm';
+import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 
 @Injectable()
 export class AdminRegionsService extends AppBaseService<
@@ -66,10 +66,25 @@ export class AdminRegionsService extends AppBaseService<
     };
   }
 
-  async getAdminRegionById(id: string): Promise<AdminRegion> {
-    const found: AdminRegion | null = await this.adminRegionRepository.findOne({
-      where: { id },
-    });
+  /**
+   * @description: Retrieves a Admin Region given its Id with optional parameters
+   * @param id
+   * @param {Object} [options] - Additional search options
+   * @param {boolean} [options.isCountry] - Flag to find a country level admin-region given an ID. Defaults to false
+   *
+   */
+  async getAdminRegionById(
+    id: string,
+    options?: { isCountry: boolean },
+  ): Promise<AdminRegion> {
+    const findOptions: FindOneOptions<AdminRegion> = { where: { id } };
+    if (options?.isCountry) {
+      // document
+      findOptions.where = { ...findOptions.where, level: 0 };
+    }
+    const found: AdminRegion | null = await this.adminRegionRepository.findOne(
+      findOptions,
+    );
 
     if (!found) {
       throw new NotFoundException(`Admin region with ID "${id}" not found`);
@@ -213,25 +228,40 @@ export class AdminRegionsService extends AppBaseService<
   }
 
   /**
-   * @description: Returns a flat array of all children of given Admin Region's Id
-   *               Optionally return full entities, or Ids
-   */
-
+   * @description: Returns an array of all children of given Admin Region's Ids with optional parameters
+   * @param {string[]} adminRegionIds - The IDs of the admin regions.
+   * @param {Object} [options] - Optional find options.
+   * @param {boolean} [options.fullEntities] - A flag indicating whether to return the full entities or just the IDs. S
+   * the [options.treeResponse] flag
+   * @param {boolean} [options.treeResponse] - A flag indicating whether to return the response in tree format. This options overrides fullEntities option
+   * @returns {Promise<any>} The promise that resolves to the descendants of the admin regions.
+   **/
   // TODO: Add proper return typing to support retrieving entities or Ids
   async getAdminRegionDescendants(
     adminRegionIds: string[],
-    options?: { fullEntities: boolean },
+    options?: { fullEntities?: boolean; treeResponse?: boolean },
   ): Promise<any> {
-    // using type casting not to search for and provide the full entity, since only id is used by the method (to improve performance)
+    // using type casting not to search for and r
+    //provide the full entity, since only id is used by the method (to improve performance)
     let adminRegions: AdminRegion[] = [];
+
     for (const id of adminRegionIds) {
-      const result: AdminRegion[] =
-        await this.adminRegionRepository.findDescendants({
-          id,
-        } as AdminRegion);
-      adminRegions = [...adminRegions, ...result];
+      if (options?.treeResponse) {
+        const result: AdminRegion =
+          await this.adminRegionRepository.findDescendantsTree({
+            id,
+          } as AdminRegion);
+        adminRegions.push(result);
+      } else {
+        const result: AdminRegion[] =
+          await this.adminRegionRepository.findDescendants({
+            id,
+          } as AdminRegion);
+
+        adminRegions = [...adminRegions, ...result];
+      }
     }
-    if (options?.fullEntities) {
+    if (options?.fullEntities || options?.treeResponse) {
       return adminRegions;
     }
 

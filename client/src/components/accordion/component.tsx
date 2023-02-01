@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState, useMemo } from 'react';
 
 import type { HTMLAttributes } from 'react';
 
+console.log('this is a test');
+
 type AccordionEntryProps = React.PropsWithChildren<{
   header: React.ReactNode;
   expanded?: boolean;

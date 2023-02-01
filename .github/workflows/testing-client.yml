@@ -2,6 +2,9 @@ name: Client Tests
 
 on:
   push:
+    paths:
+      - 'client/**'
+
 
   workflow_dispatch:
 

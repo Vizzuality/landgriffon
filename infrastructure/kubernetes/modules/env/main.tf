@@ -94,6 +94,10 @@ module "k8s_api" {
     {
       name  = "REQUIRE_USER_ACCOUNT_ACTIVATION"
       value = "true"
+    },
+    {
+      name = "USE_NEW_METHODOLOGY"
+      value = "true"
     }
   ])
 

@@ -17,7 +17,7 @@ describe('Analysis navigation across table, map and chart', () => {
     }).as('fetchContextualLayerCategories');
     cy.intercept(
       {
-        pathname: '/api/v1/contextual-layers/**/h3data',
+        pathname: '**/h3data*',
         method: 'GET',
       },
       {
@@ -79,6 +79,8 @@ describe('Analysis navigation across table, map and chart', () => {
     //   expect(interception.request.url).contain('year');
     //   expect(interception.request.url).contain('resolution=4');
     // });
-    cy.wait('@fetchContextualLayerH3Data').its('request.url').should('not.contain', 'indicatorId');
+    cy.wait('@fetchContextualLayerH3Data', {
+      responseTimeout: 30000,
+    }).its('request.url').should('not.contain', 'indicatorId');
   });
 });

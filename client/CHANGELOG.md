@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [v0.4.0 Unreleased]
 
+## [v0.3.6]
+
 ### Added
 
 - Switch to toggle layers from the legend itself [LANDGRIF-991](https://vizzuality.atlassian.net/browse/LANDGRIF-991)

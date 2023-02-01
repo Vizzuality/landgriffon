@@ -41,8 +41,8 @@ const MaterialSettings = ({
   );
 
   const handleMaterialChange = useCallback(
-    (material: Option | null) => {
-      onChangeMaterial((material?.value as string) || null);
+    (material: Option<string> | null) => {
+      onChangeMaterial(material?.value || null);
     },
     [onChangeMaterial],
   );

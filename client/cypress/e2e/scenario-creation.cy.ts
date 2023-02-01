@@ -5,6 +5,8 @@ beforeEach(() => {
     statusCode: 201,
     fixture: 'scenario/scenario-creation',
   }).as('scenarioCreation');
+
+  cy.intercept('api/v1/users/me', { fixture: 'profiles/all-permissions' }).as('profile');
 });
 
 afterEach(() => {

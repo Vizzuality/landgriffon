@@ -15,16 +15,30 @@ describe('Analysis navigation across table, map and chart', () => {
     cy.intercept('GET', '/api/v1/contextual-layers/categories', {
       fixture: 'layers/contextual-layer-categories.json',
     }).as('fetchContextualLayerCategories');
-    cy.intercept(
-      {
-        pathname: '**/h3data*',
-        method: 'GET',
-      },
-      {
-        fixture: 'layers/contextual-layer.json',
-      },
-    ).as('fetchContextualLayerH3Data');
+    cy.intercept('GET', '/api/v1/contextual-layers/**/h3data?*', {
+      fixture: 'layers/contextual-layer.json',
+    }).as('fetchContextualLayerH3Data');
     cy.login();
+  });
+
+  it('contextual layer request does not include indicatorId as param', () => {
+    cy.visit('/analysis/map');
+    cy.wait('@fetchIndicators');
+    cy.wait('@fetchContextualLayerCategories');
+    cy.get('[data-testid="contextual-layer-modal-toggle"]').click();
+    cy.get('[data-testid="category-header-Environmental datasets"]').click();
+    cy.get('[data-testid="layer-settings-item-Agriculture blue water footprint"]')
+      .find('[data-testid="switch-button"]')
+      .click();
+    cy.get('[data-testid="contextual-layer-apply-button"').click();
+    cy.wait(500);
+
+    // cy.wait('@fetchContextualLayerH3Data').then((interception) => {
+    //   expect(interception.request.url).not.to.contain('indicatorId');
+    //   expect(interception.request.url).contain('year');
+    //   expect(interception.request.url).contain('resolution=4');
+    // });
+    cy.wait('@fetchContextualLayerH3Data').its('request.url').should('not.contain', 'indicatorId');
   });
 
   it('should load the charts', () => {
@@ -61,26 +75,5 @@ describe('Analysis navigation across table, map and chart', () => {
       timeout: 5000,
     }).should('be.visible');
     cy.url().should('contain', '/analysis/map');
-  });
-
-  it('contextual layer request does not include indicatorId as param', () => {
-    cy.visit('/analysis/map');
-    cy.wait('@fetchIndicators');
-    cy.wait('@fetchContextualLayerCategories');
-    cy.get('[data-testid="contextual-layer-modal-toggle"]').click();
-    cy.get('[data-testid="category-header-Environmental datasets"]').click();
-    cy.get('[data-testid="layer-settings-item-Agriculture blue water footprint"]')
-      .find('[data-testid="switch-button"]')
-      .click();
-    cy.get('[data-testid="contextual-layer-apply-button"').click();
-
-    // cy.wait('@fetchContextualLayerH3Data').then((interception) => {
-    //   expect(interception.request.url).not.to.contain('indicatorId');
-    //   expect(interception.request.url).contain('year');
-    //   expect(interception.request.url).contain('resolution=4');
-    // });
-    cy.wait('@fetchContextualLayerH3Data', {
-      responseTimeout: 30000,
-    }).its('request.url').should('not.contain', 'indicatorId');
   });
 });

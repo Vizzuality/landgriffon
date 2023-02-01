@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Move the users page from data to user [LANDGRIF-1122](https://vizzuality.atlassian.net/browse/LANDGRIF-1122)
 
 ### Fixed
+- Fixed condition to fetch available years for material layer. [LANDGRIF-1141](https://vizzuality.atlassian.net/browse/LANDGRIF-1141)
 - Undefined `endYear` value sent to API regardless being deactivated. [LANDGRIF-1145](https://vizzuality.atlassian.net/browse/LANDGRIF-1145)
 - Undefined value of coefficients. [LANDGRIF-1142](https://vizzuality.atlassian.net/browse/LANDGRIF-1142)
 - Disable the filter in the manage data page [LANDGRIF-1110](https://vizzuality.atlassian.net/browse/LANDGRIF-1110)

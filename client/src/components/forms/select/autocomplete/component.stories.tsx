@@ -1,11 +1,12 @@
 import Component from './component';
 
-import type { SelectProps, Option } from './types';
+import type { AutoCompleteSelectProps } from './types';
+import type { Option } from '../types';
 
 const data: Option<number>[] = [
   { value: 1, label: 'Wade Cooper' },
-  { value: 2, label: 'Arlene Mccoy' },
-  { value: 3, label: 'Devon Webb', disabled: true },
+  { value: 2, label: 'Arlene Mccoy', disabled: true },
+  { value: 3, label: 'Devon Webb' },
   { value: 4, label: 'Tom Cook' },
   { value: 5, label: 'Tanya Fox' },
   { value: 6, label: 'Hellen Schmidt', disabled: true },
@@ -38,17 +39,10 @@ export default {
   },
 };
 
-const Template = (args: SelectProps<number>) => {
+const Template = (args: AutoCompleteSelectProps<number>) => {
   return (
-    <Component<number>
-      {...args}
-      error={args.error ? 'This is an example of error message' : null}
-      name="people"
-      id="mySelect"
-      options={data}
-      placeholder="Select an person"
-    />
+    <Component<number> {...args} name="people" options={data} placeholder="Select an person" />
   );
 };
 
-export const SimpleSelect = Template.bind({});
+export const AutoCompleteSelect = Template.bind({});

@@ -31,6 +31,7 @@ import { ActualVsScenarioImpactService } from 'modules/impact/comparison/actual-
 import { SetScenarioIdsInterceptor } from 'modules/impact/set-scenario-ids.interceptor';
 import { ScenarioVsScenarioImpactService } from 'modules/impact/comparison/scenario-vs-scenario.service';
 import { ScenarioVsScenarioPaginatedImpactTable } from 'modules/impact/dto/response-scenario-scenario.dto';
+import { IndicatorsService } from 'modules/indicators/indicators.service';
 
 @Controller('/api/v1/impact')
 @ApiTags('Impact')
@@ -40,6 +41,7 @@ export class ImpactController {
     private readonly impactService: ImpactService,
     private readonly actualVsScenarioImpactService: ActualVsScenarioImpactService,
     private readonly scenarioVsScenarioService: ScenarioVsScenarioImpactService,
+    private readonly indicatorService: IndicatorsService,
   ) {}
 
   @ApiOperation({
@@ -55,6 +57,9 @@ export class ImpactController {
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
     @Query(ValidationPipe) impactTableDto: GetImpactTableDto,
   ): Promise<PaginatedImpactTable> {
+    await this.indicatorService.checkActiveIndicatorsForCalculations(
+      impactTableDto.indicatorIds,
+    );
     return await this.impactService.getImpactTable(
       impactTableDto,
       fetchSpecification,
@@ -75,6 +80,9 @@ export class ImpactController {
     @Query(ValidationPipe)
     scenarioVsScenarioImpactTableDto: GetScenarioVsScenarioImpactTableDto,
   ): Promise<ScenarioVsScenarioPaginatedImpactTable> {
+    await this.indicatorService.checkActiveIndicatorsForCalculations(
+      scenarioVsScenarioImpactTableDto.indicatorIds,
+    );
     return await this.scenarioVsScenarioService.getScenarioVsScenarioImpactTable(
       scenarioVsScenarioImpactTableDto,
       fetchSpecification,
@@ -94,10 +102,13 @@ export class ImpactController {
   async getActualVsScenarioImpactTable(
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
     @Query(ValidationPipe)
-    actualvsScenarioImpactTableDto: GetActualVsScenarioImpactTableDto,
+    actualVsScenarioImpactTableDto: GetActualVsScenarioImpactTableDto,
   ): Promise<PaginatedImpactTable> {
+    await this.indicatorService.checkActiveIndicatorsForCalculations(
+      actualVsScenarioImpactTableDto.indicatorIds,
+    );
     return await this.actualVsScenarioImpactService.getActualVsScenarioImpactTable(
-      actualvsScenarioImpactTableDto,
+      actualVsScenarioImpactTableDto,
       fetchSpecification,
     );
   }
@@ -116,6 +127,9 @@ export class ImpactController {
   async getRankedImpactTable(
     @Query(ValidationPipe) rankedImpactTableDto: GetRankedImpactTableDto,
   ): Promise<ImpactTable> {
+    await this.indicatorService.checkActiveIndicatorsForCalculations(
+      rankedImpactTableDto.indicatorIds,
+    );
     return await this.impactService.getRankedImpactTable(rankedImpactTableDto);
   }
 }

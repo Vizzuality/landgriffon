@@ -10,6 +10,7 @@ import {
 } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 import {
   Indicator,
+  INDICATOR_STATUS,
   INDICATOR_TYPES_NEW,
 } from 'modules/indicators/indicator.entity';
 import { DataSource } from 'typeorm';
@@ -117,7 +118,9 @@ export class ImpactCalculator {
     }
 
     const indicatorsToCalculateImpactFor: Indicator[] =
-      await this.indicatorService.findAllUnpaginated();
+      await this.indicatorService.findAllIndicators({
+        status: INDICATOR_STATUS.ACTIVE,
+      });
     let rawData: IndicatorRawDataBySourcingRecord =
       new IndicatorRawDataBySourcingRecord();
 

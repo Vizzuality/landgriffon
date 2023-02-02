@@ -56,7 +56,7 @@ describe('Indicators - Status (Integration Tests', () => {
     );
 
     const allIndicators: Indicator[] =
-      await indicatorService.findAllUnpaginated();
+      await indicatorService.findAllIndicators();
     const actives: Indicator[] = allIndicators.filter(
       (i: Indicator) => i.status === INDICATOR_STATUS.ACTIVE,
     );
@@ -105,7 +105,7 @@ describe('Indicators - Status (Integration Tests', () => {
     await indicatorService.deactivateAllIndicators();
 
     const allIndicators: Indicator[] =
-      await indicatorService.findAllUnpaginated();
+      await indicatorService.findAllIndicators();
     allIndicators.forEach((i: Indicator) =>
       expect(i.status).toEqual(INDICATOR_STATUS.INACTIVE),
     );

@@ -9,6 +9,7 @@ export const enum LocationTypes {
   aggregationPoint = 'production-aggregation-point',
   pointOfProduction = 'point-of-production',
   countryOfProduction = 'country-of-production',
+  countryOfDelivery = 'country-of-delivery',
 }
 
 export enum LocationStatus {

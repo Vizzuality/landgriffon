@@ -5,6 +5,7 @@ import { apiRawService } from 'services/api';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import type { BaseTreeSearchParams } from 'containers/analysis-visualization/analysis-filters/more-filters/types';
 import type { LocationTypes } from 'containers/interventions/enums';
+import type { Option } from 'components/forms/select';
 
 const DEFAULT_QUERY_OPTIONS = {
   placeholderData: [],
@@ -17,20 +18,15 @@ export interface LocationTypesParams extends BaseTreeSearchParams {
   supplierIds?: string[];
 }
 
-export type LocationType = {
-  label: string;
-  value: LocationTypes;
-};
-
-export const useLocationTypes = <T = LocationType[]>(
+export const useLocationTypes = <T = Option<LocationTypes>[]>(
   params: LocationTypesParams = {},
-  options?: UseQueryOptions<LocationType[], unknown, T, ['location-types', typeof params]>,
+  options?: UseQueryOptions<Option<LocationTypes>[], unknown, T, ['location-types', typeof params]>,
 ) => {
   const query = useQuery(
     ['location-types', params],
     () =>
       apiRawService
-        .request<{ data: LocationType[] }>({
+        .request<{ data: Option<LocationTypes>[] }>({
           method: 'GET',
           url: '/sourcing-locations/location-types',
           params,

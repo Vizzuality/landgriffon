@@ -4,7 +4,6 @@ import { apiService } from 'services/api';
 
 import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
 import type { APIMetadataPagination, ErrorResponse, Task } from 'types';
-import type { LocationTypes } from 'containers/interventions/enums';
 
 type TaskAPIResponse = Task;
 
@@ -17,15 +16,6 @@ const DEFAULT_QUERY_OPTIONS = {
   retry: false,
   keepPreviousData: true,
   refetchOnWindowFocus: false,
-};
-
-export type LocationType = {
-  label: string;
-  value:
-    | LocationTypes.pointOfProduction
-    | LocationTypes.aggregationPoint
-    | LocationTypes.countryOfProduction
-    | LocationTypes.unknown;
 };
 
 export const useTasks = <T = TasksAPIResponse>(

@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added a volume field in the intervention form [LANDGRIF-1112](https://vizzuality.atlassian.net/browse/LANDGRIF-1112)
 
 ### Changed
+- Disabled `Country of delivery` and `Unknown` location types options from intervention form. [LANDGRIF-1148](https://vizzuality.atlassian.net/browse/LANDGRIF-1148)
 - Bumped `react-hook-form` fixing several validation issues. [LANDGRIF-1142](https://vizzuality.atlassian.net/browse/LANDGRIF-1142)
 - Bumped `browserslist-db` dependency.
 - Bumped `@floating-ui/core` dependency.

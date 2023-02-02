@@ -34,6 +34,8 @@ import { recursiveMap, recursiveSort } from 'components/tree-select/utils';
 import type { Option } from 'components/forms/select';
 import type { Intervention, InterventionFormData } from '../types';
 
+const DISABLED_LOCATION_TYPES = [LocationTypes.unknown, LocationTypes.countryOfDelivery];
+
 type InterventionFormProps = {
   intervention?: Intervention;
   isCreation?: boolean;
@@ -246,7 +248,14 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   // Location types
   const { data: locationTypes, isLoading: isLoadingLocationTypes } = useLocationTypes(
     {},
-    { select: (_locationTypes) => sortBy(_locationTypes, 'label') },
+    {
+      select: (_locationTypes) =>
+        _locationTypes.map((locationTypeOption) => ({
+          ...locationTypeOption,
+          // ! this is a temporary workaround, disabling should come from API. Remove as soon as it is available in API.
+          disabled: DISABLED_LOCATION_TYPES.includes(locationTypeOption.value),
+        })),
+    },
   );
 
   // Countries

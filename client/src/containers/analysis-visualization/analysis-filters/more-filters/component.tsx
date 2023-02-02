@@ -8,15 +8,15 @@ import {
   useFloating,
   useInteractions,
   FloatingPortal,
-} from '@floating-ui/react-dom-interactions';
+} from '@floating-ui/react';
 import { Popover, Transition } from '@headlessui/react';
 import { useRouter } from 'next/router';
 
 import Materials from '../materials/component';
 import OriginRegions from '../origin-regions/component';
 import Suppliers from '../suppliers/component';
-import LocationTypes from '../location-types/component';
 
+import Select from 'components/forms/select';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters, setFilters } from 'store/features/analysis/filters';
 import { setFilter } from 'store/features/analysis';
@@ -27,6 +27,8 @@ import { useLocationTypes } from 'hooks/location-types';
 import Button from 'components/button/component';
 import { flattenTree, recursiveMap, recursiveSort } from 'components/tree-select/utils';
 
+import type { Option } from 'components/forms/select';
+import type { LocationTypes as LocationTyping } from 'containers/interventions/enums';
 import type { TreeSelectOption } from 'components/tree-select/types';
 import type { AnalysisFiltersState } from 'store/features/analysis/filters';
 
@@ -113,7 +115,7 @@ const MoreFilters = () => {
 
   // Updating internal state from selectors
   const handleChangeFilter = useCallback(
-    (key: keyof MoreFiltersState, values: TreeSelectOption[]) => {
+    <T,>(key: keyof MoreFiltersState, values: TreeSelectOption[] | Option<T>) => {
       setSelectedFilters((filters) => ({ ...filters, [key]: values }));
     },
     [],
@@ -312,10 +314,10 @@ const MoreFilters = () => {
                   </div>
                   <div>
                     <div className="mb-1">Location type</div>
-                    <LocationTypes
+                    <Select<LocationTyping>
+                      multiple
                       options={locationTypeOptions}
-                      current={selectedFilters.locationTypes}
-                      fitContent
+                      placeholder="Location types"
                       onChange={(values) => handleChangeFilter('locationTypes', values)}
                     />
                   </div>

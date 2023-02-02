@@ -10,7 +10,7 @@ import {
   useInteractions,
   useRole,
   autoUpdate,
-} from '@floating-ui/react-dom-interactions';
+} from '@floating-ui/react';
 import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
 import Tree from 'rc-tree';
 import { flattenTreeData } from 'rc-tree/lib/utils/treeUtil';

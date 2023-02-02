@@ -10,9 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [v0.3.6]
 
 ### Added
+- Added `@floating-ui/react` and `@floating-ui/react-dom` dependencies. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
 - Added disabled option styles for single and autocomplete selects. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
 - Added DOM virtualization (with `react-virtualized`) to autocomplete select to avoid lagging and low performance. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
-- Added new select components: single and autocomplete, based on `headless-ui` and `floating-ui` libraries. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
+- Added new select components: single and autocomplete, based on `headless-ui` and `floating-ui` libraries. Also, single select with multiple values. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
 - Added a end year field in the intervention form [LANDGRIF-1113](https://vizzuality.atlassian.net/browse/LANDGRIF-1113)
 - Added a volume field in the intervention form [LANDGRIF-1112](https://vizzuality.atlassian.net/browse/LANDGRIF-1112)
 - Switch to toggle layers from the legend itself [LANDGRIF-991](https://vizzuality.atlassian.net/browse/LANDGRIF-991)
@@ -20,7 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added a volume field in the intervention form [LANDGRIF-1112](https://vizzuality.atlassian.net/browse/LANDGRIF-1112)
 
 ### Changed
-- Bumps `browserslist-db` dependency.
+- Bumped `@floating-ui/core` dependency.
+- Bumped `browserslist-db` dependency.
 - Updated `prettier` and its dependencies [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
 - Show the scenario name in the charts [LANDGRIF-1116](https://vizzuality.atlassian.net/browse/LANDGRIF-1116)
 - Move the users page from data to user [LANDGRIF-1122](https://vizzuality.atlassian.net/browse/LANDGRIF-1122)
@@ -36,12 +38,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Contextual layers should render in resolution 4 [LANDGRIF-1130](https://vizzuality.atlassian.net/browse/LANDGRIF-1130)
 
 ### Removed
+- Removed deprecated `@floating-ui/react-dom-interactions` dependency.
 - Removed `components/select` and `react-select` library. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
 
 ## [v0.3.5]
 
 ### Fixed
-
 - Contextual layers were not showed in the map
 - Styles of the legend were not applied correctly
 - Styles of the opacity control were not applied correctly

@@ -11,7 +11,7 @@ import {
   useDismiss,
   autoUpdate,
   FloatingPortal,
-} from '@floating-ui/react-dom-interactions';
+} from '@floating-ui/react';
 import { shift } from '@floating-ui/core';
 import classNames from 'classnames';
 

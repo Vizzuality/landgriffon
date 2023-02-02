@@ -1,17 +1,19 @@
-import { cloneElement, useCallback, useEffect, useState } from 'react';
+import { cloneElement, useCallback, useEffect, useMemo, useState } from 'react';
 import classnames from 'classnames';
 import { Listbox, Transition } from '@headlessui/react';
-import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/solid';
+import { ChevronUpIcon, ChevronDownIcon, XIcon } from '@heroicons/react/solid';
 import { flip, useFloating, size } from '@floating-ui/react-dom';
-import { FloatingPortal } from '@floating-ui/react-dom-interactions';
+import { FloatingPortal } from '@floating-ui/react';
+import { isArray, sortBy } from 'lodash-es';
 
 import Hint from '../hint';
 
 import Loading from 'components/loading';
+import Pill from 'components/pill';
 
 import type { Option, SelectProps } from './types';
 
-const Select = <T = string,>({
+const Select = <T,>({
   value,
   defaultValue,
   error,
@@ -22,11 +24,18 @@ const Select = <T = string,>({
   placeholder = 'Select an option',
   showHint,
   onChange,
+  multiple = false,
   ...props
 }: SelectProps<T>) => {
-  const [selected, setSelected] = useState<Option<T> | Option<string>>(
-    defaultValue || value || { label: '', value: '' },
-  );
+  const [selected, setSelected] = useState<Option<T> | Option<string> | Option<T>[]>(() => {
+    if (multiple && !value) {
+      return [];
+    }
+    if (defaultValue) return defaultValue;
+    if (value) return value;
+
+    return { label: '', value: '' };
+  });
   const { x, y, reference, floating, strategy } = useFloating<HTMLButtonElement>({
     middleware: [
       flip(),
@@ -53,10 +62,50 @@ const Select = <T = string,>({
     [onChange],
   );
 
+  const handleDelete = useCallback(
+    (option: Option<T>) => {
+      if (isArray(selected)) {
+        const newSelected = selected.filter(({ value }) => option.value !== value);
+        setSelected(newSelected);
+      }
+    },
+    [selected],
+  );
+
   // ? in case the value is not set in the hook initialization, it will be set here after first render.
   useEffect(() => {
     if (value) setSelected(value);
   }, [value]);
+
+  const labelSelect = useMemo(() => {
+    if (isArray(selected) && selected?.[0]?.label) {
+      return (
+        <div className="flex flex-wrap gap-2">
+          {(sortBy(selected, ['label']) as Option<T>[] | Option<string>[]).map((option) => (
+            <div
+              className="flex space-x-2"
+              key={option.value}
+              onClick={(evt) => {
+                evt.stopPropagation();
+                handleDelete(option);
+              }}
+            >
+              <Pill className="flex items-center space-x-1 bg-blue-200">
+                <span>{option.label}</span>
+                <XIcon className="w-4 h-4" />
+              </Pill>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (!isArray(selected) && selected?.label) {
+      return selected.label;
+    }
+
+    return <span className="text-gray-200">{placeholder}</span>;
+  }, [selected, placeholder, handleDelete]);
 
   return (
     <div data-testid={`select-${props.id || props.name || props['data-testid']}`}>
@@ -65,6 +114,7 @@ const Select = <T = string,>({
         value={selected}
         onChange={handleChange}
         disabled={props.disabled || loading}
+        multiple={multiple}
       >
         {({ open }) => (
           <>
@@ -85,13 +135,7 @@ const Select = <T = string,>({
               ref={reference}
             >
               {icon && <div className="mr-2">{cloneElement(icon)}</div>}
-              <span className="block text-sm truncate">
-                {selected?.label !== '' ? (
-                  selected.label
-                ) : (
-                  <span className="text-gray-200">{placeholder}</span>
-                )}
-              </span>
+              <span className="block text-sm truncate">{labelSelect}</span>
               <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                 {open && !loading && (
                   <ChevronUpIcon

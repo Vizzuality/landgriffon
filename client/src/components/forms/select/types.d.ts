@@ -16,5 +16,6 @@ export type SelectProps<T = string> = Omit<
   loading?: boolean;
   options: Option<T>[];
   showHint?: boolean;
+  multiple?: boolean;
   onChange: (value: Option<T>) => void;
 };

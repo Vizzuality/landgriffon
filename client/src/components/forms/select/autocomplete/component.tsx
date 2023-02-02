@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import { Transition, Combobox } from '@headlessui/react';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/solid';
 import { flip, useFloating, size, autoUpdate, offset } from '@floating-ui/react-dom';
-import { FloatingPortal } from '@floating-ui/react-dom-interactions';
+import { FloatingPortal } from '@floating-ui/react';
 import { List as VirtualizedList } from 'react-virtualized';
 
 import Hint from 'components/forms/hint';
@@ -15,7 +15,7 @@ import type { ChangeEvent } from 'react';
 
 const DEFAULT_ROW_HEIGHT = 36;
 
-const AutoCompleteSelect = <T = string,>({
+const AutoCompleteSelect = <T,>({
   value,
   defaultValue,
   error,

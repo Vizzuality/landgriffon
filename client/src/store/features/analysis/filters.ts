@@ -1,13 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+import type { Option } from 'components/forms/select';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from 'store';
 import type { Indicator, Material } from 'types';
-
-type Option = {
-  label: string;
-  value: string;
-};
+import type { LocationTypes } from 'containers/interventions/enums';
 
 export type AnalysisFiltersState = {
   layer: 'impact' | 'risk' | 'material' | 'water';
@@ -19,8 +16,7 @@ export type AnalysisFiltersState = {
   materials: Option[];
   origins: Option[];
   suppliers: Option[];
-  locationTypes: Option[];
-
+  locationTypes: Option<LocationTypes>[];
   // used for the material layer
   materialId: Material['id'];
 };

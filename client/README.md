@@ -32,5 +32,6 @@ yarn cypress:headless
 Run the tests in a Dockerfile:
 
 ```bash
-docker compose -f docker-compose.test.yml up --build --exit-code-from cypress --arg NEXT_PUBLIC_API_URL=https://apiUrl
+docker compose -f docker-compose.test.yml build --build-arg NEXT_PUBLIC_API_URL=https://apiUrl
+docker compose -f docker-compose.test.yml up --exit-code-from cypress
 ```

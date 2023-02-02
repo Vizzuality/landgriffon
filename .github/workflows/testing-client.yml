@@ -33,7 +33,7 @@ jobs:
           wait-on: http://localhost:3000/auth/signin
           config-file: cypress.config.ts
           command-prefix: yarn dlx
-          command: "yarn cypress:headless"
+          command: "yarn test:e2e"
         env:
           NEXT_PUBLIC_MAPBOX_API_TOKEN: ${{ secrets.NEXT_PUBLIC_MAPBOX_API_TOKEN }}
           NEXT_PUBLIC_API_URL: ${{ secrets.CYPRESS_API_URL }}

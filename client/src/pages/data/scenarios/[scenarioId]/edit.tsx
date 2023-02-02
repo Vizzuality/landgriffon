@@ -24,7 +24,6 @@ import { Anchor, Button } from 'components/button';
 import Input from 'components/forms/input';
 import Toggle from 'components/toggle';
 import Dropdown from 'components/dropdown';
-import { parseScenarioFormDataToDto } from 'containers/scenarios/utils';
 
 import type { ScenarioFormData } from 'containers/scenarios/types';
 import type { ErrorResponse } from 'types';
@@ -44,9 +43,8 @@ const UpdateScenarioPage: React.FC = () => {
 
   const handleUpdateScenario = useCallback(
     (scenarioFormData: ScenarioFormData) => {
-      const scenarioDTO = parseScenarioFormDataToDto(scenarioFormData);
       updateScenario.mutate(
-        { id: data.id, data: scenarioDTO },
+        { id: data.id, data: scenarioFormData },
         {
           onSuccess: () => {
             toast.success('Your changes were successfully saved.');
@@ -113,7 +111,7 @@ const UpdateScenarioPage: React.FC = () => {
             >
               {/* TO-DO: Promote to a specific component */}
               <div>
-                <div className="flex items-baseline space-x-1 mb-4">
+                <div className="flex items-baseline mb-4 space-x-1">
                   <h2>Growth rates</h2>
                   <InfoTooltip
                     icon="outline"
@@ -149,7 +147,7 @@ const UpdateScenarioPage: React.FC = () => {
               </div>
 
               <div>
-                <div className="flex mb-4 justify-between items-center">
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-baseline space-x-1">
                     <h2 className="flex-1">Interventions</h2>
                     <InfoTooltip

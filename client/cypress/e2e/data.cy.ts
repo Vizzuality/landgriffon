@@ -8,8 +8,27 @@ const disabledLinks = Object.values(ADMIN_TABS).filter(
 
 describe('Data page', () => {
   beforeEach(() => {
+    cy.intercept('GET', '/api/v1/sourcing-locations/location-types*', {
+      statusCode: 200,
+      fixture: 'location-types/index',
+    });
+
+    cy.intercept('GET', '/api/v1/tasks*', {
+      statusCode: 200,
+      fixture: 'tasks/index',
+    });
+
+    cy.intercept('GET', '/api/v1/sourcing-locations*', {
+      statusCode: 200,
+      fixture: 'sourcing-locations/index',
+    });
+
     cy.login();
     cy.visit('/data');
+  });
+
+  afterEach(() => {
+    cy.logout();
   });
 
   it('should disabled menu links be disabled', () => {

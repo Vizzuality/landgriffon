@@ -1,11 +1,11 @@
 {
   "data": {
     "type": "users",
-    "id": "368bbd1f-8c37-4999-9c01-da0ac7750597",
+    "id": "inventedUserId",
     "attributes": {
       "fname": null,
       "lname": null,
-      "email": "user@vizzuality.com",
+      "email": "jhon.smith@vizzuality.com",
       "displayName": null,
       "avatarDataUrl": null,
       "isActive": true,

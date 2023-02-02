@@ -333,7 +333,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
       <div className="flex gap-2">
         <input
           ref={ref}
-          autoFocus
+          autoFocus={false}
           type="search"
           value={searchTerm}
           placeholder={selected === null ? placeholder : null}
@@ -602,7 +602,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
                   treeData={treeData}
                   fieldNames={FIELD_NAMES}
                 />
-                {(options.length === 0 || (searchTerm && filteredOptionsKeys.length === 0)) && (
+                {(options.length === 0 || (searchTerm && filteredOptionsKeys?.length === 0)) && (
                   <div className="p-2 mx-auto text-sm text-gray-600 opacity-60 w-fit">
                     No results
                   </div>

@@ -26,6 +26,8 @@ const schemaValidation = yup.object({
     .string()
     .required('password confirmation is required')
     .oneOf([yup.ref('password'), null], 'passwords must match'),
+  roles: yup.array().of(yup.string()).optional().nullable(),
+  id: yup.string().nullable().optional(),
 });
 
 const signUpService = (data: ProfilePayload) => authService.post('/sign-up', data);
@@ -93,20 +95,24 @@ const SignUp: NextPageWithLayout = () => {
           <form className="grid grid-cols-2 gap-6" onSubmit={handleSubmit(handleSignUp)}>
             <div>
               <Label htmlFor="fname">First name</Label>
-              <Input {...register('fname')} error={errors.fname?.message} />
+              <Input {...register('fname')} error={errors.fname?.message as string} />
             </div>
             <div>
               <Label htmlFor="lname">Last name</Label>
-              <Input {...register('lname')} error={errors.lname?.message} />
+              <Input {...register('lname')} error={errors.lname?.message as string} />
             </div>
             <div className="col-span-2">
               <Label htmlFor="email">Email address</Label>
-              <Input {...register('email')} type="email" error={errors.email?.message} />
+              <Input {...register('email')} type="email" error={errors.email?.message as string} />
             </div>
 
             <div className="col-span-2">
               <Label htmlFor="password">Password</Label>
-              <Input {...register('password')} type="password" error={errors.password?.message} />
+              <Input
+                {...register('password')}
+                type="password"
+                error={errors.password?.message as string}
+              />
             </div>
 
             <div className="col-span-2">
@@ -114,7 +120,7 @@ const SignUp: NextPageWithLayout = () => {
               <Input
                 {...register('passwordConfirmation')}
                 type="password"
-                error={errors.passwordConfirmation?.message}
+                error={errors.passwordConfirmation?.message as string}
               />
             </div>
 

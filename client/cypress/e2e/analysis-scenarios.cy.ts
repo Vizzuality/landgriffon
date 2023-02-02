@@ -32,6 +32,17 @@ describe('Analysis and scenarios', () => {
       },
     ).as('scenariosList');
 
+    cy.intercept(
+      {
+        method: 'GET',
+        pathname: '/api/v1/scenarios/*',
+      },
+      {
+        statusCode: 200,
+        fixture: 'scenario/scenario-creation',
+      },
+    );
+
     cy.intercept('GET', '/api/v1/impact/compare/scenario/vs/actual?*', {
       statusCode: 200,
       fixture: 'scenario/scenario-vs-actual',
@@ -42,7 +53,56 @@ describe('Analysis and scenarios', () => {
       fixture: 'scenario/scenario-vs-scenario',
     }).as('scenarioVsScenario');
 
+    cy.intercept('GET', '/api/v1/h3/map/impact*', {
+      fixture: 'layers/impact-layer.json',
+    });
+
+    cy.intercept('GET', '/api/v1/impact/table*', {
+      fixture: 'impact/table',
+    }).as('fetchImpactTable');
+
+    cy.intercept('GET', '/api/v1/indicators', {
+      fixture: 'indicators/index',
+    });
+
+    cy.intercept('GET', '/api/v1/indicators/*', {
+      fixture: 'indicators/show',
+    });
+
+    cy.intercept('GET', '/api/v1/contextual-layers/categories', {
+      fixture: 'layers/contextual-layer-categories.json',
+    });
+
+    cy.intercept('GET', '/api/v1/h3/years*', {
+      statusCode: 200,
+      fixture: 'years/index',
+    });
+
+    cy.intercept('GET', '/api/v1/materials/trees*', {
+      statusCode: 200,
+      fixture: 'trees/materials',
+    });
+
+    cy.intercept('GET', '/api/v1/suppliers/trees*', {
+      statusCode: 200,
+      fixture: 'trees/suppliers',
+    });
+
+    cy.intercept('GET', '/api/v1/sourcing-locations/location-types*', {
+      statusCode: 200,
+      fixture: 'scenario/scenario-location-types',
+    });
+
+    cy.intercept('GET', '/api/v1/admin-regions/trees*', {
+      statusCode: 200,
+      fixture: 'trees/admin-regions',
+    });
+
     cy.login();
+  });
+
+  afterEach(() => {
+    cy.logout();
   });
 
   it('should be able to see the analysis page', () => {

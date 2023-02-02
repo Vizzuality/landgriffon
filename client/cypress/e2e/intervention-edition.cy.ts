@@ -34,9 +34,45 @@ beforeEach(() => {
     fixture: 'intervention/intervention-creation-dto',
   }).as('fetchIntervention');
 
+  cy.intercept('GET', '/api/v1/suppliers/trees*', {
+    statusCode: 200,
+    fixture: 'trees/suppliers',
+  });
+
+  cy.intercept(
+    {
+      method: 'GET',
+      pathname: '/api/v1/suppliers/types',
+      query: {
+        type: 't1supplier',
+      },
+    },
+    {
+      statusCode: 200,
+      fixture: 'suppliers/types-t1supplier',
+    },
+  );
+
+  cy.intercept(
+    {
+      method: 'GET',
+      pathname: '/api/v1/suppliers/types',
+      query: {
+        type: 'producer',
+      },
+    },
+    {
+      statusCode: 200,
+      fixture: 'suppliers/types-producer',
+    },
+  );
+
   cy.login();
-  // cy.createScenario();
   cy.visit('/data/scenarios/some-random-id/interventions/random-intervention-id/edit');
+});
+
+afterEach(() => {
+  cy.logout();
 });
 
 describe('Intervention edition', () => {

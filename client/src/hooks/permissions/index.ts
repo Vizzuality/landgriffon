@@ -1,6 +1,8 @@
+import { RoleName } from './enums';
+
 import { useProfile } from 'hooks/profile';
 
-import { Permission, RoleName } from './enums';
+import type { Permission } from './enums';
 
 export function usePermissions(creatorId?: string) {
   const { data, isLoading } = useProfile();

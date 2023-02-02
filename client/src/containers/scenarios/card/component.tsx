@@ -34,9 +34,9 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data, display = 'grid' }) =
   const canDeleteScenario = hasPermission(Permission.CAN_DELETE_SCENARIO);
 
   const handleChangeVisibility = useCallback(
-    (isActive) => {
+    (isActive: boolean) => {
       updateScenario.mutate(
-        { id: data.id, data: { visibility: isActive ? 'public' : 'private' } },
+        { id: data.id, data: { visibility: isActive } },
         {
           onSuccess: () => {
             toast.success('Your changes were successfully saved.');
@@ -153,19 +153,17 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data, display = 'grid' }) =
           </div>
           <div
             className={classNames('flex items-center space-x-1', {
-              'bg-navy-50': data.visibility === 'public',
-              'bg-gray-100': data.visibility !== 'public',
+              'bg-navy-50': data.isPublic,
+              'bg-gray-100': !data.isPublic,
               'rounded-md justify-center p-3': display === 'list',
               'p-6 -mx-6': display === 'grid',
             })}
           >
             <Toggle
               data-testid="scenario-visibility"
-              // active={data.visibility === 'public'} // ! uncomment this line when the API returns the visibility of the scenario
-              active
+              active={data.isPublic}
               onChange={handleChangeVisibility}
-              disabled // ! <-- this feature is disabled until the API allows to change the visibility of a scenario
-              // disabled={!canEditScenario}
+              disabled={!canEditScenario}
             />
             <span className="text-sm text-gray-500 peer-disabled:text-gray-300">
               Make scenario public

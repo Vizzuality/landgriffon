@@ -3,21 +3,64 @@ describe('Analysis and filters', () => {
     cy.intercept('GET', '/api/v1/impact/table*', {
       fixture: 'impact/table.json',
     }).as('impactTable');
+
+    cy.intercept('GET', '/api/v1/indicators', {
+      fixture: 'indicators/index',
+    });
+
+    cy.intercept('GET', '/api/v1/indicators/*', {
+      fixture: 'indicators/show',
+    });
+
+    cy.intercept('GET', '/api/v1/h3/years*', {
+      statusCode: 200,
+      fixture: 'years/index',
+    });
+
+    cy.intercept('GET', '/api/v1/materials/trees?depth=1&withSourcingLocations=true', {
+      fixture: 'trees/materials.json',
+    }).as('materialsTrees');
+
+    cy.intercept('GET', '/api/v1/admin-regions/trees?withSourcingLocations=true*', {
+      fixture: 'trees/admin-regions.json',
+    }).as('originsTrees');
+
+    cy.intercept('GET', '/api/v1/suppliers/trees?withSourcingLocations=true', {
+      fixture: 'trees/suppliers.json',
+    }).as('suppliersTrees');
+
+    cy.intercept(
+      {
+        method: 'GET',
+        pathname: '/api/v1/sourcing-locations/location-types*',
+      },
+      {
+        fixture: 'location-types/index',
+      },
+    );
+
+    cy.intercept('GET', '/api/v1/scenarios*', {
+      statusCode: 200,
+      fixture: 'scenario/scenarios',
+    });
+
     cy.login();
   });
 
-  it('should be able to select and indicator', () => {
+  afterEach(() => {
+    cy.logout();
+  });
+
+  it('should be able to select an indicator', () => {
     // data integrity check
     cy.intercept('GET', '/api/v1/indicators', {
       fixture: 'indicators/index.json',
     }).as('indicators');
     cy.visit('/analysis/table');
     cy.wait('@indicators').then((interception) => {
-      expect(interception.response.body?.data).have.length(4);
+      expect(interception.response.body?.data).have.length(5);
     });
-    cy.get('[data-testid="analysis-table"]', {
-      timeout: 5000,
-    }).should('be.visible');
+    cy.get('[data-testid="analysis-table"]').should('be.visible');
 
     cy.url().should('not.include', 'indicator');
 
@@ -34,23 +77,11 @@ describe('Analysis and filters', () => {
       .click()
       .type('{downArrow}{downArrow}{enter}');
 
-    cy.wait(1000);
-
-    cy.url().should('include', 'indicator=633cf928-7c4f-41a3-99c5-e8c1bda0b323');
+    cy.url().should('include', 'indicator=5c595ac7-f144-485f-9f32-601f6faae9fe'); // Land use
   });
 
   it('should update the params playing with the filters', () => {
     cy.visit('/analysis/table');
-
-    cy.intercept('GET', '/api/v1/materials/trees?depth=1&withSourcingLocations=true', {
-      fixture: 'trees/materials.json',
-    }).as('materialsTrees');
-    cy.intercept('GET', '/api/v1/admin-regions/trees?withSourcingLocations=true', {
-      fixture: 'trees/admin-regions.json',
-    }).as('originsTrees');
-    cy.intercept('GET', '/api/v1/suppliers/trees?withSourcingLocations=true', {
-      fixture: 'trees/suppliers.json',
-    }).as('suppliersTrees');
 
     // Step 1: open more filters
     cy.get('[data-testid="more-filters-button"]').click();
@@ -68,8 +99,13 @@ describe('Analysis and filters', () => {
     ).as('suppliersTreesFiltered');
 
     cy.intercept(
-      'GET',
-      '/api/v1/materials/trees?*supplierIds[]=c8bca40d-1aec-44e3-b82b-8170898800ad*',
+      {
+        method: 'GET',
+        pathname: '/api/v1/materials/trees',
+        query: {
+          'supplierIds[]': 'c8bca40d-1aec-44e3-b82b-8170898800ad',
+        },
+      },
       {
         fixture: 'trees/materials-filtered.json',
       },

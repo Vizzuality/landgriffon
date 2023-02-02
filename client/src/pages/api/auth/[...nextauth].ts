@@ -2,7 +2,6 @@ import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
 import { authService } from 'services/authentication';
-import logger from 'utils/logger';
 
 import type { NextAuthOptions } from 'next-auth';
 
@@ -84,23 +83,6 @@ const options: NextAuthOptions = {
     session({ session, token }) {
       session.accessToken = token.accessToken;
       return session;
-    },
-  },
-
-  events: {
-    signOut(message) {
-      logger.info(`Signing out: ${JSON.stringify(message)}`);
-      // After sign-out expire token in the API
-      // if (session) {
-      //   await AUTHENTICATION.request({
-      //     url: '/sign-out',
-      //     method: 'POST',
-      //     headers: {
-      //       Authorization: `Bearer ${session.accessToken}`,
-      //       'Content-Type': 'application/json',
-      //     },
-      //   });
-      // }
     },
   },
 };

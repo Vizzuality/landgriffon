@@ -32,9 +32,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               'pr-20': unit && error,
             },
           )}
-          ref={ref}
           type={type}
           {...inputProps}
+          ref={ref}
         />
         {unit && (
           <div

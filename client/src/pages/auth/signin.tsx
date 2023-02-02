@@ -86,7 +86,12 @@ const SignIn: NextPageWithLayout = () => {
           >
             <div>
               <Label htmlFor="email">Email address</Label>
-              <Input {...register('email')} type="email" id="email" error={errors.email?.message} />
+              <Input
+                {...register('email')}
+                type="email"
+                id="email"
+                error={errors.email?.message as string}
+              />
             </div>
 
             <div>
@@ -95,12 +100,16 @@ const SignIn: NextPageWithLayout = () => {
                 {...register('password')}
                 type="password"
                 id="password"
-                error={errors.password?.message}
+                error={errors.password?.message as string}
               />
             </div>
 
             <div className="flex items-center justify-between">
-              <Checkbox {...register('remember')} id="rememberMe" error={errors.remember?.message}>
+              <Checkbox
+                {...register('remember')}
+                id="rememberMe"
+                error={errors.remember?.message as string}
+              >
                 Remember me
               </Checkbox>
 

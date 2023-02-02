@@ -1,4 +1,8 @@
 beforeEach(() => {
+  cy.intercept('GET', '/api/v1/indicators*', {
+    fixture: 'indicators/index.json',
+  }).as('fetchIndicators');
+
   cy.intercept('POST', '/api/v1/scenarios', {
     statusCode: 201,
     fixture: 'scenario/scenario-creation',
@@ -14,9 +18,47 @@ beforeEach(() => {
     fixture: 'scenario/scenario-materials',
   }).as('scenarioNewMaterials');
 
-  cy.intercept('GET', '/api/v1/materials/trees?depth=1&withSourcingLocations=true', {
+  cy.intercept('GET', '/api/v1/business-units/trees?depth=1*', {
     statusCode: 200,
-    fixture: 'scenario/scenario-raw-materials',
+    fixture: 'trees/business-units',
+  }).as('businessUnits');
+
+  cy.intercept('GET', '/api/v1/suppliers/trees*', {
+    statusCode: 200,
+    fixture: 'trees/suppliers',
+  });
+
+  cy.intercept(
+    {
+      method: 'GET',
+      pathname: '/api/v1/suppliers/types',
+      query: {
+        type: 't1supplier',
+      },
+    },
+    {
+      statusCode: 200,
+      fixture: 'suppliers/types-t1supplier',
+    },
+  );
+
+  cy.intercept(
+    {
+      method: 'GET',
+      pathname: '/api/v1/suppliers/types',
+      query: {
+        type: 'producer',
+      },
+    },
+    {
+      statusCode: 200,
+      fixture: 'suppliers/types-producer',
+    },
+  );
+
+  cy.intercept('GET', '/api/v1/materials/trees?depth=1&withSourcingLocations=true*', {
+    statusCode: 200,
+    fixture: 'trees/materials',
   }).as('scenarioRawMaterials');
 
   cy.intercept('GET', '/api/v1/sourcing-locations/location-types', {
@@ -24,7 +66,7 @@ beforeEach(() => {
     fixture: 'location-types/index',
   }).as('scenarioLocationTypes');
 
-  cy.intercept('GET', '/api/v1/admin-regions/trees?depth=0', {
+  cy.intercept('GET', '/api/v1/admin-regions/trees*', {
     statusCode: 200,
     fixture: 'scenario/scenario-location-countries',
   }).as('scenarioLocationCountries');
@@ -32,6 +74,10 @@ beforeEach(() => {
   cy.login();
   cy.createScenario();
   cy.visit('/data/scenarios/some-random-id/interventions/new');
+});
+
+afterEach(() => {
+  cy.logout();
 });
 
 describe('Intervention creation', () => {
@@ -281,7 +327,7 @@ describe('Intervention location type', () => {
     cy.get('[data-testid="hint-input-cityAddressCoordinates"]').should('not.exist');
 
     // When is not valid coordinate
-    cityAddressCoordinateInput.clear().type('200, -3');
+    cy.get('[data-testid="city-address-coordinates-field"]').find('input').clear().type('200, -3');
     cy.get('[data-testid="intervention-submit-btn"]').click();
     cy.get('[data-testid="hint-input-cityAddressCoordinates"]')
       .find('p')

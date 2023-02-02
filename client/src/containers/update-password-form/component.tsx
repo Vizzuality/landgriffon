@@ -61,7 +61,7 @@ const UserPasswordForm: React.FC = () => {
                 <Input
                   {...registerPassword('currentPassword')}
                   type="password"
-                  error={errors.currentPassword?.message}
+                  error={errors.currentPassword?.message as string}
                 />
               </div>
               <div className="col-span-2">
@@ -69,7 +69,7 @@ const UserPasswordForm: React.FC = () => {
                 <Input
                   {...registerPassword('newPassword')}
                   type="password"
-                  error={errors.newPassword?.message}
+                  error={errors.newPassword?.message as string}
                 />
               </div>
 
@@ -78,7 +78,7 @@ const UserPasswordForm: React.FC = () => {
                 <Input
                   {...registerPassword('passwordConfirmation')}
                   type="password"
-                  error={errors.passwordConfirmation?.message}
+                  error={errors.passwordConfirmation?.message as string}
                 />
               </div>
             </div>

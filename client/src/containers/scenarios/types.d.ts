@@ -6,8 +6,7 @@ export type Scenario = {
   description?: string;
   updatedAt?: Date;
   scenarioInterventions?: Intervention[];
-  // ! this property might change in the future as it is not defined in the API yet
-  visibility?: 'public' | 'private';
+  isPublic?: boolean;
   user?: ProfilePayload;
   userId?: string;
   updatedBy?: ProfilePayload;
@@ -18,7 +17,7 @@ export type ScenarioFormData = {
   id?: Scenario['id'];
   title: Scenario['title'];
   description?: Scenario['description'];
-  visibility: boolean;
+  isPublic: boolean;
 };
 
 export type ScenarioDTO = {

@@ -8,7 +8,7 @@ import Textarea from 'components/forms/textarea';
 import { Anchor, Button } from 'components/button';
 import Toggle from 'components/toggle';
 import { usePermissions } from 'hooks/permissions';
-import { Permission } from 'hooks/permissions/enums';
+import { Permission, RoleName } from 'hooks/permissions/enums';
 
 import type { Scenario, ScenarioFormData } from '../types';
 
@@ -20,8 +20,8 @@ type ScenarioFormProps = {
 
 const schemaValidation = yup.object({
   title: yup.string().min(2).max(40).required(),
-  description: yup.string(),
-  visibility: yup.boolean().required().default(true),
+  isPublic: yup.boolean(),
+  description: yup.string().optional().nullable(),
 });
 
 type SubSchema = yup.InferType<typeof schemaValidation>;
@@ -36,52 +36,60 @@ const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
     register,
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<SubSchema>({
     resolver: yupResolver(schemaValidation),
     defaultValues: {
-      visibility: true,
+      title: scenario?.title || null,
+      isPublic: scenario?.isPublic || false,
+      description: scenario?.description || null,
     },
   });
 
-  const { hasPermission } = usePermissions(scenario?.userId);
+  const { hasPermission, hasRole } = usePermissions(scenario?.userId);
   // If scenario exists, check if the user can edit,
   // else, check if the user can create a scenario
-  const canSave = hasPermission(
-    scenario?.id ? Permission.CAN_EDIT_SCENARIO : Permission.CAN_CREATE_SCENARIO,
-  );
+  const canSave =
+    (hasRole(RoleName.ADMIN) ||
+      hasPermission(
+        scenario?.id ? Permission.CAN_EDIT_SCENARIO : Permission.CAN_CREATE_SCENARIO,
+      )) &&
+    isValid;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="grid w-full grid-cols-1 gap-6 mt-6">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="grid w-full grid-cols-1 gap-6 mt-6"
+      data-testid={`scenario-form-validation-${isValid}`}
+    >
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label>Name</label>
+          <label>
+            Name <sup>*</sup>
+          </label>
           <Input
             {...register('title')}
             type="text"
-            name="title"
-            id="title"
             defaultValue={scenario?.title}
             placeholder="Type a scenario name"
             aria-label="Name"
             autoFocus
             error={errors?.title?.message}
             data-testid="scenario-name-input"
+            required
           />
         </div>
         <div className="flex flex-col">
           <label>Access</label>
           <div className="flex items-center h-full space-x-1">
             <Controller
-              name="visibility"
+              name="isPublic"
               control={control}
-              render={({ field: { onChange: handleChangeVisibility, value } }) => (
+              render={({ field: { onChange: handleChangeIsPublic, value } }) => (
                 <Toggle
-                  data-testid="scenario-visibility"
+                  data-testid="scenario-is-public-toggle"
                   active={value}
-                  onChange={handleChangeVisibility}
-                  // ! this feature is disabled until the API allows to change the visibility of a scenario
-                  disabled
+                  onChange={handleChangeIsPublic}
                 />
               )}
             />
@@ -98,8 +106,6 @@ const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
         </label>
         <Textarea
           {...register('description')}
-          id="description"
-          name="description"
           rows={3}
           className="w-full"
           error={errors?.description?.message}

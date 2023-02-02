@@ -41,22 +41,14 @@ describe('Scenario creation', () => {
     });
   });
 
-  it('a user tries to create a scenario without filling in the name field and a hint appears below the field', () => {
+  it('a user tries to create a scenario without filling in the name field and submit is disabled', () => {
     cy.url().should('contain', '/data/scenarios/new');
-    cy.get('[data-testid="create-scenario-button"]').click();
-
-    cy.get('[data-testid="hint-input-title"]')
-      .contains('title must be at least 2 characters')
-      .should('be.visible');
+    cy.get('[data-testid="create-scenario-button"]').should('be.disabled');
   });
 
-  it('a user types an invalid name and a hint appears below the field', () => {
+  it('a user types an invalid name and submit is disabled', () => {
     cy.url().should('contain', '/data/scenarios/new');
     cy.get('[data-testid="scenario-name-input"]').type('?');
-    cy.get('[data-testid="create-scenario-button"]').click();
-
-    cy.get('[data-testid="hint-input-title"]')
-      .contains('title must be at least 2 characters')
-      .should('be.visible');
+    cy.get('[data-testid="create-scenario-button"]').should('be.disabled');
   });
 });

@@ -14,6 +14,8 @@ const schemaValidation = yup.object({
   fname: yup.string(),
   lname: yup.string(),
   email: yup.string().email().required(),
+  roles: yup.array().of(yup.string()).optional().nullable(),
+  id: yup.string().nullable().optional(),
 });
 
 const UserDataForm: React.FC = () => {
@@ -62,7 +64,7 @@ const UserDataForm: React.FC = () => {
                   <Input
                     {...register('fname')}
                     defaultValue={user.data.fname}
-                    error={errors.fname?.message}
+                    error={errors.fname?.message as string}
                   />
                 </div>
                 <div>
@@ -70,7 +72,7 @@ const UserDataForm: React.FC = () => {
                   <Input
                     {...register('lname')}
                     defaultValue={user.data.lname}
-                    error={errors.lname?.message}
+                    error={errors.lname?.message as string}
                   />
                 </div>
 
@@ -80,7 +82,7 @@ const UserDataForm: React.FC = () => {
                     {...register('email')}
                     defaultValue={user.data.email}
                     type="email"
-                    error={errors.email?.message}
+                    error={errors.email?.message as string}
                   />
                 </div>
               </div>

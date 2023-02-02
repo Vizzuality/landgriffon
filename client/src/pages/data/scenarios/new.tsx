@@ -8,7 +8,6 @@ import { useCreateScenario } from 'hooks/scenarios';
 import CleanLayout from 'layouts/clean';
 import BackLink from 'components/back-link';
 import ScenarioForm from 'containers/scenarios/form';
-import { parseScenarioFormDataToDto } from 'containers/scenarios/utils';
 
 import type { ScenarioFormData } from 'containers/scenarios/types';
 import type { ErrorResponse } from 'types';
@@ -17,16 +16,15 @@ const CreateScenarioPage: React.FC = () => {
   const createScenario = useCreateScenario();
   const handleCreateScenario = useCallback(
     (scenarioFormData: ScenarioFormData) => {
-      const scenarioDTO = parseScenarioFormDataToDto(scenarioFormData);
-      createScenario.mutate(scenarioDTO, {
+      createScenario.mutate(scenarioFormData, {
         onSuccess: ({ data }) => {
           const { data: scenario } = data;
           const { id, title } = scenario;
-          toast.success(`The scenario ${title} has been created`);
+          toast.success(`The scenario ${title} has been created, you will be redirected shortly.`);
           // adding some delay to make sure the user reads the success message
           setTimeout(() => {
             router.replace(`/data/scenarios/${id}/edit`);
-          }, 1000);
+          }, 3000);
         },
         onError: (error: ErrorResponse) => {
           const { errors } = error.response?.data;

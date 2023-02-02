@@ -18,6 +18,14 @@ Cypress.Commands.add(
   } = {}): Cypress.Chainable => {
     cy.log('🔐 Sign in with Next Auth');
 
+    cy.intercept('GET', '/api/auth/session', {
+      fixture: 'auth/session.json',
+    });
+
+    cy.intercept('GET', '/api/v1/users/me', {
+      fixture: 'auth/me.json',
+    });
+
     return cy.session(['login', username, password], () => {
       cy.wrap(
         signIn('credentials', {
@@ -36,10 +44,12 @@ Cypress.Commands.add('createScenario', (): void => {
   cy.visit('/data/scenarios/new');
   cy.get('[data-testid="scenario-name-input"]').type('scenario mockup name');
   cy.get('[data-testid="scenario-description-input"]').type('scenario mockup description');
-  cy.get('[data-testid="create-scenario-button"]').click();
+  // cy.get('[data-testid="scenario-form-validation-true"]').should('exist'); // wait for the validation
+  cy.get('[data-testid="create-scenario-button"]').should('not.be.disabled').click();
 });
 
 Cypress.Commands.add('logout', (): Cypress.Chainable => {
   cy.log('logout');
+
   return cy.wrap(signOut({ redirect: false }));
 });

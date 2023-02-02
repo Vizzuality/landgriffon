@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   ServiceUnavailableException,
@@ -18,9 +19,8 @@ import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto';
 import { UpdateIndicatorDto } from 'modules/indicators/dto/update.indicator.dto';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
-import { In, SelectQueryBuilder } from 'typeorm';
+import { FindManyOptions, FindOptionsWhere, In } from 'typeorm';
 import { IndicatorNameCodeWithRelatedH3 } from 'modules/indicators/dto/indicator-namecode-with-related-h3.dto';
-import { FetchSpecification } from 'nestjs-base-service';
 import { getDiffForEntitiesToBeActivated } from 'utils/helpers/array-diff.helper';
 
 @Injectable()
@@ -59,12 +59,12 @@ export class IndicatorsService extends AppBaseService<
   async getAllIndicators(): Promise<Indicator[]> {
     // It is assumed that the indicators that are enabled/valid, are the ones that are present on the DB since
     // the initial seeding import. So a simple getAll is sufficient
-    return this.findAllUnpaginated();
+    return this.findAllIndicators();
   }
 
   async getIndicatorById(id: string): Promise<Indicator> {
     const found: Indicator | null = await this.indicatorRepository.findOne({
-      where: { id, status: INDICATOR_STATUS.ACTIVE },
+      where: { id },
     });
 
     if (!found) {
@@ -107,7 +107,6 @@ export class IndicatorsService extends AppBaseService<
   async getIndicatorsById(ids: string[]): Promise<Indicator[]> {
     const indicators: Indicator[] = await this.indicatorRepository.findBy({
       id: In(ids),
-      status: INDICATOR_STATUS.ACTIVE,
     });
 
     if (!indicators.length) {
@@ -118,11 +117,14 @@ export class IndicatorsService extends AppBaseService<
     return indicators;
   }
 
-  async findAllUnpaginated(): Promise<Indicator[]> {
-    return this.indicatorRepository.find({
-      cache: 1000,
-      where: { status: INDICATOR_STATUS.ACTIVE },
-    });
+  async findAllIndicators(
+    whereOptions?: FindOptionsWhere<Indicator>,
+  ): Promise<Indicator[]> {
+    const findOptions: FindManyOptions<Indicator> = whereOptions
+      ? { cache: 1000, where: whereOptions }
+      : { cache: 1000 };
+
+    return this.indicatorRepository.find(findOptions);
   }
 
   async getIndicatorsAndRelatedH3DataIds(): Promise<
@@ -211,13 +213,24 @@ export class IndicatorsService extends AppBaseService<
     );
   }
 
-  async extendFindAllQuery(
-    queryBuilder: SelectQueryBuilder<Indicator>,
-    fetchSpecification: FetchSpecification,
-  ): Promise<SelectQueryBuilder<Indicator>> {
-    queryBuilder.andWhere(`${this.alias}.status = :status`, {
-      status: INDICATOR_STATUS.ACTIVE,
-    });
-    return queryBuilder;
+  async checkActiveIndicatorsForCalculations(
+    indicatorIds: string[],
+  ): Promise<void> {
+    const inactiveSelectedIndicators: Indicator[] =
+      await this.findAllIndicators({
+        id: In(indicatorIds),
+        status: INDICATOR_STATUS.INACTIVE,
+      });
+
+    if (inactiveSelectedIndicators.length) {
+      const inactiveIndicatorsNames: string[] = inactiveSelectedIndicators.map(
+        (indicator: Indicator) => indicator.name,
+      );
+      throw new BadRequestException(
+        `Requested Indicators are not activated: ${inactiveIndicatorsNames.join(
+          ', ',
+        )}`,
+      );
+    }
   }
 }

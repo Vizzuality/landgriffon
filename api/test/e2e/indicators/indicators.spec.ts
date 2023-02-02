@@ -2,6 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import {
   Indicator,
+  INDICATOR_STATUS,
   INDICATOR_TYPES,
 } from 'modules/indicators/indicator.entity';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
@@ -11,6 +12,7 @@ import ApplicationManager, {
 } from '../../utils/application-manager';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
+import { createIndicator } from '../../entity-mocks';
 
 /**
  * Tests for the IndicatorsModule.
@@ -143,6 +145,40 @@ describe('IndicatorsModule (e2e)', () => {
 
       expect(response.body.data[0].id).toEqual(indicator.id);
     });
+
+    test('When requesting all indicators then indicators with inactive status should be included in results', async () => {
+      await createIndicator({
+        name: 'Indicator 1',
+        nameCode: 'IND_1',
+        status: INDICATOR_STATUS.ACTIVE,
+      });
+      await createIndicator({
+        name: 'Indicator 2',
+        nameCode: 'IND_2',
+        status: INDICATOR_STATUS.INACTIVE,
+      });
+      const inactiveIndicator: Indicator = await createIndicator({
+        name: 'Indicator 3',
+        nameCode: 'IND_3',
+        status: INDICATOR_STATUS.INACTIVE,
+      });
+
+      const response = await request(testApplication.getHttpServer())
+        .get(`/api/v1/indicators`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send()
+        .expect(HttpStatus.OK);
+
+      expect(response.body.data.length).toEqual(3);
+
+      const foundInactiveIndicator: any = response.body.data.find(
+        (indicator: Indicator) => indicator.id === inactiveIndicator.id,
+      );
+
+      expect(foundInactiveIndicator.attributes.status).toEqual(
+        INDICATOR_STATUS.INACTIVE,
+      );
+    });
   });
 
   describe('Indicators - Get by id', () => {
@@ -150,6 +186,22 @@ describe('IndicatorsModule (e2e)', () => {
       const indicator: Indicator = new Indicator();
       indicator.name = 'test indicator';
       indicator.nameCode = 'Midiclorian';
+      await indicator.save();
+
+      const response = await request(testApplication.getHttpServer())
+        .get(`/api/v1/indicators/${indicator.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send()
+        .expect(HttpStatus.OK);
+
+      expect(response.body.data.id).toEqual(indicator.id);
+    });
+
+    test('Get an inactive indicator by id should be successful (happy case)', async () => {
+      const indicator: Indicator = new Indicator();
+      indicator.name = 'inactive indicator';
+      indicator.nameCode = 'IND_INACT';
+      indicator.status = INDICATOR_STATUS.INACTIVE;
       await indicator.save();
 
       const response = await request(testApplication.getHttpServer())

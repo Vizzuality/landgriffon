@@ -9,6 +9,7 @@ import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { MaterialsModule } from 'modules/materials/materials.module';
 import { ActualVsScenarioImpactService } from 'modules/impact/comparison/actual-vs-scenario.service';
 import { ScenarioVsScenarioImpactService } from 'modules/impact/comparison/scenario-vs-scenario.service';
+import { IndicatorsService } from 'modules/indicators/indicators.service';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ScenarioVsScenarioImpactService } from 'modules/impact/comparison/scena
     ImpactService,
     ActualVsScenarioImpactService,
     ScenarioVsScenarioImpactService,
+    IndicatorsService,
   ],
   controllers: [ImpactController],
   exports: [

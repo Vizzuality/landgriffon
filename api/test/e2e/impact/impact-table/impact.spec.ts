@@ -17,6 +17,7 @@ import { IndicatorRecord } from 'modules/indicator-records/indicator-record.enti
 import { Unit } from 'modules/units/unit.entity';
 import {
   Indicator,
+  INDICATOR_STATUS,
   INDICATOR_TYPES,
 } from 'modules/indicators/indicator.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
@@ -125,6 +126,34 @@ describe('Impact Table and Charts test suite (e2e)', () => {
 
     expect(response.body.errors[0].title).toEqual(
       'No Indicator has been found with provided IDs',
+    );
+  });
+
+  test('When I query the API for a Impact Table for inactive indicators then I should get a proper error message', async () => {
+    const inactiveIndicator: Indicator = await createIndicator({
+      name: 'Inactive Indicator 1',
+      nameCode: 'IN_IND',
+      status: INDICATOR_STATUS.INACTIVE,
+    });
+
+    const activeIndicator: Indicator = await createIndicator({
+      name: 'active Indicator',
+      nameCode: 'ACT_IND',
+      status: INDICATOR_STATUS.ACTIVE,
+    });
+    const response = await request(testApplication.getHttpServer())
+      .get('/api/v1/impact/table')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .query({
+        'indicatorIds[]': [inactiveIndicator.id, activeIndicator.id],
+        endYear: 1,
+        startYear: 2,
+        groupBy: 'material',
+      })
+      .expect(HttpStatus.BAD_REQUEST);
+
+    expect(response.body.errors[0].title).toEqual(
+      'Requested Indicators are not activated: Inactive Indicator 1',
     );
   });
 

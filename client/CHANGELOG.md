@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added a volume field in the intervention form [LANDGRIF-1112](https://vizzuality.atlassian.net/browse/LANDGRIF-1112)
 
 ### Changed
-
+- Bumps `browserslist-db` dependency.
 - Show the scenario name in the charts [LANDGRIF-1116](https://vizzuality.atlassian.net/browse/LANDGRIF-1116)
 - Move the users page from data to user [LANDGRIF-1122](https://vizzuality.atlassian.net/browse/LANDGRIF-1122)
 

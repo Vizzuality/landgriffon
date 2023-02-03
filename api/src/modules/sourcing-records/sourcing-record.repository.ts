@@ -28,6 +28,11 @@ import {
   ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 
+export type AnyImpactTableData =
+  | ImpactTableData
+  | ActualVsScenarioImpactTableData
+  | ScenarioVsScenarioImpactTableData;
+
 export class ImpactTableData {
   year: number;
   indicatorId: string;
@@ -39,35 +44,12 @@ export class ImpactTableData {
 }
 
 export class ActualVsScenarioImpactTableData extends ImpactTableData {
-  scenarioImpact?: number;
-  absoluteDifference?: number;
-  percentageDifference?: number;
+  scenarioImpact: number;
 }
 
 export class ScenarioVsScenarioImpactTableData extends ImpactTableData {
-  scenarioOneImpact?: number;
-  scenarioTwoImpact?: number;
-  absoluteDifference?: number;
-  percentageDifference?: number;
-}
-
-export class ScenariosImpactTableData extends ImpactTableData {
-  scenariosImpacts: ScenarioComparisonImpact[];
-  scenariosTonnes: ScenarioComparisonTonnes[];
-}
-
-export class ScenarioComparisonImpact {
-  scenarioId: string;
-  newImpact?: number;
-  canceledImpact?: number;
-  impactResult?: number;
-}
-
-export class ScenarioComparisonTonnes {
-  scenarioId: string;
-  newTonnage?: number;
-  canceledTonnage?: number;
-  tonnageDifference?: number;
+  scenarioOneImpact: number;
+  scenarioTwoImpact: number;
 }
 
 @EntityRepository(SourcingRecord)
@@ -110,10 +92,8 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
     // Decide to select just actual data or scenario with actual data
     this.handleSourceDataSelect(impactDataQueryBuilder, getImpactTaleDto);
 
-    // Adding received entity filters to query
     this.addEntityFiltersToQuery(impactDataQueryBuilder, getImpactTaleDto);
 
-    // Adding received group by option to query
     this.addGroupAndOrderByToQuery(impactDataQueryBuilder, getImpactTaleDto);
 
     const dataForImpactTable: ImpactTableData[] =
@@ -129,7 +109,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
 
   async getDataForActualVsScenarioImpactTable(
     getActualVsScenarioImpactTable: GetActualVsScenarioImpactTableDto,
-  ): Promise<ActualVsScenarioImpactTableData[]> {
+  ): Promise<ImpactTableData[]> {
     const impactDataQueryBuilder: SelectQueryBuilder<SourcingRecord> =
       this.createBasicSelectQuery(getActualVsScenarioImpactTable);
 
@@ -163,7 +143,6 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       impactDataQueryBuilder,
       getActualVsScenarioImpactTable,
     );
-    impactDataQueryBuilder.addGroupBy('scenarioIntervention.scenarioId');
 
     const dataForActualVsScenarioImpactTable: ActualVsScenarioImpactTableData[] =
       await impactDataQueryBuilder.getRawMany();

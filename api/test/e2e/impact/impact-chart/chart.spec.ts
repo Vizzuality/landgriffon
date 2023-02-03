@@ -444,7 +444,9 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
         'ignoring INACTIVE interventions. ' +
         'Past years with 0 values should have property isProjected false',
       async () => {
-        const newScenario: Scenario = await createScenario();
+        const newScenario: Scenario = await createScenario({
+          title: 'RankWithInactive',
+        });
 
         const { replacedMaterials, replacingMaterials, indicator } =
           await createNewMaterialInterventionPreconditions(newScenario);

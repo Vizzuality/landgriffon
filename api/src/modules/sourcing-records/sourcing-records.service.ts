@@ -10,7 +10,6 @@ import {
 } from 'modules/sourcing-records/sourcing-record.entity';
 import { AppInfoDTO } from 'dto/info.dto';
 import {
-  ActualVsScenarioImpactTableData,
   ImpactTableData,
   SourcingRecordRepository,
 } from 'modules/sourcing-records/sourcing-record.repository';
@@ -64,9 +63,9 @@ export class SourcingRecordsService extends AppBaseService<
     };
   }
 
-  async getSourcingRecordById(id: number): Promise<SourcingRecord> {
-    const found: SourcingRecord | undefined =
-      await this.sourcingRecordRepository.findOne(id);
+  async getSourcingRecordById(id: string): Promise<SourcingRecord> {
+    const found: SourcingRecord | null =
+      await this.sourcingRecordRepository.findOne({ where: { id } });
 
     if (!found) {
       throw new NotFoundException(`Sourcing Record with ID "${id}" not found`);
@@ -104,7 +103,7 @@ export class SourcingRecordsService extends AppBaseService<
 
   async getDataForActualVsScenarioImpactTable(
     getActualVsScenarioImpactTableDto: GetActualVsScenarioImpactTableDto,
-  ): Promise<ActualVsScenarioImpactTableData[]> {
+  ): Promise<ImpactTableData[]> {
     return this.sourcingRecordRepository.getDataForActualVsScenarioImpactTable(
       getActualVsScenarioImpactTableDto,
     );

@@ -15,6 +15,11 @@ import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 import { replaceStringWhiteSpacesWithDash } from 'utils/transform-location-type.util';
 
+export type AnyImpactTableDto =
+  | GetImpactTableDto
+  | GetRankedImpactTableDto
+  | GetActualVsScenarioImpactTableDto
+  | GetScenarioVsScenarioImpactTableDto;
 export class BaseImpactTableDto {
   @ApiProperty({
     name: 'indicatorIds[]',

@@ -51,4 +51,19 @@ const Template = (args: SelectProps<number>) => {
   );
 };
 
+const MultipleTemplate = (args: SelectProps<number>) => {
+  return (
+    <Component<number>
+      {...args}
+      error={args.error ? 'This is an example of error message' : null}
+      name="people"
+      id="multiple-select"
+      options={data}
+      multiple
+      placeholder="Select several people"
+    />
+  );
+};
+
 export const SimpleSelect = Template.bind({});
+export const MutlipleSelect = MultipleTemplate.bind({});

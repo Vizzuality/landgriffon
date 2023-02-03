@@ -1,5 +1,10 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { PaginationMeta } from 'utils/app-base.service';
+import {
+  BaseIndicatorSumByYearData,
+  ImpactTableBaseRowsValues,
+  ImpactTablePurchasedTonnes,
+} from 'modules/impact/dto/response-impact-table.dto';
 
 export class ActualVsScenarioImpactTable {
   @ApiProperty({
@@ -11,7 +16,7 @@ export class ActualVsScenarioImpactTable {
     type: () => ActualVsScenarioImpactTablePurchasedTonnes,
     isArray: true,
   })
-  purchasedTonnes: ActualVsScenarioImpactTablePurchasedTonnes[];
+  purchasedTonnes: ImpactTablePurchasedTonnes[];
 }
 
 export class ActualVsScenarioPaginatedImpactTable {
@@ -19,16 +24,6 @@ export class ActualVsScenarioPaginatedImpactTable {
   data: ActualVsScenarioImpactTable;
   @ApiProperty({ type: () => PaginationMeta })
   metadata?: PaginationMeta;
-}
-
-export class ActualVsScenarioImpactTableDataAggregationInfo {
-  aggregatedValues: ActualVsScenarioImpactTableDataAggregatedValue[];
-  numberOfAggregatedEntities: number;
-  sort: string;
-}
-export class ActualVsScenarioImpactTableDataAggregatedValue {
-  year: number;
-  value: number;
 }
 
 export class ActualVsScenarioImpactTableDataByIndicator {
@@ -40,21 +35,13 @@ export class ActualVsScenarioImpactTableDataByIndicator {
   groupBy: string;
   @ApiProperty({ type: () => ActualVsScenarioImpactTableRows, isArray: true })
   rows: ActualVsScenarioImpactTableRows[];
-  @ApiProperty({ type: () => ActualVsScenarioYearSumData, isArray: true })
-  yearSum: ActualVsScenarioYearSumData[];
-  @ApiProperty()
-  metadata: { unit: string };
   @ApiProperty({
-    type: () => ActualVsScenarioImpactTableRowsValues,
+    type: () => ActualVsScenarioIndicatorSumByYear,
     isArray: true,
   })
-  values?: ActualVsScenarioImpactTableRowsValues[];
-
-  @ApiPropertyOptional({
-    description:
-      'Extra information used for Ranked ImpactTable requests. Missing on normal ImpactTable requests',
-  })
-  others?: ActualVsScenarioImpactTableDataAggregationInfo;
+  yearSum: ActualVsScenarioIndicatorSumByYear[];
+  @ApiProperty()
+  metadata: { unit: string };
 }
 
 export class ActualVsScenarioImpactTablePurchasedTonnes {
@@ -82,32 +69,24 @@ export class ActualVsScenarioImpactTableRows {
   children: ActualVsScenarioImpactTableRows[];
 }
 
-export class ActualVsScenarioYearSumData {
-  @ApiProperty()
-  year: number;
+export class ActualVsScenarioIndicatorSumByYear extends BaseIndicatorSumByYearData {
   @ApiProperty()
   value: number;
-  @ApiPropertyOptional()
-  comparedScenarioValue?: number;
-  @ApiPropertyOptional()
-  absoluteDifference?: number;
-  @ApiPropertyOptional()
-  percentageDifference?: number;
   @ApiProperty()
-  isProjected?: boolean;
+  comparedScenarioValue: number;
+  @ApiProperty()
+  absoluteDifference: number;
+  @ApiProperty()
+  percentageDifference: number;
 }
 
-export class ActualVsScenarioImpactTableRowsValues {
-  @ApiProperty()
-  year: number;
+export class ActualVsScenarioImpactTableRowsValues extends ImpactTableBaseRowsValues {
   @ApiProperty()
   value: number;
-  @ApiPropertyOptional()
-  comparedScenarioValue?: number;
-  @ApiPropertyOptional()
-  absoluteDifference?: number;
-  @ApiPropertyOptional()
-  percentageDifference?: number;
   @ApiProperty()
-  isProjected: boolean;
+  comparedScenarioValue: number;
+  @ApiProperty()
+  absoluteDifference: number;
+  @ApiProperty()
+  percentageDifference: number;
 }

@@ -22,28 +22,35 @@ import { BusinessUnitsService } from 'modules/business-units/business-units.serv
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { MaterialsService } from 'modules/materials/materials.service';
-import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { ImpactTableEntityType } from 'types/impact-table-entity.type';
-import { DEFAULT_PAGINATION, FetchSpecification } from 'nestjs-base-service';
+import { FetchSpecification } from 'nestjs-base-service';
 import { PaginatedEntitiesDto } from 'modules/impact/dto/paginated-entities.dto';
-import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
-import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
-import { PaginationMeta } from 'utils/app-base.service';
+import {
+  BaseImpactService,
+  ImpactDataTableAuxMap,
+} from 'modules/impact/base-impact.service';
 
 @Injectable()
-export class ImpactService {
-  //TODO: Hack to set a expected growing rate. This needs to be stored in the DB in the future
-  growthRate: number = 1.5;
+export class ImpactService extends BaseImpactService {
   logger: Logger = new Logger(ImpactService.name);
 
   constructor(
-    private readonly indicatorService: IndicatorsService,
-    private readonly businessUnitsService: BusinessUnitsService,
-    private readonly adminRegionsService: AdminRegionsService,
-    private readonly suppliersService: SuppliersService,
-    private readonly materialsService: MaterialsService,
-    private readonly sourcingRecordService: SourcingRecordsService,
-  ) {}
+    protected readonly indicatorService: IndicatorsService,
+    protected readonly businessUnitsService: BusinessUnitsService,
+    protected readonly adminRegionsService: AdminRegionsService,
+    protected readonly suppliersService: SuppliersService,
+    protected readonly materialsService: MaterialsService,
+    protected readonly sourcingRecordService: SourcingRecordsService,
+  ) {
+    super(
+      indicatorService,
+      businessUnitsService,
+      adminRegionsService,
+      suppliersService,
+      materialsService,
+      sourcingRecordService,
+    );
+  }
 
   async getImpactTable(
     impactTableDto: GetImpactTableDto,
@@ -177,17 +184,14 @@ export class ImpactService {
       //Sort the impact data rows by the most impact on the starYear
       impactTableDataByIndicator.rows = impactTableDataByIndicator.rows?.sort(
         (a: ImpactTableRows, b: ImpactTableRows) => {
-          if (sort === 'ASC') {
-            return getYearImpact(a, startYear) - getYearImpact(b, startYear);
-          } else {
-            // return DESCENDENT order by default
-            return getYearImpact(b, startYear) - getYearImpact(a, startYear);
-          }
+          return sort === 'ASC'
+            ? getYearImpact(a, startYear) - getYearImpact(b, startYear)
+            : getYearImpact(b, startYear) - getYearImpact(a, startYear);
         },
       );
 
       // extract the entities that are over the maxRankingEntities threshold
-      const discardedEntities: ImpactTableRows[] =
+      const overMaxRankingEntities: ImpactTableRows[] =
         impactTableDataByIndicator.rows.splice(maxRankingEntities);
 
       // Aggregate the values of the entities over the maxRankingEntities for each year
@@ -195,7 +199,7 @@ export class ImpactService {
         startYear,
         endYear + 1,
       ).map((year: number) => {
-        const value: number = discardedEntities.reduce(
+        const value: number = overMaxRankingEntities.reduce(
           (aggregate: number, current: ImpactTableRows) =>
             aggregate + getYearImpact(current, year),
           0,
@@ -206,137 +210,12 @@ export class ImpactService {
 
       impactTableDataByIndicator.others = {
         aggregatedValues: aggregatedValuesPerYear,
-        numberOfAggregatedEntities: discardedEntities.length,
+        numberOfAggregatedEntities: overMaxRankingEntities.length,
         sort,
       };
     }
 
     return impactTable;
-  }
-
-  /**
-   * Modifies the ImpactTabledto such that, for each entityIds that is populated,
-   * the ids of their descendants are added, in-place
-   * @param impactTableDto
-   * @private
-   */
-  private async loadDescendantEntityIds(
-    impactTableDto: GetImpactTableDto,
-  ): Promise<GetImpactTableDto> {
-    if (impactTableDto.originIds)
-      impactTableDto.originIds =
-        await this.adminRegionsService.getAdminRegionDescendants(
-          impactTableDto.originIds,
-        );
-    if (impactTableDto.materialIds)
-      impactTableDto.materialIds =
-        await this.materialsService.getMaterialsDescendants(
-          impactTableDto.materialIds,
-        );
-    if (impactTableDto.supplierIds)
-      impactTableDto.supplierIds =
-        await this.suppliersService.getSuppliersDescendants(
-          impactTableDto.supplierIds,
-        );
-
-    return impactTableDto;
-  }
-
-  /**
-   * @description Returns an array of ImpactTable Entities, determined by the groupBy field and properties
-   * of the GetImpactTableDto
-   * @param impactTableDto
-   * @private
-   */
-  private async getEntityTree(
-    impactTableDto: GetImpactTableDto,
-  ): Promise<ImpactTableEntityType[]> {
-    const treeOptions: GetMaterialTreeWithOptionsDto = {
-      ...(impactTableDto.materialIds && {
-        materialIds: impactTableDto.materialIds,
-      }),
-      ...(impactTableDto.originIds && {
-        originIds: impactTableDto.originIds,
-      }),
-      ...(impactTableDto.supplierIds && {
-        supplierIds: impactTableDto.supplierIds,
-      }),
-      ...(impactTableDto.scenarioIds && {
-        scenarioIds: impactTableDto.scenarioIds,
-      }),
-    };
-    switch (impactTableDto.groupBy) {
-      case GROUP_BY_VALUES.MATERIAL: {
-        return this.materialsService.getMaterialsTreeFromSourcingLocations(
-          treeOptions,
-        );
-      }
-      case GROUP_BY_VALUES.REGION: {
-        return this.adminRegionsService.getAdminRegionWithSourcingLocations(
-          treeOptions,
-        );
-      }
-      case GROUP_BY_VALUES.SUPPLIER: {
-        return this.suppliersService.getSuppliersWithSourcingLocations(
-          treeOptions,
-        );
-      }
-      case GROUP_BY_VALUES.BUSINESS_UNIT:
-        return this.businessUnitsService.getBusinessUnitWithSourcingLocations(
-          treeOptions,
-        );
-
-      case GROUP_BY_VALUES.LOCATION_TYPE:
-        return Object.values(LOCATION_TYPES).map((entity: LOCATION_TYPES) => {
-          return { name: entity, children: [] };
-        });
-
-      default:
-        return [];
-    }
-  }
-
-  /**
-   * Modifies the impactTableDto in-place, to put the ids of the entity tree into the
-   * corresponding entity Ids field according to the groupBy
-   * @param impactTableDto
-   * @param entities
-   * @private
-   */
-  private updateGroupByCriteriaFromEntityTree(
-    impactTableDto: GetImpactTableDto,
-    entities: ImpactTableEntityType[],
-  ): void {
-    switch (impactTableDto.groupBy) {
-      case GROUP_BY_VALUES.MATERIAL:
-        impactTableDto.materialIds = this.getIdsFromTree(
-          entities,
-          impactTableDto.materialIds,
-        );
-        break;
-      case GROUP_BY_VALUES.REGION:
-        impactTableDto.originIds = this.getIdsFromTree(
-          entities,
-          impactTableDto.originIds,
-        );
-        break;
-      case GROUP_BY_VALUES.SUPPLIER:
-        impactTableDto.supplierIds = this.getIdsFromTree(
-          entities,
-          impactTableDto.supplierIds,
-        );
-        break;
-      default:
-    }
-  }
-
-  private getDataForImpactTable(
-    impactTableDto: GetImpactTableDto,
-    entities: ImpactTableEntityType[],
-  ): Promise<ImpactTableData[]> {
-    return entities.length
-      ? this.sourcingRecordService.getDataForImpactTable(impactTableDto)
-      : Promise.resolve([]);
   }
 
   private buildImpactTable(
@@ -357,9 +236,12 @@ export class ImpactService {
 
     //Auxiliary structure in order to avoid scanning the whole table more than once
     const [indicatorEntityMap, lastYearWithData]: [
-      Map<string, Map<string, Map<number, ImpactTableRowsValues>>>,
+      ImpactDataTableAuxMap<ImpactTableRowsValues>,
       number,
-    ] = this.impactTableDataArrayToAuxMap(dataForImpactTable);
+    ] = BaseImpactService.impactTableDataArrayToAuxMapV2<
+      ImpactTableData,
+      ImpactTableRowsValues
+    >(dataForImpactTable, this.createRowValueFromImpactData);
 
     // construct result impact Table
     const impactTable: ImpactTableDataByIndicator[] = [];
@@ -368,14 +250,8 @@ export class ImpactService {
       const indicator: Indicator = auxIndicatorMap.get(
         indicatorId,
       ) as Indicator;
-      const impactTableDataByIndicator: ImpactTableDataByIndicator = {
-        indicatorShortName: indicator.shortName as string,
-        indicatorId: indicator.id,
-        groupBy: groupBy,
-        rows: [],
-        yearSum: [],
-        metadata: { unit: indicator.unit.symbol },
-      };
+      const impactTableDataByIndicator: ImpactTableDataByIndicator =
+        this.createImpactTableDataByIndicator(indicator, groupBy);
       impactTable.push(impactTableDataByIndicator);
 
       // since some entities may be missing values for any given year, we need to do another pass to calculate
@@ -414,146 +290,6 @@ export class ImpactService {
     return { impactTable, purchasedTonnes };
   }
 
-  private getTotalPurchasedVolumeByYear(
-    rangeOfYears: number[],
-    dataForImpactTable: ImpactTableData[],
-    lastYearWithData: number,
-    scenarioId?: string,
-  ): ImpactTablePurchasedTonnes[] {
-    // First scan the whole table to accumulate the values for each year
-    const purchasedTonnesYearMap: Map<number, number> = new Map();
-
-    for (const impactTableData of dataForImpactTable) {
-      const accumulatedPurchasedTonnes: number | undefined =
-        purchasedTonnesYearMap.get(impactTableData.year) || 0;
-
-      const currentPurchasedTonnes: number = Number.isFinite(
-        +impactTableData.tonnes,
-      )
-        ? +impactTableData.tonnes // TODO!!!!!!
-        : 0;
-
-      purchasedTonnesYearMap.set(
-        impactTableData.year,
-        currentPurchasedTonnes + accumulatedPurchasedTonnes,
-      );
-    }
-
-    //Calculate projected data for missing years and construct result array
-    const purchasedTonnes: ImpactTablePurchasedTonnes[] = [];
-    rangeOfYears.forEach((year: number) => {
-      let currentPurchasedTonnesByYear: number | undefined =
-        purchasedTonnesYearMap.get(year);
-      let isProjected: boolean = false;
-
-      // If value exist for that year, append it. There will always be a first valid value to start with
-      // If it does not exist, get the previous value and project it
-      if (!currentPurchasedTonnesByYear) {
-        // TODO: this is hotfix for situations where we receive a start year for which we don't have data
-        const previousYearTonnage: number =
-          purchasedTonnes.length > 0
-            ? purchasedTonnes[purchasedTonnes.length - 1].value
-            : 0;
-        const tonnesToProject: number =
-          dataForImpactTable.length > 0 ? previousYearTonnage : 0;
-
-        currentPurchasedTonnesByYear =
-          tonnesToProject + (tonnesToProject * this.growthRate) / 100;
-        isProjected = year > lastYearWithData;
-      }
-
-      purchasedTonnes.push({
-        year,
-        value: currentPurchasedTonnesByYear,
-        isProjected,
-      });
-    });
-
-    if (scenarioId)
-      purchasedTonnes.map((el: ImpactTablePurchasedTonnes) => (el.value /= 2));
-
-    return purchasedTonnes;
-  }
-
-  /**
-   * Converts an array of flat Impact Table Data to a pseudo-tree structure based on maps
-   * for easier/faster access, like this
-   *    Map<
-   *      indicatorId:string,
-   *      Map<
-   *        entityName:string,
-   *        Map<
-   *          year:number,
-   *          ImpactTableRowsValues
-   *        >
-   *      >
-   *    >
-   *   {
-   *     "deforestationRiskId": {
-   *       "Brazil": {
-   *         2010: {
-   *           year: 2010
-   *           value: 12483
-   *           ....
-   *         },
-   *         2011: {...},
-   *         ......
-   *       },
-   *       "Paraná": {...},
-   *       ....
-   *     },
-   *     "waterUseIndicatorId": {....},
-   *     .....
-   *   }
-   * It also determines the last year with Data, so that another full sweep of the database can be avoided for
-   * optimization
-   * @param dataForImpactTable
-   * @private
-   */
-  private impactTableDataArrayToAuxMap(
-    dataForImpactTable: ImpactTableData[],
-  ): [Map<string, Map<string, Map<number, ImpactTableRowsValues>>>, number] {
-    // NOTE: the impact Table Data can be quite large, so to calculate the maximum number of years is not as trivial
-    // as using Math.max(...impactTable.map(...)) since the call stack will be exceeded because of no of arguments
-    const yearsWithData: Set<number> = new Set();
-
-    const indicatorEntityMap: Map<
-      string,
-      Map<string, Map<number, ImpactTableRowsValues>>
-    > = new Map();
-
-    // Convert the flat structure on array to tree of Maps for easier access
-    for (const impactTableData of dataForImpactTable) {
-      let entityMap:
-        | Map<string, Map<number, ImpactTableRowsValues>>
-        | undefined = indicatorEntityMap.get(impactTableData.indicatorId);
-
-      if (!entityMap) {
-        entityMap = new Map();
-        indicatorEntityMap.set(impactTableData.indicatorId, entityMap);
-      }
-
-      let yearMap: Map<number, ImpactTableRowsValues> | undefined =
-        entityMap.get(impactTableData.name);
-      if (!yearMap) {
-        yearMap = new Map();
-        entityMap.set(impactTableData.name, yearMap);
-      }
-
-      yearMap.set(impactTableData.year, {
-        year: impactTableData.year,
-        value: impactTableData.impact,
-        isProjected: false,
-      });
-
-      yearsWithData.add(impactTableData.year);
-    }
-
-    const lastYearWithData: number = Math.max(...yearsWithData.values());
-
-    return [indicatorEntityMap, lastYearWithData];
-  }
-
   /**
    * This functions does 2 things
    * - fill any missing years in the entityies' yearMap, with the calculation based on previous years' data
@@ -571,7 +307,7 @@ export class ImpactService {
     //We also calculate the yearsum for each indicator
     const yearSumMap: Map<number, number> = new Map();
 
-    for (const [entityName, yearMap] of entityMap.entries()) {
+    for (const yearMap of entityMap.values()) {
       const auxYearValues: number[] = [];
 
       for (const [index, year] of rangeOfYears.entries()) {
@@ -614,16 +350,15 @@ export class ImpactService {
     entity: ImpactTableRows,
     entityMap: Map<string, Map<number, ImpactTableRowsValues>>,
     rangeOfYears: number[],
-    scenarioId?: string,
   ): ImpactTableRowsValues[] {
     entity.values = [];
     for (const year of rangeOfYears) {
-      entity.values.push({
+      const rowsValues: ImpactTableRowsValues = {
         year: year,
         value: 0,
         isProjected: false,
-        ...(scenarioId && { interventionValue: 0 }),
-      });
+      };
+      entity.values.push(rowsValues);
     }
 
     const valuesToAggregate: ImpactTableRowsValues[][] = [];
@@ -632,32 +367,22 @@ export class ImpactService {
     if (selfData) {
       const sortedSelfData: ImpactTableRowsValues[] = Array.from(
         selfData.values(),
-      ).sort(
-        (a: ImpactTableRowsValues, b: ImpactTableRowsValues) => a.year - b.year,
-      );
+      ).sort(BaseImpactService.sortRowValueByYear);
       valuesToAggregate.push(sortedSelfData);
     }
     entity.children.forEach((childEntity: ImpactTableRows) => {
       valuesToAggregate.push(
-        /*
-         * first aggregate data of child entity and then add returned value for
-         * parents aggregation
-         */
-        this.populateValuesRecursively(
-          childEntity,
-          entityMap,
-          rangeOfYears,
-          scenarioId,
-        ),
+        // first aggregate data of child entity and then add returned value for parents aggregation
+        this.populateValuesRecursively(childEntity, entityMap, rangeOfYears),
       );
     });
-    for (const [valueIndex, impactTableRowsValues] of entity.values.entries()) {
-      valuesToAggregate.forEach((item: ImpactTableRowsValues[]) => {
-        entity.values[valueIndex].value =
-          impactTableRowsValues.value + item[valueIndex].value;
-        entity.values[valueIndex].isProjected =
-          item[valueIndex].isProjected || entity.values[valueIndex].isProjected;
-      });
+    for (const [valueIndex, entityRowValue] of entity.values.entries()) {
+      for (const valueToAggregate of valuesToAggregate) {
+        entityRowValue.value += valueToAggregate[valueIndex].value;
+        entityRowValue.isProjected =
+          valueToAggregate[valueIndex].isProjected ||
+          entityRowValue.isProjected;
+      }
     }
     return entity.values;
   }
@@ -677,102 +402,67 @@ export class ImpactService {
     });
   }
 
-  private getIdsFromTree(
-    entities: ImpactTableEntityType[],
-    entityIds?: string[],
-  ): string[] {
-    const idsFromTree: string[] = entities.reduce(
-      (ids: string[], entity: ImpactTableEntityType) => {
-        const childIds: string[] =
-          entity.children.length > 0
-            ? this.getIdsFromTree(entity.children)
-            : [];
-        return [...ids, ...childIds, entity.id];
-      },
-      [],
-    );
-    return entityIds
-      ? entityIds.filter((value: string) => idsFromTree.includes(value))
-      : idsFromTree;
-  }
-
-  private static paginateRootEntities(
-    entities: ImpactTableEntityType[],
-    fetchSpecification: FetchSpecification,
-  ): PaginatedEntitiesDto {
-    if (fetchSpecification.disablePagination) {
-      return {
-        entities,
-        metadata: undefined,
-      };
-    }
-    const totalItems: number = entities.length;
-    const pageSize: number =
-      fetchSpecification?.pageSize ?? DEFAULT_PAGINATION.pageSize ?? 25;
-    const page: number =
-      fetchSpecification?.pageNumber ?? DEFAULT_PAGINATION.pageNumber ?? 1;
-    return {
-      entities: entities.slice((page - 1) * pageSize, page * pageSize),
-      metadata: new PaginationMeta({
-        totalPages: Math.ceil(totalItems / pageSize),
-        totalItems,
-        size: pageSize,
-        page,
-      }),
-    };
-  }
-
   private static processImpactDataWithScenario(
     dataForImpactTableWithScenario: ImpactTableData[],
   ): ImpactTableData[] {
-    const result: ImpactTableData[] = [];
+    // Separate the data into different groups depending on whether data is from a scenario or not
+    const actualData: Map<string, ImpactTableData> = new Map();
+    const scenarioData: ImpactTableData[] = [];
 
-    // Geting array with sourcing data  for real existing locations
-    const realSourcingData: ImpactTableData[] =
-      dataForImpactTableWithScenario.filter((el: ImpactTableData) => {
-        return el.typeByIntervention === null;
-      });
+    for (const data of dataForImpactTableWithScenario) {
+      const key: string = BaseImpactService.getImpactTableDataKey(data);
+      data.typeByIntervention !== null
+        ? scenarioData.push(data)
+        : actualData.set(key, data);
+    }
 
-    // Geting array with sourcing data for locations created by Scenario
-    const scenarioSourcingData: ImpactTableData[] =
-      dataForImpactTableWithScenario.filter((el: ImpactTableData) => {
-        return el.typeByIntervention !== null;
-      });
+    // For all actual data check if there's corresponding scenario data and aggregate it, and discarding it afterwards
+    // Once finished, the remaining data on the scenario map will be scenario data has no real data
+    // (for example, if scenario objective is to use a new material that has never been purchased before, so there is no 'real' data for this material)
+    // In that case impact value (actual or real impact, without Scenario, should be 0)*/
+    const scenarioDataWithoutRealData: ImpactTableData[] = [];
+    for (const data of scenarioData) {
+      const matchingRealData: ImpactTableData | undefined = actualData.get(
+        BaseImpactService.getImpactTableDataKey(data),
+      );
 
-    // Start iterating real data to check if it has been affected by Scenario and calculating scenarioImpact
-    realSourcingData.forEach((realData: ImpactTableData) => {
-      scenarioSourcingData.forEach((scenarioData: ImpactTableData) => {
-        if (
-          scenarioData.name === realData.name &&
-          scenarioData.year === realData.year &&
-          scenarioData.indicatorId === realData.indicatorId &&
-          scenarioData.typeByIntervention !== null
-        ) {
-          realData.impact += scenarioData.impact;
-        }
-      });
-      result.push(realData);
-    });
-
-    /**
-     * We need to check if some of the scenario data has no real data
-     * (for example, if scenario objective is to use a new material that has never been purchased before, so there is no 'real' data for this material)
-     * In that case impact value (actual or real impact, without Scenario, should be 0)*/
-
-    scenarioSourcingData.forEach((scenarioData: ImpactTableData) => {
-      const realDataForEntities: ImpactTableData | undefined =
-        realSourcingData.find((realData: ImpactTableData) => {
-          return (
-            realData.year === scenarioData.year &&
-            realData.name === scenarioData.name
-          );
-        });
-
-      if (!realDataForEntities) {
-        result.push(scenarioData);
+      if (matchingRealData) {
+        matchingRealData.impact += data.impact;
+      } else {
+        scenarioDataWithoutRealData.push(data);
       }
-    });
+    }
+
+    const result: ImpactTableData[] = Array.from(actualData.values());
+
+    scenarioDataWithoutRealData.forEach((data: ImpactTableData) =>
+      result.push(data),
+    );
 
     return result;
+  }
+
+  private createImpactTableDataByIndicator(
+    indicator: Indicator,
+    groupBy: string,
+  ): ImpactTableDataByIndicator {
+    return {
+      indicatorShortName: indicator.shortName as string,
+      indicatorId: indicator.id,
+      groupBy: groupBy,
+      rows: [],
+      yearSum: [],
+      metadata: { unit: indicator.unit.symbol },
+    };
+  }
+
+  private createRowValueFromImpactData(
+    data: ImpactTableData,
+  ): ImpactTableRowsValues {
+    return {
+      year: data.year,
+      value: data.impact,
+      isProjected: false,
+    };
   }
 }

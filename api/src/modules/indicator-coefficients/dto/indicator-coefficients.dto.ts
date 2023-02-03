@@ -81,4 +81,20 @@ export class IndicatorCoefficientsDtoV2 {
   @IsNotEmpty()
   @IsNumber()
   [INDICATOR_TYPES_NEW.LAND_USE]: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Max(1000000)
+  @Min(0)
+  @IsNotEmpty()
+  @IsNumber()
+  [INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION]: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Max(1000000)
+  @Min(0)
+  @IsNotEmpty()
+  @IsNumber()
+  [INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION_RISK]: number;
 }

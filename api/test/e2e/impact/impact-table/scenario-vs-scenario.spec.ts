@@ -30,7 +30,7 @@ import {
 import { createSameMaterialScenariosPreconditions } from '../mocks/scenario-vs-scenario-preconditions/same-materials-scenarios.preconditions';
 import { DataSource } from 'typeorm';
 
-describe('Scenario comparison test suite (e2e)', () => {
+describe('Scenario VS Scenario Impact Table test suite (e2e)', () => {
   let testApplication: TestApplication;
   let jwtToken: string;
   let dataSource: DataSource;

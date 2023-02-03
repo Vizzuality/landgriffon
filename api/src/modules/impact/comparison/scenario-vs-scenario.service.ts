@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
   GetActualVsScenarioImpactTableDto,
-  GetImpactTableDto,
   GetScenarioVsScenarioImpactTableDto,
 } from 'modules/impact/dto/impact-table.dto';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
@@ -17,36 +16,44 @@ import { BusinessUnitsService } from 'modules/business-units/business-units.serv
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { MaterialsService } from 'modules/materials/materials.service';
-import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { ImpactTableEntityType } from 'types/impact-table-entity.type';
-import { DEFAULT_PAGINATION, FetchSpecification } from 'nestjs-base-service';
+import { FetchSpecification } from 'nestjs-base-service';
 import { PaginatedEntitiesDto } from 'modules/impact/dto/paginated-entities.dto';
-import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
-import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
-import { PaginationMeta } from 'utils/app-base.service';
 import {
   ScenarioVsScenarioImpactTable,
   ScenarioVsScenarioImpactTableDataByIndicator,
-  ScenarioVsScenarioImpactTablePurchasedTonnes,
   ScenarioVsScenarioImpactTableRows,
   ScenarioVsScenarioImpactTableRowsValues,
+  ScenarioVsScenarioIndicatorSumByYearData,
   ScenarioVsScenarioPaginatedImpactTable,
 } from 'modules/impact/dto/response-scenario-scenario.dto';
+import {
+  BaseImpactService,
+  ImpactDataTableAuxMap,
+} from 'modules/impact/base-impact.service';
+import { ImpactTablePurchasedTonnes } from 'modules/impact/dto/response-impact-table.dto';
 
 @Injectable()
-export class ScenarioVsScenarioImpactService {
-  //TODO: Hack to set a expected growing rate. This needs to be stored in the DB in the future
-  growthRate: number = 1.5;
+export class ScenarioVsScenarioImpactService extends BaseImpactService {
   logger: Logger = new Logger(ScenarioVsScenarioImpactService.name);
 
   constructor(
-    private readonly indicatorService: IndicatorsService,
-    private readonly businessUnitsService: BusinessUnitsService,
-    private readonly adminRegionsService: AdminRegionsService,
-    private readonly suppliersService: SuppliersService,
-    private readonly materialsService: MaterialsService,
-    private readonly sourcingRecordService: SourcingRecordsService,
-  ) {}
+    protected readonly indicatorService: IndicatorsService,
+    protected readonly businessUnitsService: BusinessUnitsService,
+    protected readonly adminRegionsService: AdminRegionsService,
+    protected readonly suppliersService: SuppliersService,
+    protected readonly materialsService: MaterialsService,
+    protected readonly sourcingRecordService: SourcingRecordsService,
+  ) {
+    super(
+      indicatorService,
+      businessUnitsService,
+      adminRegionsService,
+      suppliersService,
+      materialsService,
+      sourcingRecordService,
+    );
+  }
 
   async getScenarioVsScenarioImpactTable(
     scenarioVsScenarioImpactTableDto: GetScenarioVsScenarioImpactTableDto,
@@ -63,8 +70,9 @@ export class ScenarioVsScenarioImpactService {
 
     // Getting entities and processing that correspond to Scenario 1 and filtered actual data
 
-    const entities: ImpactTableEntityType[] =
-      await this.getScenariosEntityTrees(scenarioVsScenarioImpactTableDto);
+    const entities: ImpactTableEntityType[] = await this.getEntityTree(
+      scenarioVsScenarioImpactTableDto,
+    );
 
     const paginatedEntities: PaginatedEntitiesDto =
       ScenarioVsScenarioImpactService.paginateRootEntities(
@@ -93,385 +101,107 @@ export class ScenarioVsScenarioImpactService {
     };
 
     const dataForScenarioOneAndActual: ImpactTableData[] =
-      await this.getDataForActualVsScenarioImpactTable(
+      await this.getDataForImpactTable(
         scenarioOneDto,
         paginatedEntities.entities,
       );
 
     const dataForScenarioTwoAndActual: ImpactTableData[] =
-      await this.getDataForActualVsScenarioImpactTable(
+      await this.getDataForImpactTable(
         scenarioTwoDto,
         paginatedEntities.entities,
       );
-
     const processedScenarioVsScenarioData: ScenarioVsScenarioImpactTableData[] =
       ScenarioVsScenarioImpactService.processTwoScenariosData(
         dataForScenarioOneAndActual,
         dataForScenarioTwoAndActual,
       );
-
-    const scenarioVsScenarioImpactTable: ScenarioVsScenarioImpactTable =
-      this.buildScenarioVsScenarioImpactTable(
-        scenarioVsScenarioImpactTableDto,
-        indicators,
-        processedScenarioVsScenarioData,
-        this.buildScenarioVsScenarioImpactTableRowsSkeleton(
-          paginatedEntities.entities,
-        ),
-      );
+    const impactTable: ScenarioVsScenarioImpactTable = this.buildImpactTable(
+      scenarioVsScenarioImpactTableDto,
+      indicators,
+      processedScenarioVsScenarioData,
+      paginatedEntities.entities,
+    );
 
     return {
-      data: scenarioVsScenarioImpactTable,
+      data: impactTable,
       metadata: paginatedEntities.metadata,
     };
   }
 
-  /**
-   * Modifies the ImpactTabledto such that, for each entityIds that is populated,
-   * the ids of their descendants are added, in-place
-   * @param impactTableDto
-   * @private
-   */
-  private async loadDescendantEntityIds(
-    scenarioVsScenarioImpactTableDto: GetScenarioVsScenarioImpactTableDto,
-  ): Promise<GetImpactTableDto> {
-    if (scenarioVsScenarioImpactTableDto.originIds)
-      scenarioVsScenarioImpactTableDto.originIds =
-        await this.adminRegionsService.getAdminRegionDescendants(
-          scenarioVsScenarioImpactTableDto.originIds,
-        );
-    if (scenarioVsScenarioImpactTableDto.materialIds)
-      scenarioVsScenarioImpactTableDto.materialIds =
-        await this.materialsService.getMaterialsDescendants(
-          scenarioVsScenarioImpactTableDto.materialIds,
-        );
-    if (scenarioVsScenarioImpactTableDto.supplierIds)
-      scenarioVsScenarioImpactTableDto.supplierIds =
-        await this.suppliersService.getSuppliersDescendants(
-          scenarioVsScenarioImpactTableDto.supplierIds,
-        );
-
-    return scenarioVsScenarioImpactTableDto;
-  }
-
-  /**
-   * Returns an array of ScenarioVsScenarioImpactTable Entities, determined by the grouBy field and properties
-   * of the GetImpactTableDto
-   * @param getActualVsScenarioImpactTableDto
-   * @private
-   */
-  private async getScenariosEntityTrees(
-    getScenarioVsScenarioImpactTableDto: GetScenarioVsScenarioImpactTableDto,
-  ): Promise<ImpactTableEntityType[]> {
-    const treeOptions: GetMaterialTreeWithOptionsDto = {
-      ...(getScenarioVsScenarioImpactTableDto.materialIds && {
-        materialIds: getScenarioVsScenarioImpactTableDto.materialIds,
-      }),
-      ...(getScenarioVsScenarioImpactTableDto.originIds && {
-        originIds: getScenarioVsScenarioImpactTableDto.originIds,
-      }),
-      ...(getScenarioVsScenarioImpactTableDto.supplierIds && {
-        supplierIds: getScenarioVsScenarioImpactTableDto.supplierIds,
-      }),
-
-      scenarioIds: [
-        getScenarioVsScenarioImpactTableDto.baseScenarioId,
-        getScenarioVsScenarioImpactTableDto.comparedScenarioId,
-      ],
-    };
-    switch (getScenarioVsScenarioImpactTableDto.groupBy) {
-      case GROUP_BY_VALUES.MATERIAL: {
-        return this.materialsService.getMaterialsTreeFromSourcingLocations(
-          treeOptions,
-        );
-      }
-      case GROUP_BY_VALUES.REGION: {
-        return this.adminRegionsService.getAdminRegionWithSourcingLocations(
-          treeOptions,
-        );
-      }
-      case GROUP_BY_VALUES.SUPPLIER: {
-        return this.suppliersService.getSuppliersWithSourcingLocations(
-          treeOptions,
-        );
-      }
-      case GROUP_BY_VALUES.BUSINESS_UNIT:
-        return this.businessUnitsService.getBusinessUnitWithSourcingLocations(
-          treeOptions,
-        );
-
-      case GROUP_BY_VALUES.LOCATION_TYPE:
-        return Object.values(LOCATION_TYPES).map((entity: LOCATION_TYPES) => {
-          return { name: entity, children: [] };
-        });
-
-      default:
-        return [];
-    }
-  }
-
-  /**
-   * Modifies the impactTableDto in-place, to put the ids of the entity tree into the
-   * corresponding entity Ids field according to the groupBy
-   * @param impactTableDto
-   * @param entities
-   * @private
-   */
-  private updateGroupByCriteriaFromEntityTree(
-    impactTableDto: GetImpactTableDto,
-    entities: ImpactTableEntityType[],
-  ): void {
-    switch (impactTableDto.groupBy) {
-      case GROUP_BY_VALUES.MATERIAL:
-        impactTableDto.materialIds = this.getIdsFromTree(
-          entities,
-          impactTableDto.materialIds,
-        );
-        break;
-      case GROUP_BY_VALUES.REGION:
-        impactTableDto.originIds = this.getIdsFromTree(
-          entities,
-          impactTableDto.originIds,
-        );
-        break;
-      case GROUP_BY_VALUES.SUPPLIER:
-        impactTableDto.supplierIds = this.getIdsFromTree(
-          entities,
-          impactTableDto.supplierIds,
-        );
-        break;
-      default:
-    }
-  }
-
-  private getDataForActualVsScenarioImpactTable(
-    actualVsScenarioImpactTableDto: GetActualVsScenarioImpactTableDto,
-    entities: ImpactTableEntityType[],
-  ): Promise<ActualVsScenarioImpactTableData[]> {
-    return entities.length > 0
-      ? this.sourcingRecordService.getDataForActualVsScenarioImpactTable(
-          actualVsScenarioImpactTableDto,
-        )
-      : Promise.resolve([]);
-  }
-
-  private buildScenarioVsScenarioImpactTable(
+  private buildImpactTable(
     queryDto: GetScenarioVsScenarioImpactTableDto,
     indicators: Indicator[],
-    dataForScenarioVsScenarioImpactTable: ScenarioVsScenarioImpactTableData[],
-    entities: ScenarioVsScenarioImpactTableRows[],
+    dataForImpactTable: ScenarioVsScenarioImpactTableData[],
+    entityTree: ImpactTableEntityType[],
   ): ScenarioVsScenarioImpactTable {
     this.logger.log('Building Impact Table...');
     const { groupBy, startYear, endYear } = queryDto;
-    const scenarioVsScenarioImpactTable: ScenarioVsScenarioImpactTableDataByIndicator[] =
-      [];
+
+    const auxIndicatorMap: Map<string, Indicator> = new Map(
+      indicators.map((value: Indicator) => [value.id, value]),
+    );
+
     // Create a range of years by start and endYears
     const rangeOfYears: number[] = range(startYear, endYear + 1);
-    const lastYearWithData: number = Math.max(
-      ...dataForScenarioVsScenarioImpactTable.map(
-        (el: ImpactTableData) => el.year,
-      ),
-    );
-    // Append data by indicator and add its unit.symbol as metadata. We need awareness of this loop during the whole process
-    indicators.forEach((indicator: Indicator, indicatorValuesIndex: number) => {
-      const calculatedData: ScenarioVsScenarioImpactTableRows[] = [];
-      scenarioVsScenarioImpactTable.push({
-        indicatorShortName: indicator.shortName as string,
-        indicatorId: indicator.id,
-        groupBy: groupBy,
-        rows: [],
-        yearSum: [],
-        metadata: { unit: indicator.unit.symbol },
-      });
-      // Filter the raw data by Indicator
-      const dataByIndicator: ScenarioVsScenarioImpactTableData[] =
-        dataForScenarioVsScenarioImpactTable.filter(
-          (data: ScenarioVsScenarioImpactTableData) =>
-            data.indicatorId === indicator.id,
+
+    //Auxiliary structure in order to avoid scanning the whole table more than once
+    const [indicatorEntityMap, lastYearWithData]: [
+      ImpactDataTableAuxMap<ScenarioVsScenarioImpactTableRowsValues>,
+      number,
+    ] = BaseImpactService.impactTableDataArrayToAuxMapV2<
+      ScenarioVsScenarioImpactTableData,
+      ScenarioVsScenarioImpactTableRowsValues
+    >(dataForImpactTable, this.createScenarioVsScenarioRowValuesFromImpactData);
+
+    // construct result impact Table
+    const impactTable: ScenarioVsScenarioImpactTableDataByIndicator[] = [];
+
+    for (const [indicatorId, entityMap] of indicatorEntityMap.entries()) {
+      const indicator: Indicator = auxIndicatorMap.get(
+        indicatorId,
+      ) as Indicator;
+      const impactTableDataByIndicator: ScenarioVsScenarioImpactTableDataByIndicator =
+        this.createScenarioVsScenarioImpactTableDataByIndicator(
+          indicator,
+          groupBy,
         );
-      // Get unique entity names for aggregations from raw data
-      const namesByIndicator: string[] = [
-        ...new Set(
-          dataByIndicator.map(
-            (el: ScenarioVsScenarioImpactTableData) => el.name,
-          ),
-        ),
-      ];
-      // For each unique name, append values by year
-      for (const [namesByIndicatorIndex, name] of namesByIndicator.entries()) {
-        calculatedData.push({
-          name,
-          values: [],
-          children: [],
-        });
-        let rowValuesIndex: number = 0;
-        for (const year of rangeOfYears) {
-          const dataForYear: ScenarioVsScenarioImpactTableData | undefined =
-            dataByIndicator.find(
-              (data: ScenarioVsScenarioImpactTableData) =>
-                data.year === year && data.name === name,
-            );
-          //If the year requested by the users exist in the raw data, append its value. There will always be a first valid value to start with
-          if (dataForYear) {
-            calculatedData[namesByIndicatorIndex].values.push({
-              year: dataForYear.year,
-              baseScenarioValue: dataForYear.scenarioOneImpact,
-              comparedScenarioValue: dataForYear.scenarioTwoImpact,
-              isProjected: false,
-            });
-            // If the year requested does no exist in the raw data, project its value getting the latest value (previous year which comes in ascendant order)
-          } else {
-            const lastYearsBaseScenarioValue: number =
-              rowValuesIndex > 0
-                ? calculatedData[namesByIndicatorIndex].values[
-                    rowValuesIndex - 1
-                  ].baseScenarioValue || 0
-                : 0;
-            const lastYearsComparedScenarioValue: number =
-              rowValuesIndex > 0
-                ? calculatedData[namesByIndicatorIndex].values[
-                    rowValuesIndex - 1
-                  ].comparedScenarioValue || 0
-                : 0;
-            const isProjected: boolean = year > lastYearWithData;
-            calculatedData[namesByIndicatorIndex].values.push({
-              year: year,
-              baseScenarioValue:
-                lastYearsBaseScenarioValue +
-                (lastYearsBaseScenarioValue * this.growthRate) / 100,
-              comparedScenarioValue:
-                lastYearsComparedScenarioValue +
-                (lastYearsComparedScenarioValue * this.growthRate) / 100,
-              isProjected,
-            });
-          }
-          ++rowValuesIndex;
-        }
+      impactTable.push(impactTableDataByIndicator);
+
+      // since some entities may be missing values for any given year, we need to do another pass to calculate
+      // values for missing or projected years, and also calculates the total sum for each year
+      this.postProcessYearIndicatorData(
+        entityMap,
+        rangeOfYears,
+        lastYearWithData,
+      );
+
+      // copy and populate tree skeleton for each indicator
+      const impactTableEntitySkeleton: ScenarioVsScenarioImpactTableRows[] =
+        this.buildScenarioVsScenarioImpactTableRowsSkeleton(entityTree);
+
+      for (const entity of impactTableEntitySkeleton) {
+        this.populateValuesRecursively(entity, entityMap, rangeOfYears);
       }
 
-      // Once we have all data, projected or not, append the total sum of impact by year and indicator
-      rangeOfYears.forEach((year: number, indexOfYear: number) => {
-        const baseScenarioTotalSumByYear: number = calculatedData.reduce(
-          (
-            accumulator: number,
-            currentValue: ScenarioVsScenarioImpactTableRows,
-          ): number => {
-            if (currentValue.values[indexOfYear].year === year)
-              accumulator += Number.isFinite(
-                currentValue.values[indexOfYear].baseScenarioValue || 0,
-              )
-                ? currentValue.values[indexOfYear].baseScenarioValue || 0
-                : 0;
-            return accumulator;
-          },
-          0,
-        );
+      impactTableDataByIndicator.rows = impactTableEntitySkeleton;
 
-        const comparedScenarioTotalSumByYear: number = calculatedData.reduce(
-          (
-            accumulator: number,
-            currentValue: ScenarioVsScenarioImpactTableRows,
-          ): number => {
-            if (currentValue.values[indexOfYear].year === year)
-              accumulator += Number.isFinite(
-                currentValue.values[indexOfYear].comparedScenarioValue,
-              )
-                ? currentValue.values[indexOfYear].comparedScenarioValue || 0
-                : 0;
-            return accumulator;
-          },
-          0,
-        );
-
-        const yearData: ScenarioVsScenarioImpactTableRowsValues | undefined =
-          calculatedData[0].values.find(
-            (tableRowValue: ScenarioVsScenarioImpactTableRowsValues) => {
-              return tableRowValue.year === year;
-            },
-          );
-
-        scenarioVsScenarioImpactTable[indicatorValuesIndex].yearSum.push({
-          year,
-          baseScenarioValue: baseScenarioTotalSumByYear,
-          comparedScenarioValue: comparedScenarioTotalSumByYear,
-          absoluteDifference:
-            (baseScenarioTotalSumByYear || 0) - comparedScenarioTotalSumByYear,
-          percentageDifference:
-            (((baseScenarioTotalSumByYear || 0) -
-              comparedScenarioTotalSumByYear) /
-              (((baseScenarioTotalSumByYear || 0) +
-                comparedScenarioTotalSumByYear) /
-                2)) *
-            100,
-          isProjected: yearData?.isProjected,
-        });
-      });
-      // copy and populate tree skeleton for each indicator
-      const skeleton: ScenarioVsScenarioImpactTableRows[] = JSON.parse(
-        JSON.stringify(entities),
+      impactTableDataByIndicator.yearSum = this.calculateIndicatorSumByYear(
+        entityMap,
+        rangeOfYears,
+        lastYearWithData,
       );
-      skeleton.forEach((entity: any) => {
-        this.populateValuesRecursively(entity, calculatedData, rangeOfYears);
-      });
+    }
 
-      scenarioVsScenarioImpactTable[indicatorValuesIndex].rows = skeleton;
-    });
-    const purchasedTonnes: ScenarioVsScenarioImpactTablePurchasedTonnes[] =
+    const purchasedTonnes: ImpactTablePurchasedTonnes[] =
       this.getTotalPurchasedVolumeByYear(
         rangeOfYears,
-        dataForScenarioVsScenarioImpactTable,
+        dataForImpactTable,
         lastYearWithData,
       );
     this.logger.log('Impact Table built');
 
-    return { impactTable: scenarioVsScenarioImpactTable, purchasedTonnes };
-  }
-
-  private getTotalPurchasedVolumeByYear(
-    rangeOfYears: number[],
-    dataForImpactTable: ImpactTableData[],
-    lastYearWithData: number,
-  ): ScenarioVsScenarioImpactTablePurchasedTonnes[] {
-    const purchasedTonnes: ScenarioVsScenarioImpactTablePurchasedTonnes[] = [];
-
-    rangeOfYears.forEach((year: number) => {
-      const valueOfPurchasedTonnesByYear: number = dataForImpactTable.reduce(
-        (accumulator: number, currentValue: ImpactTableData): number => {
-          if (currentValue.year === year) {
-            accumulator += Number.isFinite(+currentValue.tonnes)
-              ? +currentValue.tonnes
-              : 0;
-          }
-          return accumulator;
-        },
-        0,
-      );
-      // If value exist for that year, append it. There will always be a first valid value to start with
-      if (valueOfPurchasedTonnesByYear) {
-        purchasedTonnes.push({
-          year,
-          value: valueOfPurchasedTonnesByYear,
-          isProjected: false,
-        });
-        // If it does not exist, get the previous value and project it
-      } else {
-        // TODO: this is hotfix for situations where we receive a start year for which we don't have data
-        const previousYearTonnage: number =
-          purchasedTonnes.length > 0
-            ? purchasedTonnes[purchasedTonnes.length - 1].value
-            : 0;
-        const tonnesToProject: number =
-          dataForImpactTable.length > 0 ? previousYearTonnage : 0;
-        const isProjected: boolean = year > lastYearWithData;
-        purchasedTonnes.push({
-          year,
-          value: tonnesToProject + (tonnesToProject * this.growthRate) / 100,
-          isProjected,
-        });
-      }
-    });
-
-    return purchasedTonnes;
+    return { impactTable, purchasedTonnes };
   }
 
   /**
@@ -480,68 +210,71 @@ export class ScenarioVsScenarioImpactService {
    */
   private populateValuesRecursively(
     entity: ScenarioVsScenarioImpactTableRows,
-    calculatedRows: ScenarioVsScenarioImpactTableRows[],
+    entityDataMap: Map<
+      string,
+      Map<number, ScenarioVsScenarioImpactTableRowsValues>
+    >,
     rangeOfYears: number[],
   ): ScenarioVsScenarioImpactTableRowsValues[] {
     entity.values = [];
     for (const year of rangeOfYears) {
-      entity.values.push({
+      const rowsValues: ScenarioVsScenarioImpactTableRowsValues = {
         year: year,
         baseScenarioValue: 0,
         comparedScenarioValue: 0,
+        absoluteDifference: 0,
+        percentageDifference: 0,
         isProjected: false,
-      });
+      };
+      entity.values.push(rowsValues);
     }
 
     const valuesToAggregate: ScenarioVsScenarioImpactTableRowsValues[][] = [];
-    const selfData: ScenarioVsScenarioImpactTableRows | undefined =
-      calculatedRows.find(
-        (item: ScenarioVsScenarioImpactTableRows) => item.name === entity.name,
-      );
-    if (selfData) valuesToAggregate.push(selfData.values);
+    const selfData:
+      | Map<number, ScenarioVsScenarioImpactTableRowsValues>
+      | undefined = entityDataMap.get(entity.name);
+    if (selfData) {
+      const sortedSelfData: ScenarioVsScenarioImpactTableRowsValues[] =
+        Array.from(selfData.values()).sort(
+          BaseImpactService.sortRowValueByYear,
+        );
+      valuesToAggregate.push(sortedSelfData);
+    }
+
     entity.children.forEach(
       (childEntity: ScenarioVsScenarioImpactTableRows) => {
-        valuesToAggregate.push(
-          /*
-           * first aggregate data of child entity and then add returned value for
-           * parents aggregation
-           */
+        //first aggregate data of child entity and then add returned value for parents aggregation
+        const childValues: ScenarioVsScenarioImpactTableRowsValues[] =
           this.populateValuesRecursively(
             childEntity,
-            calculatedRows,
+            entityDataMap,
             rangeOfYears,
-          ),
-        );
+          );
+        valuesToAggregate.push(childValues);
       },
     );
-    for (const [
-      valueIndex,
-      ScenarioVsScenarioImpactTableRowsValues,
-    ] of entity.values.entries()) {
-      valuesToAggregate.forEach(
-        (item: ScenarioVsScenarioImpactTableRowsValues[]) => {
-          entity.values[valueIndex].baseScenarioValue =
-            (ScenarioVsScenarioImpactTableRowsValues.baseScenarioValue ?? 0) +
-            (item[valueIndex].baseScenarioValue || 0);
-          entity.values[valueIndex].isProjected =
-            item[valueIndex].isProjected ||
-            entity.values[valueIndex].isProjected;
 
-          entity.values[valueIndex].comparedScenarioValue =
-            (ScenarioVsScenarioImpactTableRowsValues.comparedScenarioValue ??
-              0) + (item[valueIndex].comparedScenarioValue || 0);
-          entity.values[valueIndex].absoluteDifference =
-            (entity.values[valueIndex].baseScenarioValue || 0) -
-            (entity.values[valueIndex].comparedScenarioValue || 0);
-          entity.values[valueIndex].percentageDifference =
-            (((entity.values[valueIndex].baseScenarioValue || 0) -
-              (entity.values[valueIndex].comparedScenarioValue || 0)) /
-              (((entity.values[valueIndex].baseScenarioValue || 0) +
-                (entity.values[valueIndex].comparedScenarioValue || 0)) /
-                2)) *
-            100;
-        },
-      );
+    for (const [valueIndex, entityRowValue] of entity.values.entries()) {
+      for (const valueToAggregate of valuesToAggregate) {
+        entityRowValue.baseScenarioValue +=
+          valueToAggregate[valueIndex].baseScenarioValue;
+        entityRowValue.comparedScenarioValue +=
+          valueToAggregate[valueIndex].comparedScenarioValue;
+        entityRowValue.isProjected =
+          valueToAggregate[valueIndex].isProjected ||
+          entityRowValue.isProjected;
+
+        entityRowValue.absoluteDifference =
+          entityRowValue.baseScenarioValue -
+          entityRowValue.comparedScenarioValue;
+        entityRowValue.percentageDifference =
+          ((entityRowValue.baseScenarioValue -
+            entityRowValue.comparedScenarioValue) /
+            ((entityRowValue.baseScenarioValue +
+              entityRowValue.comparedScenarioValue) /
+              2)) *
+          100;
+      }
     }
     return entity.values;
   }
@@ -561,118 +294,6 @@ export class ScenarioVsScenarioImpactService {
     });
   }
 
-  private getIdsFromTree(
-    entities: ImpactTableEntityType[],
-    entityIds?: string[],
-  ): string[] {
-    const idsFromTree: string[] = entities.reduce(
-      (ids: string[], entity: ImpactTableEntityType) => {
-        const childIds: string[] =
-          entity.children.length > 0
-            ? this.getIdsFromTree(entity.children)
-            : [];
-        return [...ids, ...childIds, entity.id];
-      },
-      [],
-    );
-    return entityIds
-      ? entityIds.filter((value: string) => idsFromTree.includes(value))
-      : idsFromTree;
-  }
-
-  private static paginateRootEntities(
-    entities: ImpactTableEntityType[],
-    fetchSpecification: FetchSpecification,
-  ): PaginatedEntitiesDto {
-    if (fetchSpecification.disablePagination) {
-      return {
-        entities,
-        metadata: undefined,
-      };
-    }
-    const totalItems: number = entities.length;
-    const pageSize: number =
-      fetchSpecification?.pageSize ?? DEFAULT_PAGINATION.pageSize ?? 25;
-    const page: number =
-      fetchSpecification?.pageNumber ?? DEFAULT_PAGINATION.pageNumber ?? 1;
-    return {
-      entities: entities.slice((page - 1) * pageSize, page * pageSize),
-      metadata: new PaginationMeta({
-        totalPages: Math.ceil(totalItems / pageSize),
-        totalItems,
-        size: pageSize,
-        page,
-      }),
-    };
-  }
-
-  private static processDataForComparison(
-    dataForActualVsScenarioImpactTable: ImpactTableData[],
-  ): ActualVsScenarioImpactTableData[] {
-    const result: ActualVsScenarioImpactTableData[] = [];
-
-    // Geting array with sourcing data  for real existing locations
-    const realSourcingData: ActualVsScenarioImpactTableData[] =
-      dataForActualVsScenarioImpactTable.filter((el: ImpactTableData) => {
-        return el.typeByIntervention === null;
-      });
-
-    // Geting array with sourcing data for locations created by Scenario
-    const scenarioSourcingData: ImpactTableData[] =
-      dataForActualVsScenarioImpactTable.filter((el: ImpactTableData) => {
-        return el.typeByIntervention !== null;
-      });
-
-    // By default, if real sourcing data is not affected by scenario - we assume that real impact and scenario impact are the same
-
-    realSourcingData.map((data: ActualVsScenarioImpactTableData) => {
-      return (data.scenarioImpact = data.impact);
-    });
-
-    // Start iterating real data to check if it has been affected by Scenario and calculating scenarioImpact
-    realSourcingData.forEach((realData: ActualVsScenarioImpactTableData) => {
-      scenarioSourcingData.forEach(
-        (scenarioData: ActualVsScenarioImpactTableData) => {
-          if (
-            scenarioData.name === realData.name &&
-            scenarioData.year === realData.year &&
-            scenarioData.indicatorId === realData.indicatorId &&
-            scenarioData.typeByIntervention !== null
-          ) {
-            realData.scenarioImpact! += scenarioData.impact;
-          }
-        },
-      );
-      result.push(realData);
-    });
-
-    /**
-     * We need to check if some of the scenario data has no real data
-     * (for example, if scenario objective is to use a new material that has never been purchased before, so there is no 'real' data for this material)
-     * In that case impact value (actual or real impact, without Scenario, should be 0)*/
-
-    scenarioSourcingData.forEach(
-      (scenarioData: ActualVsScenarioImpactTableData) => {
-        const realDataForEntities: ActualVsScenarioImpactTableData | undefined =
-          realSourcingData.find((realData: ActualVsScenarioImpactTableData) => {
-            return (
-              realData.year === scenarioData.year &&
-              realData.name === scenarioData.name
-            );
-          });
-
-        if (!realDataForEntities) {
-          scenarioData.scenarioImpact = scenarioData.impact;
-          scenarioData.impact = 0;
-
-          result.push(scenarioData);
-        }
-      },
-    );
-
-    return result;
-  }
-
   private static processTwoScenariosData(
     dataForScenarioOne: ImpactTableData[],
     dataForScenarioTwo: ImpactTableData[],
@@ -681,6 +302,11 @@ export class ScenarioVsScenarioImpactService {
       ScenarioVsScenarioImpactService.processDataForComparison(
         dataForScenarioOne,
       );
+    const processedDataForScenarioTwoAndActual: ActualVsScenarioImpactTableData[] =
+      ScenarioVsScenarioImpactService.processDataForComparison(
+        dataForScenarioTwo,
+      );
+
     const scenarioOneDataForScenarioComparison: ScenarioVsScenarioImpactTableData[] =
       processedDataForScenarioOneAndActual.map((scenarioData: any) => {
         scenarioData.scenarioOneImpact = scenarioData.scenarioImpact;
@@ -688,12 +314,6 @@ export class ScenarioVsScenarioImpactService {
         delete scenarioData.scenarioImpact;
         return scenarioData;
       });
-
-    const processedDataForScenarioTwoAndActual: ActualVsScenarioImpactTableData[] =
-      ScenarioVsScenarioImpactService.processDataForComparison(
-        dataForScenarioTwo,
-      );
-
     const scenarioTwoDataForScenarioComparison: ScenarioVsScenarioImpactTableData[] =
       processedDataForScenarioTwoAndActual.map((scenarioData: any) => {
         scenarioData.scenarioOneImpact = 0;
@@ -702,49 +322,181 @@ export class ScenarioVsScenarioImpactService {
         return scenarioData;
       });
 
-    return this.mergeTwoScenariosData(
+    return this.mergeTwoScenariosDataV2(
       scenarioOneDataForScenarioComparison,
       scenarioTwoDataForScenarioComparison,
     );
   }
 
-  private static mergeTwoScenariosData(
+  private static mergeTwoScenariosDataV2(
     scenarioOneData: ScenarioVsScenarioImpactTableData[],
     scenarioTwoData: ScenarioVsScenarioImpactTableData[],
   ): ScenarioVsScenarioImpactTableData[] {
-    const mergedScenariosData: ScenarioVsScenarioImpactTableData[] =
+    const bothScenarios: ScenarioVsScenarioImpactTableData[] =
       scenarioOneData.concat(scenarioTwoData);
 
-    const finalScenariosData: ScenarioVsScenarioImpactTableData[] =
-      mergedScenariosData.reduce(
-        (
-          accumulator: ScenarioVsScenarioImpactTableData[],
-          currentValue: ScenarioVsScenarioImpactTableData,
-        ) => {
-          const existingData: ScenarioVsScenarioImpactTableData | undefined =
-            accumulator.find((item: ScenarioVsScenarioImpactTableData) => {
-              return (
-                item.name === currentValue.name &&
-                item.year === currentValue.year &&
-                item.indicatorId === currentValue.indicatorId
-              );
-            });
+    const getKey = (data: ImpactTableData): string =>
+      data.indicatorId + '-' + data.name + '-' + data.year;
 
-          if (existingData) {
-            existingData.scenarioOneImpact =
-              (existingData.scenarioOneImpact || 0) +
-              (currentValue.scenarioOneImpact || 0);
-            existingData.scenarioTwoImpact =
-              (existingData.scenarioTwoImpact || 0) +
-              (currentValue.scenarioTwoImpact || 0);
-          } else {
-            accumulator.push(currentValue);
-          }
-          return accumulator;
-        },
-        [],
-      );
+    const resultMap: Map<string, ScenarioVsScenarioImpactTableData> = new Map();
 
-    return finalScenariosData;
+    for (const data of bothScenarios) {
+      const existingData: ScenarioVsScenarioImpactTableData | undefined =
+        resultMap.get(getKey(data));
+
+      if (existingData) {
+        existingData.scenarioOneImpact += data.scenarioOneImpact;
+        existingData.scenarioTwoImpact += data.scenarioTwoImpact;
+      } else {
+        resultMap.set(getKey(data), data);
+      }
+    }
+
+    return Array.from(resultMap.values());
+  }
+
+  /**
+   * This functions fills, in-place, any missing years in the entities' yearMap, with the calculation based
+   * on previous years' data
+   * @param rangeOfYears
+   * @param lastYearWithData
+   * @param entityMap
+   * @private
+   */
+  private postProcessYearIndicatorData(
+    entityMap: Map<
+      string,
+      Map<number, ScenarioVsScenarioImpactTableRowsValues>
+    >,
+    rangeOfYears: number[],
+    lastYearWithData: number,
+  ): void {
+    for (const yearMap of entityMap.values()) {
+      const auxYearValues: number[] = [];
+      const auxYearScenarioValues: number[] = [];
+
+      for (const [index, year] of rangeOfYears.entries()) {
+        let dataForYear: ScenarioVsScenarioImpactTableRowsValues | undefined =
+          yearMap.get(year);
+
+        //If the year requested by the users exist in the raw data, append its value. There will always be a first valid value to start with
+        if (!dataForYear) {
+          // If the year requested does no exist in the raw data, project its value getting the latest value (previous year which comes in ascendant order)
+          const isProjected: boolean = year > lastYearWithData;
+
+          const lastYearsBaseScenarioValue: number =
+            index > 0 ? auxYearValues[index - 1] : 0;
+          const lastYearsComparedScenarioValue: number =
+            index > 0 ? auxYearScenarioValues[index - 1] || 0 : 0;
+          const baseScenarioValue: number =
+            lastYearsBaseScenarioValue +
+            (lastYearsBaseScenarioValue * this.growthRate) / 100;
+          const comparedScenarioValue: number =
+            lastYearsComparedScenarioValue +
+            (lastYearsComparedScenarioValue * this.growthRate) / 100;
+
+          dataForYear = {
+            year: year,
+            baseScenarioValue,
+            comparedScenarioValue,
+            absoluteDifference: 0,
+            percentageDifference: 0,
+            isProjected,
+          };
+          yearMap.set(year, dataForYear);
+        }
+
+        auxYearValues.push(dataForYear.baseScenarioValue || 0);
+        auxYearScenarioValues.push(dataForYear.comparedScenarioValue || 0);
+      }
+    }
+  }
+
+  /**
+   * Returns an Array containing the sum of the values of all entities, by each year in rangeOfYears
+   * @param entityMap
+   * @param rangeOfYears
+   * @param lastYearWithData
+   * @private
+   */
+  private calculateIndicatorSumByYear(
+    entityMap: Map<
+      string,
+      Map<number, ScenarioVsScenarioImpactTableRowsValues>
+    >,
+    rangeOfYears: number[],
+    lastYearWithData: number,
+  ): ScenarioVsScenarioIndicatorSumByYearData[] {
+    const baseScenarioYearSumMap: Map<number, number> = new Map();
+    const comparedScenarioYearSumMap: Map<number, number> = new Map();
+
+    //Iterate over the entities to aggregate the year totals
+    for (const dataByYearMap of entityMap.values()) {
+      for (const year of rangeOfYears) {
+        const dataByYear: ScenarioVsScenarioImpactTableRowsValues =
+          dataByYearMap.get(year) as ScenarioVsScenarioImpactTableRowsValues;
+
+        const yearSum: number =
+          (baseScenarioYearSumMap.get(year) || 0) +
+          (dataByYear.baseScenarioValue || 0);
+        const yearInterventionSum: number =
+          (comparedScenarioYearSumMap.get(year) || 0) +
+          (dataByYear.comparedScenarioValue || 0);
+
+        baseScenarioYearSumMap.set(year, yearSum);
+        comparedScenarioYearSumMap.set(year, yearInterventionSum);
+      }
+    }
+
+    //Return the result Array from the year total Maps
+    return rangeOfYears.map((year: number) => {
+      const baseScenarioTotalSumByYear: number =
+        baseScenarioYearSumMap.get(year) || 0;
+      const comparedScenarioTotalSumByYear: number =
+        comparedScenarioYearSumMap.get(year) || 0;
+
+      return {
+        year,
+        baseScenarioValue: baseScenarioTotalSumByYear,
+        comparedScenarioValue: comparedScenarioTotalSumByYear,
+        absoluteDifference:
+          (baseScenarioTotalSumByYear || 0) - comparedScenarioTotalSumByYear,
+        percentageDifference:
+          (((baseScenarioTotalSumByYear || 0) -
+            comparedScenarioTotalSumByYear) /
+            (((baseScenarioTotalSumByYear || 0) +
+              comparedScenarioTotalSumByYear) /
+              2)) *
+          100,
+        isProjected: year > lastYearWithData,
+      };
+    });
+  }
+
+  private createScenarioVsScenarioImpactTableDataByIndicator(
+    indicator: Indicator,
+    groupBy: string,
+  ): ScenarioVsScenarioImpactTableDataByIndicator {
+    return {
+      indicatorShortName: indicator.shortName as string,
+      indicatorId: indicator.id,
+      groupBy: groupBy,
+      rows: [],
+      yearSum: [],
+      metadata: { unit: indicator.unit.symbol },
+    };
+  }
+
+  private createScenarioVsScenarioRowValuesFromImpactData(
+    data: ScenarioVsScenarioImpactTableData,
+  ): ScenarioVsScenarioImpactTableRowsValues {
+    return {
+      year: data.year,
+      baseScenarioValue: data.scenarioOneImpact,
+      comparedScenarioValue: data.scenarioTwoImpact,
+      absoluteDifference: 0,
+      percentageDifference: 0,
+      isProjected: false,
+    };
   }
 }

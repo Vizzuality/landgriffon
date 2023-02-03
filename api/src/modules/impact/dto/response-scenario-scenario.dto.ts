@@ -1,5 +1,10 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { PaginationMeta } from 'utils/app-base.service';
+import {
+  BaseIndicatorSumByYearData,
+  ImpactTableBaseRowsValues,
+  ImpactTablePurchasedTonnes,
+} from 'modules/impact/dto/response-impact-table.dto';
 
 export class ScenarioVsScenarioImpactTable {
   @ApiProperty({
@@ -11,7 +16,7 @@ export class ScenarioVsScenarioImpactTable {
     type: () => ScenarioVsScenarioImpactTablePurchasedTonnes,
     isArray: true,
   })
-  purchasedTonnes: ScenarioVsScenarioImpactTablePurchasedTonnes[];
+  purchasedTonnes: ImpactTablePurchasedTonnes[];
 }
 
 export class ScenarioVsScenarioPaginatedImpactTable {
@@ -19,16 +24,6 @@ export class ScenarioVsScenarioPaginatedImpactTable {
   data: ScenarioVsScenarioImpactTable;
   @ApiProperty({ type: () => PaginationMeta })
   metadata?: PaginationMeta;
-}
-
-export class ScenarioVsScenarioImpactTableDataAggregationInfo {
-  aggregatedValues: ScenarioVsScenarioImpactTableDataAggregatedValue[];
-  numberOfAggregatedEntities: number;
-  sort: string;
-}
-export class ScenarioVsScenarioImpactTableDataAggregatedValue {
-  year: number;
-  value: number;
 }
 
 export class ScenarioVsScenarioImpactTableDataByIndicator {
@@ -40,21 +35,13 @@ export class ScenarioVsScenarioImpactTableDataByIndicator {
   groupBy: string;
   @ApiProperty({ type: () => ScenarioVsScenarioImpactTableRows, isArray: true })
   rows: ScenarioVsScenarioImpactTableRows[];
-  @ApiProperty({ type: () => ScenarioVsScenarioYearSumData, isArray: true })
-  yearSum: ScenarioVsScenarioYearSumData[];
-  @ApiProperty()
-  metadata: { unit: string };
   @ApiProperty({
-    type: () => ScenarioVsScenarioImpactTableRowsValues,
+    type: () => ScenarioVsScenarioIndicatorSumByYearData,
     isArray: true,
   })
-  values?: ScenarioVsScenarioImpactTableRowsValues[];
-
-  @ApiPropertyOptional({
-    description:
-      'Extra information used for Ranked ImpactTable requests. Missing on normal ImpactTable requests',
-  })
-  others?: ScenarioVsScenarioImpactTableDataAggregationInfo;
+  yearSum: ScenarioVsScenarioIndicatorSumByYearData[];
+  @ApiProperty()
+  metadata: { unit: string };
 }
 
 export class ScenarioVsScenarioImpactTablePurchasedTonnes {
@@ -82,32 +69,24 @@ export class ScenarioVsScenarioImpactTableRows {
   children: ScenarioVsScenarioImpactTableRows[];
 }
 
-export class ScenarioVsScenarioYearSumData {
+export class ScenarioVsScenarioIndicatorSumByYearData extends BaseIndicatorSumByYearData {
   @ApiProperty()
-  year: number;
-  @ApiPropertyOptional()
   baseScenarioValue: number;
-  @ApiPropertyOptional()
+  @ApiProperty()
   comparedScenarioValue: number;
-  @ApiPropertyOptional()
-  absoluteDifference?: number;
-  @ApiPropertyOptional()
-  percentageDifference?: number;
-  @ApiPropertyOptional()
-  isProjected?: boolean;
+  @ApiProperty()
+  absoluteDifference: number;
+  @ApiProperty()
+  percentageDifference: number;
 }
 
-export class ScenarioVsScenarioImpactTableRowsValues {
+export class ScenarioVsScenarioImpactTableRowsValues extends ImpactTableBaseRowsValues {
   @ApiProperty()
-  year: number;
-  @ApiPropertyOptional()
-  baseScenarioValue?: number;
-  @ApiPropertyOptional()
-  comparedScenarioValue?: number;
-  @ApiPropertyOptional()
-  absoluteDifference?: number;
-  @ApiPropertyOptional()
-  percentageDifference?: number;
+  baseScenarioValue: number;
   @ApiProperty()
-  isProjected: boolean;
+  comparedScenarioValue: number;
+  @ApiProperty()
+  absoluteDifference: number;
+  @ApiProperty()
+  percentageDifference: number;
 }

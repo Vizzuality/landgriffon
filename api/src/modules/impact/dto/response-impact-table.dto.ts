@@ -1,5 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationMeta } from 'utils/app-base.service';
+import {
+  ActualVsScenarioImpactTableRows,
+  ActualVsScenarioImpactTableRowsValues,
+} from 'modules/impact/dto//response-actual-scenario.dto';
+import {
+  ScenarioVsScenarioImpactTableRows,
+  ScenarioVsScenarioImpactTableRowsValues,
+} from 'modules/impact/dto/response-scenario-scenario.dto';
 
 export class ImpactTable {
   @ApiProperty({ type: () => ImpactTableDataByIndicator, isArray: true })
@@ -38,9 +46,6 @@ export class ImpactTableDataByIndicator {
   yearSum: YearSumData[];
   @ApiProperty()
   metadata: { unit: string };
-  @ApiProperty({ type: () => ImpactTableRowsValues, isArray: true })
-  values?: ImpactTableRowsValues[];
-
   @ApiPropertyOptional({
     description:
       'Extra information used for Ranked ImpactTable requests. Missing on normal ImpactTable requests',
@@ -69,33 +74,33 @@ export class ImpactTableRows {
   })
   children: ImpactTableRows[];
 }
-
-export class YearSumData {
+export class BaseIndicatorSumByYearData {
   @ApiProperty()
   year: number;
-  @ApiProperty()
-  value: number;
-  @ApiPropertyOptional()
-  scenarioValue?: number;
-  @ApiPropertyOptional()
-  absoluteDifference?: number;
-  @ApiPropertyOptional()
-  percentageDifference?: number;
-  @ApiProperty()
-  isProjected?: boolean;
-}
-
-export class ImpactTableRowsValues {
-  @ApiProperty()
-  year: number;
-  @ApiProperty()
-  value: number;
-  @ApiPropertyOptional()
-  scenarioValue?: number;
-  @ApiPropertyOptional()
-  absoluteDifference?: number;
-  @ApiPropertyOptional()
-  percentageDifference?: number;
   @ApiProperty()
   isProjected: boolean;
 }
+export class YearSumData {
+  @ApiProperty()
+  value: number;
+}
+export class ImpactTableBaseRowsValues {
+  @ApiProperty()
+  year: number;
+  @ApiProperty()
+  isProjected: boolean;
+}
+export class ImpactTableRowsValues extends ImpactTableBaseRowsValues {
+  @ApiProperty()
+  value: number;
+}
+
+export type AnyImpactTableRowsValues =
+  | ImpactTableRowsValues
+  | ActualVsScenarioImpactTableRowsValues
+  | ScenarioVsScenarioImpactTableRowsValues;
+
+export type AnyImpactTableRows =
+  | ImpactTableRows
+  | ActualVsScenarioImpactTableRows
+  | ScenarioVsScenarioImpactTableRows;

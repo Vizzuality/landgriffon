@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
@@ -9,7 +9,6 @@ import {
 } from 'modules/sourcing-records/sourcing-record.entity';
 import { AppInfoDTO } from 'dto/info.dto';
 import {
-  ActualVsScenarioImpactTableData,
   ImpactTableData,
   SourcingRecordRepository,
 } from 'modules/sourcing-records/sourcing-record.repository';
@@ -102,7 +101,7 @@ export class SourcingRecordsService extends AppBaseService<
 
   async getDataForActualVsScenarioImpactTable(
     getActualVsScenarioImpactTableDto: GetActualVsScenarioImpactTableDto,
-  ): Promise<ActualVsScenarioImpactTableData[]> {
+  ): Promise<ImpactTableData[]> {
     return this.sourcingRecordRepository.getDataForActualVsScenarioImpactTable(
       getActualVsScenarioImpactTableDto,
     );

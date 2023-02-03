@@ -37,7 +37,7 @@ import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing
 import { createScenario } from '../../../entity-mocks';
 import { DataSource } from 'typeorm';
 
-describe('Impact Table and Charts test suite (e2e)', () => {
+describe('Actual VS Scenario Impact Table test suite (e2e)', () => {
   let testApplication: TestApplication;
   let jwtToken: string;
   let dataSource: DataSource;

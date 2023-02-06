@@ -5,10 +5,12 @@ export enum InterventionTypes {
 }
 
 export const enum LocationTypes {
-  unknown = 'unknown',
+  administrativeRegionOfProduction = 'administrative-region-of-production',
   aggregationPoint = 'production-aggregation-point',
-  pointOfProduction = 'point-of-production',
   countryOfProduction = 'country-of-production',
+  countryOfDelivery = 'country-of-delivery',
+  pointOfProduction = 'point-of-production',
+  unknown = 'unknown',
 }
 
 export enum LocationStatus {

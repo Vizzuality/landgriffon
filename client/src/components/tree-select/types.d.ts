@@ -1,19 +1,19 @@
 import type { FieldDataNode } from 'rc-tree';
 import type { CHECKED_STRATEGIES } from './utils';
 
-export type TreeSelectOption = {
+export type TreeSelectOption<T = string> = {
   label: string;
-  value: string | number;
+  value: T;
   children?: TreeSelectOption[];
 };
 
-interface CommonTreeProps {
+interface CommonTreeProps<T = string> {
   id?: string; // for testing purposes
   maxBadges?: number;
   placeholder?: string;
   showSearch?: boolean;
   loading?: boolean;
-  options: TreeSelectOption[];
+  options: TreeSelectOption<T>[];
   onSearch?: (query: string) => unknown;
   theme?: 'default' | 'inline-primary';
   ellipsis?: boolean;
@@ -38,4 +38,4 @@ export interface TreeSelectProps<IsMulti extends boolean = false> extends Common
   onChange?: (selected: IsMulti extends true ? TreeSelectOption[] : TreeSelectOption) => void;
 }
 
-export type TreeDataNode = FieldDataNode<Omit<TreeSelectOption, 'children'>>;
+export type TreeDataNode = FieldDataNode<Omit<TreeSelectOption<T>, 'children'>>;

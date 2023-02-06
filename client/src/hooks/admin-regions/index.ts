@@ -74,3 +74,27 @@ export const useAdminRegionsTrees = <T = OriginRegion[]>(
 
   return query;
 };
+
+export const useAdminRegionsByCountry = <T = OriginRegion[]>(
+  countryId: string,
+  params?: AdminRegionsTreesParams,
+  options: UseQueryOptions<OriginRegion, unknown, T> = {},
+) => {
+  const query = useQuery(
+    ['admin-regions-country-trees', countryId, params],
+    () =>
+      apiService
+        .request<{ data: T }>({
+          method: 'GET',
+          url: `/admin-regions/${countryId}/regions`,
+          params,
+        })
+        .then(({ data: responseData }) => responseData.data?.[0]),
+    {
+      ...DEFAULT_QUERY_OPTIONS,
+      ...options,
+    },
+  );
+
+  return query;
+};

@@ -29,7 +29,7 @@ const SignIn: NextPageWithLayout = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<yup.InferType<typeof schemaValidation>>({
     resolver: yupResolver(schemaValidation),
     shouldUseNativeValidation: false,
   });

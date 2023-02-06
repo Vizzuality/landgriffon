@@ -24,7 +24,7 @@ const UserPasswordForm: React.FC = () => {
     register: registerPassword,
     handleSubmit: handleSubmitPassword,
     formState: { errors },
-  } = useForm({
+  } = useForm<yup.InferType<typeof passwordSchemaValidation>>({
     resolver: yupResolver(passwordSchemaValidation),
   });
 
@@ -47,13 +47,13 @@ const UserPasswordForm: React.FC = () => {
 
   return (
     <section className="mt-8">
-      <div className="grid gap-4 grid-cols-12">
+      <div className="grid grid-cols-12 gap-4">
         <div className="col-span-4">
           <h1 className="text-lg">Password</h1>
           <p className="text-sm text-gray-500">Update your password.</p>
         </div>
 
-        <div className="bg-white rounded-md shadow-lg col-span-8">
+        <div className="col-span-8 bg-white rounded-md shadow-lg">
           <form onSubmit={handleSubmitPassword(handleEditPassword)}>
             <div className="grid grid-cols-2 gap-6 p-6 pb-8">
               <div className="col-span-2">

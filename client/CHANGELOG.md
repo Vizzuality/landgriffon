@@ -10,18 +10,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [v0.3.6]
 
 ### Added
-
+- Added `*` to Type of Intervention title to indicate the selection is mandatory. Also, a hint when it is not selected. [LANDGRIF-1142](https://vizzuality.atlassian.net/browse/LANDGRIF-1142)
 - Switch to toggle layers from the legend itself [LANDGRIF-991](https://vizzuality.atlassian.net/browse/LANDGRIF-991)
 - Added a end year field in the intervention form [LANDGRIF-1113](https://vizzuality.atlassian.net/browse/LANDGRIF-1113)
 - Added a volume field in the intervention form [LANDGRIF-1112](https://vizzuality.atlassian.net/browse/LANDGRIF-1112)
 
 ### Changed
+- Bumps `react-hook-form` fixing several validation issues. [LANDGRIF-1142](https://vizzuality.atlassian.net/browse/LANDGRIF-1142)
 - Bumps `browserslist-db` dependency.
 - Show the scenario name in the charts [LANDGRIF-1116](https://vizzuality.atlassian.net/browse/LANDGRIF-1116)
 - Move the users page from data to user [LANDGRIF-1122](https://vizzuality.atlassian.net/browse/LANDGRIF-1122)
 
 ### Fixed
-
+- Undefined value of coefficients. [LANDGRIF-1142](https://vizzuality.atlassian.net/browse/LANDGRIF-1142)
 - Disable the filter in the manage data page [LANDGRIF-1110](https://vizzuality.atlassian.net/browse/LANDGRIF-1110)
 - Disable action buttons in the targets page [LANDGRIF-1109](https://vizzuality.atlassian.net/browse/LANDGRIF-1109)
 - Profile page requires to be logged

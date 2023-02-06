@@ -29,6 +29,7 @@ export function parseInterventionFormDataToDto(
     newT1SupplierId,
     newProducerId,
     newLocationType,
+    newLocationRegion,
     newLocationCountryInput,
     newLocationAddressInput,
     coefficients,
@@ -54,6 +55,13 @@ export function parseInterventionFormDataToDto(
     ...(interventionType !== InterventionTypes.Efficiency && {
       newLocationType: emptyStringIsNull(getValue(newLocationType) as string),
       newLocationCountryInput: newLocationCountryInput?.label,
+    }),
+
+    // * country region is only sent when the location type is "Administrative Region of Product"
+    ...([LocationTypes.administrativeRegionOfProduction].includes(
+      newLocationType?.value as LocationTypes,
+    ) && {
+      newLocationRegion: emptyStringIsNull(getValue(newLocationRegion)),
     }),
 
     // * if an address is provided for certain location types, latitude and longitudes are nullified

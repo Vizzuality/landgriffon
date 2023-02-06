@@ -35,6 +35,7 @@ export type Intervention = {
   newT1Supplier: T1Supplier;
   newProducer: Producer;
   newLocationType: LocationTypes;
+  newLocationRegion?: string;
   newLocationAddressInput?: string;
   newLocationCountryInput?: string;
   newLocationLatitudeInput?: string;
@@ -59,6 +60,7 @@ export type InterventionFormData = {
 
   newLocationType?: SelectOption;
   newLocationCountryInput?: SelectOption;
+  newLocationRegion?: SelectOption;
   cityAddressCoordinates: string;
   newLocationAddressInput?: string;
   newLocationLatitude?: number;
@@ -90,6 +92,7 @@ export type InterventionDto = {
 
   newLocationType: string;
   newLocationCountryInput?: string;
+  newLocationRegion?: string;
   newIndicatorCoefficients?: IndicatorCoefficients;
   newLocationAddressInput?: string;
   newLocationLatitude?: number;

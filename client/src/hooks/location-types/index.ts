@@ -32,7 +32,7 @@ export const useLocationTypes = <T = LocationType[]>(
       apiRawService
         .request<{ data: LocationType[] }>({
           method: 'GET',
-          url: '/sourcing-locations/location-types',
+          url: '/sourcing-locations/location-types/supported',
           params,
         })
         .then(({ data: responseData }) => responseData.data),

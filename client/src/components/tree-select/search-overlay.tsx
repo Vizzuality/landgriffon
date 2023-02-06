@@ -38,7 +38,7 @@ const SearchOverlay = ({ options, onChange }: SearchOverlayProps) => {
               isSelected ? 'font-bold text-navy-400' : 'text-gray-900',
             )}
             key={key}
-            onClick={getHandleChange(key)}
+            onClick={getHandleChange(key as string)}
           >
             {matchingParts.map(({ value, isMatch }, i) => {
               return (
@@ -50,7 +50,7 @@ const SearchOverlay = ({ options, onChange }: SearchOverlayProps) => {
             {parents.length !== 0 && (
               <>
                 {' '}
-                <span className="text-gray-400 italic">
+                <span className="italic text-gray-400">
                   ({parents.map((parent) => parent.data.label).join(', ')})
                 </span>
               </>

@@ -16,7 +16,7 @@ import InterventionTypeIcon from './intervention-type-icon';
 import { useIndicators } from 'hooks/indicators';
 import { useSuppliersTypes } from 'hooks/suppliers';
 import { useLocationTypes } from 'hooks/location-types';
-import { useAdminRegionsTrees } from 'hooks/admin-regions';
+import { useAdminRegionsTrees, useAdminRegionsByCountry } from 'hooks/admin-regions';
 import { useSourcingRecordsYears } from 'hooks/sourcing-records';
 import MaterialsSelect from 'containers/materials/select';
 import BusinessUnitsSelect from 'containers/business-units/select';
@@ -28,6 +28,8 @@ import Select from 'components/select';
 import InfoToolTip from 'components/info-tooltip/component';
 import { isCoordinates } from 'utils/coordinates';
 import Hint from 'components/forms/hint';
+import TreeSelect from 'components/tree-select';
+import { recursiveMap, recursiveSort } from 'components/tree-select/utils';
 
 import type { SelectOption } from 'components/select/types';
 import type { Intervention, InterventionFormData } from '../types';
@@ -124,6 +126,14 @@ const schemaValidation = yup.object({
           .required('City, address or coordinates is required'),
       otherwise: (schema) => schema.nullable(),
     }),
+
+  // location region
+  newLocationRegion: optionSchema.when('newLocationType', {
+    is: (newLocationType) =>
+      [LocationTypes.administrativeRegionOfProduction].includes(newLocationType?.value),
+    then: (schema) => schema.required('Country region is required'),
+    otherwise: (schema) => schema.nullable(),
+  }),
 
   // New material
   newMaterialId: yup
@@ -234,7 +244,10 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   );
 
   // Location types
-  const { data: locationTypes, isLoading: isLoadingLocationTypes } = useLocationTypes();
+  const { data: locationTypes, isLoading: isLoadingLocationTypes } = useLocationTypes(
+    {},
+    { select: (_locationTypes) => sortBy(_locationTypes, 'label') },
+  );
 
   // Countries
   const { data: countries, isLoading: isLoadingCountries } = useAdminRegionsTrees({ depth: 0 });
@@ -330,6 +343,9 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
             ? Number(intervention?.newLocationLongitudeInput)
             : 0,
 
+          // todo: full fill this properly
+          newLocationRegion: {},
+
           // New supplier/producer
           newT1SupplierId: intervention?.newT1Supplier
             ? {
@@ -368,8 +384,26 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     newLocationType: locationType,
     newT1SupplierId: currentT1SupplierId,
     newProducerId: currentProducerId,
+    newLocationCountryInput: currentCountry,
     coefficients = {},
   } = watch();
+
+  const {
+    data: regionsByCountry,
+    // isLoading: isLoadingRegions
+  } = useAdminRegionsByCountry(
+    currentCountry?.value,
+    {},
+    {
+      enabled:
+        Boolean(currentCountry?.value) &&
+        locationType?.value === LocationTypes.administrativeRegionOfProduction,
+      select: (_country) =>
+        recursiveSort(_country.children, 'name').map((child) =>
+          recursiveMap(child, ({ id, name }) => ({ value: id, label: name })),
+        ),
+    },
+  );
 
   // Populate the new location field when the location type options changes
   useEffect(() => {
@@ -447,8 +481,11 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   useEffect(() => {
     // * if a location type doesn't require coordinates, the coordinates fields are reset to avoid sending them unintentionally
     if (
-      locationType?.value === LocationTypes.countryOfProduction ||
-      locationType?.value === LocationTypes.unknown
+      [
+        LocationTypes.countryOfProduction,
+        LocationTypes.countryOfDelivery,
+        LocationTypes.unknown,
+      ].includes(locationType?.value)
     ) {
       resetField('cityAddressCoordinates', { defaultValue: null });
       resetField('newLocationLatitude', { defaultValue: 0 });
@@ -893,6 +930,46 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                             </div>
                             <div className="hidden">
                               <Input type="text" {...register('newLocationAddressInput')} />
+                            </div>
+                          </>
+                        )}
+                        {[LocationTypes.administrativeRegionOfProduction].includes(
+                          locationType?.value,
+                        ) && (
+                          <>
+                            <div data-testid="administrative-region-production-field">
+                              <label className={LABEL_CLASSNAMES}>
+                                Region <sup>*</sup>
+                              </label>
+                              <Controller
+                                name="newLocationRegion"
+                                control={control}
+                                render={({
+                                  field: { onChange, value },
+                                  fieldState: { invalid },
+                                }) => (
+                                  <div data-testid="new-location-region-select">
+                                    <TreeSelect
+                                      multiple={false}
+                                      showSearch
+                                      options={regionsByCountry}
+                                      current={value}
+                                      placeholder="Select a region"
+                                      // disabled={!Boolean(currentCountry) || isLoadingRegions}
+                                      onChange={({ label, value }) => {
+                                        if (invalid) clearErrors('newLocationRegion');
+                                        onChange({ label, value });
+                                      }}
+                                      error={!!errors?.newLocationRegion}
+                                    />
+                                    {errors.newLocationRegion && (
+                                      <Hint data-testid={'hint-input-newLocationRegion'}>
+                                        {errors.newLocationRegion.message}
+                                      </Hint>
+                                    )}
+                                  </div>
+                                )}
+                              />
                             </div>
                           </>
                         )}

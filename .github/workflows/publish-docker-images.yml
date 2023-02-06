@@ -13,6 +13,7 @@ on:
     paths:
       - 'api/**'
       - 'client/**'
+      - 'marketing/**'
       - 'data/**'
       - '.github/**'
   workflow_dispatch:
@@ -23,9 +24,38 @@ on:
         default: true
 
 jobs:
+  wait_for_tests:
+    name: Wait for tests to finish running
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Wait for API E2E tests to run
+        if: ${{ github.event.inputs.waitForTest == 'true' }}
+        uses: fountainhead/action-wait-for-check@v1.0.0
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          checkName: E2E Tests
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Wait for API Integration tests to run
+        if: ${{ github.event.inputs.waitForTest == 'true' }}
+        uses: fountainhead/action-wait-for-check@v1.0.0
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          checkName: Integration Tests
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Wait for Client tests to run
+        if: ${{ github.event.inputs.waitForTest == 'true' }}
+        uses: fountainhead/action-wait-for-check@v1.0.0
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          checkName: Client Tests
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
   push_api_to_registry:
     name: Push API Docker image to Docker Hub
     runs-on: ubuntu-20.04
+    needs: wait_for_tests
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
@@ -56,30 +86,6 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG api
 
-      - name: Wait for API E2E tests to run
-        if: ${{ github.event.inputs.waitForTest == 'true' }}
-        uses: fountainhead/action-wait-for-check@v1.0.0
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          checkName: E2E Tests
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-
-      - name: Wait for API Integration tests to run
-        if: ${{ github.event.inputs.waitForTest == 'true' }}
-        uses: fountainhead/action-wait-for-check@v1.0.0
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          checkName: Integration Tests
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-
-      - name: Wait for Client tests to run
-        if: ${{ github.event.inputs.waitForTest == 'true' }}
-        uses: fountainhead/action-wait-for-check@v1.0.0
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          checkName: Client Tests
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-
       - name: Push API Docker image to AWS ECR
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
@@ -91,6 +97,7 @@ jobs:
   push_client_to_registry:
     name: Push Client Docker image to Docker Hub
     runs-on: ubuntu-20.04
+    needs: wait_for_tests
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
@@ -129,31 +136,51 @@ jobs:
           -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
           client
 
-      - name: Wait for API E2E tests to run
-        uses: fountainhead/action-wait-for-check@v1.0.0
-        if: ${{ github.event.inputs.waitForTest == 'true' }}
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          checkName: E2E Tests
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-
-      - name: Wait for API Integration tests to run
-        uses: fountainhead/action-wait-for-check@v1.0.0
-        if: ${{ github.event.inputs.waitForTest == 'true' }}
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          checkName: Integration Tests
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-
-      - name: Wait for Client tests to run
-        uses: fountainhead/action-wait-for-check@v1.0.0
-        if: ${{ github.event.inputs.waitForTest == 'true' }}
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          checkName: Client Tests
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-
       - name: Push Client Docker image to AWS ECR
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          ECR_REPOSITORY: client
+          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+        run: |
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+
+  push_marketing_to_registry:
+    name: Push Marketing site Docker image to Docker Hub
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Get ECR Registry
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Extract branch name
+        shell: bash
+        run: |
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+        id: extract_branch
+
+      - name: Build Marketing site Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          ECR_REPOSITORY: marketing
+          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+        run: |
+          docker build \
+          -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+          client
+
+      - name: Push Marketing site Docker image to AWS ECR
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: client
@@ -165,6 +192,7 @@ jobs:
   push_data_import_to_registry:
     name: Push Data Import Docker image to Docker Hub
     runs-on: ubuntu-20.04
+    needs: wait_for_tests
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
@@ -194,30 +222,6 @@ jobs:
           IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG data
-
-      - name: Wait for API E2E tests to run
-        uses: fountainhead/action-wait-for-check@v1.0.0
-        if: ${{ github.event.inputs.waitForTest == 'true' }}
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          checkName: E2E Tests
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-
-      - name: Wait for API Integration tests to run
-        uses: fountainhead/action-wait-for-check@v1.0.0
-        if: ${{ github.event.inputs.waitForTest == 'true' }}
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          checkName: Integration Tests
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-
-      - name: Wait for Client tests to run
-        uses: fountainhead/action-wait-for-check@v1.0.0
-        if: ${{ github.event.inputs.waitForTest == 'true' }}
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          checkName: Client Tests
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Push Data Import Docker image to AWS ECR
         env:

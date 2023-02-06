@@ -17,18 +17,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy_images_to_kubernetes:
-    name: Deploy updated Docker image to Kubernetes
+  wait_for_image_push:
+    name: Wait for Docker images to be pushed
     runs-on: ubuntu-20.04
     steps:
-      - name: Check out the repo
-        uses: actions/checkout@v2
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
       - name: Wait for API image to be pushed to Docker Hub
         uses: fountainhead/action-wait-for-check@v1.0.0
         with:
@@ -42,6 +34,20 @@ jobs:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           checkName: Push Client Docker image to Docker Hub
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+  deploy_images_to_kubernetes:
+    name: Deploy updated Docker image to Kubernetes
+    runs-on: ubuntu-20.04
+    needs: wait_for_image_push
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Configure SSH access to the bastion host
         run: |

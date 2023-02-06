@@ -64,7 +64,7 @@ export class SourcingRecordsService extends AppBaseService<
   }
 
   async getSourcingRecordById(id: string): Promise<SourcingRecord> {
-    const found: SourcingRecord | null =
+    const found: SourcingRecord | undefined =
       await this.sourcingRecordRepository.findOne({ where: { id } });
 
     if (!found) {

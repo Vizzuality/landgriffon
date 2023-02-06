@@ -232,6 +232,8 @@ describe('Indicator Records Service', () => {
         [INDICATOR_TYPES_NEW.LAND_USE]: 0.35,
         [INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE]: 0.2,
         [INDICATOR_TYPES_NEW.WATER_USE]: 0.6,
+        [INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION]: 0.3,
+        [INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION_RISK]: 0.5,
       };
 
       //ACT
@@ -247,7 +249,6 @@ describe('Indicator Records Service', () => {
 
       // Value is provided coeff * tonnage, and scaler is null, because it's based on production coefficient, and it's not provided
       await checkCreatedIndicatorRecord(
-        INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
         indicatorPreconditions.deforestationIndicator,
         materialH3Data,
         sourcingData.sourcingRecordId,
@@ -256,7 +257,6 @@ describe('Indicator Records Service', () => {
         calculatedIndicators,
       );
       await checkCreatedIndicatorRecord(
-        INDICATOR_TYPES_NEW.CLIMATE_RISK,
         indicatorPreconditions.climateRiskIndicator,
         materialH3Data,
         sourcingData.sourcingRecordId,
@@ -265,7 +265,6 @@ describe('Indicator Records Service', () => {
         calculatedIndicators,
       );
       await checkCreatedIndicatorRecord(
-        INDICATOR_TYPES_NEW.LAND_USE,
         indicatorPreconditions.landUseIndicator,
         materialH3Data,
         sourcingData.sourcingRecordId,
@@ -274,7 +273,6 @@ describe('Indicator Records Service', () => {
         calculatedIndicators,
       );
       await checkCreatedIndicatorRecord(
-        INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE,
         indicatorPreconditions.unsustWaterUseIndicator,
         materialH3Data,
         sourcingData.sourcingRecordId,
@@ -284,7 +282,6 @@ describe('Indicator Records Service', () => {
       );
 
       await checkCreatedIndicatorRecord(
-        INDICATOR_TYPES_NEW.WATER_USE,
         indicatorPreconditions.waterUseIndicator,
         materialH3Data,
         sourcingData.sourcingRecordId,
@@ -461,7 +458,6 @@ describe('Indicator Records Service', () => {
       expect(calculatedRecords.length).toEqual(5);
 
       await checkCreatedIndicatorRecord(
-        INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
         indicatorPreconditions.deforestationIndicator,
         materialH3DataProducer,
         sourcingData.sourcingRecordId,
@@ -470,7 +466,6 @@ describe('Indicator Records Service', () => {
         calculatedRecords,
       );
       await checkCreatedIndicatorRecord(
-        INDICATOR_TYPES_NEW.CLIMATE_RISK,
         indicatorPreconditions.climateRiskIndicator,
         materialH3DataProducer,
         sourcingData.sourcingRecordId,
@@ -479,7 +474,6 @@ describe('Indicator Records Service', () => {
         calculatedRecords,
       );
       await checkCreatedIndicatorRecord(
-        INDICATOR_TYPES_NEW.LAND_USE,
         indicatorPreconditions.landUseIndicator,
         materialH3DataProducer,
         sourcingData.sourcingRecordId,
@@ -488,7 +482,6 @@ describe('Indicator Records Service', () => {
         calculatedRecords,
       );
       await checkCreatedIndicatorRecord(
-        INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE,
         indicatorPreconditions.unsustWaterUseIndicator,
         materialH3DataProducer,
         sourcingData.sourcingRecordId,
@@ -550,7 +543,6 @@ describe('Indicator Records Service', () => {
       expect(allIndicators.length).toEqual(10);
 
       await checkCreatedIndicatorRecord(
-        INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
         indicatorPreconditions.deforestationIndicator,
         materialH3DataProducer1,
         indicatorPreconditions.sourcingRecord1.id,
@@ -558,7 +550,6 @@ describe('Indicator Records Service', () => {
         1610,
       );
       await checkCreatedIndicatorRecord(
-        INDICATOR_TYPES_NEW.LAND_USE,
         indicatorPreconditions.landUseIndicator,
         materialH3DataProducer1,
         indicatorPreconditions.sourcingRecord1.id,
@@ -566,7 +557,6 @@ describe('Indicator Records Service', () => {
         1610,
       );
       await checkCreatedIndicatorRecord(
-        INDICATOR_TYPES_NEW.CLIMATE_RISK,
         indicatorPreconditions.climateRiskIndicator,
         materialH3DataProducer1,
         indicatorPreconditions.sourcingRecord1.id,
@@ -574,7 +564,6 @@ describe('Indicator Records Service', () => {
         1610,
       );
       await checkCreatedIndicatorRecord(
-        INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE,
         indicatorPreconditions.unsustWaterUseIndicator,
         materialH3DataProducer1,
         indicatorPreconditions.sourcingRecord1.id,
@@ -583,7 +572,6 @@ describe('Indicator Records Service', () => {
       );
 
       await checkCreatedIndicatorRecord(
-        INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
         indicatorPreconditions.deforestationIndicator,
         materialH3DataProducer2,
         indicatorPreconditions.sourcingRecord2.id,
@@ -591,7 +579,6 @@ describe('Indicator Records Service', () => {
         1610,
       );
       await checkCreatedIndicatorRecord(
-        INDICATOR_TYPES_NEW.LAND_USE,
         indicatorPreconditions.landUseIndicator,
         materialH3DataProducer2,
         indicatorPreconditions.sourcingRecord2.id,
@@ -599,7 +586,6 @@ describe('Indicator Records Service', () => {
         1610,
       );
       await checkCreatedIndicatorRecord(
-        INDICATOR_TYPES_NEW.CLIMATE_RISK,
         indicatorPreconditions.climateRiskIndicator,
         materialH3DataProducer2,
         indicatorPreconditions.sourcingRecord2.id,
@@ -607,7 +593,6 @@ describe('Indicator Records Service', () => {
         1610,
       );
       await checkCreatedIndicatorRecord(
-        INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE,
         indicatorPreconditions.unsustWaterUseIndicator,
         materialH3DataProducer2,
         indicatorPreconditions.sourcingRecord2.id,
@@ -879,16 +864,8 @@ describe('Indicator Records Service', () => {
 
   /**
    * Does expect checks on all relevant fields of IndicatorRecord
-   * @param indicatorType
-   * @param h3Data
-   * @param materialH3Data
-   * @param sourcingRecordId
-   * @param recordValue
-   * @param scalerValue
-   * @param calculatedIndicatorRecords
    */
   async function checkCreatedIndicatorRecord(
-    indicatorType: INDICATOR_TYPES_NEW,
     indicator: Indicator,
     materialH3Data: MaterialToH3,
     sourcingRecordId: string,
@@ -1073,6 +1050,14 @@ describe('Indicator Records Service', () => {
       (el: Indicator) =>
         el.nameCode === INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE,
     );
+    const satelligenceDeforestation = h3Data.indicators.find(
+      (el: Indicator) =>
+        el.nameCode === INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION,
+    );
+    const satelligenceDeforestationRisk = h3Data.indicators.find(
+      (el: Indicator) =>
+        el.nameCode === INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION_RISK,
+    );
     return {
       material1,
       material2,
@@ -1093,6 +1078,9 @@ describe('Indicator Records Service', () => {
       deforestationIndicator,
       waterUseIndicator,
       unsustWaterUseIndicator,
+      satelligenceDeforestation,
+      satelligenceDeforestationRisk,
+      tablesToDrop: h3Data.tablesToDrop,
     };
   }
 });

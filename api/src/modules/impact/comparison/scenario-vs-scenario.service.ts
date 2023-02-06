@@ -335,20 +335,17 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
     const bothScenarios: ScenarioVsScenarioImpactTableData[] =
       scenarioOneData.concat(scenarioTwoData);
 
-    const getKey = (data: ImpactTableData): string =>
-      data.indicatorId + '-' + data.name + '-' + data.year;
-
     const resultMap: Map<string, ScenarioVsScenarioImpactTableData> = new Map();
 
     for (const data of bothScenarios) {
       const existingData: ScenarioVsScenarioImpactTableData | undefined =
-        resultMap.get(getKey(data));
+        resultMap.get(BaseImpactService.getImpactTableDataKey(data));
 
       if (existingData) {
         existingData.scenarioOneImpact += data.scenarioOneImpact;
         existingData.scenarioTwoImpact += data.scenarioTwoImpact;
       } else {
-        resultMap.set(getKey(data), data);
+        resultMap.set(BaseImpactService.getImpactTableDataKey(data), data);
       }
     }
 

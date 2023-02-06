@@ -59,13 +59,13 @@ jobs:
 
       - name: Build Marketing site Docker image
         run: |-
-          docker build -t eu-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/main:${{ github.sha }} -t eu-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/main:latest ./marketing
-          docker push eu-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/main:${{ github.sha }} eu-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/main:latest
+          docker build -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/main:${{ github.sha }} -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/main:latest ./marketing
+          docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/main:${{ github.sha }} europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/main:latest
 
       - name: Deploy to Cloud Run
         run: |-
           gcloud run deploy ${{ env.SERVICE }} \
             --region ${{ env.REGION }} \
-            --image eu-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/main:latest \
+            --image europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/main:latest \
             --platform "managed" \
             --quiet

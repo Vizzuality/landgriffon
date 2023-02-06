@@ -21,7 +21,7 @@ const UserDataForm: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<yup.InferType<typeof schemaValidation>>({
     resolver: yupResolver(schemaValidation),
   });
 
@@ -45,7 +45,7 @@ const UserDataForm: React.FC = () => {
 
   return (
     <section className="mt-14">
-      <div className="grid gap-4 grid-cols-12">
+      <div className="grid grid-cols-12 gap-4">
         <div className="col-span-4">
           <h1 className="text-lg ">Personal information</h1>
           <p className="text-sm text-gray-500">
@@ -53,7 +53,7 @@ const UserDataForm: React.FC = () => {
           </p>
         </div>
 
-        <div className="bg-white rounded-md shadow-lg col-span-8">
+        <div className="col-span-8 bg-white rounded-md shadow-lg">
           {user.data && !user.isLoading && (
             <form onSubmit={handleSubmit(handleEditUserData)}>
               <div className="grid grid-cols-2 gap-6 p-6 pb-8">

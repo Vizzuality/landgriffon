@@ -183,6 +183,15 @@ describe('Intervention creation', () => {
       );
     });
   });
+
+  it('a user skips selecting type of intervention and a hint appears', () => {
+    // if the user skips full filling any field in the form, a hint should appear below the types of interventions available
+    cy.get('[data-testid="intervention-submit-btn"]').click();
+    cy.get('[data-testid="hint-input-interventionType"]').should('have.length', 1);
+    // after clicking on the first type of intervention, the previous hint should be gone
+    cy.get('[data-testid="intervention-type-option"]').first().click();
+    cy.get('[data-testid="hint-input-interventionType"]').should('have.length', 0);
+  });
 });
 
 describe('Intervention location type', () => {

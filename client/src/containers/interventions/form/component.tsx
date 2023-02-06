@@ -27,6 +27,7 @@ import { Anchor, Button } from 'components/button';
 import Select from 'components/select';
 import InfoToolTip from 'components/info-tooltip/component';
 import { isCoordinates } from 'utils/coordinates';
+import Hint from 'components/forms/hint';
 
 import type { SelectOption } from 'components/select/types';
 import type { Intervention, InterventionFormData } from '../types';
@@ -55,7 +56,10 @@ const locationTypeSchema = yup
 const schemaValidation = yup.object({
   title: yup.string().label('Title').max(60).required(),
   volume: yup.number().optional(),
-  interventionType: yup.string().label('Intervention type').required(),
+  interventionType: yup
+    .string()
+    .label('Intervention type')
+    .required('Type of intervention is required'),
   startYear: yup
     .object({
       label: yup.string(),
@@ -158,7 +162,7 @@ const schemaValidation = yup.object({
     }),
 
   // Coefficients
-  coefficients: yup.lazy((coefficientObject) => {
+  coefficients: yup.lazy((coefficientObject = {}) => {
     const schema = Object.keys(coefficientObject).reduce(
       (prevValue, currentValue) => ({
         ...prevValue,
@@ -669,14 +673,20 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
       </div>
 
       <div className="flex flex-col justify-center pr-10">
-        <h2>2. Type of intervention</h2>
+        <h2>2. Type of intervention *</h2>
       </div>
       <div className="pl-10 border-l-2 border-gray-100">
         <Controller
           name="interventionType"
           control={control}
-          render={({ field }) => (
-            <RadioGroup {...field} onChange={(value) => setValue('interventionType', value)}>
+          render={({ field, fieldState: { invalid } }) => (
+            <RadioGroup
+              {...field}
+              onChange={(value) => {
+                if (invalid) clearErrors('interventionType');
+                setValue('interventionType', value);
+              }}
+            >
               <RadioGroup.Label className="sr-only">Type of intervention</RadioGroup.Label>
               <div className="space-y-4">
                 {TYPES_OF_INTERVENTIONS.map(({ label, value }) => (
@@ -704,6 +714,11 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                     )}
                   </RadioGroup.Option>
                 ))}
+                {errors.interventionType && (
+                  <Hint data-testid={'hint-input-interventionType'}>
+                    {errors.interventionType.message}
+                  </Hint>
+                )}
               </div>
             </RadioGroup>
           )}

@@ -26,34 +26,6 @@ on:
         default: true
 
 jobs:
-  wait_for_tests:
-    name: Wait for tests to finish running
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Wait for API E2E tests to run
-        if: ${{ github.event.inputs.waitForTest == 'true' }}
-        uses: fountainhead/action-wait-for-check@v1.1.0
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          checkName: E2E Tests
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-
-      - name: Wait for API Integration tests to run
-        if: ${{ github.event.inputs.waitForTest == 'true' }}
-        uses: fountainhead/action-wait-for-check@v1.1.0
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          checkName: Integration Tests
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-
-      - name: Wait for Client tests to run
-        if: ${{ github.event.inputs.waitForTest == 'true' }}
-        uses: fountainhead/action-wait-for-check@v1.1.0
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          checkName: Client Tests
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-
   push_marketing_to_registry:
     name: Push Marketing site Docker image to Google Container Registry
     runs-on: ubuntu-20.04

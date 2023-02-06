@@ -9,7 +9,7 @@ terraform {
 }
 
 module "bootstrap" {
-  source               = "./modules/bootstrap"
+  source               = "./modules/aws/bootstrap"
   s3_bucket            = var.tf_state_bucket
   dynamo_db_table_name = var.dynamo_db_lock_table_name
   tags                 = local.tags
@@ -17,7 +17,7 @@ module "bootstrap" {
 
 # Internal module which defines the VPC
 module "vpc" {
-  source              = "./modules/vpc"
+  source              = "./modules/aws/vpc"
   region              = var.aws_region
   project             = var.project_name
   tags                = local.tags
@@ -31,7 +31,7 @@ module "vpc" {
 }
 
 module "bastion" {
-  source      = "./modules/bastion"
+  source      = "./modules/aws/bastion"
   bastion_ami = data.aws_ami.latest-ubuntu-lts.id
   project     = var.project_name
   tags        = local.tags
@@ -42,7 +42,7 @@ module "bastion" {
 }
 
 module "dns" {
-  source              = "./modules/dns"
+  source              = "./modules/aws/dns"
   domain              = var.domain
   site_server_ip_list = [
     "76.76.21.21"
@@ -51,7 +51,7 @@ module "dns" {
 }
 
 module "eks" {
-  source     = "./modules/eks"
+  source     = "./modules/aws/eks"
   project    = var.project_name
   vpc_id     = module.vpc.id
   subnet_ids = module.vpc.private_subnets.*.id
@@ -59,7 +59,7 @@ module "eks" {
 }
 
 module "default-node-group" {
-  source          = "./modules/node_group"
+  source          = "./modules/aws/node_group"
   cluster         = module.eks.cluster
   cluster_name    = module.eks.cluster_name
   node_group_name = "default-node-group"
@@ -75,7 +75,7 @@ module "default-node-group" {
 }
 
 module "data-node-group" {
-  source          = "./modules/node_group"
+  source          = "./modules/aws/node_group"
   cluster         = module.eks.cluster
   cluster_name    = module.eks.cluster_name
   node_group_name = "data-node-group"
@@ -91,22 +91,27 @@ module "data-node-group" {
 }
 
 module "s3_bucket" {
-  source = "./modules/s3_bucket"
+  source = "./modules/aws/s3_bucket"
   bucket = "landgriffon-raw-data"
 }
 
 module "api_container_registry" {
-  source = "./modules/container_registry"
+  source = "./modules/aws/container_registry"
   name   = "api"
 }
 
 module "client_container_registry" {
-  source = "./modules/container_registry"
+  source = "./modules/aws/container_registry"
   name   = "client"
 }
 
+module "marketing_container_registry" {
+  source = "./modules/aws/container_registry"
+  name   = "marketing"
+}
+
 module "data_import_container_registry" {
-  source = "./modules/container_registry"
+  source = "./modules/aws/container_registry"
   name   = "data_import"
 }
 

@@ -145,50 +145,6 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
 
-  push_marketing_to_registry:
-    name: Push Marketing site Docker image to Docker Hub
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v2
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Get ECR Registry
-        id: ecr-login
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Extract branch name
-        shell: bash
-        run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
-        id: extract_branch
-
-      - name: Build Marketing site Docker image
-        env:
-          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          ECR_REPOSITORY: marketing
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
-        run: |
-          docker build \
-          -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-          marketing
-
-      - name: Push Marketing site Docker image to AWS ECR
-        env:
-          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          ECR_REPOSITORY: marketing
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
-        run: |
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-
-
   push_data_import_to_registry:
     name: Push Data Import Docker image to Docker Hub
     runs-on: ubuntu-20.04

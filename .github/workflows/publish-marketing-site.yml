@@ -1,0 +1,104 @@
+name: Publish Docker images
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT }}
+  SERVICE: ${{ secrets.GCP_CLOUDRUN_SERVICE }}
+  REGION: ${{ secrets.GCP_REGION }}
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'staging'
+      - 'test'
+      - 'vcf'
+      - 'tetrapack'
+      - 'dev'
+      - 'demo'
+    paths:
+      - 'marketing/**'
+      - '.github/**'
+  workflow_dispatch:
+    inputs:
+      waitForTest:
+        description: 'Set to "false" to skip waiting for the test to pass.'
+        required: true
+        default: true
+
+jobs:
+  wait_for_tests:
+    name: Wait for tests to finish running
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Wait for API E2E tests to run
+        if: ${{ github.event.inputs.waitForTest == 'true' }}
+        uses: fountainhead/action-wait-for-check@v1.1.0
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          checkName: E2E Tests
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Wait for API Integration tests to run
+        if: ${{ github.event.inputs.waitForTest == 'true' }}
+        uses: fountainhead/action-wait-for-check@v1.1.0
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          checkName: Integration Tests
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Wait for Client tests to run
+        if: ${{ github.event.inputs.waitForTest == 'true' }}
+        uses: fountainhead/action-wait-for-check@v1.1.0
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          checkName: Client Tests
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+  push_marketing_to_registry:
+    name: Push Marketing site Docker image to Google Container Registry
+    runs-on: ubuntu-20.04
+
+
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: 'projects/168301767246/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
+          service_account: 'github-actions@landgriffon.iam.gserviceaccount.com'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Authorize Docker push
+        run: gcloud auth configure-docker
+
+      - name: Extract branch name
+        shell: bash
+        run: |
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+        id: extract_branch
+
+      - name: Build Marketing site Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          ECR_REPOSITORY: marketing
+          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+        run: |-
+          docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }} -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:marketing .
+          docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}
+
+      - name: Deploy to Cloud Run
+        run: |-
+          gcloud run deploy ${{ env.SERVICE }} \
+            --region ${{ env.REGION }} \
+            --image gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }} \
+            --platform "managed" \
+            --quiet

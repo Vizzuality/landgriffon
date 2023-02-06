@@ -47,3 +47,11 @@ output "client_container_registry_url" {
 output "data_import_container_registry_url" {
   value = module.data_import_container_registry.container_registry_url
 }
+
+output "gcp_workload_identity_provider" {
+  value = module.workload_identity.workload_identity_provider
+}
+
+output "gcp_service_account" {
+  value = module.workload_identity.service_account
+}

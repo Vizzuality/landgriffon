@@ -20,6 +20,17 @@ variable "aws_region" {
   description = "A valid AWS region to configure the underlying AWS SDK."
 }
 
+variable "gcp_region" {
+  type        = string
+  description = "A valid AWS region to configure the underlying AWS SDK."
+}
+
+# define GCP project id
+variable "gcp_project_id" {
+  type        = string
+  description = "GCP project id"
+}
+
 variable "dynamo_db_lock_table_name" {
   default     = "aws-locks"
   type        = string
@@ -110,4 +121,9 @@ variable "data_node_group_max_size" {
 variable "data_node_group_desired_size" {
   type    = number
   default = 1
+}
+
+variable "marketing_site_tag" {
+  type = string
+  description = "Tag name to use when pulling the marketing site from the image repository"
 }

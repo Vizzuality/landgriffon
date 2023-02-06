@@ -30,7 +30,6 @@ jobs:
     name: Push Marketing site Docker image to Google Container Registry
     runs-on: ubuntu-20.04
 
-
     permissions:
       contents: 'read'
       id-token: 'write'
@@ -59,12 +58,8 @@ jobs:
         id: extract_branch
 
       - name: Build Marketing site Docker image
-        env:
-          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          ECR_REPOSITORY: marketing
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
         run: |-
-          docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }} -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:marketing .
+          docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }} -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:marketing ./marketing
           docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}
 
       - name: Deploy to Cloud Run

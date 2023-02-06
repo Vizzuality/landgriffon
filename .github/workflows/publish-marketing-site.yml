@@ -1,4 +1,4 @@
-name: Publish Docker images
+name: Publish marketing site image
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT }}

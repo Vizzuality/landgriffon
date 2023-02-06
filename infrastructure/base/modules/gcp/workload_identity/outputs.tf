@@ -3,5 +3,5 @@ output "workload_identity_provider" {
 }
 
 output "service_account" {
-  value = google_service_account.github_actions.email
+  value = google_service_account.github_actions
 }

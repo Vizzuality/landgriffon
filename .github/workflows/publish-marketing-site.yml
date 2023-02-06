@@ -39,7 +39,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v1'
+        uses: google-github-actions/auth@v1
         with:
           workload_identity_provider: 'projects/168301767246/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
           service_account: 'github-actions@landgriffon.iam.gserviceaccount.com'
@@ -59,13 +59,13 @@ jobs:
 
       - name: Build Marketing site Docker image
         run: |-
-          docker build -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }} -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:marketing ./marketing
-          docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}
+          docker build -t eu-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/main:${{ github.sha }} -t eu-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/main:latest ./marketing
+          docker push eu-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/main:${{ github.sha }} eu-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/main:latest
 
       - name: Deploy to Cloud Run
         run: |-
           gcloud run deploy ${{ env.SERVICE }} \
             --region ${{ env.REGION }} \
-            --image gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }} \
+            --image eu-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/main:latest \
             --platform "managed" \
             --quiet

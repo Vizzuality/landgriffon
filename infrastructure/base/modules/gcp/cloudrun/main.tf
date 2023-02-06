@@ -20,7 +20,7 @@ resource "google_cloud_run_service" "cloud_run" {
       service_account_name = google_service_account.service_account.email
 
       containers {
-        image = "gcr.io/${var.project_id}/${var.image_name}:${var.tag}"
+        image = "eu-docker.pkg.dev/${var.project_id}/${var.image_name}/main:latest"
         args  = [var.start_command]
         ports {
           container_port = var.container_port

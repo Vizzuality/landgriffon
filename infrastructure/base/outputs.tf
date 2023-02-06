@@ -53,5 +53,5 @@ output "gcp_workload_identity_provider" {
 }
 
 output "gcp_service_account" {
-  value = module.workload_identity.service_account
+  value = module.workload_identity.service_account.email
 }

@@ -7,7 +7,7 @@ module "network" {
 
 module "marketing_cloudrun" {
   source             = "./modules/gcp/cloudrun"
-  name               = "${var.project_name}-marketing"
+  name               = "marketing"
   region             = var.gcp_region
   project_id         = var.gcp_project_id
   image_name         = "marketing"
@@ -20,10 +20,11 @@ module "marketing_cloudrun" {
 }
 
 module "marketing_gcr" {
-  source     = "./modules/gcp/gcr"
-  project_id = var.gcp_project_id
-  region     = var.gcp_region
-  name       = "${var.project_name}-marketing"
+  source          = "./modules/gcp/gcr"
+  project_id      = var.gcp_project_id
+  region          = var.gcp_region
+  name            = "marketing"
+  service_account = module.workload_identity.service_account
 }
 
 module "workload_identity" {

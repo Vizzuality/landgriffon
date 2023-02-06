@@ -1,3 +1,8 @@
+resource "google_project_service" "iamcredentials_api" {
+  service            = "iamcredentials.googleapis.com"
+  disable_on_destroy = false
+}
+
 resource "google_iam_workload_identity_pool" "github_pool" {
   project                   = var.project_id
   workload_identity_pool_id = "github-pool"
@@ -30,4 +35,20 @@ resource "google_service_account_iam_member" "workload_identity_user" {
   service_account_id = google_service_account.github_actions.name
   role               = "roles/iam.workloadIdentityUser"
   member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_pool.name}/attribute.repository/${var.repository_path}"
+}
+
+resource "google_project_iam_binding" "github_actions_allow_storage_get" {
+  project = var.project_id
+  role    = "roles/storage.objectAdmin"
+
+  members = [
+    "serviceAccount:${google_service_account.github_actions.email}"
+  ]
+}
+
+resource "google_project_iam_custom_role" "github_actions_allow_storage_get" {
+  role_id     = "StorageBucketGet"
+  title       = "StorageBucketGet Role"
+  description = "Ability to read storage buckets"
+  permissions = ["storage.buckets.get"]
 }

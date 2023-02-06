@@ -5,5 +5,6 @@ variable "project_id" {
 
 variable "repository_path" {
   type    = string
-  default = "landgriffon/marketing"
+  description = "Github repo path"
+  default = "Vizzuality/landgriffon"
 }

@@ -22,14 +22,14 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Wait for API image to be pushed to Docker Hub
-        uses: fountainhead/action-wait-for-check@v1.0.0
+        uses: fountainhead/action-wait-for-check@v1.1.0
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           checkName: Push API Docker image to Docker Hub
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Wait for Client image to be pushed to Docker Hub
-        uses: fountainhead/action-wait-for-check@v1.0.0
+        uses: fountainhead/action-wait-for-check@v1.1.0
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           checkName: Push Client Docker image to Docker Hub

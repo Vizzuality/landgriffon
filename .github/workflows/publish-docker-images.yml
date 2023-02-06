@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Wait for API E2E tests to run
         if: ${{ github.event.inputs.waitForTest == 'true' }}
-        uses: fountainhead/action-wait-for-check@v1.0.0
+        uses: fountainhead/action-wait-for-check@v1.1.0
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           checkName: E2E Tests
@@ -38,7 +38,7 @@ jobs:
 
       - name: Wait for API Integration tests to run
         if: ${{ github.event.inputs.waitForTest == 'true' }}
-        uses: fountainhead/action-wait-for-check@v1.0.0
+        uses: fountainhead/action-wait-for-check@v1.1.0
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           checkName: Integration Tests
@@ -46,7 +46,7 @@ jobs:
 
       - name: Wait for Client tests to run
         if: ${{ github.event.inputs.waitForTest == 'true' }}
-        uses: fountainhead/action-wait-for-check@v1.0.0
+        uses: fountainhead/action-wait-for-check@v1.1.0
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           checkName: Client Tests
@@ -178,7 +178,7 @@ jobs:
         run: |
           docker build \
           -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-          client
+          marketing
 
       - name: Push Marketing site Docker image to AWS ECR
         env:

@@ -20,7 +20,7 @@ jobs:
         run: chmod +x cc-test-reporter
 
       - name: Wait for API tests to run
-        uses: fountainhead/action-wait-for-check@v1.0.0
+        uses: fountainhead/action-wait-for-check@v1.1.0
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           checkName: API Tests
@@ -37,7 +37,7 @@ jobs:
           path: ${{github.workspace}}/api/coverage
 
       - name: Wait for Client tests to run
-        uses: fountainhead/action-wait-for-check@v1.0.0
+        uses: fountainhead/action-wait-for-check@v1.1.0
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           checkName: Client Tests

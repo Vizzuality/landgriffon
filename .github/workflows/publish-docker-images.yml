@@ -183,7 +183,7 @@ jobs:
       - name: Push Marketing site Docker image to AWS ECR
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          ECR_REPOSITORY: client
+          ECR_REPOSITORY: marketing
           IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
         run: |
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

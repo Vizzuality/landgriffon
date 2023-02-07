@@ -45,7 +45,7 @@ const ScenariosAdminPage: React.FC = () => {
   const { query } = router;
 
   const { hasPermission } = usePermissions();
-  const canCreateScenario = hasPermission(Permission.CAN_CREATE_SCENARIO);
+  const canCreateScenario = hasPermission(Permission.CAN_CREATE_SCENARIO, false);
 
   const handleSort = useCallback(
     ({ value }) => {

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   forwardRef,
   HttpException,
   Inject,
@@ -280,5 +281,26 @@ export class MaterialsService extends AppBaseService<
         status: MATERIALS_STATUS.INACTIVE,
       })),
     );
+  }
+
+  async checkActiveMaterials(materialIds: string[]): Promise<void> {
+    const inactiveSelectedMaterials: Material[] =
+      await this.materialRepository.find({
+        where: {
+          id: In(materialIds),
+          status: MATERIALS_STATUS.INACTIVE,
+        },
+      });
+
+    if (inactiveSelectedMaterials.length) {
+      const inactiveMaterialNames: string[] = inactiveSelectedMaterials.map(
+        (material: Material) => material.name,
+      );
+      throw new BadRequestException(
+        `Following Requested Materials are not activated: ${inactiveMaterialNames.join(
+          ', ',
+        )}`,
+      );
+    }
   }
 }

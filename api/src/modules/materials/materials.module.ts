@@ -21,6 +21,6 @@ import { MaterialRepository } from 'modules/materials/material.repository';
   ],
   controllers: [MaterialsController],
   providers: [MaterialsService, MaterialsToH3sService, MaterialRepository],
-  exports: [MaterialsService, MaterialsToH3sService],
+  exports: [MaterialsService, MaterialsToH3sService, MaterialRepository],
 })
 export class MaterialsModule {}

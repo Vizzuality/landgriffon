@@ -21,7 +21,7 @@ import {
   INDICATOR_TYPES,
 } from 'modules/indicators/indicator.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
-import { Material } from 'modules/materials/material.entity';
+import { Material, MATERIALS_STATUS } from 'modules/materials/material.entity';
 import {
   LOCATION_TYPES,
   SourcingLocation,
@@ -126,6 +126,36 @@ describe('Impact Table and Charts test suite (e2e)', () => {
 
     expect(response.body.errors[0].title).toEqual(
       'No Indicator has been found with provided IDs',
+    );
+  });
+
+  test('When I query the API for a Impact Table filtering by Inactive material, then I should get a proper errors message ', async () => {
+    const unit: Unit = await createUnit({ shortName: 'fakeUnit' });
+    const indicator: Indicator = await createIndicator({
+      name: 'Fake Indicator',
+      unit,
+      nameCode: INDICATOR_TYPES.DEFORESTATION,
+      status: INDICATOR_STATUS.ACTIVE,
+    });
+
+    const material: Material = await createMaterial({
+      name: 'Fake Material',
+      status: MATERIALS_STATUS.INACTIVE,
+    });
+    const response = await request(testApplication.getHttpServer())
+      .get('/api/v1/impact/table')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .query({
+        'indicatorIds[]': [indicator.id],
+        'materialIds[]': [material.id],
+        endYear: 1,
+        startYear: 2,
+        groupBy: 'material',
+      })
+      .expect(HttpStatus.BAD_REQUEST);
+
+    expect(response.body.errors[0].title).toEqual(
+      'Following Requested Materials are not activated: Fake Material',
     );
   });
 

@@ -4,7 +4,7 @@ import {
   SCENARIO_INTERVENTION_TYPE,
   ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
-import { Material } from 'modules/materials/material.entity';
+import { Material, MATERIALS_STATUS } from 'modules/materials/material.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
@@ -268,6 +268,7 @@ async function createMaterial(
   const defaultData: DeepPartial<Material> = {
     name: 'Material name',
     hsCodeId: uuidv4(),
+    status: MATERIALS_STATUS.ACTIVE,
   };
 
   const material = Material.merge(new Material(), defaultData, additionalData);

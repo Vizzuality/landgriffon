@@ -23,14 +23,19 @@ export function usePermissions(creatorId?: string) {
     return !isLoading && !!roles?.includes(role);
   };
 
-  const hasPermission = (permission: Permission) => {
-    // If is admin or if has the permission or if is the creator of the entity
-    return (
-      !isLoading &&
-      (hasRole(RoleName.ADMIN) ||
-        permissions?.includes(permission) ||
-        (!!creatorId && creatorId === data.id))
-    );
+  /**
+   * Function to determine if a user is allowed to perform an action.
+   * For CREATE actions add param needsCreatorPermission=false, so it will not check the 'creatorId'
+   */
+  const hasPermission = (permissionName: Permission, needsCreatorPermission = true) => {
+    // The user has permission
+    let permission = permissions?.includes(permissionName);
+    // The user is creator of the entity and has permission (for delete and update actions)
+    if (needsCreatorPermission) {
+      permission = permission && creatorId === data?.id;
+    }
+    // Admin always has permission
+    return !isLoading && (hasRole(RoleName.ADMIN) || permission);
   };
 
   return { roles, hasRole, permissions, hasPermission, isLoading };

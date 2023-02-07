@@ -20,6 +20,7 @@ export function parseInterventionFormDataToDto(
   const {
     interventionType,
     startYear,
+    endYear,
     materialIds,
     businessUnitIds,
     supplierIds,
@@ -39,7 +40,8 @@ export function parseInterventionFormDataToDto(
   const result: InterventionDto = {
     ...rest,
     type: interventionType,
-    startYear: getValue(startYear) as unknown as number,
+    startYear: getValue(startYear),
+    endYear: getValue(endYear),
 
     materialIds: materialIds?.map(getValue).map(emptyStringIsNull) as string[],
     businessUnitIds: businessUnitIds?.map(getValue).map(emptyStringIsNull) as string[],

@@ -45,6 +45,7 @@ export type Intervention = {
 export type InterventionFormData = {
   interventionType: string;
   startYear: SelectOption<number>;
+  endYear: SelectOption<number>;
   percentage: number;
   scenarioId: string;
 

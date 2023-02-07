@@ -45,7 +45,7 @@ module "dns" {
   source              = "./modules/aws/dns"
   domain              = var.domain
   site_server_ip_list = [
-    "76.76.21.21"
+    module.load_balancer.load-balancer-ip
   ]
   bastion_hostname = module.bastion.bastion_hostname
 }

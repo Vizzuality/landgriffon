@@ -37,15 +37,6 @@ resource "google_service_account_iam_member" "workload_identity_user" {
   member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_pool.name}/attribute.repository/${var.repository_path}"
 }
 
-resource "google_project_iam_binding" "github_actions_allow_storage_get" {
-  project = var.project_id
-  role    = "roles/storage.objectAdmin" //TODO: limit
-
-  members = [
-    "serviceAccount:${google_service_account.github_actions.email}"
-  ]
-}
-
 resource "google_project_iam_binding" "github_actions_artifact_registry_write" {
   project = var.project_id
   role    = "roles/artifactregistry.writer"

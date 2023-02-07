@@ -66,3 +66,7 @@ variable "tag" {
   type = string
   description = "Tag name to use for docker image tagging and deployment"
 }
+
+variable "developer_service_account" {
+  description = "A service account to which `developer` role will be granted"
+}

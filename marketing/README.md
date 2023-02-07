@@ -21,3 +21,12 @@ Run the development server:
 ```bash
 yarn dev
 ```
+
+## ENV variables required
+
+Those variables are required to run the project. You can find them on LastPass.
+
+```
+SENDGRID_API_KEY_SUBSCRIPTION=
+SENDGRID_API_KEY_CONTACT=
+```

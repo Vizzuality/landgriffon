@@ -7,6 +7,7 @@ import * as helmet from 'helmet';
 import * as compression from 'compression';
 import { JwtAuthGuard } from 'guards/jwt-auth.guard';
 import { useContainer } from 'class-validator';
+import { SensitiveInfoGuard } from 'guards/sensitive-info.guard';
 
 async function bootstrap(): Promise<void> {
   const logger: Logger = new Logger('bootstrap');
@@ -42,6 +43,7 @@ async function bootstrap(): Promise<void> {
       transform: true,
     }),
   );
+  app.useGlobalInterceptors(new SensitiveInfoGuard());
   const reflector: Reflector = app.get(Reflector);
   app.useGlobalGuards(new JwtAuthGuard(reflector));
 

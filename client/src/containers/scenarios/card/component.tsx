@@ -36,7 +36,7 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data, display = 'grid' }) =
   const handleChangeVisibility = useCallback(
     (isActive: boolean) => {
       updateScenario.mutate(
-        { id: data.id, data: { visibility: isActive } },
+        { id: data.id, data: { isPublic: isActive } },
         {
           onSuccess: () => {
             toast.success('Your changes were successfully saved.');

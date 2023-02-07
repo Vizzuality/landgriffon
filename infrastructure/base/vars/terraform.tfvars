@@ -7,3 +7,5 @@ rds_engine_version = "13.2"
 gcp_project_id     = "landgriffon"
 gcp_region         = "europe-west1"
 marketing_site_tag = "dev"
+
+marketing_site_google_analytics = "271375789"

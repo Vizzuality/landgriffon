@@ -133,10 +133,14 @@ variable "repo_name" {
   description = "Name of the github repo where the project is hosted"
 }
 
-variable "sendgrid_api_key_subscription" {
+variable "marketing_site_sendgrid_api_key_subscription" {
   type = string
 }
 
-variable "sendgrid_api_key_contact" {
+variable "marketing_site_sendgrid_api_key_contact" {
+  type = string
+}
+
+variable "marketing_site_google_analytics" {
   type = string
 }

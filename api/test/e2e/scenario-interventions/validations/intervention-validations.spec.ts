@@ -5,6 +5,7 @@ import {
 } from 'modules/indicators/indicator.entity';
 import {
   createIndicator,
+  createMaterial,
   createScenarioIntervention,
 } from '../../../entity-mocks';
 import {
@@ -22,6 +23,11 @@ import ApplicationManager, {
 import { Test } from '@nestjs/testing';
 import { AppModule } from 'app.module';
 import { ScenarioInterventionsService } from 'modules/scenario-interventions/scenario-interventions.service';
+import {
+  Material,
+  MATERIALS_STATUS,
+} from '../../../../src/modules/materials/material.entity';
+import { HttpStatus } from '@nestjs/common';
 
 describe('Interventions E2E Tests (Controller Validations)', () => {
   let jwtToken: string;
@@ -310,6 +316,69 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
       expect(
         response.body.errors[0].meta.rawError.response.message[0],
       ).not.toContain(inactiveIndicators.join(', '));
+    },
+  );
+
+  test(
+    'When I Create new intervention with replacing material ' +
+      +'And the replacing material is active ' +
+      +'Then validation shall pass',
+
+    async () => {
+      const material: Material = await createMaterial();
+      const response = await request(testApplication.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'test scenario intervention',
+          startYear: 2025,
+          percentage: 50,
+          scenarioId: uuidv4(),
+          materialIds: [uuidv4()],
+          supplierIds: [uuidv4()],
+          businessUnitIds: [uuidv4()],
+          adminRegionIds: [uuidv4()],
+          type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+          newLocationCountryInput: 'TestCountry',
+          newLocationType: 'unknown',
+          newMaterialId: material.id,
+        });
+
+      expect(response.body.errors).toBeUndefined();
+    },
+  );
+
+  test(
+    'When I Create new intervention with replacing material ' +
+      +'But the replacing material is Inactive ' +
+      +'Then I should get a relevant error message',
+    async () => {
+      const material: Material = await createMaterial({
+        name: 'Inactive Material',
+        status: MATERIALS_STATUS.INACTIVE,
+      });
+      const response = await request(testApplication.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'test scenario intervention',
+          startYear: 2025,
+          percentage: 50,
+          scenarioId: uuidv4(),
+          materialIds: [uuidv4()],
+          supplierIds: [uuidv4()],
+          businessUnitIds: [uuidv4()],
+          adminRegionIds: [uuidv4()],
+          type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+          newLocationCountryInput: 'TestCountry',
+          newLocationType: 'unknown',
+          newMaterialId: material.id,
+        });
+
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      expect(response.body.errors[0].title).toEqual(
+        'Following Requested Materials are not activated: Inactive Material',
+      );
     },
   );
 });

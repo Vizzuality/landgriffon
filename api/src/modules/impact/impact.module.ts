@@ -9,6 +9,8 @@ import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { MaterialsModule } from 'modules/materials/materials.module';
 import { ActualVsScenarioImpactService } from 'modules/impact/comparison/actual-vs-scenario.service';
 import { ScenarioVsScenarioImpactService } from 'modules/impact/comparison/scenario-vs-scenario.service';
+import { MaterialsService } from '../materials/materials.service';
+import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 
 @Module({
@@ -19,12 +21,14 @@ import { IndicatorsService } from 'modules/indicators/indicators.service';
     AdminRegionsModule,
     SuppliersModule,
     MaterialsModule,
+    SourcingLocationsModule,
   ],
   providers: [
     ImpactService,
     ActualVsScenarioImpactService,
     ScenarioVsScenarioImpactService,
     IndicatorsService,
+    MaterialsService,
   ],
   controllers: [ImpactController],
   exports: [

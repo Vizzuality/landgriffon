@@ -37,6 +37,7 @@ import { CreateScenarioInterventionDtoV2 } from 'modules/scenario-interventions/
 import { UpdateScenarioInterventionDto } from 'modules/scenario-interventions/dto/update.scenario-intervention.dto';
 import { PaginationMeta } from 'utils/app-base.service';
 import { SetUserInterceptor } from 'decorators/set-user.interceptor';
+import { MaterialsService } from 'modules/materials/materials.service';
 
 @Controller(`/api/v1/scenario-interventions`)
 @ApiTags(scenarioResource.className)
@@ -44,6 +45,7 @@ import { SetUserInterceptor } from 'decorators/set-user.interceptor';
 export class ScenarioInterventionsControllerV2 {
   constructor(
     public readonly scenarioInterventionsService: ScenarioInterventionsService,
+    public readonly materialsService: MaterialsService,
   ) {}
 
   @ApiOperation({
@@ -95,6 +97,8 @@ export class ScenarioInterventionsControllerV2 {
   async create(
     @Body() dto: CreateScenarioInterventionDtoV2,
   ): Promise<Partial<ScenarioIntervention>> {
+    if (dto.newMaterialId)
+      await this.materialsService.checkActiveMaterials([dto.newMaterialId]);
     return await this.scenarioInterventionsService.serialize(
       await this.scenarioInterventionsService.createScenarioIntervention(dto),
     );

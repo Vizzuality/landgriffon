@@ -18,8 +18,7 @@ import { ScenarioInterventionsControllerV2 } from 'modules/scenario-intervention
 import { ActiveIndicatorValidator } from 'modules/indicators/validators/active-indicator.validator';
 import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
 import { AuthorizationModule } from 'modules/authorization/authorization.module';
-
-
+import { MaterialsService } from 'modules/materials/materials.service';
 
 @Module({
   imports: [
@@ -42,6 +41,7 @@ import { AuthorizationModule } from 'modules/authorization/authorization.module'
     NewSupplierLocationIntervention,
     ChangeProductionEfficiencyIntervention,
     ActiveIndicatorValidator,
+    MaterialsService,
   ],
   exports: [ScenarioInterventionRepository, ScenarioInterventionsService],
 })

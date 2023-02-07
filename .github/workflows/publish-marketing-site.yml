@@ -59,7 +59,11 @@ jobs:
 
       - name: Build Marketing site Docker image
         run: |-
-          docker build -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/main:${{ github.sha }} -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/main:latest ./marketing
+          docker build \
+          --build-arg SENDGRID_API_KEY_SUBSCRIPTION=${{ secrets.SENDGRID_API_KEY_SUBSCRIPTION }} \
+          --build-arg SENDGRID_API_KEY_CONTACT=${{ secrets.SENDGRID_API_KEY_CONTACT }} \
+          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/main:${{ github.sha }} \
+          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/main:latest ./marketing
           docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/main:${{ github.sha }}
           docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}/main:latest
 

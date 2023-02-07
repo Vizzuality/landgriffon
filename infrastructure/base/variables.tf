@@ -127,3 +127,16 @@ variable "marketing_site_tag" {
   type = string
   description = "Tag name to use when pulling the marketing site from the image repository"
 }
+
+variable "repo_name" {
+  type        = string
+  description = "Name of the github repo where the project is hosted"
+}
+
+variable "sendgrid_api_key_subscription" {
+  type = string
+}
+
+variable "sendgrid_api_key_contact" {
+  type = string
+}

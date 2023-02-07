@@ -29,4 +29,5 @@ Those variables are required to run the project. You can find them on LastPass.
 ```
 SENDGRID_API_KEY_SUBSCRIPTION=
 SENDGRID_API_KEY_CONTACT=
+NEXT_PUBLIC_GOOGLE_ANALYTICS=
 ```

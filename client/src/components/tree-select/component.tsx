@@ -11,7 +11,7 @@ import {
   useRole,
   autoUpdate,
 } from '@floating-ui/react-dom-interactions';
-import { ChevronDownIcon, XIcon } from '@heroicons/react/solid';
+import { ChevronDownIcon, XIcon } from '@heroicons/react/outline';
 import Tree from 'rc-tree';
 import { flattenTreeData } from 'rc-tree/lib/utils/treeUtil';
 import { useDebouncedValue } from 'rooks';
@@ -108,7 +108,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
     theme = 'default',
     ellipsis = false,
     error = false,
-    fitContent = false,
+    fitContent = true,
     checkedStrategy: checkedStrategyName = 'PARENT', // by default show child
     label,
     autoFocus = false,
@@ -333,7 +333,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
       <div className="flex gap-2">
         <input
           ref={ref}
-          autoFocus
+          autoFocus={autoFocus}
           type="search"
           value={searchTerm}
           placeholder={selected === null ? placeholder : null}
@@ -366,7 +366,17 @@ const InnerTreeSelect = <IsMulti extends boolean>(
       </div>
     );
     return Component;
-  }, [handleSearch, multiple, placeholder, ref, resetSearch, searchTerm, selected, theme]);
+  }, [
+    handleSearch,
+    multiple,
+    placeholder,
+    ref,
+    resetSearch,
+    searchTerm,
+    selected,
+    theme,
+    autoFocus,
+  ]);
 
   const [keyToScroll, setKeyToScroll] = useState<Key>();
 
@@ -511,7 +521,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
               )}
             </>
           ) : (
-            <div className="inline-flex items-center min-w-0 my-auto pl-4 min-h-[36px]">
+            <div className="inline-flex items-center min-w-0 my-auto min-h-[36px]">
               {selected ? (
                 <span className="block w-full text-gray-900 truncate">{selected.label}</span>
               ) : (

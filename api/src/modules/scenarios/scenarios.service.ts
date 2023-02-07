@@ -11,7 +11,6 @@ import { UpdateScenarioDto } from 'modules/scenarios/dto/update.scenario.dto';
 import { ScenarioInterventionsService } from 'modules/scenario-interventions/scenario-interventions.service';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { SelectQueryBuilder } from 'typeorm';
-import { FindOptions } from '@nestjs/schematics';
 import { ScenariosAccessControl } from 'modules/authorization/modules/scenarios.access-control.service';
 
 @Injectable()
@@ -44,6 +43,7 @@ export class ScenariosService extends AppBaseService<
         'updatedAt',
         'isPublic',
         'scenarioInterventions',
+        'user',
       ],
       keyForAttribute: 'camelCase',
     };

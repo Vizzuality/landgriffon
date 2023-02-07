@@ -48,7 +48,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
 
       - name: Authorize Docker push
-        run: gcloud auth configure-docker
+        run: gcloud auth configure-docker europe-west1-docker.pkg.dev
 
       - name: Extract branch name
         shell: bash

@@ -15,6 +15,7 @@ import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { Role } from 'modules/authorization/roles/role.entity';
+import { Exclude } from 'class-transformer';
 
 export const userResource: BaseServiceResource = {
   className: 'User',
@@ -62,9 +63,11 @@ export class User extends BaseEntity {
   @Column('character varying', { name: 'avatar_data_url', nullable: true })
   avatarDataUrl?: string;
 
+  @Exclude({ toPlainOnly: true })
   @Column('character varying', { name: 'password' })
   password!: string;
 
+  @Exclude({ toPlainOnly: true })
   @Column('character varying', { name: 'salt' })
   salt!: string;
 

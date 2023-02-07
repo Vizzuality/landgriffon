@@ -469,6 +469,24 @@ export class CreateScenarioInterventionDtoV2 {
   })
   newLocationCountryInput!: string;
 
+  @ApiProperty({
+    description: `New Administrative Region, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER}
+    for Location Type: ${LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION}`,
+    type: String,
+    example: 'Murcia',
+  })
+  @ValidateIf(
+    (dto: CreateScenarioInterventionDto) =>
+      dto.type !== SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY &&
+      dto.newLocationType ===
+        LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION,
+  )
+  @IsNotEmpty({
+    message:
+      'New Administrative Region input is required for the selected intervention and location type',
+  })
+  newLocationAdminRegionInput?: string;
+
   @ApiPropertyOptional({
     description: `
     New Supplier Location address, is required for Intervention types: ${SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL}, ${SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER}

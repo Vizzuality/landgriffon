@@ -24,7 +24,7 @@ export type ScenarioDTO = {
   id?: Scenario['id'];
   title: Scenario['title'];
   description?: Scenario['description'];
-  visibility?: Scenario['visibility'];
+  isPublic?: Scenario['visibility'];
 };
 
 export type Scenarios = Scenario[];

@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'client/**'
+
   workflow_dispatch:
 
 env:

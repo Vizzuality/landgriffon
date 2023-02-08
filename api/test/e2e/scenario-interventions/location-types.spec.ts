@@ -1,4 +1,5 @@
 import {
+  Indicator,
   INDICATOR_STATUS,
   INDICATOR_TYPES_NEW,
 } from 'modules/indicators/indicator.entity';
@@ -97,6 +98,8 @@ describe('Interventions E2E Tests (Location Types)', () => {
             'New Administrative Region input is required for the selected intervention and location type',
           ],
         );
+        // Deleting manually so the next tests tear down does not clash with all the precondition hell
+        await dataSource.getRepository(Indicator).delete({});
       },
     );
 

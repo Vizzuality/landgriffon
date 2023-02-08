@@ -8,7 +8,7 @@ import Textarea from 'components/forms/textarea';
 import { Anchor, Button } from 'components/button';
 import Toggle from 'components/toggle';
 import { usePermissions } from 'hooks/permissions';
-import { Permission, RoleName } from 'hooks/permissions/enums';
+import { Permission } from 'hooks/permissions/enums';
 
 import type { Scenario, ScenarioFormData } from '../types';
 

@@ -31,7 +31,7 @@ import type { ErrorResponse } from 'types';
 const UpdateScenarioPage: React.FC = () => {
   const { query } = useRouter();
   const queryClient = useQueryClient();
-  const { data, isLoading } = useScenario(query?.scenarioId as string);
+  const { data, isLoading } = useScenario(query?.scenarioId as string, { include: 'user' });
   const updateScenario = useUpdateScenario();
   const updateIntervention = useUpdateIntervention();
   const deleteIntervention = useDeleteIntervention();

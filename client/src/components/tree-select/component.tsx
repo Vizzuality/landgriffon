@@ -18,6 +18,7 @@ import { useDebouncedValue } from 'rooks';
 
 import { CHECKED_STRATEGIES, getParents, useTree } from './utils';
 import SearchOverlay from './search-overlay';
+import SearchInput from './search-input';
 import { FIELD_NAMES } from './constants';
 
 import Badge from 'components/badge';
@@ -47,6 +48,8 @@ const THEMES = {
     treeContent: 'max-w-xl',
     badge: '',
   },
+  disabled:
+    'flex-row max-w-full bg-gray-300/20 border border-gray-200 rounded-md shadow-sm cursor-default pointer-events-none min-h-[2.5rem] text-sm p-0.5 px-[0.2rem]',
 };
 
 const CustomSwitcherIcon: TreeProps<TreeDataNode>['switcherIcon'] = ({ isLeaf, expanded }) => {
@@ -94,28 +97,26 @@ const CustomIcon: TreeProps<TreeDataNode>['icon'] = ({ checked, halfChecked, dis
   return <CustomCheckbox checked={checked} indeterminate={halfChecked} disabled={disabled} />;
 };
 
-const InnerTreeSelect = <IsMulti extends boolean>(
-  {
-    current: currentRaw,
-    loading,
-    maxBadges = 5,
-    multiple,
-    options = [],
-    placeholder = '',
-    showSearch = false,
-    onChange,
-    onSearch,
-    theme = 'default',
-    ellipsis = false,
-    error = false,
-    fitContent = true,
-    checkedStrategy: checkedStrategyName = 'PARENT', // by default show child
-    label,
-    autoFocus = false,
-    id,
-  }: TreeSelectProps<IsMulti>,
-  ref: Ref<HTMLInputElement>,
-) => {
+const InnerTreeSelect = <IsMulti extends boolean>({
+  current: currentRaw,
+  loading,
+  maxBadges = 5,
+  multiple,
+  options = [],
+  placeholder = '',
+  showSearch = false,
+  onChange,
+  onSearch,
+  theme = 'default',
+  ellipsis = false,
+  error = false,
+  fitContent = true,
+  checkedStrategy: checkedStrategyName = 'PARENT', // by default show child
+  label,
+  autoFocus = false,
+  id,
+  disabled = false,
+}: TreeSelectProps<IsMulti>) => {
   const current = useMemo(() => {
     if (!currentRaw) {
       return null;
@@ -315,7 +316,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
   // Current selection
   useEffect(() => {
     // Clear selection when current is empty
-    if (current && current.length === 0) {
+    if ((current && current.length === 0) || !current) {
       setSelected(null);
       setSelectedKeys([]);
       setCheckedKeys([]);
@@ -327,56 +328,6 @@ const InnerTreeSelect = <IsMulti extends boolean>(
       setCheckedKeys(currentKeys);
     }
   }, [current]);
-
-  const SearchInput = useMemo(() => {
-    const Component = () => (
-      <div className="flex gap-2">
-        <input
-          ref={ref}
-          autoFocus={autoFocus}
-          type="search"
-          value={searchTerm}
-          placeholder={selected === null ? placeholder : null}
-          className={classNames(
-            'p-0 appearance-none truncate border-none focus:ring-0 w-full py-2',
-            {
-              'pl-2': multiple,
-              'text-sm': theme !== 'inline-primary',
-            },
-          )}
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsOpen(true);
-          }}
-          onKeyUp={(e) => {
-            // Pressing space closes the selector, so the event is prevented in that case
-            if (e.key !== ' ') return;
-            e.stopPropagation();
-            e.currentTarget.value += ' ';
-            handleSearch(e);
-          }}
-          onChange={handleSearch}
-          autoComplete="off"
-        />
-        {searchTerm && (
-          <button type="button" onClick={resetSearch} className="flex-shrink-0">
-            <XIcon className="w-4 h-4 text-gray-400" />
-          </button>
-        )}
-      </div>
-    );
-    return Component;
-  }, [
-    handleSearch,
-    multiple,
-    placeholder,
-    ref,
-    resetSearch,
-    searchTerm,
-    selected,
-    theme,
-    autoFocus,
-  ]);
 
   const [keyToScroll, setKeyToScroll] = useState<Key>();
 
@@ -462,11 +413,15 @@ const InnerTreeSelect = <IsMulti extends boolean>(
   return (
     <div className="min-w-0 " data-testid={`tree-select-${id}`}>
       <div
-        {...getReferenceProps({
-          ref: reference,
+        {...(!disabled && {
+          ...getReferenceProps({
+            ref: reference,
+            disabled,
+          }),
         })}
         className={classNames('w-full min-w-0', {
-          [THEMES[theme].wrapper]: theme === 'default',
+          [THEMES[theme].wrapper]: theme === 'default' && !disabled,
+          [THEMES.disabled]: disabled,
           'ring-[1.5px] ring-navy-400': theme === 'default' && isOpen && !error,
           'flex flex-row justify-between items-center gap-1': theme === 'default',
           'ring-1 ring-red-400': theme === 'default' && error,
@@ -479,7 +434,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
             // apply flex-1 to all children to wrap content nicely
             '[&>*]:flex-1',
             {
-              'px-2': !multiple,
+              // 'px-2': !multiple,
               'flex flex-wrap': theme !== 'inline-primary',
               'ring-navy-400 border-navy-400': isOpen,
               'border-red-400': theme === 'inline-primary' && error,
@@ -521,14 +476,40 @@ const InnerTreeSelect = <IsMulti extends boolean>(
               )}
             </>
           ) : (
-            <div className="inline-flex items-center min-w-0 my-auto min-h-[36px]">
+            <div
+              className={classNames('inline-flex items-center min-w-0 my-auto min-h-[36px]', {
+                'pl-2': selected,
+              })}
+            >
               {selected ? (
                 <span className="block w-full text-gray-900 truncate">{selected.label}</span>
               ) : (
                 // the placeholder is in the search input already
                 showSearch || <span className="text-gray-500">{placeholder}</span>
               )}
-              {!selected && <SearchInput />}
+              {!selected && (
+                <div className="flex gap-2">
+                  <SearchInput
+                    value={searchTerm}
+                    placeholder={selected === null ? placeholder : null}
+                    theme={theme}
+                    autoFocus={autoFocus}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsOpen(true);
+                    }}
+                    onKeyUp={(e) => {
+                      // Pressing space closes the selector, so the event is prevented in that case
+                      if (e.key !== ' ') return;
+                      e.stopPropagation();
+                      e.currentTarget.value += ' ';
+                      handleSearch(e);
+                    }}
+                    onChange={handleSearch}
+                    resetSearch={resetSearch}
+                  />
+                </div>
+              )}
               {selected && (
                 <button type="button" onClick={handleReset} className="px-2 py-0 shrink-0">
                   <XIcon className="w-4 h-4 text-gray-400 hover:text-gray-900" />
@@ -536,7 +517,29 @@ const InnerTreeSelect = <IsMulti extends boolean>(
               )}
             </div>
           )}
-          {multiple && showSearch && <SearchInput />}
+          {multiple && showSearch && (
+            <div className="flex gap-2">
+              <SearchInput
+                value={searchTerm}
+                placeholder={selected === null ? placeholder : null}
+                theme={theme}
+                autoFocus={autoFocus}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsOpen(true);
+                }}
+                onKeyUp={(e) => {
+                  // Pressing space closes the selector, so the event is prevented in that case
+                  if (e.key !== ' ') return;
+                  e.stopPropagation();
+                  e.currentTarget.value += ' ';
+                  handleSearch(e);
+                }}
+                onChange={handleSearch}
+                resetSearch={resetSearch}
+              />
+            </div>
+          )}
         </div>
         <div
           className={classNames(
@@ -556,7 +559,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
             />
           ) : (
             <ChevronDownIcon
-              className={classNames('h-4 w-4', { 'rotate-180': isOpen })}
+              className={classNames('h-4 w-4', { 'rotate-180': isOpen, 'text-gray-300': disabled })}
               aria-hidden="true"
             />
           )}
@@ -611,6 +614,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
                   onCheck={handleCheck}
                   treeData={treeData}
                   fieldNames={FIELD_NAMES}
+                  disabled={disabled}
                 />
                 {(options.length === 0 || (searchTerm && filteredOptionsKeys?.length === 0)) && (
                   <div className="p-2 mx-auto text-sm text-gray-600 opacity-60 w-fit">

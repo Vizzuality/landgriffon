@@ -29,7 +29,7 @@ export function parseInterventionFormDataToDto(
     newT1SupplierId,
     newProducerId,
     newLocationType,
-    newLocationRegion,
+    newLocationAdminRegionInput,
     newLocationCountryInput,
     newLocationAddressInput,
     coefficients,
@@ -61,7 +61,7 @@ export function parseInterventionFormDataToDto(
     ...([LocationTypes.administrativeRegionOfProduction].includes(
       newLocationType?.value as LocationTypes,
     ) && {
-      newLocationRegion: emptyStringIsNull(getValue(newLocationRegion)),
+      newLocationAdminRegionInput: emptyStringIsNull(getValue(newLocationAdminRegionInput)),
     }),
 
     // * if an address is provided for certain location types, latitude and longitudes are nullified

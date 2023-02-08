@@ -6,7 +6,8 @@ resource "google_compute_global_address" "ip_address" {
 }
 
 locals {
-  domain = var.subdomain == "" ? var.domain : "${var.subdomain}.${var.domain}"
+  domain          = var.subdomain == "" ? var.domain : "${var.subdomain}.${var.domain}"
+  redirect_domain = "www.${var.domain}"
 }
 
 # ------------------------------------------------------------------------------
@@ -32,7 +33,7 @@ resource "google_compute_managed_ssl_certificate" "load-balancer-certificate" {
   name = "${var.name}-lb-cert"
 
   managed {
-    domains = [local.domain]
+    domains = [local.domain, local.redirect_domain]
   }
 }
 
@@ -75,6 +76,21 @@ resource "google_compute_url_map" "load-balancer-url-map" {
   path_matcher {
     name            = "site"
     default_service = google_compute_backend_service.frontend_service.id
+  }
+
+  host_rule {
+    hosts        = [local.redirect_domain]
+    path_matcher = "redirect"
+  }
+
+  path_matcher {
+    name = "redirect"
+    default_url_redirect {
+      redirect_response_code = "MOVED_PERMANENTLY_DEFAULT"
+      strip_query            = false
+      host_redirect          = local.domain
+      https_redirect         = true
+    }
   }
 }
 

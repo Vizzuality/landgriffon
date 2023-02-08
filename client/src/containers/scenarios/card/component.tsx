@@ -29,7 +29,7 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data, display = 'grid' }) =
     scenarioId: data?.id,
   });
 
-  const { hasPermission } = usePermissions(data?.userId);
+  const { hasPermission } = usePermissions(data?.user?.id);
   const canEditScenario = hasPermission(Permission.CAN_EDIT_SCENARIO);
   const canDeleteScenario = hasPermission(Permission.CAN_DELETE_SCENARIO);
 

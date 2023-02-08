@@ -10,7 +10,7 @@
         "metadata": null,
         "createdAt": "2022-07-14T14:28:25.552Z",
         "updatedAt": "2022-07-22T17:37:23.505Z",
-        "userId": "368bbd1f-8c37-4999-9c01-da0ac7750599",
+        "user": { "id": "368bbd1f-8c37-4999-9c01-da0ac7750597" },
         "scenarioInterventions": [
           [
             {
@@ -31,9 +31,7 @@
                 "startYear": 2020,
                 "percentage": 50,
                 "scenarioId": "8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7",
-                "materialIds": [
-                  "80d52237-bb4a-4f25-9133-cbbebaa68734"
-                ],
+                "materialIds": ["80d52237-bb4a-4f25-9133-cbbebaa68734"],
                 "newMaterialId": "ed626334-1a6a-43c2-b52f-a61e94e756b4",
                 "newLocationType": "country of production",
                 "newLocationCountryInput": "Botswana"
@@ -65,9 +63,7 @@
                 "startYear": 2018,
                 "percentage": 100,
                 "scenarioId": "f8b37929-29eb-4efc-9c2f-27fa8b2af561",
-                "materialIds": [
-                  "67f6906f-400c-4d22-95e9-ae4074ee6d1f"
-                ],
+                "materialIds": ["67f6906f-400c-4d22-95e9-ae4074ee6d1f"],
                 "newMaterialId": "33a20a3d-be8f-4baa-a0bf-db1084422719",
                 "newLocationType": "country of production",
                 "newLocationCountryInput": "Russia"
@@ -95,7 +91,7 @@
         "metadata": null,
         "createdAt": "2022-07-21T09:42:00.862Z",
         "updatedAt": "2022-07-22T16:06:05.291Z",
-        "userId": "368bbd1f-8c37-4999-9c01-da0ac7750599",
+        "user": { "id": "368bbd1f-8c37-4999-9c01-da0ac7750597" },
         "scenarioInterventions": []
       }
     },
@@ -109,7 +105,7 @@
         "metadata": null,
         "createdAt": "2022-07-22T15:29:55.390Z",
         "updatedAt": "2022-07-22T15:33:35.069Z",
-        "userId": "368bbd1f-8c37-4999-9c01-da0ac7750599",
+        "user": { "id": "368bbd1f-8c37-4999-9c01-da0ac7750597" },
         "scenarioInterventions": []
       }
     },
@@ -123,7 +119,7 @@
         "metadata": null,
         "createdAt": "2022-07-12T09:38:37.169Z",
         "updatedAt": "2022-07-15T07:46:21.730Z",
-        "userId": "368bbd1f-8c37-4999-9c01-da0ac7750599",
+        "user": { "id": "368bbd1f-8c37-4999-9c01-da0ac7750597" },
         "scenarioInterventions": []
       }
     },
@@ -137,7 +133,7 @@
         "metadata": null,
         "createdAt": "2022-07-21T09:42:00.862Z",
         "updatedAt": "2022-07-22T16:06:05.291Z",
-        "userId": "368bbd1f-8c37-4999-9c01-da0ac7750599",
+        "user": { "id": "368bbd1f-8c37-4999-9c01-da0ac7750597" },
         "scenarioInterventions": []
       }
     },
@@ -151,7 +147,7 @@
         "metadata": null,
         "createdAt": "2022-07-22T15:29:55.390Z",
         "updatedAt": "2022-07-22T15:33:35.069Z",
-        "userId": "368bbd1f-8c37-4999-9c01-da0ac7750599",
+        "user": { "id": "368bbd1f-8c37-4999-9c01-da0ac7750597" },
         "scenarioInterventions": []
       }
     },
@@ -165,7 +161,7 @@
         "metadata": null,
         "createdAt": "2022-07-12T09:38:37.169Z",
         "updatedAt": "2022-07-15T07:46:21.730Z",
-        "userId": "368bbd1f-8c37-4999-9c01-da0ac7750599",
+        "user": { "id": "368bbd1f-8c37-4999-9c01-da0ac7750597" },
         "scenarioInterventions": []
       }
     },
@@ -179,7 +175,7 @@
         "metadata": null,
         "createdAt": "2022-07-21T09:42:00.862Z",
         "updatedAt": "2022-07-22T16:06:05.291Z",
-        "userId": "368bbd1f-8c37-4999-9c01-da0ac7750599",
+        "user": { "id": "368bbd1f-8c37-4999-9c01-da0ac7750597" },
         "scenarioInterventions": []
       }
     },
@@ -193,7 +189,7 @@
         "metadata": null,
         "createdAt": "2022-07-22T15:29:55.390Z",
         "updatedAt": "2022-07-22T15:33:35.069Z",
-        "userId": "368bbd1f-8c37-4999-9c01-da0ac7750599",
+        "user": { "id": "368bbd1f-8c37-4999-9c01-da0ac7750597" },
         "scenarioInterventions": []
       }
     },
@@ -207,7 +203,7 @@
         "metadata": null,
         "createdAt": "2022-07-12T09:38:37.169Z",
         "updatedAt": "2022-07-15T07:46:21.730Z",
-        "userId": "368bbd1f-8c37-4999-9c01-da0ac7750599",
+        "user": { "id": "368bbd1f-8c37-4999-9c01-da0ac7750597" },
         "scenarioInterventions": []
       }
     }

@@ -46,7 +46,7 @@ const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
     },
   });
 
-  const { hasPermission } = usePermissions(scenario?.userId);
+  const { hasPermission } = usePermissions(scenario?.user?.id);
   // If scenario exists, check if the user can edit,
   // else, check if the user can create a scenario
   const canSave =

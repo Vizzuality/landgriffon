@@ -95,6 +95,7 @@ const ScenariosAdminPage: React.FC = () => {
       disablePagination: true,
       sort: currentSort.value,
       'search[title]': searchTerm as string,
+      include: 'user',
     },
     options: { select: (data) => data.data },
   });

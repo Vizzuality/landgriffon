@@ -214,8 +214,15 @@ describe('Scenarios', () => {
 
   it('a user looks up scenario using the search', () => {
     cy.intercept(
-      'GET',
-      '/api/v1/scenarios?disablePagination=true&sort=-updatedAt&search[title]=interventions',
+      {
+        method: 'GET',
+        pathname: '/api/v1/scenarios',
+        query: {
+          disablePagination: 'true',
+          sort: '-updatedAt',
+          'search[title]': 'interventions',
+        },
+      },
       {
         statusCode: 200,
         fixture: 'scenario/filters/search-results',
@@ -242,8 +249,15 @@ describe('Scenarios', () => {
 
   it('reloading the page with the search query param should filter the list automatically', () => {
     cy.intercept(
-      'GET',
-      '/api/v1/scenarios?disablePagination=true&sort=-updatedAt&search[title]=interventions',
+      {
+        method: 'GET',
+        pathname: '/api/v1/scenarios',
+        query: {
+          disablePagination: 'true',
+          sort: '-updatedAt',
+          'search[title]': 'interventions',
+        },
+      },
       {
         statusCode: 200,
         fixture: 'scenario/filters/search-results',

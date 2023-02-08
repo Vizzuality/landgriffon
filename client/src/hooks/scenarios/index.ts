@@ -98,7 +98,10 @@ export function useInfiniteScenarios(queryParams: QueryParams): ResponseInfinite
   return useMemo<ResponseInfiniteData>((): ResponseInfiniteData => query, [query]);
 }
 
-export function useScenario(id?: Scenario['id'] | null): ResponseDataScenario {
+export function useScenario(
+  id?: Scenario['id'] | null,
+  queryParams?: QueryParams,
+): ResponseDataScenario {
   const response: ResponseDataScenario = useQuery(
     ['scenario', id],
     () =>
@@ -106,6 +109,7 @@ export function useScenario(id?: Scenario['id'] | null): ResponseDataScenario {
         .request({
           method: 'GET',
           url: `/scenarios/${id}`,
+          params: queryParams,
         })
         .then(({ data: responseData }) => responseData.data),
     { ...DEFAULT_QUERY_OPTIONS, enabled: !!id },

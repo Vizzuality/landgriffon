@@ -8,9 +8,7 @@ export type Scenario = {
   scenarioInterventions?: Intervention[];
   isPublic?: boolean;
   user?: ProfilePayload;
-  userId?: string;
   updatedBy?: ProfilePayload;
-  updatedById?: string;
 };
 
 export type ScenarioFormData = {

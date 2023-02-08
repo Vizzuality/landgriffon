@@ -476,7 +476,7 @@ export class CreateScenarioInterventionDtoV2 {
     example: 'Murcia',
   })
   @ValidateIf(
-    (dto: CreateScenarioInterventionDto) =>
+    (dto: CreateScenarioInterventionDtoV2) =>
       dto.type !== SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY &&
       dto.newLocationType ===
         LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION,

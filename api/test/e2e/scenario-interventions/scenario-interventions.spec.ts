@@ -65,7 +65,7 @@ import { dropH3DataMock, h3DataMock } from '../h3-data/mocks/h3-data.mock';
 import { h3MaterialExampleDataFixture } from '../h3-data/mocks/h3-fixtures';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
-import { ROLES } from 'modules/authorization/roles/roles.enum';
+
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 import { setupTestUser } from '../../utils/userAuth';
 import ApplicationManager, {

@@ -4,7 +4,7 @@ import type { CHECKED_STRATEGIES } from './utils';
 export type TreeSelectOption<T = string> = {
   label: string;
   value: T;
-  children?: TreeSelectOption[];
+  children?: TreeSelectOption<T>[];
 };
 
 interface CommonTreeProps<T = string> {

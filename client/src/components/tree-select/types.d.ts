@@ -22,6 +22,7 @@ interface CommonTreeProps<T = string> {
   label?: string;
   error?: boolean;
   autoFocus?: boolean;
+  disabled?: boolean;
   /**
    * - `ALL`: show all ids in the values (default by tree-select component)
    * - `PARENT`: if parent is selected and also all children are selected, only parent id is in the values

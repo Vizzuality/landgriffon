@@ -128,7 +128,7 @@ const schemaValidation = yup.object({
     }),
 
   // location region
-  newLocationRegion: optionSchema.when('newLocationType', {
+  newLocationAdminRegionInput: optionSchema.when('newLocationType', {
     is: (newLocationType) =>
       [LocationTypes.administrativeRegionOfProduction].includes(newLocationType?.value),
     then: (schema) => schema.required('Country region is required'),
@@ -344,7 +344,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
             : 0,
 
           // todo: full fill this properly
-          newLocationRegion: {},
+          newLocationAdminRegionInput: {},
 
           // New supplier/producer
           newT1SupplierId: intervention?.newT1Supplier
@@ -388,10 +388,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     coefficients = {},
   } = watch();
 
-  const {
-    data: regionsByCountry,
-    // isLoading: isLoadingRegions
-  } = useAdminRegionsByCountry(
+  const { data: regionsByCountry, isFetching: isFetchingRegions } = useAdminRegionsByCountry(
     currentCountry?.value,
     {},
     {
@@ -898,6 +895,15 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                                   placeholder="Select"
                                   onChange={(value) => {
                                     if (invalid) clearErrors('newLocationCountryInput');
+                                    if (
+                                      locationType?.value ===
+                                      LocationTypes.administrativeRegionOfProduction
+                                    ) {
+                                      resetField('newLocationAdminRegionInput', {
+                                        defaultValue: null,
+                                      });
+                                    }
+
                                     setValue('newLocationCountryInput', value);
                                   }}
                                   error={!!errors?.newLocationCountryInput}
@@ -942,7 +948,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                                 Region <sup>*</sup>
                               </label>
                               <Controller
-                                name="newLocationRegion"
+                                name="newLocationAdminRegionInput"
                                 control={control}
                                 render={({
                                   field: { onChange, value },
@@ -950,21 +956,32 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                                 }) => (
                                   <div data-testid="new-location-region-select">
                                     <TreeSelect
-                                      multiple={false}
-                                      showSearch
                                       options={regionsByCountry}
                                       current={value}
                                       placeholder="Select a region"
-                                      // disabled={!Boolean(currentCountry) || isLoadingRegions}
-                                      onChange={({ label, value }) => {
-                                        if (invalid) clearErrors('newLocationRegion');
-                                        onChange({ label, value });
+                                      multiple={false}
+                                      showSearch
+                                      disabled={
+                                        !Boolean(currentCountry) ||
+                                        (currentCountry && isFetchingRegions) ||
+                                        regionsByCountry?.length === 0
+                                      }
+                                      loading={isFetchingRegions}
+                                      onChange={(option) => {
+                                        if (invalid) clearErrors('newLocationAdminRegionInput');
+                                        if (option) {
+                                          onChange({ label: option.label, value: option.value });
+                                        } else {
+                                          resetField('newLocationAdminRegionInput', {
+                                            defaultValue: [],
+                                          });
+                                        }
                                       }}
-                                      error={!!errors?.newLocationRegion}
+                                      error={!!errors?.newLocationAdminRegionInput}
                                     />
-                                    {errors.newLocationRegion && (
-                                      <Hint data-testid={'hint-input-newLocationRegion'}>
-                                        {errors.newLocationRegion.message}
+                                    {errors.newLocationAdminRegionInput && (
+                                      <Hint data-testid={'hint-input-newLocationAdminRegionInput'}>
+                                        {errors.newLocationAdminRegionInput.message}
                                       </Hint>
                                     )}
                                   </div>

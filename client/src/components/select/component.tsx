@@ -72,7 +72,7 @@ const getComponents = <
     ),
     IndicatorSeparator: null,
     ValueContainer: ({ className, ...props }) => (
-      <components.ValueContainer className={classNames(className, 'px-0')} {...props} />
+      <components.ValueContainer className={classNames(className, '!px-0')} {...props} />
     ),
     Option: ({ className, children, ...props }) => (
       <components.Option

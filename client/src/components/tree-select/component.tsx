@@ -434,7 +434,6 @@ const InnerTreeSelect = <IsMulti extends boolean>({
             // apply flex-1 to all children to wrap content nicely
             '[&>*]:flex-1',
             {
-              // 'px-2': !multiple,
               'flex flex-wrap': theme !== 'inline-primary',
               'ring-navy-400 border-navy-400': isOpen,
               'border-red-400': theme === 'inline-primary' && error,

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [v0.3.6]
 
 ### Added
+- Added new location types coming from API and region handling. [LANDGRIF-1143](https://vizzuality.atlassian.net/browse/LANDGRIF-1143)
 - Added `*` to Type of Intervention title to indicate the selection is mandatory. Also, a hint when it is not selected. [LANDGRIF-1142](https://vizzuality.atlassian.net/browse/LANDGRIF-1142)
 - New hook to check user role and permissions [LANDGRIF-1123](https://vizzuality.atlassian.net/browse/LANDGRIF-1123)
 - Switch to toggle layers from the legend itself [LANDGRIF-991](https://vizzuality.atlassian.net/browse/LANDGRIF-991)

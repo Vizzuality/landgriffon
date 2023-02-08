@@ -10,6 +10,7 @@ export abstract class GeoCodingAbstractClass {
   ): Promise<SourcingData[]>;
 
   abstract geoCodeSourcingLocation(locationInfo: {
+    locationAdminRegionInput?: string;
     locationAddressInput?: string;
     locationLatitude?: number;
     locationLongitude?: number;

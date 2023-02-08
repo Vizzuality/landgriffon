@@ -11,6 +11,15 @@ import {
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { AdminRegionOfProductionService } from 'modules/geo-coding/strategies/admin-region-of-production.service';
 
+interface locationInfo {
+  locationAddressInput?: string;
+  locationLatitude?: number;
+  locationLongitude?: number;
+  locationAdminRegionInput?: string;
+  locationCountryInput: string;
+  locationType: LOCATION_TYPES;
+}
+
 @Injectable()
 export class GeoCodingService extends GeoCodingAbstractClass {
   protected readonly logger: Logger = new Logger(GeoCodingService.name);
@@ -72,13 +81,9 @@ export class GeoCodingService extends GeoCodingAbstractClass {
     return geoCodedSourcingData;
   }
 
-  async geoCodeSourcingLocation(locationInfo: {
-    locationAddressInput?: string;
-    locationLatitude?: number;
-    locationLongitude?: number;
-    locationCountryInput: string;
-    locationType: LOCATION_TYPES;
-  }): Promise<SourcingLocation> {
+  async geoCodeSourcingLocation(
+    locationInfo: locationInfo,
+  ): Promise<SourcingLocation> {
     let geoCodedSourcingLocation: Partial<SourcingData> = {};
     if (locationInfo.locationType === LOCATION_TYPES.UNKNOWN) {
       geoCodedSourcingLocation = await this.geoCodeUnknownLocationType(

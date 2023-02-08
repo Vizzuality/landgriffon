@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import {
@@ -122,7 +121,9 @@ export class ScenarioInterventionsService extends AppBaseService<
     this.logger.log('Creating new Intervention...');
 
     const { adminRegionId, geoRegionId, locationWarning } =
-      await this.validateNewLocation(dto as CreateScenarioInterventionDto);
+      await this.validateNewLocation(
+        dto as CreateScenarioInterventionDto & CreateScenarioInterventionDtoV2,
+      );
     /**
      *  Getting descendants of adminRegions, materials, suppliers adn businessUnits received as filters, if exists
      */
@@ -359,7 +360,7 @@ export class ScenarioInterventionsService extends AppBaseService<
    */
 
   private async validateNewLocation(
-    dto: CreateScenarioInterventionDto,
+    dto: CreateScenarioInterventionDto & CreateScenarioInterventionDtoV2,
   ): Promise<
     | SourcingLocation
     | {
@@ -370,6 +371,7 @@ export class ScenarioInterventionsService extends AppBaseService<
   > {
     if (dto.type !== SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY) {
       return this.geoCodingService.geoCodeSourcingLocation({
+        locationAdminRegionInput: dto.newLocationAdminRegionInput,
         locationLongitude: dto.newLocationLongitude,
         locationLatitude: dto.newLocationLatitude,
         locationAddressInput: dto.newLocationAddressInput,

@@ -135,6 +135,7 @@ describe('Administrative Region of Production GeoCoding Service (Integration Tes
       const country: AdminRegion = await createAdminRegion({
         name: 'country',
         geoRegion: countryGeoRegion,
+        level: 0,
       });
       const region1GeoRegion = await createGeoRegion({ name: 'geoSubRegion1' });
       await createAdminRegion({

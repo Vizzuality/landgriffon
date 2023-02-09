@@ -483,6 +483,11 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   }, [currentInterventionType, clearErrors]);
 
   useEffect(() => {
+    // * resets the region field whenever the user chooses any location type but administrive region one
+    if (![LocationTypes.administrativeRegionOfProduction].includes(locationType?.value)) {
+      resetField('newLocationAdminRegionInput', { defaultValue: null });
+    }
+
     // * if a location type doesn't require coordinates, the coordinates fields are reset to avoid sending them unintentionally
     if (
       [

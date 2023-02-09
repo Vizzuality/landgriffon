@@ -131,7 +131,7 @@ const schemaValidation = yup.object({
   newLocationAdminRegionInput: optionSchema.when('newLocationType', {
     is: (newLocationType) =>
       [LocationTypes.administrativeRegionOfProduction].includes(newLocationType?.value),
-    then: (schema) => schema.required('Country region is required'),
+    then: (schema) => schema.required('Country region is required').nullable(),
     otherwise: (schema) => schema.nullable(),
   }),
 

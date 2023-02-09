@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import { Listbox, Transition } from '@headlessui/react';
 import { ChevronUpIcon, ChevronDownIcon, XIcon } from '@heroicons/react/solid';
 import { flip, useFloating, size } from '@floating-ui/react-dom';
-import { FloatingPortal } from '@floating-ui/react';
+import { autoUpdate } from '@floating-ui/react';
 import { isArray, sortBy } from 'lodash-es';
 
 import Hint from '../hint';
@@ -51,6 +51,7 @@ const Select = <T,>({
       }),
     ],
     placement: 'bottom-start',
+    whileElementsMounted: autoUpdate,
     strategy: 'fixed',
   });
 
@@ -156,55 +157,53 @@ const Select = <T,>({
                 {loading && <Loading className="w-4 h-4 text-navy-400" />}
               </span>
             </Listbox.Button>
-            <FloatingPortal>
-              <Transition
-                show={open}
-                as="div"
-                enter="transition ease-out duration-200"
-                enterFrom="opacity-0 translate-y-1"
-                enterTo="opacity-100 translate-y-0"
-                leave="transition ease-in duration-150"
-                leaveFrom="opacity-100 translate-y-0"
-                leaveTo="opacity-0 translate-y-1"
-                className="z-50"
-                style={{
-                  position: strategy,
-                  top: y ?? 0,
-                  left: x ?? 0,
-                }}
-                ref={floating}
-              >
-                <Listbox.Options className="mt-2 overflow-auto text-base bg-white rounded-md shadow-sm max-h-60 ring-1 ring-gray-200 focus:outline-none">
-                  {options.map((option) => (
-                    <Listbox.Option
-                      key={`option-item-${option.value}`}
-                      className={({ active, disabled }) =>
-                        classnames(
-                          'relative cursor-default text-sm select-none py-2 pl-3 pr-9 hover:cursor-pointer',
-                          {
-                            'bg-navy-50': active,
-                            'pointer-events-none cursor-default': disabled,
-                          },
-                        )
-                      }
-                      value={option}
-                      disabled={option.disabled}
-                    >
-                      {({ selected, disabled }) => (
-                        <div
-                          className={classnames('block truncate text-gray-900', {
-                            'text-navy-400': selected,
-                            'text-gray-300': disabled,
-                          })}
-                        >
-                          {option.label}
-                        </div>
-                      )}
-                    </Listbox.Option>
-                  ))}
-                </Listbox.Options>
-              </Transition>
-            </FloatingPortal>
+            <Transition
+              show={open}
+              as="div"
+              enter="transition ease-out duration-200"
+              enterFrom="opacity-0 translate-y-1"
+              enterTo="opacity-100 translate-y-0"
+              leave="transition ease-in duration-150"
+              leaveFrom="opacity-100 translate-y-0"
+              leaveTo="opacity-0 translate-y-1"
+              className="z-50"
+              style={{
+                position: strategy,
+                top: y ?? 0,
+                left: x ?? 0,
+              }}
+              ref={floating}
+            >
+              <Listbox.Options className="mt-2 overflow-auto text-base bg-white rounded-md shadow-sm max-h-60 ring-1 ring-gray-200 focus:outline-none">
+                {options.map((option) => (
+                  <Listbox.Option
+                    key={`option-item-${option.value}`}
+                    className={({ active, disabled }) =>
+                      classnames(
+                        'relative cursor-default text-sm select-none py-2 pl-3 pr-9 hover:cursor-pointer',
+                        {
+                          'bg-navy-50': active,
+                          'pointer-events-none cursor-default': disabled,
+                        },
+                      )
+                    }
+                    value={option}
+                    disabled={option.disabled}
+                  >
+                    {({ selected, disabled }) => (
+                      <div
+                        className={classnames('block truncate text-gray-900', {
+                          'text-navy-400': selected,
+                          'text-gray-300': disabled,
+                        })}
+                      >
+                        {option.label}
+                      </div>
+                    )}
+                  </Listbox.Option>
+                ))}
+              </Listbox.Options>
+            </Transition>
 
             {showHint && error && typeof error === 'string' && (
               <Hint data-testid={`hint-input-${props.name}`}>{error}</Hint>

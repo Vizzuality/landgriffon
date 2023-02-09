@@ -1079,7 +1079,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                                     options={optionsSuppliers}
                                     placeholder="Select"
                                     onChange={(value) => setValue('newT1SupplierId', value)}
-                                    error={errors?.newT1SupplierId}
+                                    error={errors?.newT1SupplierId?.message?.toString()}
                                   />
                                 </div>
                               )}
@@ -1100,7 +1100,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                                     options={optionsProducers}
                                     placeholder="Select"
                                     onChange={(value) => setValue('newProducerId', value)}
-                                    error={errors?.newProducerId}
+                                    error={errors?.newProducerId?.message?.toString()}
                                   />
                                 </div>
                               )}

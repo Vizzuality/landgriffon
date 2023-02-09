@@ -404,6 +404,10 @@ const InnerTreeSelect = <IsMulti extends boolean>({
           setSelected(null);
         } else {
           setSelected({ label: selectedNode.title as string, value: selectedNode.key as string });
+          onChange?.({
+            label: selectedNode.title as string,
+            value: selectedNode.key as string,
+          } as TreeSelectProps<IsMulti>['current']);
         }
       }
     },

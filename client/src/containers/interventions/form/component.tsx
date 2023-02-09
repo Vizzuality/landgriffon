@@ -342,9 +342,12 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
           newLocationLongitude: intervention?.newLocationLongitudeInput
             ? Number(intervention?.newLocationLongitudeInput)
             : 0,
-
-          // todo: full fill this properly
-          newLocationAdminRegionInput: {},
+          newLocationAdminRegionInput: intervention.newAdminRegion
+            ? {
+                label: intervention.newAdminRegion.name,
+                value: intervention.newAdminRegion.id,
+              }
+            : null,
 
           // New supplier/producer
           newT1SupplierId: intervention?.newT1Supplier
@@ -388,16 +391,20 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     coefficients = {},
   } = watch();
 
+  const countryId = useMemo(() => {
+    return countries.find(({ name }) => currentCountry?.label === name)?.id || null;
+  }, [countries, currentCountry]);
+
   const { data: regionsByCountry, isFetching: isFetchingRegions } = useAdminRegionsByCountry(
-    currentCountry?.value,
+    countryId,
     {},
     {
       enabled:
-        Boolean(currentCountry?.value) &&
+        Boolean(countryId) &&
         locationType?.value === LocationTypes.administrativeRegionOfProduction,
       select: (_country) =>
         recursiveSort(_country.children, 'name').map((child) =>
-          recursiveMap(child, ({ id, name }) => ({ value: id, label: name })),
+          recursiveMap(child, ({ name }) => ({ value: name, label: name })),
         ),
     },
   );

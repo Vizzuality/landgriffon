@@ -985,7 +985,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                                           onChange({ label: option.label, value: option.value });
                                         } else {
                                           resetField('newLocationAdminRegionInput', {
-                                            defaultValue: [],
+                                            defaultValue: null,
                                           });
                                         }
                                       }}

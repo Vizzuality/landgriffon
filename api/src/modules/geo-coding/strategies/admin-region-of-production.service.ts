@@ -37,6 +37,7 @@ export class AdminRegionOfProductionService extends BaseStrategy {
     const parent: { adminRegionId: string; geoRegionId: string } =
       await this.adminRegionService.getAdminRegionAndGeoRegionIdsByAdminRegionName(
         sourcingData.locationCountryInput,
+        { level: 0 },
       );
 
     const descendants: AdminRegion[] =

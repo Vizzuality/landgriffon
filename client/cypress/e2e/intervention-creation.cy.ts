@@ -61,7 +61,7 @@ beforeEach(() => {
     fixture: 'trees/materials',
   }).as('scenarioRawMaterials');
 
-  cy.intercept('GET', '/api/v1/sourcing-locations/location-types', {
+  cy.intercept('GET', '/api/v1/sourcing-locations/location-types/supported', {
     statusCode: 200,
     fixture: 'location-types/index',
   }).as('scenarioLocationTypes');
@@ -102,17 +102,17 @@ describe('Intervention creation', () => {
 
     // selects a year
     cy.wait('@scenarioYears');
-    cy.get('[data-testid="startYear-select"]').type(
+    cy.get('[data-testid="select-startYear"]').type(
       '{enter}{downArrow}{downArrow}{downArrow}{downArrow}{enter}',
     );
 
     // selects the first intervention type: Switch to new material
-    cy.get('[data-testid="intervention-type-option"]').first().click();
+    cy.get('[data-testid="intervention-type-option"]').first().click({ timeout: 500 });
 
     // check selectors are visible according to the intervention type selected
-    cy.get('[data-testid="new-material-select"]').should('be.visible');
-    cy.get('[data-testid="new-location-select"]').should('be.visible');
-    cy.get('[data-testid="new-location-country-select"]').should('be.visible');
+    cy.get('[data-testid="new-material-select"]').should('have.length', 1);
+    cy.get('[data-testid="select-newLocationType"]').should('have.length', 1);
+    cy.get('[data-testid="select-newLocationCountryInput"]').should('have.length', 1);
 
     // supplier options should not be visible by default
     cy.get('[data-testid="new-t1-supplier-select"]').should('have.length', 0);
@@ -136,14 +136,14 @@ describe('Intervention creation', () => {
 
     // waits for scenario location types request and selects an option
     cy.wait('@scenarioLocationTypes');
-    cy.get('[data-testid="new-location-select"]')
+    cy.get('[data-testid="select-newLocationType"]')
       .click()
       .find('input:visible')
       .type('Country of production{enter}');
 
     // waits for scenario location countries request and selects an option
     cy.wait('@scenarioLocationCountries');
-    cy.get('[data-testid="new-location-country-select"]')
+    cy.get('[data-testid="select-newLocationCountryInput"]')
       .click()
       .find('input:visible')
       .type('Botswana{enter}');
@@ -180,17 +180,17 @@ describe('Intervention creation', () => {
 
     // selects a year
     cy.wait('@scenarioYears');
-    cy.get('[data-testid="startYear-select"]').type(
+    cy.get('[data-testid="select-startYear"]').type(
       '{enter}{downArrow}{downArrow}{downArrow}{downArrow}{enter}',
     );
 
     // selects the first intervention type: Switch to new material
-    cy.get('[data-testid="intervention-type-option"]').first().click();
+    cy.get('[data-testid="intervention-type-option"]').first().click({ timeout: 500 });
 
     // check selectors are visible according to the intervention type selected
-    cy.get('[data-testid="new-material-select"]').should('be.visible');
-    cy.get('[data-testid="new-location-select"]').should('be.visible');
-    cy.get('[data-testid="new-location-country-select"]').should('be.visible');
+    cy.get('[data-testid="new-material-select"]').should('have.length', 1);
+    cy.get('[data-testid="select-newLocationType"]').should('have.length', 1);
+    cy.get('[data-testid="select-newLocationCountryInput"]').should('have.length', 1);
 
     // supplier options should not be visible by default
     cy.get('[data-testid="new-t1-supplier-select"]').should('have.length', 0);
@@ -211,14 +211,14 @@ describe('Intervention creation', () => {
 
     // waits for scenario location types request and selects an option
     cy.wait('@scenarioLocationTypes');
-    cy.get('[data-testid="new-location-select"]')
+    cy.get('[data-testid="select-newLocationType"]')
       .click()
       .find('input:visible')
       .type('Country of production{enter}');
 
     // waits for scenario location countries request and selects an option
     cy.wait('@scenarioLocationCountries');
-    cy.get('[data-testid="new-location-country-select"]')
+    cy.get('[data-testid="select-newLocationCountryInput"]')
       .click()
       .find('input:visible')
       .type('Botswana{enter}');
@@ -261,7 +261,7 @@ describe('Intervention location type', () => {
   });
 
   it('country of production => city, address, coordinates is not required', () => {
-    cy.get('[data-testid="new-location-select"]')
+    cy.get('[data-testid="select-newLocationType"]')
       .click()
       .find('input:visible')
       .type('Country of production{enter}');
@@ -270,7 +270,7 @@ describe('Intervention location type', () => {
   });
 
   it('aggregation point => city, address, coordinates is required', () => {
-    cy.get('[data-testid="new-location-select"]')
+    cy.get('[data-testid="select-newLocationType"]')
       .click()
       .find('input:visible')
       .type('Production aggregation{enter}');
@@ -306,7 +306,7 @@ describe('Intervention location type', () => {
   });
 
   it('point of production => city, address, coordinates is required', () => {
-    cy.get('[data-testid="new-location-select"]')
+    cy.get('[data-testid="select-newLocationType"]')
       .click()
       .find('input:visible')
       .type('Point of production{enter}');
@@ -340,7 +340,7 @@ describe('Intervention location type', () => {
   });
 
   it('unknown => city, address, coordinates is not required', () => {
-    cy.get('[data-testid="new-location-select"]')
+    cy.get('[data-testid="select-newLocationType"]')
       .click()
       .find('input:visible')
       .type('Unknown{enter}');

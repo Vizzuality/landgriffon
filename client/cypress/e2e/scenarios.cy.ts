@@ -149,9 +149,11 @@ describe('Scenarios', () => {
       fixture: 'scenario/filters/by-name-results',
     }).as('fetchScenariosByName');
 
+    cy.wait('@fetchScenarios');
+
     // ? selects the "Sort by name" option and click on it
-    cy.get('[data-testid="select-sort-scenario"]').click();
-    cy.get('[role="listbox"]').type('{downArrow}{downArrow}{enter}');
+    cy.get('[data-testid="select-sort-scenario"]').find('button').type('{downArrow}{enter}');
+
     cy.wait('@fetchScenariosByName');
 
     // ? checks the user updates acording to the sort selection

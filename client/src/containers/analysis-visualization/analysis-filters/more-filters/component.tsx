@@ -186,12 +186,7 @@ const MoreFilters = () => {
   );
 
   const { data: locationTypeOptions } = useLocationTypes(
-    {
-      materialIds,
-      originIds,
-      supplierIds,
-      scenarioIds,
-    },
+    {},
     {
       ...DEFAULT_QUERY_OPTIONS,
       select: undefined,

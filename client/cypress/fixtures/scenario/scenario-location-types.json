@@ -1,8 +1,1 @@
-{
-  "data": [
-    { "label": "Point of production", "value": "point-of-production" },
-    { "label": "Aggregation point", "value": "aggregation-point" },
-    { "label": "Country of production", "value": "country-of-production" },
-    { "label": "Unknown", "value": "unknown" }
-  ]
-}
+{"data":[{"label":"Unknown","value":"unknown"},{"label":"Production aggregation point","value":"production-aggregation-point"},{"label":"Point of production","value":"point-of-production"},{"label":"Country of production","value":"country-of-production"},{"label":"Administrative region of production","value":"administrative-region-of-production"},{"label":"Country of delivery","value":"country-of-delivery"}]}

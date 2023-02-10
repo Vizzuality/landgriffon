@@ -35,7 +35,7 @@ describe('Analysis map', () => {
       fixture: 'trees/suppliers',
     });
 
-    cy.intercept('GET', '/api/v1/sourcing-locations/location-types', {
+    cy.intercept('GET', '/api/v1/sourcing-locations/location-types/supported', {
       statusCode: 200,
       fixture: 'scenario/scenario-location-types',
     });

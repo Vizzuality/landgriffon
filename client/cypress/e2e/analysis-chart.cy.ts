@@ -23,7 +23,7 @@ describe('Analysis charts', () => {
       fixture: 'trees/suppliers',
     });
 
-    cy.intercept('GET', '/api/v1/sourcing-locations/location-types', {
+    cy.intercept('GET', '/api/v1/sourcing-locations/location-types/supported', {
       statusCode: 200,
       fixture: 'scenario/scenario-location-types',
     });
@@ -47,11 +47,11 @@ describe('Analysis charts', () => {
 
   it('should load the charts', () => {
     cy.visit('/analysis/chart');
-    cy.wait('@fetchIndicators');
-    cy.wait('@fetchChartRanking');
-    cy.get('[data-testid="analysis-chart"]')
-      .should('be.visible')
-      .find('.recharts-responsive-container')
-      .and('have.length', 5);
+
+    cy.wait(['@fetchIndicators', '@fetchChartRanking']).then(() => {
+      cy.get('[data-testid="analysis-chart"]').as('chart');
+      cy.get('@chart').should('be.visible');
+      cy.get('@chart').find('.recharts-responsive-container').and('have.length', 5);
+    });
   });
 });

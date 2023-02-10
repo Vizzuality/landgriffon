@@ -143,7 +143,9 @@ const AutoCompleteSelect = <T,>({
             <div className="relative w-full overflow-hidden">
               <Combobox.Input<'input', Option>
                 className={classnames(
-                  'w-full inline-flex items-center py-2.5 pl-3 pr-10 text-left leading-5 bg-white border rounded-md shadow-sm cursor-default hover:cursor-pointer focus:border-navy-400 focus:outline-none focus:ring-0 disabled:bg-gray-300/20 disabled:cursor-default text-sm',
+                  'w-full inline-flex items-center py-2.5 pl-3 pr-10 text-left leading-5',
+                  'bg-white border rounded-md shadow-sm cursor-default hover:cursor-pointer focus:border-navy-400 focus:outline-none focus:ring-0',
+                  'disabled:bg-gray-300/20 disabled:cursor-default text-sm placeholder:text-gray-500',
                   {
                     'mt-1': !!label,
                     'border-red-400': error,

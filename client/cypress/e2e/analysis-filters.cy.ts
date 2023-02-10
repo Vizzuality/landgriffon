@@ -32,7 +32,7 @@ describe('Analysis and filters', () => {
     cy.intercept(
       {
         method: 'GET',
-        pathname: '/api/v1/sourcing-locations/location-types*',
+        pathname: '/api/v1/sourcing-locations/location-types/supported',
       },
       {
         fixture: 'location-types/index',
@@ -65,17 +65,13 @@ describe('Analysis and filters', () => {
     cy.url().should('not.include', 'indicator');
 
     // select indicator
-    cy.get('[data-testid="select-indicators-filter"]')
-      .find('button')
-      .click()
-      .type('{downArrow}{enter}');
+    cy.get('[data-testid="select-indicators-filter"]').find('button').type('{enter}{enter}');
 
     cy.url().should('include', 'indicator=all');
 
     cy.get('[data-testid="select-indicators-filter"]')
       .find('button')
-      .click()
-      .type('{downArrow}{downArrow}{enter}');
+      .type('{enter}{downArrow}{enter}');
 
     cy.url().should('include', 'indicator=5c595ac7-f144-485f-9f32-601f6faae9fe'); // Land use
   });
@@ -113,7 +109,12 @@ describe('Analysis and filters', () => {
 
     // Step 2: Selecting Angola in the admin regions selector
     cy.get('[data-testid="tree-select-origins-filter"]').find('div[role="combobox"]').click();
-    cy.get('#floating-ui-root').find('.rc-tree-treenode').eq(1).click();
+    cy.get('[data-testid="tree-select-origins-filter"]')
+      .find('div[role="listbox"]')
+      .find('.rc-tree-treenode')
+      .eq(1)
+      .click();
+    // cy.get('#floating-ui-root').find('.rc-tree-treenode').eq(1).click();
     cy.get('[data-testid="tree-select-origins-filter"]')
       .find('input:visible:first')
       .type('{enter}');
@@ -121,7 +122,12 @@ describe('Analysis and filters', () => {
     // Step 3: Selecting Moll in the material selector
     cy.wait('@suppliersTreesFiltered');
     cy.get('[data-testid="tree-select-suppliers-filter"]').find('div[role="combobox"]').click();
-    cy.get('#floating-ui-root').find('.rc-tree-treenode').eq(1).click();
+    cy.get('[data-testid="tree-select-suppliers-filter"]')
+      .find('div[role="listbox"]')
+      .find('.rc-tree-treenode')
+      .eq(1)
+      .click();
+
     cy.get('[data-testid="tree-select-materials-filter"]')
       .find('input:visible:first')
       .type('{enter}');
@@ -131,6 +137,9 @@ describe('Analysis and filters', () => {
       .its('request.url')
       .should('include', '8bd7e578-f64f-4042-8a3a-2a7652ce850b');
     cy.get('[data-testid="tree-select-materials-filter"]').find('div[role="combobox"]').click();
-    cy.get('#floating-ui-root').find('.rc-tree-treenode:visible').should('have.length', 1); // first treenode is empty
+    cy.get('[data-testid="tree-select-materials-filter"]')
+      .find('div[role="listbox"]')
+      .find('.rc-tree-treenode:visible')
+      .should('have.length', 1); // first treenode is empty
   });
 });

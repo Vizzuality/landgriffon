@@ -88,7 +88,7 @@ describe('Analysis and scenarios', () => {
       fixture: 'trees/suppliers',
     });
 
-    cy.intercept('GET', '/api/v1/sourcing-locations/location-types*', {
+    cy.intercept('GET', '/api/v1/sourcing-locations/location-types/supported', {
       statusCode: 200,
       fixture: 'scenario/scenario-location-types',
     });
@@ -145,7 +145,7 @@ describe('Analysis and scenarios', () => {
     ).as('treesSelectorsWithScenarioId');
 
     cy.get('[data-testid="scenario-item-null"]') // actual data
-      .find('[data-testid="comparison-select"]')
+      .find('[data-testid="select-comparison"]')
       .click()
       .find('input:visible')
       .type('Test{enter}');
@@ -188,7 +188,7 @@ describe('Analysis and scenarios', () => {
     }).as('treesSelectorsWithBothScenarioIds');
 
     cy.get('[data-testid="scenario-item-8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7"]')
-      .find('[data-testid="comparison-select"]')
+      .find('[data-testid="select-comparison"]')
       .click()
       .find('input:visible')
       .type('Example{enter}');

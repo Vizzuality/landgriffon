@@ -74,15 +74,16 @@ const ScenariosComparison: FC = () => {
   });
 
   return (
-    <div data-testid="comparison-select">
+    <>
       <label className="block mb-1 text-sm text-gray-500">Compare with:</label>
       <AutoCompleteSelect
         value={selected}
         options={options}
         placeholder="Select what to compare"
         onChange={handleOnChange}
+        data-testid="comparison"
       />
-    </div>
+    </>
   );
 };
 

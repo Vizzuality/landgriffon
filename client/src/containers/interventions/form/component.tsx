@@ -686,18 +686,16 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
             name="startYear"
             control={control}
             render={({ field: { value, ...field } }) => (
-              <div data-testid="startYear-select">
-                <Select<number>
-                  {...omit(field, 'ref')}
-                  id="startYear"
-                  defaultValue={value}
-                  options={optionsYears}
-                  placeholder="Select a year"
-                  onChange={(value) => setValue('startYear', value)}
-                  loading={isLoadingYears}
-                  error={errors?.startYear?.value?.message}
-                />
-              </div>
+              <Select<number>
+                {...omit(field, 'ref')}
+                id="startYear"
+                defaultValue={value}
+                options={optionsYears}
+                placeholder="Select a year"
+                onChange={(value) => setValue('startYear', value)}
+                loading={isLoadingYears}
+                error={errors?.startYear?.value?.message}
+              />
             )}
           />
         </div>
@@ -707,19 +705,17 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
             name="endYear"
             control={control}
             render={({ field: { value, ...field } }) => (
-              <div data-testid="endYear-select">
-                <Select<number>
-                  {...omit(field, 'ref')}
-                  id="endYear"
-                  value={value}
-                  options={[]}
-                  placeholder="Select a year"
-                  onChange={(value) => setValue('endYear', value)}
-                  loading={isLoadingYears}
-                  error={errors?.endYear?.value?.message}
-                  disabled
-                />
-              </div>
+              <Select<number>
+                {...omit(field, 'ref')}
+                id="endYear"
+                value={value}
+                options={[]}
+                placeholder="Select a year"
+                onChange={(value) => setValue('endYear', value)}
+                loading={isLoadingYears}
+                error={errors?.endYear?.value?.message}
+                disabled
+              />
             )}
           />
         </div>
@@ -877,21 +873,18 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                             name="newLocationType"
                             control={control}
                             render={({ field, fieldState: { invalid } }) => (
-                              <div data-testid="new-location-select">
-                                <AutoCompleteSelect<LocationTypes>
-                                  {...omit(field, 'ref')}
-                                  loading={isLoadingLocationTypes}
-                                  value={field.value}
-                                  options={locationTypes}
-                                  placeholder="Select"
-                                  onChange={(value) => {
-                                    if (invalid) clearErrors('newLocationType');
-                                    setValue('newLocationType', value);
-                                  }}
-                                  error={errors?.newLocationType?.value?.message}
-                                  data-testid="new-location-select"
-                                />
-                              </div>
+                              <AutoCompleteSelect<LocationTypes>
+                                {...omit(field, 'ref')}
+                                loading={isLoadingLocationTypes}
+                                value={field.value}
+                                options={locationTypes}
+                                placeholder="Select"
+                                onChange={(value) => {
+                                  if (invalid) clearErrors('newLocationType');
+                                  setValue('newLocationType', value);
+                                }}
+                                error={errors?.newLocationType?.value?.message}
+                              />
                             )}
                           />
                         </div>
@@ -903,29 +896,27 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                             name="newLocationCountryInput"
                             control={control}
                             render={({ field, fieldState: { invalid } }) => (
-                              <div data-testid="new-location-country-select">
-                                <AutoCompleteSelect
-                                  {...omit(field, 'ref')}
-                                  loading={isLoadingCountries}
-                                  value={field.value}
-                                  options={optionsCountries}
-                                  placeholder="Select"
-                                  onChange={(value) => {
-                                    if (invalid) clearErrors('newLocationCountryInput');
-                                    if (
-                                      locationType?.value ===
-                                      LocationTypes.administrativeRegionOfProduction
-                                    ) {
-                                      resetField('newLocationAdminRegionInput', {
-                                        defaultValue: null,
-                                      });
-                                    }
+                              <AutoCompleteSelect
+                                {...omit(field, 'ref')}
+                                loading={isLoadingCountries}
+                                value={field.value}
+                                options={optionsCountries}
+                                placeholder="Select"
+                                onChange={(value) => {
+                                  if (invalid) clearErrors('newLocationCountryInput');
+                                  if (
+                                    locationType?.value ===
+                                    LocationTypes.administrativeRegionOfProduction
+                                  ) {
+                                    resetField('newLocationAdminRegionInput', {
+                                      defaultValue: null,
+                                    });
+                                  }
 
-                                    setValue('newLocationCountryInput', value);
-                                  }}
-                                  error={errors?.newLocationCountryInput?.value?.message}
-                                />
-                              </div>
+                                  setValue('newLocationCountryInput', value);
+                                }}
+                                error={errors?.newLocationCountryInput?.value?.message}
+                              />
                             )}
                           />
                         </div>

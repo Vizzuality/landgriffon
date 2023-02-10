@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import type { InputHTMLAttributes } from 'react';
 import type { CommonTreeProps } from './types';
 
-interface SearcInputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface SearchInputProps extends InputHTMLAttributes<HTMLInputElement> {
   theme: CommonTreeProps['theme'];
   resetSearch: () => void;
 }
@@ -17,7 +17,7 @@ const SearchInput = ({
   theme,
   resetSearch,
   ...inputProps
-}: SearcInputProps) => {
+}: SearchInputProps) => {
   return (
     <>
       <input
@@ -32,6 +32,7 @@ const SearchInput = ({
             // 'pl-2': multiple,
             'text-sm': theme !== 'inline-primary',
             'placeholder:text-gray-300': disabled,
+            'placeholder:text-gray-500': !disabled,
           },
         )}
         autoComplete="off"

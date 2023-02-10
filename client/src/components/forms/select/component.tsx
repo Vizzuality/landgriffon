@@ -105,7 +105,7 @@ const Select = <T,>({
       return selected.label;
     }
 
-    return <span className="text-gray-200">{placeholder}</span>;
+    return <span className="text-gray-500">{placeholder}</span>;
   }, [selected, placeholder, handleDelete]);
 
   return (

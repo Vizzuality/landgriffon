@@ -1,12 +1,21 @@
 describe('Analysis and filters', () => {
   beforeEach(() => {
     cy.intercept('GET', '/api/v1/impact/table*', {
-      fixture: 'impact/table.json',
+      fixture: 'impact/table',
     }).as('impactTable');
 
-    cy.intercept('GET', '/api/v1/indicators', {
-      fixture: 'indicators/index',
-    });
+    cy.intercept(
+      {
+        method: 'GET',
+        pathname: '/api/v1/indicators',
+        query: {
+          'filter[status]': 'active',
+        },
+      },
+      {
+        fixture: 'indicators/index',
+      },
+    ).as('fetchIndicatorsStatusActive');
 
     cy.intercept('GET', '/api/v1/indicators/*', {
       fixture: 'indicators/show',
@@ -35,7 +44,7 @@ describe('Analysis and filters', () => {
         pathname: '/api/v1/sourcing-locations/location-types/supported',
       },
       {
-        fixture: 'location-types/index',
+        fixture: 'sourcing-locations/supported',
       },
     );
 
@@ -52,12 +61,13 @@ describe('Analysis and filters', () => {
   });
 
   it('should be able to select an indicator', () => {
-    // data integrity check
     cy.intercept('GET', '/api/v1/indicators', {
-      fixture: 'indicators/index.json',
-    }).as('indicators');
+      fixture: 'indicators/index',
+    }).as('fetchIndicators');
+
     cy.visit('/analysis/table');
-    cy.wait('@indicators').then((interception) => {
+
+    cy.wait('@fetchIndicators').then((interception) => {
       expect(interception.response.body?.data).have.length(5);
     });
     cy.get('[data-testid="analysis-table"]').should('be.visible');

@@ -22,7 +22,7 @@ const ChartPage: NextPageWithLayout = () => {
   const { indicator } = useAppSelector(analysisFilters);
 
   // Show as many charts as there are indicators selected
-  const { data, isLoading } = useIndicators();
+  const { data, isLoading } = useIndicators({ 'filter[status]': 'active' });
 
   const activeIndicators: Indicator[] = useMemo(() => {
     if (indicator?.value === 'all') return data?.data;

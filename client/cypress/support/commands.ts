@@ -20,7 +20,7 @@ Cypress.Commands.add(
 
     cy.intercept('GET', '/api/auth/session', {
       fixture: 'auth/session.json',
-    });
+    }).as('session');
 
     cy.intercept('GET', '/api/v1/users/me', {
       fixture: 'auth/me.json',

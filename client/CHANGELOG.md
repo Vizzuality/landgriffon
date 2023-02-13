@@ -24,12 +24,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added a volume field in the intervention form [LANDGRIF-1112](https://vizzuality.atlassian.net/browse/LANDGRIF-1112)
 
 ### Changed
+<<<<<<< HEAD
 - Disabled `Country of delivery` and `Unknown` location types options from intervention form. [LANDGRIF-1148](https://vizzuality.atlassian.net/browse/LANDGRIF-1148)
 - Bumped `react-hook-form` fixing several validation issues. [LANDGRIF-1142](https://vizzuality.atlassian.net/browse/LANDGRIF-1142)
 - Bumped `browserslist-db` dependency.
 - Bumped `@floating-ui/core` dependency.
 - Bumped `browserslist-db` dependency.
 - Updated `prettier` and its dependencies [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
+=======
+- Filter indicators in the chart and table view [LANDGRIF-1173](https://vizzuality.atlassian.net/browse/LANDGRIF-1173)
+- Bumps `react-hook-form` fixing several validation issues. [LANDGRIF-1142](https://vizzuality.atlassian.net/browse/LANDGRIF-1142)
+- Bumps `browserslist-db` dependency.
+>>>>>>> 46ea66aa (filtering indicators to show in chart and table)
 - Show the scenario name in the charts [LANDGRIF-1116](https://vizzuality.atlassian.net/browse/LANDGRIF-1116)
 - Move the users page from data to user [LANDGRIF-1122](https://vizzuality.atlassian.net/browse/LANDGRIF-1122)
 

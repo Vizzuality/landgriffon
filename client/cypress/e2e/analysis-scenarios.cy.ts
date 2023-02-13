@@ -3,22 +3,7 @@ describe('Analysis and scenarios', () => {
     cy.intercept(
       {
         method: 'GET',
-        pathname: '/api/v1/scenarios',
-        query: {
-          disablePagination: 'true',
-          hasActiveInterventions: 'true',
-        },
-      },
-      {
-        statusCode: 200,
-        fixture: 'scenario/scenarios',
-      },
-    ).as('scenariosNoPaginated');
-
-    cy.intercept(
-      {
-        method: 'GET',
-        pathname: '/api/v1/scenarios',
+        pathname: '/api/v1/scenarios*',
         query: {
           include: 'scenarioInterventions',
           'page[number]': '1',
@@ -31,6 +16,21 @@ describe('Analysis and scenarios', () => {
         fixture: 'scenario/scenarios',
       },
     ).as('scenariosList');
+
+    cy.intercept(
+      {
+        method: 'GET',
+        pathname: '/api/v1/scenarios',
+        query: {
+          disablePagination: 'true',
+          hasActiveInterventions: 'true',
+        },
+      },
+      {
+        statusCode: 200,
+        fixture: 'scenario/scenarios',
+      },
+    ).as('scenariosNoPaginated');
 
     cy.intercept(
       {
@@ -61,7 +61,7 @@ describe('Analysis and scenarios', () => {
       fixture: 'impact/table',
     }).as('fetchImpactTable');
 
-    cy.intercept('GET', '/api/v1/indicators', {
+    cy.intercept('GET', '/api/v1/indicators*', {
       fixture: 'indicators/index',
     });
 
@@ -90,7 +90,7 @@ describe('Analysis and scenarios', () => {
 
     cy.intercept('GET', '/api/v1/sourcing-locations/location-types/supported', {
       statusCode: 200,
-      fixture: 'scenario/scenario-location-types',
+      fixture: 'sourcing-locations/supported',
     });
 
     cy.intercept('GET', '/api/v1/admin-regions/trees*', {

@@ -123,7 +123,6 @@ extract-mapspam-crop-production: download-mapspam-crop-production
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TROF_A.tif \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TEMF_A.tif \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TrofTemf_A.tif
-
 	for file in $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/*_A.tif; do\
 		gdal_calc.py --quiet --calc="numpy.round(A, 4)" -A "$$file" --outfile="$$file";\
 	done

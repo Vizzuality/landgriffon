@@ -1,17 +1,17 @@
-describe('Analysis charts', () => {
+describe('Analysis table', () => {
   beforeEach(() => {
     cy.intercept('GET', '/api/v1/indicators', {
       fixture: 'indicators/index',
     }).as('fetchIndicators');
 
-    cy.intercept('GET', '/api/v1/impact/ranking?*', {
-      fixture: 'impact/chart',
-    }).as('fetchChartRanking');
-
     cy.intercept('GET', '/api/v1/h3/years*', {
       statusCode: 200,
       fixture: 'years/index',
     });
+
+    cy.intercept('GET', '/api/v1/impact/table*', {
+      fixture: 'impact/table',
+    }).as('fetchTableRanking');
 
     cy.intercept('GET', '/api/v1/materials/trees?depth=1&withSourcingLocations=true', {
       statusCode: 200,
@@ -45,8 +45,8 @@ describe('Analysis charts', () => {
     cy.logout();
   });
 
-  it('should load the charts', () => {
-    cy.visit('/analysis/chart');
+  it('should load the table', () => {
+    cy.visit('/analysis/table');
     cy.wait('@fetchIndicators');
     cy.intercept(
       {
@@ -61,10 +61,7 @@ describe('Analysis charts', () => {
       },
     ).as('fetchIndicatorsStatusActive');
     cy.wait('@fetchIndicatorsStatusActive');
-    cy.wait('@fetchChartRanking');
-    cy.get('[data-testid="analysis-chart"]')
-      .should('be.visible')
-      .find('.recharts-responsive-container')
-      .and('have.length', 5); // only 5 are active
+    cy.wait('@fetchTableRanking');
+    cy.get('[data-testid="analysis-table"]').should('be.visible');
   });
 });

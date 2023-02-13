@@ -1,6 +1,6 @@
 describe('Analysis map', () => {
   beforeEach(() => {
-    cy.intercept('GET', '/api/v1/indicators', {
+    cy.intercept('GET', '/api/v1/indicators*', {
       fixture: 'indicators/index',
     }).as('fetchIndicators');
 
@@ -35,10 +35,15 @@ describe('Analysis map', () => {
       fixture: 'trees/suppliers',
     });
 
-    cy.intercept('GET', '/api/v1/sourcing-locations/location-types/supported', {
-      statusCode: 200,
-      fixture: 'scenario/scenario-location-types',
-    });
+    cy.intercept(
+      {
+        method: 'GET',
+        pathname: '/api/v1/sourcing-locations/location-types/supported',
+      },
+      {
+        fixture: 'sourcing-locations/supported',
+      },
+    );
 
     cy.intercept('GET', '/api/v1/admin-regions/trees?withSourcingLocations=true', {
       statusCode: 200,

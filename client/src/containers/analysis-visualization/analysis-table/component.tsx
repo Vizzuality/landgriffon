@@ -70,7 +70,10 @@ const AnalysisTable = () => {
   );
 
   const { scenarioToCompare, isComparisonEnabled, currentScenario } = useAppSelector(scenarios);
-  const { data: indicators } = useIndicators({}, { select: (data) => data.data });
+  const { data: indicators } = useIndicators(
+    { 'filter[status]': 'active' },
+    { select: (data) => data.data },
+  );
   const filters = useAppSelector(filtersForTabularAPI);
 
   const useIsComparison = useCallback(

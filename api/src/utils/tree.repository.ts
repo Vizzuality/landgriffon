@@ -31,12 +31,12 @@ export class ExtendedTreeRepository<
     return this.query(
       `
         with recursive ${snakeCasedEntityName}_tree as (
-            select entity.id, entity."parentId", entity."name"
+            select entity.id, entity."parentId", entity."name", entity."status"
             from ${snakeCasedEntityName} entity
             where id in
                         (${subQuery})
             union all
-            select "parent".id, "parent"."parentId", "parent"."name"
+            select "parent".id, "parent"."parentId", "parent"."name", "parent"."status"
             from ${snakeCasedEntityName} "parent"
             join ${snakeCasedEntityName}_tree "child" on "child"."parentId" = "parent".id
         )

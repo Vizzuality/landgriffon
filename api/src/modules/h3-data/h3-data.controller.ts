@@ -21,6 +21,8 @@ import {
   GetScenarioVsScenarioImpactMapDto,
 } from 'modules/h3-data/dto/get-impact-map.dto';
 import { H3DataMapService } from 'modules/h3-data/h3-data-map.service';
+import { MaterialsService } from 'modules/materials/materials.service';
+import { IndicatorsService } from 'modules/indicators/indicators.service';
 
 @Controller('/api/v1/h3')
 @ApiTags(H3Data.name)
@@ -29,6 +31,8 @@ export class H3DataController {
   constructor(
     protected readonly h3DataService: H3DataService,
     protected readonly h3DataMapService: H3DataMapService,
+    protected readonly materialsService: MaterialsService,
+    protected readonly indicatorService: IndicatorsService,
   ) {}
 
   @ApiOperation({ description: 'Retrieve H3 data providing its name' })
@@ -100,6 +104,9 @@ export class H3DataController {
     queryParams: GetMaterialH3ByResolutionDto,
   ): Promise<H3MapResponse> {
     const { materialId, resolution, year } = queryParams;
+
+    await this.materialsService.checkActiveMaterials([materialId]);
+
     return await this.h3DataMapService.getMaterialMapByResolutionAndYear(
       materialId,
       resolution,
@@ -121,6 +128,13 @@ export class H3DataController {
   async getImpactMap(
     @Query(ValidationPipe) getImpactMapDto: GetImpactMapDto,
   ): Promise<H3MapResponse> {
+    await this.indicatorService.checkActiveIndicatorsForCalculations([
+      getImpactMapDto.indicatorId,
+    ]);
+    if (getImpactMapDto.materialIds)
+      await this.materialsService.checkActiveMaterials(
+        getImpactMapDto.materialIds,
+      );
     return this.h3DataMapService.getImpactMapByResolution(getImpactMapDto);
   }
 
@@ -139,6 +153,11 @@ export class H3DataController {
   async getImpactActualVsScenarioComparisonMap(
     @Query(ValidationPipe) dto: GetActualVsScenarioImpactMapDto,
   ): Promise<H3MapResponse> {
+    await this.indicatorService.checkActiveIndicatorsForCalculations([
+      dto.indicatorId,
+    ]);
+    if (dto.materialIds)
+      await this.materialsService.checkActiveMaterials(dto.materialIds);
     return this.h3DataMapService.getImpactMapByResolution(dto);
   }
 
@@ -157,6 +176,11 @@ export class H3DataController {
   async getImpactScenarioVsScenarioComparisonMap(
     @Query(ValidationPipe) dto: GetScenarioVsScenarioImpactMapDto,
   ): Promise<H3MapResponse> {
+    await this.indicatorService.checkActiveIndicatorsForCalculations([
+      dto.indicatorId,
+    ]);
+    if (dto.materialIds)
+      await this.materialsService.checkActiveMaterials(dto.materialIds);
     return this.h3DataMapService.getImpactMapByResolution(dto);
   }
 }

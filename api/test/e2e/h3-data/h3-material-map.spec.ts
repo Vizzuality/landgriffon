@@ -1,6 +1,6 @@
 import * as request from 'supertest';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
-import { h3DataMock, dropH3DataMock } from './mocks/h3-data.mock';
+import { dropH3DataMock, h3DataMock } from './mocks/h3-data.mock';
 import { createMaterial, createMaterialToH3 } from '../../entity-mocks';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
@@ -12,6 +12,10 @@ import ApplicationManager, {
 } from '../../utils/application-manager';
 import { DataSource } from 'typeorm';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
+import {
+  Material,
+  MATERIALS_STATUS,
+} from '../../../src/modules/materials/material.entity';
 
 /**
  * Tests for the H3DataModule.
@@ -72,6 +76,21 @@ describe('H3 Data Module (e2e) - Material map', () => {
       .set('Authorization', `Bearer ${jwtToken}`);
     expect(response.body.errors[0].meta.rawError.response.message[1]).toEqual(
       'resolution must be a number conforming to the specified constraints',
+    );
+  });
+
+  test('When I query inactive material H3 data, then I should get a proper error message', async () => {
+    const material: Material = await createMaterial({
+      status: MATERIALS_STATUS.INACTIVE,
+      name: 'Inactive Material',
+    });
+    const response = await request(testApplication.getHttpServer())
+      .get(
+        `/api/v1/h3/map/material?materialId=${material.id}&resolution=6&year=2020`,
+      )
+      .set('Authorization', `Bearer ${jwtToken}`);
+    expect(response.body.errors[0].meta.rawError.response.message).toEqual(
+      'Following Requested Materials are not activated: Inactive Material',
     );
   });
 

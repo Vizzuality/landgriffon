@@ -13,6 +13,9 @@ import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
 import { H3DataMapService } from 'modules/h3-data/h3-data-map.service';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
+import { MaterialsService } from 'modules/materials/materials.service';
+import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
+import { IndicatorsService } from 'modules/indicators/indicators.service';
 
 @Module({
   imports: [
@@ -24,6 +27,7 @@ import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
     AdminRegionsModule,
     SuppliersModule,
     BusinessUnitsModule,
+    SourcingLocationsModule,
   ],
   controllers: [H3DataController],
   providers: [
@@ -31,6 +35,8 @@ import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
     H3DataMapService,
     H3DataYearsService,
     H3DataRepository,
+    MaterialsService,
+    IndicatorsService,
   ],
   exports: [H3DataService, H3DataYearsService],
 })

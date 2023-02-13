@@ -31,6 +31,7 @@ import { ActualVsScenarioImpactService } from 'modules/impact/comparison/actual-
 import { SetScenarioIdsInterceptor } from 'modules/impact/set-scenario-ids.interceptor';
 import { ScenarioVsScenarioImpactService } from 'modules/impact/comparison/scenario-vs-scenario.service';
 import { ScenarioVsScenarioPaginatedImpactTable } from 'modules/impact/dto/response-scenario-scenario.dto';
+import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { MaterialsService } from 'modules/materials/materials.service';
 
 @Controller('/api/v1/impact')
@@ -41,6 +42,7 @@ export class ImpactController {
     private readonly impactService: ImpactService,
     private readonly actualVsScenarioImpactService: ActualVsScenarioImpactService,
     private readonly scenarioVsScenarioService: ScenarioVsScenarioImpactService,
+    private readonly indicatorService: IndicatorsService,
     private readonly materialsService: MaterialsService,
   ) {}
 
@@ -57,6 +59,9 @@ export class ImpactController {
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
     @Query(ValidationPipe) impactTableDto: GetImpactTableDto,
   ): Promise<PaginatedImpactTable> {
+    await this.indicatorService.checkActiveIndicatorsForCalculations(
+      impactTableDto.indicatorIds,
+    );
     /* Here we are validating received materialIds to be active, without validating recursively possible descendants,
        since the Material Ids come from existing impact data (materials present in Sourcing Locations) and existing descendants
        will be active per default */
@@ -84,6 +89,9 @@ export class ImpactController {
     @Query(ValidationPipe)
     scenarioVsScenarioImpactTableDto: GetScenarioVsScenarioImpactTableDto,
   ): Promise<ScenarioVsScenarioPaginatedImpactTable> {
+    await this.indicatorService.checkActiveIndicatorsForCalculations(
+      scenarioVsScenarioImpactTableDto.indicatorIds,
+    );
     /* Here we are validating received materialIds to be active, without validating recursively possible descendants,
       since the Material Ids come from existing impact data (materials present in Sourcing Locations) and existing descendants
       will be active per default */
@@ -112,6 +120,9 @@ export class ImpactController {
     @Query(ValidationPipe)
     actualVsScenarioImpactTableDto: GetActualVsScenarioImpactTableDto,
   ): Promise<PaginatedImpactTable> {
+    await this.indicatorService.checkActiveIndicatorsForCalculations(
+      actualVsScenarioImpactTableDto.indicatorIds,
+    );
     /* Here we are validating received materialIds to be active, without validating recursively possible descendants,
       since the Material Ids come from existing impact data (materials present in Sourcing Locations) and existing descendants
       will be active per default */
@@ -139,6 +150,9 @@ export class ImpactController {
   async getRankedImpactTable(
     @Query(ValidationPipe) rankedImpactTableDto: GetRankedImpactTableDto,
   ): Promise<ImpactTable> {
+    await this.indicatorService.checkActiveIndicatorsForCalculations(
+      rankedImpactTableDto.indicatorIds,
+    );
     /* Here we are validating received materialIds to be active, without validating recursively possible descendants,
       since the Material Ids come from existing impact data (materials present in Sourcing Locations) and existing descendants
       will be active per default */

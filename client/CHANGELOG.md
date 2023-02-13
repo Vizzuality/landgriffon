@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 - Issue preventing new users to sign up in the platform. [LANDGRIF-1222](https://vizzuality.atlassian.net/browse/LANDGRIF-1222)
+- Error requesting scenario comparison. [LANDGRIF-1208](https://vizzuality.atlassian.net/browse/LANDGRIF-1208)
 - Issue with focus in tree-select and some styling. [LANDGRIF-1155](https://vizzuality.atlassian.net/browse/LANDGRIF-1155)
 - Fixed condition to fetch available years for material layer. [LANDGRIF-1141](https://vizzuality.atlassian.net/browse/LANDGRIF-1141)
 - Undefined `endYear` value sent to API regardless being deactivated. [LANDGRIF-1145](https://vizzuality.atlassian.net/browse/LANDGRIF-1145)

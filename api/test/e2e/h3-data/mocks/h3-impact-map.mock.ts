@@ -1,8 +1,11 @@
 import { Unit } from 'modules/units/unit.entity';
 import { UnitConversion } from 'modules/unit-conversions/unit-conversion.entity';
-import { Indicator } from 'modules/indicators/indicator.entity';
+import {
+  Indicator,
+  INDICATOR_STATUS,
+} from 'modules/indicators/indicator.entity';
 import { h3DataMock } from './h3-data.mock';
-import { Material } from 'modules/materials/material.entity';
+import { Material, MATERIALS_STATUS } from 'modules/materials/material.entity';
 import {
   createAdminRegion,
   createGeoRegion,
@@ -40,6 +43,7 @@ import { DataSource } from 'typeorm';
 
 export interface ImpactMapMockData {
   indicatorId: string;
+  inactiveIndicatorId: string;
   unitId: string;
   adminRegionOneId: string;
   adminRegionTwoId: string;
@@ -49,6 +53,7 @@ export interface ImpactMapMockData {
   t1SupplierTwoId: string;
   producerOneId: string;
   producerTwoId: string;
+  inactiveMaterialId: string;
   materialOneId: string;
   materialTwoId: string;
   harvestH3DataOneId: string;
@@ -79,6 +84,13 @@ export const createImpactMapMockData = async (
   indicator.nameCode = 'UWU_T';
   await indicator.save();
 
+  const inactiveIndicator: Indicator = new Indicator();
+  inactiveIndicator.name = 'Inactive Indicator';
+  inactiveIndicator.unit = unit;
+  inactiveIndicator.status = INDICATOR_STATUS.INACTIVE;
+  inactiveIndicator.nameCode = 'INA_IN';
+  await inactiveIndicator.save();
+
   const harvestH3Data = await h3DataMock(dataSource, {
     h3TableName: 'harvestTable',
     h3ColumnName: 'harvestColumn',
@@ -98,6 +110,11 @@ export const createImpactMapMockData = async (
   });
 
   tablesToDrop.push(productionH3Data.h3tableName);
+
+  const inactiveMaterial: Material = await createMaterial({
+    name: 'Inactive Material',
+    status: MATERIALS_STATUS.INACTIVE,
+  });
 
   const materialOne: Material = await createMaterial({
     name: 'MaterialOne',
@@ -452,6 +469,7 @@ export const createImpactMapMockData = async (
 
   return {
     indicatorId: indicator.id,
+    inactiveIndicatorId: inactiveIndicator.id,
     unitId: unit.id,
     geoRegionOneId: geoRegionOne.id,
     geoRegionTwoId: geoRegionTwo.id,
@@ -461,6 +479,7 @@ export const createImpactMapMockData = async (
     t1SupplierTwoId: t1SupplierTwo.id,
     producerOneId: producerSupplierOne.id,
     producerTwoId: producerSupplierTwo.id,
+    inactiveMaterialId: inactiveMaterial.id,
     materialOneId: materialOne.id,
     materialTwoId: materialTwo.id,
     harvestH3DataOneId: harvestH3Data.id,

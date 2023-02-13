@@ -520,6 +520,108 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       ).toBeTruthy();
     });
   });
+
+  describe('Active materials and indicator validations', () => {
+    test('When I query impact map for inactive material, then I should get a proper error message', async () => {
+      const response = await request(testApplication.getHttpServer())
+        .get(`/api/v1/h3/map/impact`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          indicatorId: impactMapMockData.indicatorId,
+          'materialIds[]': [impactMapMockData.inactiveMaterialId],
+          year: 2020,
+          resolution: 6,
+        });
+      expect(response.body.errors[0].meta.rawError.response.message).toEqual(
+        'Following Requested Materials are not activated: Inactive Material',
+      );
+    });
+
+    test('When I query impact map for inactive indicator, then I should get a proper error message', async () => {
+      const response = await request(testApplication.getHttpServer())
+        .get(`/api/v1/h3/map/impact`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          indicatorId: impactMapMockData.inactiveIndicatorId,
+          'materialIds[]': [impactMapMockData.materialOneId],
+          year: 2020,
+          resolution: 6,
+        });
+      expect(response.body.errors[0].meta.rawError.response.message).toEqual(
+        'Requested Indicators are not activated: Inactive Indicator',
+      );
+    });
+
+    test('When I query Actual vs Scenario comparison map for inactive material, then I should get a proper error message', async () => {
+      const response = await request(testApplication.getHttpServer())
+        .get(`/api/v1/h3/map/impact/compare/actual/vs/scenario`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          indicatorId: impactMapMockData.indicatorId,
+          'materialIds[]': [impactMapMockData.inactiveMaterialId],
+          year: 2020,
+          resolution: 6,
+          comparedScenarioId: impactMapMockData.scenarioId,
+          relative: false,
+        });
+      expect(response.body.errors[0].meta.rawError.response.message).toEqual(
+        'Following Requested Materials are not activated: Inactive Material',
+      );
+    });
+
+    test('When I query Actual vs Scenario comparison map for inactive indicator, then I should get a proper error message', async () => {
+      const response = await request(testApplication.getHttpServer())
+        .get(`/api/v1/h3/map/impact/compare/actual/vs/scenario`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          indicatorId: impactMapMockData.inactiveIndicatorId,
+          'materialIds[]': [impactMapMockData.materialOneId],
+          year: 2020,
+          resolution: 6,
+          comparedScenarioId: impactMapMockData.scenarioId,
+          relative: false,
+        });
+      expect(response.body.errors[0].meta.rawError.response.message).toEqual(
+        'Requested Indicators are not activated: Inactive Indicator',
+      );
+    });
+
+    test('When I query Scenario vs Scenario comparison map for inactive material, then I should get a proper error message', async () => {
+      const response = await request(testApplication.getHttpServer())
+        .get(`/api/v1/h3/map/impact/compare/scenario/vs/scenario`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          indicatorId: impactMapMockData.indicatorId,
+          'materialIds[]': [impactMapMockData.inactiveMaterialId],
+          year: 2020,
+          resolution: 6,
+          baseScenarioId: impactMapMockData.scenarioId,
+          comparedScenarioId: impactMapMockData.scenarioTwoId,
+          relative: false,
+        });
+      expect(response.body.errors[0].meta.rawError.response.message).toEqual(
+        'Following Requested Materials are not activated: Inactive Material',
+      );
+    });
+
+    test('When I query Scenario vs Scenario comparison map for inactive indicator, then I should get a proper error message', async () => {
+      const response = await request(testApplication.getHttpServer())
+        .get(`/api/v1/h3/map/impact/compare/scenario/vs/scenario`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          indicatorId: impactMapMockData.inactiveIndicatorId,
+          'materialIds[]': [impactMapMockData.materialOneId],
+          year: 2020,
+          resolution: 6,
+          baseScenarioId: impactMapMockData.scenarioId,
+          comparedScenarioId: impactMapMockData.scenarioTwoId,
+          relative: false,
+        });
+      expect(response.body.errors[0].meta.rawError.response.message).toEqual(
+        'Requested Indicators are not activated: Inactive Indicator',
+      );
+    });
+  });
 });
 
 /**

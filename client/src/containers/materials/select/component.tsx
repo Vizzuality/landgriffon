@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
-import { sortBy } from 'lodash-es';
+import React from 'react';
 
 import { useMaterialsTrees } from 'hooks/materials';
 import TreeSelect from 'components/tree-select';
+import { recursiveMap, recursiveSort } from 'components/tree-select/utils';
 
 import type { MaterialsTreesParams } from 'hooks/materials';
 import type { ComponentRef, Ref } from 'react';
@@ -48,22 +48,15 @@ const InnerMaterialsFilter = <IsMulti extends boolean>(
       withSourcingLocations,
     },
     {
-      // 2 minutes stale time
-      staleTime: 2 * 60 * 1000,
+      select: (_materials) =>
+        recursiveSort(_materials, 'name')?.map((item) =>
+          recursiveMap(item, ({ id, name, status }) => ({
+            value: id,
+            label: name,
+            disabled: status === 'inactive',
+          })),
+        ),
     },
-  );
-
-  const treeOptions: TreeSelectProps<IsMulti>['options'] = useMemo(
-    () =>
-      sortBy(
-        data?.map(({ name, id, children }) => ({
-          label: name,
-          value: id,
-          children: children?.map(({ name, id }) => ({ label: name, value: id })),
-        })),
-        'label',
-      ),
-    [data],
   );
 
   return (
@@ -71,7 +64,7 @@ const InnerMaterialsFilter = <IsMulti extends boolean>(
       multiple={multiple}
       showSearch
       loading={isFetching}
-      options={treeOptions}
+      options={data}
       placeholder="Materials"
       onChange={onChange}
       current={current}

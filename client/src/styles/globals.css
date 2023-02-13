@@ -81,7 +81,7 @@
 }
 
 .rc-tree .rc-tree-node-content-wrapper {
-  @apply w-full overflow-hidden truncate text-ellipsis flex flex-row gap-1 place-items-center;
+  @apply flex flex-row w-full gap-1 overflow-hidden truncate text-ellipsis place-items-center;
 }
 
 .rc-tree .rc-tree-title {
@@ -90,6 +90,10 @@
 
 .rc-tree .rc-tree-indent-unit {
   @apply w-4;
+}
+
+.rc-tree-treenode-disabled .rc-tree-title {
+  @apply text-gray-300;
 }
 
 /* Recharts */

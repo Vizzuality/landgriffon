@@ -16,6 +16,7 @@ import Materials from '../materials/component';
 import OriginRegions from '../origin-regions/component';
 import Suppliers from '../suppliers/component';
 
+import { flattenTree, recursiveMap, recursiveSort } from 'components/tree-select/utils';
 import Select from 'components/forms/select';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters, setFilters } from 'store/features/analysis/filters';
@@ -25,7 +26,6 @@ import { useAdminRegionsTrees } from 'hooks/admin-regions';
 import { useSuppliersTrees } from 'hooks/suppliers';
 import { useLocationTypes } from 'hooks/location-types';
 import Button from 'components/button/component';
-import { flattenTree, recursiveMap, recursiveSort } from 'components/tree-select/utils';
 
 import type { Option } from 'components/forms/select';
 import type { LocationTypes as LocationTyping } from 'containers/interventions/enums';
@@ -160,7 +160,17 @@ const MoreFilters = () => {
       supplierIds,
       locationTypes: locationTypesIds,
     },
-    DEFAULT_QUERY_OPTIONS,
+    {
+      ...DEFAULT_QUERY_OPTIONS,
+      select: (_materials) =>
+        recursiveSort(_materials, 'name')?.map((item) =>
+          recursiveMap(item, ({ id, name, status }) => ({
+            value: id,
+            label: name,
+            disabled: status === 'inactive',
+          })),
+        ),
+    },
   );
 
   const { data: originOptions } = useAdminRegionsTrees(

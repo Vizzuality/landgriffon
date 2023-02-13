@@ -124,7 +124,7 @@ export type Material = {
   hsCodeId: string;
   name: string;
   parentId: Material['id'];
-  status: string | 'active';
+  status: 'active' | 'inactive';
   metadata: {
     cautions: string;
     citation: string;
@@ -141,8 +141,9 @@ export type Material = {
 };
 
 export type MaterialTreeItem = {
-  id: string;
-  name: string;
+  id: Material['id'];
+  name: Material['name'];
+  status: Material['status'];
   children: MaterialTreeItem[];
 };
 

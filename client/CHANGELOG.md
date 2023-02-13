@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [v0.4.0 Unreleased]
 
+### Added
+- Added role check to enable upload data source button[LANGRIF-1125](https://vizzuality.atlassian.net/browse/LANDGRIF-1125)
+
 ## [v0.3.6]
 
 ### Added

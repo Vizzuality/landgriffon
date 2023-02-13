@@ -10,7 +10,9 @@ import {
 } from './constants';
 
 import ApplicationLayout from 'layouts/application';
+import { usePermissions } from 'hooks/permissions';
 
+import type { TabType } from 'components/tabs';
 import type { AdminLayoutProps } from './types';
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({
@@ -19,6 +21,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
   adminTabs = ADMIN_TABS,
 }) => {
   const { pathname } = useRouter();
+  const { hasRole } = usePermissions();
+
+  const cantAccessTab = (tab: TabType) => {
+    return (
+      tab.disabled ||
+      (!!tab.restrictedToRoles?.length && !tab.restrictedToRoles.some((role) => hasRole(role)))
+    );
+  };
 
   return (
     <ApplicationLayout>
@@ -32,7 +42,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
 
             <nav className="flex mt-12 space-x-10 text-sm" data-testid="admin-menu-list">
               {Object.values(adminTabs).map((tab) => {
-                if (tab.disabled) {
+                if (cantAccessTab(tab)) {
                   return (
                     <span
                       key={tab.href}

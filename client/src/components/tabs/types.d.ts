@@ -1,9 +1,14 @@
+import type { RoleName } from 'hooks/permissions/enums';
+
 export type TabType = {
   /** Tab name / text to be displayed */
   name: string;
   /** Tab href / where to link */
   href: string;
+  /** Whether the tab is disabled */
   disabled?: boolean;
+  /** List of roles that can access the tab */
+  restrictedToRoles?: RoleName[];
 };
 
 export type TabsType = {

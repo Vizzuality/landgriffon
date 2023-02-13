@@ -217,17 +217,28 @@ export type Role = {
 };
 
 /**
- * User profile
+ * User profile response
  */
-
-// User profile payload for API, also for sign-up purposes
 export type ProfilePayload = {
-  fname?: string;
-  lname?: string;
+  avatarDataUrl?: string;
   email: string;
-  password?: string;
-  roles: Role[];
+  displayName?: string;
+  fname?: string;
+  isActive?: boolean;
+  isDeleted?: boolean;
   id: string;
+  lname?: string;
+  roles: Role[];
+};
+
+/** User profile for create and update */
+export type Profile = {
+  displayName?: string;
+  email?: string;
+  fname?: string;
+  id?: string;
+  lname?: string;
+  roles: RoleName[];
 };
 
 // Password payload for API
@@ -353,7 +364,7 @@ export type User = {
 };
 
 export type UserPayload = {
-  data: User[];
+  data: ProfilePayload[];
   meta: {
     pageSize: number;
     pageNumber: number;

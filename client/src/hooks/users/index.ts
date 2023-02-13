@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { apiService } from 'services/api';
 
 import type { UseQueryOptions } from '@tanstack/react-query';
-import type { UserPayload } from 'types';
+import type { Profile, UserPayload } from 'types';
 
 export const useUsers = (
   params: Record<string, unknown> = {},
@@ -39,4 +39,48 @@ export const useUsers = (
   );
 
   return query;
+};
+
+export const useUpdateUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    ({ id, data }: { id: string; data: Profile }) =>
+      apiService.request({
+        method: 'PATCH',
+        url: `/users/${id}`,
+        data,
+      }),
+    {
+      onSuccess: () => queryClient.invalidateQueries(['users']),
+    },
+  );
+};
+
+export const useCreateUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    (data: Profile) =>
+      apiService.request({
+        method: 'POST',
+        url: '/users',
+        data: { ...data, password: '123qweasd' },
+      }),
+    {
+      onSuccess: () => queryClient.invalidateQueries(['users']),
+    },
+  );
+};
+
+export const useDeleteUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    (id: string) =>
+      apiService.request({
+        method: 'Delete',
+        url: `users/${id}`,
+      }),
+    {
+      onSuccess: () => queryClient.invalidateQueries(['users']),
+    },
+  );
 };

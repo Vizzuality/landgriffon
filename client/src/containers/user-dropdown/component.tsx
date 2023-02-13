@@ -5,6 +5,7 @@ import { signOut, useSession } from 'next-auth/react';
 import { Popover } from '@headlessui/react';
 import { offset, useFloating } from '@floating-ui/react-dom';
 import { shift } from '@floating-ui/core';
+import { useQueryClient } from '@tanstack/react-query';
 
 import StringAvatar from 'components/string-avatar';
 import Avatar from 'components/avatar';
@@ -21,7 +22,15 @@ const UserDropdown: React.FC = () => {
 
   const { data: session, status } = useSession(); // TO-DO: replace by useMe
 
-  const handleSignOut = useCallback(() => signOut(), []);
+  const queryClient = useQueryClient();
+
+  const handleSignOut = useCallback(
+    () =>
+      signOut().then(async () => {
+        await queryClient.invalidateQueries(['profile']);
+      }),
+    [queryClient],
+  );
 
   const renderAvatar = useCallback(
     (className?: string) => {

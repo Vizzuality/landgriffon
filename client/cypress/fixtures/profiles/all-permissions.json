@@ -12,8 +12,18 @@
       "isDeleted": false,
       "roles": [
         {
-          "name": "admin",
-          "permissions": []
+          "name": "user",
+          "permissions": [
+            {
+              "action": "canCreateScenario"
+            },
+            {
+              "action": "canEditScenario"
+            },
+            {
+              "action": "canDeleteScenario"
+            }
+          ]
         }
       ]
     }

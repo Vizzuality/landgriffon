@@ -1,0 +1,377 @@
+{
+  "meta": {
+    "totalItems": 18,
+      "totalPages": 1,
+        "size": 50,
+          "page": 1
+  },
+  "data": [
+    {
+      "type": "users",
+      "id": "ef0aceec-3a80-4363-8911-a03017e18a4f",
+      "attributes": {
+        "fname": null,
+        "lname": null,
+        "email": "yulia.belyakova@vizzuality.com",
+        "displayName": null,
+        "avatarDataUrl": null,
+        "isActive": true,
+        "isDeleted": false,
+        "roles": [
+          {
+            "name": "user",
+            "permissions": [
+              {
+                "action": "canCreateScenario"
+              },
+              {
+                "action": "canEditScenario"
+              },
+              {
+                "action": "canDeleteScenario"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "users",
+      "id": "bc041daf-3967-4eb4-922e-c59dc6cc0231",
+      "attributes": {
+        "fname": null,
+        "lname": null,
+        "email": "tiago.garcia@vizzuality.com",
+        "displayName": null,
+        "avatarDataUrl": null,
+        "isActive": true,
+        "isDeleted": false,
+        "roles": [
+          {
+            "name": "admin",
+            "permissions": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "users",
+      "id": "9fdb5b87-7656-4ead-8fee-56fcbfaf7b52",
+      "attributes": {
+        "fname": null,
+        "lname": null,
+        "email": "joaquin.trinanes@vizzuality.com",
+        "displayName": null,
+        "avatarDataUrl": null,
+        "isActive": true,
+        "isDeleted": false,
+        "roles": [
+          {
+            "name": "admin",
+            "permissions": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "users",
+      "id": "5a99743f-627d-4ba4-91bd-b8331e3785dd",
+      "attributes": {
+        "fname": null,
+        "lname": null,
+        "email": "david.inga@vizzuality.com",
+        "displayName": null,
+        "avatarDataUrl": null,
+        "isActive": true,
+        "isDeleted": false,
+        "roles": [
+          {
+            "name": "admin",
+            "permissions": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "users",
+      "id": "97d16122-6755-4242-b093-5dcc488cbc3a",
+      "attributes": {
+        "fname": null,
+        "lname": null,
+        "email": "elena.palao@vizzuality.com",
+        "displayName": null,
+        "avatarDataUrl": null,
+        "isActive": true,
+        "isDeleted": false,
+        "roles": [
+          {
+            "name": "admin",
+            "permissions": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "users",
+      "id": "1d4fcd50-f3b8-4abc-9d85-d7f8fbb0096e",
+      "attributes": {
+        "fname": null,
+        "lname": null,
+        "email": "francis.gassert@vizzuality.com",
+        "displayName": null,
+        "avatarDataUrl": null,
+        "isActive": true,
+        "isDeleted": false,
+        "roles": [
+          {
+            "name": "admin",
+            "permissions": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "users",
+      "id": "b7f4b999-b4ec-4d7b-b0f8-729e6da84682",
+      "attributes": {
+        "fname": null,
+        "lname": null,
+        "email": "arimariza@gmail.com",
+        "displayName": null,
+        "avatarDataUrl": null,
+        "isActive": true,
+        "isDeleted": false,
+        "roles": [
+          {
+            "name": "admin",
+            "permissions": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "users",
+      "id": "d16ac39f-2414-4dfb-b2e4-7fcd1f91a0b0",
+      "attributes": {
+        "fname": null,
+        "lname": null,
+        "email": "biel.stela@vizzuality.com",
+        "displayName": null,
+        "avatarDataUrl": null,
+        "isActive": true,
+        "isDeleted": false,
+        "roles": [
+          {
+            "name": "admin",
+            "permissions": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "users",
+      "id": "bf87cd20-cd40-4b28-8786-3acb71d7aa56",
+      "attributes": {
+        "fname": null,
+        "lname": null,
+        "email": "alex.larranaga@vizzuality.com",
+        "displayName": null,
+        "avatarDataUrl": null,
+        "isActive": true,
+        "isDeleted": false,
+        "roles": [
+          {
+            "name": "admin",
+            "permissions": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "users",
+      "id": "7c307749-c8ed-4e28-9bdf-ca6b924e3746",
+      "attributes": {
+        "fname": null,
+        "lname": null,
+        "email": "miguel.mendoza@vizzuality.com",
+        "displayName": null,
+        "avatarDataUrl": null,
+        "isActive": true,
+        "isDeleted": false,
+        "roles": [
+          {
+            "name": "admin",
+            "permissions": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "users",
+      "id": "19a003a6-b712-4c4e-8cef-832e7e6b446e",
+      "attributes": {
+        "fname": null,
+        "lname": null,
+        "email": "susana.romao@vizzuality.com",
+        "displayName": null,
+        "avatarDataUrl": null,
+        "isActive": true,
+        "isDeleted": false,
+        "roles": [
+          {
+            "name": "admin",
+            "permissions": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "users",
+      "id": "a175f560-64df-4fb8-a134-2a7db1c0d7fe",
+      "attributes": {
+        "fname": null,
+        "lname": null,
+        "email": "test@vizzuality.com",
+        "displayName": null,
+        "avatarDataUrl": null,
+        "isActive": true,
+        "isDeleted": false,
+        "roles": [
+          {
+            "name": "admin",
+            "permissions": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "users",
+      "id": "ba22c3bf-72c4-4666-9f20-a71ce7b109c2",
+      "attributes": {
+        "fname": null,
+        "lname": null,
+        "email": "andres.gnlez@gmail.com",
+        "displayName": null,
+        "avatarDataUrl": null,
+        "isActive": true,
+        "isDeleted": false,
+        "roles": [
+          {
+            "name": "admin",
+            "permissions": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "users",
+      "id": "7f37d768-1818-49e5-80cb-659bd3d738fe",
+      "attributes": {
+        "fname": null,
+        "lname": null,
+        "email": "lidia.arranz@vizzuality.com",
+        "displayName": null,
+        "avatarDataUrl": null,
+        "isActive": true,
+        "isDeleted": false,
+        "roles": [
+          {
+            "name": "admin",
+            "permissions": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "users",
+      "id": "ba812a1c-8f2c-459b-8197-edaa14f8aa2e",
+      "attributes": {
+        "fname": null,
+        "lname": null,
+        "email": "kevin.sanchez@vizzuality.com",
+        "displayName": null,
+        "avatarDataUrl": null,
+        "isActive": true,
+        "isDeleted": false,
+        "roles": [
+          {
+            "name": "user",
+            "permissions": [
+              {
+                "action": "canCreateScenario"
+              },
+              {
+                "action": "canEditScenario"
+              },
+              {
+                "action": "canDeleteScenario"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "users",
+      "id": "368bbd1f-8c37-4999-9c01-da0ac7750597",
+      "attributes": {
+        "fname": null,
+        "lname": null,
+        "email": "user@vizzuality.com",
+        "displayName": null,
+        "avatarDataUrl": null,
+        "isActive": true,
+        "isDeleted": false,
+        "roles": [
+          {
+            "name": "user",
+            "permissions": [
+              {
+                "action": "canCreateScenario"
+              },
+              {
+                "action": "canEditScenario"
+              },
+              {
+                "action": "canDeleteScenario"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "users",
+      "id": "0bc5ac96-f8cd-4ad3-a665-f0b885ff98e1",
+      "attributes": {
+        "fname": "Maria",
+        "lname": "Sola",
+        "email": "maria.sola@vizzuality.com",
+        "displayName": "M Sola",
+        "avatarDataUrl": null,
+        "isActive": true,
+        "isDeleted": false,
+        "roles": []
+      }
+    },
+    {
+      "type": "users",
+      "id": "1da9b20f-1172-4838-9e96-78d5febdfb1c",
+      "attributes": {
+        "fname": "Bárbara edited",
+        "lname": "Chaves Barcellos",
+        "email": "barbara.chaves@vizzuality.com",
+        "displayName": "Bárbara",
+        "avatarDataUrl": null,
+        "isActive": true,
+        "isDeleted": false,
+        "roles": [
+          {
+            "name": "admin",
+            "permissions": []
+          }
+        ]
+      }
+    }
+  ]
+}

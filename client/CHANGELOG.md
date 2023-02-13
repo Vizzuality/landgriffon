@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [v0.5.0 Unreleased]
 
+### Added
+- Added permissions check to access profle/users info table [LANDGRIF-1124](https://vizzuality.atlassian.net/browse/LANDGRIF-1124)
+- Added role check to enable upload data source button[LANGRIF-1125](https://vizzuality.atlassian.net/browse/LANDGRIF-1125)
+- Added permissions check to access profle/users info table [LANDGRIF-1124](https://vizzuality.atlassian.net/browse/LANDGRIF-1124)
+
 ### Fixed
 - Fix permissions for edit scenarios on analysis pages [LANDGRIF-1253](https://vizzuality.atlassian.net/browse/LANDGRIF-1253)
 

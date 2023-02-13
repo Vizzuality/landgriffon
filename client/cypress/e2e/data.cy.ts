@@ -45,4 +45,14 @@ describe('Data page', () => {
       .should('be.disabled')
       .should('have.class', 'bg-gray-300/20');
   });
+
+  it('admin should be able to upload data source', () => {
+    cy.intercept('api/v1/users/me', { fixture: 'profiles/admin' });
+    cy.get('[data-testid="upload-data-source-btn"]').should('not.be.disabled');
+  });
+
+  it('not admin user should not be able to upload data source', () => {
+    cy.intercept('api/v1/users/me', { fixture: 'profiles/no-permissions' });
+    cy.get('[data-testid="upload-data-source-btn"]').should('be.disabled');
+  });
 });

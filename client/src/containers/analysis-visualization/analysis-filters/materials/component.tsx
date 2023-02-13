@@ -4,7 +4,7 @@ import { useMaterialsTrees } from 'hooks/materials';
 import TreeSelect from 'components/tree-select';
 import { recursiveMap, recursiveSort } from 'components/tree-select/utils';
 
-import type { MakePropOptional, MaterialTreeItem } from 'types';
+import type { MakePropOptional } from 'types';
 import type { MaterialsTreesParams } from 'hooks/materials';
 import type { TreeSelectProps, TreeSelectOption } from 'components/tree-select/types';
 
@@ -23,9 +23,7 @@ const MaterialsFilter = <IsMulti extends boolean>({
   options,
   ...props
 }: MaterialsFilterProps<IsMulti>) => {
-  const { data: materials, isFetching } = useMaterialsTrees<
-    TreeSelectOption<string>[] | MaterialTreeItem[]
-  >(
+  const { data: materials, isFetching } = useMaterialsTrees<TreeSelectOption<string>[]>(
     {
       depth,
       supplierIds,
@@ -49,18 +47,7 @@ const MaterialsFilter = <IsMulti extends boolean>({
     },
   );
 
-  const treeOptions: TreeSelectOption[] = useMemo(
-    () =>
-      options ??
-      recursiveSort(materials as MaterialTreeItem[], 'name')?.map((item) =>
-        recursiveMap(item, ({ id, name, status }) => ({
-          value: id,
-          label: name,
-          disabled: status === 'inactive',
-        })),
-      ),
-    [materials, options],
-  );
+  const treeOptions = useMemo(() => options ?? materials, [materials, options]);
 
   return (
     <TreeSelect

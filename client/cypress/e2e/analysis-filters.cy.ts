@@ -121,7 +121,6 @@ describe('Analysis and filters', () => {
       .find('.rc-tree-treenode')
       .eq(1)
       .click();
-    // cy.get('#floating-ui-root').find('.rc-tree-treenode').eq(1).click();
     cy.get('[data-testid="tree-select-origins-filter"]')
       .find('input:visible:first')
       .type('{enter}');

@@ -1,12 +1,12 @@
-import React, { useMemo } from 'react';
-import { sortBy } from 'lodash-es';
+import { useMemo } from 'react';
 
 import { useMaterialsTrees } from 'hooks/materials';
 import TreeSelect from 'components/tree-select';
+import { recursiveMap, recursiveSort } from 'components/tree-select/utils';
 
-import type { MakePropOptional } from 'types';
+import type { MakePropOptional, MaterialTreeItem } from 'types';
 import type { MaterialsTreesParams } from 'hooks/materials';
-import type { TreeSelectProps } from 'components/tree-select/types';
+import type { TreeSelectProps, TreeSelectOption } from 'components/tree-select/types';
 
 export interface MaterialsFilterProps<IsMulti extends boolean>
   extends MaterialsTreesParams,
@@ -23,7 +23,9 @@ const MaterialsFilter = <IsMulti extends boolean>({
   options,
   ...props
 }: MaterialsFilterProps<IsMulti>) => {
-  const { data, isFetching } = useMaterialsTrees(
+  const { data: materials, isFetching } = useMaterialsTrees<
+    TreeSelectOption<string>[] | MaterialTreeItem[]
+  >(
     {
       depth,
       supplierIds,
@@ -34,24 +36,30 @@ const MaterialsFilter = <IsMulti extends boolean>({
       scenarioId,
     },
     {
-      // 2 minutes stale time
-      staleTime: 2 * 60 * 1000,
       enabled: !options,
+      select: (_materials) =>
+        options ??
+        recursiveSort(_materials, 'name')?.map((item) =>
+          recursiveMap(item, ({ id, name, status }) => ({
+            value: id,
+            label: name,
+            disabled: status === 'inactive',
+          })),
+        ),
     },
   );
 
-  const treeOptions = useMemo(
+  const treeOptions: TreeSelectOption[] = useMemo(
     () =>
       options ??
-      sortBy(
-        data?.map(({ name, id, children }) => ({
-          label: name,
+      recursiveSort(materials as MaterialTreeItem[], 'name')?.map((item) =>
+        recursiveMap(item, ({ id, name, status }) => ({
           value: id,
-          children: children?.map(({ name, id }) => ({ label: name, value: id })),
+          label: name,
+          disabled: status === 'inactive',
         })),
-        'label',
       ),
-    [data, options],
+    [materials, options],
   );
 
   return (

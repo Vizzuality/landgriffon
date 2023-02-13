@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 - Filter indicators in the chart and table view [LANDGRIF-1173](https://vizzuality.atlassian.net/browse/LANDGRIF-1173)
+- Disables materials in tree-select when needed. Also, materials are sorted alphabetically now. [LANDGRIF-1108](https://vizzuality.atlassian.net/browse/LANDGRIF-1108)
 - Disabled `Country of delivery` and `Unknown` location types options from intervention form. [LANDGRIF-1148](https://vizzuality.atlassian.net/browse/LANDGRIF-1148)
 - Bumped `react-hook-form` fixing several validation issues. [LANDGRIF-1142](https://vizzuality.atlassian.net/browse/LANDGRIF-1142)
 - Bumped `browserslist-db` dependency.

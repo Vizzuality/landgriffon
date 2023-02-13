@@ -55,7 +55,7 @@ const THEMES = {
 const CustomSwitcherIcon: TreeProps<TreeDataNode>['switcherIcon'] = ({ isLeaf, expanded }) => {
   if (isLeaf) return <span className="block w-4" />;
 
-  return <ChevronDownIcon className={classNames('h-4 w-4', { '-rotate-90': !expanded })} />;
+  return <ChevronDownIcon className={classNames('h-5 w-5', { '-rotate-90': !expanded })} />;
 };
 
 const CustomCheckbox = React.forwardRef<
@@ -177,6 +177,7 @@ const InnerTreeSelect = <IsMulti extends boolean>({
         className: classNames(THEMES[theme].treeNodes, {
           'w-full': fitContent,
           'bg-navy-50 font-bold': !multiple && selected?.value === node?.value,
+          'text-gray-300 cursor-default pointer-events-none': node.disabled,
         }),
       };
     },
@@ -562,7 +563,7 @@ const InnerTreeSelect = <IsMulti extends boolean>({
             />
           ) : (
             <ChevronDownIcon
-              className={classNames('h-4 w-4', { 'rotate-180': isOpen, 'text-gray-300': disabled })}
+              className={classNames('h-5 w-5', { 'rotate-180': isOpen, 'text-gray-300': disabled })}
               aria-hidden="true"
             />
           )}

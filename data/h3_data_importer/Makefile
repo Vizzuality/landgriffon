@@ -124,6 +124,10 @@ extract-mapspam-crop-production: download-mapspam-crop-production
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TEMF_A.tif \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TrofTemf_A.tif
 
+	for file in $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/*_A.tif; do\
+		gdal_calc.py --quiet --calc="numpy.round(A, 4)" -A "$$file" --outfile="$$file";\
+	done
+
 extract-mapspam-crop-harvest: download-mapspam-crop-harvest
 	mkdir -p $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha
 	unzip -u $(WORKDIR_MAPSPAM)/spam2010v2r0_global_harv_area.geotiff.zip *_A.tif -d $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha
@@ -184,7 +188,9 @@ extract-mapspam-crop-harvest: download-mapspam-crop-harvest
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TROF_A.tif --A_band 1 \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TEMF_A.tif --B_band 1 \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TrofTemf_A.tif
-
+	for file in $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/*_A.tif; do\
+		gdal_calc.py --quiet --calc="numpy.round(A, 4)" -A "$$file" --outfile="$$file";\
+	done
 #CONVERT DATASETS:
 # <table>: <tiff_folder>
 # Convert the tiffs in the folder to h3indexes at resolution 6

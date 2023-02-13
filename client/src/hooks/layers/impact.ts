@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/router';
+import { omit } from 'lodash-es';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
@@ -44,7 +45,7 @@ export const useImpactLayer = () => {
   const normalQuery = useH3ImpactData(params, { enabled: !isComparisonEnabled });
   const comparisonQuery = useH3ComparisonData(
     {
-      ...params,
+      ...omit(params, ['scenarioId']),
       baseScenarioId: params.scenarioId,
       comparedScenarioId: compareScenarioId as string,
       relative: comparisonMode === 'relative',

@@ -26,43 +26,55 @@ const schemaValidation = yup.object({
     .string()
     .required('password confirmation is required')
     .oneOf([yup.ref('password'), null], 'passwords must match'),
-  roles: yup.array().of(yup.string()).optional().nullable(),
-  id: yup.string().nullable().optional(),
 });
 
-const signUpService = (data: ProfilePayload) => authService.post('/sign-up', data);
+// ? https://api.dev.landgriffon.com/swagger/#/Authentication/AuthenticationController_signUp
+export type SignUpPayload = {
+  displayName?: string;
+  email: ProfilePayload['email'];
+  fname: ProfilePayload['fname'];
+  lname: ProfilePayload['lname'];
+  avatarDataUrl?: string;
+  password: string;
+};
+
+type SignUpSchemaValidation = yup.InferType<typeof schemaValidation>;
 
 const SignUp: NextPageWithLayout = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<yup.InferType<typeof schemaValidation>>({
+  } = useForm<SignUpSchemaValidation>({
     resolver: yupResolver(schemaValidation),
   });
 
-  const signUp = useMutation(signUpService, {
-    onSuccess: () => {
-      toast.success('Account created successfully');
-      // Redirect to sign-in when user is created successfully
-      router.push('/auth/signin');
+  const signUp = useMutation<unknown, Error, SignUpPayload>(
+    (data) => authService.post('/sign-up', data),
+    {
+      onSuccess: () => {
+        toast.success('Account created successfully');
+        // Redirect to sign-in when user is created successfully
+        router.push('/auth/signin');
+      },
+      onError: (error: ErrorResponse) => {
+        setIsLoading(false);
+        if (error?.response) {
+          const { data } = error.response;
+          data?.errors.forEach(({ title }) => toast.error(title));
+        }
+      },
     },
-    onError: (error: ErrorResponse) => {
-      setIsLoading(false);
-      if (error?.response) {
-        const { data } = error.response;
-        data?.errors.forEach(({ title }) => toast.error(title));
-      }
-    },
-  });
+  );
 
   const handleSignUp = useCallback(
-    (data: ProfilePayload) => {
+    (data: SignUpSchemaValidation) => {
       setIsLoading(true);
-      signUp.mutate(data);
+      const { passwordConfirmation, ...signUpData } = data;
+      signUp.mutate(signUpData);
     },
     [signUp],
   );
@@ -92,18 +104,35 @@ const SignUp: NextPageWithLayout = () => {
               To create an account please enter your details below.
             </p>
           </div>
-          <form className="grid grid-cols-2 gap-6" onSubmit={handleSubmit(handleSignUp)}>
+          <form
+            className="grid grid-cols-2 gap-6"
+            onSubmit={handleSubmit(handleSignUp)}
+            data-testid="sign-up-form"
+          >
             <div>
               <Label htmlFor="fname">First name</Label>
-              <Input {...register('fname')} error={errors.fname?.message as string} />
+              <Input
+                {...register('fname')}
+                error={errors.fname?.message}
+                data-testid="fname-input"
+              />
             </div>
             <div>
               <Label htmlFor="lname">Last name</Label>
-              <Input {...register('lname')} error={errors.lname?.message as string} />
+              <Input
+                {...register('lname')}
+                error={errors.lname?.message}
+                data-testid="lname-input"
+              />
             </div>
             <div className="col-span-2">
               <Label htmlFor="email">Email address</Label>
-              <Input {...register('email')} type="email" error={errors.email?.message as string} />
+              <Input
+                {...register('email')}
+                type="email"
+                error={errors.email?.message}
+                data-testid="email-input"
+              />
             </div>
 
             <div className="col-span-2">
@@ -111,7 +140,8 @@ const SignUp: NextPageWithLayout = () => {
               <Input
                 {...register('password')}
                 type="password"
-                error={errors.password?.message as string}
+                error={errors.password?.message}
+                data-testid="password-input"
               />
             </div>
 
@@ -120,12 +150,18 @@ const SignUp: NextPageWithLayout = () => {
               <Input
                 {...register('passwordConfirmation')}
                 type="password"
-                error={errors.passwordConfirmation?.message as string}
+                error={errors.passwordConfirmation?.message}
+                data-testid="confirm-password-input"
               />
             </div>
 
             <div className="col-span-2 pt-8">
-              <Button type="submit" className="w-full" loading={isLoading}>
+              <Button
+                type="submit"
+                className="w-full"
+                loading={isLoading}
+                data-testid="sign-up-submit-btn"
+              >
                 Sign up
               </Button>
             </div>

@@ -209,10 +209,14 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     query: { scenarioId },
   } = useRouter();
 
-  const { data: indicators } = useIndicators({ include: 'unit' }, { select: (data) => data.data });
+  const { data: indicators } = useIndicators(
+    { include: 'unit', sort: 'name' },
+    { select: (data) => data.data },
+  );
 
   const indicatorNameCodes = useMemo(
-    () => indicators?.map(({ nameCode }) => nameCode),
+    () =>
+      indicators?.map(({ nameCode, status }) => ({ nameCode, disabled: status === 'inactive' })),
     [indicators],
   );
 
@@ -540,7 +544,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
 
   const areCoefficientsEdited = useMemo(() => {
     if (!cofficientValues) return false;
-    return cofficientValues.some((v) => +v !== 0);
+    return cofficientValues.filter((v) => v).some((v) => +v !== 0);
   }, [cofficientValues]);
 
   const areSupplierEdited = useMemo(
@@ -1142,7 +1146,13 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                       <div className="space-y-4">
                         {indicators?.map((indicator) => (
                           <div key={indicator.id}>
-                            <label className={LABEL_CLASSNAMES}>{indicator.name}</label>
+                            <label
+                              className={classNames(LABEL_CLASSNAMES, {
+                                'text-gray-300': indicator.status === 'inactive',
+                              })}
+                            >
+                              {indicator.name}
+                            </label>
                             <Input
                               // @ts-expect-error not sure how to solve this dynamic typing
                               {...register(`coefficients.${indicator.nameCode}`)}
@@ -1153,6 +1163,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                               error={errors?.coefficients?.[indicator.nameCode]?.message}
                               unit={indicator.unit.symbol}
                               data-testid={`${indicator.nameCode}-input`}
+                              disabled={indicator.status === 'inactive'}
                             />
                           </div>
                         ))}

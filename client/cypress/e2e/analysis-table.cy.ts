@@ -1,6 +1,6 @@
 describe('Analysis table', () => {
   beforeEach(() => {
-    cy.intercept('GET', '/api/v1/indicators', {
+    cy.intercept('GET', '/api/v1/indicators*', {
       fixture: 'indicators/index',
     }).as('fetchIndicators');
 
@@ -47,21 +47,9 @@ describe('Analysis table', () => {
 
   it('should load the table', () => {
     cy.visit('/analysis/table');
-    cy.wait('@fetchIndicators');
-    cy.intercept(
-      {
-        method: 'GET',
-        pathname: '/api/v1/indicators',
-        query: {
-          'filter[status]': 'active',
-        },
-      },
-      {
-        fixture: 'indicators/index',
-      },
-    ).as('fetchIndicatorsStatusActive');
-    cy.wait('@fetchIndicatorsStatusActive');
-    cy.wait('@fetchTableRanking');
-    cy.get('[data-testid="analysis-table"]').should('be.visible');
+
+    cy.wait(['@fetchIndicators', '@fetchTableRanking']).then(() => {
+      cy.get('[data-testid="analysis-table"]').should('be.visible');
+    });
   });
 });

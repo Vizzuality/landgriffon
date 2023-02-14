@@ -108,7 +108,7 @@ export interface Indicator {
   id: string;
   name: string;
   nameCode: string;
-  status: Autocomplete<'active'>;
+  status: 'active' | 'inactive';
   type: 'indicators';
   unit?: Unit;
   metadata: IndicatorMetadata;

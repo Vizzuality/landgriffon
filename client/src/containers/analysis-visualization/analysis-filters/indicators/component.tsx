@@ -28,7 +28,7 @@ const IndicatorsFilter = () => {
     isFetching,
     error,
   } = useIndicators(
-    {},
+    { sort: 'name' },
     {
       select: (data) => data.data,
     },
@@ -37,7 +37,11 @@ const IndicatorsFilter = () => {
   const options: SelectProps['options'] = useMemo(() => {
     let d: Partial<Indicator>[] = data || [];
     if (visualizationMode !== 'map') d = [...[ALL], ...data];
-    return d.map((indicator) => ({ label: indicator.name, value: indicator.id }));
+    return d.map((indicator) => ({
+      label: indicator.name,
+      value: indicator.id,
+      disabled: indicator.status === 'inactive',
+    }));
   }, [data, visualizationMode]);
 
   // Those lines allow to keep the selected indicator when the user changes the visualization mode

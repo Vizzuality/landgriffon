@@ -1,6 +1,6 @@
 describe('Analysis charts', () => {
   beforeEach(() => {
-    cy.intercept('GET', '/api/v1/indicators', {
+    cy.intercept('GET', '/api/v1/indicators*', {
       fixture: 'indicators/index',
     }).as('fetchIndicators');
 
@@ -47,24 +47,11 @@ describe('Analysis charts', () => {
 
   it('should load the charts', () => {
     cy.visit('/analysis/chart');
-    cy.wait('@fetchIndicators');
-    cy.intercept(
-      {
-        method: 'GET',
-        pathname: '/api/v1/indicators',
-        query: {
-          'filter[status]': 'active',
-        },
-      },
-      {
-        fixture: 'indicators/index',
-      },
-    ).as('fetchIndicatorsStatusActive');
-    cy.wait('@fetchIndicatorsStatusActive');
-    cy.wait('@fetchChartRanking');
-    cy.get('[data-testid="analysis-chart"]')
-      .should('be.visible')
-      .find('.recharts-responsive-container')
-      .and('have.length', 5); // only 5 are active
+
+    cy.wait(['@fetchIndicators', '@fetchChartRanking']).then(() => {
+      cy.get('[data-testid="analysis-chart"]').as('chart');
+      cy.get('@chart').should('be.visible');
+      cy.get('@chart').find('.recharts-responsive-container').and('have.length', 5);
+    });
   });
 });

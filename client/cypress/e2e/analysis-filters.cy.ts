@@ -7,15 +7,12 @@ describe('Analysis and filters', () => {
     cy.intercept(
       {
         method: 'GET',
-        pathname: '/api/v1/indicators',
-        query: {
-          'filter[status]': 'active',
-        },
+        pathname: '/api/v1/indicators*',
       },
       {
         fixture: 'indicators/index',
       },
-    ).as('fetchIndicatorsStatusActive');
+    ).as('fetchIndicators');
 
     cy.intercept('GET', '/api/v1/indicators/*', {
       fixture: 'indicators/show',
@@ -61,7 +58,7 @@ describe('Analysis and filters', () => {
   });
 
   it('should be able to select an indicator', () => {
-    cy.intercept('GET', '/api/v1/indicators', {
+    cy.intercept('GET', '/api/v1/indicators*', {
       fixture: 'indicators/index',
     }).as('fetchIndicators');
 

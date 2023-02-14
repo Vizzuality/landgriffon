@@ -159,6 +159,90 @@ describe('Intervention creation', () => {
       );
     });
   });
+
+  it('a user creates an intervetion – Switch to new material flow (failed creation)', () => {
+    cy.url().should('contains', '/interventions/new');
+    cy.intercept('POST', '/api/v1/scenario-interventions', {
+      statusCode: 400,
+      fixture: 'intervention/failed-intervention-creation-dto',
+    }).as('failedInterventionCreation');
+
+    // types title of the intervention
+    cy.get('[data-testid="title-input"]').type('Lorem ipsum title');
+
+    // selects a material
+    cy.wait('@scenarioRawMaterials').then(() => {
+      const $inputSelect = cy.get('[data-testid="materials-select"]');
+      $inputSelect.click();
+
+      $inputSelect.find('.rc-tree-list').contains('Cotton').click();
+    });
+
+    // selects a year
+    cy.wait('@scenarioYears');
+    cy.get('[data-testid="select-startYear"]').type(
+      '{enter}{downArrow}{downArrow}{downArrow}{downArrow}{enter}',
+    );
+
+    // selects the first intervention type: Switch to new material
+    cy.get('[data-testid="intervention-type-option"]').first().click({ timeout: 500 });
+
+    // check selectors are visible according to the intervention type selected
+    cy.get('[data-testid="new-material-select"]').should('have.length', 1);
+    cy.get('[data-testid="select-newLocationType"]').should('have.length', 1);
+    cy.get('[data-testid="select-newLocationCountryInput"]').should('have.length', 1);
+
+    // supplier options should not be visible by default
+    cy.get('[data-testid="new-t1-supplier-select"]').should('have.length', 0);
+    cy.get('[data-testid="new-producer-select"]').should('have.length', 0);
+
+    // coefficients should not be visible by default
+    cy.get('[data-testid="GHG_LUC_T-input"]').should('have.length', 0);
+    cy.get('[data-testid="DF_LUC_T-input"]').should('have.length', 0);
+    cy.get('[data-testid="UWU_T-input"]').should('have.length', 0);
+    cy.get('[data-testid="BL_LUC_T-input-input"]').should('have.length', 0);
+
+    // waits for material request and selects an option
+    cy.wait('@scenarioNewMaterials').then(() => {
+      const $inputSelect = cy.get('[data-testid="new-material-select"]');
+      $inputSelect.click();
+      $inputSelect.find('.rc-tree-list').contains('Fruits, berries and nuts').click();
+    });
+
+    // waits for scenario location types request and selects an option
+    cy.wait('@scenarioLocationTypes');
+    cy.get('[data-testid="select-newLocationType"]')
+      .click()
+      .find('input:visible')
+      .type('Country of production{enter}');
+
+    // waits for scenario location countries request and selects an option
+    cy.wait('@scenarioLocationCountries');
+    cy.get('[data-testid="select-newLocationCountryInput"]')
+      .click()
+      .find('input:visible')
+      .type('Botswana{enter}');
+
+    // submits intervention
+    cy.get('[data-testid="intervention-submit-btn"]').click();
+
+    cy.wait('@failedInterventionCreation').then(() => {
+      // checks the toast message triggered informing something went wrong
+      cy.get('[data-testid="toast-message"]').should(
+        'contain',
+        'Something went wrong during intervention creation',
+      );
+    });
+  });
+
+  it('a user skips selecting type of intervention and a hint appears', () => {
+    // if the user skips full filling any field in the form, a hint should appear below the types of interventions available
+    cy.get('[data-testid="intervention-submit-btn"]').click();
+    cy.get('[data-testid="hint-input-interventionType"]').should('have.length', 1);
+    // after clicking on the first type of intervention, the previous hint should be gone
+    cy.get('[data-testid="intervention-type-option"]').first().click();
+    cy.get('[data-testid="hint-input-interventionType"]').should('have.length', 0);
+  });
 });
 
 describe('Intervention location type', () => {

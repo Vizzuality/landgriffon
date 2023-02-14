@@ -64,7 +64,10 @@ module "environment" {
   domain                             = var.domain
   api_container_registry_url         = data.terraform_remote_state.core.outputs.api_container_registry_url
   client_container_registry_url      = data.terraform_remote_state.core.outputs.client_container_registry_url
+  tiler_container_registry_url       = data.terraform_remote_state.core.outputs.tiler_container_registry_url
   data_import_container_registry_url = data.terraform_remote_state.core.outputs.data_import_container_registry_url
   api_env_vars                       = lookup(each.value, "api_env_vars", [])
   api_secrets                        = lookup(each.value, "api_secrets", [])
+  science_bucket_name                = data.terraform_remote_state.core.outputs.science_bucket_name
+
 }

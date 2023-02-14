@@ -29,12 +29,12 @@ module "marketing_gcr" {
 }
 
 module "load_balancer" {
-  source                                = "./modules/gcp/load-balancer"
-  region                                = var.gcp_region
-  project                               = var.gcp_project_id
-  name                                  = var.project_name
-  frontend_cloud_run_name               = module.marketing_cloudrun.name
-  domain                                = var.domain
+  source                  = "./modules/gcp/load-balancer"
+  region                  = var.gcp_region
+  project                 = var.gcp_project_id
+  name                    = var.project_name
+  frontend_cloud_run_name = module.marketing_cloudrun.name
+  domain                  = var.domain
 }
 
 module "workload_identity" {

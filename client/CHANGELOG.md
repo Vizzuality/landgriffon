@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Move the users page from data to user [LANDGRIF-1122](https://vizzuality.atlassian.net/browse/LANDGRIF-1122)
 
 ### Fixed
+- Issue preventing new users to sign up in the platform. [LANDGRIF-1222](https://vizzuality.atlassian.net/browse/LANDGRIF-1222)
 - Issue with focus in tree-select and some styling. [LANDGRIF-1155](https://vizzuality.atlassian.net/browse/LANDGRIF-1155)
 - Fixed condition to fetch available years for material layer. [LANDGRIF-1141](https://vizzuality.atlassian.net/browse/LANDGRIF-1141)
 - Undefined `endYear` value sent to API regardless being deactivated. [LANDGRIF-1145](https://vizzuality.atlassian.net/browse/LANDGRIF-1145)

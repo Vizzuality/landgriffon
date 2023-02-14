@@ -124,7 +124,7 @@ variable "data_node_group_desired_size" {
 }
 
 variable "marketing_site_tag" {
-  type = string
+  type        = string
   description = "Tag name to use when pulling the marketing site from the image repository"
 }
 

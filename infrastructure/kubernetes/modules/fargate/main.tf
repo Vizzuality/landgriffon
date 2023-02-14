@@ -24,14 +24,14 @@ resource "aws_iam_policy" "data-import-policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Action: [
+        Action : [
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ],
-        Effect: "Allow",
-        Resource: "*"
-      }]
+        Effect : "Allow",
+        Resource : "*"
+    }]
   })
 }
 
@@ -44,7 +44,7 @@ resource "aws_iam_role" "data-import-role" {
         Principal = {
           Service = "ecs-tasks.amazonaws.com"
         }
-      }]
+    }]
     Version = "2012-10-17"
   })
 }
@@ -67,19 +67,19 @@ resource "aws_ecs_task_definition" "data-import" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = 4096
   memory                   = 65536
-  execution_role_arn = aws_iam_role.data-import-role.arn
+  execution_role_arn       = aws_iam_role.data-import-role.arn
   ephemeral_storage {
     size_in_gib = 200
   }
 
-  container_definitions    = jsonencode([
+  container_definitions = jsonencode([
     {
-      name              = "data-import"
-      image             = "vizzuality/landgriffon-data-import:${var.namespace}"
-      cpu               = 2048
-      memory            = 8192
-      essential         = true
-      command           = ["seed-data"]
+      name      = "data-import"
+      image     = "vizzuality/landgriffon-data-import:${var.namespace}"
+      cpu       = 2048
+      memory    = 8192
+      essential = true
+      command   = ["seed-data"]
       environment = [
         { name = "API_POSTGRES_HOST", value = data.aws_instances.k8s_node.private_ips[0] },
         { name = "API_POSTGRES_PORT", value = var.postgresql_port },
@@ -87,7 +87,7 @@ resource "aws_ecs_task_definition" "data-import" {
         { name = "API_POSTGRES_PASSWORD", value = local.postgres_password },
         { name = "API_POSTGRES_DATABASE", value = local.postgres_database },
       ],
-      logConfiguration  = {
+      logConfiguration = {
         logDriver = "awslogs",
         options = {
           awslogs-region        = "eu-west-3",

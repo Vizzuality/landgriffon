@@ -72,8 +72,8 @@ resource "helm_release" "postgres" {
   }
 
   set {
-    name  = "primary.affinity"
-    type  = "auto"
+    name = "primary.affinity"
+    type = "auto"
     value = yamlencode({
       nodeAffinity = {
         requiredDuringSchedulingIgnoredDuringExecution = {
@@ -94,7 +94,7 @@ resource "helm_release" "postgres" {
 
 data "kubernetes_service" "postgresql" {
   metadata {
-    name = "postgres-postgresql"
+    name      = "postgres-postgresql"
     namespace = var.namespace
   }
 }

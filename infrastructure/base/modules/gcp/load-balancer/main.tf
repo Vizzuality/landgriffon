@@ -42,9 +42,9 @@ resource "google_compute_url_map" "http-redirect" {
   name = "${var.name}-http-redirect"
 
   default_url_redirect {
-    redirect_response_code = "MOVED_PERMANENTLY_DEFAULT"  // 301 redirect
+    redirect_response_code = "MOVED_PERMANENTLY_DEFAULT" // 301 redirect
     strip_query            = false
-    https_redirect         = true  // this is the magic
+    https_redirect         = true // this is the magic
   }
 }
 

@@ -3,13 +3,15 @@ data "aws_eks_cluster_auth" "cluster" {
 }
 
 locals {
-  api_domain    = "api.${var.namespace != "production" ? ("${var.namespace}.") : ""}${var.domain}"
-  client_domain = "client.${var.namespace != "production" ? ("${var.namespace}.") : ""}${var.domain}"
+  api_domain      = "api.${var.namespace != "production" ? ("${var.namespace}.") : ""}${var.domain}"
+  tiler_domain    = "tiler.${var.namespace != "production" ? ("${var.namespace}.") : ""}${var.domain}"
+  client_domain   = "client.${var.namespace != "production" ? ("${var.namespace}.") : ""}${var.domain}"
 }
 
 data "aws_route53_zone" "landgriffon-com" {
   name = "landgriffon.com."
 }
+
 
 resource "aws_acm_certificate" "landgriffon_cert" {
   domain_name               = local.api_domain
@@ -19,11 +21,11 @@ resource "aws_acm_certificate" "landgriffon_cert" {
 
 resource "aws_route53_record" "landgriffon-com-record" {
   for_each = {
-  for dvo in aws_acm_certificate.landgriffon_cert.domain_validation_options : dvo.domain_name => {
-    name   = dvo.resource_record_name
-    record = dvo.resource_record_value
-    type   = dvo.resource_record_type
-  }
+    for dvo in aws_acm_certificate.landgriffon_cert.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
   }
 
   allow_overwrite = true
@@ -37,6 +39,14 @@ resource "aws_route53_record" "landgriffon-com-record" {
 resource "aws_route53_record" "api-landgriffon-com" {
   zone_id = data.aws_route53_zone.landgriffon-com.zone_id
   name    = local.api_domain
+  type    = "CNAME"
+  ttl     = "300"
+  records = [kubernetes_ingress_v1.landgriffon.status[0].load_balancer[0].ingress[0].hostname]
+}
+
+resource "aws_route53_record" "tiler-landgriffon-com" {
+  zone_id = data.aws_route53_zone.landgriffon-com.zone_id
+  name    = local.tiler_domain
   type    = "CNAME"
   ttl     = "300"
   records = [kubernetes_ingress_v1.landgriffon.status[0].load_balancer[0].ingress[0].hostname]
@@ -59,8 +69,8 @@ resource "kubernetes_ingress_v1" "landgriffon" {
   wait_for_load_balancer = true
 
   metadata {
-    name        = "landgriffon"
-    namespace   = var.namespace
+    name      = "landgriffon"
+    namespace = var.namespace
     annotations = {
       "kubernetes.io/ingress.class"                    = "alb"
       "alb.ingress.kubernetes.io/scheme"               = "internet-facing"
@@ -75,7 +85,8 @@ resource "kubernetes_ingress_v1" "landgriffon" {
     tls {
       hosts = [
         local.api_domain,
-        local.client_domain
+        local.client_domain,
+        local.tiler_domain
       ]
       secret_name = "landgriffon-certificate"
     }
@@ -113,6 +124,22 @@ resource "kubernetes_ingress_v1" "landgriffon" {
               name = "api"
               port {
                 number = 3000
+              }
+            }
+          }
+        }
+      }
+    }
+
+    rule {
+      host = local.tiler_domain
+      http {
+        path {
+          backend {
+            service {
+              name = "tiler"
+              port {
+                number = 4000
               }
             }
           }

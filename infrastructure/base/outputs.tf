@@ -40,6 +40,10 @@ output "api_container_registry_url" {
   value = module.api_container_registry.container_registry_url
 }
 
+output "tiler_container_registry_url" {
+  value = module.tiler_container_registry.container_registry_url
+}
+
 output "client_container_registry_url" {
   value = module.client_container_registry.container_registry_url
 }
@@ -55,3 +59,8 @@ output "gcp_workload_identity_provider" {
 output "gcp_service_account" {
   value = module.workload_identity.service_account.email
 }
+
+output "science_bucket_name" {
+  value = module.s3_bucket.science_bucket_name
+}
+

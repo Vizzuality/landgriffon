@@ -31,7 +31,7 @@ variable "domain" {
 }
 
 variable "private_subnet_ids" {
-  type = list(string)
+  type        = list(string)
   description = "IDs of the subnets used in the EKS cluster"
 }
 
@@ -73,9 +73,19 @@ variable "api_container_registry_url" {
   description = "URL for the API container registry"
 }
 
+variable "tiler_container_registry_url" {
+  type        = string
+  description = "URL for the Tiler container registry"
+}
+
 variable "client_container_registry_url" {
   type        = string
   description = "URL for the client container registry"
+}
+
+variable "science_bucket_name" {
+  type        = string
+  description = "Name of the LG Science S3 Bucket"
 }
 
 variable "data_import_container_registry_url" {
@@ -85,20 +95,20 @@ variable "data_import_container_registry_url" {
 
 variable "api_env_vars" {
   type = list(object({
-    name = string
+    name  = string
     value = string
   }))
   description = "Key-value pairs of env vars to make available to the api container"
-  default = []
+  default     = []
 }
 
 
 variable "api_secrets" {
   type = list(object({
-    name = string
+    name        = string
     secret_name = string
-    secret_key = string
+    secret_key  = string
   }))
   description = "List of secrets to make available to the api container"
-  default = []
+  default     = []
 }

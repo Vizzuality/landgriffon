@@ -17,10 +17,10 @@ module "bootstrap" {
 
 # Internal module which defines the VPC
 module "vpc" {
-  source              = "./modules/aws/vpc"
-  region              = var.aws_region
-  project             = var.project_name
-  tags                = local.tags
+  source  = "./modules/aws/vpc"
+  region  = var.aws_region
+  project = var.project_name
+  tags    = local.tags
   private_subnet_tags = {
     "kubernetes.io/role/internal-elb" : 1
 
@@ -42,8 +42,8 @@ module "bastion" {
 }
 
 module "dns" {
-  source              = "./modules/aws/dns"
-  domain              = var.domain
+  source = "./modules/aws/dns"
+  domain = var.domain
   site_server_ip_list = [
     module.load_balancer.load-balancer-ip
   ]
@@ -69,7 +69,7 @@ module "default-node-group" {
   desired_size    = var.default_node_group_desired_size
   node_role_arn   = module.eks.node_role.arn
   subnet_ids      = module.vpc.private_subnets.*.id
-  labels          = {
+  labels = {
     type : "default"
   }
 }
@@ -85,7 +85,7 @@ module "data-node-group" {
   desired_size    = var.data_node_group_desired_size
   node_role_arn   = module.eks.node_role.arn
   subnet_ids      = [module.vpc.private_subnets[0].id]
-  labels          = {
+  labels = {
     type : "data"
   }
 }
@@ -98,6 +98,11 @@ module "s3_bucket" {
 module "api_container_registry" {
   source = "./modules/aws/container_registry"
   name   = "api"
+}
+
+module "tiler_container_registry" {
+  source = "./modules/aws/container_registry"
+  name   = "tiler"
 }
 
 module "client_container_registry" {
@@ -123,10 +128,10 @@ resource "aws_iam_policy" "raw_s3_rw_access" {
     Version = "2012-10-17"
     Statement = [
       {
-        "Action": [
+        "Action" : [
           "s3:*",
         ],
-        Effect   = "Allow"
+        Effect = "Allow"
         Resource = [
           module.s3_bucket.bucket_arn,
           "${module.s3_bucket.bucket_arn}/*",

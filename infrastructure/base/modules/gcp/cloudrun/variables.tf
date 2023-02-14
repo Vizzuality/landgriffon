@@ -29,41 +29,41 @@ variable "container_port" {
 
 variable "env_vars" {
   type = list(object({
-    name = string
+    name  = string
     value = string
   }))
   description = "Key-value pairs of env vars to make available to the container"
-  default = []
+  default     = []
 }
 
 variable "secrets" {
   type = list(object({
-    name = string
+    name        = string
     secret_name = string
   }))
   description = "List of secrets to make available to the container"
-  default = []
+  default     = []
 }
 
 variable "vpc_connector_name" {
-  type = string
+  type        = string
   description = "Name of the VPC Access Connector"
 }
 
 variable "min_scale" {
-  type = number
+  type        = number
   description = "Minimum number of app instances to deploy"
-  default = 0
+  default     = 0
 }
 
 variable "max_scale" {
-  type = number
+  type        = number
   description = "Maximum number of app instances to deploy"
-  default = 5
+  default     = 5
 }
 
 variable "tag" {
-  type = string
+  type        = string
   description = "Tag name to use for docker image tagging and deployment"
 }
 

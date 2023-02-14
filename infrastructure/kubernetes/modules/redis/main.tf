@@ -44,8 +44,8 @@ resource "helm_release" "redis" {
 
 resource "kubernetes_secret" "redis-secret" {
   metadata {
-    name = "redis-secret"
-    namespace  = var.namespace
+    name      = "redis-secret"
+    namespace = var.namespace
   }
 
   data = {

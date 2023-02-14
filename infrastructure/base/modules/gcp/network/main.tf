@@ -1,17 +1,17 @@
 resource "google_project_service" "vpcaccess_api" {
-  service  = "vpcaccess.googleapis.com"
+  service            = "vpcaccess.googleapis.com"
   disable_on_destroy = false
 }
 
 resource "google_project_service" "compute_api" {
-  service  = "compute.googleapis.com"
+  service            = "compute.googleapis.com"
   disable_on_destroy = false
 
   depends_on = [google_project_service.vpcaccess_api]
 }
 
 resource "google_project_service" "servicenetwork_api" {
-  service  = "servicenetworking.googleapis.com"
+  service            = "servicenetworking.googleapis.com"
   disable_on_destroy = false
 }
 
@@ -23,17 +23,17 @@ resource "google_compute_network" "network" {
 }
 
 resource "google_compute_subnetwork" "private" {
-  name                       = "${var.name}-private-subnet"
-  ip_cidr_range              = "10.0.0.0/20"
-  network                    = google_compute_network.network.self_link
-  region                     = var.region
-  private_ip_google_access   = true
+  name                     = "${var.name}-private-subnet"
+  ip_cidr_range            = "10.0.0.0/20"
+  network                  = google_compute_network.network.self_link
+  region                   = var.region
+  private_ip_google_access = true
 }
 
 resource "google_compute_router" "router" {
-  name     = "${var.name}-cloud-router"
-  region   = var.region
-  network  = google_compute_network.network.id
+  name    = "${var.name}-cloud-router"
+  region  = var.region
+  network = google_compute_network.network.id
 }
 
 resource "google_compute_router_nat" "router_nat" {

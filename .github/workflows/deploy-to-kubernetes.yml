@@ -98,10 +98,12 @@ jobs:
         if: ${{ steps.extract_branch.outputs.branch == 'main' }}
         run: |
           kubectl rollout restart deployment api -n production
+          kubectl rollout restart deployment tiler -n production
           kubectl rollout restart deployment client -n production
 
       - name: Redeploy pods for other branches
         if: ${{ steps.extract_branch.outputs.branch != 'main' }}
         run: |
           kubectl rollout restart deployment api -n ${{ steps.extract_branch.outputs.branch }}
+          kubectl rollout restart deployment tiler -n ${{ steps.extract_branch.outputs.branch }}
           kubectl rollout restart deployment client -n ${{ steps.extract_branch.outputs.branch }}

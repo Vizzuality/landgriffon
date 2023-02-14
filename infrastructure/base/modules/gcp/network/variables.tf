@@ -10,5 +10,5 @@ variable "project_id" {
 
 
 variable "name" {
-  type        = string
+  type = string
 }

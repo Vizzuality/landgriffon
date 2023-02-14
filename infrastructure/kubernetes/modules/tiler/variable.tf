@@ -27,12 +27,21 @@ variable "env_vars" {
   default     = []
 }
 
-variable "secrets" {
+variable "tiler_secrets" {
   type = list(object({
     name        = string
     secret_name = string
     secret_key  = string
   }))
   description = "List of secrets to make available to the container"
+  default     = []
+}
+
+variable "tiler_env_vars" {
+  type = list(object({
+    name  = string
+    value = string
+  }))
+  description = "Key-value pairs of env vars to make available to the container"
   default     = []
 }

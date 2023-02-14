@@ -44,8 +44,6 @@ services:
     container_name: landgriffon-tiler
     build:
       context: ./tiler
-      args:
-        - TILER_TEST_COG_FILENAME=${TILER_TEST_COG_FILENAME}
 
     env_file: ${ENVFILE}
     environment:

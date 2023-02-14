@@ -39,35 +39,35 @@ module "k8s_api" {
       name        = "DB_HOST"
       secret_name = "db"
       secret_key  = "DB_HOST"
-    }, {
+      }, {
       name        = "DB_USERNAME"
       secret_name = "db"
       secret_key  = "DB_USERNAME"
-    }, {
+      }, {
       name        = "DB_PASSWORD"
       secret_name = "db"
       secret_key  = "DB_PASSWORD"
-    }, {
+      }, {
       name        = "DB_DATABASE"
       secret_name = "db"
       secret_key  = "DB_DATABASE"
-    }, {
+      }, {
       name        = "QUEUE_HOST"
       secret_name = "db"
       secret_key  = "REDIS_HOST"
-    }, {
+      }, {
       name        = "GEOCODING_CACHE_HOST"
       secret_name = "db"
       secret_key  = "REDIS_HOST"
-    }, {
+      }, {
       name        = "DB_CACHE_HOST"
       secret_name = "db"
       secret_key  = "REDIS_HOST"
-    }, {
+      }, {
       name        = "JWT_SECRET"
       secret_name = "api"
       secret_key  = "JWT_SECRET"
-    }, {
+      }, {
       name        = "GMAPS_API_KEY"
       secret_name = "api"
       secret_key  = "GMAPS_API_KEY"
@@ -96,7 +96,7 @@ module "k8s_api" {
       value = "true"
     },
     {
-      name = "USE_NEW_METHODOLOGY"
+      name  = "USE_NEW_METHODOLOGY"
       value = "true"
     }
   ])
@@ -106,6 +106,35 @@ module "k8s_api" {
     module.k8s_database
   ]
 }
+
+
+module "k8s_tiler" {
+  source          = "../tiler"
+  cluster_name    = var.cluster_name
+  deployment_name = "tiler"
+  image           = "${var.tiler_container_registry_url}:${var.image_tag}"
+  namespace       = var.environment
+
+
+  env_vars = [
+    {
+      name  = "API_URL"
+      value = "${module.k8s_api.api_service_name}.${var.environment}.svc.cluster.local"
+    },
+    {
+      name = "API_PORT"
+      // TODO: get port from api k8s service
+      value = 3000
+    },
+    {
+      name  = "S3_BUCKET_URL"
+      value = var.science_bucket_name
+    }
+  ]
+
+}
+
+
 
 module "k8s_client" {
   source          = "../client"
@@ -176,7 +205,7 @@ module "data-import-group" {
   desired_size       = 1
   namespace          = var.environment
   subnet_ids         = [var.private_subnet_ids[0]]
-  labels             = {
+  labels = {
     type : "data-import-${var.environment}"
   }
 }

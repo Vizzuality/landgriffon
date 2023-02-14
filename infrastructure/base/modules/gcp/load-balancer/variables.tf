@@ -9,22 +9,22 @@ variable "region" {
 }
 
 variable "name" {
-  type = string
+  type        = string
   description = "Name to use on resources"
 }
 
 variable "domain" {
-  type = string
+  type        = string
   description = "Base domain for the DNS zone"
 }
 
 variable "frontend_cloud_run_name" {
-  type = string
+  type        = string
   description = "Name of the frontend Cloud Run service"
 }
 
 variable "subdomain" {
-  type = string
-  default = ""
+  type        = string
+  default     = ""
   description = "If set, it will be prepended to the domain to form a subdomain."
 }

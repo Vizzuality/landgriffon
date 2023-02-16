@@ -338,6 +338,14 @@ download-deforestation: download-deforestation-list
 	mkdir -p $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear
 	cat $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear.txt | xargs -P $(PARALLELIZATION_FACTOR) -I {} /bin/bash -c 'make transform-deforestation-file FILE={}'
 
+# Managed forest Mask from Lesiv(2022) - to be used with deforestation and forest ghg.
+# data download from https://zenodo.org/record/5879022
+#After downloading the mask layer,
+download-managed-forests:
+	@echo "Downloading managed forests file... "
+	mkdir -p $(WORKDIR_DEFORESTATION)/Lesiv_2015_managed_forests
+	wget -q -O $(WORKDIR_DEFORESTATION)/Lesiv_2015_managed_forests/managed_forests.tif "https://zenodo.org/record/5879022/files/FML_v3-2_with-colorbar.tif?download=1"
+
 
 # table_name = 00N_000W
 # 1st gdal_cal do convert to pixel mask of 2020 deforestation events

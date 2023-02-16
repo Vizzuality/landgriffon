@@ -4,6 +4,7 @@ node_modules
 /api/dist
 /api/coverage
 .env
+.vscode
 
 ## Data
 /data/datasets/**

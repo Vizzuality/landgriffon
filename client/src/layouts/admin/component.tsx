@@ -46,17 +46,17 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
                   );
                 }
                 return (
-                  <Link key={tab.href} href={tab.href}>
-                    <a
-                      className={classNames(MENU_ITEM_STYLE, {
-                        [MENU_ITEM_ACTIVE_STYLE]: pathname === tab.href,
-                      })}
-                      data-testid="admin-menu-item"
-                      data-testisactive={pathname === tab.href}
-                      data-testname={`admin-menu-item-${tab.name}`}
-                    >
-                      {tab.name}
-                    </a>
+                  <Link
+                    key={tab.href}
+                    href={tab.href}
+                    className={classNames(MENU_ITEM_STYLE, {
+                      [MENU_ITEM_ACTIVE_STYLE]: pathname === tab.href,
+                    })}
+                    data-testid="admin-menu-item"
+                    data-testisactive={pathname === tab.href}
+                    data-testname={`admin-menu-item-${tab.name}`}
+                  >
+                    {tab.name}
                   </Link>
                 );
               })}

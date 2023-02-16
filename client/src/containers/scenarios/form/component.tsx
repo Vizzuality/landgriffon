@@ -1,5 +1,4 @@
 import { useForm, Controller } from 'react-hook-form';
-import Link from 'next/link';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
@@ -113,9 +112,9 @@ const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
       </div>
       {children}
       <div className="flex justify-end space-x-6">
-        <Link href="/data/scenarios" passHref>
-          <Anchor variant="secondary">Cancel</Anchor>
-        </Link>
+        <Anchor href="/data/scenarios" variant="secondary">
+          Cancel
+        </Anchor>
         <Button
           disabled={!canSave}
           loading={isSubmitting}

@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 import Head from 'next/head';
-import Link from 'next/link';
 import router, { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 
@@ -48,9 +47,12 @@ const CreateInterventionPage: React.FC = () => {
       <Head>
         <title>Create intervention for scenario | Landgriffon</title>
       </Head>
-      <Link href={`/data/scenarios/${query.scenarioId}/edit`} passHref>
-        <BackLink className="flex mb-6 xl:sticky xl:top-0">Back to scenario</BackLink>
-      </Link>
+      <BackLink
+        href={`/data/scenarios/${query.scenarioId}/edit`}
+        className="flex mb-6 xl:sticky xl:top-0"
+      >
+        Back to scenario
+      </BackLink>
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-10 col-start-2 xl:col-start-3 xl:col-span-8">
           <h1 data-testid="page-title">New intervention</h1>

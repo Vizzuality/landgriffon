@@ -27,7 +27,7 @@ const UserDropdown: React.FC = () => {
     (className?: string) => {
       if (!session) return null;
       const { user } = session || {};
-      if (user?.image) return <Avatar src={user?.image} className={className} />;
+      if (user?.image) return <Avatar alt="user avatar" src={user?.image} className={className} />;
       if (user?.name) return <StringAvatar fullName={user.name} className={className} />;
       return <StringAvatar fullName={user.email} className={className} />;
     },
@@ -64,8 +64,8 @@ const UserDropdown: React.FC = () => {
               </div>
 
               <div>
-                <Link href="/profile">
-                  <a className={MENU_ITEM_CLASSNAME}>Edit Profile</a>
+                <Link href="/profile" className={MENU_ITEM_CLASSNAME}>
+                  Edit Profile
                 </Link>
               </div>
 

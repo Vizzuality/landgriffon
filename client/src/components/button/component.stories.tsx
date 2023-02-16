@@ -1,5 +1,4 @@
 import { PlusIcon } from '@heroicons/react/outline';
-import Link from 'next/link';
 
 import { Button, Anchor } from '.';
 
@@ -48,9 +47,6 @@ const ButtonTemplate = (args: AnchorButtonProps) => {
     <div className="space-x-2">
       <Button {...args} icon={args.icon && <PlusIcon />} />
       <Anchor href="#" {...args} icon={args.icon && <PlusIcon />} />
-      <Link href="#">
-        <Anchor {...args} icon={args.icon && <PlusIcon />} />
-      </Link>
     </div>
   );
 };

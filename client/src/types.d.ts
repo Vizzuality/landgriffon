@@ -1,5 +1,6 @@
 import type { Permission, RoleName } from 'hooks/permissions/enums';
 import type { Scenario } from 'containers/scenarios/types';
+import type { Session as NextAuthSession, User as NextAuthUser } from 'next-auth';
 
 export type RGBColor = [number, number, number];
 
@@ -361,3 +362,14 @@ export type UserPayload = {
     totalItems: number;
   };
 };
+
+// Extend next-auth Session and User to include accessToken
+declare module 'next-auth' {
+  export interface Session extends NextAuthSession {
+    accessToken: string;
+  }
+
+  export interface User extends NextAuthUser {
+    accessToken: string;
+  }
+}

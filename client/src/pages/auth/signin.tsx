@@ -130,8 +130,8 @@ const SignIn: NextPageWithLayout = () => {
         <div className="my-4">
           <p className="text-sm text-center">
             <span className="text-white/50">Don&apos;t have an account? </span>
-            <Link href="/auth/signup">
-              <a className="text-white">Sign-up</a>
+            <Link href="/auth/signup" className="text-white">
+              Sign-up
             </Link>
           </p>
         </div>

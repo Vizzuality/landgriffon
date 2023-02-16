@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import toast from 'react-hot-toast';
 import Head from 'next/head';
-import Link from 'next/link';
 import router from 'next/router';
 
 import { useCreateScenario } from 'hooks/scenarios';
@@ -40,11 +39,13 @@ const CreateScenarioPage: React.FC = () => {
       <Head>
         <title>Create new scenario | Landgriffon</title>
       </Head>
-      <Link href="/data/scenarios" passHref>
-        <BackLink className="flex mb-6 xl:sticky xl:top-0" data-testid="scenario-back-button">
-          Back to scenarios
-        </BackLink>
-      </Link>
+      <BackLink
+        href="/data/scenarios"
+        className="flex mb-6 xl:sticky xl:top-0"
+        data-testid="scenario-back-button"
+      >
+        Back to scenarios
+      </BackLink>
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-8 col-start-3">
           <h1>New scenario</h1>

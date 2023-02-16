@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [v0.5.0 Unreleased]
+### Changed
+- Updated Nextjs to v13, updated eslint-config-next, updated next-auth [LANDGRIF-1114](https://vizzuality.atlassian.net/browse/LANDGRIF-1144)
 
 ### Added
 - Add filter by year on analysis table. [LANDGRIF-965](https://vizzuality.atlassian.net/browse/LANDGRIF-965)
@@ -19,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Fix permissions for edit scenarios on analysis pages [LANDGRIF-1253](https://vizzuality.atlassian.net/browse/LANDGRIF-1253)
 
 ## [v0.4.0]
+### Added
+- Added role check to enable upload data source button[LANGRIF-1125](https://vizzuality.atlassian.net/browse/LANDGRIF-1125)
+
+## [v0.3.6]
 
 ### Added
 - Added role check to enable upload data source button [LANDGRIF-1125](https://vizzuality.atlassian.net/browse/LANDGRIF-1125)

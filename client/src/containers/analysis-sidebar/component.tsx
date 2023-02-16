@@ -18,7 +18,7 @@ import ScenariosFilters from 'containers/scenarios/filters';
 import Loading from 'components/loading';
 import ScenarioItem from 'containers/scenarios/item';
 import { Permission } from 'hooks/permissions/enums';
-import { LinkAnchor } from 'components/button/component';
+import { Anchor } from 'components/button/component';
 
 import type { MutableRefObject } from 'react';
 import type { Scenario } from 'containers/scenarios/types';
@@ -140,7 +140,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
                 </p>
                 <p>Create a scenario to get started.</p>
               </div>
-              <LinkAnchor
+              <Anchor
                 href="/data/scenarios/new"
                 className="block w-full"
                 variant="primary"
@@ -157,7 +157,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
                 }
               >
                 Add new scenario
-              </LinkAnchor>
+              </Anchor>
             </div>
           )}
 
@@ -170,7 +170,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
 
       {scenariosList?.length > 0 && (
         <div className="sticky bottom-0 left-0 z-20 w-full pb-6 bg-white before:bg-gradient-to-t before:from-white before:w-full before:h-16 before:content before:-top-16 before:left-0 before:absolute">
-          <LinkAnchor
+          <Anchor
             href="/data/scenarios/new"
             className="w-full"
             variant="secondary"
@@ -186,7 +186,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
             disabled={!canCreateScenario}
           >
             Add new scenario
-          </LinkAnchor>
+          </Anchor>
         </div>
       )}
     </div>

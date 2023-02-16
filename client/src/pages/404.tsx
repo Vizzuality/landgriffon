@@ -48,7 +48,7 @@ const Page404: React.FC = () => {
       </div>
 
       <div className="ml-32">
-        <Image src="/images/404.svg" width="700" height="264.24" alt="404 ERROR" />
+        <Image src="/images/404.svg" width={700} height={264.24} alt="404 ERROR" />
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useForm, Controller } from 'react-hook-form';
 import { RadioGroup, Disclosure } from '@headlessui/react';
@@ -1191,9 +1190,9 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
           Fields marked with (*) are mandatory.
         </div>
         <div className="flex justify-end space-x-6">
-          <Link href={`/data/scenarios/${scenarioId}/edit`} passHref>
-            <Anchor variant="secondary">Cancel</Anchor>
-          </Link>
+          <Anchor variant="secondary" href={`/data/scenarios/${scenarioId}/edit`}>
+            Cancel
+          </Anchor>
           <Button loading={isSubmitting} type="submit" data-testid="intervention-submit-btn">
             Save intervention
           </Button>

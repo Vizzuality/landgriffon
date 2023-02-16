@@ -5,7 +5,7 @@ import { DatabaseIcon } from '@heroicons/react/outline';
 import { useMemo } from 'react';
 
 import ScenariosComparison from 'containers/scenarios/comparison';
-import { LinkAnchor } from 'components/button';
+import { Anchor } from 'components/button';
 import Pill from 'components/pill';
 import { usePermissions } from 'hooks/permissions';
 import { Permission } from 'hooks/permissions/enums';
@@ -113,14 +113,14 @@ const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
                     </div>
                     {isSelected && (
                       <div>
-                        <LinkAnchor
+                        <Anchor
                           href={`/data/scenarios/${scenario.id}/edit`}
                           variant="white"
                           size="xs"
                           disabled={!canEdit}
                         >
                           Edit
-                        </LinkAnchor>
+                        </Anchor>
                       </div>
                     )}
                   </div>

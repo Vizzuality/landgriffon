@@ -10,6 +10,6 @@ describe('Sign in', () => {
     cy.get('[name="password"]').type(Cypress.env('PASSWORD'));
     cy.get('#signInForm').submit();
     cy.wait('@signInRequest');
-    cy.url().should('contain', '/analysis');
+    cy.url().should('contain', 'analysis');
   });
 });

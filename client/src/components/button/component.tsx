@@ -1,9 +1,12 @@
-import React, { forwardRef } from 'react';
+import React from 'react';
 import classNames from 'classnames';
-import { omit } from 'lodash-es';
 import Link from 'next/link';
+import { pickBy } from 'lodash-es';
 
 import Loading from 'components/loading';
+
+import type { LinkProps } from 'next/link';
+import type { FC } from 'react';
 
 const classes = {
   base: 'inline-flex justify-center items-center min-w-content hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1',
@@ -71,13 +74,16 @@ export type AnchorButtonProps = {
   disabled?: boolean;
   size?: keyof typeof classes.size;
   variant?: keyof typeof classes.variant;
+  children?: React.ReactNode;
 };
 
 // Button props
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & AnchorButtonProps;
 
 // Anchor props
-export type AnchorProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & AnchorButtonProps;
+export type AnchorProps = AnchorButtonProps &
+  Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps> &
+  LinkProps;
 
 // Input/output options
 type Overload = {
@@ -133,33 +139,6 @@ const ButtonTemplate: React.FC<AnchorButtonProps> = ({ danger, icon, loading, si
   </>
 );
 
-export const Anchor = forwardRef<HTMLAnchorElement, AnchorProps>(
-  (
-    {
-      children,
-      variant = 'primary',
-      size = 'base',
-      className,
-      disabled = false,
-      icon,
-      danger = false,
-      ...restProps
-    }: AnchorProps,
-    ref,
-  ) => (
-    <a
-      className={buildClassName({ className, danger, disabled, icon, size, variant })}
-      {...restProps}
-      ref={ref}
-    >
-      <ButtonTemplate {...{ danger, icon, size, variant }} />
-      <div className="whitespace-nowrap">{children}</div>
-    </a>
-  ),
-);
-
-Anchor.displayName = 'Anchor';
-
 export const Button: React.FC<ButtonProps> = ({
   children,
   variant = 'primary',
@@ -184,33 +163,38 @@ export const Button: React.FC<ButtonProps> = ({
   );
 };
 
-const hasLink = (props: ButtonProps | AnchorProps): props is AnchorProps =>
-  'href' in props && !props.disabled;
-
-export const LinkAnchor = (props: AnchorProps | ButtonProps) => {
-  if (hasLink(props)) {
-    const {
-      children,
-      variant = 'primary',
-      size = 'base',
-      className,
-      icon,
-      href,
-      danger = false,
-      ...restProps
-    } = props;
+export const Anchor: FC<AnchorProps> = ({
+  children,
+  variant = 'primary',
+  size = 'base',
+  className,
+  disabled = false,
+  icon,
+  danger = false,
+  href,
+  ...props
+}) => {
+  if (disabled || !href) {
+    const dataProps = pickBy(props, (_value, key) => key.startsWith('data'));
     return (
-      <Link href={href} passHref>
-        <a className={buildClassName({ className, danger, icon, size, variant })} {...restProps}>
-          <ButtonTemplate {...{ danger, icon, size, variant }} />
-          <div className="whitespace-nowrap">{children}</div>
-        </a>
-      </Link>
+      <Button {...dataProps} {...{ className, danger, icon, size, variant }} disabled>
+        {children}
+      </Button>
     );
   }
-  const buttonProps = omit(props, 'href');
-  return <Button {...buttonProps} />;
+  return (
+    <Link
+      className={buildClassName({ className, danger, disabled, icon, size, variant })}
+      href={href}
+      {...props}
+    >
+      <ButtonTemplate {...{ danger, icon, size, variant }} />
+      <div className="whitespace-nowrap">{children}</div>
+    </Link>
+  );
 };
+
+Anchor.displayName = 'Anchor';
 
 export const LinkButton: Overload = (props: AnchorProps | ButtonProps) => {
   // We consider a link button when href attribute exits

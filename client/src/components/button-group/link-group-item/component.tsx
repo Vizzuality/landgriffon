@@ -14,17 +14,16 @@ type LinkGroupItemProps = HTMLAttributes<HTMLAnchorElement> & {
 };
 
 const LinkGroupItem: React.FC<LinkGroupItemProps> = ({ children, active, href, ...props }) => (
-  <Link href={href}>
-    <a
-      className={classNames(
-        CONTROL_ITEM_CLASS_NAMES,
-        active ? CONTROL_ITEM_ACTIVE_CLASS_NAMES : CONTROL_ITEM_DEFAULT_CLASS_NAMES,
-        'first:rounded-l-md first:border-l-0 last:rounded-r-md',
-      )}
-      {...props}
-    >
-      {children}
-    </a>
+  <Link
+    href={href}
+    className={classNames(
+      CONTROL_ITEM_CLASS_NAMES,
+      active ? CONTROL_ITEM_ACTIVE_CLASS_NAMES : CONTROL_ITEM_DEFAULT_CLASS_NAMES,
+      'first:rounded-l-md first:border-l-0 last:rounded-r-md',
+    )}
+    {...props}
+  >
+    {children}
   </Link>
 );
 

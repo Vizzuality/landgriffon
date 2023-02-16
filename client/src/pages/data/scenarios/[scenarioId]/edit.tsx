@@ -97,9 +97,9 @@ const UpdateScenarioPage: React.FC = () => {
       <Head>
         <title>Edit scenario | Landgriffon</title>
       </Head>
-      <Link href="/data/scenarios" passHref>
-        <BackLink className="flex mb-6 xl:sticky xl:top-0">Back to scenarios</BackLink>
-      </Link>
+      <BackLink href="/data/scenarios" className="flex mb-6 xl:sticky xl:top-0">
+        Back to scenarios
+      </BackLink>
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-8 col-start-3">
           <h1>Edit scenario</h1>
@@ -154,22 +154,21 @@ const UpdateScenarioPage: React.FC = () => {
                     />
                   </div>
                   {!isInterventionsLoading && interventions.length > 0 && (
-                    <Link href={`/data/scenarios/${data.id}/interventions/new`} passHref>
-                      <Anchor
-                        variant="secondary"
-                        className="text-gray-900"
-                        icon={
-                          <div
-                            aria-hidden="true"
-                            className="flex items-center justify-center w-5 h-5 rounded-full bg-navy-400"
-                          >
-                            <PlusIcon className="w-4 h-4 text-white" />
-                          </div>
-                        }
-                      >
-                        Add intervention
-                      </Anchor>
-                    </Link>
+                    <Anchor
+                      href={`/data/scenarios/${data.id}/interventions/new`}
+                      variant="secondary"
+                      className="text-gray-900"
+                      icon={
+                        <div
+                          aria-hidden="true"
+                          className="flex items-center justify-center w-5 h-5 rounded-full bg-navy-400"
+                        >
+                          <PlusIcon className="w-4 h-4 text-white" />
+                        </div>
+                      }
+                    >
+                      Add intervention
+                    </Anchor>
                   )}
                 </div>
                 {isInterventionsLoading && <Loading />}
@@ -200,9 +199,10 @@ const UpdateScenarioPage: React.FC = () => {
                           <Dropdown.Items>
                             <Dropdown.Item>
                               <Link
+                                className="block px-3 py-2 text-sm"
                                 href={`/data/scenarios/${data.id}/interventions/${intervention.id}/edit`}
                               >
-                                <a className="block px-3 py-2 text-sm">Edit</a>
+                                Edit
                               </Link>
                               <button
                                 type="button"
@@ -224,22 +224,21 @@ const UpdateScenarioPage: React.FC = () => {
                       Each scenario should be formed by at least one intervention in your supply
                       chain.
                     </p>
-                    <Link href={`/data/scenarios/${data.id}/interventions/new`} passHref>
-                      <Anchor
-                        variant="secondary"
-                        className="text-gray-900"
-                        icon={
-                          <div
-                            aria-hidden="true"
-                            className="flex items-center justify-center w-5 h-5 rounded-full bg-navy-400"
-                          >
-                            <PlusIcon className="w-4 h-4 text-white" />
-                          </div>
-                        }
-                      >
-                        Add intervention
-                      </Anchor>
-                    </Link>
+                    <Anchor
+                      href={`/data/scenarios/${data.id}/interventions/new`}
+                      variant="secondary"
+                      className="text-gray-900"
+                      icon={
+                        <div
+                          aria-hidden="true"
+                          className="flex items-center justify-center w-5 h-5 rounded-full bg-navy-400"
+                        >
+                          <PlusIcon className="w-4 h-4 text-white" />
+                        </div>
+                      }
+                    >
+                      Add intervention
+                    </Anchor>
                   </div>
                 )}
               </div>

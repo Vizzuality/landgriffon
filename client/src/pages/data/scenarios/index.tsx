@@ -13,7 +13,7 @@ import Search from 'components/search';
 import { useScenarios } from 'hooks/scenarios';
 import AdminLayout from 'layouts/admin';
 import ScenarioCard from 'containers/scenarios/card';
-import { LinkAnchor } from 'components/button';
+import { Anchor } from 'components/button';
 import Loading from 'components/loading';
 import { usePermissions } from 'hooks/permissions';
 import { Permission } from 'hooks/permissions/enums';
@@ -139,7 +139,7 @@ const ScenariosAdminPage: React.FC = () => {
             </ButtonGroup>
           </div>
           <div>
-            <LinkAnchor
+            <Anchor
               href="/data/scenarios/new"
               variant="secondary"
               data-testid="scenario-add-button"
@@ -154,7 +154,7 @@ const ScenariosAdminPage: React.FC = () => {
               }
             >
               Add scenario
-            </LinkAnchor>
+            </Anchor>
           </div>
         </div>
       </div>

@@ -39,7 +39,7 @@ const Page500: React.FC = () => {
       </div>
 
       <div className="ml-32">
-        <Image src="/images/500.svg" width="700" height="264.24" alt="500 ERROR" />
+        <Image src="/images/500.svg" width={700} height={264.24} alt="500 ERROR" />
       </div>
     </div>
   );

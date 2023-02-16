@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import Link from 'next/link';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { TrashIcon } from '@heroicons/react/outline';
@@ -10,7 +9,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useDeleteScenario, useUpdateScenario } from 'hooks/scenarios';
 import { useScenarioInterventions } from 'hooks/interventions';
 import Loading from 'components/loading';
-import { Anchor, Button, LinkAnchor } from 'components/button';
+import { Anchor, Button } from 'components/button';
 import DeleteDialog from 'components/dialogs/delete';
 import Pill from 'components/pill';
 import Toggle from 'components/toggle';
@@ -190,7 +189,7 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data, display = 'grid' }) =
                 'justify-end': display === 'grid',
               })}
             >
-              <LinkAnchor
+              <Anchor
                 href={`/data/scenarios/${data.id}/edit`}
                 variant="secondary"
                 className={classNames({
@@ -200,17 +199,16 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data, display = 'grid' }) =
                 data-testid="scenario-edit-btn"
               >
                 Edit Scenario
-              </LinkAnchor>
-              <Link href={{ pathname: `/analysis/table`, query: { scenarioId: data.id } }} passHref>
-                <Anchor
-                  variant="primary"
-                  className={classNames({
-                    grow: display === 'list',
-                  })}
-                >
-                  Analyze
-                </Anchor>
-              </Link>
+              </Anchor>
+              <Anchor
+                href={{ pathname: `/analysis/table`, query: { scenarioId: data.id } }}
+                variant="primary"
+                className={classNames({
+                  grow: display === 'list',
+                })}
+              >
+                Analyze
+              </Anchor>
             </div>
           </div>
         </div>

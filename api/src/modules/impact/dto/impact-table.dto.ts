@@ -7,6 +7,8 @@ import {
   IsPositive,
   IsString,
   IsUUID,
+  Max,
+  Min,
   Validate,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -219,6 +221,17 @@ export class GetRankedImpactTableDto extends BaseImpactTableDto {
   @IsOptional()
   @IsUUID(4)
   scenarioId?: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Optional property for groupBy region and chart view to choose level of admin regions to show',
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(1)
+  @Max(3)
+  level?: number;
 
   // Property for internal api use (entity filters)
   @IsOptional()

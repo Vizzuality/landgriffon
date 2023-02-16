@@ -154,6 +154,21 @@ export class ImpactService extends BaseImpactService {
       entities,
     );
 
+    // If chart is requested for regions and specific level is received, we get only the requested level from admin regions trees of the response
+
+    if (
+      rankedImpactTableDto.groupBy === 'region' &&
+      rankedImpactTableDto.level
+    ) {
+      impactTable.impactTable.forEach(
+        (impactDataByIndicator: ImpactTableDataByIndicator) => {
+          impactDataByIndicator.rows = this.getLevelOfImpactTableRows(
+            impactDataByIndicator.rows,
+            rankedImpactTableDto.level as number,
+          );
+        },
+      );
+    }
     // Cap the results to the Ranking Max, and aggregate the rest of the results
     return await this.applyRankingProcessing(rankedImpactTableDto, impactTable);
   }
@@ -522,5 +537,28 @@ export class ImpactService extends BaseImpactService {
       value: data.impact,
       isProjected: false,
     };
+  }
+
+  private getLevelOfImpactTableRows(
+    impactTableRows: ImpactTableRows[],
+    level: number,
+  ): ImpactTableRows[] {
+    if (level === 1) {
+      return impactTableRows;
+    }
+    if (level < 1) {
+      return [];
+    }
+    return impactTableRows.reduce(
+      (impactTableRows: ImpactTableRows[], row: ImpactTableRows) => {
+        if (row.children) {
+          impactTableRows = impactTableRows.concat(
+            this.getLevelOfImpactTableRows(row.children, level - 1),
+          );
+        }
+        return impactTableRows;
+      },
+      [],
+    );
   }
 }

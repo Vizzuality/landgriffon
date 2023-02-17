@@ -19,59 +19,75 @@ import {
 } from '../../../../entity-mocks';
 import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
 
-export async function createChartLevelsPreconditions(): Promise<Indicator> {
+export async function createChartLevelsPreconditions(): Promise<{
+  indicator: Indicator;
+  country: AdminRegion;
+  provinces: AdminRegion[];
+  municipalities: AdminRegion[];
+}> {
   const country: AdminRegion = await createAdminRegion({
     name: 'Country',
+    level: 0,
   });
 
   const provinceOne: AdminRegion = await createAdminRegion({
     name: 'Province 1',
     parent: country,
+    level: 1,
   });
 
   const provinceTwo: AdminRegion = await createAdminRegion({
     name: 'Province 2',
     parent: country,
+    level: 1,
   });
 
   const provinceThree: AdminRegion = await createAdminRegion({
     name: 'Province 3',
     parent: country,
+    level: 1,
   });
 
   const municipalityOne: AdminRegion = await createAdminRegion({
     name: 'Municipality 1',
     parent: provinceOne,
+    level: 2,
   });
 
   const municipalityTwo: AdminRegion = await createAdminRegion({
     name: 'Municipality 2',
     parent: provinceOne,
+    level: 2,
   });
 
   const municipalityThree: AdminRegion = await createAdminRegion({
     name: 'Municipality 3',
     parent: provinceTwo,
+    level: 2,
   });
 
   const municipalityFour: AdminRegion = await createAdminRegion({
     name: 'Municipality 4',
     parent: provinceTwo,
+    level: 2,
   });
 
   const municipalityFive: AdminRegion = await createAdminRegion({
     name: 'Municipality 5',
     parent: provinceThree,
+    level: 2,
   });
 
   const municipalitySix: AdminRegion = await createAdminRegion({
     name: 'Municipality 6',
     parent: provinceThree,
+    level: 2,
   });
 
   const municipalitySeven: AdminRegion = await createAdminRegion({
     name: 'Municipality 7',
     parent: provinceThree,
+    level: 2,
   });
   const unit: Unit = await createUnit({
     name: 'defFakeUnit',
@@ -106,13 +122,12 @@ export async function createChartLevelsPreconditions(): Promise<Indicator> {
   ];
   const sourcingLocations: SourcingLocation[] = [];
 
-  for (const municipality of municipalities) {
-    const i: number = municipalities.indexOf(municipality);
+  for (let i = 0; i < municipalities.length; i++) {
     sourcingLocations[i] = await createSourcingLocation({
       material,
       businessUnit,
       t1Supplier,
-      adminRegion: municipality,
+      adminRegion: municipalities[i],
     });
   }
 
@@ -128,5 +143,10 @@ export async function createChartLevelsPreconditions(): Promise<Indicator> {
     });
   }
 
-  return indicator;
+  return {
+    indicator,
+    country,
+    provinces: [provinceOne, provinceTwo, provinceThree],
+    municipalities: [municipalityOne, municipalityTwo, municipalityThree],
+  };
 }

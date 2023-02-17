@@ -7,7 +7,6 @@ import {
   IsPositive,
   IsString,
   IsUUID,
-  Max,
   Min,
   Validate,
 } from 'class-validator';
@@ -224,14 +223,13 @@ export class GetRankedImpactTableDto extends BaseImpactTableDto {
 
   @ApiPropertyOptional({
     description:
-      'Optional property for groupBy region and chart view to choose level of admin regions to show',
+      'Optional param to choose the depth level of the tree of nested grouped elements',
   })
-  @IsOptional()
   @Type(() => Number)
+  @IsOptional()
+  @Min(0)
   @IsNumber()
-  @Min(1)
-  @Max(3)
-  level?: number;
+  depth?: number;
 
   // Property for internal api use (entity filters)
   @IsOptional()

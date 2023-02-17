@@ -122,6 +122,13 @@ export class ImpactService extends BaseImpactService {
   async getRankedImpactTable(
     rankedImpactTableDto: GetRankedImpactTableDto,
   ): Promise<ImpactTable> {
+    let filteredAdminRegionsLevels: number[] | undefined;
+    if (rankedImpactTableDto.originIds)
+      filteredAdminRegionsLevels =
+        await this.adminRegionsService.getAdminRegionsLevels(
+          rankedImpactTableDto.originIds,
+        );
+
     const indicators: Indicator[] =
       await this.indicatorService.getIndicatorsById(
         rankedImpactTableDto.indicatorIds,
@@ -155,16 +162,26 @@ export class ImpactService extends BaseImpactService {
     );
 
     // If chart is requested for regions and specific level is received, we get only the requested level from admin regions trees of the response
-
-    if (
-      rankedImpactTableDto.groupBy === 'region' &&
-      rankedImpactTableDto.level
-    ) {
+    if (rankedImpactTableDto.depth) {
       impactTable.impactTable.forEach(
         (impactDataByIndicator: ImpactTableDataByIndicator) => {
           impactDataByIndicator.rows = this.getLevelOfImpactTableRows(
             impactDataByIndicator.rows,
-            rankedImpactTableDto.level as number,
+            rankedImpactTableDto.depth as number,
+          );
+        },
+      );
+    } else if (
+      rankedImpactTableDto.groupBy === 'region' &&
+      filteredAdminRegionsLevels?.length
+    ) {
+      const depth: number = this.defineLevelToApply(filteredAdminRegionsLevels);
+
+      impactTable.impactTable.forEach(
+        (impactDataByIndicator: ImpactTableDataByIndicator) => {
+          impactDataByIndicator.rows = this.getLevelOfImpactTableRows(
+            impactDataByIndicator.rows,
+            depth,
           );
         },
       );
@@ -236,6 +253,58 @@ export class ImpactService extends BaseImpactService {
     }
 
     return impactTable;
+  }
+
+  private defineLevelToApply(receivedLevels: number[]): number {
+    // All filters are of level 0 - showing one level down (1)
+    if (receivedLevels.every((level: number) => level === 0)) return 1;
+    // All filters are of same level - 1 or 2 - showing one level down or same (level 2)
+    else if (
+      receivedLevels.every((level: number) => level === 1) ||
+      receivedLevels.every((level: number) => level === 2)
+    )
+      return 2;
+    // received filters are of level 0 and 1 - showing level 1
+    else if (
+      receivedLevels.includes(0) &&
+      receivedLevels.includes(1) &&
+      !receivedLevels.includes(2)
+    )
+      return 1;
+    // received filters are of mixed levels including the lowest
+    else if (
+      (!receivedLevels.includes(0) &&
+        receivedLevels.includes(1) &&
+        receivedLevels.includes(2)) ||
+      (receivedLevels.includes(0) &&
+        receivedLevels.includes(1) &&
+        receivedLevels.includes(2)) ||
+      (receivedLevels.includes(0) &&
+        !receivedLevels.includes(1) &&
+        receivedLevels.includes(2))
+    )
+      return 2;
+    else return 0;
+  }
+
+  private getLevelOfImpactTableRows(
+    impactTableRows: ImpactTableRows[],
+    level: number,
+  ): ImpactTableRows[] {
+    if (level === 0) {
+      return impactTableRows;
+    }
+    return impactTableRows.reduce(
+      (impactTableRows: ImpactTableRows[], row: ImpactTableRows) => {
+        if (row.children) {
+          impactTableRows = impactTableRows.concat(
+            this.getLevelOfImpactTableRows(row.children, level - 1),
+          );
+        }
+        return impactTableRows;
+      },
+      [],
+    );
   }
 
   private buildImpactTable(
@@ -537,28 +606,5 @@ export class ImpactService extends BaseImpactService {
       value: data.impact,
       isProjected: false,
     };
-  }
-
-  private getLevelOfImpactTableRows(
-    impactTableRows: ImpactTableRows[],
-    level: number,
-  ): ImpactTableRows[] {
-    if (level === 1) {
-      return impactTableRows;
-    }
-    if (level < 1) {
-      return [];
-    }
-    return impactTableRows.reduce(
-      (impactTableRows: ImpactTableRows[], row: ImpactTableRows) => {
-        if (row.children) {
-          impactTableRows = impactTableRows.concat(
-            this.getLevelOfImpactTableRows(row.children, level - 1),
-          );
-        }
-        return impactTableRows;
-      },
-      [],
-    );
   }
 }

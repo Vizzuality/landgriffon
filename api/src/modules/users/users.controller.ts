@@ -40,6 +40,7 @@ import { CreateUserDTO } from 'modules/users/dto/create.user.dto';
 import { RolesGuard } from 'guards/roles.guard';
 import { ROLES } from 'modules/authorization/roles/roles.enum';
 import { RequiredRoles } from 'decorators/roles.decorator';
+import { DeleteResult } from 'typeorm';
 
 @ApiTags(userResource.className)
 @Controller(`/api/v1/users`)
@@ -167,6 +168,19 @@ export class UsersController {
       throw new UnauthorizedException();
     }
     return this.service.serialize(user);
+  }
+
+  @ApiOperation({
+    description:
+      'Delete a user. This operation will destroy any resource related to the user and it will be irreversible',
+  })
+  @ApiOkResponse()
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @RequiredRoles(ROLES.ADMIN)
+  @Delete(':userId')
+  async deleteUser(@Param('userId') userId: string): Promise<DeleteResult> {
+    return this.service.deleteUser(userId);
   }
 
   @ApiOperation({

@@ -3,7 +3,6 @@ import {
   forwardRef,
   Inject,
   Injectable,
-  Logger,
   NotImplementedException,
 } from '@nestjs/common';
 import { User, userResource } from 'modules/users/user.entity';
@@ -22,6 +21,7 @@ import { compare, hash } from 'bcrypt';
 import { AuthenticationService } from 'modules/authentication/authentication.service';
 import { v4 } from 'uuid';
 import { UserRepository } from 'modules/users/user.repository';
+import { DeleteResult } from 'typeorm';
 
 @Injectable()
 export class UsersService extends AppBaseService<
@@ -178,5 +178,9 @@ export class UsersService extends AppBaseService<
 
   async createUser(createUserDTO: CreateUserDTO): Promise<Partial<User>> {
     return this.authenticationService.createUser(createUserDTO);
+  }
+
+  async deleteUser(userId: string): Promise<DeleteResult> {
+    return this.repository.delete(userId);
   }
 }

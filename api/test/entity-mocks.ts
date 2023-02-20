@@ -335,12 +335,15 @@ async function createScenario(
 async function createScenarioIntervention(
   additionalData: Partial<ScenarioIntervention> = {},
 ): Promise<ScenarioIntervention> {
-  const scenario: Scenario = await createScenario();
+  let scenario = {};
+  if (!additionalData.scenario) {
+    scenario = await createScenario();
+  }
   const defaultData: DeepPartial<ScenarioIntervention> = {
     title: 'Scenario intervention title',
     startYear: 2020,
     percentage: 50,
-    scenario: scenario,
+    scenario: additionalData.scenario ?? scenario,
     type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
     newIndicatorCoefficients: JSON.parse(
       JSON.stringify({ ce: 11, de: 10, ww: 5, bi: 3 }),

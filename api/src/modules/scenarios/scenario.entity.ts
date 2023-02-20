@@ -71,6 +71,7 @@ export class Scenario extends TimestampedBaseEntity {
 
   @ManyToOne(() => User, (user: User) => user.scenarios, {
     eager: false,
+    onDelete: 'CASCADE',
   })
   @ApiProperty({ type: () => User })
   user?: User;

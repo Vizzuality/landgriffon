@@ -171,19 +171,6 @@ export class UsersController {
   }
 
   @ApiOperation({
-    description:
-      'Delete a user. This operation will destroy any resource related to the user and it will be irreversible',
-  })
-  @ApiOkResponse()
-  @ApiUnauthorizedResponse()
-  @ApiForbiddenResponse()
-  @RequiredRoles(ROLES.ADMIN)
-  @Delete(':userId')
-  async deleteUser(@Param('userId') userId: string): Promise<DeleteResult> {
-    return this.service.deleteUser(userId);
-  }
-
-  @ApiOperation({
     description: 'Mark user as deleted.',
   })
   @ApiOkResponse()
@@ -194,5 +181,18 @@ export class UsersController {
     @Request() req: RequestWithAuthenticatedUser,
   ): Promise<void> {
     return this.service.markAsDeleted(req.user.id);
+  }
+
+  @ApiOperation({
+    description:
+      'Delete a user. This operation will destroy any resource related to the user and it will be irreversible',
+  })
+  @ApiOkResponse()
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @RequiredRoles(ROLES.ADMIN)
+  @Delete(':userId')
+  async deleteUser(@Param('userId') userId: string): Promise<DeleteResult> {
+    return this.service.deleteUser(userId);
   }
 }

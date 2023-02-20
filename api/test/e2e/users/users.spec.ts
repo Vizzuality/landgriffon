@@ -12,7 +12,20 @@ import ApplicationManager, {
 import { DataSource } from 'typeorm';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { UserRepository } from 'modules/users/user.repository';
-import { createUser } from '../../entity-mocks';
+import {
+  createScenario,
+  createScenarioIntervention,
+  createSourcingLocation,
+  createSourcingRecord,
+  createUser,
+} from '../../entity-mocks';
+import { Scenario } from '../../../src/modules/scenarios/scenario.entity';
+import { ScenarioIntervention } from '../../../src/modules/scenario-interventions/scenario-intervention.entity';
+import {
+  SOURCING_LOCATION_TYPE_BY_INTERVENTION,
+  SourcingLocation,
+} from '../../../src/modules/sourcing-locations/sourcing-location.entity';
+import { SourcingRecord } from '../../../src/modules/sourcing-records/sourcing-record.entity';
 
 /**
  * Tests for the UsersModule.
@@ -241,7 +254,7 @@ describe('UsersModule (e2e)', () => {
   });
 
   describe('Users - account deletion', () => {
-    test('A user should be able to delete their own account', async () => {
+    test('A user should be able to soft delete their own account', async () => {
       await request(testApplication.getHttpServer())
         .delete('/api/v1/users/me')
         .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
@@ -253,6 +266,56 @@ describe('UsersModule (e2e)', () => {
         .get('/api/v1/users/me')
         .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
         .expect(HttpStatus.UNAUTHORIZED);
+    });
+
+    test('A user with no admin role should not be able to delete any user', async () => {
+      await request(testApplication.getHttpServer())
+        .delete(`/api/v1/users/${adminTestUser.user.id}`)
+        .set('Authorization', `Bearer ${userTestUser.jwtToken}`)
+        .expect(HttpStatus.FORBIDDEN);
+    });
+
+    test('A user with admin role should be able to delete a user, and all scenarios and interventions of the user should be gone as well', async () => {
+      const randomUser = await createUser({ email: 'test1@mail.com' });
+      const newAdminUser = await setupTestUser(testApplication, ROLES.ADMIN, {
+        email: 'newadmin@test.com',
+      });
+      for (const number of [1, 2, 3, 4, 5]) {
+        const scenario: Scenario = await createScenario({
+          userId: randomUser.id,
+        });
+        const scenarioIntervention: ScenarioIntervention =
+          await createScenarioIntervention({ scenario });
+
+        const sourcingLocation: SourcingLocation = await createSourcingLocation(
+          {
+            scenarioInterventionId: scenarioIntervention.id,
+            interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+          },
+        );
+
+        await createSourcingRecord({ sourcingLocationId: sourcingLocation.id });
+      }
+      const response = await request(testApplication.getHttpServer())
+        .delete(`/api/v1/users/${randomUser.id}`)
+        .set('Authorization', `Bearer ${newAdminUser.jwtToken}`);
+
+      console.log(response);
+
+      const scenarios = await dataSource.getRepository(Scenario).find();
+      const interventions = await dataSource
+        .getRepository(ScenarioIntervention)
+        .find();
+      const sourcingLocations = await dataSource
+        .getRepository(SourcingLocation)
+        .find();
+      const sourcingRecords = await dataSource
+        .getRepository(SourcingRecord)
+        .find();
+
+      [scenarios, interventions, sourcingLocations, sourcingRecords].forEach(
+        (entityArray: any[]) => expect(entityArray).toHaveLength(0),
+      );
     });
   });
 });

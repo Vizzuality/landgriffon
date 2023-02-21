@@ -66,7 +66,7 @@ const MaterialSettings = ({
       expanded={isAccordionOpen}
       onExpandedChange={setIsAccordionOpen}
       header={
-        <div className="flex flex-row justify-between">
+        <div className="flex flex-row justify-between" data-testid="contextual-material-header">
           <div className="text-sm font-semibold text-gray-500">Food and agriculture</div>
           <div className="flex flex-row gap-2 place-items-center">
             <InfoToolTip
@@ -101,7 +101,10 @@ const MaterialSettings = ({
         </div>
       }
     >
-      <div className="flex flex-row justify-between max-w-full gap-5 p-2 pl-8 place-items-center">
+      <div
+        className="flex flex-row justify-between max-w-full gap-5 p-2 pl-8 place-items-center"
+        data-testid="contextual-material-content"
+      >
         <div className="flex-grow">
           <Materials current={current ?? null} onChange={handleMaterialChange} />
         </div>

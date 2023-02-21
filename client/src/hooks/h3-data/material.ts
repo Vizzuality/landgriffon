@@ -19,7 +19,7 @@ const useH3MaterialData = <T = H3APIResponse>(
 ) => {
   const colors = useColors('material', COLOR_RAMPS);
   const filters = useAppSelector(analysisFilters);
-  const { materialId, origins } = filters;
+  const { materialId } = filters;
 
   const { data: year } = useYears('material', [materialId], null, {
     enabled: !!materialId,
@@ -29,11 +29,11 @@ const useH3MaterialData = <T = H3APIResponse>(
   const urlParams = useMemo(
     () => ({
       materialId,
-      resolution: origins?.length ? 6 : 4,
+      resolution: 4,
       year,
       ...params,
     }),
-    [materialId, origins?.length, params, year],
+    [materialId, params, year],
   );
 
   const enabled = (options.enabled ?? true) && !!urlParams.year && !!urlParams.materialId;

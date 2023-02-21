@@ -16,6 +16,10 @@ describe('Analysis map', () => {
       fixture: 'layers/contextual-layer.json',
     }).as('fetchContextualLayerH3Data');
 
+    cy.intercept('GET', '/api/v1/h3/map/material*', {
+      fixture: 'layers/material-layer.json',
+    }).as('fetchMaterialLayerH3Data');
+
     cy.intercept('GET', '/api/v1/h3/map/impact*', {
       fixture: 'layers/impact-layer.json',
     });
@@ -25,7 +29,11 @@ describe('Analysis map', () => {
       fixture: 'years/index',
     });
 
-    cy.intercept('GET', '/api/v1/materials/trees*', {
+    cy.intercept('GET', '/api/v1/materials/*', {
+      fixture: 'materials/show.json',
+    });
+
+    cy.intercept('GET', '/api/v1/materials/trees?*', {
       statusCode: 200,
       fixture: 'trees/materials',
     });
@@ -74,6 +82,29 @@ describe('Analysis map', () => {
     cy.get('[data-testid="contextual-layer-apply-button"').click();
 
     cy.wait('@fetchContextualLayerH3Data').then((interception) => {
+      expect(interception.request.url).not.to.contain('indicatorId');
+      expect(interception.request.url).contain('year');
+      expect(interception.request.url).contain('resolution=4');
+    });
+  });
+
+  it('contextual material layer request does not include indicatorId as param', () => {
+    cy.wait(['@fetchIndicators', '@fetchContextualLayerCategories']);
+
+    cy.get('[data-testid="contextual-layer-modal-toggle"]').click();
+    cy.get('[data-testid="contextual-material-header"]')
+      .click()
+      .find('[data-testid="switch-button"]')
+      .click();
+    cy.wait(100);
+    cy.get('[data-testid="contextual-material-content"]')
+      .find('[data-testid="tree-select-material"]')
+      .find('input[type="search"]')
+      .type('Cotton');
+    cy.get('[data-testid="tree-select-search-results"]').find('button').click();
+    cy.get('[data-testid="contextual-layer-apply-button"').click();
+
+    cy.wait('@fetchMaterialLayerH3Data').then((interception) => {
       expect(interception.request.url).not.to.contain('indicatorId');
       expect(interception.request.url).contain('year');
       expect(interception.request.url).contain('resolution=4');

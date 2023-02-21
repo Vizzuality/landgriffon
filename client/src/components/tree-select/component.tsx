@@ -430,7 +430,7 @@ const InnerTreeSelect = <IsMulti extends boolean>({
   );
 
   return (
-    <div className="min-w-0 " data-testid={`tree-select-${id}`}>
+    <div className="min-w-0 " data-testid={id ? `tree-select-${id}` : 'tree-select-material'}>
       <div
         {...(!disabled && {
           ...getReferenceProps({

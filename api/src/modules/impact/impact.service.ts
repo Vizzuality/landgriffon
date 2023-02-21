@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   GetImpactTableDto,
   GetRankedImpactTableDto,
+  ORDER_BY,
 } from 'modules/impact/dto/impact-table.dto';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
@@ -98,6 +99,12 @@ export class ImpactService extends BaseImpactService {
       paginatedEntities.entities,
     );
 
+    this.sortEntitiesByImpactOfYear(
+      impactTable,
+      impactTableDto.sortingYear,
+      impactTableDto.sortingOrder,
+    );
+
     return { data: impactTable, metadata: paginatedEntities.metadata };
   }
 
@@ -168,14 +175,13 @@ export class ImpactService extends BaseImpactService {
       : 'DES';
     const { startYear, endYear, maxRankingEntities } = rankedImpactTableDto;
 
-    // Helper function used in sorting the entities later, defined here for readability
-    // Gets the impact value of the given year, if not found, 0 is returned
-    const getYearImpact = (row: ImpactTableRows, year: number): number => {
-      const yearValue: ImpactTableRowsValues | undefined = row.values.find(
-        (value: ImpactTableRowsValues) => value.year === year,
-      );
-
-      return yearValue ? yearValue.value : 0;
+    const sortByStartingYearImpact = (
+      a: ImpactTableRows,
+      b: ImpactTableRows,
+    ): number => {
+      return sort === 'ASC'
+        ? this.getYearImpact(a, startYear) - this.getYearImpact(b, startYear)
+        : this.getYearImpact(b, startYear) - this.getYearImpact(a, startYear);
     };
 
     //For each indicator, Sort and limit the number of impact data for entity rows
@@ -183,11 +189,7 @@ export class ImpactService extends BaseImpactService {
     for (const impactTableDataByIndicator of impactTable.impactTable) {
       //Sort the impact data rows by the most impact on the starYear
       impactTableDataByIndicator.rows = impactTableDataByIndicator.rows?.sort(
-        (a: ImpactTableRows, b: ImpactTableRows) => {
-          return sort === 'ASC'
-            ? getYearImpact(a, startYear) - getYearImpact(b, startYear)
-            : getYearImpact(b, startYear) - getYearImpact(a, startYear);
-        },
+        sortByStartingYearImpact,
       );
 
       // extract the entities that are over the maxRankingEntities threshold
@@ -201,11 +203,11 @@ export class ImpactService extends BaseImpactService {
       ).map((year: number) => {
         const value: number = overMaxRankingEntities.reduce(
           (aggregate: number, current: ImpactTableRows) =>
-            aggregate + getYearImpact(current, year),
+            aggregate + this.getYearImpact(current, year),
           0,
         );
 
-        return { year, value: value };
+        return { year, value };
       });
 
       impactTableDataByIndicator.others = {
@@ -440,6 +442,59 @@ export class ImpactService extends BaseImpactService {
     );
 
     return result;
+  }
+
+  // For all indicators, entities are sorted by the value of the given sortingYear, in the order given by sortingOrder
+  private sortEntitiesByImpactOfYear(
+    impactTable: ImpactTable,
+    sortingYear: number | undefined,
+    sortingOrder: ORDER_BY | undefined = ORDER_BY.DESC,
+  ): void {
+    if (!sortingYear) {
+      return;
+    }
+
+    for (const impactTableDataByIndicator of impactTable.impactTable) {
+      this.sortEntitiesRecursively(
+        impactTableDataByIndicator.rows,
+        sortingYear,
+        sortingOrder,
+      );
+    }
+  }
+
+  // Entities represented by ImpactTableRows will be sorted recursively by the value of the given
+  // sortingYear, in the given sortingOrder
+  private sortEntitiesRecursively(
+    impactTableRows: ImpactTableRows[],
+    sortingYear: number,
+    sortingOrder: ORDER_BY,
+  ): void {
+    if (impactTableRows.length === 0) {
+      return;
+    }
+
+    for (const row of impactTableRows) {
+      this.sortEntitiesRecursively(row.children, sortingYear, sortingOrder);
+    }
+
+    impactTableRows.sort((a: ImpactTableRows, b: ImpactTableRows) =>
+      sortingOrder === ORDER_BY.ASC
+        ? this.getYearImpact(a, sortingYear) -
+          this.getYearImpact(b, sortingYear)
+        : this.getYearImpact(b, sortingYear) -
+          this.getYearImpact(a, sortingYear),
+    );
+  }
+
+  // Gets the absolute difference of the given year of the TableRow, if not found, 0 is returned
+  // Helper function (for readability) used in sorting the entities by the absolute difference of impact on the given year,
+  private getYearImpact(row: ImpactTableRows, year: number): number {
+    const yearValue: ImpactTableRowsValues | undefined = row.values.find(
+      (value: ImpactTableRowsValues) => value.year === year,
+    );
+
+    return yearValue ? yearValue.value : 0;
   }
 
   private createImpactTableDataByIndicator(

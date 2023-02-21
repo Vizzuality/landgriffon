@@ -29,6 +29,9 @@ import {
 } from '../mocks/scenario-vs-scenario-responses/same-materials-scenarios.reponse';
 import { createSameMaterialScenariosPreconditions } from '../mocks/scenario-vs-scenario-preconditions/same-materials-scenarios.preconditions';
 import { DataSource } from 'typeorm';
+import { createImpactTableSortingPreconditions } from '../mocks/sorting.preconditions';
+import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
+import { ImpactTableRows } from 'modules/impact/dto/response-impact-table.dto';
 
 describe('Scenario VS Scenario Impact Table test suite (e2e)', () => {
   let testApplication: TestApplication;
@@ -180,4 +183,56 @@ describe('Scenario VS Scenario Impact Table test suite (e2e)', () => {
       );
     },
   );
+
+  describe('Sorting Tests', () => {
+    test('When I query the API for an Actual Vs Scenario mpact table sorted by a given year, Then I should get the correct data in ascendant order by default ', async () => {
+      //ARRANGE
+      const data: any = await createImpactTableSortingPreconditions(
+        'ScenarioVsScenario',
+      );
+      const {
+        indicator,
+        supplier,
+        scenario,
+        comparedScenario,
+        parentMaterials,
+        childMaterialParent1,
+      } = data;
+
+      // ACT
+      const response = await request(testApplication.getHttpServer())
+        .get('/api/v1/impact/compare/scenario/vs/scenario')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [indicator.id],
+          'supplierIds[]': [supplier.id],
+          sortingYear: 2020,
+          endYear: 2021,
+          startYear: 2020,
+          groupBy: GROUP_BY_VALUES.MATERIAL,
+          baseScenarioId: scenario.id,
+          comparedScenarioId: comparedScenario.id,
+        });
+
+      //ASSERT
+      const response1OrderParents: string[] =
+        response.body.data.impactTable[0].rows.map(
+          (row: ImpactTableRows) => row.name,
+        );
+      const response1OrderMaterial1Children: string[] =
+        response.body.data.impactTable[0].rows[1].children.map(
+          (row: ImpactTableRows) => row.name,
+        );
+      expect(response1OrderParents).toEqual([
+        parentMaterials[1].name,
+        parentMaterials[0].name,
+        parentMaterials[2].name,
+      ]);
+      expect(response1OrderMaterial1Children).toEqual([
+        childMaterialParent1[1].name,
+        childMaterialParent1[2].name,
+        childMaterialParent1[0].name,
+      ]);
+    });
+  });
 });

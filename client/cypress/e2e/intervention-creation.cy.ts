@@ -348,3 +348,86 @@ describe('Intervention location type', () => {
     cy.get('[data-testid="city-address-coordinates-field"]').should('not.exist');
   });
 });
+
+describe('Intervention creation: Change production efficiency', () => {
+  beforeEach(() => {
+    cy.intercept('POST', '/api/v1/scenario-interventions', {
+      statusCode: 201,
+      fixture: 'intervention/intervention-creation-dto',
+    }).as('successfullyInterventionCreation');
+
+    cy.url().should('contains', '/interventions/new');
+
+    // types title of the intervention
+    cy.get('[data-testid="title-input"]').type('Lorem ipsum title');
+
+    // selects a material
+    cy.wait('@scenarioRawMaterials').then(() => {
+      const $inputSelect = cy.get('[data-testid="materials-select"]');
+      $inputSelect.click();
+
+      $inputSelect.find('.rc-tree-list').contains('Cotton').click();
+    });
+
+    // selects a year
+    cy.wait('@scenarioYears');
+    cy.get('[data-testid="select-startYear"]').type(
+      '{enter}{downArrow}{downArrow}{downArrow}{downArrow}{enter}',
+    );
+  });
+
+  // By default the intervention is created with zero coefficients
+  it('a user should be able to create an intervention with zero coefficients', () => {
+    cy.get('[data-testid="intervention-type-option"]').last().click();
+    // submits intervention
+    cy.get('[data-testid="intervention-submit-btn"]').click();
+
+    cy.wait('@successfullyInterventionCreation').then((interception) => {
+      const { body } = interception.request;
+      const { newIndicatorCoefficients } = body;
+      Object.keys(newIndicatorCoefficients).forEach((key) => {
+        expect(newIndicatorCoefficients[key]).equal(0);
+      });
+    });
+  });
+
+  it('a user should not be able to create an intervention with empty coefficients', () => {
+    cy.get('[data-testid="intervention-type-option"]').last().click();
+
+    cy.get('[data-testid="fieldset-impacts-per-ton"]')
+      .find('input:enabled')
+      .each(($input) => {
+        cy.wrap($input).clear();
+      });
+
+    // submits intervention
+    cy.get('[data-testid="intervention-submit-btn"]').click();
+
+    cy.get('[data-testid="fieldset-impacts-per-ton"]')
+      .find('input:enabled')
+      .each(($input) => {
+        cy.get(`[data-testid="hint-input-${$input.attr('name')}"]`).should('exist');
+      });
+  });
+
+  it('a user should be able to create an intervention with edited coefficient', () => {
+    cy.get('[data-testid="intervention-type-option"]').last().click();
+
+    cy.get('[data-testid="fieldset-impacts-per-ton"]')
+      .find('input:enabled')
+      .each(($input) => {
+        cy.wrap($input).type('100');
+      });
+
+    // submits intervention
+    cy.get('[data-testid="intervention-submit-btn"]').click();
+
+    cy.wait('@successfullyInterventionCreation').then((interception) => {
+      const { body } = interception.request;
+      const { newIndicatorCoefficients } = body;
+      Object.keys(newIndicatorCoefficients).forEach((key) => {
+        expect(newIndicatorCoefficients[key]).equal(100);
+      });
+    });
+  });
+});

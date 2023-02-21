@@ -1114,7 +1114,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                 closeImpactsRef.current = close;
 
                 return (
-                  <>
+                  <div data-testid="fieldset-impacts-per-ton">
                     <div className="flex items-center justify-between w-full">
                       <div className="flex items-center space-x-1">
                         <h3>Impacts per ton</h3>
@@ -1169,7 +1169,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                         ))}
                       </div>
                     </Disclosure.Panel>
-                  </>
+                  </div>
                 );
               }}
             </Disclosure>

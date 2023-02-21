@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   GetActualVsScenarioImpactTableDto,
   GetScenarioVsScenarioImpactTableDto,
+  ORDER_BY,
 } from 'modules/impact/dto/impact-table.dto';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
@@ -59,23 +60,19 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
   }
 
   async getScenarioVsScenarioImpactTable(
-    scenarioVsScenarioImpactTableDto: GetScenarioVsScenarioImpactTableDto,
+    dto: GetScenarioVsScenarioImpactTableDto,
     fetchSpecification: FetchSpecification,
   ): Promise<ScenarioVsScenarioPaginatedImpactTable> {
     const indicators: Indicator[] =
-      await this.indicatorService.getIndicatorsById(
-        scenarioVsScenarioImpactTableDto.indicatorIds,
-      );
+      await this.indicatorService.getIndicatorsById(dto.indicatorIds);
     this.logger.log('Retrieving data from DB to build Impact Table...');
 
     //Getting Descendants Ids for the filters, in case Parent Ids were received
-    await this.loadDescendantEntityIds(scenarioVsScenarioImpactTableDto);
+    await this.loadDescendantEntityIds(dto);
 
     // Getting entities and processing that correspond to Scenario 1 and filtered actual data
 
-    const entities: ImpactTableEntityType[] = await this.getEntityTree(
-      scenarioVsScenarioImpactTableDto,
-    );
+    const entities: ImpactTableEntityType[] = await this.getEntityTree(dto);
 
     const paginatedEntities: PaginatedEntitiesDto =
       ScenarioVsScenarioImpactService.paginateRootEntities(
@@ -83,15 +80,11 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
         fetchSpecification,
       );
 
-    this.updateGroupByCriteriaFromEntityTree(
-      scenarioVsScenarioImpactTableDto,
-      paginatedEntities.entities,
-    );
+    this.updateGroupByCriteriaFromEntityTree(dto, paginatedEntities.entities);
 
     // Getting and proceesing impact data separetely for each scenario for further merge
 
-    const { baseScenarioId, comparedScenarioId, ...generalDto } =
-      scenarioVsScenarioImpactTableDto;
+    const { baseScenarioId, comparedScenarioId, ...generalDto } = dto;
 
     const scenarioOneDto: GetActualVsScenarioImpactTableDto = {
       comparedScenarioId: baseScenarioId,
@@ -120,10 +113,16 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
         dataForScenarioTwoAndActual,
       );
     const impactTable: ScenarioVsScenarioImpactTable = this.buildImpactTable(
-      scenarioVsScenarioImpactTableDto,
+      dto,
       indicators,
       processedScenarioVsScenarioData,
       paginatedEntities.entities,
+    );
+
+    this.sortEntitiesByImpactOfYear(
+      impactTable,
+      dto.sortingYear,
+      dto.sortingOrder,
     );
 
     return {
@@ -268,13 +267,13 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
           entityRowValue.isProjected;
 
         entityRowValue.absoluteDifference =
-          entityRowValue.baseScenarioValue -
-          entityRowValue.comparedScenarioValue;
+          entityRowValue.comparedScenarioValue -
+          entityRowValue.baseScenarioValue;
         entityRowValue.percentageDifference =
-          ((entityRowValue.baseScenarioValue -
-            entityRowValue.comparedScenarioValue) /
-            ((entityRowValue.baseScenarioValue +
-              entityRowValue.comparedScenarioValue) /
+          ((entityRowValue.comparedScenarioValue -
+            entityRowValue.baseScenarioValue) /
+            ((entityRowValue.comparedScenarioValue +
+              entityRowValue.baseScenarioValue) /
               2)) *
           100;
       }
@@ -460,17 +459,78 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
         baseScenarioValue: baseScenarioTotalSumByYear,
         comparedScenarioValue: comparedScenarioTotalSumByYear,
         absoluteDifference:
-          (baseScenarioTotalSumByYear || 0) - comparedScenarioTotalSumByYear,
+          comparedScenarioTotalSumByYear - (baseScenarioTotalSumByYear || 0),
         percentageDifference:
-          (((baseScenarioTotalSumByYear || 0) -
-            comparedScenarioTotalSumByYear) /
-            (((baseScenarioTotalSumByYear || 0) +
-              comparedScenarioTotalSumByYear) /
+          ((comparedScenarioTotalSumByYear -
+            (baseScenarioTotalSumByYear || 0)) /
+            ((comparedScenarioTotalSumByYear +
+              (baseScenarioTotalSumByYear || 0)) /
               2)) *
           100,
         isProjected: year > lastYearWithData,
       };
     });
+  }
+
+  // For all indicators, entities are sorted by the value of the given sortingYear, in the order given by sortingOrder
+  private sortEntitiesByImpactOfYear(
+    impactTable: ScenarioVsScenarioImpactTable,
+    sortingYear: number | undefined,
+    sortingOrder: ORDER_BY | undefined = ORDER_BY.ASC,
+  ): void {
+    if (!sortingYear) {
+      return;
+    }
+
+    for (const impactTableDataByIndicator of impactTable.impactTable) {
+      this.sortEntitiesRecursively(
+        impactTableDataByIndicator.rows,
+        sortingYear,
+        sortingOrder,
+      );
+    }
+  }
+
+  // Entities represented by ImpactTableRows will be sorted recursively by the absoluteDifference value of the given
+  // sortingYear, in the given sortingOrder
+  private sortEntitiesRecursively(
+    rows: ScenarioVsScenarioImpactTableRows[],
+    sortingYear: number,
+    sortingOrder: ORDER_BY,
+  ): void {
+    if (rows.length === 0) {
+      return;
+    }
+
+    for (const row of rows) {
+      this.sortEntitiesRecursively(row.children, sortingYear, sortingOrder);
+    }
+
+    rows.sort(
+      (
+        a: ScenarioVsScenarioImpactTableRows,
+        b: ScenarioVsScenarioImpactTableRows,
+      ) =>
+        sortingOrder === ORDER_BY.ASC
+          ? this.getYearAbsoluteDifference(a, sortingYear) -
+            this.getYearAbsoluteDifference(b, sortingYear)
+          : this.getYearAbsoluteDifference(b, sortingYear) -
+            this.getYearAbsoluteDifference(a, sortingYear),
+    );
+  }
+
+  // Gets the absolute difference of the given year of the TableRow, if not found, 0 is returned
+  // Helper function (for readability) used in sorting the entities by the absolute difference of impact on the given year,
+  private getYearAbsoluteDifference(
+    row: ScenarioVsScenarioImpactTableRows,
+    year: number,
+  ): number {
+    const yearValue: ScenarioVsScenarioImpactTableRowsValues | undefined =
+      row.values.find(
+        (value: ScenarioVsScenarioImpactTableRowsValues) => value.year === year,
+      );
+
+    return yearValue ? yearValue.absoluteDifference : 0;
   }
 
   private createScenarioVsScenarioImpactTableDataByIndicator(

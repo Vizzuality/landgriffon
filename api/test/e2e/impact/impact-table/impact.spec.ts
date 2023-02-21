@@ -57,7 +57,10 @@ import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing
 import { createNewMaterialInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-material-intervention.preconditions';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { DataSource } from 'typeorm';
-import { GROUP_BY_VALUES } from '../../../../src/modules/h3-data/dto/get-impact-map.dto';
+import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
+import { ORDER_BY } from 'modules/impact/dto/impact-table.dto';
+import { ImpactTableRows } from 'modules/impact/dto/response-impact-table.dto';
+import { createImpactTableSortingPreconditions } from '../mocks/sorting.preconditions';
 
 describe('Impact Table and Charts test suite (e2e)', () => {
   let testApplication: TestApplication;
@@ -122,7 +125,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         'indicatorIds[]': [uuidv4(), uuidv4(), uuidv4()],
         endYear: 1,
         startYear: 2,
-        groupBy: 'material',
+        groupBy: GROUP_BY_VALUES.MATERIAL,
       })
       .expect(HttpStatus.NOT_FOUND);
 
@@ -240,7 +243,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         'indicatorIds[]': [indicator.id],
         endYear: 2012,
         startYear: 2010,
-        groupBy: 'material',
+        groupBy: GROUP_BY_VALUES.MATERIAL,
         'materialIds[]': [material.id],
       })
       .expect(HttpStatus.OK);
@@ -272,7 +275,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         'indicatorIds[]': [indicator.id],
         endYear: 2012,
         startYear: 2010,
-        groupBy: 'business-unit',
+        groupBy: GROUP_BY_VALUES.BUSINESS_UNIT,
       })
       .expect(HttpStatus.OK);
 
@@ -287,7 +290,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         'indicatorIds[]': [indicator.id],
         endYear: 2012,
         startYear: 2010,
-        groupBy: 'supplier',
+        groupBy: GROUP_BY_VALUES.SUPPLIER,
       })
       .expect(HttpStatus.OK);
 
@@ -301,7 +304,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         'indicatorIds[]': [indicator.id],
         endYear: 2012,
         startYear: 2010,
-        groupBy: 'region',
+        groupBy: GROUP_BY_VALUES.REGION,
       })
       .expect(HttpStatus.OK);
 
@@ -352,7 +355,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         'indicatorIds[]': [indicator.id],
         endYear: 2012,
         startYear: 2010,
-        groupBy: 'material',
+        groupBy: GROUP_BY_VALUES.MATERIAL,
       })
       .expect(HttpStatus.OK);
 
@@ -410,7 +413,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         'indicatorIds[]': [indicator.id],
         endYear: 2012,
         startYear: 2010,
-        groupBy: 'material',
+        groupBy: GROUP_BY_VALUES.MATERIAL,
       })
       .expect(HttpStatus.OK);
 
@@ -423,6 +426,205 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     );
   });
 
+  describe('Sorting Tests', () => {
+    test('When I query the API for an impact table with an invalid sorting year, then I should get an error', async () => {
+      //ARRANGE/ACT
+      const response1 = await request(testApplication.getHttpServer())
+        .get('/api/v1/impact/table')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [uuidv4()],
+          'supplierIds[]': [uuidv4()],
+          sortingYear: 2019,
+          endYear: 2021,
+          startYear: 2020,
+          groupBy: GROUP_BY_VALUES.MATERIAL,
+        });
+
+      const response2 = await request(testApplication.getHttpServer())
+        .get('/api/v1/impact/table')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [uuidv4()],
+          'supplierIds[]': [uuidv4()],
+          sortingYear: 3145,
+          endYear: 2030,
+          startYear: 2025,
+          groupBy: GROUP_BY_VALUES.MATERIAL,
+        });
+
+      expect(response1.body.errors[0].meta.rawError.response.message).toEqual([
+        'sortingYear must be have a value between startYear and endYear. 2020 and 2021 on this request.',
+      ]);
+      expect(response2.body.errors[0].meta.rawError.response.message).toEqual([
+        'sortingYear must be have a value between startYear and endYear. 2025 and 2030 on this request.',
+      ]);
+    });
+
+    test('When I query the API for an impact table sorted by a given year, Then I should get the correct data in descendent order by default ', async () => {
+      //ARRANGE
+      const data: any = await createImpactTableSortingPreconditions('Normal');
+      const { indicator, supplier, parentMaterials, childMaterialParent1 } =
+        data;
+
+      // ACT
+      const response = await request(testApplication.getHttpServer())
+        .get('/api/v1/impact/table')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [indicator.id],
+          'supplierIds[]': [supplier.id],
+          startYear: 2020,
+          endYear: 2021,
+          sortingYear: 2020,
+          groupBy: GROUP_BY_VALUES.MATERIAL,
+        });
+      const response2 = await request(testApplication.getHttpServer())
+        .get('/api/v1/impact/table')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [indicator.id],
+          'supplierIds[]': [supplier.id],
+          startYear: 2020,
+          endYear: 2021,
+          sortingYear: 2021,
+          groupBy: GROUP_BY_VALUES.MATERIAL,
+        });
+
+      //ASSERT
+      const reponse1OrderParents: string[] =
+        response.body.data.impactTable[0].rows.map(
+          (row: ImpactTableRows) => row.name,
+        );
+      const reponse1OrderMaterial1Children: string[] =
+        response.body.data.impactTable[0].rows[2].children.map(
+          (row: ImpactTableRows) => row.name,
+        );
+      expect(reponse1OrderParents).toEqual([
+        parentMaterials[1].name,
+        parentMaterials[2].name,
+        parentMaterials[0].name,
+      ]);
+      expect(reponse1OrderMaterial1Children).toEqual([
+        childMaterialParent1[2].name,
+        childMaterialParent1[0].name,
+        childMaterialParent1[1].name,
+      ]);
+
+      const reponse2OrderParents: string[] =
+        response2.body.data.impactTable[0].rows.map(
+          (row: ImpactTableRows) => row.name,
+        );
+      const reponse2OrderMaterial1Children: string[] =
+        response2.body.data.impactTable[0].rows[1].children.map(
+          (row: ImpactTableRows) => row.name,
+        );
+      expect(reponse2OrderParents).toEqual([
+        parentMaterials[2].name,
+        parentMaterials[0].name,
+        parentMaterials[1].name,
+      ]);
+      expect(reponse2OrderMaterial1Children).toEqual([
+        childMaterialParent1[1].name,
+        childMaterialParent1[2].name,
+        childMaterialParent1[0].name,
+      ]);
+    });
+
+    test('When I query the API for an impact table sorted by a given year, it muse be ordered by the sortingOrder parameter ', async () => {
+      //ARRANGE
+      const adminRegion: AdminRegion = await createAdminRegion({
+        name: 'Fake AdminRegion',
+      });
+      const unit: Unit = await createUnit({ shortName: 'fakeUnit' });
+      const indicator: Indicator = await createIndicator({
+        name: 'Fake Indicator',
+        unit,
+        nameCode: INDICATOR_TYPES.DEFORESTATION,
+      });
+
+      const parentMaterial1 = await createMaterial({
+        name: 'Parent Fake Material 1',
+      });
+      const parentMaterial2 = await createMaterial({
+        name: 'Parent Fake Material 2',
+      });
+      const parentMaterial3 = await createMaterial({
+        name: 'Parent Fake Material 3',
+      });
+
+      const businessUnit: BusinessUnit = await createBusinessUnit({
+        name: 'Fake Business Unit',
+      });
+
+      const supplier: Supplier = await createSupplier({
+        name: 'Fake Supplier',
+      });
+
+      const parentLocations: SourcingLocation[] = await Promise.all(
+        [parentMaterial1, parentMaterial2, parentMaterial3].map(
+          async (material: Material) =>
+            await createSourcingLocation({
+              material: material,
+              businessUnit,
+              t1Supplier: supplier,
+              adminRegion,
+            }),
+        ),
+      );
+
+      await indicatorSourcingRecord(2020, 100, indicator, parentLocations[0]);
+      await indicatorSourcingRecord(2020, 200, indicator, parentLocations[1]);
+      await indicatorSourcingRecord(2020, 150, indicator, parentLocations[2]);
+
+      // ACT
+      const responseDesc = await request(testApplication.getHttpServer())
+        .get('/api/v1/impact/table')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [indicator.id],
+          'supplierIds[]': [supplier.id],
+          endYear: 2021,
+          startYear: 2020,
+          groupBy: GROUP_BY_VALUES.MATERIAL,
+          sortingYear: 2020,
+          sortingOrder: ORDER_BY.DESC,
+        });
+      const response2Asc = await request(testApplication.getHttpServer())
+        .get('/api/v1/impact/table')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [indicator.id],
+          'supplierIds[]': [supplier.id],
+          endYear: 2021,
+          startYear: 2020,
+          groupBy: GROUP_BY_VALUES.MATERIAL,
+          sortingYear: 2020,
+          sortingOrder: ORDER_BY.ASC,
+        });
+
+      //ASSERT
+      const reponse1OrderParents: string[] =
+        responseDesc.body.data.impactTable[0].rows.map(
+          (row: ImpactTableRows) => row.name,
+        );
+      expect(reponse1OrderParents).toEqual([
+        parentMaterial2.name,
+        parentMaterial3.name,
+        parentMaterial1.name,
+      ]);
+
+      const reponse2OrderParents: string[] =
+        response2Asc.body.data.impactTable[0].rows.map(
+          (row: ImpactTableRows) => row.name,
+        );
+      expect(reponse2OrderParents).toEqual([
+        parentMaterial1.name,
+        parentMaterial3.name,
+        parentMaterial2.name,
+      ]);
+    });
+  });
   describe('Group By tests', () => {
     test('When I query the API for a Impact table grouped by material with filters Then I should get the correct data', async () => {
       const adminRegion: AdminRegion = await createAdminRegion({
@@ -520,7 +722,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           'supplierIds[]': [supplier.id],
           endYear: 2013,
           startYear: 2010,
-          groupBy: 'material',
+          groupBy: GROUP_BY_VALUES.MATERIAL,
         })
         .expect(HttpStatus.OK);
 
@@ -612,7 +814,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           'indicatorIds[]': [indicator.id],
           endYear: 2013,
           startYear: 2010,
-          groupBy: 'material',
+          groupBy: GROUP_BY_VALUES.MATERIAL,
         })
         .expect(HttpStatus.OK);
 
@@ -635,7 +837,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           'materialIds[]': [childMaterial.id],
           endYear: 2013,
           startYear: 2010,
-          groupBy: 'material',
+          groupBy: GROUP_BY_VALUES.MATERIAL,
         })
         .expect(HttpStatus.OK);
       expect(responseWithFilter.body.data.impactTable[0].rows).toHaveLength(1);
@@ -656,7 +858,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           'materialIds[]': [grandchildMaterial.id],
           endYear: 2013,
           startYear: 2010,
-          groupBy: 'material',
+          groupBy: GROUP_BY_VALUES.MATERIAL,
         })
         .expect(HttpStatus.OK);
 
@@ -755,7 +957,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           'indicatorIds[]': [indicator.id],
           endYear: 2013,
           startYear: 2010,
-          groupBy: 'region',
+          groupBy: GROUP_BY_VALUES.REGION,
         })
         .expect(HttpStatus.OK);
 
@@ -849,7 +1051,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           'indicatorIds[]': [indicator.id],
           endYear: 2013,
           startYear: 2010,
-          groupBy: 'supplier',
+          groupBy: GROUP_BY_VALUES.SUPPLIER,
         })
         .expect(HttpStatus.OK);
 
@@ -860,7 +1062,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           'indicatorIds[]': [indicator.id],
           endYear: 2013,
           startYear: 2010,
-          groupBy: 'supplier',
+          groupBy: GROUP_BY_VALUES.SUPPLIER,
           'materialIds[]': [material2.id],
         })
         .expect(HttpStatus.OK);
@@ -960,7 +1162,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           'indicatorIds[]': [indicator.id],
           endYear: 2013,
           startYear: 2010,
-          groupBy: 'business-unit',
+          groupBy: GROUP_BY_VALUES.BUSINESS_UNIT,
         })
         .expect(HttpStatus.OK);
 
@@ -1052,7 +1254,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           'indicatorIds[]': [indicator.id],
           endYear: 2013,
           startYear: 2010,
-          groupBy: 'location-type',
+          groupBy: GROUP_BY_VALUES.LOCATION_TYPE,
         })
         .expect(HttpStatus.OK);
 
@@ -1144,7 +1346,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           'page[number]': 1,
           endYear: 2013,
           startYear: 2010,
-          groupBy: 'material',
+          groupBy: GROUP_BY_VALUES.MATERIAL,
         })
         .expect(HttpStatus.OK);
       const responseSecondPage = await request(testApplication.getHttpServer())
@@ -1156,7 +1358,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           'page[number]': 2,
           endYear: 2013,
           startYear: 2010,
-          groupBy: 'material',
+          groupBy: GROUP_BY_VALUES.MATERIAL,
         })
         .expect(HttpStatus.OK);
       const paginationMetadata: PaginationMeta = new PaginationMeta({
@@ -1233,13 +1435,14 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
         });
 
-      await createSourcingLocation({
-        material: material2,
-        businessUnit: businessUnit1,
-        t1Supplier: supplier1,
-        adminRegion: adminRegion,
-        locationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
-      });
+      const sourcingLocationMaterial2: SourcingLocation =
+        await createSourcingLocation({
+          material: material2,
+          businessUnit: businessUnit1,
+          t1Supplier: supplier1,
+          adminRegion: adminRegion,
+          locationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+        });
 
       // Creating Sourcing Records and Indicator Records for previously created Sourcing Locations of different Location Types
       for await (const [index, year] of [2010, 2011, 2012].entries()) {
@@ -1278,6 +1481,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           'indicatorIds[]': [indicator.id],
           endYear: 2013,
           startYear: 2010,
+          groupBy: GROUP_BY_VALUES.MATERIAL,
           groupBy: GROUP_BY_VALUES.MATERIAL,
           'locationTypes[]': [LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT],
         });
@@ -1328,7 +1532,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
             'indicatorIds[]': [indicator.id],
             endYear: 2022,
             startYear: 2017,
-            groupBy: 'material',
+            groupBy: GROUP_BY_VALUES.MATERIAL,
             scenarioId: scenario.id,
           });
 
@@ -1354,3 +1558,22 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     );
   });
 });
+
+async function indicatorSourcingRecord(
+  year: number,
+  value: number,
+  indicator: Indicator,
+  sourcingLocation: SourcingLocation,
+  tonnage: number = 100,
+): Promise<void> {
+  const indicatorRecord: IndicatorRecord = await createIndicatorRecord({
+    value,
+    indicator,
+  });
+  await createSourcingRecord({
+    tonnage,
+    year,
+    indicatorRecords: [indicatorRecord],
+    sourcingLocation,
+  });
+}

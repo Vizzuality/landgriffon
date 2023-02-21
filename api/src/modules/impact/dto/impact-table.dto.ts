@@ -7,6 +7,7 @@ import {
   IsPositive,
   IsString,
   IsUUID,
+  Validate,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
@@ -14,6 +15,12 @@ import { Transform, Type } from 'class-transformer';
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 import { replaceStringWhiteSpacesWithDash } from 'utils/transform-location-type.util';
+import { ValidSortingYearValidator } from 'modules/impact/validation/valid-sorting-year.validator';
+
+export enum ORDER_BY {
+  DESC = 'DESC',
+  ASC = 'ASC',
+}
 
 export type AnyImpactTableDto =
   | GetImpactTableDto
@@ -90,17 +97,6 @@ export class BaseImpactTableDto {
   locationTypes?: LOCATION_TYPES[];
 }
 
-export class GetActualVsScenarioImpactTableDto extends BaseImpactTableDto {
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsUUID(4)
-  comparedScenarioId: string;
-
-  // Property for internal api use (entity filters)
-  @IsOptional()
-  scenarioIds?: string[];
-}
-
 export class GetImpactTableDto extends BaseImpactTableDto {
   @ApiPropertyOptional({
     description:
@@ -110,10 +106,56 @@ export class GetImpactTableDto extends BaseImpactTableDto {
   @IsUUID(4)
   scenarioId?: string;
 
+  @ApiPropertyOptional({
+    description:
+      'Sort all the entities recursively by the impact value corresponding to the sortingYear',
+  })
+  @Type(() => Number)
+  @IsOptional()
+  @IsNumber()
+  @Validate(ValidSortingYearValidator)
+  sortingYear?: number;
+
+  @ApiPropertyOptional({
+    description: 'Indicates the order by which the entities will be sorted',
+  })
+  @IsOptional()
+  @IsEnum(ORDER_BY)
+  sortingOrder?: ORDER_BY;
+
   // Property for internal api use (entity filters)
   @IsOptional()
   scenarioIds?: string[];
 }
+
+export class GetActualVsScenarioImpactTableDto extends BaseImpactTableDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsUUID(4)
+  comparedScenarioId: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Sort all the entities recursively by the absolute difference value corresponding to the sortingYear',
+  })
+  @Type(() => Number)
+  @IsOptional()
+  @IsNumber()
+  @Validate(ValidSortingYearValidator)
+  sortingYear?: number;
+
+  @ApiPropertyOptional({
+    description: 'Indicates the order by which the entities will be sorted',
+  })
+  @IsOptional()
+  @IsEnum(ORDER_BY)
+  sortingOrder?: ORDER_BY;
+
+  // Property for internal api use (entity filters)
+  @IsOptional()
+  scenarioIds?: string[];
+}
+
 export class GetScenarioVsScenarioImpactTableDto extends BaseImpactTableDto {
   @ApiPropertyOptional()
   @IsOptional()
@@ -124,6 +166,23 @@ export class GetScenarioVsScenarioImpactTableDto extends BaseImpactTableDto {
   @IsOptional()
   @IsUUID(4)
   comparedScenarioId: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Sort all the entities recursively by the absolute difference value corresponding to the sortingYear',
+  })
+  @Type(() => Number)
+  @IsOptional()
+  @IsNumber()
+  @Validate(ValidSortingYearValidator)
+  sortingYear?: number;
+
+  @ApiPropertyOptional({
+    description: 'Indicates the order by which the entities will be sorted',
+  })
+  @IsOptional()
+  @IsEnum(ORDER_BY)
+  sortingOrder?: ORDER_BY;
 
   // Property for internal api use (entity filters)
   @IsOptional()

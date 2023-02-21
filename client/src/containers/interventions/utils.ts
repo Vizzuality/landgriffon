@@ -36,7 +36,7 @@ export function parseInterventionFormDataToDto(
     ...rest
   } = interventionFormData;
 
-  const areCoefficientsSet = Object.values(coefficients).some((v) => +v !== 0);
+  const areCoefficientsSet = Object.values(coefficients).some((v) => +v !== 0 && v);
 
   const result: InterventionDto = {
     ...rest,

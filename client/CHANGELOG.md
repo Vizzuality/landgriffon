@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [v0.4.0]
 
 ### Added
-- Added role check to enable upload data source button[LANGRIF-1125](https://vizzuality.atlassian.net/browse/LANDGRIF-1125)
+- Added role check to enable upload data source button [LANDGRIF-1125](https://vizzuality.atlassian.net/browse/LANDGRIF-1125)
 - Added `@floating-ui/react` and `@floating-ui/react-dom` dependencies. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
 - Added disabled option styles for single and autocomplete selects. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
 - Added DOM virtualization (with `react-virtualized`) to autocomplete select to avoid lagging and low performance. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Move the users page from data to user [LANDGRIF-1122](https://vizzuality.atlassian.net/browse/LANDGRIF-1122)
 
 ### Fixed
+- Material layer fixed to resolution 4 [LANDGRIF-1234](https://vizzuality.atlassian.net/browse/LANDGRIF-1234)
 - Issue preventing new users to sign up in the platform. [LANDGRIF-1222](https://vizzuality.atlassian.net/browse/LANDGRIF-1222)
 - Error requesting scenario comparison. [LANDGRIF-1208](https://vizzuality.atlassian.net/browse/LANDGRIF-1208)
 - Issue with focus in tree-select and some styling. [LANDGRIF-1155](https://vizzuality.atlassian.net/browse/LANDGRIF-1155)

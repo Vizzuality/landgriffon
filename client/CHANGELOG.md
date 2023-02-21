@@ -5,14 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [v0.4.0 Unreleased]
+## [v0.5.0 Unreleased]
+
+## [v0.4.0]
 
 ### Added
 - Added role check to enable upload data source button[LANGRIF-1125](https://vizzuality.atlassian.net/browse/LANDGRIF-1125)
-
-## [v0.3.6]
-
-### Added
 - Added `@floating-ui/react` and `@floating-ui/react-dom` dependencies. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
 - Added disabled option styles for single and autocomplete selects. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
 - Added DOM virtualization (with `react-virtualized`) to autocomplete select to avoid lagging and low performance. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)

@@ -11,7 +11,8 @@ declare global {
        */
       login(credentials?: { username?: string; password?: string }): Chainable<null>;
       logout(): Chainable<null>;
-      createScenario(): Chainable<Element>;
+      createScenario(): Chainable<null>;
+      interceptAllRequests(): Chainable<null>;
     }
   }
 }

@@ -1,12 +1,7 @@
 beforeEach(() => {
-  cy.login().visit('/data/scenarios/new');
-
-  cy.intercept('POST', '/api/v1/scenarios', {
-    statusCode: 201,
-    fixture: 'scenario/scenario-creation',
-  }).as('scenarioCreation');
-
-  cy.intercept('api/v1/users/me', { fixture: 'profiles/all-permissions' }).as('profile');
+  cy.interceptAllRequests();
+  cy.login();
+  cy.visit('/data/scenarios/new');
 });
 
 afterEach(() => {

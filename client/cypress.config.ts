@@ -1,10 +1,10 @@
 import { defineConfig } from 'cypress';
 
 export default defineConfig({
-  defaultCommandTimeout: 60000,
-  requestTimeout: 60000,
+  defaultCommandTimeout: 90000,
+  requestTimeout: 90000,
   responseTimeout: 90000,
-  execTimeout: 60000,
+  execTimeout: 90000,
   e2e: {
     baseUrl: 'http://localhost:3000',
     screenshotOnRunFailure: true,

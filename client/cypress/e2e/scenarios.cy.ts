@@ -1,8 +1,9 @@
 beforeEach(() => {
-  cy.intercept('GET', '/api/v1/scenarios/**/interventions*', {
-    statusCode: 200,
-    fixture: 'scenario/scenario-interventions',
-  }).as('fetchScenarioInterventions');
+  cy.interceptAllRequests();
+  // cy.intercept('GET', '/api/v1/scenarios/**/interventions*', {
+  //   statusCode: 200,
+  //   fixture: 'scenario/scenario-interventions',
+  // }).as('fetchScenarioInterventions');
 
   cy.intercept(
     {
@@ -17,11 +18,11 @@ beforeEach(() => {
       statusCode: 200,
       fixture: 'scenario/scenarios',
     },
-  ).as('fetchScenarios');
+  ).as('scenariosNoPaginated');
 
-  cy.intercept('DELETE', '/api/v1/scenarios/**', {
-    statusCode: 200,
-  }).as('deleteScenario');
+  // cy.intercept('DELETE', '/api/v1/scenarios/**', {
+  //   statusCode: 200,
+  // }).as('deleteScenario');
 
   cy.login();
   cy.visit('/data/scenarios');
@@ -41,13 +42,13 @@ describe('Scenarios', () => {
 
   it('should be the same scenarios cards length than API', () => {
     cy.wait('@fetchScenarioInterventions');
-    cy.wait('@fetchScenarios');
+    cy.wait('@scenariosNoPaginated');
     cy.get('[data-testid="scenario-card"]').should('have.length', 10);
   });
 
   it('should every scenario have interventions', () => {
     cy.wait('@fetchScenarioInterventions');
-    cy.wait('@fetchScenarios');
+    cy.wait('@scenariosNoPaginated');
     cy.get('[data-testid="scenario-card"]')
       .first()
       .find('[data-testid="scenario-interventions-item"]')
@@ -58,7 +59,7 @@ describe('Scenarios', () => {
     cy.intercept('api/v1/users/me', { fixture: 'profiles/all-permissions' }).as('profile');
     cy.wait('@profile');
     cy.wait('@fetchScenarioInterventions');
-    cy.wait('@fetchScenarios');
+    cy.wait('@scenariosNoPaginated');
     cy.get('a[data-testid="scenario-add-button"]').click();
 
     cy.url().should('contain', '/data/scenarios/new');
@@ -73,7 +74,7 @@ describe('Scenarios', () => {
     cy.intercept('api/v1/users/me', { fixture: 'profiles/no-permissions' }).as('profile');
     cy.wait('@profile');
     cy.wait('@fetchScenarioInterventions');
-    cy.wait('@fetchScenarios');
+    cy.wait('@scenariosNoPaginated');
     cy.get('[data-testid="scenario-add-button"]').should('be.disabled');
   });
 
@@ -81,7 +82,7 @@ describe('Scenarios', () => {
     cy.intercept('api/v1/users/me', { fixture: 'profiles/all-permissions' }).as('profile');
     cy.wait('@profile');
     cy.wait('@fetchScenarioInterventions');
-    cy.wait('@fetchScenarios');
+    cy.wait('@scenariosNoPaginated');
     // ? check there are, initially, 10 scenarios available before deletion
     cy.get('[data-testid="scenario-card"]').should('have.length', 10);
 
@@ -113,7 +114,7 @@ describe('Scenarios', () => {
     cy.intercept('api/v1/users/me', { fixture: 'profiles/no-permissions' }).as('profile');
     cy.wait('@profile');
     cy.wait('@fetchScenarioInterventions');
-    cy.wait('@fetchScenarios');
+    cy.wait('@scenariosNoPaginated');
     cy.get('[data-testid="scenario-card"]')
       .first()
       .find('[data-testid="scenario-delete-btn"]')
@@ -124,7 +125,7 @@ describe('Scenarios', () => {
     cy.intercept('api/v1/users/me', { fixture: 'profiles/all-permissions' }).as('profile');
     cy.wait('@profile');
     cy.wait('@fetchScenarioInterventions');
-    cy.wait('@fetchScenarios');
+    cy.wait('@scenariosNoPaginated');
     cy.get('[data-testid="scenario-card"]')
       .first()
       .find('a[data-testid="scenario-edit-btn"]')
@@ -136,7 +137,7 @@ describe('Scenarios', () => {
     cy.intercept('api/v1/users/me', { fixture: 'profiles/no-permissions' }).as('profile');
     cy.wait('@profile');
     cy.wait('@fetchScenarioInterventions');
-    cy.wait('@fetchScenarios');
+    cy.wait('@scenariosNoPaginated');
     cy.get('[data-testid="scenario-card"]')
       .first()
       .find('[data-testid="scenario-edit-btn"]')
@@ -149,7 +150,7 @@ describe('Scenarios', () => {
       fixture: 'scenario/filters/by-name-results',
     }).as('fetchScenariosByName');
 
-    cy.wait('@fetchScenarios');
+    cy.wait('@scenariosNoPaginated');
 
     // ? selects the "Sort by name" option and click on it
     cy.get('[data-testid="select-sort-scenario"]').find('button').type('{downArrow}{enter}');

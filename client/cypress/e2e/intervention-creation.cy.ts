@@ -1,75 +1,15 @@
 beforeEach(() => {
-  cy.intercept('GET', '/api/v1/indicators*', {
-    fixture: 'indicators/index',
-  }).as('fetchIndicators');
-
-  cy.intercept('POST', '/api/v1/scenarios', {
-    statusCode: 201,
-    fixture: 'scenario/scenario-creation',
-  }).as('scenarioCreation');
-
-  cy.intercept('GET', '/api/v1/sourcing-records/years', {
-    statusCode: 200,
-    fixture: 'scenario/scenario-years',
-  }).as('scenarioYears');
-
-  cy.intercept('GET', '/api/v1/materials/trees?depth=1', {
-    statusCode: 200,
-    fixture: 'scenario/scenario-materials',
-  }).as('scenarioNewMaterials');
-
-  cy.intercept('GET', '/api/v1/business-units/trees?depth=1*', {
-    statusCode: 200,
-    fixture: 'trees/business-units',
-  }).as('businessUnits');
-
-  cy.intercept('GET', '/api/v1/suppliers/trees*', {
-    statusCode: 200,
-    fixture: 'trees/suppliers',
-  });
-
-  cy.intercept(
-    {
-      method: 'GET',
-      pathname: '/api/v1/suppliers/types',
-      query: {
-        type: 't1supplier',
-      },
-    },
-    {
-      statusCode: 200,
-      fixture: 'suppliers/types-t1supplier',
-    },
-  );
-
-  cy.intercept(
-    {
-      method: 'GET',
-      pathname: '/api/v1/suppliers/types',
-      query: {
-        type: 'producer',
-      },
-    },
-    {
-      statusCode: 200,
-      fixture: 'suppliers/types-producer',
-    },
-  );
-
-  cy.intercept('GET', '/api/v1/materials/trees?depth=1&withSourcingLocations=true*', {
-    statusCode: 200,
-    fixture: 'trees/materials',
-  }).as('scenarioRawMaterials');
-
-  cy.intercept('GET', '/api/v1/sourcing-locations/location-types/supported', {
-    statusCode: 200,
-    fixture: 'location-types/index',
-  }).as('scenarioLocationTypes');
+  cy.interceptAllRequests();
 
   cy.intercept('GET', '/api/v1/admin-regions/trees*', {
     statusCode: 200,
     fixture: 'scenario/scenario-location-countries',
-  }).as('scenarioLocationCountries');
+  }).as('originsTrees');
+
+  cy.intercept('GET', '/api/v1/materials/trees?depth=1', {
+    statusCode: 200,
+    fixture: 'scenario/scenario-materials',
+  }).as('materialsTrees');
 
   cy.login();
   cy.createScenario();
@@ -81,11 +21,11 @@ afterEach(() => {
 });
 
 describe('Intervention creation', () => {
-  it('a user creates an intervetion – Switch to new material flow (successful creation)', () => {
+  it('a user creates an intervention – Switch to new material flow (successful creation)', () => {
     cy.intercept('POST', '/api/v1/scenario-interventions', {
       statusCode: 201,
       fixture: 'intervention/intervention-creation-dto',
-    }).as('successfullInterventionCreation');
+    }).as('successfullyInterventionCreation');
 
     cy.url().should('contains', '/interventions/new');
 
@@ -93,7 +33,7 @@ describe('Intervention creation', () => {
     cy.get('[data-testid="title-input"]').type('Lorem ipsum title');
 
     // selects a material
-    cy.wait('@scenarioRawMaterials').then(() => {
+    cy.wait('@materialsTrees').then(() => {
       const $inputSelect = cy.get('[data-testid="materials-select"]');
       $inputSelect.click();
 
@@ -101,7 +41,7 @@ describe('Intervention creation', () => {
     });
 
     // selects a year
-    cy.wait('@scenarioYears');
+    cy.wait('@sourcingRecordYears');
     cy.get('[data-testid="select-startYear"]').type(
       '{enter}{downArrow}{downArrow}{downArrow}{downArrow}{enter}',
     );
@@ -125,7 +65,7 @@ describe('Intervention creation', () => {
     cy.get('[data-testid="BL_LUC_T-input-input"]').should('have.length', 0);
 
     // waits for material request and selects an option
-    cy.wait('@scenarioNewMaterials').then(() => {
+    cy.wait('@materialsTrees').then(() => {
       const $inputSelect = cy.get('[data-testid="new-material-select"]');
       $inputSelect.click();
       $inputSelect.find('.rc-tree-list').contains('Fruits, berries and nuts').click();
@@ -135,14 +75,14 @@ describe('Intervention creation', () => {
     cy.get('[data-testid="volume-input"]').should('be.disabled');
 
     // waits for scenario location types request and selects an option
-    cy.wait('@scenarioLocationTypes');
+    cy.wait('@supportedLocationTypes');
     cy.get('[data-testid="select-newLocationType"]')
       .click()
       .find('input:visible')
       .type('Country of production{enter}');
 
     // waits for scenario location countries request and selects an option
-    cy.wait('@scenarioLocationCountries');
+    cy.wait('@originsTrees');
     cy.get('[data-testid="select-newLocationCountryInput"]')
       .click()
       .find('input:visible')
@@ -151,7 +91,7 @@ describe('Intervention creation', () => {
     // submits intervention
     cy.get('[data-testid="intervention-submit-btn"]').click();
 
-    cy.wait('@successfullInterventionCreation').then(() => {
+    cy.wait('@successfullyInterventionCreation').then(() => {
       // checks the toast message triggered after intervention creation
       cy.get('[data-testid="toast-message"]').should(
         'contain',
@@ -171,7 +111,7 @@ describe('Intervention creation', () => {
     cy.get('[data-testid="title-input"]').type('Lorem ipsum title');
 
     // selects a material
-    cy.wait('@scenarioRawMaterials').then(() => {
+    cy.wait('@materialsTrees').then(() => {
       const $inputSelect = cy.get('[data-testid="materials-select"]');
       $inputSelect.click();
 
@@ -179,7 +119,7 @@ describe('Intervention creation', () => {
     });
 
     // selects a year
-    cy.wait('@scenarioYears');
+    cy.wait('@sourcingRecordYears');
     cy.get('[data-testid="select-startYear"]').type(
       '{enter}{downArrow}{downArrow}{downArrow}{downArrow}{enter}',
     );
@@ -203,21 +143,21 @@ describe('Intervention creation', () => {
     cy.get('[data-testid="BL_LUC_T-input-input"]').should('have.length', 0);
 
     // waits for material request and selects an option
-    cy.wait('@scenarioNewMaterials').then(() => {
+    cy.wait('@materialsTrees').then(() => {
       const $inputSelect = cy.get('[data-testid="new-material-select"]');
       $inputSelect.click();
       $inputSelect.find('.rc-tree-list').contains('Fruits, berries and nuts').click();
     });
 
     // waits for scenario location types request and selects an option
-    cy.wait('@scenarioLocationTypes');
+    cy.wait('@supportedLocationTypes');
     cy.get('[data-testid="select-newLocationType"]')
       .click()
       .find('input:visible')
       .type('Country of production{enter}');
 
     // waits for scenario location countries request and selects an option
-    cy.wait('@scenarioLocationCountries');
+    cy.wait('@originsTrees');
     cy.get('[data-testid="select-newLocationCountryInput"]')
       .click()
       .find('input:visible')
@@ -252,7 +192,7 @@ describe('Intervention location type', () => {
       fixture: 'intervention/intervention-creation-dto',
     }).as('successfullInterventionCreation');
 
-    cy.wait('@scenarioLocationTypes');
+    cy.wait('@supportedLocationTypes');
 
     // Choose a location type: Switch to new material
     cy.get('[data-testid="intervention-type-option"]').first().click();
@@ -362,7 +302,7 @@ describe('Intervention creation: Change production efficiency', () => {
     cy.get('[data-testid="title-input"]').type('Lorem ipsum title');
 
     // selects a material
-    cy.wait('@scenarioRawMaterials').then(() => {
+    cy.wait('@materialsTrees').then(() => {
       const $inputSelect = cy.get('[data-testid="materials-select"]');
       $inputSelect.click();
 
@@ -370,7 +310,7 @@ describe('Intervention creation: Change production efficiency', () => {
     });
 
     // selects a year
-    cy.wait('@scenarioYears');
+    cy.wait('@sourcingRecordYears');
     cy.get('[data-testid="select-startYear"]').type(
       '{enter}{downArrow}{downArrow}{downArrow}{downArrow}{enter}',
     );

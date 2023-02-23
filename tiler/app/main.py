@@ -6,7 +6,7 @@ from titiler.core.middleware import TotalTimeMiddleware, LoggerMiddleware
 from .middlewares.auth_middleware import AuthMiddleware
 from .middlewares.url_injector import inject_s3_url
 
-app = FastAPI(title="LandGriffon Tiler")
+app = FastAPI(title="LandGriffon Tiler", root_path="/tiler")
 app.add_middleware(TotalTimeMiddleware)
 app.add_middleware(LoggerMiddleware)
 app.add_middleware(AuthMiddleware)

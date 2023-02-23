@@ -4,14 +4,12 @@ data "aws_eks_cluster_auth" "cluster" {
 
 locals {
   api_domain      = "api.${var.namespace != "production" ? ("${var.namespace}.") : ""}${var.domain}"
-  tiler_domain    = "tiler.${var.namespace != "production" ? ("${var.namespace}.") : ""}${var.domain}"
   client_domain   = "client.${var.namespace != "production" ? ("${var.namespace}.") : ""}${var.domain}"
 }
 
 data "aws_route53_zone" "landgriffon-com" {
   name = "landgriffon.com."
 }
-
 
 resource "aws_acm_certificate" "landgriffon_cert" {
   domain_name               = local.api_domain
@@ -39,14 +37,6 @@ resource "aws_route53_record" "landgriffon-com-record" {
 resource "aws_route53_record" "api-landgriffon-com" {
   zone_id = data.aws_route53_zone.landgriffon-com.zone_id
   name    = local.api_domain
-  type    = "CNAME"
-  ttl     = "300"
-  records = [kubernetes_ingress_v1.landgriffon.status[0].load_balancer[0].ingress[0].hostname]
-}
-
-resource "aws_route53_record" "tiler-landgriffon-com" {
-  zone_id = data.aws_route53_zone.landgriffon-com.zone_id
-  name    = local.tiler_domain
   type    = "CNAME"
   ttl     = "300"
   records = [kubernetes_ingress_v1.landgriffon.status[0].load_balancer[0].ingress[0].hostname]
@@ -86,7 +76,6 @@ resource "kubernetes_ingress_v1" "landgriffon" {
       hosts = [
         local.api_domain,
         local.client_domain,
-        local.tiler_domain
       ]
       secret_name = "landgriffon-certificate"
     }
@@ -131,10 +120,13 @@ resource "kubernetes_ingress_v1" "landgriffon" {
       }
     }
 
+
     rule {
-      host = local.tiler_domain
+      host = local.api_domain
       http {
         path {
+          path_type = "Prefix"
+          path      = "/tiler"
           backend {
             service {
               name = "tiler"
@@ -146,6 +138,8 @@ resource "kubernetes_ingress_v1" "landgriffon" {
         }
       }
     }
+
+
 
     rule {
       host = local.client_domain

@@ -333,31 +333,47 @@ download-deforestation-list:
 	mkdir -p $(WORKDIR_DEFORESTATION)
 	wget -q -O $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear.txt "https://storage.googleapis.com/earthenginepartners-hansen/GFC-2020-v1.8/lossyear.txt"
 
-download-deforestation: download-deforestation-list
-	@echo "Iterating deforestation files... "
-	mkdir -p $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear
-	cat $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear.txt | xargs -P $(PARALLELIZATION_FACTOR) -I {} /bin/bash -c 'make transform-deforestation-file FILE={}'
-
 # Managed forest Mask from Lesiv(2022) - to be used with deforestation and forest ghg.
 # data download from https://zenodo.org/record/5879022
-#After downloading the mask layer,
+# After downloading the mask layer, we will make use of it in the command transform
+# deforestation file
 download-managed-forests:
 	@echo "Downloading managed forests file... "
 	mkdir -p $(WORKDIR_DEFORESTATION)/Lesiv_2015_managed_forests
 	wget -q -O $(WORKDIR_DEFORESTATION)/Lesiv_2015_managed_forests/managed_forests.tif "https://zenodo.org/record/5879022/files/FML_v3-2_with-colorbar.tif?download=1"
 
+download-deforestation: download-deforestation-list | download-managed-forests
+	@echo "Iterating deforestation files... "
+	mkdir -p $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear
+	cat $(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear.txt | xargs -P $(PARALLELIZATION_FACTOR) -I {} /bin/bash -c 'make transform-deforestation-file FILE={}'
 
 # table_name = 00N_000W
-# 1st gdal_cal do convert to pixel mask of 2020 deforestation events
+# mask_table_name = 00N_000W_mask
+# 1st download the lost file
+# 2nd remove the final file if it exists
+# 3rd clip the mask to the extent of the deforestation file
+# 4th gdal_warp to resample the mask to the same resolution of the deforestation file
+# 5th gdal_calc to multiply the mask by the deforestation file and convert to pixel mask (5 years) for 2020 deforestation events
 # the resampling sums the pixels then divide by the number of original pixels fit in
 # resampled pixel to get the % of area afected by deforestation
 transform-deforestation-file:
 	@echo "Transforming deforestation file $(FILE) ... "
 	table_name=`basename -s .tif $(FILE) | tr -d ' \t\n\r' | grep -oP "\d{2}[A-Z]_\d{3}[A-Z]"`; \
+	mask_path=`$${table_name}_mask`; \
+	mask_table_name=`basename -s .tif $${mask_path}; \
  	wget -q -O "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" $(FILE); \
 	rm -f "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
-	gdal_calc.py --quiet --calc "(A>16)" --format GTiff --co NBITS=1 --co compress=PACKBITS --co tiled=YES --co BLOCKXSIZE=400 --co BLOCKYSIZE=400  --NoDataValue 0 --overwrite \
+	rm -f "$(WORKDIR_DEFORESTATION)/$${mask_table_name}_clip.tif"; \
+	rm -f "$(WORKDIR_DEFORESTATION)/$${mask_table_name}.tif"; \
+	rio clip "$${mask_path}" "$(WORKDIR_DEFORESTATION)/$${mask_table_name}_clip.tif" \
+		--like "$(WORKDIR_DEFORESTATION)/$${table_name}.tif"; \
+	gdalwarp -q -s_srs EPSG:4326 -t_srs EPSG:4326 -r nearest -tr 0.00025 0.00025 -multi -of GTiff  -ot UInt32 -wo NUM_THREADS=ALL_CPUS \
+		'$(WORKDIR_DEFORESTATION)/$${mask_table_name}_clip.tif' \
+		'$(WORKDIR_DEFORESTATION)/$${mask_table_name}.tif'; \
+	gdal_calc.py --quiet --calc "(A>16)*(B<12)" \
+		--format GTiff --co NBITS=1 --co compress=PACKBITS --co tiled=YES --co BLOCKXSIZE=400 --co BLOCKYSIZE=400  --NoDataValue 0 --overwrite \
 		-A "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" \
+		-B "$(WORKDIR_DEFORESTATION)/$${mask_table_name}.tif" \
 		--outfile  "$(WORKDIR_DEFORESTATION)/$${table_name}.tif"; \
 	gdalwarp -q -s_srs EPSG:4326 -t_srs EPSG:4326 -r sum -tr 0.0833333333333286 0.0833333333333286 -multi -of GTiff  -ot UInt32 -wo NUM_THREADS=ALL_CPUS \
 		"$(WORKDIR_DEFORESTATION)/$${table_name}.tif" \

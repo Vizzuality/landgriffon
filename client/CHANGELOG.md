@@ -25,13 +25,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Replaced Deck.gl map with `react-map-gl` to prepare migration to Layer Manager. [LANDGRIF-812](https://vizzuality.atlassian.net/browse/LANDGRIF-812)
 
 ### Fixed
-- Styles amendments for the contextual layers modal
-- Fixed callback Url after login [LANDGRIF-1260](https://vizzuality.atlassian.net/browse/LANDGRIF-1260)
-- Fixed items alignement in the legend. [LANDGRIF-1093](https://vizzuality.atlassian.net/browse/LANDGRIF-1093)
-- Fixes response error displayed messages. [LANDGRIF-1273](https://vizzuality.atlassian.net/browse/LANDGRIF-1273)
-- Fixed axios response error type.
-- Fixed callbackUrl after logout [LANDGRIF-1260](https://vizzuality.atlassian.net/browse/LANDGRIF-1260)
-- Fixed coefficients panel acting weird when values are edited. [LANDGRIF-1246](https://vizzuality.atlassian.net/browse/LANDGRIF-1246)
 - Fix permissions for edit scenarios on analysis pages [LANDGRIF-1253](https://vizzuality.atlassian.net/browse/LANDGRIF-1253)
 
 ## [v0.4.0]

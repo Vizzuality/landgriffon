@@ -1,6 +1,7 @@
 FROM osgeo/gdal:ubuntu-full-3.2.1
 LABEL maintainer="hello@vizzuality.com"
-
+# TODO: check GDAL env vars!
+#ENV GDAL_READ_DIR_ON_OPEN=false
 ENV NODE_OPTIONS=--max_old_space_size=16384
 
 # Silence some apt-get errors

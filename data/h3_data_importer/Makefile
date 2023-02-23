@@ -69,18 +69,18 @@ download-mapspam-crop-harvest:
 extract-mapspam-crop-production: download-mapspam-crop-production
 	mkdir -p $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod
 	unzip -u $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod.geotiff.zip *_A.tif -d $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod
-	gdal_calc.py --quiet --calc "A+B+C+D" --format GTiff --type Float32 \
+	gdal_calc.py --quiet --NoDataValue=-1 --calc "A+B+C+D" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TEMF_A.tif \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_GROU_A.tif \
 		-C $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_BANA_A.tif \
 		-D $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TROF_A.tif \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TemfGrouBanaTrof_A.tif
-	gdal_calc.py --quiet --calc "A+B+C" --format GTiff --type Float32 \
+	gdal_calc.py --quiet --NoDataValue=-1 --calc "A+B+C" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_ACOF_A.tif \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TEAS_A.tif \
 		-C $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_REST_A.tif \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_AcofTeasRest_A.tif
-	gdal_calc.py --quiet --calc "A+B+C+D+E+F+G" --format GTiff --type Float32 \
+	gdal_calc.py --quiet --NoDataValue=-1 --calc "A+B+C+D+E+F+G" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_WHEA_A.tif \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_OCER_A.tif \
 		-C $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_BARL_A.tif \
@@ -89,13 +89,13 @@ extract-mapspam-crop-production: download-mapspam-crop-production
 		-F $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_SORG_A.tif \
 		-G $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_SMIL_A.tif \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_WheaOcerBarlMaizRiceSorgSmil_A.tif
-	gdal_calc.py --quiet --calc "A+B+C+D" --format GTiff --type Float32 \
+	gdal_calc.py --quiet --NoDataValue=-1 --calc "A+B+C+D" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_WHEA_A.tif \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_OCER_A.tif \
 		-C $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_POTA_A.tif \
 		-D $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_OPUL_A.tif \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_WheaOcerPotaOpul_A.tif
-	gdal_calc.py --quiet --calc "A+B+C+D+E+F+G+H+I" --format GTiff --type Float32 \
+	gdal_calc.py --quiet --NoDataValue=-1 --calc "A+B+C+D+E+F+G+H+I" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_SOYB_A.tif \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_GROU_A.tif \
 		-C $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_CNUT_A.tif \
@@ -106,45 +106,49 @@ extract-mapspam-crop-production: download-mapspam-crop-production
 		-H $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_OCER_A.tif \
 		-I $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_SUGB_A.tif \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_SoybGrouCnutOoilRapeSunfRestOcerSugb_A.tif
-	gdal_calc.py --quiet --calc "A+B" --format GTiff --type Float32 \
+	gdal_calc.py --quiet --NoDataValue=-1 --calc "A+B" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_SUGC_A.tif \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_SUGB_A.tif \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_SugcSugb_A.tif
-	gdal_calc.py --quiet --calc "A+B" --format GTiff --type Float32 \
+	gdal_calc.py --quiet --NoDataValue=-1 --calc "A+B" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_OCER_A.tif \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_WHEA_A.tif \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_OcerWhea_A.tif
-	gdal_calc.py --quiet --calc "A+B" --format GTiff --type Float32 \
+	gdal_calc.py --quiet --NoDataValue=-1 --calc "A+B" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_VEGE_A.tif \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TEMF_A.tif \
 		-C $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TROF_A.tif \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_VegeTemfTrof_A.tif
-	gdal_calc.py --quiet --calc "A+B" --format GTiff --type Float32 \
+	gdal_calc.py --quiet --NoDataValue=-1 --calc "A+B" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TROF_A.tif \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TEMF_A.tif \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TrofTemf_A.tif
+	mkdir $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod_rounded
 	for file in $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/*_A.tif; do\
-		gdal_calc.py --quiet --calc="numpy.round(A, 4)" -A "$$file" --outfile="$$file";\
+		gdal_calc.py --quiet --NoDataValue=0 --calc="numpy.round(A, 4)" -A "$$file" --outfile=$(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod_rounded/`basename $$file`;\
 	done
+	rm -r $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod
+	mv $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod_rounded $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod
+
 
 extract-mapspam-crop-harvest: download-mapspam-crop-harvest
 	mkdir -p $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha
 	unzip -u $(WORKDIR_MAPSPAM)/spam2010v2r0_global_harv_area.geotiff.zip *_A.tif -d $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha
-	gdal_calc.py --quiet --calc="numpy.sum(A, axis=0)" --format Gtiff \
+	gdal_calc.py --quiet --NoDataValue=-1 --calc="numpy.sum(A, axis=0)" --format Gtiff \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/*_A.tif \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_All_A.tif
-	gdal_calc.py --quiet --calc "A+B+C+D" --format GTiff --type Float32 \
+	gdal_calc.py --quiet --NoDataValue=-1 --calc "A+B+C+D" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TEMF_A.tif --A_band 1 \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_GROU_A.tif --B_band 1 \
 		-C $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_BANA_A.tif --C_band 1 \
 		-D $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TROF_A.tif --D_band 1 \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TemfGrouBanaTrof_A.tif
-	gdal_calc.py --quiet --calc "A+B+C" --format GTiff --type Float32 \
+	gdal_calc.py --quiet --NoDataValue=-1 --calc "A+B+C" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_ACOF_A.tif --A_band 1 \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TEAS_A.tif --B_band 1 \
 		-C $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_REST_A.tif --C_band 1 \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_AcofTeasRest_A.tif
-	gdal_calc.py --quiet --calc "A+B+C+D+E+F+G" --format GTiff --type Float32 \
+	gdal_calc.py --quiet --NoDataValue=-1 --calc "A+B+C+D+E+F+G" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_WHEA_A.tif --A_band 1 \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_OCER_A.tif --B_band 1 \
 		-C $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_BARL_A.tif --C_band 1 \
@@ -153,13 +157,13 @@ extract-mapspam-crop-harvest: download-mapspam-crop-harvest
 		-F $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_SORG_A.tif --F_band 1 \
 		-G $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_SMIL_A.tif --G_band 1 \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_WheaOcerBarlMaizRiceSorgSmil_A.tif
-	gdal_calc.py --quiet --calc "A+B+C+D" --format GTiff --type Float32 \
+	gdal_calc.py --quiet --NoDataValue=-1 --calc "A+B+C+D" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_WHEA_A.tif --A_band 1 \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_OCER_A.tif --B_band 1 \
 		-C $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_POTA_A.tif --C_band 1 \
 		-D $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_OPUL_A.tif --D_band 1 \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_WheaOcerPotaOpul_A.tif
-	gdal_calc.py --quiet --calc "A+B+C+D+E+F+G+H+I" --format GTiff --type Float32 \
+	gdal_calc.py --quiet --NoDataValue=-1 --calc "A+B+C+D+E+F+G+H+I" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_SOYB_A.tif --A_band 1 \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_GROU_A.tif --B_band 1 \
 		-C $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_CNUT_A.tif --C_band 1 \
@@ -170,26 +174,30 @@ extract-mapspam-crop-harvest: download-mapspam-crop-harvest
 		-H $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_OCER_A.tif --H_band 1 \
 		-I $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_SUGB_A.tif --I_band 1 \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_SoybGrouCnutOoilRapeSunfRestOcerSugb_A.tif
-	gdal_calc.py --quiet --calc "A+B" --format GTiff --type Float32 \
+	gdal_calc.py --quiet --NoDataValue=-1 --calc "A+B" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_SUGC_A.tif --A_band 1 \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_SUGB_A.tif --B_band 1 \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_SugcSugb_A.tif
-	gdal_calc.py --quiet --calc "A+B" --format GTiff --type Float32 \
+	gdal_calc.py --quiet --NoDataValue=-1 --calc "A+B" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_OCER_A.tif --A_band 1 \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_WHEA_A.tif --B_band 1 \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_OcerWhea_A.tif
-	gdal_calc.py --quiet --calc "A+B" --format GTiff --type Float32 \
+	gdal_calc.py --quiet --NoDataValue=-1 --calc "A+B" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_VEGE_A.tif --A_band 1 \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TEMF_A.tif --B_band 1 \
 		-C $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TROF_A.tif --C_band 1 \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_VegeTemfTrof_A.tif
-	gdal_calc.py --quiet --calc "A+B" --format GTiff --type Float32 \
+	gdal_calc.py --quiet --NoDataValue=-1 --calc "A+B" --format GTiff --type Float32 \
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TROF_A.tif --A_band 1 \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TEMF_A.tif --B_band 1 \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TrofTemf_A.tif
+	mkdir $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha_rounded
 	for file in $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/*_A.tif; do\
-		gdal_calc.py --quiet --calc="numpy.round(A, 4)" -A "$$file" --outfile="$$file";\
+		gdal_calc.py --quiet --NoDataValue=0 --calc="numpy.round(A, 4)" -A "$$file" --outfile=$(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha_rounded/`basename $$file`;\
 	done
+	rm -r $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha
+	mv $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha_rounded $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha
+
 #CONVERT DATASETS:
 # <table>: <tiff_folder>
 # Convert the tiffs in the folder to h3indexes at resolution 6

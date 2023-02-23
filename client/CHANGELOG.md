@@ -12,13 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Analysis filters: location types options now listed according to scenarios (if any). [LANDGRIF-1255](https://vizzuality.atlassian.net/browse/LANDGRIF-1255)
 
 ### Fixed
-- analysis page: location type selected holds values after closing popover. [LANDGRIF-1250](https://vizzuality.atlassian.net/browse/LANDGRIF-1250)
 - Fix permissions for edit scenarios on analysis pages [LANDGRIF-1253](https://vizzuality.atlassian.net/browse/LANDGRIF-1253)
 
 ## [v0.4.0]
 
 ### Added
-- Added clearable property for autocomplete selects.
 - Added role check to enable upload data source button [LANDGRIF-1125](https://vizzuality.atlassian.net/browse/LANDGRIF-1125)
 - Added `@floating-ui/react` and `@floating-ui/react-dom` dependencies. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
 - Added disabled option styles for single and autocomplete selects. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
@@ -46,7 +44,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Move the users page from data to user [LANDGRIF-1122](https://vizzuality.atlassian.net/browse/LANDGRIF-1122)
 
 ### Fixed
-- Scenario comparison was not working on the charts page [LANDGRIF-1252](https://vizzuality.atlassian.net/browse/LANDGRIF-1252)
 - Intervention form: an empty object was being sent for coefficients when these were `undefined`. [LANDGRIF-1238](https://vizzuality.atlassian.net/browse/LANDGRIF-1238)
 - Material layer fixed to resolution 4 [LANDGRIF-1234](https://vizzuality.atlassian.net/browse/LANDGRIF-1234)
 - Issue preventing new users to sign up in the platform. [LANDGRIF-1222](https://vizzuality.atlassian.net/browse/LANDGRIF-1222)

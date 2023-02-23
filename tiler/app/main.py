@@ -3,10 +3,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from titiler.core import TilerFactory
 from titiler.core.errors import DEFAULT_STATUS_CODES, add_exception_handlers
 from titiler.core.middleware import TotalTimeMiddleware, LoggerMiddleware
+
+from .config.config import get_settings
 from .middlewares.auth_middleware import AuthMiddleware
 from .middlewares.url_injector import inject_s3_url
 
-app = FastAPI(title="LandGriffon Tiler", root_path="/tiler")
+root_path = get_settings().root_path
+titiler_router_prefix = get_settings().titiler_router_prefix
+titiler_prefix = get_settings().titiler_prefix
+
+app = FastAPI(title="LandGriffon Tiler", docs_url='/tiler/docs', openapi_url='/tiler')
 app.add_middleware(TotalTimeMiddleware)
 app.add_middleware(LoggerMiddleware)
 app.add_middleware(AuthMiddleware)
@@ -15,8 +21,8 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"],
                    allow_headers=["*"], )
 
 # single COG tiler. One file can have multiple bands
-cog = TilerFactory(router_prefix="/cog", path_dependency=inject_s3_url)
-app.include_router(cog.router, tags=["Cloud Optimized GeoTIFF"], prefix="/cog", )
+cog = TilerFactory(router_prefix=titiler_router_prefix, path_dependency=inject_s3_url)
+app.include_router(cog.router, tags=["Cloud Optimized GeoTIFF"], prefix=titiler_prefix)
 add_exception_handlers(app, DEFAULT_STATUS_CODES)
 
 

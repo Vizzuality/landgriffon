@@ -129,7 +129,20 @@ module "k8s_tiler" {
     {
       name  = "S3_BUCKET_URL"
       value = var.science_bucket_name
-    }
+    },
+    {
+      name  = "ROOT_PATH"
+      value = ""
+    },
+    {
+      name  = "TITILER_PREFIX"
+      value = "/cog"
+    },
+    {
+      name  = "TITILER_ROUTER_PREFIX"
+      value = "/cog"
+    },
+
   ]
 
 }

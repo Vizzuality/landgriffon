@@ -108,23 +108,6 @@ resource "kubernetes_ingress_v1" "landgriffon" {
       host = local.api_domain
       http {
         path {
-          backend {
-            service {
-              name = "api"
-              port {
-                number = 3000
-              }
-            }
-          }
-        }
-      }
-    }
-
-
-    rule {
-      host = local.api_domain
-      http {
-        path {
           path_type = "Prefix"
           path      = "/tiler"
           backend {
@@ -139,7 +122,21 @@ resource "kubernetes_ingress_v1" "landgriffon" {
       }
     }
 
-
+    rule {
+      host = local.api_domain
+      http {
+        path {
+          backend {
+            service {
+              name = "api"
+              port {
+                number = 3000
+              }
+            }
+          }
+        }
+      }
+    }
 
     rule {
       host = local.client_domain

@@ -56,7 +56,6 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
   const params: Partial<ImpactComparisonParams> = {
     ...omit(filters, 'indicatorId'),
     indicatorIds: [indicator.id],
-    disabledPagination: true,
   };
 
   // Scenario vs scenario comparison

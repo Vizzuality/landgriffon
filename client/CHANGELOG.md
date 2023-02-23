@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Move the users page from data to user [LANDGRIF-1122](https://vizzuality.atlassian.net/browse/LANDGRIF-1122)
 
 ### Fixed
+- Scenario comparison was not working on the charts page [LANDGRIF-1252](https://vizzuality.atlassian.net/browse/LANDGRIF-1252)
 - Intervention form: an empty object was being sent for coefficients when these were `undefined`. [LANDGRIF-1238](https://vizzuality.atlassian.net/browse/LANDGRIF-1238)
 - Material layer fixed to resolution 4 [LANDGRIF-1234](https://vizzuality.atlassian.net/browse/LANDGRIF-1234)
 - Issue preventing new users to sign up in the platform. [LANDGRIF-1222](https://vizzuality.atlassian.net/browse/LANDGRIF-1222)

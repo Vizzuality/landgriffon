@@ -117,7 +117,7 @@ const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
                           href={`/data/scenarios/${scenario.id}/edit`}
                           variant="white"
                           size="xs"
-                          disabled={canEdit}
+                          disabled={!canEdit}
                         >
                           Edit
                         </LinkAnchor>

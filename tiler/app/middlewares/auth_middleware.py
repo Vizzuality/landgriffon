@@ -10,6 +10,7 @@ api_port = get_settings().api_port
 
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
+        print('accessing path', request.url.path)
         env = os.environ.get('PYTHON_ENV')
         if env == 'dev':
             return await call_next(request)

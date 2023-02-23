@@ -7,9 +7,7 @@ repo_name          = "landgriffon"
 environments = {
   dev : {},
   test : {},
-  vcf : {},
   tetrapack : {
-
   },
   demo : {}
 }

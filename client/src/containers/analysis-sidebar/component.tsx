@@ -46,7 +46,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
     sort: sort as string,
     'page[size]': 10,
     'search[title]': searchTerm,
-    include: 'scenarioInterventions',
+    include: 'scenarioInterventions,user',
     hasActiveInterventions: true,
   });
 

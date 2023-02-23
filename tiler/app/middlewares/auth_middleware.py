@@ -13,6 +13,8 @@ class AuthMiddleware(BaseHTTPMiddleware):
         env = os.environ.get('PYTHON_ENV')
         if env == 'dev':
             return await call_next(request)
+        if request.url.path in ("/health", "/docs", "/openapi.json"):
+            return await call_next(request)
         else:
             try:
                 token = request.headers.get("Authorization")

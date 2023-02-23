@@ -92,6 +92,11 @@ Cypress.Commands.add('interceptAllRequests', (): void => {
     fixture: 'trees/suppliers',
   }).as('suppliersTrees');
 
+  cy.intercept(
+    'GET',
+    '/api/v1/**/trees?withSourcingLocations=true&scenarioIds[]=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7',
+  ).as('treesSelectorsWithScenarioId');
+
   cy.intercept('GET', '/api/v1/sourcing-locations/location-types*', {
     statusCode: 200,
     fixture: 'location-types/index',
@@ -115,9 +120,20 @@ Cypress.Commands.add('interceptAllRequests', (): void => {
   cy.intercept(
     {
       method: 'GET',
+      pathname: '/api/v1/scenarios/*',
+    },
+    {
+      statusCode: 200,
+      fixture: 'scenario/scenario-creation',
+    },
+  );
+
+  cy.intercept(
+    {
+      method: 'GET',
       pathname: '/api/v1/scenarios',
       query: {
-        disablePagination: 'true',
+        // disablePagination: 'true',
         hasActiveInterventions: 'true',
       },
     },
@@ -126,17 +142,6 @@ Cypress.Commands.add('interceptAllRequests', (): void => {
       fixture: 'scenario/scenarios',
     },
   ).as('scenariosNoPaginated');
-
-  cy.intercept(
-    {
-      method: 'GET',
-      pathname: '/api/v1/scenarios/*',
-    },
-    {
-      statusCode: 200,
-      fixture: 'scenario/scenario-creation',
-    },
-  );
 
   cy.intercept('GET', '/api/v1/impact/compare/scenario/vs/actual?*', {
     statusCode: 200,

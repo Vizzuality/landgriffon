@@ -30,7 +30,7 @@ const YearsRange: React.FC = () => {
   });
 
   useEffect(() => {
-    setYears(range(data[0], toNumber(data[data.length - 1] + 2) + 1));
+    setYears(range(data[0], toNumber(data[data.length - 1] + 100) + 1));
   }, [data]);
 
   useEffect(() => {

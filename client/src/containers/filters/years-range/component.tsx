@@ -13,7 +13,7 @@ import {
 import { Transition } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/solid';
 
-import Select from 'components/forms/select';
+import Select from 'components/forms/select/autocomplete';
 
 import type { Option } from 'components/forms/select';
 import type { YearsRangeFilterProps } from './types';

@@ -1,30 +1,114 @@
+beforeEach(() => {
+  cy.intercept(
+    {
+      method: 'GET',
+      pathname: '/api/v1/scenarios*',
+      query: {
+        include: 'scenarioInterventions',
+        'page[number]': '1',
+        'page[size]': '10',
+        sort: '-updatedAt',
+      },
+    },
+    {
+      statusCode: 200,
+      fixture: 'scenario/scenarios',
+    },
+  ).as('scenariosList');
+
+  cy.intercept(
+    {
+      method: 'GET',
+      pathname: '/api/v1/scenarios',
+      query: {
+        disablePagination: 'true',
+        hasActiveInterventions: 'true',
+      },
+    },
+    {
+      statusCode: 200,
+      fixture: 'scenario/scenarios',
+    },
+  ).as('scenariosNoPaginated');
+
+  cy.intercept(
+    {
+      method: 'GET',
+      pathname: '/api/v1/scenarios/*',
+    },
+    {
+      statusCode: 200,
+      fixture: 'scenario/scenario-creation',
+    },
+  );
+
+  cy.intercept('GET', '/api/v1/impact/compare/scenario/vs/actual?*', {
+    statusCode: 200,
+    fixture: 'scenario/scenario-vs-actual',
+  }).as('scenarioVsActual');
+
+  cy.intercept('GET', '/api/v1/impact/compare/scenario/vs/scenario?*', {
+    statusCode: 200,
+    fixture: 'scenario/scenario-vs-scenario',
+  }).as('scenarioVsScenario');
+
+  cy.intercept('GET', '/api/v1/h3/map/impact*', {
+    fixture: 'layers/impact-layer.json',
+  });
+
+  cy.intercept('GET', '/api/v1/impact/table*', {
+    fixture: 'impact/table',
+  }).as('fetchImpactTable');
+
+  cy.intercept('GET', '/api/v1/impact/ranking?*', {
+    fixture: 'impact/chart',
+  }).as('fetchChartRanking');
+
+  cy.intercept('GET', '/api/v1/indicators*', {
+    fixture: 'indicators/index',
+  });
+
+  cy.intercept('GET', '/api/v1/indicators/*', {
+    fixture: 'indicators/show',
+  });
+
+  cy.intercept('GET', '/api/v1/contextual-layers/categories', {
+    fixture: 'layers/contextual-layer-categories.json',
+  });
+
+  cy.intercept('GET', '/api/v1/h3/years*', {
+    statusCode: 200,
+    fixture: 'years/index',
+  });
+
+  cy.intercept('GET', '/api/v1/materials/trees*', {
+    statusCode: 200,
+    fixture: 'trees/materials',
+  });
+
+  cy.intercept('GET', '/api/v1/suppliers/trees*', {
+    statusCode: 200,
+    fixture: 'trees/suppliers',
+  });
+
+  cy.intercept('GET', '/api/v1/sourcing-locations/location-types/supported', {
+    statusCode: 200,
+    fixture: 'sourcing-locations/supported',
+  });
+
+  cy.intercept('GET', '/api/v1/admin-regions/trees*', {
+    statusCode: 200,
+    fixture: 'trees/admin-regions',
+  });
+
+  cy.login();
+});
+
+afterEach(() => {
+  cy.logout();
+});
+
 describe('Analysis and scenarios', () => {
-  beforeEach(() => {
-    cy.interceptAllRequests();
-    cy.intercept(
-      {
-        method: 'GET',
-        pathname: '/api/v1/scenarios*',
-        query: {
-          include: 'scenarioInterventions',
-          'page[number]': '1',
-          'page[size]': '10',
-          sort: '-updatedAt',
-        },
-      },
-      {
-        statusCode: 200,
-        fixture: 'scenario/scenarios',
-      },
-    ).as('scenariosList');
-
-    cy.login();
-  });
-
-  afterEach(() => {
-    cy.logout();
-  });
-
   it('should be able to see the analysis page', () => {
     cy.visit('/analysis/map');
     cy.url().should('contain', '/analysis/map');
@@ -54,6 +138,35 @@ describe('Analysis and scenarios', () => {
       expect(scenarioIds).to.be.null;
     });
   });
+
+  // it('should be able to select a scenario vs actual data in the comparison select', () => {
+  //   cy.visit('/analysis/table');
+  //   cy.wait('@scenariosNoPaginated');
+
+  //   cy.intercept(
+  //     'GET',
+  //     '/api/v1/**/trees?withSourcingLocations=true&scenarioIds[]=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7',
+  //   ).as('treesSelectorsWithScenarioId');
+
+  //   cy.get('[data-testid="scenario-item-null"]') // actual data
+  //     .find('[data-testid="select-comparison"]')
+  //     .click()
+  //     .find('input:visible')
+  //     .type('Test{enter}');
+
+  //   cy.url().should('contain', 'compareScenarioId=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7');
+
+  //   // checking comparison cell is there
+  //   cy.wait('@scenarioVsActual')
+  //     .its('request.url')
+  //     .should('contain', 'comparedScenarioId=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7');
+  //   cy.get('[data-testid="comparison-cell"]').should('have.length.above', 1);
+
+  //   // checking tree selectors on more filers
+  //   cy.wait('@treesSelectorsWithScenarioId')
+  //     .its('request.url')
+  //     .should('contain', 'scenarioIds[]=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7');
+  // });
 
   it('should be able to select a scenario vs scenario in the comparison select', () => {
     cy.intercept(

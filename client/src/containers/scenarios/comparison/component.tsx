@@ -49,6 +49,16 @@ const ScenariosComparison: FC = () => {
     [dispatch, push, query],
   );
 
+  const handleScenarioRemoval = useCallback(() => {
+    // TODO: deprecated, we'll keep only for retro-compatibility
+    dispatch(setComparisonEnabled(false));
+    dispatch(setScenarioToCompareAction(null));
+
+    push({ query: pickBy({ ...query, compareScenarioId: null }) }, null, {
+      shallow: true,
+    });
+  }, [dispatch, push, query]);
+
   // Reset comparison when options changes
   useEffect(() => {
     if (selected?.value && compareScenarioId !== selected?.value) {
@@ -82,6 +92,8 @@ const ScenariosComparison: FC = () => {
         placeholder="Select what to compare"
         onChange={handleOnChange}
         data-testid="comparison"
+        clearable
+        onClearSelection={handleScenarioRemoval}
       />
     </>
   );

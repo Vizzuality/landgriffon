@@ -14,4 +14,6 @@ export type AutoCompleteSelectProps<T = string> = Omit<
   showHint?: boolean;
   onChange: (value: Option<T>) => void;
   rowHeight?: number;
+  clearable?: boolean;
+  onClearSelection?: () => void;
 };

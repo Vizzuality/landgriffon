@@ -1,7 +1,7 @@
 import { cloneElement, useCallback, useEffect, useMemo, useState } from 'react';
 import classnames from 'classnames';
 import { Transition, Combobox } from '@headlessui/react';
-import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/solid';
+import { ChevronUpIcon, ChevronDownIcon, XIcon } from '@heroicons/react/solid';
 import { flip, useFloating, size, autoUpdate, offset } from '@floating-ui/react-dom';
 import { FloatingPortal } from '@floating-ui/react';
 import { List as VirtualizedList } from 'react-virtualized';
@@ -26,7 +26,9 @@ const AutoCompleteSelect = <T,>({
   rowHeight = DEFAULT_ROW_HEIGHT,
   options,
   showHint,
+  clearable = false,
   onChange,
+  onClearSelection,
   ...props
 }: AutoCompleteSelectProps<T>) => {
   const [virtualizedListWidth, setVirtualizedListWidth] = useState(0);
@@ -115,10 +117,22 @@ const AutoCompleteSelect = <T,>({
     [filteredOptions],
   );
 
+  const clearSelection = useCallback(() => {
+    setSelected(null);
+    setQuery('');
+
+    if (onClearSelection) onClearSelection();
+  }, [onClearSelection]);
+
   const virtualizedListHeight = useMemo(() => {
     if (!filteredOptions.length) return rowHeight;
     return filteredOptions.length * rowHeight < 240 ? filteredOptions.length * rowHeight : 240;
   }, [filteredOptions, rowHeight]);
+
+  const isEmptySelection = useMemo(
+    () => selected === null || selected?.value === null || selected?.value === '',
+    [selected],
+  );
 
   // ? in case the value is not set in the hook initialization, it will be set here after first render.
   useEffect(() => {
@@ -157,24 +171,38 @@ const AutoCompleteSelect = <T,>({
                 displayValue={(option) => option?.label}
                 ref={reference}
               />
-              <Combobox.Button className="absolute inset-0 flex items-center w-full pr-2">
+              <Combobox.Button className="absolute inset-0 flex items-center w-full pr-2" as="div">
                 {icon && <div className="mr-2">{cloneElement(icon)}</div>}
                 <div className="absolute right-1">
                   {open && !loading && (
-                    <ChevronUpIcon
-                      className={classnames('w-5 h-5 text-gray-900', {
-                        'text-gray-300': props.disabled,
-                      })}
-                      aria-hidden="true"
-                    />
+                    <div className="flex items-center gap-1">
+                      {!isEmptySelection && clearable && (
+                        <button type="button" onClick={clearSelection}>
+                          <XIcon className="w-4 h-4" />
+                        </button>
+                      )}
+                      <ChevronUpIcon
+                        className={classnames('w-5 h-5 text-gray-900', {
+                          'text-gray-300': props.disabled,
+                        })}
+                        aria-hidden="true"
+                      />
+                    </div>
                   )}
                   {!open && !loading && (
-                    <ChevronDownIcon
-                      className={classnames('w-5 h-5 text-gray-900', {
-                        'text-gray-300': props.disabled,
-                      })}
-                      aria-hidden="true"
-                    />
+                    <div className="flex items-center gap-1">
+                      {!isEmptySelection && clearable && (
+                        <button type="button" onClick={clearSelection}>
+                          <XIcon className="w-4 h-4" />
+                        </button>
+                      )}
+                      <ChevronDownIcon
+                        className={classnames('w-5 h-5 text-gray-900', {
+                          'text-gray-300': props.disabled,
+                        })}
+                        aria-hidden="true"
+                      />
+                    </div>
                   )}
                   {loading && <Loading className="w-4 h-4 text-navy-400" />}
                 </div>

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [v0.4.0]
 
 ### Added
+- Added clearable property for autocomplete selects.
 - Added role check to enable upload data source button [LANDGRIF-1125](https://vizzuality.atlassian.net/browse/LANDGRIF-1125)
 - Added `@floating-ui/react` and `@floating-ui/react-dom` dependencies. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
 - Added disabled option styles for single and autocomplete selects. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)

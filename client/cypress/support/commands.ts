@@ -133,7 +133,6 @@ Cypress.Commands.add('interceptAllRequests', (): void => {
       method: 'GET',
       pathname: '/api/v1/scenarios',
       query: {
-        // disablePagination: 'true',
         hasActiveInterventions: 'true',
       },
     },

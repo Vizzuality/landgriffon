@@ -28,6 +28,7 @@ import {
   BaseImpactService,
   ImpactDataTableAuxMap,
 } from 'modules/impact/base-impact.service';
+import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 
 @Injectable()
 export class ActualVsScenarioImpactService extends BaseImpactService {
@@ -40,6 +41,7 @@ export class ActualVsScenarioImpactService extends BaseImpactService {
     protected readonly suppliersService: SuppliersService,
     protected readonly materialsService: MaterialsService,
     protected readonly sourcingRecordService: SourcingRecordsService,
+    protected readonly sourcingLocationsService: SourcingLocationsService,
   ) {
     super(
       indicatorService,
@@ -48,6 +50,7 @@ export class ActualVsScenarioImpactService extends BaseImpactService {
       suppliersService,
       materialsService,
       sourcingRecordService,
+      sourcingLocationsService,
     );
   }
 

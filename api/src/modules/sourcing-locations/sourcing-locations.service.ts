@@ -30,7 +30,10 @@ import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { MaterialsService } from 'modules/materials/materials.service';
-import { locationTypeParser } from 'modules/sourcing-locations/helpers/location-type.parser';
+import {
+  locationTypeParser,
+  toLocationType,
+} from 'modules/sourcing-locations/helpers/location-type.parser';
 
 @Injectable()
 export class SourcingLocationsService extends AppBaseService<
@@ -253,5 +256,16 @@ export class SourcingLocationsService extends AppBaseService<
     geoRegionId: string,
   ): Promise<SourcingLocation | null> {
     return this.sourcingLocationRepository.findOne({ where: { geoRegionId } });
+  }
+
+  async getAvailableLocationTypes(
+    dto: GetLocationTypesDto,
+  ): Promise<LOCATION_TYPES[]> {
+    const locationTypes: { locationType: string }[] =
+      await this.sourcingLocationRepository.getAvailableLocationTypes(dto);
+
+    return locationTypes.map((value: { locationType: string }) =>
+      toLocationType(value.locationType),
+    );
   }
 }

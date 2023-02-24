@@ -29,6 +29,7 @@ import {
   BaseImpactService,
   ImpactDataTableAuxMap,
 } from 'modules/impact/base-impact.service';
+import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 
 @Injectable()
 export class ImpactService extends BaseImpactService {
@@ -41,6 +42,7 @@ export class ImpactService extends BaseImpactService {
     protected readonly suppliersService: SuppliersService,
     protected readonly materialsService: MaterialsService,
     protected readonly sourcingRecordService: SourcingRecordsService,
+    protected readonly sourcingLocationsService: SourcingLocationsService,
   ) {
     super(
       indicatorService,
@@ -49,6 +51,7 @@ export class ImpactService extends BaseImpactService {
       suppliersService,
       materialsService,
       sourcingRecordService,
+      sourcingLocationsService,
     );
   }
 

@@ -1,6 +1,6 @@
 import CustomMatcherResult = jest.CustomMatcherResult;
 import { Response } from 'supertest';
-import { isEqual, xor } from 'lodash';
+import { isEqual, xor, cloneDeep } from 'lodash';
 import ApplicationManager from './utils/application-manager';
 
 declare global {
@@ -16,6 +16,8 @@ declare global {
       toHaveJSONAPIAttributes(
         expectedAttributes: string[],
       ): CustomMatcherResult;
+
+      toEqualArrayUnordered(expected: any[]): CustomMatcherResult;
     }
   }
 }
@@ -23,6 +25,29 @@ declare global {
 afterAll(async () => ApplicationManager.tearDown());
 
 expect.extend({
+  /**
+   * Checks that two arrays are equivalent, with considering the order
+   * @param actual
+   * @param expected
+   */
+  toEqualArrayUnordered(actual: any[], expected: any[]): CustomMatcherResult {
+    if (!Array.isArray(actual)) {
+      throw new Error('The object to be evaluated must be an array');
+    }
+    if (!Array.isArray(expected)) {
+      throw new Error('The expected object must be an array');
+    }
+
+    // Deep clone both array in order to mutate them when sorting afterwards
+    const actualCopy = cloneDeep(actual);
+    const expectedCopy = cloneDeep(expected);
+
+    return {
+      pass: isEqual(actualCopy.sort(), expectedCopy.sort()),
+      message: (): string =>
+        `Expected "${expectedCopy}" array, but got "${actualCopy}"`,
+    };
+  },
   toHaveErrorMessage(
     response: Response,
     code: number,

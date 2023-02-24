@@ -11,7 +11,10 @@ export const locationTypeParser = (
       label:
         locationType.locationType.replace(/-/g, ' ').charAt(0).toUpperCase() +
         locationType.locationType.replace(/-/g, ' ').slice(1),
-      value: locationType.locationType.replace(/ /g, '-') as LOCATION_TYPES,
+      value: toLocationType(locationType.locationType),
     };
   });
 };
+
+export const toLocationType = (locationType: string): LOCATION_TYPES =>
+  locationType.replace(/ /g, '-') as LOCATION_TYPES;

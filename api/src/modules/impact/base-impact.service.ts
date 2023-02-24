@@ -27,6 +27,7 @@ import { PaginatedEntitiesDto } from 'modules/impact/dto/paginated-entities.dto'
 import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 import { PaginationMeta } from 'utils/app-base.service';
+import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 
 @Injectable()
 export class BaseImpactService {
@@ -41,6 +42,7 @@ export class BaseImpactService {
     protected readonly suppliersService: SuppliersService,
     protected readonly materialsService: MaterialsService,
     protected readonly sourcingRecordService: SourcingRecordsService,
+    protected readonly sourcingLocationsService: SourcingLocationsService,
   ) {}
 
   /**
@@ -93,6 +95,9 @@ export class BaseImpactService {
       ...(impactTableDto.scenarioIds && {
         scenarioIds: impactTableDto.scenarioIds,
       }),
+      ...(impactTableDto.locationTypes && {
+        locationTypes: impactTableDto.locationTypes,
+      }),
     };
 
     switch (impactTableDto.groupBy) {
@@ -117,7 +122,11 @@ export class BaseImpactService {
         );
 
       case GROUP_BY_VALUES.LOCATION_TYPE:
-        return Object.values(LOCATION_TYPES).map((entity: LOCATION_TYPES) => {
+        return (
+          await this.sourcingLocationsService.getAvailableLocationTypes(
+            treeOptions,
+          )
+        ).map((entity: LOCATION_TYPES) => {
           return { name: entity, children: [] };
         });
 

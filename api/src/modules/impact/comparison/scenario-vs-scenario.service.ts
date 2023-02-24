@@ -32,6 +32,7 @@ import {
   ImpactDataTableAuxMap,
 } from 'modules/impact/base-impact.service';
 import { ImpactTablePurchasedTonnes } from 'modules/impact/dto/response-impact-table.dto';
+import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 
 @Injectable()
 export class ScenarioVsScenarioImpactService extends BaseImpactService {
@@ -44,6 +45,7 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
     protected readonly suppliersService: SuppliersService,
     protected readonly materialsService: MaterialsService,
     protected readonly sourcingRecordService: SourcingRecordsService,
+    protected readonly sourcingLocationsService: SourcingLocationsService,
   ) {
     super(
       indicatorService,
@@ -52,6 +54,7 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
       suppliersService,
       materialsService,
       sourcingRecordService,
+      sourcingLocationsService,
     );
   }
 

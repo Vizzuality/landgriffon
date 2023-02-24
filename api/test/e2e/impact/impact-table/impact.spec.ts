@@ -1054,12 +1054,12 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         })
         .expect(HttpStatus.OK);
 
-      expect(response.body.data.impactTable[0].rows).toHaveLength(6);
-      expect(response.body.data.impactTable[0].rows).toEqual(
-        expect.arrayContaining(groupByLocationTypeResponseData.rows),
+      const impactTable = response.body.data.impactTable[0];
+      expect(impactTable.rows).toEqualArrayUnordered(
+        groupByLocationTypeResponseData.rows,
       );
-      expect(response.body.data.impactTable[0].yearSum).toEqual(
-        expect.arrayContaining(groupByLocationTypeResponseData.yearSum),
+      expect(impactTable.yearSum).toEqualArrayUnordered(
+        groupByLocationTypeResponseData.yearSum,
       );
     });
   });
@@ -1200,6 +1200,11 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         name: 'Fake Material',
       });
 
+      //Only entities with data related to the specified filters should show on the impact table, so this Material should now show
+      const material2: Material = await createMaterial({
+        name: 'Fake Material different 2',
+      });
+
       const businessUnit1: BusinessUnit = await createBusinessUnit({
         name: 'Fake BusinessUnit 1',
       });
@@ -1208,21 +1213,32 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         name: 'Fake Supplier 1',
       });
 
-      const sourcingLocation1: SourcingLocation = await createSourcingLocation({
-        material: material,
-        businessUnit: businessUnit1,
-        t1Supplier: supplier1,
-        adminRegion: adminRegion,
-        locationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
-      });
+      const sourcingLocation1Material1: SourcingLocation =
+        await createSourcingLocation({
+          material: material,
+          businessUnit: businessUnit1,
+          t1Supplier: supplier1,
+          adminRegion: adminRegion,
+          locationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+        });
 
-      const sourcingLocation2: SourcingLocation = await createSourcingLocation({
-        material: material,
-        businessUnit: businessUnit1,
-        t1Supplier: supplier1,
-        adminRegion: adminRegion,
-        locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
-      });
+      const sourcingLocation2Material1: SourcingLocation =
+        await createSourcingLocation({
+          material: material,
+          businessUnit: businessUnit1,
+          t1Supplier: supplier1,
+          adminRegion: adminRegion,
+          locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
+        });
+
+      const sourcingLocationMaterial2: SourcingLocation =
+        await createSourcingLocation({
+          material: material2,
+          businessUnit: businessUnit1,
+          t1Supplier: supplier1,
+          adminRegion: adminRegion,
+          locationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+        });
 
       // Creating Sourcing Records and Indicator Records for previously created Sourcing Locations of different Location Types
       for await (const [index, year] of [2010, 2011, 2012].entries()) {
@@ -1237,7 +1253,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           tonnage: startTonnage + 100 * index,
           year,
           indicatorRecords: [indicatorRecord1],
-          sourcingLocation: sourcingLocation1,
+          sourcingLocation: sourcingLocation1Material1,
         });
 
         // Indicator Records and Sourcing Records for 'Aggregation point' type
@@ -1250,7 +1266,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           tonnage: startTonnage + 100 * index,
           year,
           indicatorRecords: [indicatorRecord2],
-          sourcingLocation: sourcingLocation2,
+          sourcingLocation: sourcingLocation2Material1,
         });
       }
 
@@ -1266,12 +1282,11 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         });
       //.expect(HttpStatus.OK);
 
-      expect(response.body.data.impactTable[0].rows).toHaveLength(1);
-      expect(response.body.data.impactTable[0].rows).toEqual(
-        expect.arrayContaining(filteredByLocationTypeResponseData.rows),
+      expect(response.body.data.impactTable[0].rows).toEqualArrayUnordered(
+        filteredByLocationTypeResponseData.rows,
       );
-      expect(response.body.data.impactTable[0].yearSum).toEqual(
-        expect.arrayContaining(filteredByLocationTypeResponseData.yearSum),
+      expect(response.body.data.impactTable[0].yearSum).toEqualArrayUnordered(
+        filteredByLocationTypeResponseData.yearSum,
       );
     });
   });

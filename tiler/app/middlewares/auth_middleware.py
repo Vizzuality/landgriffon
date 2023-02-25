@@ -6,15 +6,15 @@ from app.config.config import get_settings
 
 api_url = get_settings().api_url
 api_port = get_settings().api_port
+require_auth = get_settings().require_auth
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         print('accessing path', request.url.path)
-        env = os.environ.get('PYTHON_ENV')
-        if env == 'dev':
+        if request.url.path in ("/health", "/tiler/docs", "/tiler"):
             return await call_next(request)
-        if request.url.path in ("/health", "/docs", "/openapi.json"):
+        if require_auth == "false":
             return await call_next(request)
         else:
             try:

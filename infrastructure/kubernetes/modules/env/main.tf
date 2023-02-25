@@ -127,7 +127,7 @@ module "k8s_tiler" {
       value = 3000
     },
     {
-      name  = "S3_BUCKET_URL"
+      name  = "S3_BUCKET_NAME"
       value = var.science_bucket_name
     },
     {
@@ -136,12 +136,17 @@ module "k8s_tiler" {
     },
     {
       name  = "TITILER_PREFIX"
-      value = "/cog"
+      value = "/tiler/cog"
     },
     {
       name  = "TITILER_ROUTER_PREFIX"
-      value = "/cog"
+      value = "/tiler/cog"
     },
+
+    {
+      name = "DEFAULT_COG"
+      value = ""
+    }
 
   ]
 

@@ -320,11 +320,12 @@ const MoreFilters = () => {
                   <div>
                     <div className="mb-1">Location type</div>
                     <Select<LocationTyping>
+                      id="location-type-filter"
                       multiple
                       options={locationTypeOptions}
                       placeholder="Location types"
                       onChange={(values) => handleChangeFilter('locationTypes', values)}
-                      value={locationTypes}
+                      value={selectedFilters.locationTypes}
                     />
                   </div>
                 </div>

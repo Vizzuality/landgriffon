@@ -1,8 +1,9 @@
+from botocore.config import Config
 from fastapi.params import Query
 import boto3
 from ..config.config import get_settings
 
-s3 = boto3.client("s3")
+s3 = boto3.client("s3", region_name="eu-west-3", config=Config(signature_version='s3v4'))
 bucket_name = get_settings().s3_bucket_name
 default_cog = get_settings().default_cog
 DATA_PATH_IN_S3 = 'processed/satelligence/'

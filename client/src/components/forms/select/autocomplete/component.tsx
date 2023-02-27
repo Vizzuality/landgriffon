@@ -29,6 +29,7 @@ const AutoCompleteSelect = <T,>({
   clearable = false,
   onChange,
   onClearSelection,
+  onSearch,
   ...props
 }: AutoCompleteSelectProps<T>) => {
   const [virtualizedListWidth, setVirtualizedListWidth] = useState(0);
@@ -69,8 +70,11 @@ const AutoCompleteSelect = <T,>({
   );
 
   const handleInputChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => setQuery(event.target.value),
-    [],
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setQuery(event.target.value);
+      onSearch?.(event.target.value);
+    },
+    [onSearch],
   );
 
   const handleAfterTransitionLeave = useCallback(() => setQuery(''), []);
@@ -109,6 +113,9 @@ const AutoCompleteSelect = <T,>({
               })}
             >
               {filteredOptions[index].label}
+              {filteredOptions[index].extraInfo && (
+                <span className="text-sm">{` - ${filteredOptions[index].extraInfo}`}</span>
+              )}
             </div>
           )}
         </Combobox.Option>

@@ -324,6 +324,7 @@ const MoreFilters = () => {
                       options={locationTypeOptions}
                       placeholder="Location types"
                       onChange={(values) => handleChangeFilter('locationTypes', values)}
+                      value={locationTypes}
                     />
                   </div>
                 </div>

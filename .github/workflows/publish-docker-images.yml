@@ -22,7 +22,7 @@ on:
       waitForTest:
         description: 'Set to "false" to skip waiting for the test to pass.'
         required: true
-        default: true
+        default: 'true'
 
 jobs:
   wait_for_tests:

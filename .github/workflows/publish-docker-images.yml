@@ -75,8 +75,8 @@ jobs:
       - name: Extract branch name
         shell: bash
         run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+          echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
+          echo "branch-upper=$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )" >> $GITHUB_OUTPUT
         id: extract_branch
 
       - name: Build API Docker image
@@ -117,8 +117,8 @@ jobs:
       - name: Extract branch name
         shell: bash
         run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+          echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
+          echo "branch-upper=$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )" >> $GITHUB_OUTPUT
         id: extract_branch
 
       - name: Build Client Docker image
@@ -168,8 +168,8 @@ jobs:
       - name: Extract branch name
         shell: bash
         run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+          echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
+          echo "branch-upper=$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )" >> $GITHUB_OUTPUT
         id: extract_branch
 
       - name: Build Data Import Docker image
@@ -210,8 +210,8 @@ jobs:
       - name: Extract branch name
         shell: bash
         run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+          echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
+          echo "branch-upper=$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )" >> $GITHUB_OUTPUT
         id: extract_branch
 
       - name: Build Tiler Docker image

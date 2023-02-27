@@ -10,7 +10,23 @@ from psycopg2.extensions import connection
 log = logging.getLogger(__name__)  # here we can use __name__ because it is an imported module
 
 
+DTYPES_TO_PG = {
+    "boolean": "bool",
+    "uint8": "smallint",
+    "uint16": "int",
+    "uint32": "bigint",
+    "uint64": "bigint",
+    "int8": "smallint",
+    "int16": "smallint",
+    "int32": "int",
+    "int64": "bigint",
+    "float32": "real",
+    "float64": "double precision",
+}
+
+
 def slugify(s):
+    # TODO: IS THIS NECESSARY? FIND A PACKAGE THAT DOES IT
     s = sub(r"[_-]+", " ", s).title().replace(" ", "")
     return "".join([s[0].lower(), s[1:]])
 
@@ -66,7 +82,7 @@ def insert_to_h3_data_and_contextual_layer_tables(
             contextual_data_id = cursor.fetchall()[0][0]
             # insert contextual_layer entry id into h3_table
             cursor.execute(
-                f"""update "h3_data"  set "contextualLayerId" = '{contextual_data_id}' 
+                f"""update "h3_data"  set "contextualLayerId" = '{contextual_data_id}'
                 where  "h3tableName" = '{table}';"""
             )
 
@@ -104,7 +120,7 @@ def link_to_indicator_table(connection: connection, indicator_code: str, h3_colu
             indicator_id = cursor.fetchall()[0][0]
             if indicator_id:
                 cursor.execute(
-                    f"""update "h3_data"  set "indicatorId" = '{indicator_id}' 
+                    f"""update "h3_data"  set "indicatorId" = '{indicator_id}'
                     where  "h3columnName" = '{h3_column_name}'"""
                 )
                 log.info(f"Updated indicatorId '{indicator_id}' in h3_data for {h3_column_name}")

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [v0.5.0 Unreleased]
 
 ### Fixed
+- analysis page: location type selected holds values after closing popover. [LANDGRIF-1250](https://vizzuality.atlassian.net/browse/LANDGRIF-1250)
 - Fix permissions for edit scenarios on analysis pages [LANDGRIF-1253](https://vizzuality.atlassian.net/browse/LANDGRIF-1253)
 
 ## [v0.4.0]

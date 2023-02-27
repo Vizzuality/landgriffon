@@ -2,6 +2,7 @@ export type Option<T = string> = {
   label: string;
   value: T;
   disabled?: boolean;
+  extraInfo?: string;
 };
 
 export type SelectProps<T = string> = Omit<

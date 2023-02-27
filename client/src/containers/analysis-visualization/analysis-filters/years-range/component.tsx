@@ -7,6 +7,10 @@ import { analysisFilters, setFilters } from 'store/features/analysis/filters';
 import { useYears } from 'hooks/years';
 import YearsRangeFilter, { useYearsRange } from 'containers/filters/years-range';
 
+import type { YearsRangeParams } from 'containers/filters/years-range';
+
+const DEFAULT_LAST_YEAR_GAP = 5;
+
 const YearsRange: React.FC = () => {
   const dispatch = useAppDispatch();
 
@@ -23,21 +27,26 @@ const YearsRange: React.FC = () => {
 
   const { startYear, endYear, yearsGap, setYearsRange } = useYearsRange({
     years,
+    yearsGap: 1,
     // Map mode only makes use of the endYear and will display the Select,
     // not the YearsRangeFilter.
-    validateRange: visualizationMode !== 'map',
+    validateRange: visualizationMode !== 'map' && visualizationMode !== 'table',
     ...filters,
   });
 
+  const lastYearWithData = useMemo(() => data[data.length - 1], [data]);
+  const defaultLastYear = useMemo(
+    () => lastYearWithData + DEFAULT_LAST_YEAR_GAP,
+    [lastYearWithData],
+  );
+
   useEffect(() => {
-    setYears(range(data[0], toNumber(data[data.length - 1] + 100) + 1));
-  }, [data]);
+    setYears(range(data[0], defaultLastYear + 1));
+  }, [data, defaultLastYear]);
 
   useEffect(() => {
     dispatch(setFilters({ startYear, endYear }));
   }, [startYear, endYear, dispatch]);
-
-  const lastYearWithData = useMemo(() => data[data.length - 1], [data]);
 
   const handleOnEndYearSearch: (searchedYear: string) => void = (searchedYear) => {
     const year = toNumber(searchedYear);
@@ -46,12 +55,24 @@ const YearsRange: React.FC = () => {
       return;
     }
 
-    // TODO: set max number of years, otherwise an extra number la va a liar parda
-    if (year === data[data.length - 1]) {
-      setYears(range(data[0], data[data.length - 1] + 2));
+    if (year === lastYearWithData) {
+      setYears(range(data[0], defaultLastYear + 1));
     } else if (!years.includes(year)) {
       setYears(range(data[0], year + 1));
     }
+  };
+
+  const handleYearChange = ({ startYear, endYear }: YearsRangeParams) => {
+    const lastYear = years[years.length - 1];
+    // Reduce the years range in case the current selected end year is smaller than the previous and the previous range was larger than the default
+    if (endYear < lastYear) {
+      if (endYear > defaultLastYear) {
+        setYears(range(years[0], toNumber(endYear) + 1));
+      } else {
+        setYears(range(years[0], defaultLastYear + 1));
+      }
+    }
+    if (endYear) setYearsRange({ startYear, endYear });
   };
 
   return (
@@ -62,7 +83,7 @@ const YearsRange: React.FC = () => {
       years={years}
       yearsGap={yearsGap}
       showSearch
-      onChange={setYearsRange}
+      onChange={handleYearChange}
       onEndYearSearch={handleOnEndYearSearch}
       lastYearWithData={lastYearWithData}
       placeholderFrom="Select a year"

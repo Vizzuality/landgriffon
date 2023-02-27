@@ -24,11 +24,11 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
   years,
   loading = false,
   yearsGap = 0,
-  showStartYearSearch = false,
-  showEndYearSearch = true,
-  showSearch,
+  // showStartYearSearch = false,
+  // showEndYearSearch = true,
+  // showSearch,
   onChange = () => null,
-  onStartYearSearch = () => null,
+  // onStartYearSearch = () => null,
   onEndYearSearch = () => null,
   lastYearWithData,
   placeholderFrom = 'Type any year',
@@ -52,7 +52,6 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
         disabled: endYear <= year + (yearsGap - 1),
       })),
     );
-
     setEndYearOptions(
       years?.map((year) => ({
         label: year.toString(),
@@ -60,23 +59,22 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
         disabled: startYear >= year - (yearsGap - 1),
       })),
     );
-
     setIsLoaded(true);
   }, [endYear, isLoaded, startYear, years, yearsGap, lastYearWithData]);
 
-  useEffect(() => {
-    if (!startYearOption || !endYearOption) return;
-    if (startYear === startYearOption.value && endYear === endYearOption.value) return;
-    onChange?.({ startYear: Number(startYearOption.value), endYear: Number(endYearOption.value) });
-  }, [
-    startYear,
-    endYear,
-    startYearOptions,
-    endYearOption,
-    endYearOptions,
-    onChange,
-    startYearOption,
-  ]);
+  // useEffect(() => {
+  //   if (!startYearOption || !endYearOption) return;
+  //   if (startYear === startYearOption.value && endYear === endYearOption.value) return;
+  //   onChange?.({ startYear: Number(startYearOption.value), endYear: Number(endYearOption.value) });
+  // }, [
+  //   startYear,
+  //   endYear,
+  //   startYearOptions,
+  //   endYearOption,
+  //   endYearOptions,
+  //   onChange,
+  //   startYearOption,
+  // ]);
 
   const { reference, floating, x, y, context, strategy } = useFloating({
     open: isOpen,
@@ -93,6 +91,10 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
 
   // Prevent display when not loaded
   if (!isLoaded) return null;
+
+  const handleChangeEndYear = ({ value }) => {
+    onChange?.({ startYear, endYear: Number(value) });
+  };
 
   return (
     <div>
@@ -162,10 +164,9 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
                         : undefined,
                   }))}
                   value={endYearOption}
-                  onChange={({ value }) => {
-                    onChange?.({ startYear, endYear: Number(value) });
-                  }}
+                  onChange={handleChangeEndYear}
                   placeholder={placeholderTo}
+                  onSearch={onEndYearSearch}
                 />
               </div>
             </div>

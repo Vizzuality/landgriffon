@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { isFinite, toNumber, range } from 'lodash-es';
+import toast from 'react-hot-toast';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisUI } from 'store/features/analysis/ui';
@@ -9,7 +10,10 @@ import YearsRangeFilter, { useYearsRange } from 'containers/filters/years-range'
 
 import type { YearsRangeParams } from 'containers/filters/years-range';
 
-const DEFAULT_LAST_YEAR_GAP = 5;
+/** Arbitrary value to define the end year list range */
+const DEFAULT_END_YEAR_GAP = 5;
+/** Arbitrary value to define the max range of end year options to avoid performance issues */
+const MAX_END_YEAR_RANGE = 1000;
 
 const YearsRange: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -30,13 +34,13 @@ const YearsRange: React.FC = () => {
     yearsGap: 1,
     // Map mode only makes use of the endYear and will display the Select,
     // not the YearsRangeFilter.
-    validateRange: visualizationMode !== 'map' && visualizationMode !== 'table',
+    validateRange: visualizationMode !== 'map',
     ...filters,
   });
 
   const lastYearWithData = useMemo(() => data[data.length - 1], [data]);
   const defaultLastYear = useMemo(
-    () => lastYearWithData + DEFAULT_LAST_YEAR_GAP,
+    () => lastYearWithData + DEFAULT_END_YEAR_GAP,
     [lastYearWithData],
   );
 
@@ -52,6 +56,10 @@ const YearsRange: React.FC = () => {
     const year = toNumber(searchedYear);
 
     if (!isFinite(year) || year <= data[0]) {
+      return;
+    }
+    if (year > MAX_END_YEAR_RANGE + defaultLastYear) {
+      toast.error(`Max year limit is ${MAX_END_YEAR_RANGE + defaultLastYear}`);
       return;
     }
 

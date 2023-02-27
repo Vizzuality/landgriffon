@@ -113,9 +113,6 @@ const AutoCompleteSelect = <T,>({
               })}
             >
               {filteredOptions[index].label}
-              {filteredOptions[index].extraInfo && (
-                <span className="text-sm">{` - ${filteredOptions[index].extraInfo}`}</span>
-              )}
             </div>
           )}
         </Combobox.Option>
@@ -162,7 +159,7 @@ const AutoCompleteSelect = <T,>({
               </Combobox.Label>
             )}
             <div className="relative w-full overflow-hidden">
-              <Combobox.Input<'input', Option>
+              <Combobox.Input<'input', Option<T>>
                 className={classnames(
                   'w-full inline-flex items-center py-2.5 pl-3 pr-10 text-left leading-5',
                   'bg-white border rounded-md shadow-sm cursor-default hover:cursor-pointer focus:border-navy-400 focus:outline-none focus:ring-0',

@@ -43,16 +43,6 @@ export function useYearsRange({
   }, [startYear, endYear, firstYear, lastYear, years]);
 
   useEffect(() => {
-    // If we don't have a years array there's nothing to set
-    if (!years) return;
-
-    // If we don't have a startYear nor an endYear, we need to set them with the default values in the array.
-    if (!startYear || !endYear) {
-      if (!startYear) setStartYear(firstYear);
-      if (!endYear) setEndYear(years[years.length - 1]);
-      return;
-    }
-
     // We have a startYear and an endYear, but they fall out of the years array boundaries. Correct that.
     if (validateRange && (startYear < firstYear || endYear > lastYear)) {
       setStartYear(firstYear);
@@ -71,17 +61,7 @@ export function useYearsRange({
         toast.error('Years gap cannot be respected; not enough years data');
       }
     }
-  }, [
-    invalidRange,
-    setYearsRange,
-    startYear,
-    validateRange,
-    years,
-    yearsGap,
-    endYear,
-    lastYear,
-    firstYear,
-  ]);
+  }, [invalidRange, startYear, validateRange, yearsGap, endYear, lastYear, firstYear]);
 
   const yearsInRange = useMemo(
     () =>

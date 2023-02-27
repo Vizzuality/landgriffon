@@ -62,20 +62,6 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
     setIsLoaded(true);
   }, [endYear, isLoaded, startYear, years, yearsGap, lastYearWithData]);
 
-  // useEffect(() => {
-  //   if (!startYearOption || !endYearOption) return;
-  //   if (startYear === startYearOption.value && endYear === endYearOption.value) return;
-  //   onChange?.({ startYear: Number(startYearOption.value), endYear: Number(endYearOption.value) });
-  // }, [
-  //   startYear,
-  //   endYear,
-  //   startYearOptions,
-  //   endYearOption,
-  //   endYearOptions,
-  //   onChange,
-  //   startYearOption,
-  // ]);
-
   const { reference, floating, x, y, context, strategy } = useFloating({
     open: isOpen,
     onOpenChange: setIsOpen,
@@ -91,10 +77,6 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
 
   // Prevent display when not loaded
   if (!isLoaded) return null;
-
-  const handleChangeEndYear = ({ value }) => {
-    onChange?.({ startYear, endYear: Number(value) });
-  };
 
   return (
     <div>
@@ -148,9 +130,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
                   loading={loading}
                   options={startYearOptions}
                   value={startYearOption}
-                  onChange={({ value }) => {
-                    onChange?.({ startYear: Number(value), endYear });
-                  }}
+                  onChange={({ value }) => onChange?.({ startYear: value, endYear })}
                   placeholder={placeholderFrom}
                 />
                 <div>To</div>
@@ -158,13 +138,13 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
                   loading={loading}
                   options={endYearOptions.map((option) => ({
                     ...option,
-                    extraInfo:
+                    label:
                       lastYearWithData && option.value > lastYearWithData
-                        ? 'projected data'
-                        : undefined,
+                        ? `${option.label} - projected data`
+                        : option.label,
                   }))}
                   value={endYearOption}
-                  onChange={handleChangeEndYear}
+                  onChange={({ value }) => onChange?.({ startYear, endYear: value })}
                   placeholder={placeholderTo}
                   onSearch={onEndYearSearch}
                 />

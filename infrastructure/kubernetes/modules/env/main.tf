@@ -145,7 +145,7 @@ module "k8s_tiler" {
 
     {
       name = "DEFAULT_COG"
-      value = ""
+      value = "biomass.tif"
     }
 
   ]

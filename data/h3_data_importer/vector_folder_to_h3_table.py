@@ -31,11 +31,9 @@ import fiona
 import geopandas as gpd
 import pandas as pd
 import psycopg2
-from docopt import docopt
 from h3ronpy import vector
 from psycopg2.pool import ThreadedConnectionPool
-from utils import (insert_to_h3_data_and_contextual_layer_tables,
-                   link_to_indicator_table, slugify)
+from utils import insert_to_h3_data_and_contextual_layer_tables, link_to_indicator_table, slugify
 
 DTYPES_TO_PG = {
     "object": "text",
@@ -182,11 +180,7 @@ def main(
         return  # gracefully exit without exception
 
     if indicator_code:  # if given, consider layer as indicator update h3_table
-        link_to_indicator_table(
-            conn,
-            indicator_code,
-            column
-        )
+        link_to_indicator_table(conn, indicator_code, column)
 
     postgres_thread_pool.putconn(conn, close=True)
 
@@ -200,7 +194,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "category",
         help="Dataset category",
-        choices=["Environmental datasets", "Business datasets", "Food and agriculture", "Default"]
+        choices=["Environmental datasets", "Business datasets", "Food and agriculture", "Default"],
     )
     parser.add_argument("year", type=int, help="Year of the imported dataset")
     parser.add_argument("--indicator", help="Indicator nameCode", default=None)

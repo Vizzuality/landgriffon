@@ -39,8 +39,13 @@ def s3_presigned_access(url: str | None = Query(default=None, description="Optio
             'Bucket': bucket_name,
             'Key': DATA_PATH_IN_S3 + url
         },
-        ExpiresIn=3600
+        ExpiresIn=604700
     )
+    print("PRESIGNED URL:::::", presigned_url)
+    response = s3.list_buckets()
+    print("LISTING BUCKETS FOR TESTING", response)
+    for bucket in response['Buckets']:
+        print(f'  {bucket["Name"]}')
     return presigned_url
 
 

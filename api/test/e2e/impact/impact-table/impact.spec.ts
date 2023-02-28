@@ -34,6 +34,7 @@ import ApplicationManager, {
 } from '../../../utils/application-manager';
 import {
   filteredByLocationTypeResponseData,
+  filteredByLocationTypeResponseData2,
   groupByBusinessUnitResponseData,
   groupByLocationTypeResponseData,
   groupByMaterialNestedResponseData,
@@ -56,6 +57,7 @@ import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing
 import { createNewMaterialInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-material-intervention.preconditions';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { DataSource } from 'typeorm';
+import { GROUP_BY_VALUES } from '../../../../src/modules/h3-data/dto/get-impact-map.dto';
 
 describe('Impact Table and Charts test suite (e2e)', () => {
   let testApplication: TestApplication;
@@ -1231,14 +1233,13 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
         });
 
-      const sourcingLocationMaterial2: SourcingLocation =
-        await createSourcingLocation({
-          material: material2,
-          businessUnit: businessUnit1,
-          t1Supplier: supplier1,
-          adminRegion: adminRegion,
-          locationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
-        });
+      await createSourcingLocation({
+        material: material2,
+        businessUnit: businessUnit1,
+        t1Supplier: supplier1,
+        adminRegion: adminRegion,
+        locationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+      });
 
       // Creating Sourcing Records and Indicator Records for previously created Sourcing Locations of different Location Types
       for await (const [index, year] of [2010, 2011, 2012].entries()) {
@@ -1277,7 +1278,17 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           'indicatorIds[]': [indicator.id],
           endYear: 2013,
           startYear: 2010,
-          groupBy: 'material',
+          groupBy: GROUP_BY_VALUES.MATERIAL,
+          'locationTypes[]': [LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT],
+        });
+      const response2 = await request(testApplication.getHttpServer())
+        .get('/api/v1/impact/table')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [indicator.id],
+          endYear: 2013,
+          startYear: 2010,
+          groupBy: GROUP_BY_VALUES.LOCATION_TYPE,
           'locationTypes[]': [LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT],
         });
       //.expect(HttpStatus.OK);
@@ -1287,6 +1298,13 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       );
       expect(response.body.data.impactTable[0].yearSum).toEqualArrayUnordered(
         filteredByLocationTypeResponseData.yearSum,
+      );
+
+      expect(response2.body.data.impactTable[0].rows).toEqualArrayUnordered(
+        filteredByLocationTypeResponseData2.rows,
+      );
+      expect(response2.body.data.impactTable[0].yearSum).toEqualArrayUnordered(
+        filteredByLocationTypeResponseData2.yearSum,
       );
     });
   });

@@ -53,6 +53,12 @@ export class SourcingLocationRepository extends AppBaseRepository<SourcingLocati
       });
     }
 
+    if (locationTypesOptions.locationTypes) {
+      queryBuilder.andWhere('sl.locationType IN (:...locationTypes)', {
+        locationTypes: locationTypesOptions.locationTypes,
+      });
+    }
+
     if (locationTypesOptions.scenarioId) {
       queryBuilder
         .leftJoin(

@@ -1,5 +1,7 @@
-import { IsArray, IsOptional, IsUUID } from 'class-validator';
+import { IsArray, IsEnum, IsOptional, IsUUID } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
+import { Type } from 'class-transformer';
 
 export class GetLocationTypesDto {
   @IsArray()
@@ -25,6 +27,21 @@ export class GetLocationTypesDto {
   @ApiPropertyOptional()
   @IsOptional()
   materialIds?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Types of Sourcing Locations, written with hyphens',
+    enum: Object.values(LOCATION_TYPES),
+    name: 'locationTypes[]',
+  })
+  @IsOptional()
+  @IsEnum(LOCATION_TYPES, {
+    each: true,
+    message:
+      'Available options: ' +
+      Object.values(LOCATION_TYPES).toString().toLowerCase(),
+  })
+  @Type(() => String)
+  locationTypes?: LOCATION_TYPES[];
 
   @IsUUID('4')
   @ApiPropertyOptional()

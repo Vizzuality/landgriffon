@@ -485,6 +485,44 @@ export const filteredByLocationTypeResponseData = {
     { value: 406, year: 2013 },
   ],
 };
+
+export const filteredByLocationTypeResponseData2 = {
+  rows: [
+    {
+      name: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
+      children: [],
+      values: [
+        {
+          year: 2010,
+          value: 300,
+          isProjected: false,
+        },
+        {
+          year: 2011,
+          value: 350,
+          isProjected: false,
+        },
+        {
+          year: 2012,
+          value: 400,
+          isProjected: false,
+        },
+        {
+          year: 2013,
+          value: 406,
+          isProjected: true,
+        },
+      ],
+    },
+  ],
+  yearSum: [
+    { value: 300, year: 2010 },
+    { value: 350, year: 2011 },
+    { value: 400, year: 2012 },
+    { value: 406, year: 2013 },
+  ],
+};
+
 export const impactTableWithScenario = {
   impactTable: [
     {

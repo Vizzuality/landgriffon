@@ -11,6 +11,7 @@ import {
 } from '@floating-ui/react';
 import { Popover, Transition } from '@headlessui/react';
 import { useRouter } from 'next/router';
+import { sortBy } from 'lodash-es';
 
 import Materials from '../materials/component';
 import OriginRegions from '../origin-regions/component';
@@ -53,7 +54,6 @@ interface ApiTreeResponse {
 }
 
 const DEFAULT_QUERY_OPTIONS = {
-  staleTime: 2 * 60 * 1000, // 2 minutes
   select: (data: ApiTreeResponse[]) => {
     const sorted = recursiveSort(data, 'name');
     return sorted.map((item) => recursiveMap(item, ({ id, name }) => ({ label: name, value: id })));
@@ -72,7 +72,6 @@ const MoreFilters = () => {
     [materials, origins, suppliers, locationTypes],
   );
 
-  // Initial state from redux
   const [selectedFilters, setSelectedFilters] = useState(moreFilters);
 
   const materialIds = useMemo(
@@ -95,17 +94,12 @@ const MoreFilters = () => {
     [selectedFilters.locationTypes],
   );
 
-  const [counter, setCounter] = useState<number>(0);
+  const [counter, setCounter] = useState(0);
 
   // Only the changes are applied when the user clicks on Apply
   const handleApply = useCallback(() => {
     dispatch(setFilters(selectedFilters));
   }, [dispatch, selectedFilters]);
-
-  // Close filters window
-  const handleCancel = useCallback(() => {
-    setSelectedFilters(moreFilters);
-  }, [moreFilters]);
 
   // Restoring state from initial state only internally,
   // the user have to apply the changes
@@ -122,16 +116,8 @@ const MoreFilters = () => {
   );
 
   useEffect(() => {
-    const counters = Object.values(moreFilters).map((value) => value.length);
-    const total = counters.reduce((a, b) => a + b);
-    setCounter(total);
+    setSelectedFilters(moreFilters);
   }, [moreFilters]);
-
-  // Check difference between current selection of filters and filters already applied
-  const hasChangesToApply = useMemo(
-    () => JSON.stringify(selectedFilters) !== JSON.stringify(moreFilters),
-    [selectedFilters, moreFilters],
-  );
 
   const { reference, floating, strategy, x, y, context } = useFloating({
     // open: isOpen,
@@ -196,10 +182,27 @@ const MoreFilters = () => {
   );
 
   const { data: locationTypeOptions } = useLocationTypes(
-    {},
+    {
+      materialIds,
+      originIds,
+      supplierIds,
+      // ! enable this sorting when the API supports it
+      // sort: 'label',
+    },
     {
       ...DEFAULT_QUERY_OPTIONS,
-      select: undefined,
+      // ! this sorting can be removed once the /location-types endpoint supports sorting
+      select: (_locationTypeOptions) => sortBy(_locationTypeOptions, ['label']),
+      onSuccess: (_locationTypeOptions) => {
+        // * every time new location types are fetched, we need to validate if the previous location types selected are still
+        // * available in the new options. Otherwise, we will remove them from the current selection.
+        setSelectedFilters((filters) => ({
+          ...filters,
+          locationTypes: _locationTypeOptions.filter(({ value }) =>
+            locationTypesIds.includes(value),
+          ),
+        }));
+      },
     },
   );
 
@@ -228,6 +231,12 @@ const MoreFilters = () => {
     reviewFilterContent('origins', origins, origins);
     reviewFilterContent('suppliers', suppliers, suppliers);
   }, [locationTypes, materialOptions, materials, origins, reviewFilterContent, suppliers]);
+
+  useEffect(() => {
+    const counters = Object.values(moreFilters).map((value) => value.length);
+    const total = counters.reduce((a, b) => a + b);
+    setCounter(total);
+  }, [moreFilters]);
 
   useEffect(() => {
     handleScenarioChange();
@@ -336,7 +345,6 @@ const MoreFilters = () => {
                     className="px-9"
                     onClick={() => {
                       close();
-                      handleCancel();
                     }}
                   >
                     Cancel
@@ -344,8 +352,10 @@ const MoreFilters = () => {
                   <Button
                     variant="primary"
                     className="flex-grow"
-                    onClick={handleApply}
-                    disabled={!hasChangesToApply}
+                    onClick={() => {
+                      handleApply();
+                      close();
+                    }}
                   >
                     Apply
                   </Button>

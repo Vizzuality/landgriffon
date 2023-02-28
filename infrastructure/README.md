@@ -50,6 +50,10 @@ The `value` in the key-value pair is an object with a set of properties, all of 
   variables to the api application. Internally, other environment variables are merged with this list, the result of
   which is applied to the kubernetes deployment. There is no handling
   for overlapping environment variables name. Defaults to an empty list.
+- `tiler_env_vars`: a list of objects, each of which with `name` and `value`. Used to inject non-sensitive environment
+  variables to the tiler application. Internally, other environment variables are merged with this list, the result of
+  which is applied to the kubernetes deployment. There is no handling
+  for overlapping environment variables name. Defaults to an empty list.
 - `load_fresh_data`: if "true", it will create a new node group, and start the data importer process in that group. Said
   node group is NOT automatically destroyed upon data import completion, so be sure to set it to "false" and apply
   terraform again once the import process is over, to save costs. Defaults to "false"

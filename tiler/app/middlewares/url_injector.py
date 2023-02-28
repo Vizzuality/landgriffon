@@ -31,7 +31,7 @@ def s3_presigned_access(url: str | None = Query(default=None, description="Optio
     """
     if not url:
         if not default_cog:
-            raise Exception("DEFAULT_COG env var is not set. It is required if no URL is paased to the tiler")
+            raise Exception("DEFAULT_COG env var is not set. It is required if no URL is passed to the tiler")
         url = default_cog
     presigned_url = s3.generate_presigned_url(
         'get_object',

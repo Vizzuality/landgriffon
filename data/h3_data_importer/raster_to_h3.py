@@ -74,9 +74,12 @@ def create_h3_grid_table(connection: psycopg.Connection, table: str, df: pd.Data
     ]
     schema = sql.SQL(", ").join(index + extra)
     with connection.cursor() as cur:
-        query = sql.SQL("create table {table_name} ({fields})").format(table_name=sql.Identifier(table), fields=schema)
+        query = sql.SQL("CREATE TABLE {} ({});").format(sql.Identifier(table), schema)
         log.info(f"Creating table {table}")
         cur.execute(query)
+        # Force commit, otherwise h3_grid_table is not created... fishy.
+        # TODO: WHY THE TABLE IS NOT CREATED
+        connection.commit()
 
 
 def write_data_to_h3_grid_table(connection: psycopg.Connection, table: str, data: pd.DataFrame):
@@ -145,7 +148,7 @@ def update_for_material(cursor: psycopg.Cursor, dataset: str, column_name: str, 
         data_type=sql.Literal(type_map[data_type]),
     )
     cursor.execute('SELECT id FROM "material" WHERE "datasetId" = %s', (dataset_id,))
-    for material_id in cursor.fetchall():
+    for material_id in cursor:
         cursor.execute(delete_query, (material_id[0],))
         cursor.execute(insert_query, (material_id[0],))
         log.info(f"Updated materialId '{material_id[0]}' in material_to_h3 for {column_name}")
@@ -162,7 +165,7 @@ def to_the_db(df: pd.DataFrame, table: str, data_type: str, dataset: str, year: 
         user=os.getenv("API_POSTGRES_USERNAME"),
         password=os.getenv("API_POSTGRES_PASSWORD"),
     )
-    pool = ConnectionPool(conn_info)
+    pool = ConnectionPool(conn_info, kwargs={"autocommit": True})
     with pool.connection() as conn:
         create_h3_grid_table(conn, table, df)
         write_data_to_h3_grid_table(conn, table, df)
@@ -186,6 +189,8 @@ def main(folder: Path, table: str, data_type: str, dataset: str, year: int, h3_r
     All GeoTiffs in the folder must have identical projection, transform, etc.
     The resulting table will contain a column for each GeoTiff.
     """
+
+    # Part 1: Convert Raster to h3 index -> value map (or dataframe in this case)
     rasters = list(folder.glob("*.tif"))
     with ExitStack() as cm:
         raster_readers = [cm.enter_context(rio.open(raster)) for raster in rasters]
@@ -200,6 +205,8 @@ def main(folder: Path, table: str, data_type: str, dataset: str, year: int, h3_r
             h3s.append(h3)
 
     df = h3s[0].join(h3s[1:]) if len(raster_readers) > 1 else h3s[0]
+
+    # Part 2: Ingest h3 index into the database
     to_the_db(df, table, data_type, dataset, year, h3_res)
 
 

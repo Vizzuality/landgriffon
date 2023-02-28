@@ -359,7 +359,7 @@ download-deforestation: download-deforestation-list | download-managed-forests
 transform-deforestation-file:
 	@echo "Transforming deforestation file $(FILE) ... "
 	table_name=`basename -s .tif $(FILE) | tr -d ' \t\n\r' | grep -oP "\d{2}[A-Z]_\d{3}[A-Z]"`; \
-	mask_path=`$${table_name}_mask`; \
+	mask_path=$${table_name}_mask; \
 	mask_table_name=`basename -s .tif $${mask_path}; \
  	wget -q -O "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" $(FILE); \
 	rm -f "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \

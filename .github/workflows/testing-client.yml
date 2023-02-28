@@ -57,7 +57,7 @@ jobs:
           CYPRESS_API_URL: ${{ secrets.CYPRESS_API_URL }}
           # pass GitHub token to detect new build vs re-run build
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          DEBUG: "cypress:server:args"
+          DEBUG: "cypress:server:util:process_profiler"
 
       - uses: actions/upload-artifact@v3
         if: failure()

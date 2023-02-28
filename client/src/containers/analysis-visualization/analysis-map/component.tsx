@@ -3,7 +3,7 @@ import { XCircleIcon } from '@heroicons/react/solid';
 
 import LayerManager from 'components/map/layer-manager';
 import { useAppSelector } from 'store/hooks';
-import { analysisMap } from 'store/features/analysis';
+import { analysisFilters, analysisMap } from 'store/features/analysis';
 import { useImpactLayer } from 'hooks/layers/impact';
 import Legend from 'containers/analysis-visualization/analysis-legend';
 import PageLoading from 'containers/page-loading';
@@ -21,14 +21,27 @@ import type { BasemapValue } from 'components/map/controls/basemap/types';
 
 const AnalysisMap = () => {
   const { layers } = useAppSelector(analysisMap);
+  const { origins } = useAppSelector(analysisFilters);
 
   const [mapStyle, setMapStyle] = useState<MapStyle>('terrain');
   const [viewState, setViewState] = useState<Partial<ViewState>>(INITIAL_VIEW_STATE);
   const handleViewState = useCallback((viewState: ViewState) => setViewState(viewState), []);
   const [tooltipData, setTooltipData] = useState(null);
 
+  const zoom = useMemo(() => Math.round(viewState.zoom), [viewState]);
+
+  // In zoom less than 5 renders resolution 4,
+  // In zoom between 5 to 7 renders resolution 5,
+  // In zoom greater than 7 renders resolution 6
+  const impactLayerResolution = useMemo(() => {
+    if (origins.length && zoom >= 5) {
+      return zoom > 7 ? 6 : 5;
+    }
+    return 4;
+  }, [origins.length, zoom]);
+
   // Loading layers
-  const { isError, isFetching } = useImpactLayer();
+  const { isError, isFetching } = useImpactLayer(impactLayerResolution);
 
   const onHoverLayer = useCallback(
     (

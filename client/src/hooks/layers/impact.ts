@@ -14,7 +14,7 @@ import { storeToQueryParams } from 'hooks/h3-data/utils';
 
 import type { LegendItem as LegendItemProp } from 'types';
 
-export const useImpactLayer = () => {
+export const useImpactLayer = (resolution = 4) => {
   const dispatch = useAppDispatch();
   const filters = useAppSelector(analysisFilters);
   const {
@@ -28,16 +28,15 @@ export const useImpactLayer = () => {
     layers: { impact: impactLayer },
   } = useAppSelector(analysisMap);
 
-  const params = useMemo(
-    () =>
-      storeToQueryParams({
-        ...filters,
-        currentScenario: scenarioId as string,
-        scenarioToCompare: compareScenarioId as string,
-        isComparisonEnabled,
-      }),
-    [compareScenarioId, filters, isComparisonEnabled, scenarioId],
-  );
+  const params = useMemo(() => {
+    const queryParams = storeToQueryParams({
+      ...filters,
+      currentScenario: scenarioId as string,
+      scenarioToCompare: compareScenarioId as string,
+      isComparisonEnabled,
+    });
+    return { ...queryParams, resolution };
+  }, [compareScenarioId, filters, isComparisonEnabled, resolution, scenarioId]);
 
   const { indicator } = filters;
   const { year } = params;

@@ -186,11 +186,10 @@ export class ImpactService extends BaseImpactService {
           depth = await this.adminRegionsService.getAdminRegionsMaxLevel(
             rankedImpactTableDto.originIds,
           );
-          return depth;
+          return depth + 1;
         } else {
           return 0;
         }
-        break;
 
       case GROUP_BY_VALUES.MATERIAL:
         if (rankedImpactTableDto.materialIds) {
@@ -201,32 +200,18 @@ export class ImpactService extends BaseImpactService {
         } else {
           return 0;
         }
-        break;
 
       case GROUP_BY_VALUES.SUPPLIER:
-        if (rankedImpactTableDto.materialIds) {
-          depth = await this.materialsService.getMaxDepthLevelWithMpath(
-            rankedImpactTableDto.materialIds,
+        if (rankedImpactTableDto.supplierIds) {
+          depth = await this.suppliersService.getMaxDepthLevelWithMpath(
+            rankedImpactTableDto.supplierIds,
           );
           return depth + 1;
         } else {
           return 0;
         }
-        break;
-
-      case GROUP_BY_VALUES.BUSINESS_UNIT:
-        if (rankedImpactTableDto.materialIds) {
-          depth = await this.materialsService.getMaxDepthLevelWithMpath(
-            rankedImpactTableDto.materialIds,
-          );
-          return depth + 1;
-        } else {
-          return 0;
-        }
-        break;
       default:
         return 0;
-        break;
     }
   }
 
@@ -308,6 +293,8 @@ export class ImpactService extends BaseImpactService {
           impactTableRows = impactTableRows.concat(
             this.getLevelOfImpactTableRows(row.children, depth - 1),
           );
+        } else {
+          impactTableRows = impactTableRows.concat(row);
         }
         return impactTableRows;
       },

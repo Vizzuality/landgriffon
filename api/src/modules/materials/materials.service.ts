@@ -313,8 +313,6 @@ export class MaterialsService extends AppBaseService<
 
   async getMaxDepthLevelWithMpath(ids: string[]): Promise<number> {
     const depthLevels: number[] = [];
-    // try to use one single query
-    // use promise all
 
     await Promise.all(
       ids.map(async (id: string) => {

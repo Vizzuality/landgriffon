@@ -101,7 +101,10 @@ describe('Impact Chart (Ranking) Test Suite (e2e) with requested levels for Mate
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           'indicatorIds[]': [preconditions.indicator.id],
-          'materialIds[]': [preconditions.materialsLevelOne[0].id],
+          'materialIds[]': [
+            preconditions.materialsLevelOne[0].id,
+            preconditions.materialsLevelOne[1].id,
+          ],
           endYear: 2020,
           startYear: 2020,
           groupBy: GROUP_BY_VALUES.MATERIAL,
@@ -110,7 +113,41 @@ describe('Impact Chart (Ranking) Test Suite (e2e) with requested levels for Mate
         })
         .expect(HttpStatus.OK);
 
-      expect(response.body.impactTable[0].rows.length).toBe(3);
+      expect(response.body.impactTable[0].rows.length).toBe(4);
+      expect(response.body.impactTable[0].rows[0].name).toBe(
+        'Material Level Two 1',
+      );
+      expect(response.body.impactTable[0].rows[0].values[0].value).toBe(1000);
+      expect(
+        response.body.impactTable[0].others.aggregatedValues[0].value,
+      ).toBe(1000);
+    },
+  );
+
+  test(
+    'When I query a Impact Chart grouped by material and filtered by level one and level two' +
+      'And  do not specify level' +
+      'Then I should get response structure starting from the level two materials  ',
+    async () => {
+      const response = await request(testApplication.getHttpServer())
+        .get('/api/v1/impact/ranking')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          'indicatorIds[]': [preconditions.indicator.id],
+          'materialIds[]': [
+            preconditions.materialsLevelTwo[4].id,
+            preconditions.materialsLevelTwo[3].id,
+            preconditions.materialsLevelOne[0].id,
+          ],
+          endYear: 2020,
+          startYear: 2020,
+          groupBy: GROUP_BY_VALUES.MATERIAL,
+          maxRankingEntities: 5,
+          sort: 'DES',
+        })
+        .expect(HttpStatus.OK);
+
+      expect(response.body.impactTable[0].rows.length).toBe(5);
       expect(response.body.impactTable[0].rows[0].name).toBe(
         'Material Level Two 1',
       );

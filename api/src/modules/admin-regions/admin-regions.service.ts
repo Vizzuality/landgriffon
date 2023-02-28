@@ -268,8 +268,8 @@ export class AdminRegionsService extends AppBaseService<
     return adminRegions.map((adminRegion: AdminRegion) => adminRegion.id);
   }
   /**
-   * @description: Retrieving max admin region depth level of selected materials
-   * based on mpath column which represents the ascendants path to the material
+   * @description: Retrieving max admin region depth level of selected admin regions
+   * based on mpath column which represents the ascendants path to the admin region
    * @param adminRegionIds
    */
   async getAdminRegionsMaxLevel(adminRegionIds: string[]): Promise<number> {

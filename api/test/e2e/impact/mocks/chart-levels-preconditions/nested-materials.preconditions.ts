@@ -127,6 +127,8 @@ export async function createNestedMaterialsPreconditions(): Promise<{
       levelTwoMaterial1,
       levelTwoMaterial2,
       levelTwoMaterial3,
+      levelTwoMaterial4,
+      levelTwoMaterial5,
     ],
   };
 }

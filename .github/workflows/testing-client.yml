@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'client/**'
+      - '.github/workflows/testing-client.yml'
 
   workflow_dispatch:
 

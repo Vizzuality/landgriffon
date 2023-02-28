@@ -9,7 +9,7 @@ export type SelectProps<T = string> = Omit<
   'className' | 'onChange' | 'value' | 'defaultValue'
 > & {
   defaultValue?: Option<T>;
-  value?: Option<T> | Option<T>[];
+  value?: Option<T>[] | Option<T>;
   error?: string;
   icon?: React.ReactElement<SVGElement | HTMLDivElement>;
   label?: React.ReactNode;

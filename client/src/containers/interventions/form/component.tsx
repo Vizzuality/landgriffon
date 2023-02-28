@@ -15,7 +15,7 @@ import InterventionTypeIcon from './intervention-type-icon';
 
 import { useIndicators } from 'hooks/indicators';
 import { useSuppliersTypes } from 'hooks/suppliers';
-import { useLocationTypes } from 'hooks/location-types';
+import { useSupportedLocationTypes } from 'hooks/location-types';
 import { useAdminRegionsTrees, useAdminRegionsByCountry } from 'hooks/admin-regions';
 import { useSourcingRecordsYears } from 'hooks/sourcing-records';
 import MaterialsSelect from 'containers/materials/select';
@@ -250,7 +250,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   );
 
   // Location types
-  const { data: locationTypes, isLoading: isLoadingLocationTypes } = useLocationTypes(
+  const { data: locationTypes, isLoading: isLoadingLocationTypes } = useSupportedLocationTypes(
     {},
     {
       select: (_locationTypes) =>

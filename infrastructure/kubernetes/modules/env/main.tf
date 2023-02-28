@@ -116,7 +116,7 @@ module "k8s_tiler" {
   namespace       = var.environment
 
 
-  env_vars = [
+  env_vars = concat(var.tiler_env_vars, [
     {
       name  = "API_URL"
       value = "${module.k8s_api.api_service_name}.${var.environment}.svc.cluster.local"
@@ -146,9 +146,13 @@ module "k8s_tiler" {
     {
       name = "DEFAULT_COG"
       value = "biomass.tif"
+    },
+    {
+      name = "REQUIRE_AUTH"
+      value = "false"
     }
 
-  ]
+  ])
 
 }
 

@@ -1,0 +1,11 @@
+[tool.pytest.ini_options]
+pythonpath = [
+  "."
+]
+env = ["REQUIRE_AUTH=true",
+    "API_HOST=",
+    "API_PORT=3000",
+    "S3_BUCKET_NAME=mybucket",
+    "ROOT_PATH=",
+    "TITILER_PREFIX=/cog",
+    "TITILER_ROUTER_PREFIX=/cog"]

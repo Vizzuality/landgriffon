@@ -112,3 +112,14 @@ variable "api_secrets" {
   description = "List of secrets to make available to the api container"
   default     = []
 }
+
+
+
+variable "tiler_env_vars" {
+  type = list(object({
+    name  = string
+    value = string
+  }))
+  description = "Key-value pairs of env vars to make available to the tiler container"
+  default     = []
+}

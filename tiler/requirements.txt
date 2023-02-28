@@ -3,3 +3,4 @@ boto3==1.26.68
 uvicorn==0.20.0
 requests~=2.28.2
 pytest~=7.2.1
+pytest-env==0.8.1

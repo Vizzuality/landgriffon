@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from titiler.core import TilerFactory

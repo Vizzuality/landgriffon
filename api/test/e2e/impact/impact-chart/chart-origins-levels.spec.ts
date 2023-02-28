@@ -176,7 +176,7 @@ describe('Impact Chart (Ranking) Test Suite (e2e) with requested levels for Admi
   test(
     'When I query a Impact Chart grouped by region ' +
       'And send no depth param, but filter by origins of level 0 and 1 ' +
-      'Then I should get response structure starting with regions of level 1 (provinces)',
+      'Then I should get response structure starting with regions of level 2 (going one level down from the lowest received)',
     async () => {
       const response = await request(testApplication.getHttpServer())
         .get('/api/v1/impact/ranking')
@@ -196,12 +196,12 @@ describe('Impact Chart (Ranking) Test Suite (e2e) with requested levels for Admi
         })
         .expect(HttpStatus.OK);
 
-      expect(response.body.impactTable[0].rows.length).toBe(3);
-      expect(response.body.impactTable[0].rows[0].name).toBe('Province 3');
-      expect(response.body.impactTable[0].rows[0].values[0].value).toBe(3000);
+      expect(response.body.impactTable[0].rows.length).toBe(5);
+      expect(response.body.impactTable[0].rows[0].name).toBe('Municipality 1');
+      expect(response.body.impactTable[0].rows[0].values[0].value).toBe(1000);
       expect(
         response.body.impactTable[0].others.aggregatedValues[0].value,
-      ).toBe(0);
+      ).toBe(2000);
     },
   );
 });

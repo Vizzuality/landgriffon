@@ -10,7 +10,7 @@ import { DataSource } from 'typeorm';
 import { createChartLevelsPreconditions } from '../mocks/chart-levels-preconditions/chart-levels.preconditions';
 import { AdminRegion } from '../../../../src/modules/admin-regions/admin-region.entity';
 
-describe('Impact Chart (Ranking) Test Suite (e2e) with requested levels', () => {
+describe('Impact Chart (Ranking) Test Suite (e2e) with requested levels for Admin Regions', () => {
   let testApplication: TestApplication;
   let jwtToken: string;
   let dataSource: DataSource;

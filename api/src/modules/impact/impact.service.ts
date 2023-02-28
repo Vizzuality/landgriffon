@@ -31,6 +31,7 @@ import {
   ImpactDataTableAuxMap,
 } from 'modules/impact/base-impact.service';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
+import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 
 @Injectable()
 export class ImpactService extends BaseImpactService {
@@ -122,12 +123,9 @@ export class ImpactService extends BaseImpactService {
   async getRankedImpactTable(
     rankedImpactTableDto: GetRankedImpactTableDto,
   ): Promise<ImpactTable> {
-    let filteredAdminRegionsLevels: number[] | undefined;
-    if (rankedImpactTableDto.originIds)
-      filteredAdminRegionsLevels =
-        await this.adminRegionsService.getAdminRegionsLevels(
-          rankedImpactTableDto.originIds,
-        );
+    const depth: number = rankedImpactTableDto.depth
+      ? rankedImpactTableDto.depth
+      : await this.findDepthLevelToApply(rankedImpactTableDto);
 
     const indicators: Indicator[] =
       await this.indicatorService.getIndicatorsById(
@@ -162,32 +160,74 @@ export class ImpactService extends BaseImpactService {
     );
 
     // If chart is requested for regions and specific level is received, we get only the requested level from admin regions trees of the response
-    if (rankedImpactTableDto.depth) {
-      impactTable.impactTable.forEach(
-        (impactDataByIndicator: ImpactTableDataByIndicator) => {
-          impactDataByIndicator.rows = this.getLevelOfImpactTableRows(
-            impactDataByIndicator.rows,
-            rankedImpactTableDto.depth as number,
-          );
-        },
-      );
-    } else if (
-      rankedImpactTableDto.groupBy === 'region' &&
-      filteredAdminRegionsLevels?.length
-    ) {
-      const depth: number = this.defineLevelToApply(filteredAdminRegionsLevels);
 
-      impactTable.impactTable.forEach(
-        (impactDataByIndicator: ImpactTableDataByIndicator) => {
-          impactDataByIndicator.rows = this.getLevelOfImpactTableRows(
-            impactDataByIndicator.rows,
-            depth,
-          );
-        },
-      );
-    }
+    // Add depth restriction or fallback to the lowest level existing in Data Base
+
+    impactTable.impactTable.forEach(
+      (impactDataByIndicator: ImpactTableDataByIndicator) => {
+        impactDataByIndicator.rows = this.getLevelOfImpactTableRows(
+          impactDataByIndicator.rows,
+          depth,
+        );
+      },
+    );
+
     // Cap the results to the Ranking Max, and aggregate the rest of the results
     return await this.applyRankingProcessing(rankedImpactTableDto, impactTable);
+  }
+
+  async findDepthLevelToApply(
+    rankedImpactTableDto: GetRankedImpactTableDto,
+  ): Promise<number> {
+    let depth: number;
+    switch (rankedImpactTableDto.groupBy) {
+      case GROUP_BY_VALUES.REGION:
+        if (rankedImpactTableDto.originIds) {
+          depth = await this.adminRegionsService.getAdminRegionsMaxLevel(
+            rankedImpactTableDto.originIds,
+          );
+          return depth;
+        } else {
+          return 0;
+        }
+        break;
+
+      case GROUP_BY_VALUES.MATERIAL:
+        if (rankedImpactTableDto.materialIds) {
+          depth = await this.materialsService.getMaxDepthLevelWithMpath(
+            rankedImpactTableDto.materialIds,
+          );
+          return depth + 1;
+        } else {
+          return 0;
+        }
+        break;
+
+      case GROUP_BY_VALUES.SUPPLIER:
+        if (rankedImpactTableDto.materialIds) {
+          depth = await this.materialsService.getMaxDepthLevelWithMpath(
+            rankedImpactTableDto.materialIds,
+          );
+          return depth + 1;
+        } else {
+          return 0;
+        }
+        break;
+
+      case GROUP_BY_VALUES.BUSINESS_UNIT:
+        if (rankedImpactTableDto.materialIds) {
+          depth = await this.materialsService.getMaxDepthLevelWithMpath(
+            rankedImpactTableDto.materialIds,
+          );
+          return depth + 1;
+        } else {
+          return 0;
+        }
+        break;
+      default:
+        return 0;
+        break;
+    }
   }
 
   /**
@@ -255,50 +295,18 @@ export class ImpactService extends BaseImpactService {
     return impactTable;
   }
 
-  private defineLevelToApply(receivedLevels: number[]): number {
-    // All filters are of level 0 - showing one level down (1)
-    if (receivedLevels.every((level: number) => level === 0)) return 1;
-    // All filters are of same level - 1 or 2 - showing one level down or same (level 2)
-    else if (
-      receivedLevels.every((level: number) => level === 1) ||
-      receivedLevels.every((level: number) => level === 2)
-    )
-      return 2;
-    // received filters are of level 0 and 1 - showing level 1
-    else if (
-      receivedLevels.includes(0) &&
-      receivedLevels.includes(1) &&
-      !receivedLevels.includes(2)
-    )
-      return 1;
-    // received filters are of mixed levels including the lowest
-    else if (
-      (!receivedLevels.includes(0) &&
-        receivedLevels.includes(1) &&
-        receivedLevels.includes(2)) ||
-      (receivedLevels.includes(0) &&
-        receivedLevels.includes(1) &&
-        receivedLevels.includes(2)) ||
-      (receivedLevels.includes(0) &&
-        !receivedLevels.includes(1) &&
-        receivedLevels.includes(2))
-    )
-      return 2;
-    else return 0;
-  }
-
   private getLevelOfImpactTableRows(
     impactTableRows: ImpactTableRows[],
-    level: number,
+    depth: number,
   ): ImpactTableRows[] {
-    if (level === 0) {
+    if (depth === 0) {
       return impactTableRows;
     }
     return impactTableRows.reduce(
       (impactTableRows: ImpactTableRows[], row: ImpactTableRows) => {
-        if (row.children) {
+        if (row.children.length > 0) {
           impactTableRows = impactTableRows.concat(
-            this.getLevelOfImpactTableRows(row.children, level - 1),
+            this.getLevelOfImpactTableRows(row.children, depth - 1),
           );
         }
         return impactTableRows;

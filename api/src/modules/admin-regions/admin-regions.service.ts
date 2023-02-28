@@ -267,19 +267,24 @@ export class AdminRegionsService extends AppBaseService<
 
     return adminRegions.map((adminRegion: AdminRegion) => adminRegion.id);
   }
-
-  async getAdminRegionsLevels(
-    adminRegionIds: string[],
-  ): Promise<number[] | undefined> {
+  /**
+   * @description: Retrieving max admin region depth level of selected materials
+   * based on mpath column which represents the ascendants path to the material
+   * @param adminRegionIds
+   */
+  async getAdminRegionsMaxLevel(adminRegionIds: string[]): Promise<number> {
     const adminRegions: AdminRegion[] | undefined =
       await this.adminRegionRepository.find({
         where: { id: In(adminRegionIds) },
       });
 
-    if (adminRegions)
-      return Object.values(
+    if (adminRegions) {
+      const adminRegionLevels: number[] = Object.values(
         adminRegions.map((adminRegion: AdminRegion) => adminRegion.level),
       );
-    else return undefined;
+      return Math.max(...adminRegionLevels);
+    } else {
+      return 0;
+    }
   }
 }

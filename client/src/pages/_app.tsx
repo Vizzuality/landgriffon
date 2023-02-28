@@ -70,7 +70,16 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     };
   }, [debouncedRouteChange, router.events]);
 
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false,
+          },
+        },
+      }),
+  );
   const getLayout = Component.Layout ?? ((page) => page);
 
   return (

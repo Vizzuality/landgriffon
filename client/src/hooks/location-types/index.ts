@@ -11,19 +11,41 @@ const DEFAULT_QUERY_OPTIONS = {
   placeholderData: [],
   retry: false,
   keepPreviousData: true,
-  refetchOnWindowFocus: false,
 };
 
 export interface LocationTypesParams extends BaseTreeSearchParams {
   supplierIds?: string[];
+  // ! enable this type when the API supports sorting
+  // sort?: string;
 }
 
 export const useLocationTypes = <T = Option<LocationTypes>[]>(
   params: LocationTypesParams = {},
   options?: UseQueryOptions<Option<LocationTypes>[], unknown, T, ['location-types', typeof params]>,
-) => {
-  const query = useQuery(
+) =>
+  useQuery(
     ['location-types', params],
+    () =>
+      apiRawService
+        .request<{ data: Option<LocationTypes>[] }>({
+          method: 'GET',
+          url: '/sourcing-locations/location-types',
+          params,
+        })
+        .then(({ data: responseData }) => responseData.data),
+    {
+      ...DEFAULT_QUERY_OPTIONS,
+      ...options,
+    },
+  );
+
+// ! remove this hook and use `useLocationTypes` with `supported=true` when the API allows it
+export const useSupportedLocationTypes = <T = Option<LocationTypes>[]>(
+  params: LocationTypesParams = {},
+  options?: UseQueryOptions<Option<LocationTypes>[], unknown, T, ['location-types', typeof params]>,
+) =>
+  useQuery(
+    ['supported-location-types', params],
     () =>
       apiRawService
         .request<{ data: Option<LocationTypes>[] }>({
@@ -37,6 +59,3 @@ export const useLocationTypes = <T = Option<LocationTypes>[]>(
       ...options,
     },
   );
-
-  return query;
-};

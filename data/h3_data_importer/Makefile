@@ -359,19 +359,19 @@ download-deforestation: download-deforestation-list | download-managed-forests
 transform-deforestation-file:
 	@echo "Transforming deforestation file $(FILE) ... "
 	table_name=`basename -s .tif $(FILE) | tr -d ' \t\n\r' | grep -oP "\d{2}[A-Z]_\d{3}[A-Z]"`; \
-	mask_path=$${table_name}_mask; \
-	mask_table_name=`basename -s .tif $${mask_path}; \
+	mask_path="$(WORKDIR_DEFORESTATION)/Lesiv_2015_managed_forests/managed_forests.tif"; \
+	mask_table_name="$${table_name}_mask"; \
  	wget -q -O "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" $(FILE); \
 	rm -f "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
 	rm -f "$(WORKDIR_DEFORESTATION)/$${mask_table_name}_clip.tif"; \
 	rm -f "$(WORKDIR_DEFORESTATION)/$${mask_table_name}.tif"; \
 	rio clip "$${mask_path}" "$(WORKDIR_DEFORESTATION)/$${mask_table_name}_clip.tif" \
 		--like "$(WORKDIR_DEFORESTATION)/$${table_name}.tif"; \
-	gdalwarp -q -s_srs EPSG:4326 -t_srs EPSG:4326 -r nearest -tr 0.00025 0.00025 -multi -of GTiff  -ot UInt32 -wo NUM_THREADS=ALL_CPUS \
-		'$(WORKDIR_DEFORESTATION)/$${mask_table_name}_clip.tif' \
-		'$(WORKDIR_DEFORESTATION)/$${mask_table_name}.tif'; \
+	rio warp --resampling "nearest" --overwrite "$(WORKDIR_DEFORESTATION)/$${mask_table_name}_clip.tif" \
+		-o "$(WORKDIR_DEFORESTATION)/$${mask_table_name}.tif" \
+		--like "$(WORKDIR_DEFORESTATION)/$${table_name}.tif"; \
 	gdal_calc.py --quiet --calc "(A>16)*(B<12)" \
-		--format GTiff --co NBITS=1 --co compress=PACKBITS --co tiled=YES --co BLOCKXSIZE=400 --co BLOCKYSIZE=400  --NoDataValue 0 --overwrite \
+		--format GTiff --co NBITS=1 --co compress=PACKBITS --co tiled=YES --co BLOCKXSIZE=400 --co BLOCKYSIZE=400  --NoDataValue 0 --overwrite --extent=intersect \
 		-A "$(WORKDIR_DEFORESTATION)/$${table_name}.tif" \
 		-B "$(WORKDIR_DEFORESTATION)/$${mask_table_name}.tif" \
 		--outfile  "$(WORKDIR_DEFORESTATION)/$${table_name}.tif"; \
@@ -380,7 +380,7 @@ transform-deforestation-file:
 		"$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
 	gdal_calc.py --quiet --calc "A/111111.11111109848" --format GTiff --type Float32 --NoDataValue 0.0 --overwrite \
 		-A "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif" \
-		--outfile  "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"
+		--outfile  "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif";
 	@echo "Done transforming deforestation file $(FILE)"
 
 preprocess-deforestation: download-deforestation

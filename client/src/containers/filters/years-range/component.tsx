@@ -52,9 +52,13 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
         disabled: endYear <= year + (yearsGap - 1),
       })),
     );
+
     setEndYearOptions(
       years?.map((year) => ({
-        label: year.toString(),
+        label:
+          lastYearWithData && year > lastYearWithData
+            ? `${year} - projected data`
+            : year.toString(),
         value: year,
         disabled: startYear >= year - (yearsGap - 1),
       })),
@@ -86,6 +90,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
         {...getReferenceProps({
           ref: reference,
         })}
+        data-testid="years-range-btn"
       >
         <span className="block h-5 truncate">
           <span className="mr-2 text-gray-400">from</span>
@@ -132,21 +137,17 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
                   value={startYearOption}
                   onChange={({ value }) => onChange?.({ startYear: value, endYear })}
                   placeholder={placeholderFrom}
+                  data-testid="year-selector-from"
                 />
                 <div>To</div>
                 <Select<number>
                   loading={loading}
-                  options={endYearOptions.map((option) => ({
-                    ...option,
-                    label:
-                      lastYearWithData && option.value > lastYearWithData
-                        ? `${option.label} - projected data`
-                        : option.label,
-                  }))}
+                  options={endYearOptions}
                   value={endYearOption}
                   onChange={({ value }) => onChange?.({ startYear, endYear: value })}
                   placeholder={placeholderTo}
                   onSearch={onEndYearSearch}
+                  data-testid="year-selector-to"
                 />
               </div>
             </div>

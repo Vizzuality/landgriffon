@@ -104,6 +104,7 @@ const AutoCompleteSelect = <T,>({
           }
           value={filteredOptions[index]}
           disabled={filteredOptions[index].disabled}
+          data-testid={`${props.id || props.name || props['data-testid']}-option`}
         >
           {({ selected, disabled }) => (
             <div

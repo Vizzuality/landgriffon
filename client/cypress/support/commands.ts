@@ -75,7 +75,7 @@ Cypress.Commands.add('interceptAllRequests', (): void => {
   cy.intercept('GET', '/api/v1/h3/years*', {
     statusCode: 200,
     fixture: 'years/index',
-  });
+  }).as('h2Years');
 
   cy.intercept('GET', '/api/v1/business-units/trees?depth=1*', {
     statusCode: 200,

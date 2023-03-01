@@ -1490,7 +1490,6 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           endYear: 2013,
           startYear: 2010,
           groupBy: GROUP_BY_VALUES.MATERIAL,
-          groupBy: GROUP_BY_VALUES.MATERIAL,
           'locationTypes[]': [LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT],
         });
       const response2 = await request(testApplication.getHttpServer())

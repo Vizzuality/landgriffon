@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Intervention form: list only supported location types.
 - Analysis filters: location types options now listed according to scenarios (if any). [LANDGRIF-1255](https://vizzuality.atlassian.net/browse/LANDGRIF-1255)
 
+### Changed
+- Replaced Deck.gl map with `react-map-gl` to prepare migration to Layer Manager. [LANDGRIF-812](https://vizzuality.atlassian.net/browse/LANDGRIF-812)
+
 ### Fixed
 - Fixed coefficients panel acting weird when values are edited. [LANDGRIF-1246](https://vizzuality.atlassian.net/browse/LANDGRIF-1246)
 - Fix permissions for edit scenarios on analysis pages [LANDGRIF-1253](https://vizzuality.atlassian.net/browse/LANDGRIF-1253)

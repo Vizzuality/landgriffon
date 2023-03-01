@@ -1,4 +1,7 @@
 import { useEffect, useMemo } from 'react';
+import { LayerManager, Layer } from '@vizzuality/layer-manager-react';
+import PluginMapboxGl from '@vizzuality/layer-manager-plugin-mapboxgl';
+import { MapboxLayer } from '@deck.gl/mapbox/typed';
 import { H3HexagonLayer } from '@deck.gl/geo-layers/typed';
 
 import Map from 'components/map';
@@ -6,22 +9,16 @@ import { useH3Data } from 'hooks/h3-data';
 import PageLoading from 'containers/page-loading';
 import { useYears } from 'hooks/years';
 
+import type { H3HexagonLayer as H3HexagonLayerType } from '@deck.gl/geo-layers/typed';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { Dispatch } from 'react';
-import type { Layer, Material } from 'types';
+import type { Material } from 'types';
 
 interface PreviewMapProps {
   selectedLayerId?: Layer['id'];
   selectedMaterialId?: Material['id'];
   onStatusChange?: Dispatch<UseQueryResult['status']>;
 }
-
-const BASE_LAYER_PROPS = {
-  id: 'layer-preview',
-  getHexagon: (d) => d.h,
-  getFillColor: (d) => d.c,
-  getLineColor: (d) => d.c,
-};
 
 const INITIAL_PREVIEW_SETTINGS = {
   minZoom: 0,
@@ -56,16 +53,28 @@ const PreviewMap = ({ selectedLayerId, selectedMaterialId, onStatusChange }: Pre
   }, [onStatusChange, status]);
 
   const h3Layer = useMemo(() => {
-    return new H3HexagonLayer({
-      ...BASE_LAYER_PROPS,
+    if (!data?.length) return null;
+
+    return new MapboxLayer<H3HexagonLayerType<(typeof data)[0], { type: typeof H3HexagonLayer }>>({
+      id: 'layer-preview',
+      type: H3HexagonLayer,
       data,
+      getHexagon: (d) => d.h,
+      getFillColor: (d) => d.c,
+      getLineColor: (d) => d.c,
     });
   }, [data]);
 
   return (
     <>
       {isFetching && <PageLoading />}
-      <Map initialViewState={INITIAL_PREVIEW_SETTINGS} layers={[h3Layer]} mapStyle="terrain" />
+      <Map id="contextual-preview-map" mapStyle="terrain" viewState={INITIAL_PREVIEW_SETTINGS}>
+        {(map) => (
+          <LayerManager map={map} plugin={PluginMapboxGl}>
+            {h3Layer && <Layer key={h3Layer.id} id={h3Layer.id} type="deck" deck={[h3Layer]} />}
+          </LayerManager>
+        )}
+      </Map>
     </>
   );
 };

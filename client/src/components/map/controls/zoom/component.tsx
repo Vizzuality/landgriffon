@@ -1,32 +1,43 @@
 import { useCallback } from 'react';
 import cx from 'classnames';
+import { useMap } from 'react-map-gl';
 import { MinusIcon, PlusIcon } from '@heroicons/react/solid';
 
 import type { MouseEventHandler } from 'react';
-import type { ViewportProps } from 'react-map-gl';
 
 export interface ZoomControlProps {
-  viewport: Partial<ViewportProps>;
+  mapId?: string;
   className?: string;
-  onZoomChange: (zoom: number) => void;
 }
 
-const COMMON_CLASSES = 'p-2 transition-colors';
-const ENABLED_CLASSES = 'bg-white hover:bg-gray-100 active:bg-navy-50 cursor-pointer';
-const DISABLED_CLASSES = 'bg-gray-100 opacity-75 cursor-default';
+const COMMON_CLASSES =
+  'p-2 transition-colors bg-white cursor-pointer hover:bg-gray-100 active:bg-navy-50 disabled:bg-gray-100 disabled:opacity-75 disabled:cursor-default';
 
-export const ZoomControl: React.FC<ZoomControlProps> = ({
-  className,
-  viewport: { zoom, maxZoom, minZoom } = {},
-  onZoomChange,
-}) => {
-  const increaseZoom = useCallback<MouseEventHandler<HTMLButtonElement>>(() => {
-    onZoomChange(zoom + 1 > maxZoom ? maxZoom : zoom + 1);
-  }, [zoom, maxZoom, onZoomChange]);
+export const ZoomControl: React.FC<ZoomControlProps> = ({ className, mapId = 'default' }) => {
+  const { [mapId]: mapRef } = useMap();
+  const zoom = mapRef?.getZoom();
+  const minZoom = mapRef?.getMinZoom();
+  const maxZoom = mapRef?.getMaxZoom();
 
-  const decreaseZoom = useCallback<MouseEventHandler<HTMLButtonElement>>(() => {
-    onZoomChange(zoom - 1 < minZoom ? minZoom : zoom - 1);
-  }, [zoom, minZoom, onZoomChange]);
+  const increaseZoom = useCallback<MouseEventHandler<HTMLButtonElement>>(
+    (evt) => {
+      evt.stopPropagation();
+      if (!mapRef) return null;
+
+      mapRef.zoomIn();
+    },
+    [mapRef],
+  );
+
+  const decreaseZoom = useCallback<MouseEventHandler<HTMLButtonElement>>(
+    (evt) => {
+      evt.stopPropagation();
+      if (!mapRef) return null;
+
+      mapRef.zoomOut();
+    },
+    [mapRef],
+  );
 
   return (
     <div
@@ -36,25 +47,23 @@ export const ZoomControl: React.FC<ZoomControlProps> = ({
       )}
     >
       <button
-        className={cx(COMMON_CLASSES, {
-          [ENABLED_CLASSES]: zoom < maxZoom,
-          [DISABLED_CLASSES]: zoom >= maxZoom,
-        })}
+        className={COMMON_CLASSES}
         aria-label="Zoom in"
         type="button"
-        disabled={zoom >= maxZoom}
+        // ? Sometimes, depending on the viewport, the map will not reach zoom 22 but 21.X.
+        // ? As we have no control over this, we are assuming, if no maxZoom is set, going further zoom level 21 will be considered as the limit
+        disabled={zoom >= maxZoom || (!maxZoom && zoom > 21)}
         onClick={increaseZoom}
       >
         <PlusIcon className="w-5 h-5" />
       </button>
       <button
-        className={cx(COMMON_CLASSES, {
-          [ENABLED_CLASSES]: zoom > minZoom,
-          [DISABLED_CLASSES]: zoom <= minZoom,
-        })}
+        className={COMMON_CLASSES}
         aria-label="Zoom out"
         type="button"
-        disabled={zoom <= minZoom}
+        // ? Sometimes, depending on the viewport, the map will not reach zoom 0 but 0.X.
+        // ? As we have no control over this, we are assuming, if no minZoom is set, going below zoom level 1 will be considered as the limit
+        disabled={zoom <= minZoom || (!minZoom && zoom < 1)}
         onClick={decreaseZoom}
       >
         <MinusIcon className="w-5 h-5" />

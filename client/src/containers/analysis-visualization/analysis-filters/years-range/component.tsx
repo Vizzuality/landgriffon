@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { isFinite, toNumber, range } from 'lodash-es';
 import toast from 'react-hot-toast';
 
+import { DEFAULT_END_YEAR_GAP, MAX_END_YEAR_RANGE } from './constants';
+
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisUI } from 'store/features/analysis/ui';
 import { analysisFilters, setFilters } from 'store/features/analysis/filters';
@@ -9,11 +11,6 @@ import { useYears } from 'hooks/years';
 import YearsRangeFilter, { useYearsRange } from 'containers/filters/years-range';
 
 import type { YearsRangeParams } from 'containers/filters/years-range';
-
-/** Arbitrary value to define the end year list range */
-const DEFAULT_END_YEAR_GAP = 5;
-/** Arbitrary value to define the max range of end year options to avoid performance issues */
-const MAX_END_YEAR_RANGE = 1000;
 
 const YearsRange: React.FC = () => {
   const dispatch = useAppDispatch();

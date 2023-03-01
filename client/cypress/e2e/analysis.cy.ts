@@ -1,3 +1,8 @@
+import {
+  DEFAULT_END_YEAR_GAP,
+  MAX_END_YEAR_RANGE,
+} from '../../src/containers/analysis-visualization/analysis-filters/years-range/constants';
+
 beforeEach(() => {
   cy.interceptAllRequests();
   cy.login();
@@ -205,11 +210,21 @@ describe('Analysis table', () => {
   it('user should be able to select year filters', () => {
     cy.wait('@h2Years').then((int) => {
       const years = int.response.body.data;
+      // Check default filter values
+      cy.wait('@fetchImpactTable').then((req) => {
+        expect(req.request.query.startYear).to.eq(years[0].toString());
+        expect(req.request.query.endYear).to.eq(
+          (years[years.length - 1] + DEFAULT_END_YEAR_GAP).toString(),
+        );
+      });
+
+      // Check 'from' options
       cy.get('[data-testid="years-range-btn"]').click();
       cy.get('[data-testid="select-year-selector-from"]').click();
       cy.get('[data-testid="year-selector-from-option"]').should('have.length', years.length);
 
       const fromYear = years[2];
+      // Check if can select a typed value
       cy.get('[data-testid="select-year-selector-from"] input')
         .focus()
         .clear({ force: true })
@@ -217,15 +232,32 @@ describe('Analysis table', () => {
           force: true,
         })
         .should('have.value', fromYear);
+      // Check if the payload request is correct
+      cy.wait('@fetchImpactTable')
+        .its('request.query.startYear')
+        .should('eql', fromYear.toString());
 
-      const toYear = years[0] + 1000;
+      const toYear = years[0] + MAX_END_YEAR_RANGE;
+      cy.get('[data-testid="select-year-selector-to"]').click();
+
+      // Check that the 'to' options years smaller than the selected 'from' year are disabled
+      cy.get('[data-testid="year-selector-to-option"][aria-disabled="true"]').should(
+        'have.length',
+        3,
+      );
+
+      // Check if can select a typed value
       cy.get('[data-testid="select-year-selector-to"] input')
         .focus()
         .clear({ force: true })
-        .type(toYear, {
+        .type(`${toYear}`, {
           force: true,
+          delay: 300,
         })
+        .type('{enter}', { force: true })
         .should('have.value', toYear);
+      // Check if the payload request is correct
+      cy.wait('@fetchImpactTable').its('request.query.endYear').should('eql', toYear.toString());
     });
   });
 });
@@ -252,6 +284,7 @@ describe('Analysis scenarios', () => {
     cy.wait('@treesSelectors').then((interception) => {
       const url = new URL(interception.request.url);
       const scenarioIds = url.searchParams.get('scenarioIds');
+      expect(scenarioIds).to.be.null;
       expect(scenarioIds).to.be.null;
     });
   });

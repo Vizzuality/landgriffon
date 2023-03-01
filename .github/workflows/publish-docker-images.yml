@@ -22,7 +22,7 @@ on:
       waitForTest:
         description: 'Set to "false" to skip waiting for the test to pass.'
         required: true
-        default: true
+        default: 'true'
 
 jobs:
   wait_for_tests:
@@ -59,7 +59,7 @@ jobs:
     needs: wait_for_tests
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -75,8 +75,8 @@ jobs:
       - name: Extract branch name
         shell: bash
         run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+          echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
+          echo "branch-upper=$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )" >> $GITHUB_OUTPUT
         id: extract_branch
 
       - name: Build API Docker image
@@ -101,7 +101,7 @@ jobs:
     needs: wait_for_tests
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -117,8 +117,8 @@ jobs:
       - name: Extract branch name
         shell: bash
         run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+          echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
+          echo "branch-upper=$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )" >> $GITHUB_OUTPUT
         id: extract_branch
 
       - name: Build Client Docker image
@@ -152,7 +152,7 @@ jobs:
     needs: wait_for_tests
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -168,8 +168,8 @@ jobs:
       - name: Extract branch name
         shell: bash
         run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+          echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
+          echo "branch-upper=$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )" >> $GITHUB_OUTPUT
         id: extract_branch
 
       - name: Build Data Import Docker image
@@ -194,7 +194,7 @@ jobs:
     needs: wait_for_tests
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -210,8 +210,8 @@ jobs:
       - name: Extract branch name
         shell: bash
         run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+          echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
+          echo "branch-upper=$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )" >> $GITHUB_OUTPUT
         id: extract_branch
 
       - name: Build Tiler Docker image

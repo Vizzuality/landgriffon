@@ -42,7 +42,7 @@ jobs:
     needs: wait_for_image_push
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
@@ -91,8 +91,8 @@ jobs:
       - name: Extract branch name
         shell: bash
         run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+          echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
+          echo "branch-upper=$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )" >> $GITHUB_OUTPUT
         id: extract_branch
 
       - name: Redeploy production pods

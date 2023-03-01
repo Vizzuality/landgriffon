@@ -355,7 +355,8 @@ download-deforestation: download-deforestation-list | download-managed-forests
 # 4th gdal_warp to resample the mask to the same resolution of the deforestation file
 # 5th gdal_calc to multiply the mask by the deforestation file and convert to pixel mask (5 years) for 2020 deforestation events
 # the resampling sums the pixels then divide by the number of original pixels fit in
-# resampled pixel to get the % of area afected by deforestation
+# 6th resampled pixel to get the % of area afected by deforestation
+# 7th remove the mask files that are intermediate files.
 transform-deforestation-file:
 	@echo "Transforming deforestation file $(FILE) ... "
 	table_name=`basename -s .tif $(FILE) | tr -d ' \t\n\r' | grep -oP "\d{2}[A-Z]_\d{3}[A-Z]"`; \
@@ -380,7 +381,9 @@ transform-deforestation-file:
 		"$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
 	gdal_calc.py --quiet --calc "A/111111.11111109848" --format GTiff --type Float32 --NoDataValue 0.0 --overwrite \
 		-A "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif" \
-		--outfile  "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif";
+		--outfile  "$(WORKDIR_DEFORESTATION)/Hansen_GFC_2020_lossyear/Loss_$${table_name}_10km.tif"; \
+	rm -f "$(WORKDIR_DEFORESTATION)/$${mask_table_name}_clip.tif"; \
+	rm -f "$(WORKDIR_DEFORESTATION)/$${mask_table_name}.tif";
 	@echo "Done transforming deforestation file $(FILE)"
 
 preprocess-deforestation: download-deforestation

@@ -21,8 +21,8 @@
     "@deck.gl/extensions": "8.8.6",
     "@deck.gl/geo-layers": "8.8.6",
     "@deck.gl/layers": "8.8.6",
+    "@deck.gl/mapbox": "8.8.6",
     "@deck.gl/mesh-layers": "8.8.6",
-    "@deck.gl/react": "8.8.6",
     "@dnd-kit/core": "5.0.3",
     "@dnd-kit/modifiers": "5.0.0",
     "@dnd-kit/sortable": "6.0.1",
@@ -34,7 +34,7 @@
     "@heroicons/react": "1.0.6",
     "@hookform/resolvers": "2.8.8",
     "@loaders.gl/core": "3.2.5",
-    "@luma.gl/core": "8.5.16",
+    "@luma.gl/constants": "8.5.18",
     "@react-aria/dialog": "3.1.4",
     "@react-aria/focus": "3.7.0",
     "@react-aria/overlays": "3.6.3",
@@ -45,6 +45,8 @@
     "@tailwindcss/typography": "0.5.0",
     "@tanstack/react-query": "^4.2.1",
     "@tanstack/react-table": "8.5.1",
+    "@vizzuality/layer-manager-plugin-mapboxgl": "2.0.3",
+    "@vizzuality/layer-manager-react": "2.0.3",
     "autoprefixer": "10.2.5",
     "axios": "0.27.2",
     "chroma-js": "2.1.2",
@@ -58,6 +60,7 @@
     "jsona": "1.9.2",
     "lodash-es": "4.17.21",
     "lottie-react": "2.2.1",
+    "mapbox-gl": "2.13.0",
     "next": "13.2.4",
     "next-auth": "4.19.2",
     "pino": "8.1.0",
@@ -69,7 +72,7 @@
     "react-dropzone": "14.2.2",
     "react-hook-form": "7.43.1",
     "react-hot-toast": "2.2.0",
-    "react-map-gl": "6.1.19",
+    "react-map-gl": "7.0.21",
     "react-range": "1.8.12",
     "react-redux": "8.0.2",
     "react-spring": "9.4.2",
@@ -78,6 +81,7 @@
     "rooks": "5.10.0",
     "sharp": "^0.31.1",
     "tailwindcss": "3.2.4",
+    "use-debounce": "9.0.3",
     "uuid": "8.3.2",
     "yup": "0.32.11"
   },
@@ -117,6 +121,10 @@
     "storybook-addon-swc": "^1.1.8",
     "typescript": "4.8.3",
     "webpack": "5"
+  },
+  "resolutions": {
+    "@deck.gl/mapbox": "8.8.6",
+    "@luma.gl/constants": "8.5.18"
   },
   "packageManager": "yarn@3.3.1"
 }

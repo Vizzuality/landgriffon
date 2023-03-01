@@ -27,7 +27,7 @@ const DEFAULT_DECKGL_PROPS = {
   visible: DEFAULT_LAYER_ATTRIBUTES.active,
 };
 
-interface DeckGLConstructorProps {
+export interface DeckGLConstructorProps {
   id: Layer['id'];
   visible: boolean;
   opacity: number;

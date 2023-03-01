@@ -1,29 +1,14 @@
-import { StaticMap } from 'react-map-gl';
-import DeckGL from '@deck.gl/react/typed';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import ReactMapGL, { useMap } from 'react-map-gl';
+import { useDebouncedCallback } from 'use-debounce';
 
-import DefaultMapStyle from './styles/map-style.json';
-import SatelliteMapStyle from './styles/map-style-satellite.json';
+import { DEFAULT_VIEW_STATE, MAP_STYLES } from './constants';
 
-import type { DeckGLProps, DeckGLRef } from '@deck.gl/react/typed';
-import type { H3HexagonLayer } from '@deck.gl/geo-layers/typed';
-import type { ViewState as MapboxViewState } from 'react-map-gl/src/mapbox/mapbox';
-import type { ComponentProps, Dispatch } from 'react';
+import type { ViewState, ViewStateChangeEvent } from 'react-map-gl';
+import type { FC } from 'react';
+import type { CustomMapProps } from './types';
 
 const MAPBOX_API_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
-
-const MAP_STYLES = {
-  terrain: DefaultMapStyle,
-  satellite: SatelliteMapStyle,
-};
-
-export type MapStyle = keyof typeof MAP_STYLES;
-
-export interface ViewState extends MapboxViewState {
-  minZoom?: number;
-  maxZoom?: number;
-  transitionDuration?: number;
-}
 
 export const INITIAL_VIEW_STATE: ViewState = {
   longitude: 0,
@@ -31,69 +16,121 @@ export const INITIAL_VIEW_STATE: ViewState = {
   zoom: 2,
   pitch: 0,
   bearing: 0,
-  minZoom: 2,
+  padding: null,
 };
 
-export interface MapProps extends DeckGLProps {
-  layers: H3HexagonLayer[];
-  mapStyle?: MapStyle;
-  initialViewState?: Partial<ViewState>;
-  viewState?: ViewState;
-  onViewStateChange?: Dispatch<
-    Omit<Parameters<ComponentProps<typeof DeckGL>['onViewStateChange']>[0], 'viewState'> & {
-      viewState: ViewState;
-    }
-  >;
-}
+export const Map: FC<CustomMapProps> = ({
+  id = 'default',
+  mapStyle = 'terrain',
+  initialViewState,
+  viewState = {},
+  bounds,
+  onMapViewStateChange,
+  children,
+  dragPan,
+  dragRotate,
+  scrollZoom,
+  doubleClickZoom,
+  ...mapboxProps
+}: CustomMapProps) => {
+  /**
+   * REFS
+   */
+  const { [id]: mapRef } = useMap();
 
-const Map = React.forwardRef<DeckGLRef, MapProps>(
-  (
-    {
-      children,
-      mapStyle = 'terrain',
-      viewState,
-      initialViewState: partialInitialViewState,
-      onViewStateChange,
-      ...props
+  /**
+   * STATE
+   */
+  const [localViewState, setLocalViewState] = useState<Partial<ViewState>>(
+    !initialViewState && {
+      ...DEFAULT_VIEW_STATE,
+      ...viewState,
     },
-    ref,
-  ) => {
-    const initialViewState = useMemo(
-      () => ({
-        ...INITIAL_VIEW_STATE,
-        ...partialInitialViewState,
-      }),
-      [partialInitialViewState],
-    );
+  );
+  const [isFlying, setFlying] = useState(false);
 
-    const [localViewState, setLocalViewState] = useState(() => ({
-      ...initialViewState,
+  /**
+   * CALLBACKS
+   */
+  const debouncedViewStateChange = useDebouncedCallback((_viewState: ViewState) => {
+    onMapViewStateChange?.(_viewState);
+  }, 150);
+
+  const handleFitBounds = useCallback(() => {
+    const { bbox, options } = bounds;
+
+    // enabling fly mode avoids the map to be interrupted during the bounds transition
+    setFlying(true);
+
+    mapRef.fitBounds(
+      [
+        [bbox[0], bbox[1]],
+        [bbox[2], bbox[3]],
+      ],
+      options,
+    );
+  }, [bounds, mapRef]);
+
+  const handleMapMove = useCallback(
+    ({ viewState: _viewState }: ViewStateChangeEvent) => {
+      setLocalViewState(_viewState);
+      debouncedViewStateChange(_viewState);
+    },
+    [debouncedViewStateChange],
+  );
+
+  useEffect(() => {
+    if (mapRef && bounds) {
+      handleFitBounds();
+    }
+  }, [mapRef, bounds, handleFitBounds]);
+
+  useEffect(() => {
+    setLocalViewState((prevViewState) => ({
+      ...prevViewState,
       ...viewState,
     }));
+  }, [viewState]);
 
-    return (
-      <DeckGL
-        ref={ref}
-        initialViewState={viewState ? undefined : initialViewState}
-        viewState={viewState}
-        onViewStateChange={(state: Parameters<MapProps['onViewStateChange']>[0]) => {
-          setLocalViewState(state.viewState);
-          onViewStateChange?.(state);
-        }}
-        controller
-        {...props}
-      >
-        <StaticMap
-          viewState={viewState ?? localViewState}
-          mapStyle={MAP_STYLES[mapStyle]}
-          mapboxApiAccessToken={MAPBOX_API_TOKEN}
-          className="-z-10"
-        />
-        {children}
-      </DeckGL>
-    );
-  },
-);
+  useEffect(() => {
+    if (!bounds) return undefined;
+
+    const { options } = bounds;
+    const animationDuration = options?.duration || 0;
+    let timeoutId: number = null;
+
+    if (isFlying) {
+      timeoutId = window.setTimeout(() => {
+        setFlying(false);
+      }, animationDuration);
+    }
+
+    return () => {
+      if (timeoutId) {
+        window.clearInterval(timeoutId);
+      }
+    };
+  }, [bounds, isFlying]);
+
+  return (
+    <ReactMapGL
+      id={id}
+      mapStyle={MAP_STYLES[mapStyle]}
+      initialViewState={initialViewState}
+      mapboxAccessToken={MAPBOX_API_TOKEN}
+      dragPan={!isFlying && dragPan}
+      dragRotate={!isFlying && dragRotate}
+      scrollZoom={!isFlying && scrollZoom}
+      doubleClickZoom={!isFlying && doubleClickZoom}
+      onMove={handleMapMove}
+      className="-z-10"
+      {...mapboxProps}
+      {...localViewState}
+    >
+      {!!mapRef && children(mapRef.getMap())}
+    </ReactMapGL>
+  );
+};
 
 Map.displayName = 'Map';
 

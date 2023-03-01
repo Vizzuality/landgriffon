@@ -1,3 +1,5 @@
+import { MapProvider } from 'react-map-gl';
+
 import useEffectOnce from 'hooks/once';
 import { setVisualizationMode } from 'store/features/analysis';
 import { useAppDispatch } from 'store/hooks';
@@ -19,7 +21,9 @@ const MapPage: NextPageWithLayout = () => {
   return (
     <>
       <TitleTemplate title="Analysis Map" />
-      <AnalysisMap />
+      <MapProvider>
+        <AnalysisMap />
+      </MapProvider>
     </>
   );
 };

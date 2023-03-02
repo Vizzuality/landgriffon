@@ -1,7 +1,8 @@
 import logging
+import multiprocessing
 import os
 import sys
-from contextlib import ExitStack
+from functools import partial
 from io import StringIO
 from pathlib import Path
 
@@ -13,7 +14,6 @@ import rasterio as rio
 from psycopg import sql
 from psycopg_pool import ConnectionPool
 from rasterio import DatasetReader
-from tqdm import tqdm
 
 from utils import DTYPES_TO_PG, slugify, snakify
 
@@ -47,23 +47,28 @@ def check_transform(reference_raster: DatasetReader, raster: DatasetReader, _rai
         sys.exit(1)
 
 
-def raster_to_h3(raster: DatasetReader, h3_resolution: int) -> pd.DataFrame:
+def raster_to_h3(reference_raster: Path, h3_resolution: int, raster_file: Path) -> pd.DataFrame:
     """Convert a raser to a dataframe with h3index -> value
 
     Uses `h3ronpy.raster.raster_to_dataframe()` which uses already multiprocessing under the hood
     so there's no need to iterate over the raster windows anymore.
     """
-    h3 = h3ronpy.raster.raster_to_dataframe(
-        raster.read(1),
-        transform=raster.transform,
-        nodata_value=raster.nodata,
-        h3_resolution=h3_resolution,
-        compacted=False,
-        geo=False,
-    ).set_index("h3index")
-    # we need the h3 index in the hexadecimal form for the DB
-    h3.index = pd.Series(h3.index).apply(lambda x: hex(x)[2:])
-    return h3.rename(columns={"value": slugify(Path(raster.name).stem)})
+    with rio.open(raster_file) as raster:
+        with rio.open(reference_raster) as ref:
+            check_srs(ref, raster)
+            check_transform(ref, raster)
+
+        h3 = h3ronpy.raster.raster_to_dataframe(
+            raster.read(1),
+            transform=raster.transform,
+            nodata_value=raster.nodata,
+            h3_resolution=h3_resolution,
+            compacted=False,
+            geo=False,
+        ).set_index("h3index")
+        # we need the h3 index in the hexadecimal form for the DB
+        h3.index = pd.Series(h3.index).apply(lambda x: hex(x)[2:])
+        return h3.rename(columns={"value": slugify(Path(raster.name).stem)})
 
 
 def create_h3_grid_table(connection: psycopg.Connection, table: str, df: pd.DataFrame):
@@ -179,29 +184,21 @@ def to_the_db(df: pd.DataFrame, table: str, data_type: str, dataset: str, year: 
 @click.argument("year", type=int)
 # @click.option("contextual", is_flag=True, help="If the data has to be referenced in contextual_layers table.")
 @click.option("--h3-res", "h3_res", type=int, default=6, help="h3 resolution to use")
-# @click.option("thread-count", "thread_count", type=int, default=4, help="Number of threads to use")
-def main(folder: Path, table: str, data_type: str, dataset: str, year: int, h3_res: int):
+@click.option("--thread-count", "thread_count", type=int, default=8, help="Number of threads to use")
+def main(folder: Path, table: str, data_type: str, dataset: str, year: int, h3_res: int, thread_count: int):
     """Reads a folder of .tif, converts to h3 and loads into a PG table
 
     All GeoTiffs in the folder must have identical projection, transform, etc.
     The resulting table will contain a column for each GeoTiff.
     """
-
     # Part 1: Convert Raster to h3 index -> value map (or dataframe in this case)
     rasters = list(folder.glob("*.tif"))
-    with ExitStack() as cm:
-        raster_readers = [cm.enter_context(rio.open(raster)) for raster in rasters]
-        h3s = []
-        pbar = tqdm(raster_readers)
-        for i, raster_reader in enumerate(pbar):
-            pbar.set_description(raster_reader.name)
-            if len(raster_readers) > 1 and i != 0:
-                check_srs(raster_readers[0], raster_reader)
-                check_transform(raster_readers[0], raster_reader)
-            h3 = raster_to_h3(raster_reader, h3_res)
-            h3s.append(h3)
-
-    df = h3s[0].join(h3s[1:]) if len(raster_readers) > 1 else h3s[0]
+    partial_raster_to_h3 = partial(raster_to_h3, rasters[0], h3_res)
+    with multiprocessing.Pool(thread_count) as pool:
+        h3s = pool.map(partial_raster_to_h3, rasters)
+    log.info("Joining h3index:values of each raster into single dataframe")
+    # df = h3s[0].join(h3s[1:]) if len(rasters) > 1 else h3s[0]
+    df = pd.concat(h3s, axis=1)
 
     # Part 2: Ingest h3 index into the database
     to_the_db(df, table, data_type, dataset, year, h3_res)

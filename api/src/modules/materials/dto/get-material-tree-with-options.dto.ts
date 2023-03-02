@@ -69,7 +69,9 @@ export class GetMaterialTreeWithOptionsDto {
   @IsUUID('4')
   scenarioId?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'Array of Scenario Ids to include in the material search',
+  })
   @IsOptional()
   @IsUUID('4', { each: true })
   scenarioIds?: string[];

@@ -1057,10 +1057,18 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         .expect(HttpStatus.OK);
 
       const impactTable = response.body.data.impactTable[0];
-      expect(impactTable.rows).toEqualArrayUnordered(
-        groupByLocationTypeResponseData.rows,
+      // expect(impactTable.rows.sort()).toEqualArrayUnordered(
+      //   groupByLocationTypeResponseData.rows,
+      // );
+      // expect(impactTable.yearSum).toEqualArrayUnordered(
+      //   groupByLocationTypeResponseData.yearSum,
+      // );
+      expect(impactTable.rows).toEqual(
+        groupByLocationTypeResponseData.rows.sort((a: any, b: any) =>
+          a.name > b.name ? 1 : b.name > a.name ? -1 : 0,
+        ),
       );
-      expect(impactTable.yearSum).toEqualArrayUnordered(
+      expect(impactTable.yearSum).toEqual(
         groupByLocationTypeResponseData.yearSum,
       );
     });

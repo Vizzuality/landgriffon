@@ -2,7 +2,6 @@ import {
   forwardRef,
   Inject,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import {
@@ -193,6 +192,11 @@ export class SourcingLocationsService extends AppBaseService<
   async getLocationTypes(
     locationTypesOptions: GetLocationTypesDto,
   ): Promise<LocationTypesDto> {
+    if (locationTypesOptions.supported) {
+      return this.getAllSupportedLocationTypes({
+        sort: locationTypesOptions.sort ?? 'DESC',
+      });
+    }
     if (locationTypesOptions.originIds) {
       locationTypesOptions.originIds =
         await this.adminRegionService.getAdminRegionDescendants(
@@ -232,7 +236,6 @@ export class SourcingLocationsService extends AppBaseService<
 
   async extendFindAllQuery(
     query: SelectQueryBuilder<SourcingLocation>,
-    fetchSpecification: Record<string, unknown>,
   ): Promise<SelectQueryBuilder<SourcingLocation>> {
     query
       .where(`${this.alias}.scenarioInterventionId IS NULL`)
@@ -244,10 +247,16 @@ export class SourcingLocationsService extends AppBaseService<
   /**
    * @description Returns a hardcoded list of all location types supported by the platform
    */
-  getAllSupportedLocationTypes(): any {
+  getAllSupportedLocationTypes(options: { sort?: 'ASC' | 'DESC' }): any {
     const locationTypes: { locationType: string }[] = Object.values(
       LOCATION_TYPES,
-    ).map((locationType: string) => ({ locationType }));
+    )
+      .map((locationType: string) => ({ locationType }))
+      .sort((a: { locationType: string }, b: { locationType: string }) => {
+        const comparison: number =
+          a.locationType.toLowerCase() < b.locationType.toLowerCase() ? -1 : 1;
+        return options.sort === 'DESC' ? comparison * -1 : comparison;
+      });
 
     return { data: locationTypeParser(locationTypes) };
   }

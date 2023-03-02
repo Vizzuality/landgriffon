@@ -62,7 +62,9 @@ export class GetBusinessUnitTreeWithOptionsDto {
   @Type(() => String)
   locationTypes?: LOCATION_TYPES[];
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'Array of Scenario Ids to include in the business unit search',
+  })
   @IsOptional()
   @IsUUID('4')
   scenarioId?: string;

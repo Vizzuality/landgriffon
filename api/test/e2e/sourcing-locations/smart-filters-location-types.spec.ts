@@ -26,8 +26,12 @@ import {
   clearEntityTables,
   clearTestDataFromDatabase,
 } from '../../utils/database-test-helper';
-import { SCENARIO_INTERVENTION_STATUS } from 'modules/scenario-interventions/scenario-intervention.entity';
+import {
+  SCENARIO_INTERVENTION_STATUS,
+  ScenarioIntervention,
+} from 'modules/scenario-interventions/scenario-intervention.entity';
 import { DataSource } from 'typeorm';
+import { Scenario } from '../../../src/modules/scenarios/scenario.entity';
 
 describe('SourcingLocationsModule (e2e)', () => {
   let testApplication: TestApplication;
@@ -48,6 +52,8 @@ describe('SourcingLocationsModule (e2e)', () => {
       BusinessUnit,
       AdminRegion,
       Supplier,
+      Scenario,
+      ScenarioIntervention,
       SourcingLocation,
     ]);
   });
@@ -282,6 +288,7 @@ describe('SourcingLocationsModule (e2e)', () => {
   });
 
   describe('Supported Location Types', () => {
+    // TODO: deprecated tests: delete when /location-types/supported endpoint is removed
     test('When I query the API for all location types, Then I should get a list of all location types supported by the platform', async () => {
       const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/sourcing-locations/location-types/supported`)
@@ -314,8 +321,53 @@ describe('SourcingLocationsModule (e2e)', () => {
         ]),
       );
     });
+    test(
+      'When I query the API for location types' +
+        'And I add the supported: true flag' +
+        'Then I should receive all supported location types' +
+        'And not the only ones that are present in Sourcing Locations' +
+        'And any other param should be ignored',
+      async () => {
+        const parentMaterial: Material = await createMaterial();
+        const childMaterialOne: Material = await createMaterial({
+          parent: parentMaterial,
+        });
+        const supplierOne: Supplier = await createSupplier();
+        const adminRegionOne: AdminRegion = await createAdminRegion();
+        const businessUnitOne: BusinessUnit = await createBusinessUnit();
+        await createSourcingLocation({
+          locationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+          materialId: parentMaterial.id,
+          t1SupplierId: supplierOne.id,
+          adminRegionId: adminRegionOne.id,
+          businessUnitId: businessUnitOne.id,
+        });
+
+        await createSourcingLocation({
+          locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
+          materialId: childMaterialOne.id,
+          t1SupplierId: supplierOne.id,
+          adminRegionId: adminRegionOne.id,
+          businessUnitId: businessUnitOne.id,
+        });
+        const response = await request(testApplication.getHttpServer())
+          .get('/api/v1/sourcing-locations/location-types')
+          .query({
+            'materialIds[]': [parentMaterial.id],
+            'supplierIds[]': [supplierOne.id],
+            supported: true,
+          })
+          .set('Authorization', `Bearer ${jwtToken}`);
+
+        expect(response.body.data).not.toHaveLength(2);
+        expect(response.body.data).toHaveLength(
+          Object.keys(LOCATION_TYPES).length,
+        );
+      },
+    );
   });
   describe('Location Types Smart Filters - Filter by Scenario', () => {
+    // TODO: We have to deprecate scenarioId param in favour of scenarioIds[]
     test(
       'When I query a Location Types endpoint ' +
         'And I filter them by Scenario' +
@@ -386,6 +438,103 @@ describe('SourcingLocationsModule (e2e)', () => {
               a.label < b.label ? -1 : a > b ? 1 : 0,
           ),
         ).toEqual([
+          {
+            label: 'Country of production',
+            value: `${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}`,
+          },
+          {
+            label: 'Production aggregation point',
+            value: `${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT}`,
+          },
+          { label: 'Unknown', value: 'unknown' },
+        ]);
+      },
+    );
+
+    test(
+      'When I query a Location Types endpoint ' +
+        'And I filter them by multiple Scenarios' +
+        'Then I should receive location types from actual data and those that are present in some intervention of said Scenario',
+      async () => {
+        const parentMaterial1: Material = await createMaterial({
+          name: 'parentMaterial1',
+        });
+
+        const childMaterial1: Material = await createMaterial({
+          name: 'childMaterial1',
+          parentId: parentMaterial1.id,
+        });
+
+        const scenario = await createScenario();
+        const scenario2 = await createScenario();
+
+        const parentMaterial2 = await createMaterial({
+          name: 'parent of a child material that is not part of intervention1',
+        });
+        const childMaterial2 = await createMaterial({
+          name: 'child material that is part of a intervention',
+          parent: parentMaterial2,
+        });
+
+        const intervention = await createScenarioIntervention({
+          scenario,
+        });
+        const intervention2 = await createScenarioIntervention({
+          scenario: scenario2,
+        });
+
+        await createSourcingLocation({
+          materialId: childMaterial2.id,
+          interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+          locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
+          scenarioInterventionId: intervention.id,
+        });
+
+        await createSourcingLocation({
+          materialId: childMaterial2.id,
+          interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+          locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
+          scenarioInterventionId: intervention.id,
+        });
+
+        await createSourcingLocation({
+          materialId: childMaterial2.id,
+          interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+          locationType: LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION,
+          scenarioInterventionId: intervention2.id,
+        });
+
+        await createMaterial({
+          name: 'supplier2Material',
+        });
+
+        await createSourcingLocation({
+          locationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+          materialId: childMaterial1.id,
+        });
+
+        await createSourcingLocation({
+          locationType: LOCATION_TYPES.UNKNOWN,
+        });
+
+        const response = await request(testApplication.getHttpServer())
+          .get('/api/v1/sourcing-locations/location-types')
+          .query({
+            'scenarioIds[]': [scenario.id, scenario2.id],
+          })
+          .set('Authorization', `Bearer ${jwtToken}`);
+        expect(HttpStatus.OK);
+        expect(response.body.data).toHaveLength(4);
+        expect(
+          response.body.data.sort(
+            (a: Record<string, any>, b: Record<string, any>) =>
+              a.label < b.label ? -1 : a > b ? 1 : 0,
+          ),
+        ).toEqual([
+          {
+            label: 'Administrative region of production',
+            value: `${LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION}`,
+          },
           {
             label: 'Country of production',
             value: `${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}`,
@@ -478,16 +627,15 @@ describe('SourcingLocationsModule (e2e)', () => {
           })
           .set('Authorization', `Bearer ${jwtToken}`);
 
-        expect(HttpStatus.OK);
         expect(response.body.data).toHaveLength(2);
-        expect(response.body.data).toEqual([
-          {
-            label: 'Production aggregation point',
-            value: `${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT}`,
-          },
+        expect(response.body.data).toEqualArrayUnordered([
           {
             label: 'Point of production',
             value: `${LOCATION_TYPES.POINT_OF_PRODUCTION}`,
+          },
+          {
+            label: 'Production aggregation point',
+            value: `${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT}`,
           },
         ]);
       },

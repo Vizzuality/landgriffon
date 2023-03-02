@@ -59,32 +59,36 @@ export class SourcingLocationRepository extends AppBaseRepository<SourcingLocati
       });
     }
 
-    if (locationTypesOptions.scenarioId) {
-      queryBuilder
-        .leftJoin(
-          ScenarioIntervention,
-          'scenarioIntervention',
-          'sl.scenarioInterventionId = scenarioIntervention.id',
-        )
-        .andWhere(
-          new Brackets((qb: WhereExpressionBuilder) => {
-            qb.where('sl.scenarioInterventionId is null').orWhere(
-              new Brackets((qbInterv: WhereExpressionBuilder) => {
-                qbInterv
-                  .where('scenarioIntervention.scenarioId = :scenarioId', {
-                    scenarioId: locationTypesOptions.scenarioId,
-                  })
-                  .andWhere(`scenarioIntervention.status = :status`, {
-                    status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
-                  });
-              }),
-            );
-          }),
-        );
+    if (locationTypesOptions.scenarioIds) {
+      queryBuilder.leftJoin(
+        ScenarioIntervention,
+        'scenarioIntervention',
+        'sl.scenarioInterventionId = scenarioIntervention.id',
+      );
+      queryBuilder.andWhere(
+        new Brackets((qb: WhereExpressionBuilder) => {
+          qb.where('sl.scenarioInterventionId is null').orWhere(
+            new Brackets((qbInterv: WhereExpressionBuilder) => {
+              qbInterv
+                .where('scenarioIntervention.scenarioId IN (:...scenarioIds)', {
+                  scenarioIds: locationTypesOptions.scenarioIds,
+                })
+                .andWhere(`scenarioIntervention.status = :status`, {
+                  status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+                });
+            }),
+          );
+        }),
+      );
     } else {
       queryBuilder.andWhere('sl.scenarioInterventionId is null');
       queryBuilder.andWhere('sl.interventionType is null');
     }
+
+    queryBuilder.orderBy(
+      'sl.locationType',
+      locationTypesOptions.sort ?? 'DESC',
+    );
 
     const locationTypes: { locationType: string }[] =
       await queryBuilder.getRawMany();

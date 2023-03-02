@@ -3,7 +3,6 @@ import {
   HttpException,
   Inject,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import {
@@ -201,5 +200,29 @@ export class SuppliersService extends AppBaseService<
     }
 
     return suppliers.map((supplier: Supplier) => supplier.id);
+  }
+
+  /**
+   * @description: Retrieving max supplier depth level of selected suppliers
+   * based on mpath column which represents the ascendants path to the supplier
+   * @param ids
+   */
+  async getMaxDepthLevelWithMpath(ids: string[]): Promise<number> {
+    const depthLevels: number[] = [];
+
+    await Promise.all(
+      ids.map(async (id: string) => {
+        const supplierMpath: any = await this.supplierRepository
+          .createQueryBuilder('supplier')
+          .select(['supplier.mpath as "mpath"'])
+          .where('supplier.id = :id', { id })
+          .getRawOne();
+        const supplierDepth: number =
+          supplierMpath.mpath.match(/\./g).length - 1;
+        depthLevels.push(supplierDepth);
+      }),
+    );
+
+    return Math.max(...depthLevels);
   }
 }

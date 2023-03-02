@@ -24,7 +24,7 @@ import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
-import { SelectQueryBuilder } from 'typeorm';
+import { In, SelectQueryBuilder } from 'typeorm';
 import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 
 @Injectable()
@@ -266,5 +266,25 @@ export class AdminRegionsService extends AppBaseService<
     }
 
     return adminRegions.map((adminRegion: AdminRegion) => adminRegion.id);
+  }
+  /**
+   * @description: Retrieving max admin region depth level of selected admin regions
+   * based on mpath column which represents the ascendants path to the admin region
+   * @param adminRegionIds
+   */
+  async getAdminRegionsMaxLevel(adminRegionIds: string[]): Promise<number> {
+    const adminRegions: AdminRegion[] | undefined =
+      await this.adminRegionRepository.find({
+        where: { id: In(adminRegionIds) },
+      });
+
+    if (adminRegions) {
+      const adminRegionLevels: number[] = Object.values(
+        adminRegions.map((adminRegion: AdminRegion) => adminRegion.level),
+      );
+      return Math.max(...adminRegionLevels);
+    } else {
+      return 0;
+    }
   }
 }

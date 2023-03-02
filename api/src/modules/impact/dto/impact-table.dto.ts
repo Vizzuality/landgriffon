@@ -7,6 +7,7 @@ import {
   IsPositive,
   IsString,
   IsUUID,
+  Min,
   Validate,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -219,6 +220,16 @@ export class GetRankedImpactTableDto extends BaseImpactTableDto {
   @IsOptional()
   @IsUUID(4)
   scenarioId?: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Optional param to choose the depth level of the tree of nested grouped elements',
+  })
+  @Type(() => Number)
+  @IsOptional()
+  @Min(0)
+  @IsNumber()
+  depth?: number;
 
   // Property for internal api use (entity filters)
   @IsOptional()

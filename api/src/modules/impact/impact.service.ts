@@ -31,6 +31,7 @@ import {
   ImpactDataTableAuxMap,
 } from 'modules/impact/base-impact.service';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
+import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 
 @Injectable()
 export class ImpactService extends BaseImpactService {
@@ -122,6 +123,10 @@ export class ImpactService extends BaseImpactService {
   async getRankedImpactTable(
     rankedImpactTableDto: GetRankedImpactTableDto,
   ): Promise<ImpactTable> {
+    const depth: number = rankedImpactTableDto.depth
+      ? rankedImpactTableDto.depth
+      : await this.findDepthLevelToApply(rankedImpactTableDto);
+
     const indicators: Indicator[] =
       await this.indicatorService.getIndicatorsById(
         rankedImpactTableDto.indicatorIds,
@@ -154,8 +159,60 @@ export class ImpactService extends BaseImpactService {
       entities,
     );
 
+    // If chart is requested for regions and specific level is received, we get only the requested level from admin regions trees of the response
+
+    // Add depth restriction or fallback to the lowest level existing in Data Base
+
+    impactTable.impactTable.forEach(
+      (impactDataByIndicator: ImpactTableDataByIndicator) => {
+        impactDataByIndicator.rows = this.getLevelOfImpactTableRows(
+          impactDataByIndicator.rows,
+          depth,
+        );
+      },
+    );
+
     // Cap the results to the Ranking Max, and aggregate the rest of the results
     return await this.applyRankingProcessing(rankedImpactTableDto, impactTable);
+  }
+
+  async findDepthLevelToApply(
+    rankedImpactTableDto: GetRankedImpactTableDto,
+  ): Promise<number> {
+    let depth: number;
+    switch (rankedImpactTableDto.groupBy) {
+      case GROUP_BY_VALUES.REGION:
+        if (rankedImpactTableDto.originIds) {
+          depth = await this.adminRegionsService.getAdminRegionsMaxLevel(
+            rankedImpactTableDto.originIds,
+          );
+          return depth + 1;
+        } else {
+          return 0;
+        }
+
+      case GROUP_BY_VALUES.MATERIAL:
+        if (rankedImpactTableDto.materialIds) {
+          depth = await this.materialsService.getMaxDepthLevelWithMpath(
+            rankedImpactTableDto.materialIds,
+          );
+          return depth + 1;
+        } else {
+          return 0;
+        }
+
+      case GROUP_BY_VALUES.SUPPLIER:
+        if (rankedImpactTableDto.supplierIds) {
+          depth = await this.suppliersService.getMaxDepthLevelWithMpath(
+            rankedImpactTableDto.supplierIds,
+          );
+          return depth + 1;
+        } else {
+          return 0;
+        }
+      default:
+        return 0;
+    }
   }
 
   /**
@@ -221,6 +278,28 @@ export class ImpactService extends BaseImpactService {
     }
 
     return impactTable;
+  }
+
+  private getLevelOfImpactTableRows(
+    impactTableRows: ImpactTableRows[],
+    depth: number,
+  ): ImpactTableRows[] {
+    if (depth === 0) {
+      return impactTableRows;
+    }
+    return impactTableRows.reduce(
+      (impactTableRows: ImpactTableRows[], row: ImpactTableRows) => {
+        if (row.children.length > 0) {
+          impactTableRows = impactTableRows.concat(
+            this.getLevelOfImpactTableRows(row.children, depth - 1),
+          );
+        } else {
+          impactTableRows = impactTableRows.concat(row);
+        }
+        return impactTableRows;
+      },
+      [],
+    );
   }
 
   private buildImpactTable(

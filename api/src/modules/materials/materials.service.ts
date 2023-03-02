@@ -68,6 +68,7 @@ export class MaterialsService extends AppBaseService<
         'children',
         'createdAt',
         'updatedAt',
+        'mpath',
       ],
       keyForAttribute: 'camelCase',
     };
@@ -302,5 +303,29 @@ export class MaterialsService extends AppBaseService<
         )}`,
       );
     }
+  }
+
+  /**
+   * @description: Retrieving max material depth level of selected materials
+   * based on mpath column which represents the ascendants path to the material
+   * @param ids
+   */
+
+  async getMaxDepthLevelWithMpath(ids: string[]): Promise<number> {
+    const depthLevels: number[] = [];
+
+    await Promise.all(
+      ids.map(async (id: string) => {
+        const material: any = await this.materialRepository
+          .createQueryBuilder('material')
+          .select(['material.mpath as "mpath"'])
+          .where('material.id = :id', { id })
+          .getRawOne();
+        const materialDepth: number = material.mpath.match(/\./g).length - 1;
+        depthLevels.push(materialDepth);
+      }),
+    );
+
+    return Math.max(...depthLevels);
   }
 }

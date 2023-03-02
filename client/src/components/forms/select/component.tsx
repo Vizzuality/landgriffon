@@ -68,7 +68,6 @@ const Select = <T,>({
       if (isArray(selected)) {
         const newSelected = selected.filter(({ value }) => option.value !== value);
         setSelected(newSelected);
-        // @ts-ignore: not sure how to fix this typing when the select is multiple or not
         onChange?.(newSelected);
       }
     },

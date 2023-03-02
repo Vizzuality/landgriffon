@@ -7,7 +7,7 @@ import { setupTestUser } from '../../../utils/userAuth';
 import { clearTestDataFromDatabase } from '../../../utils/database-test-helper';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { DataSource } from 'typeorm';
-import { createChartLevelsPreconditions } from '../mocks/chart-levels-preconditions/chart-levels.preconditions';
+import { createChartLevelsPreconditions } from '../mocks/chart-levels-preconditions/nested-origins.preconditions';
 import { AdminRegion } from '../../../../src/modules/admin-regions/admin-region.entity';
 
 describe('Impact Chart (Ranking) Test Suite (e2e) with requested levels for Admin Regions', () => {

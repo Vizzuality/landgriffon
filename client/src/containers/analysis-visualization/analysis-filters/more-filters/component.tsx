@@ -356,6 +356,7 @@ const MoreFilters = () => {
                       handleApply();
                       close();
                     }}
+                    data-testid="more-filters-apply-btn"
                   >
                     Apply
                   </Button>

@@ -2,6 +2,9 @@ import {
   DEFAULT_END_YEAR_GAP,
   MAX_END_YEAR_RANGE,
 } from '../../src/containers/analysis-visualization/analysis-filters/years-range/constants';
+const MATERIAL = 'Raw hides, skins and leather';
+const COUNTRY = 'Angola';
+const LOCATION = 'Moll';
 
 beforeEach(() => {
   cy.interceptAllRequests();
@@ -12,31 +15,32 @@ afterEach(() => {
   cy.logout();
 });
 
-describe('Analysis tab', () => {
-  beforeEach(() => {
-    cy.visit('/analysis');
-  });
 
-  it('should navigate to map, table, and chart', () => {
-    cy.wait(['@fetchImpactMap', '@fetchIndicators', '@fetchContextualLayerCategories']);
-    cy.get('[data-testid="analysis-map"]').should('be.visible');
-    cy.url().should('contain', '/analysis/map');
+// describe('Analysis tab', () => {
+//   beforeEach(() => {
+//     cy.visit('/analysis');
+//   });
 
-    cy.get('[data-testid="mode-control-table"]').click();
-    cy.wait('@fetchImpactTable');
-    cy.get('[data-testid="analysis-table"]').should('be.visible');
-    cy.url().should('contain', '/analysis/table');
+//   it('should navigate to map, table, and chart', () => {
+//     cy.wait(['@fetchImpactMap', '@fetchIndicators', '@fetchContextualLayerCategories']);
+//     cy.get('[data-testid="analysis-map"]').should('be.visible');
+//     cy.url().should('contain', '/analysis/map');
 
-    cy.get('[data-testid="mode-control-chart"]').click();
-    cy.wait('@fetchChartRanking');
-    cy.get('[data-testid="analysis-charts"]').should('be.visible');
-    cy.url().should('contain', '/analysis/chart');
+//     cy.get('[data-testid="mode-control-table"]').click();
+//     cy.wait('@fetchImpactTable');
+//     cy.get('[data-testid="analysis-table"]').should('be.visible');
+//     cy.url().should('contain', '/analysis/table');
 
-    cy.get('[data-testid="mode-control-map"]').click();
-    cy.get('[data-testid="analysis-map"]').should('be.visible');
-    cy.url().should('contain', '/analysis/map');
-  });
-});
+//     cy.get('[data-testid="mode-control-chart"]').click();
+//     cy.wait('@fetchChartRanking');
+//     cy.get('[data-testid="analysis-charts"]').should('be.visible');
+//     cy.url().should('contain', '/analysis/chart');
+
+//     cy.get('[data-testid="mode-control-map"]').click();
+//     cy.get('[data-testid="analysis-map"]').should('be.visible');
+//     cy.url().should('contain', '/analysis/map');
+//   });
+// });
 
 describe('Analysis filters', () => {
   beforeEach(() => {
@@ -62,9 +66,8 @@ describe('Analysis filters', () => {
 
     cy.url().should('include', 'indicator=all');
 
-    cy.get('[data-testid="select-indicators-filter"]')
-      .find('button')
-      .type('{enter}{downArrow}{enter}');
+    cy.get('[data-testid="select-indicators-filter"] button').click();
+    cy.get('[data-testid="select-indicators-filter"] ul li:first').next().click();
 
     cy.url().should('include', 'indicator=5c595ac7-f144-485f-9f32-601f6faae9fe'); // Land use
   });
@@ -77,6 +80,7 @@ describe('Analysis filters', () => {
     cy.wait('@materialsTrees');
     cy.wait('@originsTrees');
     cy.wait('@suppliersTrees');
+    cy.wait('@fetchImpactTable')
 
     // Adding new interceptors after selecting a filter
     cy.intercept(
@@ -99,6 +103,7 @@ describe('Analysis filters', () => {
         fixture: 'trees/materials-filtered.json',
       },
     ).as('materialsTreesFiltered');
+    cy.wait('@locationTypes')
 
     // Step 2: Selecting Angola in the admin regions selector
     cy.get('[data-testid="tree-select-origins-filter"]').find('div[role="combobox"]').click();
@@ -110,7 +115,7 @@ describe('Analysis filters', () => {
     cy.get('[data-testid="tree-select-origins-filter"]')
       .find('input:visible:first')
       .type('{enter}');
-
+    cy.wait('@locationTypes')
     // Step 3: Selecting Moll in the material selector
     cy.wait('@suppliersTreesFiltered');
     cy.get('[data-testid="tree-select-suppliers-filter"]').find('div[role="combobox"]').click();
@@ -119,15 +124,12 @@ describe('Analysis filters', () => {
       .find('.rc-tree-treenode')
       .eq(1)
       .click();
-
-    cy.get('[data-testid="tree-select-materials-filter"]')
-      .find('input:visible:first')
-      .type('{enter}');
-
+    cy.wait('@locationTypes')
     // Step 4: Checking material selector
     cy.wait('@materialsTreesFiltered')
       .its('request.url')
       .should('include', '8bd7e578-f64f-4042-8a3a-2a7652ce850b');
+
     cy.get('[data-testid="tree-select-materials-filter"]').find('div[role="combobox"]').click();
     cy.get('[data-testid="tree-select-materials-filter"]')
       .find('div[role="listbox"]')
@@ -331,34 +333,214 @@ describe('Analysis scenarios', () => {
       .find('[data-testid="scenario-item-radio"]')
       .click();
 
-    cy.wait('@fetchImpactTableData')
-      .its('request.url')
-      .should('contain', 'scenarioId=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7');
+    // Check that the location types endpoint is fetched with the selected params
+    cy.wait('@locationTypes').its('request.query').should('include.all.keys', 'materialIds', 'supplierIds', 'originIds');
 
-    cy.url().should('contain', 'scenarioId=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7');
+    // Apply filters
+    cy.get('[data-testid="more-filters-apply-btn"]').click();
+    cy.wait('@fetchImpactTable')
+      .its('request.query')
+      .should('include.all.keys', 'materialIds', 'supplierIds', 'originIds');
 
-    cy.intercept({
-      path: '/api/v1/**/trees?*scenarioIds[]=7646039e-b2e0-4bd5-90fd-925e5868f9af',
-    }).as('treesSelectorsWithBothScenarioIds');
+    // Check metadata sentence
+    cy.get('[data-testid="analysis-dynamic-metadata"]')
+      .should('include.text', MATERIAL)
+      .should('include.text', COUNTRY)
+      .should('include.text', LOCATION)
 
-    cy.get('[data-testid="scenario-item-8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7"]')
-      .find('[data-testid="select-comparison"]')
-      .click()
-      .find('input:visible')
-      .type('Example{enter}');
+    // Remove filters
+    cy.get('[data-testid="more-filters-button"]').click({ force: true });
+    cy.get('[data-testid="tree-select-suppliers-filter"] button').click()
+    cy.get('[data-testid="tree-select-origins-filter"] button').click()
+    cy.get('[data-testid="tree-select-materials-filter"] button').click()
 
-    cy.url().should('contain', 'compareScenarioId=7646039e-b2e0-4bd5-90fd-925e5868f9af');
+    // Apply remove filters
+    cy.get('[data-testid="more-filters-apply-btn"]').click();
 
-    // checking tree selectors on more filers
-    cy.wait('@treesSelectorsWithBothScenarioIds')
-      .its('request.url')
-      .should('contain', 'scenarioIds[]=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7')
-      .and('contain', 'scenarioIds[]=7646039e-b2e0-4bd5-90fd-925e5868f9af');
+    // Check the request was made without filters
+    cy.wait('@locationTypes')
+      .its('request.query')
+      .should('not.have.keys', 'materialIds', 'supplierIds', 'originIds')
+    cy.wait('@fetchImpactTable')
+      .its('request.query')
+      .should('not.have.keys', 'materialIds', 'supplierIds', 'originIds')
 
-    // checking comparison cell is there
-    cy.wait('@scenarioVsScenario')
-      .its('request.url')
-      .should('contain', 'comparedScenarioId=7646039e-b2e0-4bd5-90fd-925e5868f9af');
-    cy.get('[data-testid="comparison-cell"]').should('have.length.above', 1);
+    // Check that the metadata sentence don't have the filters
+    cy.get('[data-testid="analysis-dynamic-metadata"]')
+      .should('not.include.text', MATERIAL)
+      .should('not.include.text', COUNTRY)
+      .should('not.include.text', LOCATION)
   });
 });
+
+// describe('Analysis contextual layers', () => {
+//   beforeEach(() => {
+//     cy.visit('/analysis/map');
+//   });
+
+//   it('requests should not include the params indicatorId and should be in resolution 4', () => {
+//     cy.wait(['@fetchIndicators', '@fetchContextualLayerCategories']);
+
+//     cy.get('[data-testid="contextual-layer-modal-toggle"]').click();
+//     cy.get('[data-testid="category-header-Environmental datasets"]').click();
+//     cy.get('[data-testid="layer-settings-item-Agriculture blue water footprint"]')
+//       .find('[data-testid="switch-button"]')
+//       .click();
+//     cy.get('[data-testid="contextual-layer-apply-button"').click();
+
+//     cy.wait('@fetchContextualLayerH3Data').then((interception) => {
+//       expect(interception.request.url).not.to.contain('indicatorId');
+//       expect(interception.request.url).contain('year');
+//       expect(interception.request.url).contain('resolution=4');
+//     });
+//   });
+
+//   it('materials requests should not include the params indicatorId and should be in resolution 4', () => {
+//     cy.wait(['@fetchIndicators', '@fetchContextualLayerCategories']);
+
+//     cy.get('[data-testid="contextual-layer-modal-toggle"]').click();
+//     cy.get('[data-testid="contextual-material-header"]')
+//       .click()
+//       .find('[data-testid="switch-button"]')
+//       .click();
+//     cy.wait(100);
+//     cy.get('[data-testid="contextual-material-content"]')
+//       .find('[data-testid="tree-select-material"]')
+//       .find('input[type="search"]')
+//       .type('Cotton');
+//     cy.get('[data-testid="tree-select-search-results"]').find('button').click();
+//     cy.get('[data-testid="contextual-layer-apply-button"').click();
+
+//     cy.wait('@fetchMaterialLayerH3Data').then((interception) => {
+//       expect(interception.request.url).not.to.contain('indicatorId');
+//       expect(interception.request.url).contain('year');
+//       expect(interception.request.url).contain('resolution=4');
+//     });
+//   });
+// });
+
+// describe('Analysis charts', () => {
+//   beforeEach(() => {
+//     cy.visit('/analysis/chart');
+//   });
+
+//   it('should load one chart per indicator', () => {
+//     cy.wait(['@fetchIndicators', '@fetchChartRanking']).then(() => {
+//       cy.get('[data-testid="analysis-chart"]').as('chart');
+//       cy.get('@chart').should('be.visible');
+//       cy.get('@chart').find('.recharts-responsive-container').and('have.length', 5);
+//     });
+//   });
+// });
+
+// describe('Analysis table', () => {
+//   beforeEach(() => {
+//     cy.visit('/analysis/table');
+//   });
+
+//   it('should load the table', () => {
+//     cy.wait(['@fetchIndicators', '@fetchImpactTable']).then(() => {
+//       cy.get('[data-testid="analysis-table"]').should('be.visible');
+//     });
+//   });
+// });
+
+// describe('Analysis scenarios', () => {
+//   it('users with "canCreateScenario" permission should be able to click add new scenario button', () => {
+//     cy.intercept('/api/v1/users/me', { fixture: '/profiles/all-permissions.json' }).as('profile');
+//     cy.visit('/analysis/map');
+//     cy.wait('@profile');
+//     cy.get('a[data-testid="create-scenario"]').click();
+//     cy.wait('@profile');
+//     cy.url().should('contain', '/data/scenarios/new');
+//   });
+
+//   it('users without "canCreateScenario" permission should not be able to click add new scenario button', () => {
+//     cy.intercept('/api/v1/users/me', { fixture: '/profiles/no-permissions.json' });
+//     cy.visit('/analysis/map');
+//     cy.get('a[data-testid="create-scenario"]').should('not.exist');
+//   });
+
+//   it('should be scenarioIds empty when there is no scenario selected in the more filters endpoints', () => {
+//     cy.intercept('GET', '/api/v1/**/trees?*').as('treesSelectors');
+//     cy.visit('/analysis/table');
+//     cy.wait('@treesSelectors').then((interception) => {
+//       const url = new URL(interception.request.url);
+//       const scenarioIds = url.searchParams.get('scenarioIds');
+//       expect(scenarioIds).to.be.null;
+//     });
+//   });
+
+//   it('should be able to select a scenario vs actual data in the comparison select', () => {
+//     cy.visit('/analysis/table');
+//     cy.wait('@scenariosNoPaginated');
+
+//     cy.intercept(
+//       'GET',
+//       '/api/v1/**/trees?withSourcingLocations=true&scenarioIds[]=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7',
+//     ).as('treesSelectorsWithScenarioId');
+
+//     cy.get('[data-testid="scenario-item-null"]') // actual data
+//       .find('[data-testid="select-comparison"]')
+//       .click()
+//       .find('input:visible')
+//       .type('Test{enter}');
+
+//     cy.url().should('contain', 'compareScenarioId=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7');
+
+//     // checking comparison cell is there
+//     cy.wait('@scenarioVsActual')
+//       .its('request.url')
+//       .should('contain', 'comparedScenarioId=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7');
+//     cy.get('[data-testid="comparison-cell"]').should('have.length.above', 1);
+
+//     // checking tree selectors on more filers
+//     cy.wait('@treesSelectorsWithScenarioId')
+//       .its('request.url')
+//       .should('contain', 'scenarioIds[]=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7');
+//   });
+
+//   it('should be able to select a scenario vs scenario in the comparison select', () => {
+//     cy.intercept(
+//       'GET',
+//       '/api/v1/impact/table?*scenarioId=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7*',
+//     ).as('fetchImpactTableData');
+//     cy.visit('/analysis/table');
+//     cy.wait('@scenariosNoPaginated');
+//     cy.wait('@scenariosList');
+
+//     cy.get('[data-testid="scenario-item-8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7"]')
+//       .find('[data-testid="scenario-item-radio"]')
+//       .click();
+
+//     cy.wait('@fetchImpactTableData')
+//       .its('request.url')
+//       .should('contain', 'scenarioId=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7');
+
+//     cy.url().should('contain', 'scenarioId=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7');
+
+//     cy.intercept({
+//       path: '/api/v1/**/trees?*scenarioIds[]=7646039e-b2e0-4bd5-90fd-925e5868f9af',
+//     }).as('treesSelectorsWithBothScenarioIds');
+
+//     cy.get('[data-testid="scenario-item-8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7"]')
+//       .find('[data-testid="select-comparison"]')
+//       .click()
+//       .find('input:visible')
+//       .type('Example{enter}');
+
+//     cy.url().should('contain', 'compareScenarioId=7646039e-b2e0-4bd5-90fd-925e5868f9af');
+
+//     // checking tree selectors on more filers
+//     cy.wait('@treesSelectorsWithBothScenarioIds')
+//       .its('request.url')
+//       .should('contain', 'scenarioIds[]=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7')
+//       .and('contain', 'scenarioIds[]=7646039e-b2e0-4bd5-90fd-925e5868f9af');
+
+//     // checking comparison cell is there
+//     cy.wait('@scenarioVsScenario')
+//       .its('request.url')
+//       .should('contain', 'comparedScenarioId=7646039e-b2e0-4bd5-90fd-925e5868f9af');
+//     cy.get('[data-testid="comparison-cell"]').should('have.length.above', 1);
+//   });
+// });

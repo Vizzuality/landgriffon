@@ -74,12 +74,10 @@ def create_h3_grid_table(connection: psycopg.Connection, table: str, df: pd.Data
     ]
     schema = sql.SQL(", ").join(index + extra)
     with connection.cursor() as cur:
-        query = sql.SQL("CREATE TABLE {} ({});").format(sql.Identifier(table), schema)
+        cur.execute(sql.SQL("DROP TABLE IF EXISTS {}").format(sql.Identifier(table)))
+        query = sql.SQL("CREATE TABLE {} ({})").format(sql.Identifier(table), schema)
         log.info(f"Creating table {table}")
         cur.execute(query)
-        # Force commit, otherwise h3_grid_table is not created... fishy.
-        # TODO: WHY THE TABLE IS NOT CREATED
-        connection.commit()
 
 
 def write_data_to_h3_grid_table(connection: psycopg.Connection, table: str, data: pd.DataFrame):
@@ -95,7 +93,6 @@ def write_data_to_h3_grid_table(connection: psycopg.Connection, table: str, data
 
 def clean_before_insert(connection: psycopg.Connection, table: str):
     with connection.cursor() as cur:
-        cur.execute(sql.SQL("DROP TABLE IF EXISTS {}").format(sql.Identifier(table)))
         cur.execute(
             'DELETE FROM "material_to_h3" ' 'WHERE "h3DataId" IN (SELECT id FROM "h3_data" WHERE "h3tableName" = %s);',
             (table,),
@@ -166,7 +163,7 @@ def to_the_db(df: pd.DataFrame, table: str, data_type: str, dataset: str, year: 
         password=os.getenv("API_POSTGRES_PASSWORD"),
     )
     pool = ConnectionPool(conn_info, kwargs={"autocommit": True})
-    with pool.connection() as conn:
+    with psycopg.connect(conn_info, autocommit=True) as conn:
         create_h3_grid_table(conn, table, df)
         write_data_to_h3_grid_table(conn, table, df)
         clean_before_insert(conn, table)

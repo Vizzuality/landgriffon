@@ -8,7 +8,7 @@ import { omit } from 'lodash-es';
 import ListIcon from 'components/icons/list';
 import GridIcon from 'components/icons/grid';
 import ButtonGroup, { LinkGroupItem } from 'components/button-group';
-import Select from 'components/forms/select';
+import Select, { Option } from 'components/forms/select';
 import Search from 'components/search';
 import { useScenarios } from 'hooks/scenarios';
 import AdminLayout from 'layouts/admin';
@@ -48,7 +48,7 @@ const ScenariosAdminPage: React.FC = () => {
   const canCreateScenario = hasPermission(Permission.CAN_CREATE_SCENARIO, false);
 
   const handleSort = useCallback(
-    ({ value }) => {
+    ({ value }: Option<string>) => {
       router.replace(
         {
           pathname: router.pathname,

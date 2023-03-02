@@ -164,7 +164,8 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
 
   return (
     <div
-      className={classNames('flex items-center justify-start text-xs gap-x-1 flex-wrap', className)}
+      className={classNames('flex items-center justify-start text-xs gap-1 flex-wrap', className)}
+      data-testid="analysis-dynamic-metadata"
     >
       <InformationCircleIcon className="w-4 h-4 text-gray-900 shrink-0" />
       Viewing {isComparisonEnabled ? <ComparisonToggle /> : values}

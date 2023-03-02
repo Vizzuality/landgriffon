@@ -51,7 +51,7 @@ const GroupByFilter: React.FC = () => {
   );
 
   const handleChange: SelectProps['onChange'] = useCallback(
-    ({ value }) => {
+    ({ value }: Option<string>) => {
       replace({ query: { ...query, by: value } }, undefined, {
         shallow: true,
       });
@@ -76,6 +76,7 @@ const GroupByFilter: React.FC = () => {
       value={currentValue}
       options={options}
       onChange={handleChange}
+      data-testid='group-filters'
     />
   );
 };

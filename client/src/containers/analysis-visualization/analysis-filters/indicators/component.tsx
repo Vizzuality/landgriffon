@@ -63,7 +63,7 @@ const IndicatorsFilter = () => {
   }, [current, dispatch, filters.indicator?.value]);
 
   const handleChange: SelectProps['onChange'] = useCallback(
-    (selected) => {
+    (selected: Option<string>) => {
       replace({ query: { ...query, indicator: selected?.value } }, undefined, {
         shallow: true,
       });

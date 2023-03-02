@@ -12,13 +12,12 @@ import pandas as pd
 import psycopg
 import rasterio as rio
 from psycopg import sql
-from psycopg_pool import ConnectionPool
 from rasterio import DatasetReader
 
 from utils import DTYPES_TO_PG, slugify, snakify
 
 logging.basicConfig(level=logging.INFO)
-log = logging.getLogger("tif_folder_to_h3_table")
+log = logging.getLogger("raster_to_h3")
 
 
 def check_srs(reference_raster: DatasetReader, raster: DatasetReader, _raise: bool = True):
@@ -53,6 +52,7 @@ def raster_to_h3(reference_raster: Path, h3_resolution: int, raster_file: Path) 
     Uses `h3ronpy.raster.raster_to_dataframe()` which uses already multiprocessing under the hood
     so there's no need to iterate over the raster windows anymore.
     """
+    log.info(f"Converting {raster_file.name} to H3 dataframe")
     with rio.open(raster_file) as raster:
         with rio.open(reference_raster) as ref:
             check_srs(ref, raster)
@@ -87,7 +87,7 @@ def create_h3_grid_table(connection: psycopg.Connection, table: str, df: pd.Data
 
 def write_data_to_h3_grid_table(connection: psycopg.Connection, table: str, data: pd.DataFrame):
     with connection.cursor() as cur:
-        log.info(f"Writing data to {table}")
+        log.info(f"Writing H3 data to {table}")
         with StringIO() as buffer:
             data.to_csv(buffer, na_rep="NULL", header=False)
             buffer.seek(0)
@@ -109,13 +109,13 @@ def insert_to_h3_master_table(
     connection: psycopg.Connection, table: str, df: pd.DataFrame, h3_res: int, year: int, data_type: str, dataset: str
 ):
     with connection.cursor() as cur:
+        log.info(f"Inserting data for {table} into h3_data master table.")
         for column_name in df.columns:
             cur.execute(
                 'INSERT INTO "h3_data" ("h3tableName", "h3columnName", "h3resolution", "year")'
                 "VALUES (%s, %s, %s, %s)",
                 (table, column_name, h3_res, year),
             )
-            log.info(f"Inserted('{table}', '{column_name}', {h3_res}, {year}) into h3_data table.")
             if data_type == "indicator":
                 update_for_indicator(cur, dataset, column_name)
             else:
@@ -167,13 +167,11 @@ def to_the_db(df: pd.DataFrame, table: str, data_type: str, dataset: str, year: 
         user=os.getenv("API_POSTGRES_USERNAME"),
         password=os.getenv("API_POSTGRES_PASSWORD"),
     )
-    pool = ConnectionPool(conn_info, kwargs={"autocommit": True})
     with psycopg.connect(conn_info, autocommit=True) as conn:
         create_h3_grid_table(conn, table, df)
         write_data_to_h3_grid_table(conn, table, df)
         clean_before_insert(conn, table)
         insert_to_h3_master_table(conn, table, df, h3_res, year, data_type, dataset)
-    pool.close()
 
 
 @click.command()
@@ -197,8 +195,7 @@ def main(folder: Path, table: str, data_type: str, dataset: str, year: int, h3_r
     with multiprocessing.Pool(thread_count) as pool:
         h3s = pool.map(partial_raster_to_h3, rasters)
     log.info("Joining h3index:values of each raster into single dataframe")
-    # df = h3s[0].join(h3s[1:]) if len(rasters) > 1 else h3s[0]
-    df = pd.concat(h3s, axis=1)
+    df = h3s[0].join(h3s[1:]) if len(rasters) > 1 else h3s[0]
 
     # Part 2: Ingest h3 index into the database
     to_the_db(df, table, data_type, dataset, year, h3_res)

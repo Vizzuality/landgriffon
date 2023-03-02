@@ -12,7 +12,7 @@ import { DEFAULT_PAGE_SIZES } from './constants';
 
 import Select from 'components/forms/select';
 
-import type { SelectProps } from 'components/forms/select';
+import type { SelectProps, Option } from 'components/forms/select';
 import type { PaginationProps } from './types';
 
 const Pagination: React.FC<PaginationProps> = ({
@@ -63,7 +63,7 @@ const Pagination: React.FC<PaginationProps> = ({
   }, [onPageChange, totalPages]);
 
   const handlePageSizeChange = useCallback<SelectProps<number>['onChange']>(
-    (nextPageSize) => {
+    (nextPageSize: Option<number>) => {
       onChangePageSize(nextPageSize?.value);
     },
     [onChangePageSize],

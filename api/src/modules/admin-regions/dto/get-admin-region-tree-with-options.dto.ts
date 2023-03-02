@@ -9,7 +9,7 @@ import {
   IsUUID,
 } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, TransformFnParams, Type } from 'class-transformer';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 
 export class GetAdminRegionTreeWithOptionsDto {
@@ -69,7 +69,9 @@ export class GetAdminRegionTreeWithOptionsDto {
   @IsUUID('4')
   scenarioId?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'Array of Scenario Ids to include in the admin region search',
+  })
   @IsOptional()
   @IsUUID('4', { each: true })
   scenarioIds?: string[];

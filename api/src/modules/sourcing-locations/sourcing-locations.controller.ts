@@ -48,6 +48,7 @@ import { GetLocationTypesDto } from 'modules/sourcing-locations/dto/location-typ
 import { RolesGuard } from 'guards/roles.guard';
 import { RequiredRoles } from 'decorators/roles.decorator';
 import { ROLES } from 'modules/authorization/roles/roles.enum';
+import { SetScenarioIdsInterceptor } from 'modules/impact/set-scenario-ids.interceptor';
 
 @Controller(`/api/v1/sourcing-locations`)
 @ApiTags(sourcingLocationResource.className)
@@ -123,8 +124,12 @@ export class SourcingLocationsController {
     );
   }
 
-  @ApiOperation({ description: 'Gets available location types' })
+  @ApiOperation({
+    description:
+      'Gets available location types. Optionally returns all supported location types',
+  })
   @ApiOkResponse({ type: LocationTypesDto })
+  @UseInterceptors(SetScenarioIdsInterceptor)
   @Get('/location-types')
   async getLocationTypes(
     @Query(ValidationPipe) locationTypesOptions: GetLocationTypesDto,
@@ -132,11 +137,20 @@ export class SourcingLocationsController {
     return this.sourcingLocationsService.getLocationTypes(locationTypesOptions);
   }
 
-  @ApiOperation({ description: 'Get location types supported by the platform' })
+  /**
+   * @deprecated: We will deprecate this endpoint in favour of /location-types supporting a supported param
+   *              to return all supported location types
+   */
+  @ApiOperation({
+    description: 'Get location types supported by the platform',
+    deprecated: true,
+  })
   @ApiOkResponse({ type: LocationTypesDto })
   @Get('/location-types/supported')
   async getAllSupportedLocationTypes(): Promise<LocationTypesDto> {
-    return this.sourcingLocationsService.getAllSupportedLocationTypes();
+    return this.sourcingLocationsService.getAllSupportedLocationTypes({
+      sort: 'ASC',
+    });
   }
 
   @ApiOperation({ description: 'Find sourcing location by id' })

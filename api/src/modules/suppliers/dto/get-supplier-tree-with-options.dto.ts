@@ -67,7 +67,9 @@ export class GetSupplierTreeWithOptions {
   @Type(() => String)
   locationTypes?: LOCATION_TYPES[];
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'Array of Scenario Ids to include in the supplier search',
+  })
   @IsOptional()
   @IsUUID('4')
   scenarioId?: string;

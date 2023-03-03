@@ -154,11 +154,11 @@ def update_for_material(cursor: psycopg.Cursor, dataset: str, column_name: str, 
     )
     insert_query = sql.SQL(
         'INSERT INTO "material_to_h3" ("materialId", "h3DataId", "type") '
-        "VALUES ({material_id}, {h3_data_id[0]}, {data_type})"
+        "VALUES ({materialid}, {h3dataid}, {datatype})"
     ).format(
-        material_id=sql.Placeholder(),
-        h3_data_id=sql.Literal(h3_data_id[0]),
-        data_type=sql.Literal(type_map[data_type]),
+        materialid=sql.Placeholder(),
+        h3dataid=sql.Literal(h3_data_id[0]),
+        datatype=sql.Literal(type_map[data_type]),
     )
     cursor.execute('SELECT id FROM "material" WHERE "datasetId" = %s', (dataset_id,))
     for material_id in cursor:
@@ -192,13 +192,18 @@ def to_the_db(df: pd.DataFrame, table: str, data_type: str, dataset: str, year: 
 @click.argument("dataset", type=str)
 @click.argument("year", type=int)
 # @click.option("contextual", is_flag=True, help="If the data has to be referenced in contextual_layers table.")
-@click.option("--h3-res", "h3_res", type=int, default=6, help="h3 resolution to use")
-@click.option("--thread-count", "thread_count", type=int, default=8, help="Number of threads to use")
+@click.option("--h3-res", "h3_res", type=int, default=6, help="h3 resolution to use [default=6]")
+@click.option("--thread-count", "thread_count", type=int, default=4, help="Number of threads to use [default=4]")
 def main(folder: Path, table: str, data_type: str, dataset: str, year: int, h3_res: int, thread_count: int):
     """Reads a folder of .tif, converts to h3 and loads into a PG table
 
-    All GeoTiffs in the folder must have identical projection, transform, etc.
-    The resulting table will contain a column for each GeoTiff.
+    \b
+    FOLDER is the path to the folder containing the rasters top be ingested.
+    TABLE is the h3_grid_* style DB table name that will contain the actual H3 index and data.
+    DATA_TYPE can be "production" "harvest_area" or "indicator".
+    DATASET is the name of the reference in the indicator "nameCode" or material "datasetID".
+        For the latter case it will be constructed dynamically using DATASET + filename.split("_")[-2]
+    YEAR is the last year of the dataset.
     """
     # Part 1: Convert Raster to h3 index -> value map (or dataframe in this case)
     rasters = list(folder.glob("*.tif"))

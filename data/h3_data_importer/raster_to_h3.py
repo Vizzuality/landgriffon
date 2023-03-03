@@ -123,15 +123,26 @@ def insert_to_h3_master_table(
 
 
 def update_for_indicator(cursor: psycopg.Cursor, dataset: str, column_name: str):
-    cursor.execute('select id from "indicator" where "nameCode" = %s', (dataset,))
-    indicator_id = cursor.fetchone()[0]
-    cursor.execute('update "h3_data"  set "indicatorId" = %s where  "h3columnName" = %s', (indicator_id, column_name))
-    log.info(f"Updated indicatorId '{indicator_id}' in h3_data for {column_name}")
+    query = sql.SQL('select id from "indicator" where "nameCode" = {}').format(sql.Literal(dataset))
+    cursor.execute(query)
+    indicator_id = cursor.fetchone()
+    if not indicator_id:
+        log.error(f"Query result of {query.as_string(cursor)} returned nothing.")
+        raise ValueError(f"Indicator with 'nameCode' {dataset} does not exists")
+
+    cursor.execute(
+        'update "h3_data"  set "indicatorId" = %s where  "h3columnName" = %s', (indicator_id[0], column_name)
+    )
+    log.info(f"Updated indicatorId '{indicator_id[0]}' in h3_data for {column_name}")
 
 
 def update_for_material(cursor: psycopg.Cursor, dataset: str, column_name: str, data_type: str):
-    cursor.execute('SELECT id FROM "h3_data" WHERE "h3columnName" = %s', (column_name,))
-    h3_data_id = cursor.fetchone()[0]
+    select_query = sql.SQL('SELECT id FROM "h3_data" WHERE "h3columnName" = {}').format(sql.Literal(column_name))
+    cursor.execute(select_query)
+    h3_data_id = cursor.fetchone()
+    if not h3_data_id:
+        log.error(f"Query result of {select_query.as_string(cursor)} returned nothing.")
+        raise ValueError(f"h3_data with 'h3columnName' {column_name} does not exists")
     # FIXME: the current solution for naming a material datasets is hard to follow and easy to mess up.
     dataset_id = dataset + "_" + snakify(column_name).split("_")[-2]
     type_map = {"harvest_area": "harvest", "production": "producer"}
@@ -143,10 +154,10 @@ def update_for_material(cursor: psycopg.Cursor, dataset: str, column_name: str, 
     )
     insert_query = sql.SQL(
         'INSERT INTO "material_to_h3" ("materialId", "h3DataId", "type") '
-        "VALUES ({material_id}, {h3_data_id}, {data_type})"
+        "VALUES ({material_id}, {h3_data_id[0]}, {data_type})"
     ).format(
         material_id=sql.Placeholder(),
-        h3_data_id=sql.Literal(h3_data_id),
+        h3_data_id=sql.Literal(h3_data_id[0]),
         data_type=sql.Literal(type_map[data_type]),
     )
     cursor.execute('SELECT id FROM "material" WHERE "datasetId" = %s', (dataset_id,))

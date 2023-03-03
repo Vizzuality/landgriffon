@@ -24,7 +24,7 @@ def check_srs(reference_raster: DatasetReader, raster: DatasetReader, _raise: bo
     """Checks that raster has same projection as reference"""
     if reference_raster.crs != raster.crs:
         message = (
-            f"Rasters have different CRS: {reference_raster.name} {reference_raster.crs} "
+            f"Raster files have different CRS: {reference_raster.name} {reference_raster.crs} "
             f"vs {raster.name} {raster.crs}"
         )
         if _raise:
@@ -37,7 +37,7 @@ def check_transform(reference_raster: DatasetReader, raster: DatasetReader, _rai
     """Checks that raster has same transform as reference"""
     if reference_raster.transform != raster.transform:
         message = (
-            f"Rasters have different Transform: {reference_raster.name} {reference_raster.transform} "
+            f"Raster files have different Transform: {reference_raster.name} {reference_raster.transform} "
             f"vs {raster.name} {raster.transform}"
         )
         if _raise:
@@ -198,7 +198,7 @@ def main(folder: Path, table: str, data_type: str, dataset: str, year: int, h3_r
     """Reads a folder of .tif, converts to h3 and loads into a PG table
 
     \b
-    FOLDER is the path to the folder containing the rasters top be ingested.
+    FOLDER is the path to the folder containing the raster files to be ingested.
     TABLE is the h3_grid_* style DB table name that will contain the actual H3 index and data.
     DATA_TYPE can be "production" "harvest_area" or "indicator".
     DATASET is the name of the reference in the indicator "nameCode" or material "datasetID".
@@ -206,12 +206,12 @@ def main(folder: Path, table: str, data_type: str, dataset: str, year: int, h3_r
     YEAR is the last year of the dataset.
     """
     # Part 1: Convert Raster to h3 index -> value map (or dataframe in this case)
-    rasters = list(folder.glob("*.tif"))
-    partial_raster_to_h3 = partial(raster_to_h3, rasters[0], h3_res)
+    raster_files = list(folder.glob("*.tif"))
+    partial_raster_to_h3 = partial(raster_to_h3, raster_files[0], h3_res)
     with multiprocessing.Pool(thread_count) as pool:
-        h3s = pool.map(partial_raster_to_h3, rasters)
-    log.info("Joining h3index:values of each raster into single dataframe")
-    df = h3s[0].join(h3s[1:]) if len(rasters) > 1 else h3s[0]
+        h3s = pool.map(partial_raster_to_h3, raster_files)
+    log.info(f"Joining H3 data of each raster into single dataframe for table {table}")
+    df = h3s[0].join(h3s[1:]) if len(raster_files) > 1 else h3s[0]
 
     # Part 2: Ingest h3 index into the database
     to_the_db(df, table, data_type, dataset, year, h3_res)

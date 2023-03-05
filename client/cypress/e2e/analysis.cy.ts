@@ -206,7 +206,7 @@ describe('Analysis table', () => {
   });
 
   it('user should be able to select year filters', () => {
-    cy.wait('@h2Years').then((int) => {
+    cy.wait('@h3Years').then((int) => {
       const years = int.response.body.data;
       // Check default filter values
       cy.wait('@fetchImpactTable').then((req) => {
@@ -236,9 +236,11 @@ describe('Analysis table', () => {
         .should('eql', fromYear.toString());
 
       const toYear = years[0] + MAX_END_YEAR_RANGE;
+      // Years dialog is already open
       cy.get('[data-testid="select-year-selector-to"]').click();
 
       // Check that the 'to' options years smaller than the selected 'from' year are disabled
+      cy.get('.ReactVirtualized__List').scrollTo('top'); // select dialog portal to the top to show the options
       cy.get('[data-testid="year-selector-to-option"][aria-disabled="true"]').should(
         'have.length',
         3,

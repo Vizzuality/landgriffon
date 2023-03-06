@@ -8,7 +8,7 @@ import { omit } from 'lodash-es';
 import ListIcon from 'components/icons/list';
 import GridIcon from 'components/icons/grid';
 import ButtonGroup, { LinkGroupItem } from 'components/button-group';
-import Select, { Option } from 'components/forms/select';
+import Select from 'components/forms/select';
 import Search from 'components/search';
 import { useScenarios } from 'hooks/scenarios';
 import AdminLayout from 'layouts/admin';
@@ -18,6 +18,7 @@ import Loading from 'components/loading';
 import { usePermissions } from 'hooks/permissions';
 import { Permission } from 'hooks/permissions/enums';
 
+import type { Option } from 'components/forms/select';
 import type { ScenarioCardProps } from 'containers/scenarios/card/types';
 
 const DISPLAY_OPTIONS: ScenarioCardProps['display'][] = ['grid', 'list'];

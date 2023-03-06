@@ -119,7 +119,7 @@ const AutoCompleteSelect = <T,>({
         </Combobox.Option>
       );
     },
-    [filteredOptions],
+    [filteredOptions, props],
   );
 
   const clearSelection = useCallback(() => {

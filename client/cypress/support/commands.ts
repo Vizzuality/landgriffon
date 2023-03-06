@@ -97,10 +97,6 @@ Cypress.Commands.add('interceptAllRequests', (): void => {
     fixture: 'location-types/index',
   }).as('locationTypes');
 
-  cy.intercept('GET', '/api/v1/sourcing-locations/location-types/supported', {
-    fixture: 'sourcing-locations/supported',
-  }).as('supportedLocationTypes');
-
   cy.intercept('GET', '/api/v1/admin-regions/trees*', {
     statusCode: 200,
     fixture: 'trees/admin-regions',

@@ -11,7 +11,6 @@ import {
 } from '@floating-ui/react';
 import { Popover, Transition } from '@headlessui/react';
 import { useRouter } from 'next/router';
-import { sortBy } from 'lodash-es';
 
 import Materials from '../materials/component';
 import OriginRegions from '../origin-regions/component';
@@ -186,13 +185,9 @@ const MoreFilters = () => {
       materialIds,
       originIds,
       supplierIds,
-      // ! enable this sorting when the API supports it
-      // sort: 'label',
+      scenarioIds,
     },
     {
-      ...DEFAULT_QUERY_OPTIONS,
-      // ! this sorting can be removed once the /location-types endpoint supports sorting
-      select: (_locationTypeOptions) => sortBy(_locationTypeOptions, ['label']),
       onSuccess: (_locationTypeOptions) => {
         // * every time new location types are fetched, we need to validate if the previous location types selected are still
         // * available in the new options. Otherwise, we will remove them from the current selection.

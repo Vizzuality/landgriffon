@@ -75,7 +75,8 @@ describe('Intervention creation', () => {
     cy.get('[data-testid="volume-input"]').should('be.disabled');
 
     // waits for scenario location types request and selects an option
-    cy.wait('@supportedLocationTypes');
+    cy.wait('@locationTypes').its('request.url').should('contain', 'sort=DESC&supported=true');
+
     cy.get('[data-testid="select-newLocationType"]')
       .click()
       .find('input:visible')
@@ -150,7 +151,7 @@ describe('Intervention creation', () => {
     });
 
     // waits for scenario location types request and selects an option
-    cy.wait('@supportedLocationTypes');
+    cy.wait('@locationTypes').its('request.url').should('contain', 'sort=DESC&supported=true');
     cy.get('[data-testid="select-newLocationType"]')
       .click()
       .find('input:visible')
@@ -192,7 +193,7 @@ describe('Intervention location type', () => {
       fixture: 'intervention/intervention-creation-dto',
     }).as('successfullInterventionCreation');
 
-    cy.wait('@supportedLocationTypes');
+    cy.wait('@locationTypes').its('request.url').should('contain', 'sort=DESC&supported=true');
 
     // Choose a location type: Switch to new material
     cy.get('[data-testid="intervention-type-option"]').first().click();

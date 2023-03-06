@@ -4,7 +4,7 @@ export type Option<T = string> = {
   disabled?: boolean;
 };
 
-type SelectValue<M> = M extends true ? Option<T>[] :  Option<T>;
+type SelectValue<M> = M extends true ? Option<T>[] : Option<T>;
 
 export type SelectProps<T = string> = Omit<
   React.SelectHTMLAttributes<HTMLSelectElement>,

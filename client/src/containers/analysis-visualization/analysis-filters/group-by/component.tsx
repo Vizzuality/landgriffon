@@ -76,7 +76,7 @@ const GroupByFilter: React.FC = () => {
       value={currentValue}
       options={options}
       onChange={handleChange}
-      data-testid='group-filters'
+      data-testid="group-filters"
     />
   );
 };

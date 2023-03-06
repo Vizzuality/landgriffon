@@ -139,7 +139,12 @@ const AdminUsersPage: React.FC = () => {
       </Head>
       <div className="flex flex-col-reverse items-center justify-between mb-5 md:flex-row">
         <div className="flex w-full gap-2 md:w-auto">
-          <Search placeholder="Search table" defaultValue={search} onChange={handleOnSearch} />
+          <Search
+            disabled // TODO
+            placeholder="Search table"
+            defaultValue={search}
+            onChange={handleOnSearch}
+          />
         </div>
         <div className="flex items-center">
           <Button

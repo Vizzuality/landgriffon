@@ -16,7 +16,6 @@ module.exports = {
     'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],
   },
   rules: {
-    eqeqeq: ['warn'],
     'import/order': [
       'warn',
       {
@@ -32,7 +31,6 @@ module.exports = {
     'no-console': ['warn'],
     'no-debugger': ['warn'],
     '@typescript-eslint/consistent-type-imports': ['warn'],
-    '@typescript-eslint/ts-expect-error': ['allow-with-description'],
     '@typescript-eslint/no-unused-vars': [
       'warn',
       {

@@ -2,9 +2,6 @@ import {
   DEFAULT_END_YEAR_GAP,
   MAX_END_YEAR_RANGE,
 } from '../../src/containers/analysis-visualization/analysis-filters/years-range/constants';
-const MATERIAL = 'Raw hides, skins and leather';
-const COUNTRY = 'Angola';
-const LOCATION = 'Moll';
 
 beforeEach(() => {
   cy.interceptAllRequests();
@@ -14,7 +11,6 @@ beforeEach(() => {
 afterEach(() => {
   cy.logout();
 });
-
 
 describe('Analysis tab', () => {
   beforeEach(() => {
@@ -80,7 +76,7 @@ describe('Analysis filters', () => {
     cy.wait('@materialsTrees');
     cy.wait('@originsTrees');
     cy.wait('@suppliersTrees');
-    cy.wait('@fetchImpactTable')
+    cy.wait('@fetchImpactTable');
 
     // Adding new interceptors after selecting a filter
     cy.intercept(
@@ -103,7 +99,7 @@ describe('Analysis filters', () => {
         fixture: 'trees/materials-filtered.json',
       },
     ).as('materialsTreesFiltered');
-    cy.wait('@locationTypes')
+    cy.wait('@locationTypes');
 
     // Step 2: Selecting Angola in the admin regions selector
     cy.get('[data-testid="tree-select-origins-filter"]').find('div[role="combobox"]').click();
@@ -115,7 +111,7 @@ describe('Analysis filters', () => {
     cy.get('[data-testid="tree-select-origins-filter"]')
       .find('input:visible:first')
       .type('{enter}');
-    cy.wait('@locationTypes')
+    cy.wait('@locationTypes');
     // Step 3: Selecting Moll in the material selector
     cy.wait('@suppliersTreesFiltered');
     cy.get('[data-testid="tree-select-suppliers-filter"]').find('div[role="combobox"]').click();
@@ -124,7 +120,7 @@ describe('Analysis filters', () => {
       .find('.rc-tree-treenode')
       .eq(1)
       .click();
-    cy.wait('@locationTypes')
+    cy.wait('@locationTypes');
     // Step 4: Checking material selector
     cy.wait('@materialsTreesFiltered')
       .its('request.url')
@@ -325,6 +321,17 @@ describe('Analysis scenarios', () => {
       'GET',
       '/api/v1/impact/table?*scenarioId=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7*',
     ).as('fetchImpactTableData');
+
+    // ? locations filtered by comparison of a scenario
+    cy.intercept({
+      path: '/api/v1/sourcing-locations/location-types?sort=DESC&scenarioIds[]=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7',
+    }).as('locationTypesWithSingleScenario');
+
+    // ? locations filtered by comparison of two scenarios
+    cy.intercept({
+      path: '/api/v1/sourcing-locations/location-types?sort=DESC&scenarioIds[]=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7&scenarioIds[]=7646039e-b2e0-4bd5-90fd-925e5868f9af',
+    }).as('locationTypesWithScenarioComparison');
+
     cy.visit('/analysis/table');
     cy.wait('@scenariosNoPaginated');
     cy.wait('@scenariosList');
@@ -333,43 +340,39 @@ describe('Analysis scenarios', () => {
       .find('[data-testid="scenario-item-radio"]')
       .click();
 
-    // Check that the location types endpoint is fetched with the selected params
-    cy.wait('@locationTypes').its('request.query').should('include.all.keys', 'materialIds', 'supplierIds', 'originIds');
+    cy.wait('@fetchImpactTableData')
+      .its('request.url')
+      .should('contain', 'scenarioId=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7');
 
-    // Apply filters
-    cy.get('[data-testid="more-filters-apply-btn"]').click();
-    cy.wait('@fetchImpactTable')
-      .its('request.query')
-      .should('include.all.keys', 'materialIds', 'supplierIds', 'originIds');
+    cy.url().should('contain', 'scenarioId=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7');
 
-    // Check metadata sentence
-    cy.get('[data-testid="analysis-dynamic-metadata"]')
-      .should('include.text', MATERIAL)
-      .should('include.text', COUNTRY)
-      .should('include.text', LOCATION)
+    cy.intercept({
+      path: '/api/v1/**/trees?*scenarioIds[]=7646039e-b2e0-4bd5-90fd-925e5868f9af',
+    }).as('treesSelectorsWithBothScenarioIds');
 
-    // Remove filters
-    cy.get('[data-testid="more-filters-button"]').click({ force: true });
-    cy.get('[data-testid="tree-select-suppliers-filter"] button').click()
-    cy.get('[data-testid="tree-select-origins-filter"] button').click()
-    cy.get('[data-testid="tree-select-materials-filter"] button').click()
+    cy.get('[data-testid="scenario-item-8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7"]')
+      .find('[data-testid="select-comparison"]')
+      .click()
+      .find('input:visible')
+      .type('Example{enter}');
 
-    // Apply remove filters
-    cy.get('[data-testid="more-filters-apply-btn"]').click();
+    cy.wait('@locationTypesWithSingleScenario').its('response.statusCode').should('eq', 200);
 
-    // Check the request was made without filters
-    cy.wait('@locationTypes')
-      .its('request.query')
-      .should('not.have.keys', 'materialIds', 'supplierIds', 'originIds')
-    cy.wait('@fetchImpactTable')
-      .its('request.query')
-      .should('not.have.keys', 'materialIds', 'supplierIds', 'originIds')
+    cy.url().should('contain', 'compareScenarioId=7646039e-b2e0-4bd5-90fd-925e5868f9af');
 
-    // Check that the metadata sentence don't have the filters
-    cy.get('[data-testid="analysis-dynamic-metadata"]')
-      .should('not.include.text', MATERIAL)
-      .should('not.include.text', COUNTRY)
-      .should('not.include.text', LOCATION)
+    // checking tree selectors on more filers
+    cy.wait('@treesSelectorsWithBothScenarioIds')
+      .its('request.url')
+      .should('contain', 'scenarioIds[]=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7')
+      .and('contain', 'scenarioIds[]=7646039e-b2e0-4bd5-90fd-925e5868f9af');
+
+    cy.wait('@locationTypesWithScenarioComparison').its('response.statusCode').should('eq', 200);
+
+    // checking comparison cell is there
+    cy.wait('@scenarioVsScenario')
+      .its('request.url')
+      .should('contain', 'comparedScenarioId=7646039e-b2e0-4bd5-90fd-925e5868f9af');
+    cy.get('[data-testid="comparison-cell"]').should('have.length.above', 1);
   });
 });
 

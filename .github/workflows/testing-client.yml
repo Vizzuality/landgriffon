@@ -36,6 +36,7 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v5
         with:
+          record: true
           working-directory: client
           install: false
           build: yarn build
@@ -54,6 +55,9 @@ jobs:
           CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
           CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
           CYPRESS_API_URL: ${{ secrets.CYPRESS_API_URL }}
+          # pass GitHub token to detect new build vs re-run build
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          DEBUG: "cypress:server:args"
 
       - uses: actions/upload-artifact@v3
         if: failure()

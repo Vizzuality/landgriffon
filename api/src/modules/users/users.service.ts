@@ -22,6 +22,7 @@ import { AuthenticationService } from 'modules/authentication/authentication.ser
 import { v4 } from 'uuid';
 import { UserRepository } from 'modules/users/user.repository';
 import { DeleteResult } from 'typeorm';
+import { AuthorizationService } from 'modules/authorization/authorization.service';
 
 @Injectable()
 export class UsersService extends AppBaseService<
@@ -34,6 +35,7 @@ export class UsersService extends AppBaseService<
     protected readonly repository: UserRepository,
     @Inject(forwardRef(() => AuthenticationService))
     private readonly authenticationService: AuthenticationService,
+    private readonly authorizationService: AuthorizationService,
   ) {
     super(repository, userResource.name.singular, userResource.name.plural);
   }
@@ -182,5 +184,18 @@ export class UsersService extends AppBaseService<
 
   async deleteUser(userId: string): Promise<DeleteResult> {
     return this.repository.delete(userId);
+  }
+
+  async updateUser(userId: string, updateUser: any): Promise<User> {
+    if ('roles' in updateUser && updateUser.roles) {
+      updateUser.roles = this.authorizationService.createRolesFromEnum(
+        updateUser.roles,
+      );
+    }
+    // UpdateResult does not seems to load data back from the DB but return the dto has consumed, so
+    // we call to the repo again to return the user with loaded permissions as well
+    return this.update(userId, updateUser as UpdateUserDTO).then(() =>
+      this.repository.findOneOrFail({ where: { id: userId } }),
+    );
   }
 }

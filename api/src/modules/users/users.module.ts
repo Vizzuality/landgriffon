@@ -7,11 +7,13 @@ import { User } from 'modules/users/user.entity';
 import { UserCommand } from 'modules/users/user.command';
 import { Role } from 'modules/authorization/roles/role.entity';
 import { UserRepository } from 'modules/users/user.repository';
+import { AuthorizationModule } from 'modules/authorization/authorization.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Role]),
     forwardRef(() => AuthenticationModule),
+    AuthorizationModule,
   ],
   providers: [UsersService, UserCommand, UserRepository],
   controllers: [UsersController],

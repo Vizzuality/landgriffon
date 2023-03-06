@@ -96,23 +96,6 @@ export class UsersController {
     return this.service.serialize(await this.service.createUser(createUserDTO));
   }
 
-  @ApiOperation({ description: 'Update a user as admin' })
-  @ApiCreatedResponse({ description: 'User created successfully' })
-  @ApiOkResponse({
-    type: User,
-  })
-  @ApiForbiddenResponse()
-  @RequiredRoles(ROLES.ADMIN)
-  @Patch('update/:id')
-  async updateUser(
-    @Body(new ValidationPipe()) updateUser: UpdateUserDTO,
-    @Param('id') userId: string,
-  ): Promise<User> {
-    return this.service.serialize(
-      await this.service.update(userId, updateUser),
-    );
-  }
-
   @ApiOperation({
     description:
       'Update the password of a user, if they can present the current one.',
@@ -181,6 +164,23 @@ export class UsersController {
     @Request() req: RequestWithAuthenticatedUser,
   ): Promise<void> {
     return this.service.markAsDeleted(req.user.id);
+  }
+
+  @ApiOperation({ description: 'Update a user as admin' })
+  @ApiCreatedResponse({ description: 'User created successfully' })
+  @ApiOkResponse({
+    type: User,
+  })
+  @ApiForbiddenResponse()
+  @RequiredRoles(ROLES.ADMIN)
+  @Patch(':id')
+  async updateUser(
+    @Body(new ValidationPipe()) updateUser: UpdateUserDTO,
+    @Param('id') userId: string,
+  ): Promise<User> {
+    return this.service.serialize(
+      await this.service.updateUser(userId, updateUser),
+    );
   }
 
   @ApiOperation({

@@ -82,14 +82,17 @@ describe('UsersModule (e2e)', () => {
     });
 
     test('A admin should be able to create a user with default user role if none provided ', async () => {
-      const response = await request(testApplication.getHttpServer())
+      await request(testApplication.getHttpServer())
         .post('/api/v1/users')
         .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
         .send({ email: 'test@test.com', password: '12345678' })
         .expect(HttpStatus.CREATED);
 
-      expect(response.body.data.attributes.email).toEqual('test@test.com');
-      expect(response.body.data.attributes.roles).toEqual([
+      const user = await userRepository.findByEmail('test@test.com');
+
+      expect(user).toBeTruthy();
+      expect(user?.email).toEqual('test@test.com');
+      expect(user?.roles).toEqual([
         {
           name: ROLES.USER,
           permissions: [
@@ -110,7 +113,7 @@ describe('UsersModule (e2e)', () => {
     });
 
     test('A admin user should be able to create a user with roles ', async () => {
-      const response = await request(testApplication.getHttpServer())
+      await request(testApplication.getHttpServer())
         .post('/api/v1/users')
         .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
         .send({
@@ -120,8 +123,10 @@ describe('UsersModule (e2e)', () => {
         })
         .expect(HttpStatus.CREATED);
 
-      expect(response.body.data.attributes.email).toEqual('test@test.com');
-      expect(response.body.data.attributes.roles).toEqual([
+      const user = await userRepository.findByEmail('test@test.com');
+      expect(user).toBeTruthy();
+      expect(user?.email).toEqual('test@test.com');
+      expect(user?.roles).toEqual([
         { name: ROLES.ADMIN, permissions: [] },
         {
           name: ROLES.USER,
@@ -158,20 +163,32 @@ describe('UsersModule (e2e)', () => {
     });
 
     test('A admin should be able to update any users role', async () => {
-      const { id: userId } = await createUser();
+      const { id: userId } = await createUser({ email: 'whatthefuck' });
 
       const response = await request(testApplication.getHttpServer())
-        .patch(`/api/v1/users/update/${userId}`)
+        .patch(`/api/v1/users/${userId}`)
         .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
         .send({
           roles: [ROLES.ADMIN, ROLES.USER],
         })
         .expect(HttpStatus.OK);
-
-      // TODO: nestjs-base-service transforms role property from array of objects to array of strings. decide approach for everything (post, patch...) and be consistent
+      expect(response.body.data.id).toEqual(userId);
       expect(response.body.data.attributes.roles).toEqual([
-        ROLES.ADMIN,
-        ROLES.USER,
+        { name: ROLES.ADMIN, permissions: [] },
+        {
+          name: ROLES.USER,
+          permissions: [
+            {
+              action: 'canCreateScenario',
+            },
+            {
+              action: 'canEditScenario',
+            },
+            {
+              action: 'canDeleteScenario',
+            },
+          ],
+        },
       ]);
     });
 

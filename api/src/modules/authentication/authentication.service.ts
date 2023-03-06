@@ -25,6 +25,8 @@ import { ApiEventByTopicAndKind } from 'modules/api-events/api-event.topic+kind.
 import { CreateUserDTO } from 'modules/users/dto/create.user.dto';
 import ms = require('ms');
 import { AuthorizationService } from 'modules/authorization/authorization.service';
+import { ROLES } from 'modules/authorization/roles/roles.enum';
+import { Role } from 'modules/authorization/roles/role.entity';
 
 /**
  * Access token for the app: key user data and access token
@@ -281,5 +283,9 @@ export class AuthenticationService {
     if (user && !user.isDeleted) {
       throw new ConflictException('Email already exists.');
     }
+  }
+
+  updateRoles(rolesEnum: ROLES[]): Role[] {
+    return this.authorizationService.createRolesFromEnum(rolesEnum);
   }
 }

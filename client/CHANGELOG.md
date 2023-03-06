@@ -7,22 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [v0.5.0 Unreleased]
 
-### Added
-- Integration of local layer to handle different type of layers in the future. [LANDGRIF-1248](https://vizzuality.atlassian.net/browse/LANDGRIF-1248)
-- New purple style for scenario select in analysis page. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
-- Add filter by year on analysis table. [LANDGRIF-965](https://vizzuality.atlassian.net/browse/LANDGRIF-965)
-
 ### Changed
-- Updated axios version.
 - Intervention form: list only supported location types.
 - Analysis filters: location types options now listed according to scenarios (if any). [LANDGRIF-1255](https://vizzuality.atlassian.net/browse/LANDGRIF-1255)
-- Unified styles of badges/pills for filters. Additionally, allow to pass classes to colorized them. [LANDGRIF-1205](https://vizzuality.atlassian.net/browse/LANDGRIF-1205)
-- Updated Nextjs to v13, updated eslint-config-next, updated next-auth [LANDGRIF-1114](https://vizzuality.atlassian.net/browse/LANDGRIF-1144)
-- Intervention form: list only supported location types.
-- Analysis filters: location types options now listed according to scenarios (if any). [LANDGRIF-1255](https://vizzuality.atlassian.net/browse/LANDGRIF-1255)
-
-### Changed
-- Replaced Deck.gl map with `react-map-gl` to prepare migration to Layer Manager. [LANDGRIF-812](https://vizzuality.atlassian.net/browse/LANDGRIF-812)
 
 ### Fixed
 - Fix permissions for edit scenarios on analysis pages [LANDGRIF-1253](https://vizzuality.atlassian.net/browse/LANDGRIF-1253)

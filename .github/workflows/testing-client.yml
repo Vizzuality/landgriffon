@@ -9,13 +9,18 @@ on:
   workflow_dispatch:
 
 env:
-  NODE_ENV: test
+  NODE_ENV: production
 
 jobs:
   testing-client:
     name: Running client tests
     runs-on: ubuntu-22.04
-    timeout-minutes: 15
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+    defaults:
+      run:
+        working-directory: ${{github.workspace}}/client
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -23,13 +28,16 @@ jobs:
       - name: Use Node.js 18.13
         uses: actions/setup-node@v3
         with:
-          node-version: '18.13'
+          node-version-file: 'client/.nvmrc'
+
+      - name: Install dependencies
+        run: yarn install --immutable
 
       - name: Cypress run
         uses: cypress-io/github-action@v5
         with:
           working-directory: client
-          install-command: yarn install --immutable
+          install: false
           build: yarn build
           start: yarn start
           browser: chrome

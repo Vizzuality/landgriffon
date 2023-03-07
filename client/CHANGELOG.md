@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Unified styles of badges/pills for filters. Additionally, allow to pass classes to colorized them. [LANDGRIF-1205](https://vizzuality.atlassian.net/browse/LANDGRIF-1205)
 
 ### Fixed
+- Fixed coefficients panel acting weird when values are edited. [LANDGRIF-1246](https://vizzuality.atlassian.net/browse/LANDGRIF-1246)
 - Fix permissions for edit scenarios on analysis pages [LANDGRIF-1253](https://vizzuality.atlassian.net/browse/LANDGRIF-1253)
 
 ## [v0.4.0]

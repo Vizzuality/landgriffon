@@ -1,7 +1,6 @@
 import logging
 import multiprocessing
 import os
-import sys
 from functools import partial
 from io import StringIO
 from pathlib import Path
@@ -20,30 +19,26 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("raster_to_h3")
 
 
-def check_srs(reference_raster: DatasetReader, raster: DatasetReader, _raise: bool = True):
+def check_srs(reference_raster: DatasetReader, raster: DatasetReader):
     """Checks that raster has same projection as reference"""
     if reference_raster.crs != raster.crs:
         message = (
             f"Raster files have different CRS: {reference_raster.name} {reference_raster.crs} "
             f"vs {raster.name} {raster.crs}"
         )
-        if _raise:
-            raise ValueError(message)
         log.error(message)
-        sys.exit(1)
+        raise ValueError(message)
 
 
-def check_transform(reference_raster: DatasetReader, raster: DatasetReader, _raise: bool = True):
+def check_transform(reference_raster: DatasetReader, raster: DatasetReader):
     """Checks that raster has same transform as reference"""
     if reference_raster.transform != raster.transform:
         message = (
             f"Raster files have different Transform: {reference_raster.name} {reference_raster.transform} "
             f"vs {raster.name} {raster.transform}"
         )
-        if _raise:
-            raise ValueError(message)
         log.error(message)
-        sys.exit(1)
+        raise ValueError(message)
 
 
 def raster_to_h3(reference_raster: Path, h3_resolution: int, raster_file: Path) -> pd.DataFrame:

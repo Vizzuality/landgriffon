@@ -5,7 +5,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useQueryClient } from '@tanstack/react-query';
-import { XIcon, PlusIcon, DotsVerticalIcon } from '@heroicons/react/solid';
+import { PlusIcon, DotsVerticalIcon } from '@heroicons/react/solid';
 
 import InfoTooltip from 'components/info-tooltip';
 import { useScenario, useUpdateScenario } from 'hooks/scenarios';
@@ -24,6 +24,7 @@ import { Anchor, Button } from 'components/button';
 import Input from 'components/forms/input';
 import Toggle from 'components/toggle';
 import Dropdown from 'components/dropdown';
+import Badge from 'components/badge';
 
 import type { ScenarioFormData } from 'containers/scenarios/types';
 import type { ErrorResponse } from 'types';
@@ -134,12 +135,9 @@ const UpdateScenarioPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-2 p-2 mt-4 mb-2 border border-gray-300 rounded-md">
-                  <div className="flex items-center rounded-full bg-blue-400 py-0.5 px-3 text-sm">
+                  <Badge className="bg-blue-200 border-blue-400 text-sm">
                     Entire company +1.5%/y
-                    <button type="button" disabled>
-                      <XIcon className="w-3 h-3 ml-2" />
-                    </button>
-                  </div>
+                  </Badge>
                 </div>
                 <p className="mx-2 text-xs">
                   Add as many as you want, more specific growth rates override less specific ones.

@@ -37,7 +37,6 @@ const THEMES = {
     arrow: 'items-center text-gray-900',
     treeNodes:
       'flex gap-1 items-center p-2 pl-1 whitespace-nowrap text-sm cursor-pointer hover:bg-navy-50 z-[100]',
-    badge: 'text-sm',
   },
   'inline-primary': {
     label: 'truncate text-ellipsis font-bold cursor-pointer px-0 py-0',
@@ -46,7 +45,6 @@ const THEMES = {
     treeNodes:
       'flex items-center px-1 py-2 whitespace-nowrap text-sm cursor-pointer hover:bg-navy-50',
     treeContent: 'max-w-xl',
-    badge: '',
   },
   disabled:
     'flex-row max-w-full bg-gray-300/20 border border-gray-200 rounded-md shadow-sm cursor-default pointer-events-none min-h-[2.5rem] text-sm p-0.5 pr-0',
@@ -470,25 +468,18 @@ const InnerTreeSelect = <IsMulti extends boolean>({
                 currentOptions.slice(0, badgesToShow).map((option, index) => (
                   <Badge
                     key={option.value}
-                    className={classNames(
-                      'max-w-fit min-w-fit',
-                      // THEMES[theme].label,
-                      // THEMES[theme].badge,
-                    )}
                     data={option}
                     onClick={handleRemoveBadge}
                     removable={theme !== 'inline-primary'}
                     theme="big"
+                    className="text-xs"
                   >
                     {option.label}
                     {theme === 'inline-primary' && index < currentOptions.length - 1 && ','}
                   </Badge>
                 ))}
               {currentOptions?.length > badgesToShow && (
-                <Badge
-                  className={classNames('h-fit my-auto', THEMES[theme].label, THEMES[theme].badge)}
-                  theme="big"
-                >
+                <Badge className="whitespace-nowrap text-xs" theme="big">
                   {currentOptions.length - badgesToShow} more selected
                 </Badge>
               )}

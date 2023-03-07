@@ -89,6 +89,7 @@ const Select = <T,>({
               removable
               onClick={() => handleDelete(option)}
               theme="big"
+              className="text-xs"
             >
               {option.label}
             </Badge>

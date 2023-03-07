@@ -26,13 +26,13 @@ const Badge: React.FC<BadgeProps> = ({
   return (
     <div
       className={classNames(
-        'flex items-center overflow-hidden shadow-sm px-2 py-px gap-x-0.5',
+        'flex items-center overflow-hidden shadow-sm px-2 py-px gap-x-0.5 max-w-fit min-w-fit',
+        className,
         THEME_CLASSNAMES[theme]?.wrapper,
         removable && 'pr-1',
-        className,
       )}
     >
-      <span className="text-xs">{children}</span>
+      <span>{children}</span>
       {removable && (
         <button
           type="button"

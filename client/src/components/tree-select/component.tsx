@@ -33,7 +33,7 @@ const THEMES = {
   default: {
     label: 'text-gray-900 text-xs',
     wrapper:
-      'flex-row max-w-full bg-white relative border border-gray-200 transition-colors hover:border-gray-300 rounded-md shadow-sm cursor-pointer min-h-[2.5rem] text-sm p-0.5 pr-0',
+      'flex-row max-w-full bg-white relative border border-gray-200 transition-colors hover:border-gray-300 rounded-md shadow-sm cursor-pointer min-h-[2.5rem] text-sm p-1',
     arrow: 'items-center text-gray-900',
     treeNodes:
       'flex gap-1 items-center p-2 pl-1 whitespace-nowrap text-sm cursor-pointer hover:bg-navy-50 z-[100]',
@@ -471,9 +471,9 @@ const InnerTreeSelect = <IsMulti extends boolean>({
                   <Badge
                     key={option.value}
                     className={classNames(
-                      'h-max my-auto max-w-fit min-w-fit',
-                      THEMES[theme].label,
-                      THEMES[theme].badge,
+                      'max-w-fit min-w-fit',
+                      // THEMES[theme].label,
+                      // THEMES[theme].badge,
                     )}
                     data={option}
                     onClick={handleRemoveBadge}

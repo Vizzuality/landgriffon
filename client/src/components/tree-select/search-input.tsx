@@ -27,7 +27,7 @@ const SearchInput = ({
         placeholder={placeholder}
         disabled={disabled}
         className={classNames(
-          'w-full p-0 py-2 pl-2 truncate bg-transparent border-none appearance-none focus:ring-0',
+          'w-full p-0 py-2 pl-2 truncate bg-transparent border-none appearance-none focus:ring-0 h-[32px]',
           {
             // 'pl-2': multiple,
             'text-sm': theme !== 'inline-primary',

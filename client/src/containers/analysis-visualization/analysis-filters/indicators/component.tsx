@@ -72,14 +72,16 @@ const IndicatorsFilter = () => {
   );
 
   return (
-    <Select
-      data-testid="indicators-filter"
-      value={current}
-      onChange={handleChange}
-      options={options}
-      loading={isFetching}
-      disabled={!!error}
-    />
+    <div className="bg-white rounded-md">
+      <Select
+        data-testid="indicators-filter"
+        value={current}
+        onChange={handleChange}
+        options={options}
+        loading={isFetching}
+        disabled={!!error}
+      />
+    </div>
   );
 };
 

@@ -5,7 +5,7 @@ from unittest.mock import patch, Mock
 from starlette.testclient import TestClient
 
 from ..main import app
-from ..middlewares.url_injector import s3_presigned_access
+from ..middlewares.s3_access import s3_presigned_access
 
 test_client = TestClient(app)
 

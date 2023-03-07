@@ -4,7 +4,7 @@ export const THEME_CLASSNAMES = {
     closeIcon: 'hover:text-white hover:bg-orange-300 hover:ring-orange-300',
   },
   big: {
-    wrapper: 'py-2 bg-orange-50 border border-orange-300 rounded min-h-full',
+    wrapper: 'bg-orange-50 border border-orange-300 rounded h-[32px]',
     closeIcon: 'hover:text-white hover:bg-orange-300 hover:ring-orange-300',
   },
 } as const;

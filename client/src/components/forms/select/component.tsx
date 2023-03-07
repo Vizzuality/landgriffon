@@ -1,7 +1,7 @@
 import { cloneElement, useCallback, useEffect, useMemo, useState } from 'react';
 import classnames from 'classnames';
 import { Listbox, Transition } from '@headlessui/react';
-import { ChevronUpIcon, ChevronDownIcon, XIcon } from '@heroicons/react/solid';
+import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/solid';
 import { flip, useFloating, size } from '@floating-ui/react-dom';
 import { autoUpdate } from '@floating-ui/react';
 import { isArray, sortBy } from 'lodash-es';
@@ -9,7 +9,7 @@ import { isArray, sortBy } from 'lodash-es';
 import Hint from '../hint';
 
 import Loading from 'components/loading';
-import Pill from 'components/pill';
+import Badge from 'components/badge';
 
 import type { Option, SelectProps } from './types';
 
@@ -84,19 +84,14 @@ const Select = <T,>({
       return (
         <div className="flex flex-wrap gap-2">
           {(sortBy(selected, ['label']) as Option<T>[] | Option<string>[]).map((option) => (
-            <div
-              className="flex space-x-2"
-              key={option.value}
-              onClick={(evt) => {
-                evt.stopPropagation();
-                handleDelete(option);
-              }}
+            <Badge
+              key={`tree-select-badge-${option.value}`}
+              removable
+              onClick={() => handleDelete(option)}
+              theme="big"
             >
-              <Pill className="flex items-center space-x-1 bg-blue-200">
-                <span>{option.label}</span>
-                <XIcon className="w-4 h-4" />
-              </Pill>
-            </div>
+              {option.label}
+            </Badge>
           ))}
         </div>
       );
@@ -106,8 +101,16 @@ const Select = <T,>({
       return selected.label;
     }
 
-    return <span className="text-gray-500">{placeholder}</span>;
-  }, [selected, placeholder, handleDelete]);
+    return (
+      <span
+        className={classnames('text-gray-500', {
+          'inline-block pl-2': multiple,
+        })}
+      >
+        {placeholder}
+      </span>
+    );
+  }, [selected, multiple, placeholder, handleDelete]);
 
   return (
     <div data-testid={`select-${props.id || props.name || props['data-testid']}`}>
@@ -127,8 +130,10 @@ const Select = <T,>({
             )}
             <Listbox.Button
               className={classnames(
-                'relative w-full inline-flex items-center py-2.5 pl-3 pr-10 text-left leading-5 bg-white border rounded-md shadow-sm cursor-default hover:cursor-pointer focus:border-navy-400 focus:outline-none focus:ring-0 disabled:bg-gray-300/20 disabled:cursor-default',
+                'relative w-full min-h-[42px] inline-flex items-center text-left leading-5 bg-white border rounded-md shadow-sm cursor-default hover:cursor-pointer focus:border-navy-400 focus:outline-none focus:ring-0 disabled:bg-gray-300/20 disabled:cursor-default',
                 {
+                  'py-2.5 pl-3 pr-10': !multiple,
+                  'py-1 pl-1 pr-10': multiple,
                   'mt-1': !!label,
                   'border-red-400': error,
                   'border-gray-200': !error,
@@ -137,7 +142,7 @@ const Select = <T,>({
               ref={reference}
             >
               {icon && <div className="mr-2">{cloneElement(icon)}</div>}
-              <span className="block text-sm truncate">{labelSelect}</span>
+              <span className="min-h-full block text-sm truncate">{labelSelect}</span>
               <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                 {open && !loading && (
                   <ChevronUpIcon

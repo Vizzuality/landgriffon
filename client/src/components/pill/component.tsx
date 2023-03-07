@@ -1,3 +1,6 @@
+/**
+ * @deprecated The method should not be used
+ */
 import classNames from 'classnames';
 
 import type { PropsWithChildren } from 'react';

@@ -29,6 +29,8 @@ interface UseImpactDataParams {
   startYear: number;
   endYear: number;
   groupBy?: string;
+  sortingYear?: number;
+  sortingOrder?: string;
 }
 
 export const useImpactData = <T = ImpactDataApiResponse<false>>(

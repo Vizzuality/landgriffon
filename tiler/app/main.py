@@ -8,7 +8,7 @@ from titiler.core.middleware import TotalTimeMiddleware, LoggerMiddleware
 
 from .config.config import get_settings
 from .middlewares.auth_middleware import AuthMiddleware
-from .middlewares.url_injector import s3_presigned_access
+from .middlewares.s3_access import s3_presigned_access
 
 root_path = get_settings().root_path
 titiler_router_prefix = get_settings().titiler_router_prefix

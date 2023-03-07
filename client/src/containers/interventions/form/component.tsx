@@ -474,11 +474,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     if (closeSupplierRef.current !== null) {
       closeSupplierRef.current();
     }
-
-    // * closes "Impacts per ton" panel whenever the intervention type changes
-    if (closeImpactsRef.current !== null) {
-      closeImpactsRef.current();
-    }
   }, [currentInterventionType, resetField, closeSupplierRef, intervention, indicatorNameCodes]);
 
   useEffect(() => {
@@ -551,6 +546,17 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     () => Boolean(currentT1SupplierId || currentProducerId),
     [currentT1SupplierId, currentProducerId],
   );
+
+  useEffect(() => {
+    // * closes "Impacts per ton" panel whenever the intervention type changes and coefficients are not edited
+    if (
+      closeImpactsRef.current !== null &&
+      !areCoefficientsEdited &&
+      currentInterventionType !== InterventionTypes.Efficiency
+    ) {
+      closeImpactsRef.current();
+    }
+  }, [currentInterventionType, areCoefficientsEdited]);
 
   return (
     <form
@@ -1109,7 +1115,13 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
               </Disclosure>
             )}
 
-            <Disclosure as="div" className="space-y-4">
+            <Disclosure
+              as="div"
+              className="space-y-4"
+              defaultOpen={
+                currentInterventionType === InterventionTypes.Efficiency || areCoefficientsEdited
+              }
+            >
               {({ open, close }) => {
                 closeImpactsRef.current = close;
 
@@ -1138,10 +1150,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                       </Disclosure.Button>
                     </div>
                     <Disclosure.Panel
-                      static={
-                        currentInterventionType === InterventionTypes.Efficiency ||
-                        areCoefficientsEdited
-                      }
+                      static={currentInterventionType === InterventionTypes.Efficiency}
                     >
                       <div className="space-y-4">
                         {indicators?.map((indicator) => (

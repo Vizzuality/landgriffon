@@ -10,7 +10,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ScenarioInterventionsService } from 'modules/scenario-interventions/scenario-interventions.service';
+import { InterventionsService } from 'modules/interventions/interventions.service';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -30,11 +30,11 @@ import {
   ProcessFetchSpecification,
 } from 'nestjs-base-service';
 import {
-  ScenarioIntervention,
+  Intervention,
   scenarioResource,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
-import { CreateScenarioInterventionDtoV2 } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
-import { UpdateScenarioInterventionDto } from 'modules/scenario-interventions/dto/update.scenario-intervention.dto';
+} from 'modules/interventions/intervention.entity';
+import { CreateInterventionDto } from 'modules/interventions/dto/create.intervention.dto';
+import { UpdateInterventionDto } from 'modules/interventions/dto/update.intervention.dto';
 import { PaginationMeta } from 'utils/app-base.service';
 import { SetUserInterceptor } from 'decorators/set-user.interceptor';
 import { MaterialsService } from 'modules/materials/materials.service';
@@ -42,9 +42,9 @@ import { MaterialsService } from 'modules/materials/materials.service';
 @Controller(`/api/v1/scenario-interventions`)
 @ApiTags(scenarioResource.className)
 @ApiBearerAuth()
-export class ScenarioInterventionsControllerV2 {
+export class InterventionsController {
   constructor(
-    public readonly scenarioInterventionsService: ScenarioInterventionsService,
+    public readonly scenarioInterventionsService: InterventionsService,
     public readonly materialsService: MaterialsService,
   ) {}
 
@@ -52,7 +52,7 @@ export class ScenarioInterventionsControllerV2 {
     description: 'Find all scenarios',
   })
   @ApiOkResponse({
-    type: ScenarioIntervention,
+    type: Intervention,
   })
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
@@ -60,9 +60,9 @@ export class ScenarioInterventionsControllerV2 {
   @Get()
   async findAll(
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
-  ): Promise<ScenarioIntervention> {
+  ): Promise<Intervention> {
     const results: {
-      data: (Partial<ScenarioIntervention> | undefined)[];
+      data: (Partial<Intervention> | undefined)[];
       metadata: PaginationMeta | undefined;
     } = await this.scenarioInterventionsService.findAllPaginated(
       fetchSpecification,
@@ -74,29 +74,29 @@ export class ScenarioInterventionsControllerV2 {
   }
 
   @ApiOperation({ description: 'Find scenario intervention by id' })
-  @ApiOkResponse({ type: ScenarioIntervention })
+  @ApiOkResponse({ type: Intervention })
   @ApiNotFoundResponse({ description: 'Scenario intervention not found' })
   @JSONAPISingleEntityQueryParams()
   @Get(':id')
   async findOne(
     @Param('id') id: string,
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
-  ): Promise<ScenarioIntervention> {
+  ): Promise<Intervention> {
     return await this.scenarioInterventionsService.serialize(
       await this.scenarioInterventionsService.getById(id, fetchSpecification),
     );
   }
 
   @ApiOperation({ description: 'Create a scenario intervention' })
-  @ApiOkResponse({ type: ScenarioIntervention })
+  @ApiOkResponse({ type: Intervention })
   @ApiBadRequestResponse({
     description: 'Bad Request. Incorrect or missing parameters',
   })
   @UsePipes(ValidationPipe)
   @Post()
   async create(
-    @Body() dto: CreateScenarioInterventionDtoV2,
-  ): Promise<Partial<ScenarioIntervention>> {
+    @Body() dto: CreateInterventionDto,
+  ): Promise<Partial<Intervention>> {
     if (dto.newMaterialId)
       await this.materialsService.checkActiveMaterials([dto.newMaterialId]);
     return await this.scenarioInterventionsService.serialize(
@@ -105,15 +105,15 @@ export class ScenarioInterventionsControllerV2 {
   }
 
   @ApiOperation({ description: 'Update a scenario intervention' })
-  @ApiOkResponse({ type: ScenarioIntervention })
+  @ApiOkResponse({ type: Intervention })
   @ApiNotFoundResponse({ description: 'Scenario intervention not found' })
   @UsePipes(ValidationPipe)
   @UseInterceptors(SetUserInterceptor)
   @Patch(':id')
   async update(
-    @Body(new ValidationPipe()) dto: UpdateScenarioInterventionDto,
+    @Body(new ValidationPipe()) dto: UpdateInterventionDto,
     @Param('id') id: string,
-  ): Promise<ScenarioIntervention> {
+  ): Promise<Intervention> {
     return await this.scenarioInterventionsService.serialize(
       await this.scenarioInterventionsService.updateIntervention(id, dto),
     );

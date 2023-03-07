@@ -8,8 +8,8 @@ import { AppInfoDTO } from 'dto/info.dto';
 import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
 import { CreateScenarioDto } from 'modules/scenarios/dto/create.scenario.dto';
 import { UpdateScenarioDto } from 'modules/scenarios/dto/update.scenario.dto';
-import { ScenarioInterventionsService } from 'modules/scenario-interventions/scenario-interventions.service';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { InterventionsService } from 'modules/interventions/interventions.service';
+import { Intervention } from 'modules/interventions/intervention.entity';
 import { SelectQueryBuilder } from 'typeorm';
 import { ScenariosAccessControl } from 'modules/authorization/modules/scenarios.access-control.service';
 
@@ -22,7 +22,7 @@ export class ScenariosService extends AppBaseService<
 > {
   constructor(
     protected readonly scenarioRepository: ScenarioRepository,
-    protected readonly scenarioInterventionService: ScenarioInterventionsService,
+    protected readonly scenarioInterventionService: InterventionsService,
     protected readonly scenarioAccessControl: ScenariosAccessControl,
   ) {
     super(
@@ -61,10 +61,8 @@ export class ScenariosService extends AppBaseService<
     return found;
   }
 
-  async findInterventionsByScenario(
-    id: string,
-  ): Promise<ScenarioIntervention[]> {
-    const interventions: ScenarioIntervention[] =
+  async findInterventionsByScenario(id: string): Promise<Intervention[]> {
+    const interventions: Intervention[] =
       await this.scenarioInterventionService.getScenarioInterventionsByScenarioId(
         id,
       );

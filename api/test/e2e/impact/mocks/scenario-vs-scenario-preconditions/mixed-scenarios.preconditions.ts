@@ -4,9 +4,9 @@ import { IndicatorRecord } from 'modules/indicator-records/indicator-record.enti
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { Material } from 'modules/materials/material.entity';
 import {
-  ScenarioIntervention,
-  SCENARIO_INTERVENTION_TYPE,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+  Intervention,
+  INTERVENTION_TYPE,
+} from 'modules/interventions/intervention.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import {
   SourcingLocation,
@@ -106,27 +106,27 @@ export async function createMixedScenariosPreconditions(): Promise<{
 
   // Scenario Interventions pre-conditions
 
-  const scenarioInterventionChangeSupplierTextile: ScenarioIntervention =
+  const scenarioInterventionChangeSupplierTextile: Intervention =
     await createScenarioIntervention({
-      type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+      type: INTERVENTION_TYPE.NEW_SUPPLIER,
       scenario: newScenarioChangeSupplier,
     });
 
-  const scenarioInterventionChangeSupplierOil: ScenarioIntervention =
+  const scenarioInterventionChangeSupplierOil: Intervention =
     await createScenarioIntervention({
-      type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+      type: INTERVENTION_TYPE.NEW_SUPPLIER,
       scenario: newScenarioChangeSupplier,
     });
 
-  const scenarioInterventionChangeMaterialTextile: ScenarioIntervention =
+  const scenarioInterventionChangeMaterialTextile: Intervention =
     await createScenarioIntervention({
-      type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+      type: INTERVENTION_TYPE.NEW_SUPPLIER,
       scenario: newScenarioChangeMaterial,
     });
 
-  const scenarioInterventionChangeMaterialOil: ScenarioIntervention =
+  const scenarioInterventionChangeMaterialOil: Intervention =
     await createScenarioIntervention({
-      type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+      type: INTERVENTION_TYPE.NEW_SUPPLIER,
       scenario: newScenarioChangeMaterial,
     });
 

@@ -4,10 +4,10 @@ import { IndicatorRecord } from 'modules/indicator-records/indicator-record.enti
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { Material } from 'modules/materials/material.entity';
 import {
-  SCENARIO_INTERVENTION_STATUS,
-  SCENARIO_INTERVENTION_TYPE,
-  ScenarioIntervention,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+  INTERVENTION_STATUS,
+  INTERVENTION_TYPE,
+  Intervention,
+} from 'modules/interventions/intervention.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import {
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
@@ -84,28 +84,28 @@ export async function createSameMaterialScenariosPreconditions(): Promise<{
 
   // Scenario Interventions pre-conditions
 
-  const scenarioInterventionChangeSupplierTextile: ScenarioIntervention =
+  const scenarioInterventionChangeSupplierTextile: Intervention =
     await createScenarioIntervention({
-      type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+      type: INTERVENTION_TYPE.NEW_SUPPLIER,
       scenario: newScenarioChangeSupplier,
     });
-  const scenarioInterventionChangeSupplierTextileInactive: ScenarioIntervention =
+  const scenarioInterventionChangeSupplierTextileInactive: Intervention =
     await createScenarioIntervention({
-      type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+      type: INTERVENTION_TYPE.NEW_SUPPLIER,
       scenario: newScenarioChangeSupplier,
-      status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+      status: INTERVENTION_STATUS.INACTIVE,
     });
 
-  const scenarioInterventionChangeMaterialTextile: ScenarioIntervention =
+  const scenarioInterventionChangeMaterialTextile: Intervention =
     await createScenarioIntervention({
-      type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+      type: INTERVENTION_TYPE.NEW_MATERIAL,
       scenario: newScenarioChangeMaterial,
     });
-  const scenarioInterventionChangeMaterialTextileInactive: ScenarioIntervention =
+  const scenarioInterventionChangeMaterialTextileInactive: Intervention =
     await createScenarioIntervention({
-      type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+      type: INTERVENTION_TYPE.NEW_MATERIAL,
       scenario: newScenarioChangeMaterial,
-      status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+      status: INTERVENTION_STATUS.INACTIVE,
     });
 
   // SOURCING LOCATIONS - REAL ONES

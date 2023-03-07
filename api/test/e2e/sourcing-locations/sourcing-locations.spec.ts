@@ -15,7 +15,7 @@ import { setupTestUser } from '../../utils/userAuth';
 import ApplicationManager, {
   TestApplication,
 } from '../../utils/application-manager';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { Intervention } from 'modules/interventions/intervention.entity';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 import { MaterialRepository } from 'modules/materials/material.repository';
@@ -168,7 +168,7 @@ describe('SourcingLocationsModule (e2e)', () => {
     test('Get all sourcing locations should be successful, sourcing locations of the interventions must me ignored (happy case)', async () => {
       const sourcingLocation: SourcingLocation = await createSourcingLocation();
 
-      const scenarioIntervention: ScenarioIntervention =
+      const scenarioIntervention: Intervention =
         await createScenarioIntervention();
 
       await createSourcingLocation({

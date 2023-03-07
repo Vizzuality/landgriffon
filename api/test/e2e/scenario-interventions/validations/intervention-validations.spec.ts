@@ -13,7 +13,7 @@ import {
   clearTestDataFromDatabase,
 } from '../../../utils/database-test-helper';
 import * as request from 'supertest';
-import { SCENARIO_INTERVENTION_TYPE } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { INTERVENTION_TYPE } from 'modules/interventions/intervention.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { DataSource } from 'typeorm';
 import { setupTestUser } from '../../../utils/userAuth';
@@ -22,7 +22,7 @@ import ApplicationManager, {
 } from '../../../utils/application-manager';
 import { Test } from '@nestjs/testing';
 import { AppModule } from 'app.module';
-import { ScenarioInterventionsService } from 'modules/scenario-interventions/scenario-interventions.service';
+import { InterventionsService } from 'modules/interventions/interventions.service';
 import {
   Material,
   MATERIALS_STATUS,
@@ -39,7 +39,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
       Test.createTestingModule({
         imports: [AppModule],
       })
-        .overrideProvider(ScenarioInterventionsService)
+        .overrideProvider(InterventionsService)
         .useValue({
           createScenarioIntervention: () => true,
           serialize: () => ({
@@ -118,7 +118,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
           businessUnitIds: [uuidv4()],
           adminRegionIds: [uuidv4()],
           newLocationCountryInput: 'TestCountry',
-          type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          type: INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           newIndicatorCoefficients: {
             [INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE]: 1,
           },
@@ -160,7 +160,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
           businessUnitIds: [uuidv4()],
           adminRegionIds: [uuidv4()],
           newLocationCountryInput: 'TestCountry',
-          type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          type: INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           newIndicatorCoefficients: {
             [INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE]: 1,
             [INDICATOR_TYPES_NEW.DEFORESTATION_RISK]: 2,
@@ -199,7 +199,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
           businessUnitIds: [uuidv4()],
           adminRegionIds: [uuidv4()],
           newLocationCountryInput: 'TestCountry',
-          type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          type: INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           newIndicatorCoefficients: {
             [INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE]: 1,
             [INDICATOR_TYPES_NEW.DEFORESTATION_RISK]: 2,
@@ -237,7 +237,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
           businessUnitIds: [uuidv4()],
           adminRegionIds: [uuidv4()],
           newLocationCountryInput: 'TestCountry',
-          type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          type: INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           newIndicatorCoefficients: {
             [INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE]: 1,
             [INDICATOR_TYPES_NEW.DEFORESTATION_RISK]: 2,
@@ -304,7 +304,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
           businessUnitIds: [uuidv4()],
           adminRegionIds: [uuidv4()],
           newLocationCountryInput: 'TestCountry',
-          type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          type: INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           newIndicatorCoefficients: {
             [INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE]: 1,
           },
@@ -338,7 +338,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
           supplierIds: [uuidv4()],
           businessUnitIds: [uuidv4()],
           adminRegionIds: [uuidv4()],
-          type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+          type: INTERVENTION_TYPE.NEW_MATERIAL,
           newLocationCountryInput: 'TestCountry',
           newLocationType: 'unknown',
           newMaterialId: material.id,
@@ -369,7 +369,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
           supplierIds: [uuidv4()],
           businessUnitIds: [uuidv4()],
           adminRegionIds: [uuidv4()],
-          type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+          type: INTERVENTION_TYPE.NEW_MATERIAL,
           newLocationCountryInput: 'TestCountry',
           newLocationType: 'unknown',
           newMaterialId: material.id,

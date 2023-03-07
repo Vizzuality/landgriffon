@@ -18,7 +18,7 @@ import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { UpdateSourcingLocationDto } from 'modules/sourcing-locations/dto/update.sourcing-location.dto';
 
-import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
+import { CreateInterventionDto } from 'modules/interventions/dto/create.intervention.dto';
 import { Brackets, SelectQueryBuilder, WhereExpressionBuilder } from 'typeorm';
 import {
   LocationTypesDto,
@@ -117,7 +117,7 @@ export class SourcingLocationsService extends AppBaseService<
    */
 
   async findSourcingLocationsWithSourcingRecords(
-    createInterventionDto: CreateScenarioInterventionDto,
+    createInterventionDto: CreateInterventionDto,
   ): Promise<SourcingLocation[]> {
     const queryBuilder: SelectQueryBuilder<SourcingLocation> =
       this.sourcingLocationRepository

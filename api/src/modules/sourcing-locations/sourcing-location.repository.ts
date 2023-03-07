@@ -9,9 +9,9 @@ import { GetLocationTypesDto } from 'modules/sourcing-locations/dto/location-typ
 import { AppBaseRepository } from 'utils/app-base.repository';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
-  SCENARIO_INTERVENTION_STATUS,
-  ScenarioIntervention,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+  INTERVENTION_STATUS,
+  Intervention,
+} from 'modules/interventions/intervention.entity';
 
 @Injectable()
 export class SourcingLocationRepository extends AppBaseRepository<SourcingLocation> {
@@ -61,7 +61,7 @@ export class SourcingLocationRepository extends AppBaseRepository<SourcingLocati
 
     if (locationTypesOptions.scenarioIds) {
       queryBuilder.leftJoin(
-        ScenarioIntervention,
+        Intervention,
         'scenarioIntervention',
         'sl.scenarioInterventionId = scenarioIntervention.id',
       );
@@ -74,7 +74,7 @@ export class SourcingLocationRepository extends AppBaseRepository<SourcingLocati
                   scenarioIds: locationTypesOptions.scenarioIds,
                 })
                 .andWhere(`scenarioIntervention.status = :status`, {
-                  status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+                  status: INTERVENTION_STATUS.ACTIVE,
                 });
             }),
           );

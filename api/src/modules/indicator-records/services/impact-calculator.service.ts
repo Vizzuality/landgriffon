@@ -18,7 +18,7 @@ import {
   INDICATOR_RECORD_STATUS,
   IndicatorRecord,
 } from 'modules/indicator-records/indicator-record.entity';
-import { IndicatorCoefficientsDtoV2 } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
+import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
 import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 import { IndicatorRecordCalculatedValuesDtoV2 } from 'modules/indicator-records/dto/indicator-record-calculated-values.dto';
@@ -98,7 +98,7 @@ export class ImpactCalculator {
       year: number;
       sourcingRecord?: SourcingRecord;
     },
-    providedCoefficients?: IndicatorCoefficientsDtoV2,
+    providedCoefficients?: IndicatorCoefficientsDto,
   ): Promise<any> {
     const {
       geoRegionId,
@@ -266,7 +266,7 @@ export class ImpactCalculator {
    * by the user, for each possible indicator passed in an array
    */
   private useProvidedIndicatorCoefficients(
-    newIndicatorCoefficients: IndicatorCoefficientsDtoV2,
+    newIndicatorCoefficients: IndicatorCoefficientsDto,
     sourcingData: { sourcingRecordId: string; tonnage: number },
     materialH3DataId: string,
   ): IndicatorRecordCalculatedValuesDtoV2 {

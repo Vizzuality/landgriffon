@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
+import { CreateInterventionDto } from 'modules/interventions/dto/create.intervention.dto';
 import {
-  SCENARIO_INTERVENTION_TYPE,
-  ScenarioIntervention,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+  INTERVENTION_TYPE,
+  Intervention,
+} from 'modules/interventions/intervention.entity';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
@@ -12,14 +12,11 @@ import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.e
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
-import { NewMaterialIntervention } from 'modules/scenario-interventions/strategies/new-material.intervention.strategy';
+import { NewMaterialIntervention } from 'modules/interventions/strategies/new-material.intervention.strategy';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
-import {
-  IndicatorCoefficientsDto,
-  IndicatorCoefficientsDtoV2,
-} from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
-import { NewSupplierLocationIntervention } from 'modules/scenario-interventions/strategies/new-supplier-location.intervention.strategy';
-import { ChangeProductionEfficiencyIntervention } from 'modules/scenario-interventions/strategies/change-production-efficiency.intervention.strategy';
+import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
+import { NewSupplierLocationIntervention } from 'modules/interventions/strategies/new-supplier-location.intervention.strategy';
+import { ChangeProductionEfficiencyIntervention } from 'modules/interventions/strategies/change-production-efficiency.intervention.strategy';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 
 /**
@@ -42,9 +39,9 @@ export class InterventionBuilder {
   ) {}
 
   async addDescendantsEntitiesForFiltering(
-    dto: CreateScenarioInterventionDto,
-  ): Promise<CreateScenarioInterventionDto> {
-    const dtoWithDescendants: CreateScenarioInterventionDto = { ...dto };
+    dto: CreateInterventionDto,
+  ): Promise<CreateInterventionDto> {
+    const dtoWithDescendants: CreateInterventionDto = { ...dto };
 
     // A Material Id is always required
     dtoWithDescendants.materialIds =
@@ -78,10 +75,10 @@ export class InterventionBuilder {
    */
 
   async addReplacedElementsToIntervention(
-    newIntervention: ScenarioIntervention,
+    newIntervention: Intervention,
     cancelledSourcingLocations: SourcingLocation[],
-    dto: CreateScenarioInterventionDto,
-  ): Promise<ScenarioIntervention> {
+    dto: CreateInterventionDto,
+  ): Promise<Intervention> {
     if (dto.materialIds?.length) {
       newIntervention.replacedMaterials =
         await this.materialService.getMaterialsById(dto.materialIds);
@@ -115,11 +112,11 @@ export class InterventionBuilder {
    */
 
   async addReplacingElementsToIntervention(
-    newIntervention: ScenarioIntervention,
+    newIntervention: Intervention,
     newSourcingLocations: SourcingData[],
-    type: SCENARIO_INTERVENTION_TYPE,
-  ): Promise<ScenarioIntervention> {
-    if (type === SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL) {
+    type: INTERVENTION_TYPE,
+  ): Promise<Intervention> {
+    if (type === INTERVENTION_TYPE.NEW_MATERIAL) {
       newIntervention.newMaterial = await this.materialService.getMaterialById(
         newSourcingLocations[0].materialId,
       );
@@ -140,7 +137,7 @@ export class InterventionBuilder {
           );
       }
     }
-    if (type === SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER) {
+    if (type === INTERVENTION_TYPE.NEW_SUPPLIER) {
       if (newSourcingLocations[0].producerId) {
         newIntervention.newProducer =
           await this.suppliersService.getSupplierById(
@@ -195,8 +192,8 @@ export class InterventionBuilder {
   async calculateNewImpactForNewLocations(
     newSourcingLocations: SourcingLocation[],
     newIndicatorCoefficients: IndicatorCoefficientsDto | undefined,
-    newScenarioIntervention: ScenarioIntervention,
-  ): Promise<ScenarioIntervention> {
+    newScenarioIntervention: Intervention,
+  ): Promise<Intervention> {
     for (const sourcingLocation of newSourcingLocations) {
       for await (const sourcingRecord of sourcingLocation.sourcingRecords) {
         const sourcingData: any = {
@@ -211,7 +208,7 @@ export class InterventionBuilder {
         sourcingRecord.indicatorRecords =
           await this.impactCalculator.createIndicatorRecordsBySourcingRecords(
             sourcingData,
-            newIndicatorCoefficients as unknown as IndicatorCoefficientsDtoV2,
+            newIndicatorCoefficients as unknown as IndicatorCoefficientsDto,
           );
       }
     }
@@ -222,8 +219,8 @@ export class InterventionBuilder {
   }
 
   async generateNewLocationsForIntervention(
-    dto: CreateScenarioInterventionDto,
-    newIntervention: ScenarioIntervention,
+    dto: CreateInterventionDto,
+    newIntervention: Intervention,
     actualSourcingLocations: SourcingLocation[],
     locationData: {
       adminRegionId: string;
@@ -232,7 +229,7 @@ export class InterventionBuilder {
     },
   ): Promise<any> {
     switch (dto.type) {
-      case SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL:
+      case INTERVENTION_TYPE.NEW_MATERIAL:
         const newMaterialInterventionLocation: SourcingLocation[] =
           this.newMaterialIntervention.generateNewSourcingLocation(
             dto,
@@ -244,12 +241,12 @@ export class InterventionBuilder {
         await this.addReplacingElementsToIntervention(
           newIntervention,
           newMaterialInterventionLocation,
-          SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+          INTERVENTION_TYPE.NEW_MATERIAL,
         );
 
         return newMaterialInterventionLocation;
 
-      case SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER:
+      case INTERVENTION_TYPE.NEW_SUPPLIER:
         const newSupplerInterventionLocations: SourcingLocation[] =
           this.newSupplierLocationIntervention.generateNewReplacingSourcingLocationsForNewSupplierIntervention(
             dto,
@@ -260,13 +257,13 @@ export class InterventionBuilder {
         await this.addReplacingElementsToIntervention(
           newIntervention,
           newSupplerInterventionLocations,
-          SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          INTERVENTION_TYPE.NEW_SUPPLIER,
         );
         // Mutates the original instance calculating new impact for the new location created
 
         return newSupplerInterventionLocations;
 
-      case SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY:
+      case INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY:
         return this.changeProductionEfficiencyIntervention.generateNewLocationForChangeProductionEfficiency(
           actualSourcingLocations,
         );

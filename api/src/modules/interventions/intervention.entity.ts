@@ -28,14 +28,14 @@ import {
   REPLACED_BUSINESS_UNITS_TABLE_NAME,
   REPLACED_MATERIALS_TABLE_NAME,
   REPLACED_SUPPLIERS_TABLE_NAME,
-} from 'modules/scenario-interventions/intermediate-table-names/intermediate.table.names';
-export enum SCENARIO_INTERVENTION_STATUS {
+} from 'modules/interventions/intermediate-table-names/intermediate.table.names';
+export enum INTERVENTION_STATUS {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
   DELETED = 'deleted',
 }
 
-export enum SCENARIO_INTERVENTION_TYPE {
+export enum INTERVENTION_TYPE {
   DEFAULT = 'default',
   NEW_SUPPLIER = 'Source from new supplier or location',
   CHANGE_PRODUCTION_EFFICIENCY = 'Change production efficiency',
@@ -52,8 +52,9 @@ export const scenarioResource: BaseServiceResource = {
   columnsAllowedAsFilter: [],
 };
 
-@Entity()
-export class ScenarioIntervention extends TimestampedBaseEntity {
+// TODO: alter table name to 'interventions' making sure that the change does not blow up existing data
+@Entity('scenario_intervention')
+export class Intervention extends TimestampedBaseEntity {
   @PrimaryGeneratedColumn('uuid')
   @ApiProperty()
   id: string;
@@ -72,18 +73,18 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   @ApiProperty()
   @Column({
     type: 'enum',
-    enum: SCENARIO_INTERVENTION_STATUS,
-    default: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+    enum: INTERVENTION_STATUS,
+    default: INTERVENTION_STATUS.ACTIVE,
   })
-  status!: SCENARIO_INTERVENTION_STATUS;
+  status!: INTERVENTION_STATUS;
 
   @ApiProperty()
   @Column({
     type: 'enum',
-    enum: SCENARIO_INTERVENTION_TYPE,
-    default: SCENARIO_INTERVENTION_TYPE.DEFAULT,
+    enum: INTERVENTION_TYPE,
+    default: INTERVENTION_TYPE.DEFAULT,
   })
-  type!: SCENARIO_INTERVENTION_TYPE;
+  type!: INTERVENTION_TYPE;
 
   @ApiProperty()
   @Column()

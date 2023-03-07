@@ -4,9 +4,9 @@ import { IndicatorRecord } from 'modules/indicator-records/indicator-record.enti
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { Material } from 'modules/materials/material.entity';
 import {
-  SCENARIO_INTERVENTION_STATUS,
-  ScenarioIntervention,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+  INTERVENTION_STATUS,
+  Intervention,
+} from 'modules/interventions/intervention.entity';
 import {
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
@@ -32,7 +32,7 @@ export async function createNewCoefficientsInterventionPreconditions(
   customScenario?: Scenario,
 ): Promise<{
   indicator: Indicator;
-  scenarioIntervention: ScenarioIntervention;
+  scenarioIntervention: Intervention;
 }> {
   // Creating Admin Regions
   const adminRegion: AdminRegion = await createAdminRegion({
@@ -80,19 +80,19 @@ export async function createNewCoefficientsInterventionPreconditions(
 
   // Scenario pre-conditions
 
-  const scenarioIntervention: ScenarioIntervention = customScenario
+  const scenarioIntervention: Intervention = customScenario
     ? await createScenarioIntervention({ scenario: customScenario })
     : await createScenarioIntervention();
 
-  const scenarioInterventionInactive: ScenarioIntervention = customScenario
+  const scenarioInterventionInactive: Intervention = customScenario
     ? await createScenarioIntervention({
         scenario: customScenario,
         description: 'inactive intervention',
-        status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+        status: INTERVENTION_STATUS.INACTIVE,
       })
     : await createScenarioIntervention({
         description: 'inactive intervention',
-        status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+        status: INTERVENTION_STATUS.INACTIVE,
       });
 
   // Sourcing Locations - real ones

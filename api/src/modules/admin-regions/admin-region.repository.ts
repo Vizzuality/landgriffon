@@ -11,9 +11,9 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetAdminRegionTreeWithOptionsDto } from 'modules/admin-regions/dto/get-admin-region-tree-with-options.dto';
 import {
-  SCENARIO_INTERVENTION_STATUS,
-  ScenarioIntervention,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+  INTERVENTION_STATUS,
+  Intervention,
+} from 'modules/interventions/intervention.entity';
 import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 
 @Injectable()
@@ -214,7 +214,7 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
 
     if (adminRegionTreeOptions.scenarioIds) {
       queryBuilder.leftJoin(
-        ScenarioIntervention,
+        Intervention,
         'scenarioIntervention',
         'sl.scenarioInterventionId = scenarioIntervention.id',
       );
@@ -227,7 +227,7 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
                   scenarioIds: adminRegionTreeOptions.scenarioIds,
                 })
                 .andWhere(`scenarioIntervention.status = :status`, {
-                  status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+                  status: INTERVENTION_STATUS.ACTIVE,
                 });
             }),
           );

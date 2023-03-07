@@ -20,7 +20,7 @@ import {
   createUser,
 } from '../../entity-mocks';
 import { Scenario } from '../../../src/modules/scenarios/scenario.entity';
-import { ScenarioIntervention } from '../../../src/modules/scenario-interventions/scenario-intervention.entity';
+import { Intervention } from '../../../src/modules/interventions/intervention.entity';
 import {
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
@@ -284,7 +284,7 @@ describe('UsersModule (e2e)', () => {
         const scenario: Scenario = await createScenario({
           userId: randomUser.id,
         });
-        const scenarioIntervention: ScenarioIntervention =
+        const scenarioIntervention: Intervention =
           await createScenarioIntervention({ scenario });
 
         const sourcingLocation: SourcingLocation = await createSourcingLocation(
@@ -303,9 +303,7 @@ describe('UsersModule (e2e)', () => {
       console.log(response);
 
       const scenarios = await dataSource.getRepository(Scenario).find();
-      const interventions = await dataSource
-        .getRepository(ScenarioIntervention)
-        .find();
+      const interventions = await dataSource.getRepository(Intervention).find();
       const sourcingLocations = await dataSource
         .getRepository(SourcingLocation)
         .find();

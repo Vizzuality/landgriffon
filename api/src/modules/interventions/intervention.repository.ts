@@ -1,5 +1,5 @@
 import { DataSource, InsertResult, QueryRunner, Repository } from 'typeorm';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { Intervention } from 'modules/interventions/intervention.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
@@ -19,26 +19,26 @@ import {
   ReplacedBusinessUnits,
   ReplacedMaterial,
   ReplacedSuppliers,
-} from 'modules/scenario-interventions/intermediate-table-names/intermediate.table.names';
+} from 'modules/interventions/intermediate-table-names/intermediate.table.names';
 import { chunk } from 'lodash';
 import * as config from 'config';
 import { IMPACT_VIEW_NAME } from 'modules/impact/views/impact.materialized-view.entity';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 
 @Injectable()
-export class ScenarioInterventionRepository extends Repository<ScenarioIntervention> {
+export class InterventionRepository extends Repository<Intervention> {
   constructor(
     private dataSource: DataSource,
     private indicatorRecordService: IndicatorRecordsService,
   ) {
-    super(ScenarioIntervention, dataSource.createEntityManager());
+    super(Intervention, dataSource.createEntityManager());
   }
 
-  logger: Logger = new Logger(ScenarioInterventionRepository.name);
+  logger: Logger = new Logger(InterventionRepository.name);
 
   async getScenarioInterventionsByScenarioId(
     scenarioId: string,
-  ): Promise<ScenarioIntervention[]> {
+  ): Promise<Intervention[]> {
     // TODO: Join with suppliers and selecting supplier field commented out due to performance issues
     //       This needs to be restored
     return (
@@ -84,9 +84,7 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
   // TODO: This is a workaround to bypass TypeORM's issues when bulk inserting. This could be possibly fixed
   //       By upgrading TypeORM version
 
-  async saveNewIntervention(
-    newIntervention: ScenarioIntervention,
-  ): Promise<any> {
+  async saveNewIntervention(newIntervention: Intervention): Promise<any> {
     const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -168,7 +166,7 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
         `Saving Scenario Intervention with Id: ${newIntervention.id}`,
       );
       const intervention: InsertResult = await queryRunner.manager.insert(
-        ScenarioIntervention,
+        Intervention,
         remainingData,
       );
       this.logger.log(

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
+import { CreateInterventionDto } from 'modules/interventions/dto/create.intervention.dto';
 import {
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
@@ -14,7 +14,7 @@ export class NewMaterialIntervention {
    * that are being canceled by the Intervention, and multiplied by the percentage selected by the user
    */
   generateNewSourcingLocation(
-    dto: CreateScenarioInterventionDto,
+    dto: CreateInterventionDto,
     sourcingData: SourcingLocation[],
     locationData: {
       adminRegionId: string;

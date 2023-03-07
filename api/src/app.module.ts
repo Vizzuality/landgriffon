@@ -20,7 +20,7 @@ import { UnitsModule } from 'modules/units/units.module';
 import { UnitConversionsModule } from 'modules/unit-conversions/unit-conversions.module';
 import { SourcingLocationGroupsModule } from 'modules/sourcing-location-groups/sourcing-location-groups.module';
 import { ScenariosModule } from 'modules/scenarios/scenarios.module';
-import { ScenarioInterventionsModule } from 'modules/scenario-interventions/scenario-interventions.module';
+import { InterventionsModule } from 'modules/interventions/interventions.module';
 import { ImportDataModule } from 'modules/import-data/import-data.module';
 import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-records.module';
 import { GeoCodingModule } from 'modules/geo-coding/geo-coding.module';
@@ -67,7 +67,7 @@ const queueConfig: any = config.get('queue');
     IndicatorRecordsModule,
     IndicatorsModule,
     MaterialsModule,
-    ScenarioInterventionsModule,
+    InterventionsModule,
     ScenariosModule,
     SourcingLocationGroupsModule,
     SourcingLocationsModule,

@@ -24,9 +24,9 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import {
-  SCENARIO_INTERVENTION_STATUS,
-  ScenarioIntervention,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+  INTERVENTION_STATUS,
+  Intervention,
+} from 'modules/interventions/intervention.entity';
 
 export type AnyImpactTableData =
   | ImpactTableData
@@ -118,7 +118,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       this.createBasicSelectQuery(getActualVsScenarioImpactTable);
 
     impactDataQueryBuilder.leftJoin(
-      ScenarioIntervention,
+      Intervention,
       'scenarioIntervention',
       'sourcingLocation.scenarioInterventionId = scenarioIntervention.id',
     );
@@ -131,7 +131,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
                 scenarioId: getActualVsScenarioImpactTable.comparedScenarioId,
               })
               .andWhere(`scenarioIntervention.status = :status`, {
-                status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+                status: INTERVENTION_STATUS.ACTIVE,
               });
           }),
         );
@@ -332,7 +332,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
     if (dto.scenarioId) {
       queryBuilder
         .leftJoin(
-          ScenarioIntervention,
+          Intervention,
           'scenarioIntervention',
           'sourcingLocation.scenarioInterventionId = scenarioIntervention.id',
         )
@@ -345,7 +345,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
                     scenarioId: dto.scenarioId,
                   })
                   .andWhere(`scenarioIntervention.status = :status`, {
-                    status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+                    status: INTERVENTION_STATUS.ACTIVE,
                   });
               }),
             );

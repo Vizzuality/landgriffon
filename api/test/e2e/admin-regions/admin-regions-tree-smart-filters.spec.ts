@@ -26,9 +26,9 @@ import {
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import {
-  SCENARIO_INTERVENTION_STATUS,
-  ScenarioIntervention,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+  INTERVENTION_STATUS,
+  Intervention,
+} from 'modules/interventions/intervention.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { DataSource } from 'typeorm';
 
@@ -48,7 +48,7 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
   afterEach(async () => {
     await clearEntityTables(dataSource, [
       Scenario,
-      ScenarioIntervention,
+      Intervention,
       AdminRegion,
       Material,
       Supplier,
@@ -428,7 +428,7 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
 
         const interventionInactive = await createScenarioIntervention({
           scenario,
-          status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+          status: INTERVENTION_STATUS.INACTIVE,
         });
 
         await createSourcingLocation({

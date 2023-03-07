@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
+import { CreateInterventionDto } from 'modules/interventions/dto/create.intervention.dto';
 import {
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
@@ -9,7 +9,7 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 @Injectable()
 export class NewSupplierLocationIntervention {
   generateNewReplacingSourcingLocationsForNewSupplierIntervention(
-    dto: CreateScenarioInterventionDto,
+    dto: CreateInterventionDto,
     sourcingData: SourcingLocation[],
     locationData: {
       adminRegionId: string;

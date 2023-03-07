@@ -27,9 +27,9 @@ import {
   clearTestDataFromDatabase,
 } from '../../utils/database-test-helper';
 import {
-  SCENARIO_INTERVENTION_STATUS,
-  ScenarioIntervention,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+  INTERVENTION_STATUS,
+  Intervention,
+} from 'modules/interventions/intervention.entity';
 import { DataSource } from 'typeorm';
 import { Scenario } from '../../../src/modules/scenarios/scenario.entity';
 
@@ -53,7 +53,7 @@ describe('SourcingLocationsModule (e2e)', () => {
       AdminRegion,
       Supplier,
       Scenario,
-      ScenarioIntervention,
+      Intervention,
       SourcingLocation,
     ]);
   });
@@ -654,7 +654,7 @@ describe('SourcingLocationsModule (e2e)', () => {
         });
         const interventionInactive = await createScenarioIntervention({
           scenario,
-          status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+          status: INTERVENTION_STATUS.INACTIVE,
         });
 
         await createSourcingLocation({

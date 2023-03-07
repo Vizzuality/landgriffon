@@ -26,9 +26,9 @@ import {
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import {
-  SCENARIO_INTERVENTION_TYPE,
-  ScenarioIntervention,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+  INTERVENTION_TYPE,
+  Intervention,
+} from 'modules/interventions/intervention.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 
 export async function createImpactTableSortingPreconditions(
@@ -121,12 +121,13 @@ export async function createImpactTableSortingPreconditions(
   if (type === 'ActualVsScenario' || 'ScenarioVsScenario') {
     const scenario: Scenario = await createScenario({ title: 'scenario1' });
 
-    const scenarioIntervention: ScenarioIntervention =
-      await createScenarioIntervention({
+    const scenarioIntervention: Intervention = await createScenarioIntervention(
+      {
         scenario,
         description: 'intervention 1',
-        type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
-      });
+        type: INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+      },
+    );
 
     const sharedLocationAdditionalData: Partial<SourcingLocation> = {
       businessUnit,
@@ -179,12 +180,13 @@ export async function createImpactTableSortingPreconditions(
       title: 'comparedScenario',
     });
 
-    const scenarioIntervention: ScenarioIntervention =
-      await createScenarioIntervention({
+    const scenarioIntervention: Intervention = await createScenarioIntervention(
+      {
         scenario: comparedScenario,
         description: 'intervention 1 Compared scenario',
-        type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
-      });
+        type: INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+      },
+    );
 
     const sharedLocationAdditionalData: Partial<SourcingLocation> = {
       businessUnit,

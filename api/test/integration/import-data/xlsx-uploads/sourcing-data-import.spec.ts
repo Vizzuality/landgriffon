@@ -49,7 +49,7 @@ import { FileService } from 'modules/import-data/file.service';
 import { createWorldToCalculateIndicatorRecords } from '../../../utils/indicator-records-preconditions';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { Material, MATERIALS_STATUS } from 'modules/materials/material.entity';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { Intervention } from 'modules/interventions/intervention.entity';
 import { SourcingRecordsWithIndicatorRawDataDtoV2 } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 import { DataSource } from 'typeorm';
@@ -412,7 +412,7 @@ describe('Sourcing Data import', () => {
 
     const materials: Material[] = await materialRepository.find();
 
-    const scenarioIntervention: ScenarioIntervention =
+    const scenarioIntervention: Intervention =
       await createScenarioIntervention();
 
     const existingSouringLocation: SourcingLocation =

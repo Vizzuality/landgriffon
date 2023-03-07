@@ -5,7 +5,7 @@ import { setupTestUser } from '../../../utils/userAuth';
 import ApplicationManager, {
   TestApplication,
 } from '../../../utils/application-manager';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { Intervention } from 'modules/interventions/intervention.entity';
 import { createNewMaterialInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-material-intervention.preconditions';
 import { createNewCoefficientsInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-coefficients-intervention.preconditions';
 import { newCoefficientsScenarioInterventionTable } from '../mocks/actual-vs-scenario-responses/new-coefficients-intervention.response';
@@ -81,7 +81,7 @@ describe('Actual VS Scenario Impact Table test suite (e2e)', () => {
     const scenario: Scenario = await createScenario();
     const preconditions: {
       indicator: Indicator;
-      scenarioIntervention: ScenarioIntervention;
+      scenarioIntervention: Intervention;
     } = await createNewCoefficientsInterventionPreconditions(scenario);
 
     const response = await request(testApplication.getHttpServer())
@@ -111,7 +111,7 @@ describe('Actual VS Scenario Impact Table test suite (e2e)', () => {
     const scenario: Scenario = await createScenario();
     const preconditions: {
       indicator: Indicator;
-      scenarioIntervention: ScenarioIntervention;
+      scenarioIntervention: Intervention;
     } = await createNewMaterialInterventionPreconditions(scenario);
 
     const response = await request(testApplication.getHttpServer())
@@ -135,7 +135,7 @@ describe('Actual VS Scenario Impact Table test suite (e2e)', () => {
     const scenario: Scenario = await createScenario();
     const preconditions: {
       indicator: Indicator;
-      scenarioIntervention: ScenarioIntervention;
+      scenarioIntervention: Intervention;
     } = await createNewSupplierInterventionPreconditions(scenario);
 
     const response = await request(testApplication.getHttpServer())

@@ -26,7 +26,7 @@ import {
   clearTestDataFromDatabase,
 } from '../../utils/database-test-helper';
 import { Material } from 'modules/materials/material.entity';
-import { SCENARIO_INTERVENTION_STATUS } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { INTERVENTION_STATUS } from 'modules/interventions/intervention.entity';
 import { DataSource } from 'typeorm';
 
 describe('Business Units - Get trees - Smart Filters', () => {
@@ -374,7 +374,7 @@ describe('Business Units - Get trees - Smart Filters', () => {
         });
         const interventionInactive = await createScenarioIntervention({
           scenario,
-          status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+          status: INTERVENTION_STATUS.INACTIVE,
         });
 
         const parentBusinessUnit = await createBusinessUnit();

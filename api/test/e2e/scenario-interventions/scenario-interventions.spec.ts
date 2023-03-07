@@ -1,11 +1,11 @@
 import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import {
-  SCENARIO_INTERVENTION_STATUS,
-  SCENARIO_INTERVENTION_TYPE,
-  ScenarioIntervention,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
-import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
+  INTERVENTION_STATUS,
+  INTERVENTION_TYPE,
+  Intervention,
+} from 'modules/interventions/intervention.entity';
+import { InterventionRepository } from 'modules/interventions/intervention.repository';
 import {
   createAdminRegion,
   createBusinessUnit,
@@ -91,7 +91,7 @@ const expectedJSONAPIAttributes: string[] = [
   'newLocationLongitudeInput',
 ];
 
-describe('ScenarioInterventionsModule (e2e)', () => {
+describe('InterventionsModule (e2e)', () => {
   const geoCodingServiceMock = {
     geoCodeLocations: async (sourcingData: any): Promise<any> => {
       const geoRegion: GeoRegion | null = await geoRegionRepository.findOne({
@@ -156,7 +156,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
   let testApplication: TestApplication;
   let dataSource: DataSource;
-  let scenarioInterventionRepository: ScenarioInterventionRepository;
+  let scenarioInterventionRepository: InterventionRepository;
   let scenarioRepository: ScenarioRepository;
   let sourcingLocationRepository: SourcingLocationRepository;
   let sourcingRecordRepository: SourcingRecordRepository;
@@ -179,9 +179,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     );
 
     scenarioInterventionRepository =
-      testApplication.get<ScenarioInterventionRepository>(
-        ScenarioInterventionRepository,
-      );
+      testApplication.get<InterventionRepository>(InterventionRepository);
 
     scenarioRepository =
       testApplication.get<ScenarioRepository>(ScenarioRepository);
@@ -223,7 +221,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
   afterEach(async () => {
     await clearEntityTables(dataSource, [
-      ScenarioIntervention,
+      Intervention,
       IndicatorRecord,
       MaterialToH3,
       H3Data,
@@ -273,7 +271,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnitIds: [preconditions.businessUnit1.id],
           adminRegionIds: [preconditions.adminRegion1.id],
           newLocationCountryInput: 'TestCountry',
-          type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          type: INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           // TODO generate from enum
           newIndicatorCoefficients: {
             UWU_T: 5,
@@ -286,7 +284,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(response.status).toBe(HttpStatus.CREATED);
 
-      const allInterventions: [ScenarioIntervention[], number] =
+      const allInterventions: [Intervention[], number] =
         await scenarioInterventionRepository.findAndCount();
       expect(allInterventions[1]).toEqual(1);
       expect(typeof allInterventions[0][0].id).toBe('string');
@@ -415,14 +413,14 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           supplierIds: [preconditions.supplier1.id],
           businessUnitIds: [preconditions.businessUnit1.id],
           adminRegionIds: [preconditions.adminRegion1.id],
-          type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          type: INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
           newLocationCountryInput: 'Spain',
         });
 
       expect(response.status).toBe(HttpStatus.CREATED);
 
-      const allInterventions: [ScenarioIntervention[], number] =
+      const allInterventions: [Intervention[], number] =
         await scenarioInterventionRepository.findAndCount();
       expect(allInterventions[1]).toEqual(1);
       expect(typeof allInterventions[0][0].id).toBe('string');
@@ -534,7 +532,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             materialIds: [preconditions.material1.id],
             businessUnitIds: [preconditions.businessUnit1.id],
             adminRegionIds: [preconditions.adminRegion1.id],
-            type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+            type: INTERVENTION_TYPE.NEW_SUPPLIER,
             newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
             newLocationCountryInput: 'Spain',
             newIndicatorCoefficients: {
@@ -593,14 +591,14 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           materialIds: [preconditions.material1.id],
           businessUnitIds: [preconditions.businessUnit1.id],
           adminRegionIds: [preconditions.adminRegion1.id],
-          type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          type: INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
           newLocationCountryInput: 'Spain',
         });
 
       expect(response.status).toBe(HttpStatus.CREATED);
 
-      const allInterventions: [ScenarioIntervention[], number] =
+      const allInterventions: [Intervention[], number] =
         await scenarioInterventionRepository.findAndCount();
       expect(allInterventions[1]).toEqual(1);
       expect(typeof allInterventions[0][0].id).toBe('string');
@@ -730,7 +728,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             preconditions.adminRegion1.id,
             preconditions.adminRegion2.id,
           ],
-          type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+          type: INTERVENTION_TYPE.NEW_MATERIAL,
           newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
           newLocationCountryInput: 'Spain',
           newMaterialId: replacingMaterial.id,
@@ -738,7 +736,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(response.status).toBe(HttpStatus.CREATED);
 
-      const allInterventions: [ScenarioIntervention[], number] =
+      const allInterventions: [Intervention[], number] =
         await scenarioInterventionRepository.findAndCount();
       expect(allInterventions[1]).toEqual(1);
       expect(typeof allInterventions[0][0].id).toBe('string');
@@ -835,7 +833,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             percentage: 50,
             scenarioId: preconditions.scenario.id,
             materialIds: [preconditions.material1.id],
-            type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+            type: INTERVENTION_TYPE.NEW_MATERIAL,
             newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
             newLocationCountryInput: 'Spain',
             newMaterialId: replacingMaterial.id,
@@ -933,7 +931,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             percentage: 50,
             scenarioId: preconditions.scenario.id,
             materialIds: [preconditions.material1.id],
-            type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+            type: INTERVENTION_TYPE.NEW_MATERIAL,
             newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
             newLocationCountryInput: 'Spain',
             newMaterialId: replacingMaterial.id,
@@ -989,7 +987,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnitIds: [preconditions.businessUnit1.id],
           adminRegionIds: [preconditions.adminRegion1.id],
           newLocationCountryInput: 'TestCountry',
-          type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          type: INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
         });
 
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -1015,7 +1013,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnitIds: [preconditions.businessUnit2.id],
           adminRegionIds: [preconditions.adminRegion2.id],
           newLocationCountryInput: 'TestCountry',
-          type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          type: INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
         });
 
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -1073,7 +1071,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           supplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
           adminRegionIds: [adminRegion.id],
-          type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          type: INTERVENTION_TYPE.NEW_SUPPLIER,
         });
 
       expect(HttpStatus.BAD_REQUEST);
@@ -1106,7 +1104,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           supplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
           adminRegionIds: [adminRegion.id],
-          type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          type: INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
         });
 
@@ -1131,7 +1129,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           supplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
           adminRegionIds: [adminRegion.id],
-          type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          type: INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
         });
 
@@ -1161,7 +1159,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           materialIds: [material.id],
           supplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
-          type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          type: INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
         });
 
@@ -1188,7 +1186,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           materialIds: [material.id],
           supplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
-          type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          type: INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
           newLocationCountryInput: 'TestCountry',
         });
@@ -1215,7 +1213,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           materialIds: [material.id],
           supplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
-          type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          type: INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
           newLocationCountryInput: 'TestCountry',
           newLocationLatitude: -4,
@@ -1253,7 +1251,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           supplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
           adminRegionIds: [adminRegion.id],
-          type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+          type: INTERVENTION_TYPE.NEW_MATERIAL,
           newLocationCountryInput: 'TestCountry',
         });
 
@@ -1291,7 +1289,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           supplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
           adminRegionIds: [adminRegion.id],
-          type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+          type: INTERVENTION_TYPE.NEW_MATERIAL,
           newLocationCountryInput: 'TestCountry',
           newLocationType: 'unknown',
           newMaterialId: material.id,
@@ -1308,7 +1306,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
   describe('Scenario interventions - Update', () => {
     test('Update a scenario intervention basic properties should be successful (happy case)', async () => {
-      const scenarioIntervention: ScenarioIntervention =
+      const scenarioIntervention: Intervention =
         await createScenarioIntervention();
 
       const response = await request(testApplication.getHttpServer())
@@ -1316,7 +1314,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           title: 'updated test scenario intervention',
-          status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+          status: INTERVENTION_STATUS.INACTIVE,
         });
 
       expect(response.status).toBe(HttpStatus.OK);
@@ -1330,7 +1328,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         'updated test scenario intervention',
       );
       expect(response.body.data.attributes.status).toEqual(
-        SCENARIO_INTERVENTION_STATUS.INACTIVE,
+        INTERVENTION_STATUS.INACTIVE,
       );
 
       // Note: Update response does not retrieve the related resources
@@ -1357,7 +1355,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnitIds: [preconditions.businessUnit1.id],
           adminRegionIds: [preconditions.adminRegion1.id],
           newLocationCountryInput: 'TestCountry',
-          type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+          type: INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           newIndicatorCoefficients: {
             UWU_T: 5,
             UWUSR_T: 5,
@@ -1369,7 +1367,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(HttpStatus.CREATED);
 
-      const allInterventions: [ScenarioIntervention[], number] =
+      const allInterventions: [Intervention[], number] =
         await scenarioInterventionRepository.findAndCount();
       expect(allInterventions[1]).toEqual(1);
 
@@ -1385,7 +1383,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         })
         .expect(HttpStatus.OK);
 
-      const allInterventionsAfterUpdate: [ScenarioIntervention[], number] =
+      const allInterventionsAfterUpdate: [Intervention[], number] =
         await scenarioInterventionRepository.findAndCount();
       expect(allInterventionsAfterUpdate[1]).toEqual(1);
 
@@ -1405,7 +1403,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
   describe('Scenario interventions - Delete', () => {
     test('Delete a scenario intervention should be successful (happy case)', async () => {
-      const scenarioIntervention: ScenarioIntervention =
+      const scenarioIntervention: Intervention =
         await createScenarioIntervention();
 
       await request(testApplication.getHttpServer())
@@ -1424,7 +1422,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
   describe('Scenario interventions - Get all', () => {
     test('Get all scenario interventions should be successful (happy case)', async () => {
-      const scenarioIntervention: ScenarioIntervention =
+      const scenarioIntervention: Intervention =
         await createScenarioIntervention();
 
       const response = await request(testApplication.getHttpServer())
@@ -1474,19 +1472,19 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     });
 
     test('Get scenario interventions filtered by some criteria should only return the scenario interventions that match said criteria', async () => {
-      const scenarioInterventionOne: ScenarioIntervention =
+      const scenarioInterventionOne: Intervention =
         await createScenarioIntervention({
           title: 'scenario intervention one',
-          status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+          status: INTERVENTION_STATUS.ACTIVE,
         });
-      const scenarioInterventionTwo: ScenarioIntervention =
+      const scenarioInterventionTwo: Intervention =
         await createScenarioIntervention({
           title: 'scenario intervention two',
-          status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+          status: INTERVENTION_STATUS.ACTIVE,
         });
       await createScenarioIntervention({
         title: 'scenario intervention three',
-        status: SCENARIO_INTERVENTION_STATUS.DELETED,
+        status: INTERVENTION_STATUS.DELETED,
       });
 
       const response = await request(testApplication.getHttpServer())
@@ -1494,7 +1492,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           filter: {
-            status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+            status: INTERVENTION_STATUS.ACTIVE,
           },
         })
         .send()
@@ -1661,7 +1659,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             supplierIds: [parentSupplier.id],
             businessUnitIds: [parentBusinessUnit.id],
             adminRegionIds: [parentAdminRegion.id],
-            type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+            type: INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
             newIndicatorCoefficients: {
               UWU_T: 5,
               UWUSR_T: 5,
@@ -1671,7 +1669,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             },
           });
 
-        const intervention: ScenarioIntervention | null =
+        const intervention: Intervention | null =
           await scenarioInterventionRepository.findOne({
             where: { id: response.body.data.id },
           });
@@ -1848,7 +1846,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             materialIds: [parentMaterial.id],
             supplierIds: [parentSupplier.id, parentSupplier2.id],
             businessUnitIds: [parentBusinessUnit.id],
-            type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+            type: INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
             newIndicatorCoefficients: {
               UWU_T: 5,
               UWUSR_T: 5,
@@ -1891,7 +1889,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             scenarioId: scenario.id,
             materialIds: [parentMaterial.id],
             supplierIds: [parentSupplier.id],
-            type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+            type: INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
             newIndicatorCoefficients: {
               UWU_T: 5,
               UWUSR_T: 5,
@@ -1919,7 +1917,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             percentage: 50,
             scenarioId: scenario.id,
             materialIds: [parentMaterial.id],
-            type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+            type: INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
             newIndicatorCoefficients: {
               UWU_T: 5,
               UWUSR_T: 5,
@@ -2082,25 +2080,25 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             supplierIds: [parentSupplier.id],
             businessUnitIds: [parentBusinessUnit.id],
             adminRegionIds: [parentAdminRegion.id],
-            type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+            type: INTERVENTION_TYPE.NEW_MATERIAL,
             newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
             newLocationCountryInput: 'Spain',
             newMaterialId: newMaterial.id,
           });
 
-        const intervention: ScenarioIntervention | null =
+        const intervention: Intervention | null =
           await scenarioInterventionRepository.findOne({
             where: { id: response.body.data.id },
           });
 
         //ASSERT;
         expect(intervention).toBeTruthy();
-        expect((intervention as ScenarioIntervention).newMaterial.id).toEqual(
+        expect((intervention as Intervention).newMaterial.id).toEqual(
           newMaterial.id,
         );
-        expect(
-          (intervention as ScenarioIntervention).newAdminRegion.id,
-        ).toEqual(newAdminRegion.id);
+        expect((intervention as Intervention).newAdminRegion.id).toEqual(
+          newAdminRegion.id,
+        );
       },
     );
 
@@ -2247,7 +2245,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             supplierIds: [parentSupplier.id],
             businessUnitIds: [parentBusinessUnit.id],
             adminRegionIds: [parentAdminRegion.id],
-            type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+            type: INTERVENTION_TYPE.NEW_MATERIAL,
             newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
             newLocationCountryInput: 'Spain',
             newMaterialId: newMaterial.id,
@@ -2281,7 +2279,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
   describe('Scenario interventions - Get by id', () => {
     test('Get a scenario intervention by id should be successful (happy case)', async () => {
-      const scenarioIntervention: ScenarioIntervention =
+      const scenarioIntervention: Intervention =
         await createScenarioIntervention();
 
       const response = await request(testApplication.getHttpServer())
@@ -2297,7 +2295,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
   describe('Cascade delete os Scenario', () => {
     test('When Scenario is deleted, related interventions must be deleted as well', async () => {
-      const scenarioIntervention: ScenarioIntervention =
+      const scenarioIntervention: Intervention =
         await createScenarioIntervention();
 
       const sourcingLocation: SourcingLocation = await createSourcingLocation({
@@ -2308,7 +2306,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       await createSourcingRecord({ sourcingLocationId: sourcingLocation.id });
 
       const scenarios: Scenario[] = await scenarioRepository.find();
-      const interventions: ScenarioIntervention[] =
+      const interventions: Intervention[] =
         await scenarioInterventionRepository.find();
       const sourcingLocations: SourcingLocation[] =
         await sourcingLocationRepository.find();
@@ -2322,7 +2320,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       await scenarioRepository.delete(scenarioIntervention.scenarioId);
 
-      const interventionsAfterDelete: ScenarioIntervention[] =
+      const interventionsAfterDelete: Intervention[] =
         await scenarioInterventionRepository.find();
       const sourcingLocationsAfterDelete: SourcingLocation[] =
         await sourcingLocationRepository.find();
@@ -2365,7 +2363,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           supplierIds: [preconditions.supplier1.id],
           businessUnitIds: [preconditions.businessUnit1.id],
           adminRegionIds: [preconditions.adminRegion1.id],
-          type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          type: INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
           newLocationCountryInput: 'Spain',
           newLocationLatitude: -4,

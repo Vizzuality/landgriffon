@@ -4,10 +4,10 @@ import { IndicatorRecord } from 'modules/indicator-records/indicator-record.enti
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { Material } from 'modules/materials/material.entity';
 import {
-  SCENARIO_INTERVENTION_STATUS,
-  SCENARIO_INTERVENTION_TYPE,
-  ScenarioIntervention,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+  INTERVENTION_STATUS,
+  INTERVENTION_TYPE,
+  Intervention,
+} from 'modules/interventions/intervention.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import {
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
@@ -76,24 +76,21 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
 
   const newScenario: Scenario = await createScenario();
 
-  const scenarioIntervention1: ScenarioIntervention =
-    await createScenarioIntervention({
-      type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-      scenario: newScenario,
-    });
+  const scenarioIntervention1: Intervention = await createScenarioIntervention({
+    type: INTERVENTION_TYPE.NEW_SUPPLIER,
+    scenario: newScenario,
+  });
 
-  const scenarioIntervention2: ScenarioIntervention =
-    await createScenarioIntervention({
-      type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-      scenario: newScenario,
-    });
+  const scenarioIntervention2: Intervention = await createScenarioIntervention({
+    type: INTERVENTION_TYPE.NEW_SUPPLIER,
+    scenario: newScenario,
+  });
 
-  const scenarioIntervention3: ScenarioIntervention =
-    await createScenarioIntervention({
-      type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
-      scenario: newScenario,
-      status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
-    });
+  const scenarioIntervention3: Intervention = await createScenarioIntervention({
+    type: INTERVENTION_TYPE.NEW_SUPPLIER,
+    scenario: newScenario,
+    status: INTERVENTION_STATUS.INACTIVE,
+  });
 
   // Sourcing Locations - real ones
 

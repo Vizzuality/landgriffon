@@ -11,9 +11,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
 import {
-  SCENARIO_INTERVENTION_STATUS,
-  ScenarioIntervention,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+  INTERVENTION_STATUS,
+  Intervention,
+} from 'modules/interventions/intervention.entity';
 
 @Injectable()
 export class MaterialRepository extends ExtendedTreeRepository<
@@ -78,7 +78,7 @@ export class MaterialRepository extends ExtendedTreeRepository<
     // TODO: we could externalise this to something generic as well
     if (materialTreeOptions.scenarioIds) {
       queryBuilder.leftJoin(
-        ScenarioIntervention,
+        Intervention,
         'scenarioIntervention',
         'sl.scenarioInterventionId = scenarioIntervention.id',
       );
@@ -92,7 +92,7 @@ export class MaterialRepository extends ExtendedTreeRepository<
                   scenarioIds: materialTreeOptions.scenarioIds,
                 })
                 .andWhere(`scenarioIntervention.status = :status`, {
-                  status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+                  status: INTERVENTION_STATUS.ACTIVE,
                 });
             }),
           );

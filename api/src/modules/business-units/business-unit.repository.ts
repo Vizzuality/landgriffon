@@ -11,9 +11,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetBusinessUnitTreeWithOptionsDto } from 'modules/business-units/dto/get-business-unit-tree-with-options.dto';
 import {
-  SCENARIO_INTERVENTION_STATUS,
-  ScenarioIntervention,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+  INTERVENTION_STATUS,
+  Intervention,
+} from 'modules/interventions/intervention.entity';
 
 @Injectable()
 export class BusinessUnitRepository extends ExtendedTreeRepository<
@@ -70,7 +70,7 @@ export class BusinessUnitRepository extends ExtendedTreeRepository<
 
     if (businessUnitTreeOptions.scenarioIds) {
       queryBuilder.leftJoin(
-        ScenarioIntervention,
+        Intervention,
         'scenarioIntervention',
         'sl.scenarioInterventionId = scenarioIntervention.id',
       );
@@ -84,7 +84,7 @@ export class BusinessUnitRepository extends ExtendedTreeRepository<
                   scenarioIds: businessUnitTreeOptions.scenarioIds,
                 })
                 .andWhere(`scenarioIntervention.status = :status`, {
-                  status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+                  status: INTERVENTION_STATUS.ACTIVE,
                 });
             }),
           );

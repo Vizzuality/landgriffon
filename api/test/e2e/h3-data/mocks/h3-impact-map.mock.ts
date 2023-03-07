@@ -34,9 +34,9 @@ import {
 } from 'modules/materials/material-to-h3.entity';
 import { h3BasicFixtureForScaler } from './h3-fixtures';
 import {
-  SCENARIO_INTERVENTION_STATUS,
-  ScenarioIntervention,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+  INTERVENTION_STATUS,
+  Intervention,
+} from 'modules/interventions/intervention.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { DataSource } from 'typeorm';
@@ -226,7 +226,7 @@ export const createImpactMapMockData = async (
   // WITHOUT an scenarioId
   const scenario: Scenario = await createScenario({ title: 'testScenario' });
 
-  const scenarioInterventionOne: ScenarioIntervention =
+  const scenarioInterventionOne: Intervention =
     await createScenarioIntervention({ scenario: scenario });
 
   const canceledSourcingLocationOne: SourcingLocation =
@@ -282,10 +282,10 @@ export const createImpactMapMockData = async (
   });
 
   // Inactive intervention for scenario one, should be ignored in all calculations
-  const scenarioInterventionOneInactive: ScenarioIntervention =
+  const scenarioInterventionOneInactive: Intervention =
     await createScenarioIntervention({
       scenario: scenario,
-      status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+      status: INTERVENTION_STATUS.INACTIVE,
     });
 
   const canceledSourcingLocationOneInactive: SourcingLocation =
@@ -341,7 +341,7 @@ export const createImpactMapMockData = async (
   });
 
   //Intervention Two
-  const scenarioInterventionTwo: ScenarioIntervention =
+  const scenarioInterventionTwo: Intervention =
     await createScenarioIntervention({ scenario: scenario });
 
   const canceledSourcingLocationTwo: SourcingLocation =
@@ -401,7 +401,7 @@ export const createImpactMapMockData = async (
     title: 'testScenario2',
   });
 
-  const interventionScenarioTwo: ScenarioIntervention =
+  const interventionScenarioTwo: Intervention =
     await createScenarioIntervention({ scenario: scenarioTwo });
 
   const canceledSourcingLocationScenarioTwo: SourcingLocation =
@@ -500,6 +500,6 @@ export const deleteImpactMapMockData = async (
   await dataSource.getRepository(IndicatorRecord).delete({});
   await dataSource.getRepository(UnitConversion).delete({});
   await dataSource.getRepository(Unit).delete({});
-  await dataSource.getRepository(ScenarioIntervention).delete({});
+  await dataSource.getRepository(Intervention).delete({});
   await dataSource.getRepository(Scenario).delete({});
 };

@@ -15,13 +15,13 @@ import { setupTestUser } from '../../utils/userAuth';
 import ApplicationManager, {
   TestApplication,
 } from '../../utils/application-manager';
-import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
+import { InterventionRepository } from 'modules/interventions/intervention.repository';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
 import {
-  SCENARIO_INTERVENTION_STATUS,
-  ScenarioIntervention,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+  INTERVENTION_STATUS,
+  Intervention,
+} from 'modules/interventions/intervention.entity';
 import {
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
@@ -46,7 +46,7 @@ describe('ScenariosModule (e2e)', () => {
   let testApplication: TestApplication;
   let dataSource: DataSource;
   let scenarioRepository: ScenarioRepository;
-  let scenarioInterventionRepository: ScenarioInterventionRepository;
+  let scenarioInterventionRepository: InterventionRepository;
   let sourcingLocationRepository: SourcingLocationRepository;
   let sourcingRecordRepository: SourcingRecordRepository;
   let adminToken: string;
@@ -60,9 +60,7 @@ describe('ScenariosModule (e2e)', () => {
     scenarioRepository =
       testApplication.get<ScenarioRepository>(ScenarioRepository);
     scenarioInterventionRepository =
-      testApplication.get<ScenarioInterventionRepository>(
-        ScenarioInterventionRepository,
-      );
+      testApplication.get<InterventionRepository>(InterventionRepository);
     sourcingLocationRepository =
       testApplication.get<SourcingLocationRepository>(
         SourcingLocationRepository,
@@ -212,7 +210,7 @@ describe('ScenariosModule (e2e)', () => {
         'Then I should receive said Interventions in the response' +
         'And they should be ordered by creation date in a DESC order',
       async () => {
-        const interventions: ScenarioIntervention[] = [];
+        const interventions: Intervention[] = [];
 
         const scenario: Scenario = await createScenario();
 
@@ -228,9 +226,9 @@ describe('ScenariosModule (e2e)', () => {
           .set('Authorization', `Bearer ${adminToken}`)
           .send();
 
-        expect(
-          interventions.map((i: ScenarioIntervention) => i.id).reverse(),
-        ).toEqual(response.body.data.map((i: ScenarioIntervention) => i.id));
+        expect(interventions.map((i: Intervention) => i.id).reverse()).toEqual(
+          response.body.data.map((i: Intervention) => i.id),
+        );
       },
     );
   });
@@ -254,7 +252,7 @@ describe('ScenariosModule (e2e)', () => {
   describe('Cascade delete os Scenario', () => {
     test('When Scenario is deleted, related interventions must be deleted as well', async () => {
       const scenario: Scenario = await createScenario();
-      const scenarioIntervention: ScenarioIntervention =
+      const scenarioIntervention: Intervention =
         await createScenarioIntervention({ scenario });
 
       const sourcingLocation: SourcingLocation = await createSourcingLocation({
@@ -264,7 +262,7 @@ describe('ScenariosModule (e2e)', () => {
 
       await createSourcingRecord({ sourcingLocationId: sourcingLocation.id });
 
-      const interventions: ScenarioIntervention[] =
+      const interventions: Intervention[] =
         await scenarioInterventionRepository.find();
       const sourcingLocations: SourcingLocation[] =
         await sourcingLocationRepository.find();
@@ -277,7 +275,7 @@ describe('ScenariosModule (e2e)', () => {
 
       await scenarioRepository.delete(scenario.id);
 
-      const interventionsAfterDelete: ScenarioIntervention[] =
+      const interventionsAfterDelete: Intervention[] =
         await scenarioInterventionRepository.find();
       const sourcingLocationsAfterDelete: SourcingLocation[] =
         await sourcingLocationRepository.find();
@@ -314,7 +312,7 @@ describe('ScenariosModule (e2e)', () => {
       await createScenarioIntervention({
         scenario: scenarioOne,
         title: 'intervention 1-1',
-        status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+        status: INTERVENTION_STATUS.INACTIVE,
       });
 
       const scenarioTwo: Scenario = await createScenario({
@@ -326,13 +324,13 @@ describe('ScenariosModule (e2e)', () => {
       await createScenarioIntervention({
         scenario: scenarioTwo,
         title: 'intervention 2-1',
-        status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+        status: INTERVENTION_STATUS.INACTIVE,
       });
 
       await createScenarioIntervention({
         scenario: scenarioTwo,
         title: 'intervention 2-2',
-        status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+        status: INTERVENTION_STATUS.INACTIVE,
       });
 
       const scenarioThree: Scenario = await createScenario({
@@ -343,12 +341,12 @@ describe('ScenariosModule (e2e)', () => {
       await createScenarioIntervention({
         scenario: scenarioThree,
         title: 'intervention 2-1',
-        status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+        status: INTERVENTION_STATUS.ACTIVE,
       });
       await createScenarioIntervention({
         scenario: scenarioThree,
         title: 'intervention 2-2',
-        status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+        status: INTERVENTION_STATUS.ACTIVE,
       });
 
       const scenarioFour: Scenario = await createScenario({
@@ -360,12 +358,12 @@ describe('ScenariosModule (e2e)', () => {
       await createScenarioIntervention({
         scenario: scenarioFour,
         title: 'intervention 4-1',
-        status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+        status: INTERVENTION_STATUS.ACTIVE,
       });
       await createScenarioIntervention({
         scenario: scenarioFour,
         title: 'intervention 4-2',
-        status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+        status: INTERVENTION_STATUS.INACTIVE,
       });
 
       const response = await request(testApplication.getHttpServer())

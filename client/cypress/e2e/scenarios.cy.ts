@@ -2,7 +2,7 @@ beforeEach(() => {
   cy.interceptAllRequests();
   // cy.intercept('GET', '/api/v1/scenarios/**/interventions*', {
   //   statusCode: 200,
-  //   fixture: 'scenario/scenario-interventions',
+  //   fixture: 'scenario/interventions',
   // }).as('fetchScenarioInterventions');
 
   cy.intercept(
@@ -51,7 +51,7 @@ describe('Scenarios', () => {
     cy.wait('@scenariosNoPaginated');
     cy.get('[data-testid="scenario-card"]')
       .first()
-      .find('[data-testid="scenario-interventions-item"]')
+      .find('[data-testid="interventions-item"]')
       .should('have.length', 2);
   });
 

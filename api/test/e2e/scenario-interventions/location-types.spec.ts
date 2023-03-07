@@ -5,7 +5,7 @@ import {
 } from 'modules/indicators/indicator.entity';
 
 import * as request from 'supertest';
-import { SCENARIO_INTERVENTION_TYPE } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { INTERVENTION_TYPE } from 'modules/interventions/intervention.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { DataSource } from 'typeorm';
 import { Test } from '@nestjs/testing';
@@ -19,7 +19,7 @@ import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { createIndicator } from '../../entity-mocks';
 import { HttpStatus } from '@nestjs/common';
 import { GeoCodingAbstractClass } from '../../../src/modules/geo-coding/geo-coding-abstract-class';
-import { ScenarioInterventionRepository } from '../../../src/modules/scenario-interventions/scenario-intervention.repository';
+import { InterventionRepository } from '../../../src/modules/interventions/intervention.repository';
 import { createInterventionPreconditions } from '../../utils/scenario-interventions-preconditions';
 
 describe('Interventions E2E Tests (Location Types)', () => {
@@ -39,7 +39,7 @@ describe('Interventions E2E Tests (Location Types)', () => {
             geoRegionId: uuidv4(),
           }),
         })
-        .overrideProvider(ScenarioInterventionRepository)
+        .overrideProvider(InterventionRepository)
         .useValue({
           saveNewIntervention: () => ({
             identifiers: [uuidv4()],
@@ -84,7 +84,7 @@ describe('Interventions E2E Tests (Location Types)', () => {
             businessUnitIds: [uuidv4()],
             adminRegionIds: [uuidv4()],
             newLocationType: LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION,
-            type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+            type: INTERVENTION_TYPE.NEW_MATERIAL,
             newIndicatorCoefficients: {
               [INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE]: 1,
             },
@@ -125,7 +125,7 @@ describe('Interventions E2E Tests (Location Types)', () => {
             newLocationCountryInput: 'TestCountry',
             newLocationAdminRegionInput:
               'I dont care since Im mocking the geocoding',
-            type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+            type: INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
             // TODO generate from enum
             newIndicatorCoefficients: {
               UWU_T: 5,

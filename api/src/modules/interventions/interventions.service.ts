@@ -8,24 +8,21 @@ import {
   JSONAPISerializerConfig,
 } from 'utils/app-base.service';
 import {
-  SCENARIO_INTERVENTION_TYPE,
-  ScenarioIntervention,
+  INTERVENTION_TYPE,
+  Intervention,
   scenarioResource,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+} from 'modules/interventions/intervention.entity';
 import { AppInfoDTO } from 'dto/info.dto';
-import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
-import {
-  CreateScenarioInterventionDto,
-  CreateScenarioInterventionDtoV2,
-} from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
-import { UpdateScenarioInterventionDto } from 'modules/scenario-interventions/dto/update.scenario-intervention.dto';
+import { InterventionRepository } from 'modules/interventions/intervention.repository';
+import { CreateInterventionDto } from 'modules/interventions/dto/create.intervention.dto';
+import { UpdateInterventionDto } from 'modules/interventions/dto/update.intervention.dto';
 import {
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
-import { InterventionBuilder } from 'modules/scenario-interventions/services/intervention-builder.service';
+import { InterventionBuilder } from 'modules/interventions/services/intervention-builder.service';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { InsertResult } from 'typeorm';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
@@ -33,10 +30,10 @@ import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/ind
 import { AccessControl } from 'modules/authorization/access-control.service';
 
 @Injectable()
-export class ScenarioInterventionsService extends AppBaseService<
-  ScenarioIntervention,
-  CreateScenarioInterventionDto,
-  UpdateScenarioInterventionDto,
+export class InterventionsService extends AppBaseService<
+  Intervention,
+  CreateInterventionDto,
+  UpdateInterventionDto,
   AppInfoDTO
 > {
   private basicUpdateColumns: string[] = [
@@ -47,7 +44,7 @@ export class ScenarioInterventionsService extends AppBaseService<
   ];
 
   constructor(
-    protected readonly scenarioInterventionRepository: ScenarioInterventionRepository,
+    protected readonly scenarioInterventionRepository: InterventionRepository,
     protected readonly interventionBuilder: InterventionBuilder,
     protected readonly geoCodingService: GeoCodingAbstractClass,
     protected readonly sourcingLocationsService: SourcingLocationsService,
@@ -60,7 +57,7 @@ export class ScenarioInterventionsService extends AppBaseService<
     );
   }
 
-  get serializerConfig(): JSONAPISerializerConfig<ScenarioIntervention> {
+  get serializerConfig(): JSONAPISerializerConfig<Intervention> {
     return {
       attributes: [
         'title',
@@ -92,8 +89,8 @@ export class ScenarioInterventionsService extends AppBaseService<
     };
   }
 
-  async getScenarioInterventionById(id: string): Promise<ScenarioIntervention> {
-    const found: ScenarioIntervention | null =
+  async getScenarioInterventionById(id: string): Promise<Intervention> {
+    const found: Intervention | null =
       await this.scenarioInterventionRepository.findOne({ where: { id } });
 
     if (!found) {
@@ -107,30 +104,28 @@ export class ScenarioInterventionsService extends AppBaseService<
 
   async getScenarioInterventionsByScenarioId(
     scenarioId: string,
-  ): Promise<ScenarioIntervention[]> {
+  ): Promise<Intervention[]> {
     return this.scenarioInterventionRepository.getScenarioInterventionsByScenarioId(
       scenarioId,
     );
   }
 
   async createScenarioIntervention(
-    dto: CreateScenarioInterventionDto | CreateScenarioInterventionDtoV2,
-  ): Promise<Partial<ScenarioIntervention>> {
+    dto: CreateInterventionDto,
+  ): Promise<Partial<Intervention>> {
     // Validate new location. If it's validated, get the geolocated info. If not, throw an exception
 
     this.logger.log('Creating new Intervention...');
 
     const { adminRegionId, geoRegionId, locationWarning } =
-      await this.validateNewLocation(
-        dto as CreateScenarioInterventionDto & CreateScenarioInterventionDtoV2,
-      );
+      await this.validateNewLocation(dto as CreateInterventionDto);
     /**
      *  Getting descendants of adminRegions, materials, suppliers adn businessUnits received as filters, if exists
      */
 
-    const dtoWithDescendants: CreateScenarioInterventionDto =
+    const dtoWithDescendants: CreateInterventionDto =
       await this.interventionBuilder.addDescendantsEntitiesForFiltering(
-        dto as CreateScenarioInterventionDto,
+        dto as CreateInterventionDto,
       );
     /**
      * Getting Sourcing Locations and Sourcing Records and Indicator records
@@ -172,9 +167,9 @@ export class ScenarioInterventionsService extends AppBaseService<
      *  Creating New Intervention to be saved in scenario_interventions table
      */
 
-    const newIntervention: ScenarioIntervention =
-      ScenarioInterventionsService.createInterventionInstance(
-        dto as CreateScenarioInterventionDto,
+    const newIntervention: Intervention =
+      InterventionsService.createInterventionInstance(
+        dto as CreateInterventionDto,
       );
 
     //Mutates the intervention instance adding replaced Entities to new Scenario Intervention
@@ -182,12 +177,12 @@ export class ScenarioInterventionsService extends AppBaseService<
     await this.interventionBuilder.addReplacedElementsToIntervention(
       newIntervention,
       newCancelledByInterventionLocationsData,
-      dto as CreateScenarioInterventionDto,
+      dto as CreateInterventionDto,
     );
 
     const newLocations: SourcingLocation[] =
       await this.interventionBuilder.generateNewLocationsForIntervention(
-        dto as CreateScenarioInterventionDto,
+        dto as CreateInterventionDto,
         newIntervention,
         actualSourcingDataWithTonnage,
         { adminRegionId, geoRegionId, locationWarning },
@@ -288,11 +283,8 @@ export class ScenarioInterventionsService extends AppBaseService<
     return cancelledSourcingLocations;
   }
 
-  static createInterventionInstance(
-    dto: CreateScenarioInterventionDto,
-  ): ScenarioIntervention {
-    const scenarioIntervention: ScenarioIntervention =
-      new ScenarioIntervention();
+  static createInterventionInstance(dto: CreateInterventionDto): Intervention {
+    const scenarioIntervention: Intervention = new Intervention();
     scenarioIntervention.title = dto.title || 'Untitled';
     scenarioIntervention.description = dto.description;
     scenarioIntervention.scenarioId = dto.scenarioId;
@@ -314,8 +306,8 @@ export class ScenarioInterventionsService extends AppBaseService<
 
   async updateIntervention(
     id: string,
-    dto: UpdateScenarioInterventionDto,
-  ): Promise<Partial<ScenarioIntervention>> {
+    dto: UpdateInterventionDto,
+  ): Promise<Partial<Intervention>> {
     for (const k of Object.keys(dto)) {
       if (!this.basicUpdateColumns.includes(k)) {
         return await this.replaceScenarioIntervention(id, dto);
@@ -330,15 +322,12 @@ export class ScenarioInterventionsService extends AppBaseService<
    */
   async replaceScenarioIntervention(
     id: string,
-    dto: UpdateScenarioInterventionDto,
-  ): Promise<Partial<ScenarioIntervention>> {
-    const currentScenarioIntervention: ScenarioIntervention =
+    dto: UpdateInterventionDto,
+  ): Promise<Partial<Intervention>> {
+    const currentScenarioIntervention: Intervention =
       await this.repository.findOneOrFail({ where: { id } });
-    // TODO: Add proper typing once old methodology related deleted
-    const newScenarioIntervention: Partial<ScenarioIntervention> =
-      await this.createScenarioIntervention(
-        dto as CreateScenarioInterventionDto,
-      );
+    const newScenarioIntervention: Partial<Intervention> =
+      await this.createScenarioIntervention(dto as CreateInterventionDto);
 
     await this.repository.remove(currentScenarioIntervention);
     // since we create new intervention, updatedBy must be set manually
@@ -359,9 +348,7 @@ export class ScenarioInterventionsService extends AppBaseService<
    * @private
    */
 
-  private async validateNewLocation(
-    dto: CreateScenarioInterventionDto & CreateScenarioInterventionDtoV2,
-  ): Promise<
+  private async validateNewLocation(dto: CreateInterventionDto): Promise<
     | SourcingLocation
     | {
         adminRegionId: string;
@@ -369,7 +356,7 @@ export class ScenarioInterventionsService extends AppBaseService<
         locationWarning: string;
       }
   > {
-    if (dto.type !== SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY) {
+    if (dto.type !== INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY) {
       return this.geoCodingService.geoCodeSourcingLocation({
         locationAdminRegionInput: dto.newLocationAdminRegionInput,
         locationLongitude: dto.newLocationLongitude,

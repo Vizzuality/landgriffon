@@ -160,10 +160,10 @@ Cypress.Commands.add('interceptAllRequests', (): void => {
   // Intervention requests
   cy.intercept('GET', '/api/v1/scenarios/**/interventions*', {
     statusCode: 200,
-    fixture: 'scenario/scenario-interventions',
+    fixture: 'scenario/interventions',
   }).as('fetchScenarioInterventions');
 
-  cy.intercept('PATCH', '/api/v1/scenario-interventions/random-intervention-id', {
+  cy.intercept('PATCH', '/api/v1/interventions/random-intervention-id', {
     statusCode: 200,
     fixture: 'intervention/intervention-creation-dto',
   }).as('successfulInterventionEdition');

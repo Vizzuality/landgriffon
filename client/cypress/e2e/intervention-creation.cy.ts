@@ -22,7 +22,7 @@ afterEach(() => {
 
 describe('Intervention creation', () => {
   it('a user creates an intervention – Switch to new material flow (successful creation)', () => {
-    cy.intercept('POST', '/api/v1/scenario-interventions', {
+    cy.intercept('POST', '/api/v1/interventions', {
       statusCode: 201,
       fixture: 'intervention/intervention-creation-dto',
     }).as('successfullyInterventionCreation');
@@ -102,7 +102,7 @@ describe('Intervention creation', () => {
 
   it('a user creates an intervetion – Switch to new material flow (failed creation)', () => {
     cy.url().should('contains', '/interventions/new');
-    cy.intercept('POST', '/api/v1/scenario-interventions', {
+    cy.intercept('POST', '/api/v1/interventions', {
       statusCode: 400,
       fixture: 'intervention/failed-intervention-creation-dto',
     }).as('failedInterventionCreation');
@@ -187,7 +187,7 @@ describe('Intervention creation', () => {
 
 describe('Intervention location type', () => {
   beforeEach(() => {
-    cy.intercept('POST', '/api/v1/scenario-interventions', {
+    cy.intercept('POST', '/api/v1/interventions', {
       statusCode: 201,
       fixture: 'intervention/intervention-creation-dto',
     }).as('successfullInterventionCreation');
@@ -291,7 +291,7 @@ describe('Intervention location type', () => {
 
 describe('Intervention creation: Change production efficiency', () => {
   beforeEach(() => {
-    cy.intercept('POST', '/api/v1/scenario-interventions', {
+    cy.intercept('POST', '/api/v1/interventions', {
       statusCode: 201,
       fixture: 'intervention/intervention-creation-dto',
     }).as('successfullyInterventionCreation');

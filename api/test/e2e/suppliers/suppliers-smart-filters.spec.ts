@@ -20,7 +20,7 @@ import {
   LOCATION_TYPES,
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
 } from 'modules/sourcing-locations/sourcing-location.entity';
-import { SCENARIO_INTERVENTION_STATUS } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { INTERVENTION_STATUS } from 'modules/interventions/intervention.entity';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 
@@ -235,7 +235,7 @@ describe('Suppliers - Get trees - Smart Filters', () => {
         });
         const interventionInactive = await createScenarioIntervention({
           scenario,
-          status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+          status: INTERVENTION_STATUS.INACTIVE,
         });
 
         await createSourcingLocation({

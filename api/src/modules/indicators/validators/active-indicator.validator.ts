@@ -10,7 +10,7 @@ import {
   INDICATOR_STATUS,
 } from 'modules/indicators/indicator.entity';
 import { difference } from 'lodash';
-import { CreateScenarioInterventionDtoV2 } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
+import { CreateInterventionDto } from 'modules/interventions/dto/create.intervention.dto';
 import { DataSource } from 'typeorm';
 
 /**
@@ -58,7 +58,7 @@ export class ActiveIndicatorValidator implements ValidatorConstraintInterface {
 
 export function ActiveIndicators(validationOptions?: ValidationOptions) {
   return function (
-    object: CreateScenarioInterventionDtoV2,
+    object: CreateInterventionDto,
     newIndicatorCoefficient: string,
   ): void {
     registerDecorator({

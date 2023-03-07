@@ -18,7 +18,7 @@ import {
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { Intervention } from 'modules/interventions/intervention.entity';
 import { SourcingLocationMaterial } from 'modules/sourcing-locations/dto/materials.sourcing-location.dto';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
@@ -115,7 +115,7 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
     });
 
     // Adding sourcing location belonging to intervention, that must be ignored by endpoint
-    const scenarioIntervention: ScenarioIntervention =
+    const scenarioIntervention: Intervention =
       await createScenarioIntervention();
 
     const interventionSourcingLocation = await createSourcingLocation({

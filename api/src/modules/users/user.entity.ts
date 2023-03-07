@@ -13,7 +13,7 @@ import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-c
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { Intervention } from 'modules/interventions/intervention.entity';
 import { Role } from 'modules/authorization/roles/role.entity';
 import { Exclude } from 'class-transformer';
 
@@ -106,11 +106,10 @@ export class User extends BaseEntity {
   scenariosLastEdited: Scenario[];
 
   @OneToMany(
-    () => ScenarioIntervention,
-    (scenarioIntervention: ScenarioIntervention) =>
-      scenarioIntervention.updatedBy,
+    () => Intervention,
+    (scenarioIntervention: Intervention) => scenarioIntervention.updatedBy,
   )
-  scenarioInterventionsLastEdited: ScenarioIntervention[];
+  scenarioInterventionsLastEdited: Intervention[];
 
   @ApiProperty({ type: [Role] })
   @ManyToMany(() => Role, (role: Role) => role.user, { eager: true })

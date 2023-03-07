@@ -24,9 +24,9 @@ import {
   clearTestDataFromDatabase,
 } from '../../utils/database-test-helper';
 import {
-  SCENARIO_INTERVENTION_STATUS,
-  ScenarioIntervention,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+  INTERVENTION_STATUS,
+  Intervention,
+} from 'modules/interventions/intervention.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { DataSource } from 'typeorm';
 
@@ -46,7 +46,7 @@ describe('Materials - Get trees - Smart Filters', () => {
   afterEach(async () => {
     await clearEntityTables(dataSource, [
       Scenario,
-      ScenarioIntervention,
+      Intervention,
       Supplier,
       Material,
       SourcingLocation,
@@ -430,7 +430,7 @@ describe('Materials - Get trees - Smart Filters', () => {
         });
         const interventionInactive = await createScenarioIntervention({
           scenario,
-          status: SCENARIO_INTERVENTION_STATUS.INACTIVE,
+          status: INTERVENTION_STATUS.INACTIVE,
         });
 
         await createSourcingLocation({

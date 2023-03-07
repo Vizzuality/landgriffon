@@ -5,7 +5,7 @@ import {
 } from 'class-validator';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 
-import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
+import { CreateInterventionDto } from 'modules/interventions/dto/create.intervention.dto';
 
 @ValidatorConstraint({ name: 'newLocationAddressInput', async: false })
 export class InterventionLocationAddressInputValidator
@@ -15,8 +15,7 @@ export class InterventionLocationAddressInputValidator
     newLocationAddressInput: string,
     args: ValidationArguments,
   ): boolean {
-    const dto: CreateScenarioInterventionDto =
-      args.object as CreateScenarioInterventionDto;
+    const dto: CreateInterventionDto = args.object as CreateInterventionDto;
 
     if (this.addressMustBeEmpty(dto)) {
       return !newLocationAddressInput;
@@ -32,8 +31,7 @@ export class InterventionLocationAddressInputValidator
     }
   }
   defaultMessage(args: ValidationArguments): string {
-    const dto: CreateScenarioInterventionDto =
-      args.object as CreateScenarioInterventionDto;
+    const dto: CreateInterventionDto = args.object as CreateInterventionDto;
 
     if (this.addressMustBeEmpty(dto)) {
       return `Address must be empty for locations of type ${
@@ -46,14 +44,14 @@ export class InterventionLocationAddressInputValidator
     }
   }
 
-  addressMustBeEmpty(dto: CreateScenarioInterventionDto): boolean {
+  addressMustBeEmpty(dto: CreateInterventionDto): boolean {
     return dto.newLocationType === LOCATION_TYPES.UNKNOWN ||
       dto.newLocationType === LOCATION_TYPES.COUNTRY_OF_PRODUCTION
       ? true
       : false;
   }
 
-  dtoAlreadyHasCoordinates(dto: CreateScenarioInterventionDto): boolean {
+  dtoAlreadyHasCoordinates(dto: CreateInterventionDto): boolean {
     return (dto.newLocationType ===
       LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT ||
       dto.newLocationType === LOCATION_TYPES.POINT_OF_PRODUCTION) &&
@@ -62,7 +60,7 @@ export class InterventionLocationAddressInputValidator
       : false;
   }
 
-  addressIsRequired(dto: CreateScenarioInterventionDto): boolean {
+  addressIsRequired(dto: CreateInterventionDto): boolean {
     return (dto.newLocationType ===
       LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT ||
       dto.newLocationType === LOCATION_TYPES.POINT_OF_PRODUCTION) &&

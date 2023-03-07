@@ -19,7 +19,7 @@ import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { Intervention } from 'modules/interventions/intervention.entity';
 
 export enum LOCATION_TYPES {
   UNKNOWN = 'unknown',
@@ -217,9 +217,9 @@ export class SourcingLocation extends TimestampedBaseEntity {
   )
   sourcingRecords: SourcingRecord[];
 
-  @ManyToOne(() => ScenarioIntervention, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Intervention, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'scenarioInterventionId' })
-  scenarioIntervention: ScenarioIntervention;
+  scenarioIntervention: Intervention;
 
   @Index()
   @Column({ nullable: true })

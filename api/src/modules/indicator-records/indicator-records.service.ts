@@ -100,142 +100,11 @@ export class IndicatorRecordsService extends AppBaseService<
    * @description Creates Indicator Records from all existing Sourcing Records in the DB
    */
   // TODO still not adapted to modular indicators, because the performance gets hit drastically on the source import. Pending to be worked on
-  async createIndicatorRecordsForAllSourcingRecords(): Promise<void> {
-    const indicatorMap: Record<string, any> = await this.getIndicatorMap();
-    // Using a hardcoded list of indicator types because this function is still based on
-    // a calculation query with hardcoded indicators,
-    const indicators: INDICATOR_TYPES[] = [
-      INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
-      INDICATOR_TYPES.CARBON_EMISSIONS,
-      INDICATOR_TYPES.DEFORESTATION,
-      INDICATOR_TYPES.BIODIVERSITY_LOSS,
-    ];
-
-    const rawData: SourcingRecordsWithIndicatorRawDataDto[] =
-      await this.indicatorRecordRepository.getIndicatorRawDataForAllSourcingRecords();
-
-    const calculatedData2: IndicatorRecordCalculatedValuesDto[] = rawData.map(
-      (sourcingRecordData: SourcingRecordsWithIndicatorRawDataDto) => {
-        // Small DTO transformations to adapt the result of the stored procedures query
-        const indicatorValues: Map<INDICATOR_TYPES, number> = new Map();
-        indicatorValues.set(
-          INDICATOR_TYPES.DEFORESTATION,
-          sourcingRecordData.rawDeforestation,
-        );
-        indicatorValues.set(
-          INDICATOR_TYPES.CARBON_EMISSIONS,
-          sourcingRecordData.rawCarbon,
-        );
-        indicatorValues.set(
-          INDICATOR_TYPES.BIODIVERSITY_LOSS,
-          sourcingRecordData.rawBiodiversity,
-        );
-        indicatorValues.set(
-          INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
-          sourcingRecordData.rawWater,
-        );
-
-        const indicatorComputedRawDataDto: IndicatorComputedRawDataDto = {
-          harvestedArea: sourcingRecordData.harvestedArea,
-          production: sourcingRecordData.production,
-          indicatorValues,
-        };
-
-        return this.calculateIndicatorValues(
-          sourcingRecordData.sourcingRecordId,
-          sourcingRecordData.tonnage,
-          sourcingRecordData.materialH3DataId,
-          indicatorComputedRawDataDto,
-        );
-      },
-    );
-
-    const indicatorRecords: IndicatorRecord[] = [];
-    for (const calculatedIndicatorRecords of calculatedData2) {
-      for (const indicator of indicators) {
-        indicatorRecords.push(
-          IndicatorRecord.merge(new IndicatorRecord(), {
-            value: calculatedIndicatorRecords.values.get(indicator),
-            indicatorId: indicatorMap[indicator].id,
-            status: INDICATOR_RECORD_STATUS.SUCCESS,
-            sourcingRecordId: calculatedIndicatorRecords.sourcingRecordId,
-            scaler: calculatedIndicatorRecords.production,
-            materialH3DataId: calculatedIndicatorRecords.materialH3DataId,
-          }),
-        );
-      }
-    }
-    await this.indicatorRecordRepository.saveChunks(indicatorRecords);
-  }
 
   /**
    * @description Creates Indicator-Records for a single Sourcing-Record, by first retrieving Raw Indicator data from the DB, then applying
    * the methodology and persist new Indicator Records
    */
-  async createIndicatorRecordsBySourcingRecords(
-    sourcingData: {
-      sourcingRecordId: string;
-      geoRegionId: string;
-      materialId: string;
-      tonnage: number;
-      year: number;
-      sourcingRecord: SourcingRecord;
-    },
-    providedCoefficients?: IndicatorCoefficientsDto,
-  ): Promise<IndicatorRecord[]> {
-    // TODO: This Harvest Material reference is stored later in the Indicator Record in order to optimize queries regarding
-    // maps, because, so far, all indicator use it for their calculations. Will potentially need to be reworked
-    // as more indicators with different formulas are introduced
-    const materialH3Data: H3Data | undefined =
-      await this.h3DataService.getMaterialH3ByClosestYear(
-        sourcingData.materialId,
-        MATERIAL_TO_H3_TYPE.HARVEST,
-        sourcingData.year,
-      );
-
-    if (!materialH3Data) {
-      throw new MissingH3DataError(
-        `No H3 Data required to calculate Impact for Material with ID: ${sourcingData.materialId}`,
-      );
-    }
-
-    const indicators: Indicator[] =
-      await this.indicatorService.getAllIndicators();
-
-    let calculatedIndicatorRecordValues: IndicatorRecordCalculatedValuesDto;
-    if (providedCoefficients) {
-      // Here we will be missing scaler, probably it should be obtained inside useProvidedIndicatorCoefficients() method
-
-      calculatedIndicatorRecordValues =
-        await this.useProvidedIndicatorCoefficients(
-          providedCoefficients,
-          sourcingData,
-          indicators,
-          materialH3Data.id,
-        );
-    } else {
-      const rawData: IndicatorComputedRawDataDto =
-        await this.getIndicatorRawDataByGeoRegionAndMaterial(
-          sourcingData.geoRegionId,
-          sourcingData.materialId,
-          sourcingData.year,
-        );
-      calculatedIndicatorRecordValues = this.calculateIndicatorValues(
-        sourcingData.sourcingRecordId,
-        sourcingData.tonnage,
-        materialH3Data.id,
-        rawData,
-      );
-    }
-
-    // Create the Indicator Records entities from the calculated indicator values
-    return indicators.map((indicator: Indicator) => {
-      return IndicatorRecordsService.createIndicatorRecord(
-        indicator,
-        calculatedIndicatorRecordValues,
-      );
-    });
-  }
 
   /**
    * Creates an IndicatorRecord object instance from the given input (type, calculated values, and h3data)
@@ -243,19 +112,6 @@ export class IndicatorRecordsService extends AppBaseService<
    * @param calculatedValues
    * @private
    */
-  private static createIndicatorRecord(
-    indicator: Indicator,
-    calculatedValues: IndicatorRecordCalculatedValuesDto,
-  ): IndicatorRecord {
-    return IndicatorRecord.merge(new IndicatorRecord(), {
-      value: calculatedValues.values.get(indicator.nameCode as INDICATOR_TYPES),
-      indicatorId: indicator.id,
-      status: INDICATOR_RECORD_STATUS.SUCCESS,
-      sourcingRecordId: calculatedValues.sourcingRecordId,
-      scaler: calculatedValues.production ?? null,
-      materialH3DataId: calculatedValues.materialH3DataId,
-    });
-  }
 
   /**
    * Consumes Indicator Raw Data from the DB to calculate final values for Indicator Records
@@ -265,52 +121,6 @@ export class IndicatorRecordsService extends AppBaseService<
    * @param indicatorComputedRawData
    * @private
    */
-  private calculateIndicatorValues(
-    sourcingRecordId: string,
-    tonnage: number,
-    materialH3DataId: string,
-    indicatorComputedRawData: IndicatorComputedRawDataDto,
-  ): IndicatorRecordCalculatedValuesDto {
-    const { production, harvestedArea } = indicatorComputedRawData;
-    const calculatedIndicatorValues: IndicatorRecordCalculatedValuesDto =
-      new IndicatorRecordCalculatedValuesDto();
-
-    // TODO Alternative strategy for calculations when production and harvest area values are very small
-
-    /** Temporary solution - checking if production and harvest area values are less than 1
-     *  the raw impact values and land use values will be set to 0
-     */
-
-    calculatedIndicatorValues.sourcingRecordId = sourcingRecordId;
-    calculatedIndicatorValues.materialH3DataId = materialH3DataId;
-    calculatedIndicatorValues.production = production;
-    // Land per tonn is set to 0 if production or harvest area are less than 1
-    calculatedIndicatorValues.landPerTon =
-      harvestedArea < 1 || production < 1 ? 0 : harvestedArea / production || 0;
-    const landUse: number = calculatedIndicatorValues.landPerTon * tonnage || 0;
-    calculatedIndicatorValues.landUse = landUse;
-
-    //calculate final value for each indicator raw value included in indicatorComputedRawData
-    calculatedIndicatorValues.values = new Map();
-    indicatorComputedRawData.indicatorValues.forEach(
-      (value: number, indicatorType: INDICATOR_TYPES) => {
-        //TODO provisional simple version, might need refactoring to strategy pattern as indicators expand
-        if (indicatorType === INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE) {
-          calculatedIndicatorValues.values.set(indicatorType, value * tonnage);
-        } else {
-          // Impact value is set to 0 if harvest area are less than 1
-          const indicatorPerHarvestedAreaLandUse: number =
-            harvestedArea < 1 ? 0 : value / harvestedArea || 0;
-          calculatedIndicatorValues.values.set(
-            indicatorType,
-            indicatorPerHarvestedAreaLandUse * landUse,
-          );
-        }
-      },
-    );
-
-    return calculatedIndicatorValues;
-  }
 
   // TODO: Check what is actually needed from this indicator mapper
   //       i.e bringing and relating H3 data is not
@@ -333,70 +143,6 @@ export class IndicatorRecordsService extends AppBaseService<
    * @description: Calculates Indicator values by the tonnage of the impact and estimates (coefficients) provided
    * by the user, for each possible indicator passed in an array
    */
-  private async useProvidedIndicatorCoefficients(
-    newIndicatorCoefficients: IndicatorCoefficientsDto,
-    sourcingData: {
-      sourcingRecordId: string;
-      tonnage: number;
-      materialId: string;
-      geoRegionId: string;
-      year: number;
-      sourcingRecord?: SourcingRecord;
-    },
-    indicators: Indicator[],
-    materialH3DataId: string,
-  ): Promise<IndicatorRecordCalculatedValuesDto> {
-    let productionValue: number;
-    if (
-      sourcingData.sourcingRecord &&
-      sourcingData.sourcingRecord.indicatorRecords
-    ) {
-      productionValue = sourcingData.sourcingRecord.indicatorRecords[0].scaler;
-    } else {
-      const materialH3s: Map<MATERIAL_TO_H3_TYPE, H3Data> =
-        await this.h3DataService.getAllMaterialH3sByClosestYear(
-          sourcingData.materialId,
-          sourcingData.year,
-        );
-
-      const materialH3: H3Data | undefined = materialH3s.get(
-        MATERIAL_TO_H3_TYPE.PRODUCER,
-      );
-      if (!materialH3) {
-        throw new NotFoundException(
-          `No H3 Data could be found the material ${sourcingData.materialId} type ${MATERIAL_TO_H3_TYPE.PRODUCER}`,
-        );
-      }
-
-      productionValue = await this.calculateRawMaterialValueOverGeoRegion(
-        sourcingData.geoRegionId,
-        materialH3,
-      );
-    }
-
-    const calculatedIndicatorValues: IndicatorRecordCalculatedValuesDto =
-      new IndicatorRecordCalculatedValuesDto();
-    calculatedIndicatorValues.sourcingRecordId = sourcingData.sourcingRecordId;
-    calculatedIndicatorValues.materialH3DataId = materialH3DataId;
-
-    // now we have here production data that will later be saved as scaler in new IR:
-    calculatedIndicatorValues.production = productionValue;
-    calculatedIndicatorValues.values = new Map();
-
-    for (const indicator of indicators) {
-      const type: INDICATOR_TYPES = indicator.nameCode as INDICATOR_TYPES;
-      if (newIndicatorCoefficients[type] === undefined) {
-        throw new NotFoundException(
-          `Required coefficient for indicator ${type} was not provided`,
-        );
-      }
-
-      const value: number =
-        newIndicatorCoefficients[type] * sourcingData.tonnage;
-      calculatedIndicatorValues.values.set(type, value);
-    }
-    return calculatedIndicatorValues;
-  }
 
   async getIndicatorRawDataByGeoRegionAndMaterial(
     geoRegionId: string,

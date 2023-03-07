@@ -24,9 +24,9 @@ import {
   GetScenarioVsScenarioImpactMapDto,
 } from 'modules/h3-data/dto/get-impact-map.dto';
 import {
-  SCENARIO_INTERVENTION_STATUS,
-  ScenarioIntervention,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+  INTERVENTION_STATUS,
+  Intervention,
+} from 'modules/interventions/intervention.entity';
 import {
   LOCATION_TYPES,
   SourcingLocation,
@@ -360,11 +360,7 @@ export class H3DataRepository extends Repository<H3Data> {
       // the CANCELLED and REPLACING records)
       if (dto.scenarioId) {
         baseQuery
-          .leftJoin(
-            ScenarioIntervention,
-            'si',
-            'si.id = sl.scenarioInterventionId',
-          )
+          .leftJoin(Intervention, 'si', 'si.id = sl.scenarioInterventionId')
           .andWhere(
             new Brackets((qb: WhereExpressionBuilder) => {
               qb.where('sl.scenarioInterventionId IS NULL').orWhere(
@@ -374,7 +370,7 @@ export class H3DataRepository extends Repository<H3Data> {
                       scenarioId: dto.scenarioId,
                     })
                     .andWhere(`si.status = :status`, {
-                      status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+                      status: INTERVENTION_STATUS.ACTIVE,
                     });
                 }),
               );
@@ -406,11 +402,7 @@ export class H3DataRepository extends Repository<H3Data> {
     const baseQueryExtend = (baseQuery: SelectQueryBuilder<any>): void => {
       //Add selection criteria to also select both comparedScenario in the select statement
       baseQuery
-        .leftJoin(
-          ScenarioIntervention,
-          'si',
-          'si.id = sl.scenarioInterventionId',
-        )
+        .leftJoin(Intervention, 'si', 'si.id = sl.scenarioInterventionId')
         .andWhere(
           new Brackets((qb: WhereExpressionBuilder) => {
             qb.where('sl.scenarioInterventionId IS NULL').orWhere(
@@ -420,7 +412,7 @@ export class H3DataRepository extends Repository<H3Data> {
                     scenarioId: dto.comparedScenarioId,
                   })
                   .andWhere(`si.status = :status`, {
-                    status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+                    status: INTERVENTION_STATUS.ACTIVE,
                   });
               }),
             );
@@ -464,11 +456,7 @@ export class H3DataRepository extends Repository<H3Data> {
     const baseQueryExtend = (baseQuery: SelectQueryBuilder<any>): void => {
       //Add selection criteria to also select both baseScenario and comparedScenario in the select statement
       baseQuery
-        .leftJoin(
-          ScenarioIntervention,
-          'si',
-          'si.id = sl.scenarioInterventionId',
-        )
+        .leftJoin(Intervention, 'si', 'si.id = sl.scenarioInterventionId')
         .andWhere(
           new Brackets((qb: WhereExpressionBuilder) => {
             qb.where('sl.scenarioInterventionId IS NULL').orWhere(
@@ -478,7 +466,7 @@ export class H3DataRepository extends Repository<H3Data> {
                     scenarioIds: [dto.baseScenarioId, dto.comparedScenarioId],
                   })
                   .andWhere(`si.status = :status`, {
-                    status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+                    status: INTERVENTION_STATUS.ACTIVE,
                   });
               }),
             );

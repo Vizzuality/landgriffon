@@ -34,7 +34,7 @@ import { CreateScenarioDto } from 'modules/scenarios/dto/create.scenario.dto';
 import { UpdateScenarioDto } from 'modules/scenarios/dto/update.scenario.dto';
 import { PaginationMeta } from 'utils/app-base.service';
 import { SetUserInterceptor } from 'decorators/set-user.interceptor';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { Intervention } from 'modules/interventions/intervention.entity';
 import { UserOwnsScenario } from 'modules/authorization/modules/scenario-ownership.interceptor';
 
 @Controller(`/api/v1/scenarios`)
@@ -120,7 +120,7 @@ export class ScenariosController {
   @Get(':id/interventions')
   async findInterventionsByScenario(
     @Param('id') id: string,
-  ): Promise<ScenarioIntervention[]> {
+  ): Promise<Intervention[]> {
     return this.scenariosService.findInterventionsByScenario(id);
   }
 

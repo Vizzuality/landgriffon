@@ -1,9 +1,9 @@
 import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import {
-  SCENARIO_INTERVENTION_TYPE,
-  ScenarioIntervention,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+  INTERVENTION_TYPE,
+  Intervention,
+} from 'modules/interventions/intervention.entity';
 import { Material, MATERIALS_STATUS } from 'modules/materials/material.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
@@ -333,25 +333,25 @@ async function createScenario(
 }
 
 async function createScenarioIntervention(
-  additionalData: Partial<ScenarioIntervention> = {},
-): Promise<ScenarioIntervention> {
+  additionalData: Partial<Intervention> = {},
+): Promise<Intervention> {
   let scenario = {};
   if (!additionalData.scenario) {
     scenario = await createScenario();
   }
-  const defaultData: DeepPartial<ScenarioIntervention> = {
+  const defaultData: DeepPartial<Intervention> = {
     title: 'Scenario intervention title',
     startYear: 2020,
     percentage: 50,
     scenario: additionalData.scenario ?? scenario,
-    type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
+    type: INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
     newIndicatorCoefficients: JSON.parse(
       JSON.stringify({ ce: 11, de: 10, ww: 5, bi: 3 }),
     ),
   };
 
-  const scenarioIntervention = ScenarioIntervention.merge(
-    new ScenarioIntervention(),
+  const scenarioIntervention = Intervention.merge(
+    new Intervention(),
     defaultData,
     additionalData,
   );

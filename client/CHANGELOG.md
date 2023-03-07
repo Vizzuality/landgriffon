@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [v0.5.0 Unreleased]
 
+### Added
+- Add filter by year on analysis table. [LANDGRIF-965](https://vizzuality.atlassian.net/browse/LANDGRIF-965)
 ### Changed
 - Intervention form: list only supported location types.
 - Analysis filters: location types options now listed according to scenarios (if any). [LANDGRIF-1255](https://vizzuality.atlassian.net/browse/LANDGRIF-1255)

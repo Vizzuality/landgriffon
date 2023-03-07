@@ -107,12 +107,23 @@ const AnalysisTable = () => {
     return [];
   }, [indicators, indicatorId]);
 
+  const sortingParams = useMemo(() => {
+    if (!!sortingState.length) {
+      return {
+        sortingYear: Number(sortingState?.[0].id),
+        sortingOrder: sortingState[0].desc ? 'DESC' : 'ASC',
+      };
+    }
+    return {};
+  }, [sortingState]);
+
   const params = {
     indicatorIds,
     startYear: filters.startYear,
     endYear: filters.endYear,
     groupBy: filters.groupBy,
     ...restFilters,
+    ...sortingParams,
     scenarioId: currentScenario,
     'page[number]': paginationState.pageIndex,
     'page[size]': paginationState.pageSize,
@@ -214,8 +225,7 @@ const AnalysisTable = () => {
         id: `${year}`,
         size: 170,
         align: 'left',
-        // TODO: restore when the API supports it
-        // enableSorting: !isComparison,
+        enableSorting: true,
         cell: ({ row: { original: data, id }, table }) => {
           //* The metadata is only present at the parent row, so we need to get it from there
           const { rowsById } = table.getExpandedRowModel();

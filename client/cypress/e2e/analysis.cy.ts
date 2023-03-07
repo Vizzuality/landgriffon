@@ -246,6 +246,28 @@ describe('Analysis table', () => {
       cy.wait('@fetchImpactTable').its('request.query.endYear').should('eql', toYear.toString());
     });
   });
+
+  it('should sort actual data impact by year', () => {
+    cy.wait('@fetchImpactTable');
+
+    // Sort DESC
+    cy.get('table th:last div > div div:last').as('lastYearColumnSortBtn').click({ force: true });
+    cy.wait('@fetchImpactTable').then((i) => {
+      expect(i.request.query).haveOwnProperty('sortingYear');
+      expect(i.request.query.sortingOrder).eq('DESC');
+    });
+    // Sort ASC
+    cy.get('@lastYearColumnSortBtn').click({ force: true });
+    cy.wait('@fetchImpactTable').then((i) => {
+      expect(i.request.query).haveOwnProperty('sortingYear');
+      expect(i.request.query.sortingOrder).eq('ASC');
+    });
+    // Remove sort
+    cy.get('@lastYearColumnSortBtn').click({ force: true });
+    cy.wait('@fetchImpactTable')
+      .its('request.query')
+      .should('not.include.any.keys', 'sortingYear', 'sortingOrder');
+  });
 });
 
 describe('Analysis scenarios', () => {

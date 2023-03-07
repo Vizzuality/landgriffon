@@ -74,9 +74,9 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
       !!materials.length && (
         <span>
           {materialArticle}{' '}
-          <ul className="inline-flex text-xs">
+          <ul className="inline-flex gap-1 text-xs">
             {materials.map((material) => (
-              <li key={material.value} className="pr-1">
+              <li key={material.value}>
                 <Badge
                   key={material.value}
                   data={material}
@@ -97,7 +97,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
       !!origins.length && (
         <span>
           {originArticle}{' '}
-          <ul className="inline-flex">
+          <ul className="inline-flex gap-1">
             {origins.map((origin) => (
               <li key={origin.value}>
                 <Badge
@@ -120,7 +120,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
       !!suppliers.length && (
         <span>
           {supplierArticle}{' '}
-          <ul className="inline-flex">
+          <ul className="inline-flex gap-1">
             {suppliers.map((supplier) => (
               <li key={supplier.value}>
                 <Badge
@@ -143,7 +143,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
       !!locationTypes.length && (
         <span>
           {locationTypeArticle}{' '}
-          <ul className="inline-flex">
+          <ul className="inline-flex gap-1">
             {locationTypes.map((locationType) => (
               <li key={locationType.value}>
                 <Badge
@@ -164,7 +164,8 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
 
   return (
     <div
-      className={classNames('flex items-center justify-start text-xs gap-x-1 flex-wrap', className)}
+      className={classNames('flex items-center justify-start text-xs gap-1 flex-wrap', className)}
+      data-testid="analysis-dynamic-metadata"
     >
       <InformationCircleIcon className="w-4 h-4 text-gray-900 shrink-0" />
       Viewing {isComparisonEnabled ? <ComparisonToggle /> : values}

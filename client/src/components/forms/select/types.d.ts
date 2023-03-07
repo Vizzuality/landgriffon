@@ -4,12 +4,14 @@ export type Option<T = string> = {
   disabled?: boolean;
 };
 
+type SelectValue<M> = M extends true ? Option<T>[] : Option<T>;
+
 export type SelectProps<T = string> = Omit<
   React.SelectHTMLAttributes<HTMLSelectElement>,
   'className' | 'onChange' | 'value' | 'defaultValue'
 > & {
   defaultValue?: Option<T>;
-  value?: Option<T> | Option<T>[];
+  value?: Option<T>[] | Option<T>;
   error?: string;
   icon?: React.ReactElement<SVGElement | HTMLDivElement>;
   label?: React.ReactNode;
@@ -17,5 +19,5 @@ export type SelectProps<T = string> = Omit<
   options: Option<T>[];
   showHint?: boolean;
   multiple?: boolean;
-  onChange: (value: Option<T>) => void;
+  onChange: (value: Option<T> | Option<T>[]) => void;
 };

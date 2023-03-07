@@ -11,25 +11,31 @@ const DEFAULT_QUERY_OPTIONS = {
   placeholderData: [],
   retry: false,
   keepPreviousData: true,
-  refetchOnWindowFocus: false,
 };
 
 export interface LocationTypesParams extends BaseTreeSearchParams {
   supplierIds?: string[];
+  sort?: 'ASC' | 'DESC';
+  // ! Due to an issue in NestJS framework (API side), sending supported with value `false`
+  // ! will be treated as a truthy value, so for this specific case, do not send it.
+  supported?: boolean;
 }
 
 export const useLocationTypes = <T = Option<LocationTypes>[]>(
   params: LocationTypesParams = {},
   options?: UseQueryOptions<Option<LocationTypes>[], unknown, T, ['location-types', typeof params]>,
-) => {
-  const query = useQuery(
+) =>
+  useQuery(
     ['location-types', params],
     () =>
       apiRawService
         .request<{ data: Option<LocationTypes>[] }>({
           method: 'GET',
-          url: '/sourcing-locations/location-types/supported',
-          params,
+          url: '/sourcing-locations/location-types',
+          params: {
+            sort: 'DESC',
+            ...params,
+          },
         })
         .then(({ data: responseData }) => responseData.data),
     {
@@ -37,6 +43,3 @@ export const useLocationTypes = <T = Option<LocationTypes>[]>(
       ...options,
     },
   );
-
-  return query;
-};

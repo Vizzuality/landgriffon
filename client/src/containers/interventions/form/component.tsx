@@ -251,7 +251,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
 
   // Location types
   const { data: locationTypes, isLoading: isLoadingLocationTypes } = useLocationTypes(
-    {},
+    { supported: true },
     {
       select: (_locationTypes) =>
         _locationTypes.map((locationTypeOption) => ({
@@ -696,7 +696,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                 defaultValue={value}
                 options={optionsYears}
                 placeholder="Select a year"
-                onChange={(value) => setValue('startYear', value)}
+                onChange={(value: Option<number>) => setValue('startYear', value)}
                 loading={isLoadingYears}
                 error={errors?.startYear?.value?.message}
               />
@@ -715,7 +715,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                 value={value}
                 options={[]}
                 placeholder="Select a year"
-                onChange={(value) => setValue('endYear', value)}
+                onChange={(value: Option<number>) => setValue('endYear', value)}
                 loading={isLoadingYears}
                 error={errors?.endYear?.value?.message}
                 disabled

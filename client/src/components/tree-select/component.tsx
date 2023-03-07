@@ -33,7 +33,7 @@ const THEMES = {
   default: {
     label: 'text-gray-900 text-xs',
     wrapper:
-      'flex-row max-w-full bg-white relative border border-gray-200 transition-colors hover:border-gray-300 rounded-md shadow-sm cursor-pointer min-h-[2.5rem] text-sm p-0.5 px-[0.2rem]',
+      'flex-row max-w-full bg-white relative border border-gray-200 transition-colors hover:border-gray-300 rounded-md shadow-sm cursor-pointer min-h-[2.5rem] text-sm p-0.5 pr-0',
     arrow: 'items-center text-gray-900',
     treeNodes:
       'flex gap-1 items-center p-2 pl-1 whitespace-nowrap text-sm cursor-pointer hover:bg-navy-50 z-[100]',
@@ -49,7 +49,7 @@ const THEMES = {
     badge: '',
   },
   disabled:
-    'flex-row max-w-full bg-gray-300/20 border border-gray-200 rounded-md shadow-sm cursor-default pointer-events-none min-h-[2.5rem] text-sm p-0.5 px-[0.2rem]',
+    'flex-row max-w-full bg-gray-300/20 border border-gray-200 rounded-md shadow-sm cursor-default pointer-events-none min-h-[2.5rem] text-sm p-0.5 pr-0',
 };
 
 const CustomSwitcherIcon: TreeProps<TreeDataNode>['switcherIcon'] = ({

@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added role check to enable upload data source button[LANGRIF-1125](https://vizzuality.atlassian.net/browse/LANDGRIF-1125)
 - Added permissions check to access profle/users info table [LANDGRIF-1124](https://vizzuality.atlassian.net/browse/LANDGRIF-1124)
 
+### Changed
+- Intervention form: list only supported location types.
+- Analysis filters: location types options now listed according to scenarios (if any). [LANDGRIF-1255](https://vizzuality.atlassian.net/browse/LANDGRIF-1255)
+
 ### Fixed
 - Fix permissions for edit scenarios on analysis pages [LANDGRIF-1253](https://vizzuality.atlassian.net/browse/LANDGRIF-1253)
 

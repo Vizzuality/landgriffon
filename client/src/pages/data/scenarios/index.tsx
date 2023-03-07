@@ -18,6 +18,7 @@ import Loading from 'components/loading';
 import { usePermissions } from 'hooks/permissions';
 import { Permission } from 'hooks/permissions/enums';
 
+import type { Option } from 'components/forms/select';
 import type { ScenarioCardProps } from 'containers/scenarios/card/types';
 
 const DISPLAY_OPTIONS: ScenarioCardProps['display'][] = ['grid', 'list'];
@@ -48,7 +49,7 @@ const ScenariosAdminPage: React.FC = () => {
   const canCreateScenario = hasPermission(Permission.CAN_CREATE_SCENARIO, false);
 
   const handleSort = useCallback(
-    ({ value }) => {
+    ({ value }: Option<string>) => {
       router.replace(
         {
           pathname: router.pathname,

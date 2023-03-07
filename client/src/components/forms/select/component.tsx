@@ -24,7 +24,7 @@ const Select = <T,>({
   placeholder = 'Select an option',
   showHint,
   onChange,
-  multiple = false,
+  multiple,
   ...props
 }: SelectProps<T>) => {
   const [selected, setSelected] = useState<Option<T> | Option<string> | Option<T>[]>(() => {
@@ -56,8 +56,8 @@ const Select = <T,>({
   });
 
   const handleChange = useCallback(
-    (current: Option<T>) => {
-      if (onChange) onChange(current);
+    (current: Parameters<typeof onChange>[0]) => {
+      onChange?.(current);
       setSelected(current);
     },
     [onChange],
@@ -68,9 +68,10 @@ const Select = <T,>({
       if (isArray(selected)) {
         const newSelected = selected.filter(({ value }) => option.value !== value);
         setSelected(newSelected);
+        onChange?.(newSelected);
       }
     },
-    [selected],
+    [selected, onChange],
   );
 
   // ? in case the value is not set in the hook initialization, it will be set here after first render.
@@ -140,7 +141,7 @@ const Select = <T,>({
               <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                 {open && !loading && (
                   <ChevronUpIcon
-                    className={classnames('w-5 h-5 text-gray-900', {
+                    className={classnames('w-4 h-4 text-gray-900', {
                       'text-gray-300': props.disabled,
                     })}
                     aria-hidden="true"
@@ -148,7 +149,7 @@ const Select = <T,>({
                 )}
                 {!open && !loading && (
                   <ChevronDownIcon
-                    className={classnames('w-5 h-5 text-gray-900', {
+                    className={classnames('w-4 h-4 text-gray-900', {
                       'text-gray-300': props.disabled,
                     })}
                     aria-hidden="true"

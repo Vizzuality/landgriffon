@@ -35,7 +35,7 @@ const YearsFilter: React.FC = () => {
   );
 
   const handleChange: SelectProps<number>['onChange'] = useCallback(
-    (option) => {
+    (option: Option<number>) => {
       setSelectedOption(option);
       dispatch(setFilter({ id: 'startYear', value: option.value }));
     },

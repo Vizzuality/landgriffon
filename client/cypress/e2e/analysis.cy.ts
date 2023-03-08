@@ -251,7 +251,11 @@ describe('Analysis table', () => {
     cy.wait('@fetchImpactTable');
 
     // Sort DESC
-    cy.get('table th:last div > div div:last').as('lastYearColumnSortBtn').click({ force: true });
+    cy.get('table th')
+      .eq(3)
+      .find('div>div>div:last')
+      .as('lastYearColumnSortBtn')
+      .click({ force: true });
     cy.wait('@fetchImpactTable').then((i) => {
       expect(i.request.query).haveOwnProperty('sortingYear');
       expect(i.request.query.sortingOrder).eq('DESC');

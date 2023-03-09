@@ -11,7 +11,7 @@ import {
 import {
   Indicator,
   INDICATOR_STATUS,
-  INDICATOR_TYPES_NEW,
+  INDICATOR_TYPES,
 } from 'modules/indicators/indicator.entity';
 import { DataSource } from 'typeorm';
 import {
@@ -21,7 +21,7 @@ import {
 import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
 import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
-import { IndicatorRecordCalculatedValuesDtoV2 } from 'modules/indicator-records/dto/indicator-record-calculated-values.dto';
+import { IndicatorRecordCalculatedValuesDto } from 'modules/indicator-records/dto/indicator-record-calculated-values.dto';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
@@ -66,15 +66,13 @@ export class ImpactCalculator {
     const newImpactToBeSaved: IndicatorRecord[] = [];
 
     rawData.forEach((data: SourcingRecordsWithIndicatorRawDataDtoV2) => {
-      const indicatorValues: Map<INDICATOR_TYPES_NEW, number> =
+      const indicatorValues: Map<INDICATOR_TYPES, number> =
         this.calculateIndicatorValues(data, data.tonnage);
 
       activeIndicators.forEach((indicator: Indicator) => {
         newImpactToBeSaved.push(
           IndicatorRecord.merge(new IndicatorRecord(), {
-            value: indicatorValues.get(
-              indicator.nameCode as INDICATOR_TYPES_NEW,
-            ),
+            value: indicatorValues.get(indicator.nameCode as INDICATOR_TYPES),
             indicatorId: indicator.id,
             status: INDICATOR_RECORD_STATUS.SUCCESS,
             sourcingRecordId: data.sourcingRecordId,
@@ -108,7 +106,7 @@ export class ImpactCalculator {
       sourcingRecordId,
     } = sourcingData;
 
-    let calculatedIndicatorRecordValues: IndicatorRecordCalculatedValuesDtoV2;
+    let calculatedIndicatorRecordValues: IndicatorRecordCalculatedValuesDto;
     const indicatorRecords: IndicatorRecord[] = [];
     const materialH3s: MaterialToH3 | null = await this.materialToH3.findOne({
       where: { materialId },
@@ -146,7 +144,7 @@ export class ImpactCalculator {
     } else {
       rawData = await this.getImpactRawDataPerSourcingRecordCached(
         indicatorsToCalculateImpactFor.map(
-          (i: Indicator) => i.nameCode as INDICATOR_TYPES_NEW,
+          (i: Indicator) => i.nameCode as INDICATOR_TYPES,
         ),
         materialId,
         geoRegionId,
@@ -154,7 +152,7 @@ export class ImpactCalculator {
       );
 
       calculatedIndicatorRecordValues =
-        new IndicatorRecordCalculatedValuesDtoV2();
+        new IndicatorRecordCalculatedValuesDto();
 
       calculatedIndicatorRecordValues.values = this.calculateIndicatorValues(
         rawData,
@@ -166,7 +164,7 @@ export class ImpactCalculator {
       indicatorRecords.push(
         IndicatorRecord.merge(new IndicatorRecord(), {
           value: calculatedIndicatorRecordValues.values.get(
-            indicator.nameCode as INDICATOR_TYPES_NEW,
+            indicator.nameCode as INDICATOR_TYPES,
           ),
           indicatorId: indicator.id,
           status: INDICATOR_RECORD_STATUS.SUCCESS,
@@ -181,7 +179,7 @@ export class ImpactCalculator {
   }
 
   private async getImpactRawDataPerSourcingRecordCached(
-    indicators: INDICATOR_TYPES_NEW[],
+    indicators: INDICATOR_TYPES[],
     materialId: string,
     geoRegionId: string,
     adminRegionId: string,
@@ -222,7 +220,7 @@ export class ImpactCalculator {
   }
 
   private async getImpactRawDataPerSourcingRecord(
-    indicators: INDICATOR_TYPES_NEW[],
+    indicators: INDICATOR_TYPES[],
     materialId: string,
     geoRegionId: string,
     adminRegionId: string,
@@ -269,30 +267,30 @@ export class ImpactCalculator {
     newIndicatorCoefficients: IndicatorCoefficientsDto,
     sourcingData: { sourcingRecordId: string; tonnage: number },
     materialH3DataId: string,
-  ): IndicatorRecordCalculatedValuesDtoV2 {
-    const calculatedIndicatorValues: IndicatorRecordCalculatedValuesDtoV2 =
-      new IndicatorRecordCalculatedValuesDtoV2();
+  ): IndicatorRecordCalculatedValuesDto {
+    const calculatedIndicatorValues: IndicatorRecordCalculatedValuesDto =
+      new IndicatorRecordCalculatedValuesDto();
     calculatedIndicatorValues.sourcingRecordId = sourcingData.sourcingRecordId;
     calculatedIndicatorValues.materialH3DataId = materialH3DataId;
-    calculatedIndicatorValues.values = new Map<INDICATOR_TYPES_NEW, number>();
+    calculatedIndicatorValues.values = new Map<INDICATOR_TYPES, number>();
     calculatedIndicatorValues.values.set(
-      INDICATOR_TYPES_NEW.LAND_USE,
-      newIndicatorCoefficients[INDICATOR_TYPES_NEW.LAND_USE] *
+      INDICATOR_TYPES.LAND_USE,
+      newIndicatorCoefficients[INDICATOR_TYPES.LAND_USE] *
         sourcingData.tonnage || 0,
     );
     calculatedIndicatorValues.values.set(
-      INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
-      newIndicatorCoefficients[INDICATOR_TYPES_NEW.DEFORESTATION_RISK] *
+      INDICATOR_TYPES.DEFORESTATION_RISK,
+      newIndicatorCoefficients[INDICATOR_TYPES.DEFORESTATION_RISK] *
         sourcingData.tonnage || 0,
     );
     calculatedIndicatorValues.values.set(
-      INDICATOR_TYPES_NEW.CLIMATE_RISK,
-      newIndicatorCoefficients[INDICATOR_TYPES_NEW.CLIMATE_RISK] *
+      INDICATOR_TYPES.CLIMATE_RISK,
+      newIndicatorCoefficients[INDICATOR_TYPES.CLIMATE_RISK] *
         sourcingData.tonnage || 0,
     );
     calculatedIndicatorValues.values.set(
-      INDICATOR_TYPES_NEW.WATER_USE,
-      newIndicatorCoefficients[INDICATOR_TYPES_NEW.WATER_USE] *
+      INDICATOR_TYPES.WATER_USE,
+      newIndicatorCoefficients[INDICATOR_TYPES.WATER_USE] *
         sourcingData.tonnage || 0,
     );
 
@@ -302,12 +300,12 @@ export class ImpactCalculator {
 
     // Depends on water use indicator's final value
     const waterUseValue: number = calculatedIndicatorValues.values.get(
-      INDICATOR_TYPES_NEW.WATER_USE,
+      INDICATOR_TYPES.WATER_USE,
     )!;
     calculatedIndicatorValues.values.set(
-      INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE,
+      INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
       waterUseValue *
-        newIndicatorCoefficients[INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE] *
+        newIndicatorCoefficients[INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE] *
         sourcingData.tonnage,
     );
 
@@ -323,7 +321,7 @@ export class ImpactCalculator {
       | SourcingRecordsWithIndicatorRawDataDtoV2
       | IndicatorRawDataBySourcingRecord,
     tonnage: number,
-  ): Map<INDICATOR_TYPES_NEW, number> {
+  ): Map<INDICATOR_TYPES, number> {
     const landPerTon: number = Number.isFinite(
       rawData.harvestedArea / rawData.production,
     )
@@ -348,18 +346,18 @@ export class ImpactCalculator {
     const waterUse: number = rawData.rawWater * tonnage;
     const unsustainableWaterUse: number = waterUse * rawData.waterStressPerct;
 
-    const map: Map<INDICATOR_TYPES_NEW, number> = new Map();
-    map.set(INDICATOR_TYPES_NEW.CLIMATE_RISK, carbonLoss);
-    map.set(INDICATOR_TYPES_NEW.DEFORESTATION_RISK, deforestation);
-    map.set(INDICATOR_TYPES_NEW.WATER_USE, waterUse);
-    map.set(INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE, unsustainableWaterUse);
-    map.set(INDICATOR_TYPES_NEW.LAND_USE, landUse);
+    const map: Map<INDICATOR_TYPES, number> = new Map();
+    map.set(INDICATOR_TYPES.CLIMATE_RISK, carbonLoss);
+    map.set(INDICATOR_TYPES.DEFORESTATION_RISK, deforestation);
+    map.set(INDICATOR_TYPES.WATER_USE, waterUse);
+    map.set(INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE, unsustainableWaterUse);
+    map.set(INDICATOR_TYPES.LAND_USE, landUse);
     map.set(
-      INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION,
+      INDICATOR_TYPES.SATELLIGENCE_DEFORESTATION,
       rawData.satDeforestation,
     );
     map.set(
-      INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION_RISK,
+      INDICATOR_TYPES.SATELLIGENCE_DEFORESTATION_RISK,
       rawData.satDeforestationRisk,
     );
 
@@ -367,7 +365,7 @@ export class ImpactCalculator {
   }
 
   private generateIndicatorCalculationCacheKey(
-    indicators: INDICATOR_TYPES_NEW[],
+    indicators: INDICATOR_TYPES[],
     materialId: string,
     geoRegionId: string,
     adminRegionId: string,
@@ -375,9 +373,8 @@ export class ImpactCalculator {
     return {
       // Sort the indicator list to guarantee that the same set of indicator types won't result in different keys
       // because of their order
-      indicators: indicators.sort(
-        (a: INDICATOR_TYPES_NEW, b: INDICATOR_TYPES_NEW) =>
-          a.toString() > b.toString() ? -1 : 1,
+      indicators: indicators.sort((a: INDICATOR_TYPES, b: INDICATOR_TYPES) =>
+        a.toString() > b.toString() ? -1 : 1,
       ),
       materialId,
       geoRegionId,
@@ -390,7 +387,7 @@ export class ImpactCalculator {
   ): Promise<SourcingRecordsWithIndicatorRawDataDtoV2[]> {
     const { params, query } = this.dependencyManager.buildQueryForImport(
       activeIndicators.map(
-        (indicator: Indicator) => indicator.nameCode as INDICATOR_TYPES_NEW,
+        (indicator: Indicator) => indicator.nameCode as INDICATOR_TYPES,
       ),
     );
     try {

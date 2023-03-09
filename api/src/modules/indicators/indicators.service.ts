@@ -11,7 +11,6 @@ import {
 import {
   Indicator,
   INDICATOR_STATUS,
-  INDICATOR_TYPES,
   indicatorResource,
 } from 'modules/indicators/indicator.entity';
 import { AppInfoDTO } from 'dto/info.dto';
@@ -72,36 +71,6 @@ export class IndicatorsService extends AppBaseService<
     }
 
     return found;
-  }
-
-  async getDeforestationH3Data(): Promise<H3Data> {
-    /**
-     * @note: For at least 2 types of risk maps, retrieving a fixed Indicator's data
-     * is required to perform the query, and no data to retrieve this Indicator is provided
-     * in the client's request
-     */
-
-    const deforestationIndicator: Indicator | null =
-      await this.indicatorRepository.findOne({
-        where: { nameCode: INDICATOR_TYPES.DEFORESTATION },
-      });
-    if (!deforestationIndicator)
-      throw new NotFoundException(
-        'No Deforestation Indicator data found in database',
-      );
-    const deforestationH3Data: any = await this.indicatorRepository
-      .createQueryBuilder()
-      .select()
-      .from('h3_data', 'h3_data')
-      .where('"indicatorId" = :indicatorId', {
-        indicatorId: deforestationIndicator.id,
-      })
-      .getRawOne();
-    if (!deforestationH3Data)
-      throw new NotFoundException(
-        'No Deforestation Indicator H3 data found in database, required to retrieve Biodiversity Loss and Carbon Risk-Maps',
-      );
-    return deforestationH3Data;
   }
 
   async getIndicatorsById(ids: string[]): Promise<Indicator[]> {

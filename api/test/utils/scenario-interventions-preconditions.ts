@@ -6,7 +6,7 @@ import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.e
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import {
   Indicator,
-  INDICATOR_TYPES_NEW,
+  INDICATOR_TYPES,
 } from 'modules/indicators/indicator.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import {
@@ -94,24 +94,24 @@ export async function createInterventionPreconditions(
 
   const indicator1: Indicator = await createIndicator({
     name: 'climate risk',
-    nameCode: INDICATOR_TYPES_NEW.CLIMATE_RISK,
+    nameCode: INDICATOR_TYPES.CLIMATE_RISK,
   });
   const indicator2: Indicator = await createIndicator({
     name: 'water use',
-    nameCode: INDICATOR_TYPES_NEW.WATER_USE,
+    nameCode: INDICATOR_TYPES.WATER_USE,
   });
   const indicator3: Indicator = await createIndicator({
     name: 'unsust water use',
-    nameCode: INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE,
+    nameCode: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
   });
   const indicator4: Indicator = await createIndicator({
     name: 'def risk',
-    nameCode: INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
+    nameCode: INDICATOR_TYPES.DEFORESTATION_RISK,
   });
 
   await createIndicator({
     name: 'land use',
-    nameCode: INDICATOR_TYPES_NEW.LAND_USE,
+    nameCode: INDICATOR_TYPES.LAND_USE,
   });
 
   // Creating tables with h3Data for the new indicators

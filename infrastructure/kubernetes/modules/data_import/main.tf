@@ -96,30 +96,6 @@ resource "kubernetes_job" "data_import" {
             }
           }
 
-          env {
-            name = "DATA_S3_ACCESS_KEY"
-            value_from {
-              secret_key_ref {
-                name = "data"
-                key  = "DATA_S3_ACCESS_KEY"
-              }
-            }
-          }
-
-          env {
-            name = "DATA_S3_SECRET_KEY"
-            value_from {
-              secret_key_ref {
-                name = "data"
-                key  = "DATA_S3_SECRET_KEY"
-              }
-            }
-          }
-
-
-
-
-
           resources {
             requests = {
               cpu    = "15"

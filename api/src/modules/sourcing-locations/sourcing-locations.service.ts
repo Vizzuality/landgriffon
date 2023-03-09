@@ -255,7 +255,7 @@ export class SourcingLocationsService extends AppBaseService<
       .sort((a: { locationType: string }, b: { locationType: string }) => {
         const comparison: number =
           a.locationType.toLowerCase() < b.locationType.toLowerCase() ? -1 : 1;
-        return options.sort === 'DESC' ? comparison * -1 : comparison;
+        return options.sort === 'DESC' ? comparison : comparison * -1;
       });
 
     return { data: locationTypeParser(locationTypes) };

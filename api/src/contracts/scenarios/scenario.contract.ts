@@ -3,9 +3,9 @@ import { z } from 'zod';
 import { CreateScenarioDto } from 'modules/scenarios_e2e_test/dto/create.scenario.dto';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 
-const c: any = initContract();
+const c = initContract();
 
-export const ScenarioContract: any = c.router({
+export const ScenarioContract = c.router({
   createScenario: {
     method: 'POST',
     path: '/api/v1/scenarios_e2e_test',

@@ -44,10 +44,10 @@ import {
   TsRest,
   TsRestRequest,
 } from '@ts-rest/nest';
-import { NestControllerContract } from '@ts-rest/nest/src/lib/ts-rest-nest';
+
 import { ScenarioContract } from 'contracts/scenarios/scenario.contract';
 
-const c: typeof ScenarioContract = nestControllerContract(ScenarioContract);
+const c = nestControllerContract(ScenarioContract);
 type RequestShapes = NestRequestShapes<typeof c>;
 type ResponseShapes = NestResponseShapes<typeof c>;
 
@@ -74,5 +74,6 @@ export class ScenariosController {
     return await this.scenariosService.serialize(
       await this.scenariosService.create(dto),
     );
+    //return new Scenario();
   }
 }

@@ -1,0 +1,10 @@
+{
+  "name": "landgriffon-contracts",
+  "dependencies": {
+    "@ts-rest/core": "^3.18.1",
+    "zod": "^3.21.4"
+  },
+  "peerDependencies": {
+    "typescript": "4.7.4"
+  }
+}

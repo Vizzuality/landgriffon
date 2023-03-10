@@ -36,93 +36,27 @@ import { PaginationMeta } from 'utils/app-base.service';
 import { SetUserInterceptor } from 'decorators/set-user.interceptor';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { UserOwnsScenario } from 'modules/authorization/modules/scenario-ownership.interceptor';
+import {
+  Api,
+  nestControllerContract,
+  NestRequestShapes,
+  NestResponseShapes,
+  TsRest,
+  TsRestRequest,
+} from '@ts-rest/nest';
+import { NestControllerContract } from '@ts-rest/nest/src/lib/ts-rest-nest';
+import { ScenarioContract } from 'contracts/scenarios/scenario.contract';
+
+const c: typeof ScenarioContract = nestControllerContract(ScenarioContract);
+type RequestShapes = NestRequestShapes<typeof c>;
+type ResponseShapes = NestResponseShapes<typeof c>;
 
 @Controller(`/api/v1/scenarios_e2e_test`)
 @ApiTags('scenarios_e2e_test')
 @ApiBearerAuth()
+@TsRest({ validateResponses: true })
 export class ScenariosController {
   constructor(public readonly scenariosService: ScenariosService) {}
-
-  @ApiOperation({
-    description: 'Find all scenarios',
-  })
-  @ApiQuery({
-    required: false,
-    name: 'hasActiveInterventions',
-    type: 'boolean',
-    description:
-      'If true, only scenarios with at least one active intervention will be selected.',
-  })
-  @ApiQuery({
-    //TODO wile a more generic way to approach this is pending to be developed on the nestjs-base-service, only title is supported for now
-    name: 'search',
-    type: 'Map<string, string>',
-    description:
-      'Must be provided when searching with partial matching. Each key of the map corresponds to a field that is to be matched partially, and its value, the string that will be partially matched against',
-  })
-  @ApiOkResponse({
-    type: Scenario,
-  })
-  @ApiUnauthorizedResponse()
-  @ApiForbiddenResponse()
-  @JSONAPIQueryParams({
-    availableFilters: scenarioResource.columnsAllowedAsFilter.map(
-      (columnName: string) => ({
-        name: columnName,
-      }),
-    ),
-  })
-  @Get()
-  async findAll(
-    @ProcessFetchSpecification({
-      allowedFilters: scenarioResource.columnsAllowedAsFilter,
-    })
-    fetchSpecification: FetchSpecification,
-  ): Promise<Scenario> {
-    const results: {
-      data: (Partial<Scenario> | undefined)[];
-      metadata: PaginationMeta | undefined;
-    } = await this.scenariosService.findAllPaginated(fetchSpecification);
-    return this.scenariosService.serialize(results.data, results.metadata);
-  }
-
-  @ApiOperation({ description: 'Find scenario by id' })
-  @ApiOkResponse({ type: Scenario })
-  @ApiNotFoundResponse({ description: 'Scenario not found' })
-  @JSONAPISingleEntityQueryParams({
-    availableFilters: scenarioResource.columnsAllowedAsFilter.map(
-      (columnName: string) => ({
-        name: columnName,
-      }),
-    ),
-  })
-  @UserOwnsScenario({ bypassIfScenarioIsPublic: true })
-  @Get(':id')
-  async findOne(
-    @Param('id') id: string,
-    @ProcessFetchSpecification({
-      allowedFilters: scenarioResource.columnsAllowedAsFilter,
-    })
-    fetchSpecification: FetchSpecification,
-  ): Promise<Scenario> {
-    return await this.scenariosService.serialize(
-      await this.scenariosService.getById(id, fetchSpecification),
-    );
-  }
-
-  @ApiOperation({
-    description: 'Find all Interventions that belong to a given Scenario Id',
-  })
-  @ApiOkResponse({ type: Scenario })
-  @ApiNotFoundResponse({ description: 'Scenario not found' })
-  @JSONAPISingleEntityQueryParams()
-  @UserOwnsScenario({ bypassIfScenarioIsPublic: true })
-  @Get(':id/interventions')
-  async findInterventionsByScenario(
-    @Param('id') id: string,
-  ): Promise<ScenarioIntervention[]> {
-    return this.scenariosService.findInterventionsByScenario(id);
-  }
 
   @ApiOperation({ description: 'Create a scenario' })
   @ApiOkResponse({ type: Scenario })
@@ -131,33 +65,14 @@ export class ScenariosController {
   })
   @UseInterceptors(SetUserInterceptor)
   @Post()
-  async create(@Body() dto: CreateScenarioDto): Promise<Scenario> {
+  @TsRest(c.createScenario)
+  async create(
+    @TsRestRequest()
+    { body: CreateScenarioDto }: RequestShapes['createScenario'],
+    @Body() dto: CreateScenarioDto,
+  ): Promise<ResponseShapes['createScenario']> {
     return await this.scenariosService.serialize(
       await this.scenariosService.create(dto),
     );
-  }
-
-  @ApiOperation({ description: 'Updates a scenario' })
-  @ApiOkResponse({ type: Scenario })
-  @ApiNotFoundResponse({ description: 'Scenario not found' })
-  @UseInterceptors(SetUserInterceptor)
-  @UserOwnsScenario()
-  @Patch(':id')
-  async update(
-    @Body(new ValidationPipe()) dto: UpdateScenarioDto,
-    @Param('id') id: string,
-  ): Promise<Scenario> {
-    return await this.scenariosService.serialize(
-      await this.scenariosService.update(id, dto),
-    );
-  }
-
-  @ApiOperation({ description: 'Deletes a scenario' })
-  @ApiOkResponse()
-  @ApiNotFoundResponse({ description: 'Scenario not found' })
-  @UserOwnsScenario()
-  @Delete(':id')
-  async delete(@Param('id') id: string): Promise<void> {
-    return await this.scenariosService.remove(id);
   }
 }

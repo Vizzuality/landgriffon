@@ -27,6 +27,7 @@ const AutoCompleteSelect = <T,>({
   options,
   showHint,
   clearable = false,
+  theme = 'light',
   onChange,
   onClearSelection,
   onSearch,
@@ -163,12 +164,16 @@ const AutoCompleteSelect = <T,>({
               <Combobox.Input<'input', Option<T>>
                 className={classnames(
                   'w-full inline-flex items-center py-2.5 pl-3 pr-10 text-left leading-5',
-                  'bg-white border rounded-md shadow-sm cursor-default hover:cursor-pointer focus:border-navy-400 focus:outline-none focus:ring-0',
-                  'disabled:bg-gray-300/20 disabled:cursor-default text-sm placeholder:text-gray-500',
+                  'border rounded-md shadow-sm cursor-default hover:cursor-pointer focus:border-navy-400 focus:outline-none focus:ring-0',
+                  'disabled:bg-gray-300/20 disabled:cursor-default text-sm',
                   {
+                    'bg-white placeholder:text-gray-500': theme === 'light',
+                    'bg-navy-400 text-white placeholder:text-white focus:bg-navy-600':
+                      theme === 'dark',
                     'mt-1': !!label,
                     'border-red-400': error,
-                    'border-gray-200': !error,
+                    'border-gray-200': theme === 'light' && !error,
+                    'border-navy-400': theme === 'dark' && !error,
                   },
                 )}
                 onChange={handleInputChange}
@@ -176,9 +181,9 @@ const AutoCompleteSelect = <T,>({
                 displayValue={(option) => option?.label}
                 ref={reference}
               />
-              <Combobox.Button className="absolute inset-0 flex items-center w-full pr-2" as="div">
+              <Combobox.Button className="absolute inset-0 flex items-center w-full pr-10" as="div">
                 {icon && <div className="mr-2">{cloneElement(icon)}</div>}
-                <div className="absolute right-1">
+                <div className="absolute right-4">
                   {open && !loading && (
                     <div className="flex items-center gap-1">
                       {!isEmptySelection && clearable && (
@@ -187,7 +192,9 @@ const AutoCompleteSelect = <T,>({
                         </button>
                       )}
                       <ChevronUpIcon
-                        className={classnames('w-5 h-5 text-gray-900', {
+                        className={classnames('w-4 h-4', {
+                          'text-gray-900': theme === 'light',
+                          'text-white': theme === 'dark',
                           'text-gray-300': props.disabled,
                         })}
                         aria-hidden="true"
@@ -202,14 +209,23 @@ const AutoCompleteSelect = <T,>({
                         </button>
                       )}
                       <ChevronDownIcon
-                        className={classnames('w-5 h-5 text-gray-900', {
+                        className={classnames('w-4 h-4', {
+                          'text-gray-900': theme === 'light',
+                          'text-white': theme === 'dark',
                           'text-gray-300': props.disabled,
                         })}
                         aria-hidden="true"
                       />
                     </div>
                   )}
-                  {loading && <Loading className="w-4 h-4 text-navy-400" />}
+                  {loading && (
+                    <Loading
+                      className={classnames('w-4 h-4 text-navy-400', {
+                        'text-navy-400': theme === 'light',
+                        'text-white': theme === 'dark',
+                      })}
+                    />
+                  )}
                 </div>
               </Combobox.Button>
             </div>

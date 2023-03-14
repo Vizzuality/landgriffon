@@ -6,17 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [v0.5.0 Unreleased]
-### Changed
-- Updated Nextjs to v13, updated eslint-config-next, updated next-auth [LANDGRIF-1114](https://vizzuality.atlassian.net/browse/LANDGRIF-1144)
 
 ### Added
+- New purple style for scenario select in analysis page. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
 - Add filter by year on analysis table. [LANDGRIF-965](https://vizzuality.atlassian.net/browse/LANDGRIF-965)
+
 ### Changed
 - Intervention form: list only supported location types.
 - Analysis filters: location types options now listed according to scenarios (if any). [LANDGRIF-1255](https://vizzuality.atlassian.net/browse/LANDGRIF-1255)
 - Unified styles of badges/pills for filters. Additionally, allow to pass classes to colorized them. [LANDGRIF-1205](https://vizzuality.atlassian.net/browse/LANDGRIF-1205)
-
-### Changed
+- Updated Nextjs to v13, updated eslint-config-next, updated next-auth [LANDGRIF-1114](https://vizzuality.atlassian.net/browse/LANDGRIF-1144)
 - Intervention form: list only supported location types.
 - Analysis filters: location types options now listed according to scenarios (if any). [LANDGRIF-1255](https://vizzuality.atlassian.net/browse/LANDGRIF-1255)
 

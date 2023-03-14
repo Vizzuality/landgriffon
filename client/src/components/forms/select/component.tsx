@@ -25,6 +25,7 @@ const Select = <T,>({
   showHint,
   onChange,
   multiple,
+  theme = 'light',
   ...props
 }: SelectProps<T>) => {
   const [selected, setSelected] = useState<Option<T> | Option<string> | Option<T>[]>(() => {
@@ -131,37 +132,52 @@ const Select = <T,>({
             )}
             <Listbox.Button
               className={classnames(
-                'relative w-full min-h-[42px] inline-flex items-center text-left leading-5 bg-white border rounded-md shadow-sm cursor-default hover:cursor-pointer focus:border-navy-400 focus:outline-none focus:ring-0 disabled:bg-gray-300/20 disabled:cursor-default',
+                'relative w-full min-h-[42px] inline-flex items-center text-left leading-5 border rounded-md shadow-sm cursor-default hover:cursor-pointer focus:outline-none focus:ring-0 disabled:bg-gray-300/20 disabled:cursor-default',
                 {
+                  'bg-white focus:border-navy-400': theme === 'light',
+                  'bg-navy-400 text-white placeholder:text-white focus:bg-navy-600':
+                    theme === 'dark',
                   'py-2.5 pl-3 pr-10': !multiple,
                   'py-1 pl-1 pr-10': multiple,
                   'mt-1': !!label,
                   'border-red-400': error,
-                  'border-gray-200': !error,
+                  'border-gray-200': theme === 'light' && !error,
+                  'border-navy-400': theme === 'dark' && !error,
                 },
               )}
               ref={reference}
             >
               {icon && <div className="mr-2">{cloneElement(icon)}</div>}
               <span className="min-h-full block text-sm truncate">{labelSelect}</span>
-              <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+              <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
                 {open && !loading && (
                   <ChevronUpIcon
-                    className={classnames('w-4 h-4 text-gray-900', {
+                    className={classnames('w-4 h-4', {
                       'text-gray-300': props.disabled,
+                      'text-gray-900': theme === 'light',
+                      'text-white': theme === 'dark',
                     })}
                     aria-hidden="true"
                   />
                 )}
                 {!open && !loading && (
                   <ChevronDownIcon
-                    className={classnames('w-4 h-4 text-gray-900', {
+                    className={classnames('w-4 h-4', {
                       'text-gray-300': props.disabled,
+                      'text-gray-900': theme === 'light',
+                      'text-white': theme === 'dark',
                     })}
                     aria-hidden="true"
                   />
                 )}
-                {loading && <Loading className="w-4 h-4 text-navy-400" />}
+                {loading && (
+                  <Loading
+                    className={classnames('w-4 h-4 text-navy-400', {
+                      'text-navy-400': theme === 'light',
+                      'text-white': theme === 'dark',
+                    })}
+                  />
+                )}
               </span>
             </Listbox.Button>
             <Transition

@@ -15,6 +15,7 @@ export type AutoCompleteSelectProps<T = string> = Omit<
   onChange: (value: Option<T>) => void;
   rowHeight?: number;
   clearable?: boolean;
+  theme?: 'light' | 'dark';
   onClearSelection?: () => void;
   onSearch?: (value: string) => void;
 };

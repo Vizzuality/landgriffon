@@ -19,5 +19,6 @@ export type SelectProps<T = string> = Omit<
   options: Option<T>[];
   showHint?: boolean;
   multiple?: boolean;
+  theme?: 'light' | 'dark';
   onChange: (value: Option<T> | Option<T>[]) => void;
 };

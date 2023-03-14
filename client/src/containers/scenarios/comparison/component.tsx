@@ -93,6 +93,7 @@ const ScenariosComparison: FC = () => {
         onChange={handleOnChange}
         data-testid="comparison"
         clearable
+        theme="dark"
         onClearSelection={handleScenarioRemoval}
       />
     </>

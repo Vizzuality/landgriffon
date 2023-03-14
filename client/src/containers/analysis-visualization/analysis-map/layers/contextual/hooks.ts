@@ -1,0 +1,43 @@
+import { useMemo } from 'react';
+import { H3HexagonLayer, H3HexagonLayerProps } from '@deck.gl/geo-layers/typed';
+
+import { useAppSelector } from 'store/hooks';
+import { analysisMap } from 'store/features/analysis';
+import { MapboxLayerProps } from 'components/map/layers/types';
+import { useAllContextualLayersData } from 'hooks/h3-data/contextual';
+
+import type { Layer } from 'types';
+
+export function useLayer({ id }: { id: Layer['id'] }) {
+  const { layerDeckGLProps } = useAppSelector(analysisMap);
+
+  const contextualData = useAllContextualLayersData();
+  const data = useMemo(() => {
+    const contextualDataById = Object.fromEntries(
+      contextualData
+        .filter((d) => d.isSuccess)
+        .map(({ data: { layerId, ...rest } }) => [layerId, rest]),
+    );
+
+    return contextualDataById[id]?.data || [];
+  }, [contextualData, id]);
+
+  const settings = useMemo(() => layerDeckGLProps[id] || {}, [layerDeckGLProps, id]);
+
+  const layer = useMemo(() => {
+    return {
+      ...settings,
+      type: H3HexagonLayer,
+      data,
+      pickable: true,
+      getHexagon: (d) => d.h,
+      getFillColor: (d) => d.c,
+      getLineColor: (d) => d.c,
+      visible: settings.visible ?? true,
+      opacity: settings.opacity ?? 1,
+      // onHover
+    } satisfies MapboxLayerProps<H3HexagonLayerProps<(typeof data)[0]>>;
+  }, [data, settings]);
+
+  return layer;
+}

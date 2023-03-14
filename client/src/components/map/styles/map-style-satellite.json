@@ -106,6 +106,14 @@
       "paint": { "background-color": "#f9f5f3" }
     },
     {
+      "id": "custom-layers",
+      "type": "background",
+      "paint": {
+        "background-color": "#000",
+        "background-opacity": 0
+      }
+    },
+    {
       "id": "mapbox-satellite",
       "type": "raster",
       "source": "mapbox://mapbox.satellite",

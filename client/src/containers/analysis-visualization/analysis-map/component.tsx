@@ -1,11 +1,12 @@
 import { useCallback, useMemo, useState } from 'react';
 import { XCircleIcon } from '@heroicons/react/solid';
-import { MapboxLayer } from '@deck.gl/mapbox/typed';
-import { sortBy } from 'lodash-es';
-import { LayerManager, Layer } from '@vizzuality/layer-manager-react';
-import PluginMapboxGl from '@vizzuality/layer-manager-plugin-mapboxgl';
-import { H3HexagonLayer } from '@deck.gl/geo-layers/typed';
+// import { MapboxLayer } from '@deck.gl/mapbox/typed';
+// import { LayerManager, Layer } from '@vizzuality/layer-manager-react';
+// import PluginMapboxGl from '@vizzuality/layer-manager-plugin-mapboxgl';
+// import { H3HexagonLayer } from '@deck.gl/geo-layers/typed';
 
+import LayerManager from 'components/map/layer-manager';
+// import { LAYERS as DEFAULT_LAYERS } from 'containers/analysis-visualization/analysis-map/layers';
 import { useAppSelector } from 'store/hooks';
 import { analysisMap } from 'store/features/analysis';
 import { useImpactLayer } from 'hooks/layers/impact';
@@ -16,20 +17,14 @@ import PopUp from 'components/map/popup';
 import BasemapControl from 'components/map/controls/basemap';
 import { NUMBER_FORMAT } from 'utils/number-format';
 import Map, { INITIAL_VIEW_STATE } from 'components/map';
-import { useAllContextualLayersData } from 'hooks/h3-data/contextual';
-import useH3MaterialData from 'hooks/h3-data/material';
+import { getLayerConfig } from 'components/map/layers/utils';
 
-import type {
-  H3HexagonLayer as H3HexagonLayerType,
-  H3HexagonLayerProps,
-} from '@deck.gl/geo-layers/typed';
 import type { ViewState } from 'react-map-gl';
 import type { MapStyle } from 'components/map/types';
 import type { BasemapValue } from 'components/map/controls/basemap/types';
-import type { H3Data } from 'types';
 
 const AnalysisMap = () => {
-  const { layerDeckGLProps, layers: layersMetadata } = useAppSelector(analysisMap);
+  const { layers } = useAppSelector(analysisMap);
 
   const [mapStyle, setMapStyle] = useState<MapStyle>('terrain');
   const [viewState, setViewState] = useState<Partial<ViewState>>(INITIAL_VIEW_STATE);
@@ -37,118 +32,66 @@ const AnalysisMap = () => {
   const [tooltipData, setTooltipData] = useState(null);
 
   // Loading layers
-  const {
-    isError,
-    isFetching,
-    data: { data: impactData },
-  } = useImpactLayer();
+  const { isError, isFetching } = useImpactLayer();
 
-  const { data: materialData } = useH3MaterialData(undefined, {
-    keepPreviousData: false,
-  });
+  // const onHoverLayer = useCallback(
+  //   ({
+  //     layer,
+  //     object,
+  //     coordinate,
+  //     viewport,
+  //     x,
+  //     y,
+  //   }: Parameters<H3HexagonLayerProps['onHover']>[0]): void => {
+  //     const { id } = layer;
+  //     const layerInfo = layersMetadata[id];
 
-  const contextualData = useAllContextualLayersData();
-  const contextualDataById = useMemo(() => {
-    return Object.fromEntries(
-      contextualData
-        .filter((d) => d.isSuccess)
-        .map(({ data: { layerId, ...rest } }) => [layerId, rest]),
-    );
-  }, [contextualData]);
-
-  const onHoverLayer = useCallback(
-    ({
-      layer,
-      object,
-      coordinate,
-      viewport,
-      x,
-      y,
-    }: Parameters<H3HexagonLayerProps['onHover']>[0]): void => {
-      const { id } = layer;
-      const layerInfo = layersMetadata[id];
-
-      setTooltipData({
-        x,
-        y,
-        viewport,
-        data: {
-          ...object,
-          coordinate,
-          name: layerInfo.metadata?.name || layerInfo.metadata?.legend.name,
-          unit: layerInfo.metadata?.legend?.unit,
-        },
-      });
-    },
-    [layersMetadata, setTooltipData],
-  );
-
-  const layers = useMemo(() => {
-    return Object.values(layerDeckGLProps)
-      .sort((a, b) => {
-        if (layersMetadata[a.id].order > layersMetadata[b.id].order) return 1;
-        if (layersMetadata[a.id].order < layersMetadata[b.id].order) return -1;
-        return 0;
-      })
-      .map((props) => {
-        const layerInfo = layersMetadata[props.id];
-        if (!layerInfo) {
-          return null;
-        }
-
-        let data: H3Data;
-
-        switch (layerInfo.id) {
-          case 'material':
-            data = materialData?.data;
-            break;
-          case 'impact':
-            data = impactData;
-            break;
-          default:
-            data = contextualDataById[layerInfo.id]?.data || null;
-        }
-
-        if (!data) return null;
-
-        return new MapboxLayer<
-          H3HexagonLayerType<(typeof data)[0], { type: typeof H3HexagonLayer }>
-        >({
-          ...props,
-          id: props.id,
-          type: H3HexagonLayer,
-          data,
-          getHexagon: (d) => d.h,
-          getFillColor: (d) => d.c,
-          getLineColor: (d) => d.c,
-          onHover: onHoverLayer,
-        });
-      })
-      .filter((l) => !!l);
-  }, [
-    contextualDataById,
-    impactData,
-    layersMetadata,
-    layerDeckGLProps,
-    materialData?.data,
-    onHoverLayer,
-  ]);
+  //     setTooltipData({
+  //       x,
+  //       y,
+  //       viewport,
+  //       data: {
+  //         ...object,
+  //         coordinate,
+  //         name: layerInfo.metadata?.name || layerInfo.metadata?.legend.name,
+  //         unit: layerInfo.metadata?.legend?.unit,
+  //       },
+  //     });
+  //   },
+  //   [layersMetadata, setTooltipData],
+  // );
 
   const handleMapStyleChange = useCallback((newStyle: BasemapValue) => {
     setMapStyle(newStyle);
   }, []);
 
+  const sortedLayers = useMemo(() => {
+    const layerIds = Object.values(layers)
+      .filter((layer) => layer.active)
+      .sort((a, b) => {
+        if (a.order > b.order) return 1;
+        if (a.order < b.order) return -1;
+        return 0;
+      })
+      .map(({ id }) => id);
+
+    // ! review this: not sure outputting an object ensures the order of the layers
+    return layerIds.reduce(
+      (current, next) => ({
+        ...current,
+        [next]: getLayerConfig(layers[next]) || null,
+      }),
+      {},
+    );
+  }, [layers]);
+
   return (
     <div className="absolute top-0 left-0 w-full h-full overflow-hidden" data-testid="analysis-map">
       {isFetching && <PageLoading />}
       <Map mapStyle={mapStyle} viewState={viewState} onMapViewStateChange={handleViewState}>
-        {(map) => (
+        {() => (
           <>
-            <LayerManager map={map} plugin={PluginMapboxGl}>
-              {layers.map((_layer) => (
-                <Layer key={_layer.id} id={_layer.id} type="deck" deck={[_layer]} />
-              ))}
-            </LayerManager>
+            <LayerManager layers={sortedLayers} />
             {tooltipData && tooltipData.data?.v && (
               <PopUp
                 position={{

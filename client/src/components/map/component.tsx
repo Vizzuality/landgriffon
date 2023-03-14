@@ -31,6 +31,7 @@ export const Map: FC<CustomMapProps> = ({
   dragRotate,
   scrollZoom,
   doubleClickZoom,
+  onLoad,
   ...mapboxProps
 }: CustomMapProps) => {
   /**
@@ -48,6 +49,7 @@ export const Map: FC<CustomMapProps> = ({
     },
   );
   const [isFlying, setFlying] = useState(false);
+  const [isLoaded, setLoaded] = useState(false);
 
   /**
    * CALLBACKS
@@ -112,6 +114,14 @@ export const Map: FC<CustomMapProps> = ({
     };
   }, [bounds, isFlying]);
 
+  const handleMapLoad = useCallback(
+    (evt) => {
+      setLoaded(true);
+      if (onLoad) onLoad(evt);
+    },
+    [onLoad],
+  );
+
   return (
     <ReactMapGL
       id={id}
@@ -123,11 +133,12 @@ export const Map: FC<CustomMapProps> = ({
       scrollZoom={!isFlying && scrollZoom}
       doubleClickZoom={!isFlying && doubleClickZoom}
       onMove={handleMapMove}
+      onLoad={handleMapLoad}
       className="-z-10"
       {...mapboxProps}
       {...localViewState}
     >
-      {!!mapRef && children(mapRef.getMap())}
+      {!!mapRef && isLoaded && children(mapRef.getMap())}
     </ReactMapGL>
   );
 };

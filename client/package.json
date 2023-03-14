@@ -33,7 +33,7 @@
     "@headlessui/react": "1.7.8",
     "@heroicons/react": "1.0.6",
     "@hookform/resolvers": "2.8.8",
-    "@loaders.gl/core": "3.2.5",
+    "@loaders.gl/core": "3.3.1",
     "@luma.gl/constants": "8.5.18",
     "@react-aria/dialog": "3.1.4",
     "@react-aria/focus": "3.7.0",
@@ -45,8 +45,6 @@
     "@tailwindcss/typography": "0.5.0",
     "@tanstack/react-query": "^4.2.1",
     "@tanstack/react-table": "8.5.1",
-    "@vizzuality/layer-manager-plugin-mapboxgl": "2.0.3",
-    "@vizzuality/layer-manager-react": "2.0.3",
     "autoprefixer": "10.2.5",
     "axios": "0.27.2",
     "chroma-js": "2.1.2",
@@ -119,7 +117,7 @@
     "start-server-and-test": "1.14.0",
     "storybook-addon-next": "^1.6.9",
     "storybook-addon-swc": "^1.1.8",
-    "typescript": "4.8.3",
+    "typescript": "4.9.5",
     "webpack": "5"
   },
   "resolutions": {

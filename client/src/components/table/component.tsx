@@ -47,7 +47,7 @@ const columnToColumnDef = <T,>(
     column.cell ??
     (({ row: { original } }) => original[id as keyof typeof original] as DeepValue<T, typeof id>);
 
-  return columnHelper.accessor<DeepKeys<T>, DeepValue<T, DeepKeys<T>>>(
+  return columnHelper.accessor(
     id as DeepKeys<T>,
     {
       enableSorting: false,

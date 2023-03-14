@@ -37,7 +37,7 @@ COPY --chown=$USER:$USER src ./src
 COPY --chown=$USER:$USER public ./public
 
 # NextJS required files
-COPY --chown=$USER:$USER next.config.js next-env.d.ts local.d.ts \
+COPY --chown=$USER:$USER next.config.js local.d.ts \
 	postcss.config.js tailwind.config.js entrypoint.sh \
 	tsconfig.json .browserlistrc .eslintrc.js .prettierrc.json ./
 

@@ -163,9 +163,10 @@ const AutoCompleteSelect = <T,>({
             <div className="relative w-full overflow-hidden">
               <Combobox.Input<'input', Option<T>>
                 className={classnames(
-                  'w-full inline-flex items-center py-2.5 pl-3 pr-10 text-left leading-5',
+                  'w-full inline-flex items-center py-2.5 pl-3 text-left leading-5',
                   'border rounded-md shadow-sm cursor-default hover:cursor-pointer focus:border-navy-400 focus:outline-none focus:ring-0',
-                  'disabled:bg-gray-300/20 disabled:cursor-default text-sm',
+                  'disabled:bg-gray-300/20 disabled:cursor-default text-sm truncate',
+                  clearable ? 'pr-14' : 'pr-10',
                   {
                     'bg-white placeholder:text-gray-500': theme === 'light',
                     'bg-navy-400 text-white placeholder:text-white focus:bg-navy-600':
@@ -188,7 +189,9 @@ const AutoCompleteSelect = <T,>({
                     <div className="flex items-center gap-1">
                       {!isEmptySelection && clearable && (
                         <button type="button" onClick={clearSelection}>
-                          <XIcon className="w-4 h-4" />
+                          <XIcon
+                            className={classnames('w-4 h-4', theme === 'dark' && 'text-white')}
+                          />
                         </button>
                       )}
                       <ChevronUpIcon
@@ -205,7 +208,9 @@ const AutoCompleteSelect = <T,>({
                     <div className="flex items-center gap-1">
                       {!isEmptySelection && clearable && (
                         <button type="button" onClick={clearSelection}>
-                          <XIcon className="w-4 h-4" />
+                          <XIcon
+                            className={classnames('w-4 h-4', theme === 'dark' && 'text-white')}
+                          />
                         </button>
                       )}
                       <ChevronDownIcon

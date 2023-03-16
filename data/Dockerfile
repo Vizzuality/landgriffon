@@ -1,4 +1,4 @@
-FROM osgeo/gdal:ubuntu-full-3.2.1
+FROM osgeo/gdal:ubuntu-full-3.3.3
 LABEL maintainer="hello@vizzuality.com"
 
 ENV NODE_OPTIONS=--max_old_space_size=16384

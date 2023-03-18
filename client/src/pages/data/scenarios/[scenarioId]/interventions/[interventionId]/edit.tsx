@@ -9,9 +9,9 @@ import CleanLayout from 'layouts/clean';
 import InterventionForm from 'containers/interventions/form';
 import BackLink from 'components/back-link/component';
 import Loading from 'components/loading';
+import { handleResponseError } from 'utils/handle-response-error';
 
 import type { InterventionFormData } from 'containers/interventions/types';
-import type { ErrorResponse } from 'types';
 
 const EditInterventionPage: React.FC = () => {
   const router = useRouter();
@@ -50,10 +50,7 @@ const EditInterventionPage: React.FC = () => {
               router.replace(`/data/scenarios/${interventionDto.scenarioId}/edit`);
             }, 2000);
           },
-          onError: (error: ErrorResponse) => {
-            const { errors } = error.response?.data;
-            errors.forEach(({ title }) => toast.error(title));
-          },
+          onError: handleResponseError,
         },
       );
     },

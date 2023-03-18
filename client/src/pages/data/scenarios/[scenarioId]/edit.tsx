@@ -25,6 +25,7 @@ import Input from 'components/forms/input';
 import Toggle from 'components/toggle';
 import Dropdown from 'components/dropdown';
 import Badge from 'components/badge';
+import { handleResponseError } from 'utils/handle-response-error';
 
 import type { ScenarioFormData } from 'containers/scenarios/types';
 import type { ErrorResponse } from 'types';
@@ -52,10 +53,7 @@ const UpdateScenarioPage: React.FC = () => {
             queryClient.invalidateQueries(['scenariosList']);
             queryClient.invalidateQueries(['scenario', data.id]);
           },
-          onError: (error: ErrorResponse) => {
-            const { errors } = error.response?.data;
-            errors.forEach(({ meta }) => toast.error(meta.rawError.response.message));
-          },
+          onError: handleResponseError,
         },
       );
     },
@@ -71,10 +69,7 @@ const UpdateScenarioPage: React.FC = () => {
             toast.success('Intervention has been successfully updated.');
             queryClient.invalidateQueries(['scenarioInterventions']);
           },
-          onError: (error: ErrorResponse) => {
-            const { errors } = error.response?.data;
-            errors.forEach(({ meta }) => toast.error(meta.rawError.response.message));
-          },
+          onError: handleResponseError,
         },
       ),
     [queryClient, updateIntervention],
@@ -135,7 +130,7 @@ const UpdateScenarioPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-2 p-2 mt-4 mb-2 border border-gray-300 rounded-md">
-                  <Badge className="bg-blue-200 border-blue-400 text-sm">
+                  <Badge className="text-sm bg-blue-200 border-blue-400">
                     Entire company +1.5%/y
                   </Badge>
                 </div>

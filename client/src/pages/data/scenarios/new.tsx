@@ -7,9 +7,9 @@ import { useCreateScenario } from 'hooks/scenarios';
 import CleanLayout from 'layouts/clean';
 import BackLink from 'components/back-link';
 import ScenarioForm from 'containers/scenarios/form';
+import { handleResponseError } from 'utils/handle-response-error';
 
 import type { ScenarioFormData } from 'containers/scenarios/types';
-import type { ErrorResponse } from 'types';
 
 const CreateScenarioPage: React.FC = () => {
   const createScenario = useCreateScenario();
@@ -25,10 +25,7 @@ const CreateScenarioPage: React.FC = () => {
             router.replace(`/data/scenarios/${id}/edit`);
           }, 3000);
         },
-        onError: (error: ErrorResponse) => {
-          const { errors } = error.response?.data;
-          errors.forEach(({ meta }) => toast.error(meta.rawError.response.message));
-        },
+        onError: handleResponseError,
       });
     },
     [createScenario],

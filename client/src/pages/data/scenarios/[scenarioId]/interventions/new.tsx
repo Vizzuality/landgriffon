@@ -8,6 +8,7 @@ import CleanLayout from 'layouts/clean';
 import InterventionForm from 'containers/interventions/form';
 import { parseInterventionFormDataToDto } from 'containers/interventions/utils';
 import BackLink from 'components/back-link';
+import { handleResponseError } from 'utils/handle-response-error';
 
 import type { InterventionFormData } from 'containers/interventions/types';
 
@@ -21,17 +22,7 @@ const CreateInterventionPage: React.FC = () => {
         router.replace(`/data/scenarios/${variables.scenarioId}/edit`);
       }, 1000);
     },
-    onError: (error) => {
-      const { errors } = error.response?.data;
-      errors.forEach(({ meta }) => {
-        const message = meta.rawError.response.message;
-        if (Array.isArray(message)) {
-          toast.error(message.join('. '));
-        } else {
-          toast.error(message);
-        }
-      });
-    },
+    onError: handleResponseError,
   });
 
   const handleSubmit = useCallback(

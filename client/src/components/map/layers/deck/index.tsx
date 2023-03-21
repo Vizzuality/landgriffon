@@ -1,6 +1,7 @@
+import { useEffect } from 'react';
 import { Layer } from 'react-map-gl';
 
-import { useLayer } from './hooks';
+import { useMapboxOverlayContext } from 'components/map/layer-manager/provider';
 
 import type { LayerSettings, DeckLayerProps } from '../types';
 
@@ -11,7 +12,18 @@ const DeckLayer = <T,>({
   beforeId,
   ...props
 }: DeckLayerProps<T, LayerSettings>) => {
-  useLayer({ id, beforeId, settings, zIndex, ...props });
+  const i = `${id}-deck`;
+  const { addLayer, removeLayer } = useMapboxOverlayContext();
+
+  useEffect(() => {
+    addLayer({ ...props, id: i, beforeId });
+  }, [i, beforeId, props, addLayer]);
+
+  useEffect(() => {
+    return () => {
+      removeLayer(i);
+    };
+  }, [i, removeLayer]);
 
   return (
     <Layer

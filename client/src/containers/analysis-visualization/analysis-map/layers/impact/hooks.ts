@@ -6,17 +6,18 @@ import { useAppSelector } from 'store/hooks';
 import { analysisMap } from 'store/features/analysis';
 import { MapboxLayerProps } from 'components/map/layers/types';
 
-export function useLayer() {
-  const {
-    layerDeckGLProps,
-    //layers: layersMetadata
-  } = useAppSelector(analysisMap);
+import type { LayerProps, LayerSettings } from 'components/map/layers/types';
+
+export function useLayer(props: LayerProps<LayerSettings>['settings']) {
+  const { onHoverLayer } = props;
+  const { layerDeckGLProps, layers: layersMetadata } = useAppSelector(analysisMap);
 
   const {
     data: { data },
   } = useImpactLayer();
 
   const settings = useMemo(() => layerDeckGLProps['impact'] || {}, [layerDeckGLProps]);
+  const metadata = useMemo(() => layersMetadata['impact']['metadata'], [layersMetadata]);
 
   const layer = useMemo(() => {
     return {
@@ -29,9 +30,11 @@ export function useLayer() {
       getLineColor: (d) => d.c,
       visible: settings.visible ?? true,
       opacity: settings.opacity ?? 1,
-      // onHover
+      onHover: (pickinginfo) => {
+        onHoverLayer?.(pickinginfo, metadata);
+      },
     } satisfies MapboxLayerProps<H3HexagonLayerProps<(typeof data)[0]>>;
-  }, [data, settings]);
+  }, [data, settings, metadata, onHoverLayer]);
 
   return layer;
 }

@@ -1,12 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { XCircleIcon } from '@heroicons/react/solid';
-// import { MapboxLayer } from '@deck.gl/mapbox/typed';
-// import { LayerManager, Layer } from '@vizzuality/layer-manager-react';
-// import PluginMapboxGl from '@vizzuality/layer-manager-plugin-mapboxgl';
-// import { H3HexagonLayer } from '@deck.gl/geo-layers/typed';
 
 import LayerManager from 'components/map/layer-manager';
-// import { LAYERS as DEFAULT_LAYERS } from 'containers/analysis-visualization/analysis-map/layers';
 import { useAppSelector } from 'store/hooks';
 import { analysisMap } from 'store/features/analysis';
 import { useImpactLayer } from 'hooks/layers/impact';
@@ -19,6 +14,7 @@ import { NUMBER_FORMAT } from 'utils/number-format';
 import Map, { INITIAL_VIEW_STATE } from 'components/map';
 import { getLayerConfig } from 'components/map/layers/utils';
 
+import type { H3HexagonLayerProps } from '@deck.gl/geo-layers/typed';
 import type { ViewState } from 'react-map-gl';
 import type { MapStyle } from 'components/map/types';
 import type { BasemapValue } from 'components/map/controls/basemap/types';
@@ -34,32 +30,25 @@ const AnalysisMap = () => {
   // Loading layers
   const { isError, isFetching } = useImpactLayer();
 
-  // const onHoverLayer = useCallback(
-  //   ({
-  //     layer,
-  //     object,
-  //     coordinate,
-  //     viewport,
-  //     x,
-  //     y,
-  //   }: Parameters<H3HexagonLayerProps['onHover']>[0]): void => {
-  //     const { id } = layer;
-  //     const layerInfo = layersMetadata[id];
-
-  //     setTooltipData({
-  //       x,
-  //       y,
-  //       viewport,
-  //       data: {
-  //         ...object,
-  //         coordinate,
-  //         name: layerInfo.metadata?.name || layerInfo.metadata?.legend.name,
-  //         unit: layerInfo.metadata?.legend?.unit,
-  //       },
-  //     });
-  //   },
-  //   [layersMetadata, setTooltipData],
-  // );
+  const onHoverLayer = useCallback(
+    (
+      { object, coordinate, viewport, x, y }: Parameters<H3HexagonLayerProps['onHover']>[0],
+      metadata,
+    ): void => {
+      setTooltipData({
+        x,
+        y,
+        viewport,
+        data: {
+          ...object,
+          coordinate,
+          name: metadata?.name || metadata?.legend.name,
+          unit: metadata?.legend?.unit,
+        },
+      });
+    },
+    [setTooltipData],
+  );
 
   const handleMapStyleChange = useCallback((newStyle: BasemapValue) => {
     setMapStyle(newStyle);
@@ -79,7 +68,7 @@ const AnalysisMap = () => {
     return layerIds.reduce(
       (current, next) => ({
         ...current,
-        [next]: getLayerConfig(layers[next]) || null,
+        [next]: getLayerConfig(layers[next]),
       }),
       {},
     );
@@ -91,7 +80,7 @@ const AnalysisMap = () => {
       <Map mapStyle={mapStyle} viewState={viewState} onMapViewStateChange={handleViewState}>
         {() => (
           <>
-            <LayerManager layers={sortedLayers} />
+            <LayerManager layers={sortedLayers} onHoverLayer={onHoverLayer} />
             {tooltipData && tooltipData.data?.v && (
               <PopUp
                 position={{

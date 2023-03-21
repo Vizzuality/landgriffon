@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useMemo } from 'react';
 import { H3HexagonLayer } from '@deck.gl/geo-layers/typed';
 
 import DeckLayer from 'components/map/layers/deck';
@@ -24,6 +24,8 @@ const INITIAL_PREVIEW_SETTINGS = {
   minZoom: 0,
   zoom: 0,
 };
+
+const PREVIEW_LAYER_ID = 'preview';
 
 const PreviewMap = ({ selectedLayerId, selectedMaterialId, onStatusChange }: PreviewMapProps) => {
   const { data: materialYear } = useYears('material', [selectedMaterialId], 'all', {
@@ -53,9 +55,11 @@ const PreviewMap = ({ selectedLayerId, selectedMaterialId, onStatusChange }: Pre
   }, [onStatusChange, status]);
 
   const PreviewLayer = useCallback(() => {
+    if (!data?.length) return null;
+
     return (
       <DeckLayer<MapboxLayerProps<H3HexagonLayerProps>>
-        id="preview"
+        id={PREVIEW_LAYER_ID}
         type={H3HexagonLayer}
         data={data}
         getHexagon={(d) => d.h}
@@ -65,11 +69,13 @@ const PreviewMap = ({ selectedLayerId, selectedMaterialId, onStatusChange }: Pre
     );
   }, [data]);
 
+  const layers = useMemo(() => ({ [PREVIEW_LAYER_ID]: PreviewLayer }), [PreviewLayer]);
+
   return (
     <>
       {isFetching && <PageLoading />}
       <Map id="contextual-preview-map" mapStyle="terrain" viewState={INITIAL_PREVIEW_SETTINGS}>
-        {() => <LayerManager layers={{ preview: PreviewLayer }} />}
+        {() => <LayerManager layers={layers} />}
       </Map>
     </>
   );

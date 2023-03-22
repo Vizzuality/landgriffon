@@ -2487,7 +2487,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@luma.gl/constants@npm:8.5.18":
+"@luma.gl/constants@npm:8.5.16":
+  version: 8.5.16
+  resolution: "@luma.gl/constants@npm:8.5.16"
+  checksum: 226e10d63bfbd60f0c97d1d796321728520f93467c34fc41f7d1e02b92253c0a5c8ea61015702c87bc2f602b75f007b3a9b0938938c4084bfcd0431c83383620
+  languageName: node
+  linkType: hard
+
+"@luma.gl/constants@npm:8.5.18, @luma.gl/constants@npm:^8.5.16":
   version: 8.5.18
   resolution: "@luma.gl/constants@npm:8.5.18"
   checksum: 6c2d486d4ae1f1e839166e28e5d64cd7aa6d5d58362522995689a057f12689d6ddec8368a58c9b83cf65141c19a857ea6f26dbcd4ce2bc8aec71a1ded5c27aff

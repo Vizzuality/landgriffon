@@ -286,6 +286,7 @@ describe('Analysis table', () => {
       .find('[data-testid="select-comparison"]')
       .click()
       .find('input:visible')
+      .focus()
       .type('Test{enter}');
 
     cy.url().should('contain', 'compareScenarioId=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7');
@@ -340,6 +341,7 @@ describe('Analysis table', () => {
       .find('[data-testid="select-comparison"]')
       .click()
       .find('input:visible')
+      .focus()
       .type('Example{enter}');
 
     cy.wait('@locationTypesWithSingleScenario').its('response.statusCode').should('eq', 200);
@@ -473,6 +475,7 @@ describe('Analysis scenarios', () => {
       .find('[data-testid="select-comparison"]')
       .click()
       .find('input:visible')
+      .focus()
       .type('Test{enter}');
 
     cy.url().should('contain', 'compareScenarioId=8dfd0ce0-67b7-4f1d-be9c-41bc3ceafde7');
@@ -527,6 +530,7 @@ describe('Analysis scenarios', () => {
       .find('[data-testid="select-comparison"]')
       .click()
       .find('input:visible')
+      .focus()
       .type('Example{enter}');
 
     cy.wait('@locationTypesWithSingleScenario').its('response.statusCode').should('eq', 200);

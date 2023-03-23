@@ -11,8 +11,8 @@ from .middlewares.auth_middleware import AuthMiddleware
 from .middlewares.s3_access import s3_presigned_access
 
 root_path = get_settings().root_path
-titiler_router_prefix = get_settings().titiler_router_prefix
-titiler_prefix = get_settings().titiler_prefix
+titiler_router_prefix = get_settings().titiler_router_prefix if get_settings().titiler_router_prefix is not None else "/cog"
+titiler_prefix = get_settings().titiler_prefix if get_settings().titiler_prefix is not None else "/cog"
 
 app = FastAPI(title="LandGriffon Tiler", docs_url='/tiler/docs', openapi_url='/tiler')
 app.add_middleware(TotalTimeMiddleware)
@@ -24,6 +24,7 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"],
 
 # single COG tiler. One file can have multiple bands
 cog = TilerFactory(router_prefix=titiler_router_prefix, path_dependency=s3_presigned_access)
+#cog = TilerFactory(router_prefix="/cog")
 app.include_router(cog.router, tags=["Cloud Optimized GeoTIFF"], prefix=titiler_prefix)
 add_exception_handlers(app, DEFAULT_STATUS_CODES)
 

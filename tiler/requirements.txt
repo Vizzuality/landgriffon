@@ -1,4 +1,4 @@
-titiler.application==0.11.0
+titiler.application==0.11.5
 boto3==1.26.68
 uvicorn==0.20.0
 requests~=2.28.2

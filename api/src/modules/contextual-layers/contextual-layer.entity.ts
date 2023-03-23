@@ -49,6 +49,18 @@ export class ContextualLayer extends BaseEntity {
   name: string;
 
   @Column({
+    type: 'varchar',
+    nullable: true,
+  })
+  tilerUrl: string;
+
+  @Column({
+    type: 'jsonb',
+    nullable: true,
+  })
+  defaultTilerParams: any;
+
+  @Column({
     type: 'jsonb',
     nullable: true,
   })
@@ -62,7 +74,9 @@ export class ContextualLayer extends BaseEntity {
   })
   category: CONTEXTUAL_LAYER_CATEGORY;
 
-  @OneToMany(() => H3Data, (h3Data: H3Data) => h3Data.contextualLayer)
+  @OneToMany(() => H3Data, (h3Data: H3Data) => h3Data.contextualLayer, {
+    nullable: true,
+  })
   h3Data: H3Data[];
 }
 

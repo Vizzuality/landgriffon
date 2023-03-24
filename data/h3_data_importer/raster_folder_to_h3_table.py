@@ -41,7 +41,9 @@ def check_transform(reference_raster: DatasetReader, raster: DatasetReader):
         raise ValueError(message)
 
 
-def raster_to_h3(reference_raster: Path, h3_resolution: int, raster_file: Path) -> pd.DataFrame:
+def raster_to_h3(
+    reference_raster: Path, h3_resolution: int, error_mitigation_file: Path, raster_file: Path
+) -> pd.DataFrame:
     """Convert a raser to a dataframe with h3index -> value
 
     Uses `h3ronpy.raster.raster_to_dataframe()` which uses already multiprocessing under the hood
@@ -53,7 +55,7 @@ def raster_to_h3(reference_raster: Path, h3_resolution: int, raster_file: Path) 
             check_srs(ref, raster)
             check_transform(ref, raster)
 
-        h3 = h3ronpy.raster.raster_to_dataframe(
+        h3_df = h3ronpy.raster.raster_to_dataframe(
             raster.read(1),
             transform=raster.transform,
             nodata_value=raster.nodata,
@@ -61,9 +63,15 @@ def raster_to_h3(reference_raster: Path, h3_resolution: int, raster_file: Path) 
             compacted=False,
             geo=False,
         ).set_index("h3index")
-        # we need the h3 index in the hexadecimal form for the DB
-        h3.index = pd.Series(h3.index).apply(lambda x: hex(x)[2:])
-        return h3.rename(columns={"value": slugify(Path(raster.name).stem)})
+        # we need the h3_df index in the hexadecimal form for the DB
+        h3_df.index = pd.Series(h3_df.index).apply(lambda x: hex(x)[2:])
+        if error_mitigation_file:
+            log.info(f"Correcting H3 values of {raster_file.name} with pixel/h3_df ratio")
+            correction_df = pd.read_csv(error_mitigation_file, index_col="h3index")
+            h3_df = h3_df.join(correction_df["ratio"])
+            h3_df["value"] *= h3_df["ratio"]
+            h3_df = h3_df.drop("ratio", axis=1)
+        return h3_df.rename(columns={"value": slugify(Path(raster.name).stem)})
 
 
 def create_h3_grid_table(connection: psycopg.Connection, table: str, df: pd.DataFrame):
@@ -188,7 +196,22 @@ def to_the_db(df: pd.DataFrame, table: str, data_type: str, dataset: str, year: 
 @click.argument("year", type=int)
 @click.option("--h3-res", "h3_res", type=int, default=6, help="h3 resolution to use [default=6]")
 @click.option("--thread-count", "thread_count", type=int, default=4, help="Number of threads to use [default=4]")
-def main(folder: Path, table: str, data_type: str, dataset: str, year: int, h3_res: int, thread_count: int):
+@click.option(
+    "--error_mitigation",
+    "error_mitigation",
+    type=click.Path(exists=True, path_type=Path),
+    help="",
+)
+def main(
+    folder: Path,
+    table: str,
+    data_type: str,
+    dataset: str,
+    year: int,
+    h3_res: int,
+    thread_count: int,
+    error_mitigation: Path,
+):
     """Reads a folder of .tif, converts to h3 and loads into a PG table
 
     \b
@@ -201,7 +224,7 @@ def main(folder: Path, table: str, data_type: str, dataset: str, year: int, h3_r
     """
     # Part 1: Convert Raster to h3 index -> value map (or dataframe in this case)
     raster_files = list(folder.glob("*.tif"))
-    partial_raster_to_h3 = partial(raster_to_h3, raster_files[0], h3_res)
+    partial_raster_to_h3 = partial(raster_to_h3, raster_files[0], h3_res, error_mitigation)
     with multiprocessing.Pool(thread_count) as pool:
         h3s = pool.map(partial_raster_to_h3, raster_files)
     log.info(f"Joining H3 data of each raster into single dataframe for table {table}")

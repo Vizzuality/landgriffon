@@ -1,15 +1,20 @@
 """
 This script takes a pixel resolution in degrees (uses epsg:4326) and generates
-
 """
+import logging
 from collections import namedtuple
 from math import radians
+from pathlib import Path
 
 import click
 import h3
 import h3ronpy.raster
 import numpy as np
 import rasterio as rio
+from tqdm import tqdm
+
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger(Path(__file__).stem)
 
 
 @click.command()
@@ -23,16 +28,21 @@ def main(dest_path, cell_size, h3_res):
     height = int((bbox.north - bbox.south) / cell_size)
     transform = rio.transform.from_bounds(*bbox, width=width, height=height)
 
-    earth_radius = 6371007.2  # authalic radius of earth in meters
-
+    # Here we make a matrix (height * width) filled with the areas of each pixel
+    # I'm assuming a spherical earth to keep things simple
+    # and using the authalic radius of earth to have a sphere model with the same area as the WGS84 ellipsoid
+    earth_radius = 6371007.2
     _, lats = rio.transform.xy(transform, list(range(height)), 0)  # pixel centroid latitudes
     pixel_area_by_lat = np.cos(np.deg2rad(lats)) * (earth_radius**2) * (radians(cell_size) ** 2)
     areas = np.ones(width) * pixel_area_by_lat[:, np.newaxis] / 1_000_000  # areas in km^2
 
+    log.info(f"Converting raster with extent {bbox} and res {cell_size}° to h3")
     df = h3ronpy.raster.raster_to_dataframe(areas, transform, h3_resolution=h3_res, compacted=False)
     df["h3index"] = df["h3index"].apply(lambda x: hex(x)[2:])
-    df["cell_area"] = df["h3index"].apply(h3.cell_area)
-    df["ratio"] = df["value"] / df["cell_area"]
+    tqdm.pandas(desc="Getting area of h3 cells")
+    df["cell_area"] = df["h3index"].progress_apply(h3.cell_area)
+    df["ratio"] = df["cell_area"] / df["value"]
+    log.info(f"Writing CSV with h3 cell ratios at {dest_path}")
     df.set_index("h3index").to_csv(dest_path)
 
 

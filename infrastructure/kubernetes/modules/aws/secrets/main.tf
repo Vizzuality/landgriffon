@@ -1,7 +1,3 @@
-data "aws_eks_cluster_auth" "cluster" {
-  name = var.cluster_name
-}
-
 locals {
   postgres_secret_json = {
     username = "landgriffon-${var.namespace}"
@@ -19,20 +15,6 @@ locals {
 resource "random_password" "jwt_secret_generator" {
   length  = 64
   special = true
-  #  lifecycle {
-  #    ignore_changes = [
-  #      length,
-  #      lower,
-  #      min_lower,
-  #      min_numeric,
-  #      min_special,
-  #      min_upper,
-  #      number,
-  #      special,
-  #      upper,
-  #
-  #    ]
-  #  }
 }
 
 resource "aws_secretsmanager_secret" "api_secret" {

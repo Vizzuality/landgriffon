@@ -28,6 +28,38 @@ module "marketing_gcr" {
   service_account = module.workload_identity.service_account
 }
 
+module "client_gcr" {
+  source          = "./modules/gcp/gcr"
+  project_id      = var.gcp_project_id
+  region          = var.gcp_region
+  name            = "client"
+  service_account = module.gke.node_service_account
+}
+
+module "api_gcr" {
+  source          = "./modules/gcp/gcr"
+  project_id      = var.gcp_project_id
+  region          = var.gcp_region
+  name            = "api"
+  service_account = module.gke.node_service_account
+}
+
+module "tiler_gcr" {
+  source          = "./modules/gcp/gcr"
+  project_id      = var.gcp_project_id
+  region          = var.gcp_region
+  name            = "tiler"
+  service_account = module.gke.node_service_account
+}
+
+module "data_import_gcr" {
+  source          = "./modules/gcp/gcr"
+  project_id      = var.gcp_project_id
+  region          = var.gcp_region
+  name            = "data-import"
+  service_account = module.gke.node_service_account
+}
+
 module "load_balancer" {
   source                  = "./modules/gcp/load-balancer"
   region                  = var.gcp_region
@@ -42,3 +74,14 @@ module "workload_identity" {
   project_id = var.gcp_project_id
 }
 
+
+module "gke" {
+  source         = "./modules/gcp/gke"
+  cluster_name   = var.project_name
+  node_pool_name = "default-pool"
+  zone           = var.gcp_zone
+  region         = var.gcp_region
+  project        = var.gcp_project_id
+  network        = module.network.network_name
+  subnetwork     = module.network.subnetwork_name
+}

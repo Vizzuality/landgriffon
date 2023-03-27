@@ -1,7 +1,3 @@
-data "aws_eks_cluster_auth" "cluster" {
-  name = var.cluster_name
-}
-
 resource "kubernetes_service" "tiler_service" {
   metadata {
     name      = kubernetes_deployment.tiler_deployment.metadata[0].name

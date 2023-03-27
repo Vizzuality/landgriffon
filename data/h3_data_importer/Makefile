@@ -19,6 +19,9 @@ WORKDIR_HDI=data/contextual/hdi
 WORKDIR_GHG=data/forest_ghg
 WORKDIR_WOODPULP=data/woodpulp
 
+export AWS_ACCESS_KEY_ID = $(DATA_S3_ACCESS_KEY)
+export AWS_SECRET_ACCESS_KEY = $(DATA_S3_SECRET_KEY)
+
 all:
 	@aws s3 ls $(AWS_S3_BUCKET_URL) 2>&1 > /dev/null; \
 	if [ $$? -ne 0 ]; \

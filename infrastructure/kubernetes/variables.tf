@@ -20,6 +20,21 @@ variable "aws_region" {
   description = "A valid AWS region to configure the underlying AWS SDK."
 }
 
+variable "gcp_region" {
+  type        = string
+  description = "A valid GCP region to configure the underlying GCP SDK."
+}
+
+variable "gcp_project_id" {
+  type        = string
+  description = "A valid GCP project id to configure the underlying GCP SDK."
+}
+
+variable "gcp_zone" {
+  description = "A valid GCP zone to configure the underlying GCP SDK."
+  type        = string
+}
+
 variable "tf_state_bucket" {
   type        = string
   description = "The name of the S3 bucket where the state is stored"
@@ -46,6 +61,10 @@ variable "mapbox_api_token" {
   description = "Token to access the Mapbox API"
 }
 
-variable "environments" {
-  description = "A list of environments"
+variable "aws_environments" {
+  description = "A list of AWS environments"
+}
+
+variable "gcp_environments" {
+  description = "A list of GCP environments"
 }

@@ -1,7 +1,3 @@
-data "aws_eks_cluster_auth" "cluster" {
-  name = var.cluster_name
-}
-
 locals {
   api_domain      = "api.${var.namespace != "production" ? ("${var.namespace}.") : ""}${var.domain}"
   client_domain   = "client.${var.namespace != "production" ? ("${var.namespace}.") : ""}${var.domain}"

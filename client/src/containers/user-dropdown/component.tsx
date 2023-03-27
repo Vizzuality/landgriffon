@@ -11,7 +11,7 @@ import Avatar from 'components/avatar';
 import Loading from 'components/loading';
 
 const MENU_ITEM_CLASSNAME =
-  'block w-full py-2 px-4 text-sm text-left text-gray-900 h-9 hover:bg-green-50';
+  'block w-full py-2 px-4 text-sm text-left text-gray-900 h-9 hover:bg-navy-50';
 
 const UserDropdown: React.FC = () => {
   const { x, y, reference, floating, strategy } = useFloating({
@@ -21,7 +21,7 @@ const UserDropdown: React.FC = () => {
 
   const { data: session, status } = useSession(); // TO-DO: replace by useMe
 
-  const handleSignOut = useCallback(() => signOut(), []);
+  const handleSignOut = useCallback(() => signOut({ callbackUrl: '/auth/signin' }), []);
 
   const renderAvatar = useCallback(
     (className?: string) => {

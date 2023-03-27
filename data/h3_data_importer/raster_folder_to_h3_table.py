@@ -48,6 +48,8 @@ def raster_to_h3(
 
     Uses `h3ronpy.raster.raster_to_dataframe()` which uses already multiprocessing under the hood
     so there's no need to iterate over the raster windows anymore.
+
+    NOTE: raster_file has to be last parameter
     """
     log.info(f"Converting {raster_file.name} to H3 dataframe")
     with rio.open(raster_file) as raster:

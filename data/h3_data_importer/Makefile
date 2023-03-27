@@ -31,7 +31,7 @@ all:
 
 	make clean
 	make h3-correction-factor
-	make indicators
+	make -j 2 crop indicators
 
 crop:
 	make -j 2 convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock convert-woodpulp
@@ -40,11 +40,11 @@ crop:
 # once the new indicators have been defined and ingested we will need to update the indicator code in for each on the indicator commented below and allow the ingestion.
 # convert-speciesRichness convert-aboveGroundBiomass convert-satDeforestation
 indicators:
-#	make convert-aqueduct-contextual
-#	# Processing deforestation data is quite intensive, so we do it separately, so we can allocate all threads to it
-#	# There is probably a better way to do this, that future me will learn about - in the future.
-#	make convert-deforestation
-#	make convert-forestGHG
+	make convert-aqueduct-contextual
+	# Processing deforestation data is quite intensive, so we do it separately, so we can allocate all threads to it
+	# There is probably a better way to do this, that future me will learn about - in the future.
+	make convert-deforestation
+	make convert-forestGHG
 	make convert-satDeforestation
 contextual-layers:
 	make convert-hdi-contextual

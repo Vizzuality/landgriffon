@@ -4,10 +4,15 @@ allowed_account_id = "622152552144"
 domain             = "landgriffon.com"
 repo_name          = "landgriffon"
 
-environments = {
+aws_environments = {
   dev : {},
   test : {},
-  tetrapack : {
-  },
+  tetrapack : {},
   demo : {}
+}
+
+gcp_environments = {
+  gcp : {
+    load_fresh_data : true
+  },
 }

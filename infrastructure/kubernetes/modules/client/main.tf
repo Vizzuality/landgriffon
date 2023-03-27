@@ -1,11 +1,10 @@
-data "aws_eks_cluster_auth" "cluster" {
-  name = var.cluster_name
-}
-
 resource "kubernetes_service" "client_service" {
   metadata {
-    name      = kubernetes_deployment.client_deployment.metadata[0].name
-    namespace = var.namespace
+    name        = kubernetes_deployment.client_deployment.metadata[0].name
+    namespace   = var.namespace
+    annotations = {
+      "alb.ingress.kubernetes.io/healthcheck-path" = "/auth/signin"
+    }
   }
   spec {
     selector = {

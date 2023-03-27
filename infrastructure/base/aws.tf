@@ -145,3 +145,34 @@ resource "aws_iam_role_policy_attachment" "raw_s3_rw_access_attachment" {
   role       = module.eks.node_role.name
   policy_arn = aws_iam_policy.raw_s3_rw_access.arn
 }
+
+resource "aws_iam_user" "raw_s3_reader" {
+  name = "ReadAccessToRawDataS3Bucket"
+}
+
+resource "aws_iam_policy" "raw_s3_read_access" {
+  name        = "ReadAccessToRawDataS3Bucket"
+  description = "Read access to the raw data S3 bucket"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        "Action" : [
+          "s3:Get*",
+          "s3:List*",
+        ],
+        Effect = "Allow"
+        Resource = [
+          module.s3_bucket.bucket_arn,
+          "${module.s3_bucket.bucket_arn}/*",
+        ]
+      },
+    ]
+  })
+}
+
+resource "aws_iam_user_policy_attachment" "raw_s3_rw_access_attachment" {
+  user       = aws_iam_user.raw_s3_reader.name
+  policy_arn = aws_iam_policy.raw_s3_read_access.arn
+}

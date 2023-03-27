@@ -9,15 +9,29 @@ variable "environment" {
   description = "An environment namespace for the infrastructure."
 }
 
-variable "aws_region" {
-  default     = "eu-west-3"
+variable "gcp_region" {
   type        = string
-  description = "A valid AWS region to configure the underlying AWS SDK."
+  description = "A valid GCP region to configure the underlying GCP SDK."
+}
+
+variable "gcp_project" {
+  type        = string
+  description = "A valid GCP project id to configure the underlying GCP SDK."
+}
+
+variable "gcp_zone" {
+  description = "A valid GCP zone to configure the underlying GCP SDK."
+  type        = string
 }
 
 variable "repo_name" {
   type        = string
   description = "Name of the github repo where the project is hosted"
+}
+
+variable "repo_branch" {
+  type        = string
+  description = "The github branch to use"
 }
 
 variable "cluster_name" {
@@ -83,6 +97,16 @@ variable "client_container_registry_url" {
   description = "URL for the client container registry"
 }
 
+variable "aws_access_key_id" {
+  type        = string
+  description = "AWS Access Key ID to read S3 data for data import"
+}
+
+variable "aws_secret_access_key" {
+  type        = string
+  description = "AWS Secret Access Key to read S3 data for data import"
+}
+
 variable "science_bucket_name" {
   type        = string
   description = "Name of the LG Science S3 Bucket"
@@ -102,7 +126,6 @@ variable "api_env_vars" {
   default     = []
 }
 
-
 variable "api_secrets" {
   type = list(object({
     name        = string
@@ -112,8 +135,6 @@ variable "api_secrets" {
   description = "List of secrets to make available to the api container"
   default     = []
 }
-
-
 
 variable "tiler_env_vars" {
   type = list(object({

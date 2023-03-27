@@ -1,7 +1,3 @@
-data "aws_eks_cluster_auth" "cluster" {
-  name = var.cluster_name
-}
-
 // https://docs.aws.amazon.com/eks/latest/userguide/cluster-autoscaler.html
 // AWS Cluster autoscaler
 // File has changes - see link above for details

@@ -1,7 +1,3 @@
-data "aws_eks_cluster_auth" "cluster" {
-  name = var.cluster_name
-}
-
 resource "kubernetes_job" "data_import" {
   count = var.load_data ? 1 : 0
 
@@ -51,55 +47,29 @@ resource "kubernetes_job" "data_import" {
 
           args = var.arguments
 
-          env {
-            name = "API_POSTGRES_HOST"
-            value_from {
-              secret_key_ref {
-                name = "db"
-                key  = "DB_HOST"
-              }
-            }
-          }
+          dynamic "env" {
+            for_each = concat(var.env_vars, var.secrets)
+            content {
+              name = env.value["name"]
+              dynamic "value_from" {
+                for_each = lookup(env.value, "secret_name", null) != null ? [1] : []
+                content {
+                  secret_key_ref {
 
-          env {
-            name  = "API_POSTGRES_PORT"
-            value = "5432"
-          }
+                    name = env.value["secret_name"]
+                    key  = env.value["secret_key"]
+                  }
+                }
 
-          env {
-            name = "API_POSTGRES_USERNAME"
-            value_from {
-              secret_key_ref {
-                name = "db"
-                key  = "DB_USERNAME"
               }
-            }
-          }
-
-          env {
-            name = "API_POSTGRES_PASSWORD"
-            value_from {
-              secret_key_ref {
-                name = "db"
-                key  = "DB_PASSWORD"
-              }
-            }
-          }
-
-          env {
-            name = "API_POSTGRES_DATABASE"
-            value_from {
-              secret_key_ref {
-                name = "db"
-                key  = "DB_DATABASE"
-              }
+              value = lookup(env.value, "value", null) != null ? env.value["value"] : null
             }
           }
 
           resources {
             requests = {
               cpu    = "15"
-              memory = "120Gi"
+              memory = "110Gi"
             }
           }
         }

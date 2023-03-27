@@ -17,12 +17,17 @@ variable "domain" {
 variable "aws_region" {
   default     = "eu-west-3"
   type        = string
-  description = "A valid AWS region to configure the underlying AWS SDK."
+  description = "A valid GCP region to configure the underlying GCP SDK."
 }
 
 variable "gcp_region" {
   type        = string
-  description = "A valid AWS region to configure the underlying AWS SDK."
+  description = "A valid GCP region to configure the underlying GCP SDK."
+}
+
+variable "gcp_zone" {
+  type        = string
+  description = "A valid GCP zone to configure the underlying GCP SDK."
 }
 
 # define GCP project id
@@ -95,7 +100,7 @@ variable "default_node_group_min_size" {
 
 variable "default_node_group_max_size" {
   type    = number
-  default = 5
+  default = 6
 }
 
 variable "default_node_group_desired_size" {

@@ -23,10 +23,9 @@ export function useYearsRange({
     [],
   );
 
-  const invalidRange = useMemo(
-    () => endYear - startYear < yearsGap,
-    [endYear, startYear, yearsGap],
-  );
+  const invalidRange = useMemo(() => {
+    return !!endYear && !!startYear && endYear - startYear < yearsGap;
+  }, [endYear, startYear, yearsGap]);
   const firstYear = years[0];
   const lastYear = years[years.length - 1];
 

@@ -5,34 +5,42 @@ import { useAppSelector } from 'store/hooks';
 import { analysisMap } from 'store/features/analysis';
 import { MapboxLayerProps } from 'components/map/layers/types';
 import { useAllContextualLayersData } from 'hooks/h3-data/contextual';
+import DeckLayer from 'components/map/layers/deck';
 
 import type { LayerProps, LayerSettings } from 'components/map/layers/types';
 import type { Layer } from 'types';
 
-export function useLayer({
+export const ContextualDeckLayer = ({
   id,
+  beforeId,
+  zIndex,
   ...props
 }: {
   id: Layer['id'];
-} & LayerProps<LayerSettings>['settings']) {
+  beforeId: LayerProps<LayerSettings>['beforeId'];
+  zIndex: LayerProps<LayerSettings>['zIndex'];
+} & LayerProps<LayerSettings>['settings']) => {
   const { onHoverLayer } = props;
   const { layerDeckGLProps, layers: layersMetadata } = useAppSelector(analysisMap);
+  const _id = id.split('-layer')[0];
 
   const contextualData = useAllContextualLayersData();
   const data = useMemo(() => {
     const contextualDataById = Object.fromEntries(
       contextualData
-        .filter((d) => d.isSuccess)
+        .filter((d) => {
+          return d.isSuccess && layersMetadata[_id].visible;
+        })
         .map(({ data: { layerId, ...rest } }) => [layerId, rest]),
     );
 
-    return contextualDataById[id]?.data || [];
-  }, [contextualData, id]);
-
+    return contextualDataById[_id]?.data || [];
+  }, [contextualData, _id, layersMetadata]);
   const settings = useMemo(() => layerDeckGLProps[id] || {}, [layerDeckGLProps, id]);
+
   const metadata = useMemo(
-    () => ({ layerId: id, ...layersMetadata[id]['metadata'] }),
-    [layersMetadata, id],
+    () => ({ layerId: id, ...layersMetadata[_id]['metadata'] }),
+    [layersMetadata, id, _id],
   );
 
   const layer = useMemo(() => {
@@ -52,5 +60,12 @@ export function useLayer({
     } satisfies MapboxLayerProps<H3HexagonLayerProps<(typeof data)[0]>>;
   }, [data, settings, metadata, onHoverLayer]);
 
-  return layer;
-}
+  return (
+    <DeckLayer<H3HexagonLayerProps<(typeof layer.data)[0]>>
+      {...layer}
+      id={id}
+      beforeId={beforeId}
+      zIndex={zIndex}
+    />
+  );
+};

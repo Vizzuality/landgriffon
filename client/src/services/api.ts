@@ -2,6 +2,7 @@ import axios from 'axios';
 import Jsona from 'jsona';
 import { getSession, signOut } from 'next-auth/react';
 
+import type { ApiError } from 'types';
 import type { AxiosRequestConfig } from 'axios';
 
 /**
@@ -23,13 +24,15 @@ const authorizedRequest = async (config) => {
   return config;
 };
 
-const onResponseError = async (error) => {
-  // Any status codes that falls outside the range of 2xx cause this function to trigger
-  if (error.response.status === 401) {
-    await signOut();
+const onResponseError = async (error: unknown) => {
+  if (axios.isAxiosError<ApiError>(error)) {
+    // Any status codes that falls outside the range of 2xx cause this function to trigger
+    if (error.response.status === 401) {
+      await signOut();
+    }
+    // Do something with response error
+    return Promise.reject(error);
   }
-  // Do something with response error
-  return Promise.reject(error);
 };
 
 // This endpoint by default will deserialize the data

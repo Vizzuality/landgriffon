@@ -21,9 +21,9 @@ const DeckLayer = <T,>({
 
   useEffect(() => {
     return () => {
-      removeLayer(i);
+      removeLayer(id);
     };
-  }, [i, removeLayer]);
+  }, [id, removeLayer]);
 
   return (
     <Layer

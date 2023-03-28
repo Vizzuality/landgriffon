@@ -44,7 +44,7 @@ const AnalysisMap = () => {
   const [viewState, setViewState] = useState<Partial<ViewState>>(INITIAL_VIEW_STATE);
   const handleViewState = useCallback((viewState: ViewState) => setViewState(viewState), []);
   const [tooltipData, setTooltipData] = useState(null);
-
+console.log(layers);
   // Pre-Calculating legend scales
   const legendScales = useMemo(() => {
     const scales = {};

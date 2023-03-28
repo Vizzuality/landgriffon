@@ -4,14 +4,17 @@ import { apiRawService } from 'services/api';
 import { setLayer } from 'store/features/analysis/map';
 import { useAppDispatch } from 'store/hooks';
 
+import type { StringifiableRecord } from 'query-string';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import type { LayerMetadata } from 'types';
 
-interface ContextualLayerApiResponse {
+export interface ContextualLayerApiResponse {
   category: string;
   id: string;
   name: string;
   metadata: LayerMetadata;
+  tilerUrl?: string;
+  defaultTilerParams?: StringifiableRecord;
 }
 
 export interface CategoryWithLayers {

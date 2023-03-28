@@ -2,6 +2,7 @@ import type { MapboxLayerProps } from 'components/map/layers/types';
 import type { Layer } from '@deck.gl/core/typed';
 import type { H3HexagonLayerProps } from '@deck.gl/geo-layers/typed';
 import type { Layer as LGLayer } from 'types';
+import type { ContextualLayerApiResponse } from 'hooks/layers/getContextualLayers';
 
 export interface LayerSettings {
   opacity: number;
@@ -18,6 +19,8 @@ export type LayerProps<S> = {
   beforeId?: string;
   zIndex?: number;
   settings?: Partial<S>;
+  tilerUrl?: ContextualLayerApiResponse['tilerUrl'];
+  defaultTilerParams?: ContextualLayerApiResponse['defaultTilerParams'];
 };
 
 export type MapboxLayerProps<T> = Partial<Omit<T, 'id'>> & {

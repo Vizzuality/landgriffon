@@ -1,4 +1,3 @@
-
 import logging
 from collections import namedtuple
 from math import radians
@@ -31,7 +30,7 @@ def main(dest_path, cell_size, h3_res):
 
     # Here we make a matrix (height * width) filled with the areas of each pixel.
     # I'm assuming a spherical earth to keep things simple and using the authalic radius as
-    # it is used to compute the cell areas in h3 too
+    # it is used to compute the cell areas in h3 too https://h3geo.org/docs/core-library/restable/#cell-areas-1
     earth_radius = 6371007.2
     _, lats = rio.transform.xy(transform, list(range(height)), 0)  # pixel centroid latitudes
     pixel_area_by_lat = np.cos(np.deg2rad(lats)) * (earth_radius**2) * (radians(cell_size) ** 2)

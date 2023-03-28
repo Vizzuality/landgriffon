@@ -4,7 +4,7 @@
 # It does not necessarily represent a max thread count, but it's probably similar to that
 # Lower if you are having issues. Increase at your own risk
 #########################
-PARALLELIZATION_FACTOR=10
+PARALLELIZATION_FACTOR=8
 
 AWS_S3_BUCKET_URL=s3://landgriffon-raw-data
 WORKDIR_MAPSPAM=data/mapspam
@@ -30,7 +30,6 @@ all:
 	@echo "AWS S3 bucket access confirmed, proceeding with import..."
 
 	make clean
-	make h3-correction-factor
 	make -j 2 crop indicators
 
 crop:
@@ -193,10 +192,10 @@ extract-mapspam-crop-harvest: download-mapspam-crop-harvest
 # Convert the tiffs in the folder to h3indexes at resolution 6
 # and import to a table called "h3_grid_spam2017v2r0_global_prod"
 convert-mapspam-crop-production: extract-mapspam-crop-production
-	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod h3_grid_spam2010v2r0_global_prod production spam 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
+	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod h3_grid_spam2010v2r0_global_prod production spam 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
 
 convert-mapspam-crop-harvest: extract-mapspam-crop-harvest
-	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha h3_grid_spam2010v2r0_global_ha harvest_area spam 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
+	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha h3_grid_spam2010v2r0_global_ha harvest_area spam 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
 
 # DOWNLOAD PASTURE AND CROPLAND DATASET
  #https://s3.us-east-2.amazonaws.com/earthstatdata/CroplandPastureArea2000_Geotiff.zip
@@ -264,20 +263,20 @@ rasterize-glw3-livestock-pasture: rasterize-glw3-livestock
 
 #Ingest livetock data- harvest area and production
 convert-glw3-livestock: rasterize-glw3-livestock-pasture
-	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/cattle/production h3_grid_cattle_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
-	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/chickens/production h3_grid_chickens_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
-	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/horses/production h3_grid_horses_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
-	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/goats/production h3_grid_goats_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
-	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/sheep/production h3_grid_sheep_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
-	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/pigs/production h3_grid_pigs_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
-	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/pasture/production h3_grid_pasture_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
-	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/cattle/harvestArea h3_grid_cattle_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
-	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/chickens/harvestArea h3_grid_chickens_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
-	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/horses/harvestArea h3_grid_horses_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
-	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/goats/harvestArea h3_grid_goats_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
-	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/sheep/harvestArea h3_grid_sheep_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
-	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/pigs/harvestArea h3_grid_pigs_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
-	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/pasture/harvestArea h3_grid_pasture_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
+	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/cattle/production h3_grid_cattle_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
+	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/chickens/production h3_grid_chickens_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
+	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/horses/production h3_grid_horses_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
+	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/goats/production h3_grid_goats_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
+	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/sheep/production h3_grid_sheep_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
+	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/pigs/production h3_grid_pigs_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
+	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/pasture/production h3_grid_pasture_glo_lsu production glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
+	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/cattle/harvestArea h3_grid_cattle_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
+	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/chickens/harvestArea h3_grid_chickens_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
+	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/horses/harvestArea h3_grid_horses_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
+	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/goats/harvestArea h3_grid_goats_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
+	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/sheep/harvestArea h3_grid_sheep_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
+	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/pigs/harvestArea h3_grid_pigs_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
+	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/pasture/harvestArea h3_grid_pasture_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
 
 
 #######################################
@@ -327,7 +326,7 @@ get-bwf_irrigated_prod: extract-water-footprint
 
 # TODO: Use this layer as contextual layers (new script doesn't allow contextual layers)
 convert-water-footprint: get-bwf_irrigated_prod
-	python raster_folder_to_h3_table.py $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint h3_grid_wf_global indicator UWU_T 2005 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
+	python raster_folder_to_h3_table.py $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint h3_grid_wf_global indicator UWU_T 2005 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
 
 # DEFORESTATION
 #text: https://storage.googleapis.com/earthenginepartners-hansen/GFC-2020-v1.8/lossyear.txt
@@ -401,7 +400,7 @@ preprocess-deforestation: download-deforestation
 convert-deforestation: preprocess-deforestation
 	@echo "Converting deforestation data... "
 	python raster_folder_to_h3_table.py data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles h3_grid_deforestation_global \
-		indicator DF_LUC_T 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
+		indicator DF_LUC_T 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
 
 
 download-process-forestGHG-list:
@@ -421,7 +420,7 @@ preprocess-forestGHG: download-process-forestGHG-list
 
 convert-forestGHG: preprocess-forestGHG
 	@echo "Converting forest GHG data..."
-	python raster_folder_to_h3_table.py $(WORKDIR_GHG)/resampled/merged_tiles h3_grid_ghg_global indicator GHG_LUC_T 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
+	python raster_folder_to_h3_table.py $(WORKDIR_GHG)/resampled/merged_tiles h3_grid_ghg_global indicator GHG_LUC_T 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
 
 ##################################
 #        Satelligence data       #
@@ -446,7 +445,7 @@ preprocess-speciesRichness: download-speciesRichness
 
 #TODO update with the reference of a new satelligence indicator
 convert-speciesRichness: preprocess-speciesRichness
-	python raster_folder_to_h3_table.py $(WORKDIR_SPECIESRICHNESS)/ h3_grid_speciesrichness_idn_mask indicator BL_LUC_T 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
+	python raster_folder_to_h3_table.py $(WORKDIR_SPECIESRICHNESS)/ h3_grid_speciesrichness_idn_mask indicator BL_LUC_T 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
 
 # Above ground biomass
 download-aboveGroundBiomass:
@@ -460,7 +459,7 @@ preprocess-aboveGroundBiomass: download-aboveGroundBiomass
 
 #TODO update with the reference of a new satelligence indicator
 convert-aboveGroundBiomass: preprocess-aboveGroundBiomass
-	python raster_folder_to_h3_table.py $(WORKDIR_ABOVEGROUNDBIOMASS)/ h3_grid_abovegroundbiomass_glo_tha indicator GHG_LUC_T 2001 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
+	python raster_folder_to_h3_table.py $(WORKDIR_ABOVEGROUNDBIOMASS)/ h3_grid_abovegroundbiomass_glo_tha indicator GHG_LUC_T 2001 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
 
 # Satelligence deforestation
 #Download satelligence deforestation
@@ -475,8 +474,8 @@ download-satDeforestation:
 	mv $(WORKDIR_SATDEFORESTATION)/Deforestation_risk.tif $(WORKDIR_SATDEFORESTATION)/risk
 
 convert-satDeforestation: download-satDeforestation
-	python	raster_folder_to_h3_table.py	$(WORKDIR_SATDEFORESTATION)/mask	h3_grid_sat_deforestation		indicator	SAT_DF		2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR)	--error_mitigation=$(CORRECTION_FACTOR_PATH)
-	python	raster_folder_to_h3_table.py	$(WORKDIR_SATDEFORESTATION)/risk	h3_grid_sat_deforestation_risk	indicator	SAT_DF_R	2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR)	--error_mitigation=$(CORRECTION_FACTOR_PATH)
+	python	raster_folder_to_h3_table.py	$(WORKDIR_SATDEFORESTATION)/mask	h3_grid_sat_deforestation		indicator	SAT_DF		2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR)	--error_mitigation
+	python	raster_folder_to_h3_table.py	$(WORKDIR_SATDEFORESTATION)/risk	h3_grid_sat_deforestation_risk	indicator	SAT_DF_R	2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR)	--error_mitigation
 
 
 ####################
@@ -493,8 +492,8 @@ download-woodpulp:
 	mv	$(WORKDIR_WOODPULP)/gfw_plantations_woodpulp_prod_t_nd_res.tif	$(WORKDIR_WOODPULP)/prod/gfw_plantations_woodpulp_prod.tif
 
 convert-woodpulp: download-woodpulp
-	python	raster_folder_to_h3_table.py	$(WORKDIR_WOODPULP)/ha		h3_grid_woodpulp_ha		harvest_area	gfw_plantations		2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
-	python	raster_folder_to_h3_table.py	$(WORKDIR_WOODPULP)/prod	h3_grid_woodpulp_prod	production		gfw_plantations		2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation=$(CORRECTION_FACTOR_PATH)
+	python	raster_folder_to_h3_table.py	$(WORKDIR_WOODPULP)/ha		h3_grid_woodpulp_ha		harvest_area	gfw_plantations		2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
+	python	raster_folder_to_h3_table.py	$(WORKDIR_WOODPULP)/prod	h3_grid_woodpulp_prod	production		gfw_plantations		2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR) --error_mitigation
 ###################
 # Contextual data #
 ###################
@@ -522,5 +521,3 @@ convert-hdi-contextual: download-hdi-contextual
 clean:
 	rm -rf data/*
 
-h3-correction-factor:
-	python h3_correction_factor.py $(CORRECTION_FACTOR_PATH)

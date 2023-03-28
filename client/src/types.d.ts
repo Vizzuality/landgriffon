@@ -1,3 +1,4 @@
+import type { AxiosError } from 'axios';
 import type { Permission, RoleName } from 'hooks/permissions/enums';
 import type { Scenario } from 'containers/scenarios/types';
 import type { Session as NextAuthSession, User as NextAuthUser } from 'next-auth';
@@ -237,15 +238,18 @@ export type PasswordPayload = {
   newPassword: string;
 };
 
-/**
- * Generic response for all errors in API
- */
-export type ErrorResponse = AxiosError<{
+export type ApiError = {
   errors: {
     status: string;
     title: string;
+    meta: { rawError: { response: { message: string[] } } };
   }[];
-}>;
+};
+
+/**
+ * Generic response for all errors in API
+ */
+export type ErrorResponse = AxiosError<ApiError>;
 
 /**
  * Layer

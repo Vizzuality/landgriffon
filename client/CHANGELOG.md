@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Add filter by year on analysis table. [LANDGRIF-965](https://vizzuality.atlassian.net/browse/LANDGRIF-965)
 
 ### Changed
+- Updated axios version.
 - Intervention form: list only supported location types.
 - Analysis filters: location types options now listed according to scenarios (if any). [LANDGRIF-1255](https://vizzuality.atlassian.net/browse/LANDGRIF-1255)
 - Unified styles of badges/pills for filters. Additionally, allow to pass classes to colorized them. [LANDGRIF-1205](https://vizzuality.atlassian.net/browse/LANDGRIF-1205)
@@ -25,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 - Fixed items alignement in the legend. [LANDGRIF-1093](https://vizzuality.atlassian.net/browse/LANDGRIF-1093)
+- Fixes response error displayed messages. [LANDGRIF-1273](https://vizzuality.atlassian.net/browse/LANDGRIF-1273)
+- Fixed axios response error type.
 - Fixed coefficients panel acting weird when values are edited. [LANDGRIF-1246](https://vizzuality.atlassian.net/browse/LANDGRIF-1246)
 - Fix permissions for edit scenarios on analysis pages [LANDGRIF-1253](https://vizzuality.atlassian.net/browse/LANDGRIF-1253)
 

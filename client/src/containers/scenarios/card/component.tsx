@@ -15,8 +15,8 @@ import Pill from 'components/pill';
 import Toggle from 'components/toggle';
 import { usePermissions } from 'hooks/permissions';
 import { Permission } from 'hooks/permissions/enums';
+import { handleResponseError } from 'utils/handle-response-error';
 
-import type { ErrorResponse } from 'types';
 import type { ScenarioCardProps } from './types';
 
 const ScenarioCard: React.FC<ScenarioCardProps> = ({ data, display = 'grid' }) => {
@@ -42,10 +42,7 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data, display = 'grid' }) =
             queryClient.invalidateQueries(['scenariosList']);
             queryClient.invalidateQueries(['scenario', data.id]);
           },
-          onError: (error: ErrorResponse) => {
-            const { errors } = error.response?.data;
-            errors.forEach(({ meta }) => toast.error(meta.rawError.response.message));
-          },
+          onError: handleResponseError,
         },
       );
     },

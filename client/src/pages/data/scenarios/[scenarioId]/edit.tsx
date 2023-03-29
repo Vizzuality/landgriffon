@@ -25,7 +25,7 @@ import Input from 'components/forms/input';
 import Toggle from 'components/toggle';
 import Dropdown from 'components/dropdown';
 import Badge from 'components/badge';
-import { handleResponseError } from 'utils/handle-response-error';
+import { handleResponseError } from 'services/api';
 
 import type { ScenarioFormData } from 'containers/scenarios/types';
 import type { ErrorResponse } from 'types';

@@ -8,7 +8,7 @@ import CleanLayout from 'layouts/clean';
 import InterventionForm from 'containers/interventions/form';
 import { parseInterventionFormDataToDto } from 'containers/interventions/utils';
 import BackLink from 'components/back-link';
-import { handleResponseError } from 'utils/handle-response-error';
+import { handleResponseError } from 'services/api';
 
 import type { InterventionFormData } from 'containers/interventions/types';
 

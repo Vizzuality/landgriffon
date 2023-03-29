@@ -242,7 +242,7 @@ export type ApiError = {
   errors: {
     status: string;
     title: string;
-    meta: { rawError: { response: { message: string[] } } };
+    meta: { rawError: { response: { message: string[] | string } } };
   }[];
 };
 

@@ -15,7 +15,7 @@ import Pill from 'components/pill';
 import Toggle from 'components/toggle';
 import { usePermissions } from 'hooks/permissions';
 import { Permission } from 'hooks/permissions/enums';
-import { handleResponseError } from 'utils/handle-response-error';
+import { handleResponseError } from 'services/api';
 
 import type { ScenarioCardProps } from './types';
 

@@ -4,7 +4,7 @@
 # It does not necessarily represent a max thread count, but it's probably similar to that
 # Lower if you are having issues. Increase at your own risk
 #########################
-PARALLELIZATION_FACTOR=8
+PARALLELIZATION_FACTOR=10
 
 AWS_S3_BUCKET_URL=s3://landgriffon-raw-data
 WORKDIR_MAPSPAM=data/mapspam
@@ -18,7 +18,6 @@ WORKDIR_AQUEDUCT=data/contextual/aqueduct
 WORKDIR_HDI=data/contextual/hdi
 WORKDIR_GHG=data/forest_ghg
 WORKDIR_WOODPULP=data/woodpulp
-CORRECTION_FACTOR_PATH=data/h3_correction_factor.csv
 
 all:
 	@aws s3 ls $(AWS_S3_BUCKET_URL) 2>&1 > /dev/null; \

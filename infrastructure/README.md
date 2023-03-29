@@ -19,13 +19,14 @@ copies of the app - environments. To do this, do the following:
   it and wait for Github Action to finish processing.
 - Apply the kubernetes project above once more. The deployments should succeed.
 
-### The "environments" variable
+### The "environments" variables
 
-The `environments` variable can hold complex values that control many aspects of the deployment, so it's worth analyzing
-in detail
+The `environments` variables can hold complex values that control many aspects of the deployment, so it's worth analyzing
+in detail. There are two variables of this type: `aws_environments` and `gcp_environments`. They both work in the same
+way, with the first one controlling deployments to AWS, while the second one controls GCP deployments
 
 ```terraform
-environments = {
+aws_environments = {
 	sample : {
 		api_env_vars : [
 			{
@@ -64,6 +65,6 @@ The `value` in the key-value pair is an object with a set of properties, all of 
 
 ### Handling production and staging
 
-The production and staging environments are always deployed, even if they are not declared in the `environments` variable.
+The AWS production and staging environments are always deployed, even if they are not declared in the `environments` variable.
 However, if you'd like to customize their behavior (for example, reload fresh data), you can explicitly add them to the
 `environments` variable, and specify your custom values for each configuration, as you would for any other env.

@@ -1,8 +1,9 @@
 import axios from 'axios';
 import Jsona from 'jsona';
 import { getSession, signOut } from 'next-auth/react';
+import toast from 'react-hot-toast';
 
-import type { ApiError } from 'types';
+import type { ApiError, ErrorResponse } from 'types';
 import type { AxiosRequestConfig } from 'axios';
 
 /**
@@ -57,5 +58,21 @@ export const apiRawService = axios.create(defaultConfig);
 
 apiRawService.interceptors.response.use((response) => response, onResponseError);
 apiRawService.interceptors.request.use(authorizedRequest, (error) => Promise.reject(error));
+
+export const handleResponseError = (error: ErrorResponse) => {
+  const { errors } = error.response?.data || {};
+  (errors || []).forEach(({ meta, title }) => {
+    if (!!meta?.rawError?.response) {
+      const { message } = meta.rawError.response;
+      if (Array.isArray(message)) {
+        message.forEach((message) => toast.error(message));
+      } else {
+        toast.error(message);
+      }
+    } else {
+      toast.error(title);
+    }
+  });
+};
 
 export default apiService;

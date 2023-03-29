@@ -7,7 +7,7 @@ import { useCreateScenario } from 'hooks/scenarios';
 import CleanLayout from 'layouts/clean';
 import BackLink from 'components/back-link';
 import ScenarioForm from 'containers/scenarios/form';
-import { handleResponseError } from 'utils/handle-response-error';
+import { handleResponseError } from 'services/api';
 
 import type { ScenarioFormData } from 'containers/scenarios/types';
 

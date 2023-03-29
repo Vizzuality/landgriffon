@@ -235,6 +235,9 @@ def main(
     log.info(f"Joining H3 data of each raster into single dataframe for table {table}")
     df: pd.DataFrame = h3s[0].join(h3s[1:]) if len(raster_files) > 1 else h3s[0]
     if error_mitigation:
+        # Note: This is pending to discuss if it is better to use a precomputed table with the ratios and join by index
+        # each time it is needed. Another improvement could be to use a redis cache to avoid recomputing ratios twice
+        # across different dataset ingestion (aka calls to this script).
         log.info(f"Correcting H3 values of {table} with pixel/h3_df ratio")
         ratios = np.array([get_pixel_area_to_h3_cell_ratio(h3index) for h3index in df.index])
         df = df.multiply(ratios, axis=0)

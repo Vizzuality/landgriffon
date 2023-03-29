@@ -47,6 +47,7 @@ const ContextualLegendItem = ({ layer }: ContextualLegendItemProps) => {
       case 'category':
         return <LegendTypeCategorical {...props} />;
       case 'range':
+        return <LegendTypeCategorical {...props} />;
       case 'choropleth':
         return <LegendTypeChoropleth min={layer.metadata.legend.min} {...props} />;
       case 'gradient':

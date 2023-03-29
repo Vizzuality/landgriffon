@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Replaced Deck.gl map with `react-map-gl` to prepare migration to Layer Manager. [LANDGRIF-812](https://vizzuality.atlassian.net/browse/LANDGRIF-812)
 
 ### Fixed
+- Fixed items alignement in the legend. [LANDGRIF-1093](https://vizzuality.atlassian.net/browse/LANDGRIF-1093)
 - Fixed coefficients panel acting weird when values are edited. [LANDGRIF-1246](https://vizzuality.atlassian.net/browse/LANDGRIF-1246)
 - Fix permissions for edit scenarios on analysis pages [LANDGRIF-1253](https://vizzuality.atlassian.net/browse/LANDGRIF-1253)
 

@@ -32,7 +32,7 @@ export const LegendTypeCategorical = ({
         {items.map(({ label }) => (
           <li
             key={label}
-            className="flex flex-wrap justify-center text-xs leading-4 text-center"
+            className="flex flex-wrap justify-center text-2xs leading-4 text-center"
             style={{
               width: `${100 / items.length}%`,
             }}

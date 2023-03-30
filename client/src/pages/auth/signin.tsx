@@ -44,7 +44,9 @@ const SignIn: NextPageWithLayout = () => {
       });
 
       if (ok) {
-        router.push((router.query?.callbackUrl as string) || '/analysis');
+        router.push((router.query?.callbackUrl as string) || '/analysis/map', undefined, {
+          shallow: true,
+        });
       } else {
         setIsLoading(false);
         toast.error('Login failed. Your email or password is incorrect.');

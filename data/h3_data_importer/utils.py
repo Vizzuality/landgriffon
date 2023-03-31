@@ -1,14 +1,15 @@
 import json
 import logging
+import os
 from pathlib import Path
 from re import sub
 
 import jsonschema
+import psycopg
 from jsonschema import ValidationError
 from psycopg2.extensions import connection
 
 log = logging.getLogger(__name__)  # here we can use __name__ because it is an imported module
-
 
 DTYPES_TO_PG = {
     "boolean": "bool",
@@ -37,10 +38,10 @@ def snakify(s):
 
 def get_contextual_layer_category_enum(conn: connection) -> set:
     """Get the enum of contextual layer categories"""
-    with conn:
-        with conn.cursor() as cursor:
-            cursor.execute("SELECT unnest(enum_range(NULL::contextual_layer_category));")
-            values = set(r[0] for r in cursor.fetchall())
+
+    with conn.cursor() as cursor:
+        cursor.execute("SELECT unnest(enum_range(NULL::contextual_layer_category));")
+        values = set(r[0] for r in cursor.fetchall())
     return values
 
 
@@ -97,9 +98,9 @@ def get_metadata(table: str) -> dict:
     metadata_path = metadata_base_path / f"{table}_metadata.json"
 
     if not metadata_path.exists():
-        log.error(f"No metadata found for {table}")
+        log.error(f"No metadata found for {table} with the name {metadata_path.name}")
         # todo: should we raise exception or return empty metadata and keep going?
-        raise FileNotFoundError(f"Metadata file for {table} not found")
+        raise FileNotFoundError(f"Metadata file {metadata_path.name} not found")
 
     with open(metadata_path, "r") as f:
         metadata = json.load(f)
@@ -126,3 +127,13 @@ def link_to_indicator_table(connection: connection, indicator_code: str, h3_colu
                 log.info(f"Updated indicatorId '{indicator_id}' in h3_data for {h3_column_name}")
             else:
                 log.error(f"Indicator with name code {indicator_code} does not exist")
+
+
+def get_connection_info() -> str:
+    """Returns a connection info string for psycopg based on env variables"""
+    return psycopg.conninfo.make_conninfo(
+        host=os.getenv("API_POSTGRES_HOST"),
+        port=os.getenv("API_POSTGRES_PORT"),
+        user=os.getenv("API_POSTGRES_USERNAME"),
+        password=os.getenv("API_POSTGRES_PASSWORD"),
+    )

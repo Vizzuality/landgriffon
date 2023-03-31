@@ -46,8 +46,8 @@ indicators:
 	make convert-deforestation
 	make convert-forestGHG
 	make convert-satDeforestation
-contextual-layers:
-	make convert-hdi-contextual
+contextual-layers: convert-hdi-contextual convert-blue-water-contextual
+
 
 ############################################
 # MapSPAM crop production and harvest area #
@@ -519,5 +519,8 @@ download-hdi-contextual:
 convert-hdi-contextual: download-hdi-contextual
 	python csv_to_h3_table.py $(WORKDIR_HDI)/IHDI_HDR2020_040722.csv h3_grid_hdi_global hdi_2019 2019 iso3
 
+convert-blue-water-contextual:
+	# TODO: check default_params are the same that are currently hardcoded in the db
+	python cog_to_contextual_layer_linker.py --cog bluewater.tif --name bluewater_footprint --category "Environmental datasets" --tiler_param colormap=viridis --tp rescale=-18,850
 clean:
 	rm -rf data/*

@@ -1,6 +1,5 @@
 import logging
 import multiprocessing
-import os
 from functools import partial
 from io import StringIO
 from pathlib import Path
@@ -13,7 +12,7 @@ import rasterio as rio
 from psycopg import sql
 from rasterio import DatasetReader
 
-from utils import DTYPES_TO_PG, slugify, snakify
+from utils import DTYPES_TO_PG, slugify, snakify, get_connection_info
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("raster_to_h3")
@@ -167,13 +166,7 @@ def to_the_db(df: pd.DataFrame, table: str, data_type: str, dataset: str, year: 
 
     This way if we need to separate db stuff from actual data processing it can be done easily
     """
-    conn_info = psycopg.conninfo.make_conninfo(
-        host=os.getenv("API_POSTGRES_HOST"),
-        port=os.getenv("API_POSTGRES_PORT"),
-        user=os.getenv("API_POSTGRES_USERNAME"),
-        password=os.getenv("API_POSTGRES_PASSWORD"),
-    )
-    with psycopg.connect(conn_info, autocommit=True) as conn:
+    with psycopg.connect(get_connection_info(), autocommit=True) as conn:
         create_h3_grid_table(conn, table, df)
         write_data_to_h3_grid_table(conn, table, df)
         clean_before_insert(conn, table)

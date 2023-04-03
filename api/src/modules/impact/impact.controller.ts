@@ -87,6 +87,10 @@ export class ImpactController {
     bypassIfScenarioIsPublic: true,
     isComparisonMode: true,
   })
+  @CheckUserOwnsScenario({
+    bypassIfScenarioIsPublic: true,
+    isComparisonMode: true,
+  })
   @UseInterceptors(SetScenarioIdsInterceptor)
   @Get('compare/scenario/vs/scenario')
   async getTwoScenariosImpactTable(
@@ -118,6 +122,10 @@ export class ImpactController {
     type: PaginatedImpactTable,
   })
   @JSONAPIPaginationQueryParams()
+  @CheckUserOwnsScenario({
+    bypassIfScenarioIsPublic: true,
+    isComparisonMode: true,
+  })
   @CheckUserOwnsScenario({
     bypassIfScenarioIsPublic: true,
     isComparisonMode: true,

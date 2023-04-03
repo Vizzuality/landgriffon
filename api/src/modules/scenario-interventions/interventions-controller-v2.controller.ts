@@ -98,7 +98,9 @@ export class ScenarioInterventionsControllerV2 {
     @Body() dto: CreateScenarioInterventionDtoV2,
   ): Promise<Partial<ScenarioIntervention>> {
     if (dto.newMaterialId)
-      await this.materialsService.checkActiveMaterials([dto.newMaterialId]);
+      await this.materialsService.areRequestedMaterialsActive([
+        dto.newMaterialId,
+      ]);
     return await this.scenarioInterventionsService.serialize(
       await this.scenarioInterventionsService.createScenarioIntervention(dto),
     );

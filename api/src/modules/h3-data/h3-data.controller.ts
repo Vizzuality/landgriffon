@@ -105,7 +105,7 @@ export class H3DataController {
   ): Promise<H3MapResponse> {
     const { materialId, resolution, year } = queryParams;
 
-    await this.materialsService.checkActiveMaterials([materialId]);
+    await this.materialsService.areRequestedMaterialsActive([materialId]);
 
     return await this.h3DataMapService.getMaterialMapByResolutionAndYear(
       materialId,
@@ -128,11 +128,11 @@ export class H3DataController {
   async getImpactMap(
     @Query(ValidationPipe) getImpactMapDto: GetImpactMapDto,
   ): Promise<H3MapResponse> {
-    await this.indicatorService.checkActiveIndicatorsForCalculations([
+    await this.indicatorService.areRequestedIndicatorsActive([
       getImpactMapDto.indicatorId,
     ]);
     if (getImpactMapDto.materialIds)
-      await this.materialsService.checkActiveMaterials(
+      await this.materialsService.areRequestedMaterialsActive(
         getImpactMapDto.materialIds,
       );
     return this.h3DataMapService.getImpactMapByResolution(getImpactMapDto);
@@ -153,11 +153,9 @@ export class H3DataController {
   async getImpactActualVsScenarioComparisonMap(
     @Query(ValidationPipe) dto: GetActualVsScenarioImpactMapDto,
   ): Promise<H3MapResponse> {
-    await this.indicatorService.checkActiveIndicatorsForCalculations([
-      dto.indicatorId,
-    ]);
+    await this.indicatorService.areRequestedIndicatorsActive([dto.indicatorId]);
     if (dto.materialIds)
-      await this.materialsService.checkActiveMaterials(dto.materialIds);
+      await this.materialsService.areRequestedMaterialsActive(dto.materialIds);
     return this.h3DataMapService.getImpactMapByResolution(dto);
   }
 
@@ -176,11 +174,9 @@ export class H3DataController {
   async getImpactScenarioVsScenarioComparisonMap(
     @Query(ValidationPipe) dto: GetScenarioVsScenarioImpactMapDto,
   ): Promise<H3MapResponse> {
-    await this.indicatorService.checkActiveIndicatorsForCalculations([
-      dto.indicatorId,
-    ]);
+    await this.indicatorService.areRequestedIndicatorsActive([dto.indicatorId]);
     if (dto.materialIds)
-      await this.materialsService.checkActiveMaterials(dto.materialIds);
+      await this.materialsService.areRequestedMaterialsActive(dto.materialIds);
     return this.h3DataMapService.getImpactMapByResolution(dto);
   }
 }

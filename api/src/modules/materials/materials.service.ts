@@ -283,7 +283,7 @@ export class MaterialsService extends AppBaseService<
     );
   }
 
-  async checkActiveMaterials(materialIds: string[]): Promise<void> {
+  async areRequestedMaterialsActive(materialIds: string[]): Promise<void> {
     const inactiveSelectedMaterials: Material[] =
       await this.materialRepository.find({
         where: {

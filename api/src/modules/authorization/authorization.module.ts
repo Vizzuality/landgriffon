@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { RequestScopeModule } from 'nj-request-scope';
 
 import { AccessControl } from 'modules/authorization/access-control.service';
-import { ScenariosAccessControl } from 'modules/authorization/modules/scenarios.access-control.service';
+import { ScenariosAccessControl } from 'modules/authorization/formodule/scenarios.access-control.service';
 import { AuthorizationService } from 'modules/authorization/authorization.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Permission } from 'modules/authorization/permissions/permissions.entity';

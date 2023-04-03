@@ -35,7 +35,7 @@ import { UpdateScenarioDto } from 'modules/scenarios/dto/update.scenario.dto';
 import { PaginationMeta } from 'utils/app-base.service';
 import { SetUserInterceptor } from 'decorators/set-user.interceptor';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
-import { UserOwnsScenario } from 'modules/authorization/modules/scenario-ownership.interceptor';
+import { UserOwnsScenario } from 'modules/authorization/formodule/scenario-ownership.interceptor';
 
 @Controller(`/api/v1/scenarios`)
 @ApiTags(scenarioResource.className)

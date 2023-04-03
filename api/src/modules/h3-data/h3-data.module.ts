@@ -16,6 +16,7 @@ import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
+import { AuthorizationModule } from 'modules/authorization/authorization.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { IndicatorsService } from 'modules/indicators/indicators.service';
     SuppliersModule,
     BusinessUnitsModule,
     SourcingLocationsModule,
+    AuthorizationModule,
   ],
   controllers: [H3DataController],
   providers: [

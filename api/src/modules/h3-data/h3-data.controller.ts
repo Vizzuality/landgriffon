@@ -23,6 +23,7 @@ import {
 import { H3DataMapService } from 'modules/h3-data/h3-data-map.service';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
+import { CheckUserOwnsScenario } from 'modules/authorization/formodule/scenario-ownership.interceptor';
 
 @Controller('/api/v1/h3')
 @ApiTags(H3Data.name)
@@ -149,6 +150,10 @@ export class H3DataController {
   @ApiBadRequestResponse({
     description: 'Bad Request. Incorrect or missing parameters',
   })
+  @CheckUserOwnsScenario({
+    bypassIfScenarioIsPublic: true,
+    isComparisonMode: true,
+  })
   @Get('/map/impact/compare/actual/vs/scenario')
   async getImpactActualVsScenarioComparisonMap(
     @Query(ValidationPipe) dto: GetActualVsScenarioImpactMapDto,
@@ -169,6 +174,10 @@ export class H3DataController {
   })
   @ApiBadRequestResponse({
     description: 'Bad Request. Incorrect or missing parameters',
+  })
+  @CheckUserOwnsScenario({
+    bypassIfScenarioIsPublic: true,
+    isComparisonMode: true,
   })
   @Get('/map/impact/compare/scenario/vs/scenario')
   async getImpactScenarioVsScenarioComparisonMap(

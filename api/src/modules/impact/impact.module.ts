@@ -12,6 +12,7 @@ import { ScenarioVsScenarioImpactService } from 'modules/impact/comparison/scena
 import { MaterialsService } from 'modules/materials/materials.service';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
+import { AuthorizationModule } from 'modules/authorization/authorization.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { IndicatorsService } from 'modules/indicators/indicators.service';
     SuppliersModule,
     MaterialsModule,
     SourcingLocationsModule,
+    AuthorizationModule,
   ],
   providers: [
     ImpactService,

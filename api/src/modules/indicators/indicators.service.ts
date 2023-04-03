@@ -213,9 +213,7 @@ export class IndicatorsService extends AppBaseService<
     );
   }
 
-  async checkActiveIndicatorsForCalculations(
-    indicatorIds: string[],
-  ): Promise<void> {
+  async areRequestedIndicatorsActive(indicatorIds: string[]): Promise<void> {
     const inactiveSelectedIndicators: Indicator[] =
       await this.findAllIndicators({
         id: In(indicatorIds),

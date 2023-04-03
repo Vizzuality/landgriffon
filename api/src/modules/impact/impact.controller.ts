@@ -59,14 +59,14 @@ export class ImpactController {
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
     @Query(ValidationPipe) impactTableDto: GetImpactTableDto,
   ): Promise<PaginatedImpactTable> {
-    await this.indicatorService.checkActiveIndicatorsForCalculations(
+    await this.indicatorService.areRequestedIndicatorsActive(
       impactTableDto.indicatorIds,
     );
     /* Here we are validating received materialIds to be active, without validating recursively possible descendants,
        since the Material Ids come from existing impact data (materials present in Sourcing Locations) and existing descendants
        will be active per default */
     if (impactTableDto.materialIds)
-      await this.materialsService.checkActiveMaterials(
+      await this.materialsService.areRequestedMaterialsActive(
         impactTableDto.materialIds,
       );
     return await this.impactService.getImpactTable(
@@ -89,14 +89,14 @@ export class ImpactController {
     @Query(ValidationPipe)
     scenarioVsScenarioImpactTableDto: GetScenarioVsScenarioImpactTableDto,
   ): Promise<ScenarioVsScenarioPaginatedImpactTable> {
-    await this.indicatorService.checkActiveIndicatorsForCalculations(
+    await this.indicatorService.areRequestedIndicatorsActive(
       scenarioVsScenarioImpactTableDto.indicatorIds,
     );
     /* Here we are validating received materialIds to be active, without validating recursively possible descendants,
       since the Material Ids come from existing impact data (materials present in Sourcing Locations) and existing descendants
       will be active per default */
     if (scenarioVsScenarioImpactTableDto.materialIds)
-      await this.materialsService.checkActiveMaterials(
+      await this.materialsService.areRequestedMaterialsActive(
         scenarioVsScenarioImpactTableDto.materialIds,
       );
     return await this.scenarioVsScenarioService.getScenarioVsScenarioImpactTable(
@@ -120,14 +120,14 @@ export class ImpactController {
     @Query(ValidationPipe)
     actualVsScenarioImpactTableDto: GetActualVsScenarioImpactTableDto,
   ): Promise<PaginatedImpactTable> {
-    await this.indicatorService.checkActiveIndicatorsForCalculations(
+    await this.indicatorService.areRequestedIndicatorsActive(
       actualVsScenarioImpactTableDto.indicatorIds,
     );
     /* Here we are validating received materialIds to be active, without validating recursively possible descendants,
       since the Material Ids come from existing impact data (materials present in Sourcing Locations) and existing descendants
       will be active per default */
     if (actualVsScenarioImpactTableDto.materialIds)
-      await this.materialsService.checkActiveMaterials(
+      await this.materialsService.areRequestedMaterialsActive(
         actualVsScenarioImpactTableDto.materialIds,
       );
     return await this.actualVsScenarioImpactService.getActualVsScenarioImpactTable(
@@ -150,14 +150,14 @@ export class ImpactController {
   async getRankedImpactTable(
     @Query(ValidationPipe) rankedImpactTableDto: GetRankedImpactTableDto,
   ): Promise<ImpactTable> {
-    await this.indicatorService.checkActiveIndicatorsForCalculations(
+    await this.indicatorService.areRequestedIndicatorsActive(
       rankedImpactTableDto.indicatorIds,
     );
     /* Here we are validating received materialIds to be active, without validating recursively possible descendants,
       since the Material Ids come from existing impact data (materials present in Sourcing Locations) and existing descendants
       will be active per default */
     if (rankedImpactTableDto.materialIds)
-      await this.materialsService.checkActiveMaterials(
+      await this.materialsService.areRequestedMaterialsActive(
         rankedImpactTableDto.materialIds,
       );
     return await this.impactService.getRankedImpactTable(rankedImpactTableDto);

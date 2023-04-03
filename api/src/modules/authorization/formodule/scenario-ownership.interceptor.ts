@@ -8,7 +8,7 @@ import {
   SetMetadata,
   UseInterceptors,
 } from '@nestjs/common';
-import { ScenariosAccessControl } from 'modules/authorization/modules/scenarios.access-control.service';
+import { ScenariosAccessControl } from 'modules/authorization/formodule/scenarios.access-control.service';
 import { Observable } from 'rxjs';
 import { Request } from 'express';
 import { Reflector } from '@nestjs/core';

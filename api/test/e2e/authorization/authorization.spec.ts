@@ -21,6 +21,7 @@ import ApplicationManager, {
 import { DataSource } from 'typeorm';
 import { setupTestUser } from '../../utils/userAuth';
 import { HttpStatus } from '@nestjs/common';
+import { Scenario } from '../../../src/modules/scenarios/scenario.entity';
 
 describe('Authorization Test (E2E)', () => {
   let testApplication: TestApplication;
@@ -33,10 +34,16 @@ describe('Authorization Test (E2E)', () => {
   });
 
   afterEach(async () => {
-    await clearEntityTables(dataSource, [User, Indicator, SourcingLocation]);
+    await clearEntityTables(dataSource, [
+      Scenario,
+      User,
+      Indicator,
+      SourcingLocation,
+    ]);
   });
 
   afterAll(async () => {
+    jest.clearAllMocks();
     await clearTestDataFromDatabase(dataSource);
     await testApplication.close();
   });

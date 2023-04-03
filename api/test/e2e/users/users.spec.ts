@@ -313,11 +313,9 @@ describe('UsersModule (e2e)', () => {
 
         await createSourcingRecord({ sourcingLocationId: sourcingLocation.id });
       }
-      const response = await request(testApplication.getHttpServer())
+      await request(testApplication.getHttpServer())
         .delete(`/api/v1/users/${randomUser.id}`)
         .set('Authorization', `Bearer ${newAdminUser.jwtToken}`);
-
-      console.log(response);
 
       const scenarios = await dataSource.getRepository(Scenario).find();
       const interventions = await dataSource

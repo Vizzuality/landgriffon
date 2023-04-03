@@ -33,6 +33,7 @@ import { ScenarioVsScenarioImpactService } from 'modules/impact/comparison/scena
 import { ScenarioVsScenarioPaginatedImpactTable } from 'modules/impact/dto/response-scenario-scenario.dto';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { MaterialsService } from 'modules/materials/materials.service';
+import { CheckUserOwnsScenario } from 'modules/authorization/formodule/scenario-ownership.interceptor';
 
 @Controller('/api/v1/impact')
 @ApiTags('Impact')
@@ -82,6 +83,10 @@ export class ImpactController {
     type: ScenarioVsScenarioPaginatedImpactTable,
   })
   @JSONAPIPaginationQueryParams()
+  @CheckUserOwnsScenario({
+    bypassIfScenarioIsPublic: true,
+    isComparisonMode: true,
+  })
   @UseInterceptors(SetScenarioIdsInterceptor)
   @Get('compare/scenario/vs/scenario')
   async getTwoScenariosImpactTable(
@@ -113,6 +118,10 @@ export class ImpactController {
     type: PaginatedImpactTable,
   })
   @JSONAPIPaginationQueryParams()
+  @CheckUserOwnsScenario({
+    bypassIfScenarioIsPublic: true,
+    isComparisonMode: true,
+  })
   @UseInterceptors(SetScenarioIdsInterceptor)
   @Get('compare/scenario/vs/actual')
   async getActualVsScenarioImpactTable(

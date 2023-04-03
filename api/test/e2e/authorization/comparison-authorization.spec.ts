@@ -14,7 +14,7 @@ import ApplicationManager, {
 import { DataSource } from 'typeorm';
 import { setupTestUser } from '../../utils/userAuth';
 import { HttpStatus } from '@nestjs/common';
-import { v4 } from 'uuid';
+import { v4 as uuidv4, v4 } from 'uuid';
 import { H3MapResponse } from '../../../src/modules/h3-data/dto/h3-map-response.dto';
 import { Test } from '@nestjs/testing';
 import { AppModule } from '../../../src/app.module';
@@ -22,6 +22,9 @@ import { IndicatorsService } from '../../../src/modules/indicators/indicators.se
 import { MaterialsService } from '../../../src/modules/materials/materials.service';
 import { H3DataMapService } from '../../../src/modules/h3-data/h3-data-map.service';
 import { Scenario } from '../../../src/modules/scenarios/scenario.entity';
+import { ActualVsScenarioImpactService } from '../../../src/modules/impact/comparison/actual-vs-scenario.service';
+import { PaginatedImpactTable } from '../../../src/modules/impact/dto/response-impact-table.dto';
+import { ScenarioVsScenarioImpactService } from '../../../src/modules/impact/comparison/scenario-vs-scenario.service';
 
 describe('Authorization Test (E2E)', () => {
   let testApplication: TestApplication;
@@ -41,6 +44,16 @@ describe('Authorization Test (E2E)', () => {
         .overrideProvider(H3DataMapService)
         .useValue({
           getImpactMapByResolution: async (dto: any) => ({} as H3MapResponse),
+        })
+        .overrideProvider(ActualVsScenarioImpactService)
+        .useValue({
+          getActualVsScenarioImpactTable: async (dto: any) =>
+            ({} as PaginatedImpactTable),
+        })
+        .overrideProvider(ScenarioVsScenarioImpactService)
+        .useValue({
+          getScenarioVsScenarioImpactTable: async (dto: any) =>
+            ({} as PaginatedImpactTable),
         }),
     );
 
@@ -248,6 +261,198 @@ describe('Authorization Test (E2E)', () => {
             baseScenarioId: baseScenario.id,
             comparedScenarioId: comparedScenario.id,
             relative: true,
+          })
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send()
+          .expect(HttpStatus.OK);
+      });
+    });
+    describe('Impact Table and Charts Comparisons', () => {
+      test('When I request a comparison table between actual data and scenario, But that scenario is neither mine or public, Then I should not be authorised', async () => {
+        const { jwtToken } = await setupTestUser(testApplication, ROLES.USER);
+        const comparedScenario = await createScenario({ isPublic: false });
+
+        await request(testApplication.getHttpServer())
+          .get(`/api/v1/impact/compare/scenario/vs/actual`)
+          .query({
+            'indicatorIds[]': [uuidv4()],
+            startYear: 2023,
+            endYear: 2024,
+            groupBy: 'material',
+            comparedScenarioId: comparedScenario.id,
+          })
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send()
+          .expect(HttpStatus.FORBIDDEN);
+      });
+
+      test('When I request a comparison table between actual data and scenario, And that scenario is neither mine or public, But I am an Admin, Then I should get the data', async () => {
+        const { jwtToken } = await setupTestUser(testApplication, ROLES.ADMIN);
+        const { user: someFakeUser } = await setupTestUser(
+          testApplication,
+          ROLES.USER,
+          { email: 'somefakuser@test.com' },
+        );
+        const comparedScenario = await createScenario({
+          isPublic: false,
+          userId: someFakeUser.id,
+        });
+
+        await request(testApplication.getHttpServer())
+          .get(`/api/v1/impact/compare/scenario/vs/actual`)
+          .query({
+            'indicatorIds[]': [uuidv4()],
+            startYear: 2023,
+            endYear: 2024,
+            groupBy: 'material',
+            comparedScenarioId: comparedScenario.id,
+          })
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send()
+          .expect(HttpStatus.OK);
+      });
+
+      test('When I request a comparison table between actual data and scenario, But that scenario is mine, Then I should be authorised', async () => {
+        const { jwtToken, user } = await setupTestUser(
+          testApplication,
+          ROLES.USER,
+        );
+        const comparedScenario = await createScenario({
+          isPublic: false,
+          userId: user.id,
+        });
+
+        await request(testApplication.getHttpServer())
+          .get(`/api/v1/impact/compare/scenario/vs/actual`)
+          .query({
+            'indicatorIds[]': [uuidv4()],
+            startYear: 2023,
+            endYear: 2024,
+            groupBy: 'material',
+            comparedScenarioId: comparedScenario.id,
+          })
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send()
+          .expect(HttpStatus.OK);
+      });
+      test('When I request a comparison table between two scenarios, And none of them is mine, Then I should not be authorised', async () => {
+        const { jwtToken } = await setupTestUser(testApplication, ROLES.USER);
+        const comparedScenario = await createScenario({
+          isPublic: false,
+        });
+        const baseScenario = await createScenario({ isPublic: false });
+
+        await request(testApplication.getHttpServer())
+          .get(`/api/v1/impact/compare/scenario/vs/scenario`)
+          .query({
+            'indicatorIds[]': [uuidv4()],
+            startYear: 2023,
+            endYear: 2024,
+            groupBy: 'material',
+            comparedScenarioId: comparedScenario.id,
+            baseScenarioId: baseScenario.id,
+          })
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send()
+          .expect(HttpStatus.FORBIDDEN);
+      });
+      test('When I request a comparison table between two scenarios, And one is public but the other one is not either public or mine, Then I should not be authorised', async () => {
+        const { jwtToken } = await setupTestUser(testApplication, ROLES.USER);
+        const comparedScenario = await createScenario({
+          isPublic: true,
+        });
+        const baseScenario = await createScenario({ isPublic: false });
+
+        await request(testApplication.getHttpServer())
+          .get(`/api/v1/impact/compare/scenario/vs/scenario`)
+          .query({
+            'indicatorIds[]': [uuidv4()],
+            startYear: 2023,
+            endYear: 2024,
+            groupBy: 'material',
+            comparedScenarioId: comparedScenario.id,
+            baseScenarioId: baseScenario.id,
+          })
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send()
+          .expect(HttpStatus.FORBIDDEN);
+      });
+
+      test('When I request a comparison table between two scenarios, And both of them are public, Then I should get the data', async () => {
+        const { jwtToken } = await setupTestUser(testApplication, ROLES.USER);
+        const comparedScenario = await createScenario({
+          isPublic: true,
+        });
+        const baseScenario = await createScenario({ isPublic: true });
+
+        await request(testApplication.getHttpServer())
+          .get(`/api/v1/impact/compare/scenario/vs/scenario`)
+          .query({
+            'indicatorIds[]': [uuidv4()],
+            startYear: 2023,
+            endYear: 2024,
+            groupBy: 'material',
+            comparedScenarioId: comparedScenario.id,
+            baseScenarioId: baseScenario.id,
+          })
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send()
+          .expect(HttpStatus.OK);
+      });
+      test('When I request a comparison table between two scenarios, And both are mine, Then I should be authorised', async () => {
+        const { jwtToken, user } = await setupTestUser(
+          testApplication,
+          ROLES.USER,
+        );
+        const comparedScenario = await createScenario({
+          isPublic: false,
+          userId: user.id,
+        });
+        const baseScenario = await createScenario({
+          isPublic: false,
+          userId: user.id,
+        });
+
+        await request(testApplication.getHttpServer())
+          .get(`/api/v1/impact/compare/scenario/vs/scenario`)
+          .query({
+            'indicatorIds[]': [uuidv4()],
+            startYear: 2023,
+            endYear: 2024,
+            groupBy: 'material',
+            comparedScenarioId: comparedScenario.id,
+            baseScenarioId: baseScenario.id,
+          })
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send()
+          .expect(HttpStatus.OK);
+      });
+
+      test('When I request a comparison table between two scenarios, And any of them is public or mine, But I am an admin, Then I should get the data', async () => {
+        const { jwtToken } = await setupTestUser(testApplication, ROLES.ADMIN);
+        const { user: someFakeUser } = await setupTestUser(
+          testApplication,
+          ROLES.USER,
+          { email: 'test@test.com' },
+        );
+        const comparedScenario = await createScenario({
+          isPublic: false,
+          userId: someFakeUser.id,
+        });
+        const baseScenario = await createScenario({
+          isPublic: false,
+          userId: someFakeUser.id,
+        });
+
+        await request(testApplication.getHttpServer())
+          .get(`/api/v1/impact/compare/scenario/vs/scenario`)
+          .query({
+            'indicatorIds[]': [uuidv4()],
+            startYear: 2023,
+            endYear: 2024,
+            groupBy: 'material',
+            comparedScenarioId: comparedScenario.id,
+            baseScenarioId: baseScenario.id,
           })
           .set('Authorization', `Bearer ${jwtToken}`)
           .send()

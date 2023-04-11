@@ -215,7 +215,7 @@ def main(
     year: int,
     h3_res: int,
     thread_count: int,
-    error_mitigation: Path,
+    error_mitigation: bool,
 ):
     """Reads a folder of .tif, converts to h3 and loads into a PG table
 

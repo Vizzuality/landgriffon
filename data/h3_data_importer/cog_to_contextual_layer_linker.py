@@ -65,11 +65,12 @@ def main(cog: str, name: str, category: str, tiler_param: list):
     if cog.startswith("https://"):
         # External tiler url. We don't need to check if the file exists in S3, nor we need query_params for the tiler
         tiler_url = cog
-        entry_id = insert_in_contextuals_table(name, category, json.dumps(get_metadata(name)), tiler_url, json.dumps(query_params))
+        entry_id = insert_in_contextuals_table(
+            name, category, json.dumps(get_metadata(name)), tiler_url, json.dumps(query_params)
+        )
         log.info(f"External tiler {cog} linked to contextual_layer table with id={entry_id}")
     else:
         tiler_url = "/tiler/cog/tiles/{z}/{x}/{y}"
-        # TODO: This always fails :( Alex help here 🙏. but it is really needed?
         check_file_exists_in_s3(cog)
         query_params["url"] = cog
         entry_id = insert_in_contextuals_table(

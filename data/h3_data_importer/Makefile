@@ -521,6 +521,6 @@ convert-hdi-contextual: download-hdi-contextual
 
 convert-blue-water-contextual:
 	# TODO: check default_params are the same that are currently hardcoded in the db
-	python cog_to_contextual_layer_linker.py --cog bluewater.tif --name bluewater_footprint --category "Environmental datasets" --tiler_param colormap=viridis --tp rescale=-18,850
+	python cog_to_contextual_layer_linker.py --cog bluewater.tif --name bluewater_footprint --category "Environmental datasets" --tiler_param colormap_name=viridis --tp rescale=-18,832
 clean:
 	rm -rf data/*

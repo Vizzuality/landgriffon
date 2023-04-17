@@ -13,6 +13,6 @@ aws_environments = {
 
 gcp_environments = {
   gcp : {
-    load_fresh_data : true
+    image_tag: "latest"
   },
 }

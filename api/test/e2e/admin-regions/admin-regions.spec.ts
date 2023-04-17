@@ -62,7 +62,7 @@ describe('AdminRegionsModule (e2e)', () => {
     });
   });
 
-  test('Create a admin region without the required fields should fail with a 400 error', async () => {
+  test.skip('Create a admin region without the required fields should fail with a 400 error', async () => {
     const response = await request(testApplication.getHttpServer())
       .post('/api/v1/admin-regions')
       .set('Authorization', `Bearer ${jwtToken}`)

@@ -36,6 +36,7 @@ environments = {
 		load_fresh_data : true,
 		data_import_arguments : ["seed-data"],
 		image_tag : "sample"
+		subdomain : "sample"
 	}
 }
 ```
@@ -61,6 +62,7 @@ The `value` in the key-value pair is an object with a set of properties, all of 
   as part of the initial data import process. Defaults to `["seed-data"]`
 - `image_tag`: tag of the different docker images to pull from the container registry. Does not apply to the Redis
   image. Defaults to the same value as `key`.
+- `subdomain`: a string to override the default value for the subdomain name. Defaults to the same value as `key`.
 
 ### Handling production and staging
 

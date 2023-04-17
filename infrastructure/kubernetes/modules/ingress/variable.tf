@@ -22,3 +22,9 @@ variable "domain" {
   type        = string
   description = "Domain where the app is publicly available"
 }
+
+variable "subdomain" {
+  type        = string
+  description = "Subdomain name"
+  default     = var.namespace
+}

@@ -15,9 +15,9 @@ import {
 
 export class CreateBusinessUnitDto {
   @IsString()
-  @IsNotEmpty()
-  @MinLength(2)
-  @MaxLength(400)
+  @IsNotEmpty({ message: 'Business Unit Name must not be empty' })
+  @MinLength(1, { message: 'Business Unit Name is too short' })
+  @MaxLength(400, { message: 'Business Unit Name is too long' })
   @ApiProperty()
   name!: string;
 

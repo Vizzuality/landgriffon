@@ -12,9 +12,9 @@ import { Supplier, SUPPLIER_STATUS } from 'modules/suppliers/supplier.entity';
 
 export class CreateSupplierDto {
   @IsString()
-  @IsNotEmpty()
-  @MinLength(1)
-  @MaxLength(1000)
+  @IsNotEmpty({ message: 'Supplier Name must not be empty' })
+  @MinLength(1, { message: 'Supplier Name is too short' })
+  @MaxLength(400, { message: 'Supplier Name is too long' })
   @ApiProperty()
   name!: string;
 

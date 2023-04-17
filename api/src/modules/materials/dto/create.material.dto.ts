@@ -12,9 +12,9 @@ import { Material, MATERIALS_STATUS } from 'modules/materials/material.entity';
 
 export class CreateMaterialDto {
   @IsString()
-  @IsNotEmpty()
-  @MinLength(2)
-  @MaxLength(300)
+  @IsNotEmpty({ message: 'Material Name must not be empty' })
+  @MinLength(1, { message: 'Material Name is too short' })
+  @MaxLength(400, { message: 'Material Name is too long' })
   @ApiProperty()
   name!: string;
 

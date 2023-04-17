@@ -15,8 +15,9 @@ import {
 
 export class CreateAdminRegionDto {
   @IsString()
-  @MinLength(2)
-  @MaxLength(100)
+  @IsNotEmpty({ message: 'Admin Region Name must not be empty' })
+  @MinLength(1, { message: 'Admin Region Name is too short' })
+  @MaxLength(400, { message: 'Admin Region Name is too long' })
   @ApiProperty()
   @IsNotEmpty()
   name!: string;

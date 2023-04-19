@@ -44,7 +44,7 @@ const AccordionEntry = ({ header, children, expanded, onExpandedChange }: Accord
       })}
     >
       <div
-        className="flex flex-row gap-2 p-2 pb-4 cursor-pointer place-items-start"
+        className="flex flex-row gap-2 p-2 cursor-pointer place-items-start"
         onClick={toggleExpand}
       >
         <div className="h-fit">

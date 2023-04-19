@@ -136,7 +136,7 @@ export const analysisMapSlice = createSlice({
         },
       };
     },
-    setLayerOrder: (state, action: PayloadAction<Layer['id'][]>) => {
+    setLayerOrder: (state: AnalysisMapState, action: PayloadAction<Layer['id'][]>) => {
       Object.values(state.layers).forEach((layer) => {
         layer.order = action.payload.indexOf(layer.id);
       });
@@ -183,6 +183,6 @@ export const analysisMapSlice = createSlice({
 export const { setLayer, setLayerDeckGLProps, setTooltipData, setTooltipPosition, setLayerOrder } =
   analysisMapSlice.actions;
 
-export const analysisMap = (state: RootState) => state['analysis/map'];
+export const analysisMap = (state: RootState): AnalysisMapState => state['analysis/map'];
 
 export default analysisMapSlice.reducer;

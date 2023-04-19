@@ -23,6 +23,7 @@ import type { UseFuseOptions } from 'hooks/fuse';
 import type { CategoryWithLayers } from 'hooks/layers/getContextualLayers';
 import type { Dispatch } from 'react';
 import type { Layer, Material } from 'types';
+import type { AnalysisMapState } from 'store/features/analysis/map';
 
 interface LegendSettingsProps {
   categories: CategoryWithLayers[];
@@ -157,12 +158,11 @@ const FUSE_OPTIONS: UseFuseOptions<CategoryWithLayers['layers'][number]> = {
   threshold: 0.3,
 };
 
-const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsProps) => {
+const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onApply, onDismiss }) => {
   const { materialId } = useAppSelector(analysisFilters);
-
   const {
     layers: { impact, ..._initialLayerState },
-  } = useAppSelector(analysisMap);
+  }: AnalysisMapState = useAppSelector(analysisMap);
 
   const [localLayerState, setLocalLayerState] = useState(_initialLayerState);
   const [localMaterial, setLocalMaterial] = useState(materialId);
@@ -240,7 +240,7 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
     ],
   );
 
-  const localSelectedLayerNumber = useMemo(
+  const localSelectedLayerNumber = useMemo<number>(
     () => Object.values(localLayerState).filter((l) => l.visible).length,
     [localLayerState],
   );
@@ -256,7 +256,7 @@ const LegendSettings = ({ categories = [], onApply, onDismiss }: LegendSettingsP
             onReset={reset}
           />
         </div>
-        <div className="text-sm text-right underline text-navy-400 underline-offset-[3px]">
+        <div className="text-sm text-right text-navy-400 underline-offset-[3px]">
           Selected layers ({localSelectedLayerNumber})
         </div>
         <div className="max-h-full p-0.5 overflow-y-auto flex-grow">

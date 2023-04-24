@@ -1,7 +1,12 @@
 {
   "name": "landgriffon-contracts",
+  "scripts": {
+    "tsc": "tsc -p tsconfig.json"
+  },
   "dependencies": {
     "@ts-rest/core": "^3.18.1",
+    "class-transformer": "^0.5.1",
+    "tsc": "^2.0.4",
     "zod": "^3.21.4"
   },
   "peerDependencies": {

@@ -2,9 +2,19 @@ import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
 import { CreateScenarioDto } from 'modules/scenarios_e2e_test/dto/create.scenario.dto';
 import { Scenario } from 'modules/scenarios/scenario.entity';
+import { classToPlain } from 'class-transformer';
+
+function classToPlainWithInferredType<T>(instance: T): Omit<T, keyof Function> {
+  return classToPlain(instance) as unknown as Omit<T, keyof Function>;
+}
+
+const scenario = new Scenario();
+
+const ScenarioSchema = classToPlainWithInferredType(scenario);
+
+const zodSchema = z.object(ScenarioSchema);
 
 const c = initContract();
-
 export const ScenarioContract = c.router({
   createScenario: {
     method: 'POST',

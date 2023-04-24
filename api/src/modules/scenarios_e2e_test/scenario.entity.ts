@@ -5,12 +5,24 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+// eslint-disable-next-line no-restricted-imports
+import { IScenario } from '../../../../shared/scenarios/scenario.interface';
 
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { User } from 'modules/users/user.entity';
-import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
+
+type ExactProperties<T, U> = {
+  [K in keyof (T & U)]: K extends keyof T
+    ? K extends keyof U
+      ? T[K] extends U[K]
+        ? U[K]
+        : never
+      : T[K]
+    : never;
+};
 
 export enum SCENARIO_STATUS {
   ACTIVE = 'active',
@@ -29,10 +41,14 @@ export const scenarioResource: BaseServiceResource = {
 };
 
 @Entity()
-export class Scenario extends TimestampedBaseEntity {
+export class Scenario implements ExactProperties<IScenario, Scenario> {
   @PrimaryGeneratedColumn('uuid')
   @ApiProperty()
   id: string;
+
+  dale: boolean;
+
+  algo: string;
 
   @ApiProperty()
   @Column({ nullable: false })
@@ -56,7 +72,7 @@ export class Scenario extends TimestampedBaseEntity {
     enumName: 'entityStatus',
     default: SCENARIO_STATUS.INACTIVE,
   })
-  status!: SCENARIO_STATUS;
+  status!: string;
 
   @ApiPropertyOptional()
   @Column({ type: 'jsonb', nullable: true })
@@ -68,31 +84,4 @@ export class Scenario extends TimestampedBaseEntity {
       scenarioIntervention.scenario,
   )
   scenarioInterventions: ScenarioIntervention[];
-
-  @ManyToOne(() => User, (user: User) => user.scenarios, {
-    eager: false,
-    onDelete: 'CASCADE',
-  })
-  @ApiProperty({ type: () => User })
-  user?: User;
-
-  /**
-   * @debt Auto-assign user and make not nullable
-   */
-  @Column({ nullable: true })
-  @ApiPropertyOptional()
-  userId?: string;
-
-  @ManyToOne(() => User, (user: User) => user.scenariosLastEdited, {
-    eager: false,
-  })
-  @ApiProperty({ type: () => User })
-  updatedBy?: User;
-
-  /**
-   * @debt Auto-assign user and make not nullable
-   */
-  @Column({ nullable: true })
-  @ApiPropertyOptional()
-  updatedById?: string;
 }

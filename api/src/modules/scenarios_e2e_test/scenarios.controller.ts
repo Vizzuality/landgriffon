@@ -13,31 +13,16 @@ import { ScenariosService } from 'modules/scenarios/scenarios.service';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
-  ApiForbiddenResponse,
-  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiQuery,
   ApiTags,
-  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import {
-  JSONAPIQueryParams,
-  JSONAPISingleEntityQueryParams,
-} from 'decorators/json-api-parameters.decorator';
-import {
-  FetchSpecification,
-  ProcessFetchSpecification,
-} from 'nestjs-base-service';
+
 import { Scenario, scenarioResource } from 'modules/scenarios/scenario.entity';
 import { CreateScenarioDto } from 'modules/scenarios/dto/create.scenario.dto';
-import { UpdateScenarioDto } from 'modules/scenarios/dto/update.scenario.dto';
-import { PaginationMeta } from 'utils/app-base.service';
+
 import { SetUserInterceptor } from 'decorators/set-user.interceptor';
-import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
-import { UserOwnsScenario } from 'modules/authorization/modules/scenario-ownership.interceptor';
 import {
-  Api,
   nestControllerContract,
   NestRequestShapes,
   NestResponseShapes,

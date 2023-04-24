@@ -63,9 +63,9 @@ const ImpactLayer = () => {
     <LegendItem
       isActive={layer.active}
       onToggle={onToggleLayer}
-      info={indicator?.metadata?.description}
       {...layer.metadata.legend}
       name={name}
+      metadata={indicator?.metadata}
       opacity={layer.opacity}
       onChangeOpacity={handleOpacity}
       showComparisonModeToggle

@@ -131,6 +131,7 @@ export type Material = {
     cautions: string;
     citation: string;
     datasets: string[];
+    description?: string;
     'date of content': string;
     'frequency of updates': string;
     'geographic coverage': string;

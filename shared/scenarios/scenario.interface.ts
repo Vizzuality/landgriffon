@@ -9,3 +9,8 @@ export interface IScenario {
   dale: boolean;
   algo: string;
 }
+
+export interface ICreateScenarioDto {
+  title: string;
+  description?: string;
+}

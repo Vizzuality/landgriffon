@@ -5,24 +5,10 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-// eslint-disable-next-line no-restricted-imports
-import { IScenario } from '../../../../shared/scenarios/scenario.interface';
-
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
-
-type ExactProperties<T, U> = {
-  [K in keyof (T & U)]: K extends keyof T
-    ? K extends keyof U
-      ? T[K] extends U[K]
-        ? U[K]
-        : never
-      : T[K]
-    : never;
-};
+import { StrictImplementation, IScenario } from 'shared';
 
 export enum SCENARIO_STATUS {
   ACTIVE = 'active',
@@ -41,14 +27,10 @@ export const scenarioResource: BaseServiceResource = {
 };
 
 @Entity()
-export class Scenario implements ExactProperties<IScenario, Scenario> {
+export class Scenario implements StrictImplementation<IScenario, Scenario> {
   @PrimaryGeneratedColumn('uuid')
   @ApiProperty()
   id: string;
-
-  dale: boolean;
-
-  algo: string;
 
   @ApiProperty()
   @Column({ nullable: false })

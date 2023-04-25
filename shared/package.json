@@ -1,5 +1,8 @@
 {
-  "name": "landgriffon-contracts",
+  "name": "shared",
+  "version": "1.0.0",
+  "main": "./index.ts",
+  "types": "./index.d.ts",
   "scripts": {
     "tsc": "tsc -p tsconfig.json"
   },

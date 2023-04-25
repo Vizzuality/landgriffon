@@ -1,3 +1,5 @@
+import { StrictImplementation } from "../base.type";
+
 export interface IScenario {
   id: string;
   title: string;

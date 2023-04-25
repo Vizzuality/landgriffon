@@ -26,6 +26,7 @@
     "node": "^18.12"
   },
   "dependencies": {
+    "shared": "file:../shared",
     "@googlemaps/google-maps-services-js": "~3.3.2",
     "@nestjs/axios": "^1.0.0",
     "@nestjs/bull": "^0.6.2",

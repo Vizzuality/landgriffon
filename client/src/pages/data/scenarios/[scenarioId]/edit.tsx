@@ -28,7 +28,6 @@ import Badge from 'components/badge';
 import { handleResponseError } from 'services/api';
 
 import type { ScenarioFormData } from 'containers/scenarios/types';
-import type { ErrorResponse } from 'types';
 
 const UpdateScenarioPage: React.FC = () => {
   const { query } = useRouter();

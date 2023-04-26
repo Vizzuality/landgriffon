@@ -20,6 +20,8 @@ import { CHECKED_STRATEGIES, getParents, useTree } from './utils';
 import SearchOverlay from './search-overlay';
 import SearchInput from './search-input';
 import { FIELD_NAMES } from './constants';
+import CustomCheckbox from './checkbox';
+import CustomSwitcherIcon from './switcher';
 
 import Badge from 'components/badge';
 import Loading from 'components/loading';
@@ -27,7 +29,7 @@ import Loading from 'components/loading';
 import type { Key } from 'rc-tree/lib/interface';
 import type { TreeProps } from 'rc-tree';
 import type { TreeSelectProps, TreeSelectOption, TreeDataNode } from './types';
-import type { Ref, RefObject, InputHTMLAttributes, EventHandler, SyntheticEvent } from 'react';
+import type { Ref, EventHandler, SyntheticEvent } from 'react';
 
 const THEMES = {
   default: {
@@ -50,85 +52,33 @@ const THEMES = {
     'flex-row max-w-full bg-gray-300/20 border border-gray-200 rounded-md shadow-sm cursor-default pointer-events-none min-h-[2.5rem] text-sm p-0.5 pr-0',
 };
 
-const CustomSwitcherIcon: TreeProps<TreeDataNode>['switcherIcon'] = ({
-  isLeaf,
-  expanded,
-  data,
-}) => {
-  if (isLeaf) return <span className="block w-4" />;
-
-  const allChildrenDisabled = data.children.some(({ disabled }) => disabled);
-
-  return (
-    <ChevronDownIcon
-      className={classNames('h-4 w-4 cursor-pointer', {
-        '-rotate-90': !expanded,
-        'fill-gray-900': !allChildrenDisabled,
-        'fill-grey-300': allChildrenDisabled,
-      })}
-    />
-  );
-};
-
-const CustomCheckbox = React.forwardRef<
-  HTMLInputElement,
-  InputHTMLAttributes<HTMLInputElement> & { indeterminate?: boolean }
->(({ indeterminate = false, checked = false, className, ...props }, forwardedRef) => {
-  const fallbackRef = useRef<HTMLInputElement>(null);
-  const ref = forwardedRef || fallbackRef;
-
-  useEffect(() => {
-    if (!(ref as RefObject<HTMLInputElement>).current) return;
-
-    (ref as RefObject<HTMLInputElement>).current.indeterminate = !checked && indeterminate;
-  }, [checked, indeterminate, ref]);
-
-  const onChange = useCallback(() => {
-    // noop
-  }, []);
-
-  return (
-    <input
-      type="checkbox"
-      className={classNames(
-        'flex-shrink-0 rounded w-4 h-4 focus:ring-2 active:ring-2 ring-offset-1 focus:outline-offset-0 ring-navy-200 m-0.5 focus:outline-none focus:ring-offset-0 disabled:ring-0 disabled:ring-offset-0',
-        checked || indeterminate ? 'bg-navy-4 border-none' : 'border border-gray-200',
-        className,
-      )}
-      checked={checked}
-      onChange={onChange}
-      {...props}
-      ref={ref}
-    />
-  );
-});
-
-CustomCheckbox.displayName = 'CustomCheckbox';
-
 const CustomIcon: TreeProps<TreeDataNode>['icon'] = ({ checked, halfChecked, disabled }) => {
   return <CustomCheckbox checked={checked} indeterminate={halfChecked} disabled={disabled} />;
 };
 
-const InnerTreeSelect = <IsMulti extends boolean>({
-  current: currentRaw,
-  loading,
-  maxBadges = 5,
-  multiple,
-  options = [],
-  placeholder = '',
-  showSearch = false,
-  onChange,
-  onSearch,
-  theme = 'default',
-  ellipsis = false,
-  error = false,
-  fitContent = true,
-  checkedStrategy: checkedStrategyName = 'PARENT', // by default show child
-  label,
-  autoFocus = false,
-  id,
-  disabled = false,
-}: TreeSelectProps<IsMulti>) => {
+const InnerTreeSelect = <IsMulti extends boolean>(
+  {
+    current: currentRaw,
+    loading,
+    maxBadges = 5,
+    multiple,
+    options = [],
+    placeholder = '',
+    showSearch = false,
+    onChange,
+    onSearch,
+    theme = 'default',
+    ellipsis = false,
+    error = false,
+    fitContent = true,
+    checkedStrategy: checkedStrategyName = 'PARENT', // by default show child
+    label,
+    autoFocus = false,
+    id,
+    disabled = false,
+  }: TreeSelectProps<IsMulti>,
+  forwardedRef,
+) => {
   const current = useMemo(() => {
     if (!currentRaw) {
       return null;
@@ -624,6 +574,7 @@ const InnerTreeSelect = <IsMulti extends boolean>({
                   treeData={treeData}
                   fieldNames={FIELD_NAMES}
                   disabled={disabled}
+                  ref={forwardedRef}
                 />
                 {(options.length === 0 || (searchTerm && filteredOptionsKeys?.length === 0)) && (
                   <div className="p-2 mx-auto text-sm text-gray-600 opacity-60 w-fit">

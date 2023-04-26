@@ -65,7 +65,7 @@ const AdminEditTargetModal: React.FC<EditTargetModalProps> = ({ title, open, onD
   );
 
   return (
-    <Modal title={title} open={open} onDismiss={onDismiss} dismissable>
+    <Modal title={title} open={open} onDismiss={onDismiss} dismissible>
       <p className="mb-8 text-gray-500 text-md">
         Set up the baseline year and the targets for this indicator.
       </p>

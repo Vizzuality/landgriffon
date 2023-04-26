@@ -7,5 +7,3 @@ export const CONTENT_CLASSES = {
   wide: `sm:w-10/12 md:w-10/12 lg:w-10/12 xl:w-8/12 ${COMMON_CONTENT_CLASSES}`,
   fit: `w-fit ${COMMON_CONTENT_CLASSES}`,
 };
-
-export const OVERLAY_CLASSES = 'z-40 fixed inset-0 bg-black bg-blur';

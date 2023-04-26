@@ -15,4 +15,7 @@ export interface IScenario {
 export interface ICreateScenarioDto {
   title: string;
   description?: string;
+  wops: boolean;
+  wololo: string;
+  david: boolean;
 }

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery, useQueryClient, useInfiniteQuery, useMutation } from '@tanstack/react-query';
-
 import { apiService } from 'services/api';
+import { scenarioClientContract } from 'client-contracts';
 
 // types
 import type {
@@ -150,14 +150,7 @@ export function useUpdateScenario() {
 }
 
 export function useCreateScenario() {
-  const createScenario = (data: ScenarioDTO) =>
-    apiService.request<{ data: Scenario }>({
-      method: 'POST',
-      url: '/scenarios',
-      data,
-    });
-
-  return useMutation(createScenario, {
+  return scenarioClientContract.createScenario.useMutation({
     mutationKey: ['createScenario'],
   });
 }

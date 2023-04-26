@@ -5652,6 +5652,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ts-rest/core@npm:^3.18.1":
+  version: 3.19.3
+  resolution: "@ts-rest/core@npm:3.19.3"
+  peerDependencies:
+    zod: ^3.0.0
+  peerDependenciesMeta:
+    zod:
+      optional: true
+  checksum: 065c052ff485fecb47965125f32cbd0527ba22493b6682aab5a7638d798d2b69e72278f909426a15e86b75366115064bf81608e5fde24b6da98b89a063618add
+  languageName: node
+  linkType: hard
+
 "@ts-rest/react-query@npm:3.18.1":
   version: 3.18.1
   resolution: "@ts-rest/react-query@npm:3.18.1"
@@ -8503,6 +8515,13 @@ __metadata:
     inherits: ^2.0.1
     safe-buffer: ^5.0.1
   checksum: 47d3568dbc17431a339bad1fe7dff83ac0891be8206911ace3d3b818fc695f376df809bea406e759cdea07fff4b454fa25f1013e648851bec790c1d75763032e
+  languageName: node
+  linkType: hard
+
+"class-transformer@npm:^0.5.1":
+  version: 0.5.1
+  resolution: "class-transformer@npm:0.5.1"
+  checksum: f191c8b4cc4239990f5efdd790cabdd852c243ed66248e39f6616a349c910c6eed2d9fd1fbf7ee6ea89f69b4f1d0b493b27347fe0cd0ae26b47c3745a805b6d3
   languageName: node
   linkType: hard
 
@@ -14019,6 +14038,7 @@ __metadata:
     react-virtualized: 9.22.3
     recharts: 2.1.12
     rooks: 5.10.0
+    shared: "file:../shared"
     sharp: ^0.31.1
     start-server-and-test: 1.14.0
     storybook-addon-next: ^1.6.9
@@ -18624,6 +18644,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"shared@file:../shared::locator=landgriffon-client%40workspace%3A.":
+  version: 1.0.0
+  resolution: "shared@file:../shared#../shared::hash=469eb7&locator=landgriffon-client%40workspace%3A."
+  dependencies:
+    "@ts-rest/core": ^3.18.1
+    class-transformer: ^0.5.1
+    tsc: ^2.0.4
+    zod: ^3.21.4
+  peerDependencies:
+    typescript: 4.7.4
+  checksum: 90fc699247476da1008191ca6095ba7fd0bf7f467d9a26490def2921433f0004ca98f3c43f670b79bfa9670b0d327b2d27c4ab144cbf133d480aa8b880edba73
+  languageName: node
+  linkType: hard
+
 "sharp@npm:^0.31.1":
   version: 0.31.1
   resolution: "sharp@npm:0.31.1"
@@ -20008,6 +20042,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tsc@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "tsc@npm:2.0.4"
+  bin:
+    tsc: bin/tsc
+  checksum: 50b10240887424c66454687f0fca4e319713b35cb44f0dab228719eb4dd757251f83c3d79e60d29dfbe90c2d6f1272f793b83e75a9fca2c622b4213ad3eb8cb1
+  languageName: node
+  linkType: hard
+
 "tsconfig-paths-webpack-plugin@npm:^4.0.0":
   version: 4.0.0
   resolution: "tsconfig-paths-webpack-plugin@npm:4.0.0"
@@ -21250,6 +21293,13 @@ __metadata:
     property-expr: ^2.0.4
     toposort: ^2.0.2
   checksum: 43a16786b47cc910fed4891cebdd89df6d6e31702e9462e8f969c73eac88551ce750732608012201ea6b93802c8847cb0aa27b5d57370640f4ecf30f9f97d4b0
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.21.4":
+  version: 3.21.4
+  resolution: "zod@npm:3.21.4"
+  checksum: f185ba87342ff16f7a06686767c2b2a7af41110c7edf7c1974095d8db7a73792696bcb4a00853de0d2edeb34a5b2ea6a55871bc864227dace682a0a28de33e1f
   languageName: node
   linkType: hard
 

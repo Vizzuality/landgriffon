@@ -2,8 +2,6 @@ import Head from 'next/head';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 import { QueryClient, QueryClientProvider, Hydrate } from '@tanstack/react-query';
-import { OverlayProvider } from '@react-aria/overlays';
-import { SSRProvider } from '@react-aria/ssr';
 import { SessionProvider } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useDebounce } from 'rooks';
@@ -92,9 +90,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
         <QueryClientProvider client={queryClient}>
           <Hydrate state={pageProps.dehydratedState}>
             <SessionProvider session={pageProps.session}>
-              <OverlayProvider>
-                <SSRProvider>{getLayout(<Component {...pageProps} />)}</SSRProvider>
-              </OverlayProvider>
+              {getLayout(<Component {...pageProps} />)}
             </SessionProvider>
           </Hydrate>
         </QueryClientProvider>

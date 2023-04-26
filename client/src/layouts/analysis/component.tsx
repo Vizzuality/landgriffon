@@ -51,7 +51,6 @@ const AnalysisLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
           <AnalysisFilters />
           <ModeControl />
         </div>
-        {/* Map, chart or table */}
         {children}
       </section>
     </div>

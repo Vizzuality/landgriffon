@@ -246,8 +246,8 @@ const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onAppl
   );
 
   return (
-    <div className="flex flex-row h-[600px]">
-      <div className="flex flex-col items-stretch gap-5 p-6 w-[25rem]">
+    <div className="flex flex-row h-[600px] items-stretch">
+      <div className="flex flex-col gap-5 p-6 w-[25rem]">
         <div className="w-full">
           <Search
             onChange={setSearchText}
@@ -286,8 +286,8 @@ const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onAppl
           </Button>
         </div>
       </div>
-      <div className="h-full min-h-0 aspect-square">
-        <div className="relative w-full h-full">
+      <div className="relative aspect-square">
+        <div className="absolute h-full w-full top-0 left-0">
           <PreviewMap
             selectedMaterialId={localMaterial}
             selectedLayerId={selectedLayerForPreview}
@@ -300,7 +300,7 @@ const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onAppl
                 <div className="bg-white w-0.5 self-stretch" />
                 <div className="p-3">
                   Click the eye icon <EyeIcon className="inline w-4 h-4" /> next to the layer name
-                  to preview
+                  preview
                 </div>
               </>
             )}

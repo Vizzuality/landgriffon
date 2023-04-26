@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import ReactMapGL, { useMap } from 'react-map-gl';
-import { useDebouncedCallback } from 'use-debounce';
+import { useDebounce } from 'rooks';
 
 import { DEFAULT_VIEW_STATE, MAP_STYLES } from './constants';
 
-import type { ViewState, ViewStateChangeEvent } from 'react-map-gl';
+import type { ViewState, ViewStateChangeEvent, MapboxEvent } from 'react-map-gl';
 import type { FC } from 'react';
 import type { CustomMapProps } from './types';
 
@@ -25,7 +25,7 @@ export const Map: FC<CustomMapProps> = ({
   initialViewState,
   viewState = {},
   bounds,
-  onMapViewStateChange,
+  onMapViewStateChange = () => null,
   children,
   dragPan,
   dragRotate,
@@ -48,16 +48,12 @@ export const Map: FC<CustomMapProps> = ({
       ...viewState,
     },
   );
+  const onMapViewStateChangeDebounced = useDebounce(onMapViewStateChange, 150);
   const [isFlying, setFlying] = useState(false);
-  const [isLoaded, setLoaded] = useState(false);
 
   /**
    * CALLBACKS
    */
-  const debouncedViewStateChange = useDebouncedCallback((_viewState: ViewState) => {
-    onMapViewStateChange?.(_viewState);
-  }, 150);
-
   const handleFitBounds = useCallback(() => {
     const { bbox, options } = bounds;
 
@@ -76,9 +72,9 @@ export const Map: FC<CustomMapProps> = ({
   const handleMapMove = useCallback(
     ({ viewState: _viewState }: ViewStateChangeEvent) => {
       setLocalViewState(_viewState);
-      debouncedViewStateChange(_viewState);
+      onMapViewStateChangeDebounced(_viewState);
     },
-    [debouncedViewStateChange],
+    [onMapViewStateChangeDebounced],
   );
 
   useEffect(() => {
@@ -115,8 +111,7 @@ export const Map: FC<CustomMapProps> = ({
   }, [bounds, isFlying]);
 
   const handleMapLoad = useCallback(
-    (evt) => {
-      setLoaded(true);
+    (evt: MapboxEvent) => {
       if (onLoad) onLoad(evt);
     },
     [onLoad],
@@ -138,7 +133,7 @@ export const Map: FC<CustomMapProps> = ({
       {...mapboxProps}
       {...localViewState}
     >
-      {!!mapRef && isLoaded && children(mapRef.getMap())}
+      {!!mapRef && children(mapRef.getMap())}
     </ReactMapGL>
   );
 };

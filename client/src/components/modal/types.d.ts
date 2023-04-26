@@ -14,7 +14,7 @@ export interface ModalProps {
    * Whether the user can close the modal by clicking on the overlay, the close button or pressing
    * the escape key
    */
-  dismissable?: boolean;
+  dismissible?: boolean;
   /**
    * Size (width) of the modal
    */

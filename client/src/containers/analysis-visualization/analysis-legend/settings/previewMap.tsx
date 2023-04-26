@@ -1,4 +1,5 @@
 import { useEffect, useCallback, useMemo } from 'react';
+import { MapProvider } from 'react-map-gl';
 import { H3HexagonLayer } from '@deck.gl/geo-layers/typed';
 
 import DeckLayer from 'components/map/layers/deck';
@@ -22,7 +23,7 @@ interface PreviewMapProps {
 
 const INITIAL_PREVIEW_SETTINGS = {
   minZoom: 0,
-  zoom: 0,
+  zoom: 1,
 };
 
 const PREVIEW_LAYER_ID = 'preview';
@@ -72,12 +73,12 @@ const PreviewMap = ({ selectedLayerId, selectedMaterialId, onStatusChange }: Pre
   const layers = useMemo(() => ({ [PREVIEW_LAYER_ID]: PreviewLayer }), [PreviewLayer]);
 
   return (
-    <>
+    <MapProvider>
       {isFetching && <PageLoading />}
       <Map id="contextual-preview-map" mapStyle="terrain" viewState={INITIAL_PREVIEW_SETTINGS}>
         {() => <LayerManager layers={layers} />}
       </Map>
-    </>
+    </MapProvider>
   );
 };
 

@@ -13,6 +13,7 @@ export function useUploadDataSource(): UseMutationResult<ApiResponse> {
         method: 'POST',
         data,
         url: 'import/sourcing-data',
+        headers: { 'Content-Type': 'multipart/form-data' },
       })
       .then((response) => response.data);
 

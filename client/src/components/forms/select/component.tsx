@@ -215,9 +215,10 @@ const Select = <T,>({
                   >
                     {({ selected, disabled }) => (
                       <div
-                        className={classnames('block truncate text-gray-900', {
+                        className={classnames('block truncate', {
                           'text-navy-400': selected,
                           'text-gray-300': disabled,
+                          'text-gray-900': !selected && !disabled,
                         })}
                       >
                         {option.label}

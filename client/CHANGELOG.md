@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Replaced Deck.gl map with `react-map-gl` to prepare migration to Layer Manager. [LANDGRIF-812](https://vizzuality.atlassian.net/browse/LANDGRIF-812)
 
 ### Fixed
+- Uploading excel [LANDGRIF-1304](https://vizzuality.atlassian.net/browse/LANDGRIF-1304)
 - Styles amendments for the contextual layers modal
 - Fixed callback Url after login [LANDGRIF-1260](https://vizzuality.atlassian.net/browse/LANDGRIF-1260)
 - Fixed items alignement in the legend. [LANDGRIF-1093](https://vizzuality.atlassian.net/browse/LANDGRIF-1093)

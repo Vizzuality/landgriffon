@@ -274,7 +274,7 @@ const AdminDataPage: React.FC = () => {
           </div>
 
           <div className="flex justify-between gap-3 mt-8">
-            <p>
+            <div>
               <Anchor
                 href="/files/data-template.xlsx"
                 download
@@ -285,7 +285,7 @@ const AdminDataPage: React.FC = () => {
               >
                 Download template
               </Anchor>
-            </p>
+            </div>
             <Button variant="secondary" onClick={closeUploadDataSourceModal}>
               Cancel
             </Button>

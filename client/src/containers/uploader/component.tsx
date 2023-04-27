@@ -37,8 +37,13 @@ const DataUploader: React.FC<DataUploaderProps> = ({
       });
 
       uploadDataSource.mutate(formData, {
-        onError: () => {
-          toast.error('There was an error uploading the file. Try again later.');
+        onError: ({ response }) => {
+          const errors = response?.data?.errors;
+          if (errors && !!errors.length) {
+            errors.forEach(({ title }) => toast.error(title));
+          } else {
+            toast.error('There was an error uploading the file. Try again later.');
+          }
         },
       });
     },
@@ -74,7 +79,7 @@ const DataUploader: React.FC<DataUploaderProps> = ({
       </div>
 
       {isUploadingOrProcessing && (
-        <div className="absolute w-full px-20">
+        <div className="w-full px-20">
           <div className="px-10 py-4 bg-white rounded-b-xl">
             <div className="w-full h-[4px] rounded bg-gradient-to-r from-[#5FCFF9] via-[#42A56A] to-[#F5CA7D]" />
             <p className="mt-1 text-xs text-left text-gray-500">

@@ -17,6 +17,11 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": false,
     "target": "es2017",
+    "paths": {
+      "@shared/*": [
+        "../shared/*"
+      ]
+    }
   },
   "exclude": [
     "node_modules",

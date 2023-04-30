@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 import toast from 'react-hot-toast';
 import Head from 'next/head';
 import router from 'next/router';
-
 import { useCreateScenario } from 'hooks/scenarios';
 import CleanLayout from 'layouts/clean';
 import BackLink from 'components/back-link';
@@ -10,26 +9,34 @@ import ScenarioForm from 'containers/scenarios/form';
 import { handleResponseError } from 'services/api';
 
 import type { ScenarioFormData } from 'containers/scenarios/types';
+import type { ErrorResponse } from 'types';
+// I might need this type for something later
+import type { ICreateScenarioDto } from 'shared/scenarios/scenario.interface';
 
 const CreateScenarioPage: React.FC = () => {
   const createScenario = useCreateScenario();
-  const handleCreateScenario = useCallback(
-    (scenarioFormData: ScenarioFormData) => {
-      createScenario.mutate(scenarioFormData, {
-        onSuccess: ({ data }) => {
-          const { data: scenario } = data;
-          const { id, title } = scenario;
-          toast.success(`The scenario ${title} has been created, you will be redirected shortly.`);
-          // adding some delay to make sure the user reads the success message
-          setTimeout(() => {
-            router.replace(`/data/scenarios/${id}/edit`);
-          }, 3000);
+  const handleCreateScenario = useCallback(() => {
+    createScenario.mutate(
+      { body: { wololo } },
+      {
+        onSuccess: ({ body }) => {
+          const { isPublic } = body;
+          // const { id, title } = scenario;
+          // toast.success(
+          //   `The scenario ${title} has been created, you will be redirected shortly.`,
+          // );
+          // // adding some delay to make sure the user reads the success message
+          // setTimeout(() => {
+          //   router.replace(`/data/scenarios/${id}/edit`);
+          // }, 3000);
         },
-        onError: handleResponseError,
-      });
-    },
-    [createScenario],
-  );
+        onError: (error: ErrorResponse) => {
+          const { errors } = error.response?.data;
+          errors.forEach(({ meta }) => toast.error(meta.rawError.response.message));
+        },
+      },
+    );
+  }, [createScenario]);
 
   return (
     <CleanLayout>

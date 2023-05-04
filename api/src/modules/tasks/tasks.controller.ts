@@ -70,13 +70,28 @@ export class TasksController {
 
   @ApiOperation({ description: 'Find task by id' })
   @ApiOkResponse({ type: Task })
-  @JSONAPISingleEntityQueryParams()
+  @JSONAPISingleEntityQueryParams({
+    entitiesAllowedAsIncludes: taskResource.entitiesAllowedAsIncludes,
+    availableFilters: taskResource.columnsAllowedAsFilter.map(
+      (columnName: string) => ({
+        name: columnName,
+      }),
+    ),
+  })
   @ApiBadRequestResponse()
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Task> {
-    return this.taskService.serialize(await this.taskService.getById(id));
+  async findOne(
+    @ProcessFetchSpecification({
+      allowedFilters: taskResource.columnsAllowedAsFilter,
+    })
+    fetchSpecification: FetchSpecification,
+    @Param('id') id: string,
+  ): Promise<Task> {
+    return this.taskService.serialize(
+      await this.taskService.getById(id, fetchSpecification),
+    );
   }
 
   @ApiOperation({ description: 'Create a Task' })

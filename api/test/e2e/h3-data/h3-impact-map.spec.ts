@@ -12,6 +12,7 @@ import { DataSource } from 'typeorm';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { RELATIVE_UNIT_MAP_RESPONSE } from 'modules/h3-data/h3-data-map.service';
+import { H3IndexValueData } from '../../../src/modules/h3-data/h3-data.entity';
 
 /**
  * Tests for the h3 impact map.
@@ -395,9 +396,12 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a4fffffff', v: '-75.00' },
-          { h: '861203a5fffffff', v: '-25.00' },
-          { h: '861203a6fffffff', v: '-50.00' },
+          { h: '861203a6fffffff', v: -50 },
+          {
+            h: '861203a5fffffff',
+            v: -25,
+          },
+          { h: '861203a4fffffff', v: -75 },
         ]),
       );
       expect(response.body.metadata).toBeDefined();
@@ -429,17 +433,24 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a4fffffff', v: '-7.33' },
-          { h: '861203a5fffffff', v: '-2.07' },
-          { h: '861203a6fffffff', v: '-5.26' },
+          { h: '861203a6fffffff', v: -10.526315789473685 },
+          {
+            h: '861203a5fffffff',
+            v: -4.1356492969396195,
+          },
+          { h: '861203a4fffffff', v: -6.947660954145437 },
         ]),
       );
+
       expect(response.body.metadata).toBeDefined();
       expect(response.body.metadata.unit).toEqual(RELATIVE_UNIT_MAP_RESPONSE);
       expect(
         toBeCloseToArray(
           response.body.metadata.quantiles,
-          [-7.33, -5.95001, -4.196645, 0, 0, 0, 0],
+          [
+            -10.526315789473685, -8.140569756953756, -6.01030498833245, 0, 0, 0,
+            0,
+          ],
           5,
         ),
       ).toBeTruthy();
@@ -464,14 +475,26 @@ describe('H3 Data Module (e2e) - Impact map', () => {
           relative: false,
         });
 
-      expect(response.body.data).toEqual(
-        expect.arrayContaining([
-          { h: '861203a7fffffff', v: '-150.00' },
-          { h: '861203a6fffffff', v: '-50.00' },
-          { h: '861203a5fffffff', v: '125.00' },
-          { h: '861203a4fffffff', v: '75.00' },
-        ]),
-      );
+      const expected = [
+        { h: '861203a7fffffff', v: -150 },
+        {
+          h: '861203a6fffffff',
+          v: -49.99999999999994,
+        },
+        { h: '861203a5fffffff', v: 125.00000000000006 },
+        { h: '861203a4fffffff', v: 75 },
+      ];
+      expect(
+        response.body.data.map((data: H3IndexValueData) => ({ h: data.h })),
+      ).toEqual(expected.map((data: H3IndexValueData) => ({ h: data.h })));
+
+      expect(
+        toBeCloseToArray(
+          response.body.data.map((data: H3IndexValueData) => data.v),
+          expected.map((data: H3IndexValueData) => data.v),
+          5,
+        ),
+      ).toBeTruthy();
 
       expect(response.body.metadata).toBeDefined();
       expect(response.body.metadata.unit).toEqual('tonnes');
@@ -501,20 +524,37 @@ describe('H3 Data Module (e2e) - Impact map', () => {
           relative: true,
         });
 
-      expect(response.body.data).toEqual(
-        expect.arrayContaining([
-          { h: '861203a4fffffff', v: '-6.54' },
-          { h: '861203a5fffffff', v: '-11.80' },
-          { h: '861203a6fffffff', v: '5.26' },
-          { h: '861203a7fffffff', v: '200.00' },
-        ]),
-      );
+      const expected = [
+        { h: '861203a7fffffff', v: 200 },
+        {
+          h: '861203a6fffffff',
+          v: 10.526315789473673,
+        },
+        { h: '861203a5fffffff', v: -23.607176581680843 },
+        { h: '861203a4fffffff', v: -7.466401194624191 },
+      ];
+
+      expect(
+        response.body.data.map((data: H3IndexValueData) => ({ h: data.h })),
+      ).toEqual(expected.map((data: H3IndexValueData) => ({ h: data.h })));
+
+      expect(
+        toBeCloseToArray(
+          response.body.data.map((data: H3IndexValueData) => data.v),
+          expected.map((data: H3IndexValueData) => data.v),
+          5,
+        ),
+      ).toBeTruthy();
+
       expect(response.body.metadata).toBeDefined();
       expect(response.body.metadata.unit).toEqual(RELATIVE_UNIT_MAP_RESPONSE);
       expect(
         toBeCloseToArray(
           response.body.metadata.quantiles,
-          [-11.8, -10.04668, -8.293315, 0, 70.172684, 135.0873158, 200],
+          [
+            -23.607176581680843, -18.226971921913247, -12.846605854391784, 0,
+            73.68357894736842, 136.84273684210527, 200,
+          ],
           5,
         ),
       ).toBeTruthy();

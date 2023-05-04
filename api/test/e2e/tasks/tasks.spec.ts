@@ -2,13 +2,14 @@ import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { Task, TASK_STATUS, TASK_TYPE } from 'modules/tasks/task.entity';
 import { TasksRepository } from 'modules/tasks/tasks.repository';
-import { createTask } from '../../entity-mocks';
+import { createTask, createUser } from '../../entity-mocks';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 import ApplicationManager, {
   TestApplication,
 } from '../../utils/application-manager';
 import { setupTestUser } from '../../utils/userAuth';
+import { User } from 'modules/users/user.entity';
 
 /**
  * Tests for Tasks Module.
@@ -25,7 +26,6 @@ describe('Tasks Module (e2e)', () => {
     testApplication = await ApplicationManager.init();
 
     dataSource = testApplication.get<DataSource>(DataSource);
-
     tasksRepository = testApplication.get<TasksRepository>(TasksRepository);
 
     const tokenWithId = await setupTestUser(testApplication);
@@ -34,7 +34,7 @@ describe('Tasks Module (e2e)', () => {
   });
 
   afterEach(async () => {
-    await tasksRepository.delete({});
+    await dataSource.getRepository(Task).delete({});
   });
 
   afterAll(async () => {
@@ -97,9 +97,10 @@ describe('Tasks Module (e2e)', () => {
 
   describe('Tasks - Update', () => {
     test('Updating a task should be successful (happy case)', async () => {
+      const user: User = await createUser();
       const task: Task = await createTask({
         status: TASK_STATUS.ABORTED,
-        userId: '2a833cc7-5a6f-492d-9a60-0d6d056923eb',
+        userId: user.id,
       });
 
       const response = await request(testApplication.getHttpServer())
@@ -115,9 +116,6 @@ describe('Tasks Module (e2e)', () => {
         .expect(HttpStatus.OK);
 
       expect(response.body.data.attributes.status).toEqual('failed');
-      expect(response.body.data.attributes.userId).toEqual(
-        '2a833cc7-5a6f-492d-9a60-0d6d056923eb',
-      );
       expect(response.body.data.attributes.data.file2).toEqual('File2');
     });
 

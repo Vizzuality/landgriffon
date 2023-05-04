@@ -443,8 +443,9 @@ async function createTarget(
 }
 
 async function createTask(additionalData: Partial<Task> = {}): Promise<Task> {
+  const user: User = await createUser();
   const defaultData: DeepPartial<Task> = {
-    userId: '2a833cc7-5a6f-492d-9a60-0d6d056923ea',
+    userId: user.id,
     type: TASK_TYPE.SOURCING_DATA_IMPORT,
     data: {
       filename: 'fakeFile.xlsx',

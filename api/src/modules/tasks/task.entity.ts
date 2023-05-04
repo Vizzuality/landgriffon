@@ -1,7 +1,14 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty } from '@nestjs/swagger';
+import { User } from 'modules/users/user.entity';
 
 export const taskResource: BaseServiceResource = {
   className: 'Task',
@@ -9,7 +16,7 @@ export const taskResource: BaseServiceResource = {
     singular: 'task',
     plural: 'tasks',
   },
-  entitiesAllowedAsIncludes: [],
+  entitiesAllowedAsIncludes: ['user'],
   columnsAllowedAsFilter: ['status', 'data', 'createdBy'],
 };
 
@@ -39,7 +46,11 @@ export class Task extends TimestampedBaseEntity {
   })
   type!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: () => User })
+  @ManyToOne(() => User, (user: User) => user.tasks)
+  @JoinColumn({ name: 'userId' })
+  user: User;
+
   @Column({ type: 'uuid' })
   userId!: string;
 

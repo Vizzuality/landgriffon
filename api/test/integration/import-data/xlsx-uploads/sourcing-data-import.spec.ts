@@ -276,12 +276,12 @@ describe('Sourcing Data import', () => {
       dataSource,
     );
 
-    const task = await createTask();
-
     tablesToDrop = [
       ...(await createMaterialTreeForXLSXImport(dataSource)),
       ...indicatorPreconditions.h3tableNames,
     ];
+
+    const task = await createTask();
 
     await sourcingDataImportService.importSourcingData(
       __dirname + '/files/test-base-dataset.xlsx',

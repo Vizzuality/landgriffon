@@ -30,6 +30,10 @@ import { TasksService } from 'modules/tasks/tasks.service';
 import { UpdateTaskWithControllerDto } from 'modules/tasks/dto/update-task-with-controller.dto';
 import { CreateTaskDto } from 'modules/tasks/dto/create-task.dto';
 import { SetUserInterceptor } from 'decorators/set-user.interceptor';
+import {
+  JSONAPIQueryParams,
+  JSONAPISingleEntityQueryParams,
+} from 'decorators/json-api-parameters.decorator';
 
 @Controller('/api/v1/tasks')
 @ApiTags(taskResource.className)
@@ -39,6 +43,14 @@ export class TasksController {
 
   @ApiOperation({ description: 'Find all tasks' })
   @ApiOkResponse({ type: Task })
+  @JSONAPIQueryParams({
+    availableFilters: taskResource.columnsAllowedAsFilter.map(
+      (columnName: string) => ({
+        name: columnName,
+      }),
+    ),
+    entitiesAllowedAsIncludes: taskResource.entitiesAllowedAsIncludes,
+  })
   @ApiBadRequestResponse()
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
@@ -58,6 +70,7 @@ export class TasksController {
 
   @ApiOperation({ description: 'Find task by id' })
   @ApiOkResponse({ type: Task })
+  @JSONAPISingleEntityQueryParams()
   @ApiBadRequestResponse()
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()

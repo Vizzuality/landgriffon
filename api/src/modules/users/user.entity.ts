@@ -16,6 +16,7 @@ import { Scenario } from 'modules/scenarios/scenario.entity';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { Role } from 'modules/authorization/roles/role.entity';
 import { Exclude } from 'class-transformer';
+import { Task } from 'modules/tasks/task.entity';
 
 export const userResource: BaseServiceResource = {
   className: 'User',
@@ -111,6 +112,9 @@ export class User extends BaseEntity {
       scenarioIntervention.updatedBy,
   )
   scenarioInterventionsLastEdited: ScenarioIntervention[];
+
+  @OneToMany(() => Task, (task: Task) => task.user)
+  tasks: Task[];
 
   @ApiProperty({ type: [Role] })
   @ManyToMany(() => Role, (role: Role) => role.user, { eager: true })

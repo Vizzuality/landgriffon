@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   TASK_STATUS,
   TASK_TYPE,
@@ -38,7 +38,7 @@ export class TasksService extends AppBaseService<
         'data',
         'errors',
         'logs',
-        'userId',
+        'user',
       ],
       keyForAttribute: 'camelCase',
     };

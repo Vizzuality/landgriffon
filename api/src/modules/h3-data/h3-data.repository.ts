@@ -1,6 +1,7 @@
 import {
   Brackets,
   DataSource,
+  ObjectLiteral,
   Repository,
   SelectQueryBuilder,
   WhereExpressionBuilder,
@@ -34,6 +35,12 @@ import {
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { ImpactMaterializedView } from 'modules/impact/views/impact.materialized-view.entity';
+
+export enum IMPACT_MAP_TYPE {
+  IMPACT_MAP = 'impact-map',
+  ACTUAL_VS_SCENARIO = 'actual-vs-scenario',
+  SCENARIO_VS_SCENARIO = 'scenario-vs-scenario',
+}
 
 /**
  * @note: Column aliases are marked as 'h' and 'v' so that DB returns data in the format the consumer needs to be
@@ -391,6 +398,8 @@ export class H3DataRepository extends Repository<H3Data> {
       dto.indicatorId,
       dto.resolution,
       dto.year,
+      IMPACT_MAP_TYPE.IMPACT_MAP,
+      false,
       dto.materialIds,
       dto.originIds,
       dto.supplierIds,
@@ -430,25 +439,32 @@ export class H3DataRepository extends Repository<H3Data> {
       // Add the aggregation formula
       // Absolute: ((compared - actual)  / scaler
       // Relative: 100 * ((compared - actual) / ((compared + actual) / 2 ) / scaler
-      const sumDataWithScenario: string = 'sum(ir.value)';
-      const sumDataWithoutScenario: string =
-        'sum(case when si."scenarioId" is null then ir.value else 0 end)';
-      let aggregateExpression: string;
 
-      if (dto.relative) {
-        // TODO "edge" case when sumDataWithoutScenario is 0, the result will always be 200%, pending to search for a more accurate formula by Elena
-        aggregateExpression = `100 * ( ABS(${sumDataWithScenario}) - ABS(${sumDataWithoutScenario}) ) / ( ( ABS(${sumDataWithScenario}) + ABS(${sumDataWithoutScenario}) ) / 2 ) / ir.scaler `;
-      } else {
-        aggregateExpression = `( ${sumDataWithScenario} - ${sumDataWithoutScenario} ) / ir.scaler `;
-      }
+      // Sums indicator record values for actual data and selected scenario
+      const sumDataWithScenario: string = 'sum(ir.value / ir.scaler)';
 
-      baseQuery.addSelect(aggregateExpression, 'scaled_value');
+      // Sums values for actual data only
+      const sumOnlyActualData: string =
+        'sum(case when si."scenarioId" is null then ir.value else 0 end / ir.scaler)';
+      //let aggregateExpression: string;
+
+      // if (dto.relative) {
+      //   // TODO "edge" case when sumDataWithoutScenario is 0, the result will always be 200%, pending to search for a more accurate formula by Elena
+      //   aggregateExpression = `100 * ( ABS(${sumDataWithScenario}) - ABS(${sumDataWithoutScenario}) ) / ( ( ABS(${sumDataWithScenario}) + ABS(${sumDataWithoutScenario}) ) / 2 ) / ir.scaler `;
+      // } else {
+      //   aggregateExpression = `( ${sumDataWithScenario} - ${sumDataWithoutScenario} ) / ir.scaler `;
+      // }
+
+      baseQuery.addSelect(sumDataWithScenario, 'sum_compared_scenario');
+      baseQuery.addSelect(sumOnlyActualData, 'sum_actual_data');
     };
 
     return await this.baseGetImpactMap(
       dto.indicatorId,
       dto.resolution,
       dto.year,
+      IMPACT_MAP_TYPE.ACTUAL_VS_SCENARIO,
+      dto.relative,
       dto.materialIds,
       dto.originIds,
       dto.supplierIds,
@@ -488,24 +504,32 @@ export class H3DataRepository extends Repository<H3Data> {
       // Add the aggregation formula
       // Absolute: ((compared - base)  / scaler
       // Relative: 100 * ((compared - base) / ((compared + base) / 2 ) / scaler
-      const sumDataWithBaseScenario: string = `sum(case when si."scenarioId" = '${dto.baseScenarioId}' or si."scenarioId" is null then ir.value else 0 end)`;
-      const sumDataWitComparedScenario: string = `sum(case when si."scenarioId" = '${dto.comparedScenarioId}' or si."scenarioId" is null then ir.value else 0 end)`;
-      let aggregateExpression: string;
 
-      if (dto.relative) {
-        // TODO "edge" case when sumDataWithoutScenario is 0, the result will always be 200%, pending to search for a more accurate formula by Elena
-        aggregateExpression = `100 * ( ABS(${sumDataWitComparedScenario}) - ABS(${sumDataWithBaseScenario}) ) / ( ( ABS(${sumDataWitComparedScenario}) + ABS(${sumDataWithBaseScenario}) ) / 2 ) / ir.scaler `;
-      } else {
-        aggregateExpression = `( ${sumDataWithBaseScenario} - ${sumDataWitComparedScenario} ) / ir.scaler `;
-      }
+      // Sums values of indicator records for the base scenario to compare
+      const sumDataWithBaseScenario: string = `sum(case when si."scenarioId" = '${dto.baseScenarioId}' or si."scenarioId" is null then ir.value else 0 end / ir.scaler)`;
 
-      baseQuery.addSelect(aggregateExpression, 'scaled_value');
+      // Sums values of indicator records for the comparing scenario
+      const sumDataWitComparedScenario: string = `sum(case when si."scenarioId" = '${dto.comparedScenarioId}' or si."scenarioId" is null then ir.value else 0 end / ir.scaler)`;
+
+      //let aggregateExpression: string;
+
+      // if (dto.relative) {
+      //   // TODO "edge" case when sumDataWithoutScenario is 0, the result will always be 200%, pending to search for a more accurate formula by Elena
+      //   aggregateExpression = `100 * ( ABS(${sumDataWitComparedScenario}) - ABS(${sumDataWithBaseScenario}) ) / ( ( ABS(${sumDataWitComparedScenario}) + ABS(${sumDataWithBaseScenario}) ) / 2 ) / ir.scaler `;
+      // } else {
+      //   aggregateExpression = `( ${sumDataWithBaseScenario} - ${sumDataWitComparedScenario} ) / ir.scaler `;
+      // }
+
+      baseQuery.addSelect(sumDataWithBaseScenario, 'sum_base_scenario');
+      baseQuery.addSelect(sumDataWitComparedScenario, 'sum_compared_scenario');
     };
 
     return await this.baseGetImpactMap(
       dto.indicatorId,
       dto.resolution,
       dto.year,
+      IMPACT_MAP_TYPE.SCENARIO_VS_SCENARIO,
+      dto.relative,
       dto.materialIds,
       dto.originIds,
       dto.supplierIds,
@@ -524,6 +548,8 @@ export class H3DataRepository extends Repository<H3Data> {
    * @param indicatorId Indicator data of a Indicator
    * @param resolution Integer value that represent the resolution which the h3 response should be calculated
    * @param year
+   * @param mapType
+   * @param isRelative
    * @param materialIds
    * @param originIds
    * @param supplierIds
@@ -536,6 +562,8 @@ export class H3DataRepository extends Repository<H3Data> {
     indicatorId: string,
     resolution: number,
     year: number,
+    mapType: IMPACT_MAP_TYPE,
+    isRelative?: boolean,
     materialIds?: string[],
     originIds?: string[],
     supplierIds?: string[],
@@ -543,12 +571,12 @@ export class H3DataRepository extends Repository<H3Data> {
     baseQueryExtend?: (baseQuery: SelectQueryBuilder<any>) => void,
     scenarioComparisonQuantiles?: boolean,
   ): Promise<{ impactMap: H3IndexValueData[]; quantiles: number[] }> {
-    let baseMapQuery: SelectQueryBuilder<any> = this.generateBaseMapSubQuery(
+    let baseMapQuery: SelectQueryBuilder<any> = this.baseMapQuery(
       indicatorId,
       year,
     );
 
-    baseMapQuery = this.addSmartFilters(
+    baseMapQuery = this.addFiltering(
       baseMapQuery,
       materialIds,
       supplierIds,
@@ -561,13 +589,46 @@ export class H3DataRepository extends Repository<H3Data> {
     }
 
     const aggregatedResultQuery: SelectQueryBuilder<any> =
-      this.generateAggregatedQuery(baseMapQuery);
-
-    const withDynamicResolution: SelectQueryBuilder<any> =
-      this.generateWithDynamicResolutionQuery(
-        aggregatedResultQuery,
+      this.getAggregatedValuedByH3IndexAndResolution(
+        baseMapQuery,
         resolution,
+        mapType,
       );
+    const finalQueryBuiler: SelectQueryBuilder<any> =
+      this.dataSource.createQueryBuilder();
+    if (mapType !== IMPACT_MAP_TYPE.IMPACT_MAP) {
+      if (mapType === IMPACT_MAP_TYPE.ACTUAL_VS_SCENARIO) {
+        if (isRelative) {
+          finalQueryBuiler.select(
+            '100 * (ABS(q.aggregated_scenario_data) - ABS(q.aggregated_actual_data)) / NULLIF(((ABS(q.aggregated_scenario_data) + ABS(q.aggregated_actual_data)) / 2), 0)',
+            'v',
+          );
+        } else {
+          finalQueryBuiler.select(
+            'q.aggregated_scenario_data - q.aggregated_actual_data',
+            'v',
+          );
+        }
+      }
+      if (mapType === IMPACT_MAP_TYPE.SCENARIO_VS_SCENARIO) {
+        if (isRelative) {
+          finalQueryBuiler.select(
+            '100 * (ABS(q.aggregated_compared) - ABS(q.aggregated_base)) / NULLIF(((ABS(q.aggregated_compared) + ABS(q.aggregated_base)) / 2), 0)',
+            'v',
+          );
+        } else {
+          finalQueryBuiler.select(
+            'q.aggregated_base - q.aggregated_compared',
+            'v',
+          );
+        }
+      }
+      finalQueryBuiler.addSelect('q."h"', 'h');
+      finalQueryBuiler.from('(' + aggregatedResultQuery.getSql() + ')', `q`);
+    }
+
+    // const comparisonQuery: SelectQueryBuilder<any> =
+    //   this.addComparisonExpression(aggregatedResultQuery, mapType, isRelative);
 
     // NOTE the query structure is like this: withDynamicResolution FROM (aggregatedResult FROM (baseMapQuery))
     // the base query, which has the most parameters, is nested as a subquery 2 levels
@@ -575,7 +636,9 @@ export class H3DataRepository extends Repository<H3Data> {
     const [queryString, params] = baseMapQuery.getQueryAndParameters();
 
     return this.executeQueryAndQuantiles(
-      withDynamicResolution,
+      mapType === IMPACT_MAP_TYPE.IMPACT_MAP
+        ? aggregatedResultQuery
+        : finalQueryBuiler,
       params,
       scenarioComparisonQuantiles,
     );
@@ -615,7 +678,11 @@ export class H3DataRepository extends Repository<H3Data> {
     }
   }
 
-  private generateBaseMapSubQuery(
+  /**
+   * @description Creates the "main" query to get the geoRegions, material H3ids and indicator record values
+   *              to later be joined with the impact materialized view by these geoRegions and H3ids
+   */
+  private baseMapQuery(
     indicatorId: string,
     year: number,
   ): SelectQueryBuilder<any> {
@@ -638,7 +705,7 @@ export class H3DataRepository extends Repository<H3Data> {
     );
   }
 
-  private addSmartFilters(
+  private addFiltering(
     subqueryBuilder: SelectQueryBuilder<any>,
     materialIds?: string[],
     supplierIds?: string[],
@@ -672,32 +739,59 @@ export class H3DataRepository extends Repository<H3Data> {
     return subqueryBuilder;
   }
 
-  private generateAggregatedQuery(
+  /**
+   * @description: Joins Impact Materialez view to get the production value for each hexagon for a same georegion and material
+   *               Aggregation values are different depending on the type of map (ImpactMap, Actual vs Scenario, Scenario VS Scenario)
+   */
+  private getAggregatedValuedByH3IndexAndResolution(
     baseMapQuery: SelectQueryBuilder<any>,
-  ): SelectQueryBuilder<any> {
-    return this.dataSource
-      .createQueryBuilder()
-      .select(`impactview.h3index`, `h3index`)
-      .addSelect(`sum(impactview.value * reduced.scaled_value)`, `sum`)
-      .from('(' + baseMapQuery.getSql() + ')', 'reduced')
-      .leftJoin(
-        ImpactMaterializedView,
-        'impactview',
-        '(impactview."geoRegionId" = reduced."geoRegionId" AND impactview."h3DataId" = reduced."materialH3DataId")',
-      )
-      .groupBy('impactview.h3index');
-  }
-
-  private generateWithDynamicResolutionQuery(
-    aggregatedResultQuery: SelectQueryBuilder<any>,
     resolution: number,
+    mapType: IMPACT_MAP_TYPE,
   ): SelectQueryBuilder<any> {
-    return this.dataSource
-      .createQueryBuilder()
-      .addSelect(`h3_to_parent(q.h3index, ${resolution})`, `h`)
-      .addSelect(`round(sum(sum)::numeric, 2)`, `v`)
-      .from(`( ${aggregatedResultQuery.getSql()} )`, `q`)
-      .groupBy('h');
+    const impactViewAggregationQueryBuilder: SelectQueryBuilder<ObjectLiteral> =
+      this.dataSource
+        .createQueryBuilder()
+        .select(`h3_to_parent(impactview.h3index, ${resolution})`, `h`)
+        .from('(' + baseMapQuery.getSql() + ')', 'reduced')
+        .leftJoin(
+          ImpactMaterializedView,
+          'impactview',
+          '(impactview."geoRegionId" = reduced."geoRegionId" AND impactview."h3DataId" = reduced."materialH3DataId")',
+        )
+        .groupBy('impactview.h3index');
+
+    // If map type is Actual VS Scenario, sum up sum_actual_data and sum_compared_scenario from previous subquery
+    if (mapType === IMPACT_MAP_TYPE.ACTUAL_VS_SCENARIO) {
+      impactViewAggregationQueryBuilder.addSelect(
+        'sum(impactview.value * reduced.sum_actual_data)',
+        'aggregated_actual_data',
+      );
+      impactViewAggregationQueryBuilder.addSelect(
+        'sum(impactview.value * reduced.sum_compared_scenario)',
+        'aggregated_scenario_data',
+      );
+    }
+    // If map type is Actual VS Scenario, sum up sum_base_scenario and sum_compared_scenario from previous subquery
+    if (mapType === IMPACT_MAP_TYPE.SCENARIO_VS_SCENARIO) {
+      impactViewAggregationQueryBuilder.addSelect(
+        'sum(impactview.value * reduced.sum_base_scenario)',
+        'aggregated_base',
+      );
+      impactViewAggregationQueryBuilder.addSelect(
+        'sum(impactview.value * reduced.sum_compared_scenario)',
+        'aggregated_compared',
+      );
+    }
+    // If map type is Impact Map, sum up values from previous subquery
+    if (mapType === IMPACT_MAP_TYPE.IMPACT_MAP) {
+      impactViewAggregationQueryBuilder.addSelect(
+        'round(sum(impactview.value * reduced.scaled_value)::numeric, 2)',
+        'v',
+      );
+    }
+    impactViewAggregationQueryBuilder.groupBy('h');
+
+    return impactViewAggregationQueryBuilder;
   }
 
   /**

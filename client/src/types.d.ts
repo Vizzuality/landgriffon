@@ -346,7 +346,7 @@ export type MakePropOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T
 export type Task = {
   id: string;
   type: string;
-  status: string;
+  status: 'completed' | 'abort' | 'failed' | 'processing';
   errors?: Record<string, string>[];
   user?: User;
 };

@@ -32,13 +32,12 @@ const AdminDataPage: React.FC = () => {
     {
       'page[size]': 1,
       sort: '-createdAt',
-      include: 'user',
+      // include: 'user', // TODO: uncomment when user is available
     },
     {
       refetchInterval: 10000,
     },
   );
-  const lastTask: Task = tasks?.[0];
 
   const isLoading = useMemo(
     () => isTasksLoading && isSourcingLocationsLoading,
@@ -49,6 +48,9 @@ const AdminDataPage: React.FC = () => {
     () => isTaskFetched && isSourcingLocationsFetched,
     [isTaskFetched, isSourcingLocationsFetched],
   );
+
+  const lastTask: Task = tasks?.[0];
+  console.log(lastTask);
 
   return (
     <AdminLayout title="Manage data">
@@ -62,13 +64,15 @@ const AdminDataPage: React.FC = () => {
         </div>
       )}
 
-      {/* Content when empty */}
-      {isFetched && (!thereIsData || lastTask?.status === 'processing') && (
+      {/* Content when empty, or upload is processing or failed */}
+      {isFetched && (lastTask?.status === 'processing' || lastTask?.status === 'failed') && (
         <AdminDataUploader task={lastTask} />
       )}
 
-      {/* Content when data */}
-      {isFetched && thereIsData && <AdminDataTable task={lastTask} />}
+      {/* Content when data and upload is completed */}
+      {isFetched && lastTask?.status === 'completed' && thereIsData && (
+        <AdminDataTable task={lastTask} />
+      )}
     </AdminLayout>
   );
 };

@@ -7,6 +7,7 @@ import { PlusIcon, MinusIcon } from '@heroicons/react/solid';
 import * as yup from 'yup';
 import classNames from 'classnames';
 import { sortBy, omit } from 'lodash-es';
+import toast from 'react-hot-toast';
 
 import { InterventionTypes, LocationTypes, InfoTooltip } from '../enums';
 
@@ -534,12 +535,12 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
 
   // ? I had to put this variable out of useMemo because it looks like
   // ? the form mutates the coefficients object and the below useMemo doesn't trigger after a second change.
-  const cofficientValues = Object.values(coefficients);
+  const coefficientValues = Object.values(coefficients);
 
   const areCoefficientsEdited = useMemo(() => {
-    if (!cofficientValues) return false;
-    return cofficientValues.filter((v) => v).some((v) => +v !== 0);
-  }, [cofficientValues]);
+    if (!coefficientValues) return false;
+    return coefficientValues.filter((v) => v).some((v) => +v !== 0);
+  }, [coefficientValues]);
 
   const areSupplierEdited = useMemo(
     () => Boolean(currentT1SupplierId || currentProducerId),
@@ -556,6 +557,10 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
       closeImpactsRef.current();
     }
   }, [currentInterventionType, areCoefficientsEdited]);
+
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) toast.error('Please fill all required fields.');
+  }, [errors]);
 
   return (
     <form
@@ -590,8 +595,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
           <Input
             {...register('percentage')}
             type="number"
-            min="0"
-            max="100"
             placeholder="100"
             defaultValue={100}
             error={errors?.percentage?.message}
@@ -752,12 +755,12 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                     value={value}
                     key={value}
                     className={({ active, checked }) =>
-                      classNames(
-                        'border p-4 rounded-md',
-                        active || checked
-                          ? 'border-orange-100 bg-orange-50 text-gray-900'
-                          : 'border-gray-300 text-gray-500',
-                      )
+                      classNames('border p-4 rounded-md', {
+                        'border-orange-100 bg-orange-50 text-gray-900': active || checked,
+                        'border-gray-300 text-gray-500':
+                          !(active || checked) && !errors.interventionType,
+                        'border-red-400': errors.interventionType,
+                      })
                     }
                     data-testid="intervention-type-option"
                   >

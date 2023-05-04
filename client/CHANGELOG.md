@@ -20,11 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Updated Nextjs to v13, updated eslint-config-next, updated next-auth [LANDGRIF-1114](https://vizzuality.atlassian.net/browse/LANDGRIF-1144)
 - Intervention form: list only supported location types.
 - Analysis filters: location types options now listed according to scenarios (if any). [LANDGRIF-1255](https://vizzuality.atlassian.net/browse/LANDGRIF-1255)
-
-### Changed
 - Replaced Deck.gl map with `react-map-gl` to prepare migration to Layer Manager. [LANDGRIF-812](https://vizzuality.atlassian.net/browse/LANDGRIF-812)
 
 ### Fixed
+- Wrong error message in the scenario creation [LANDGRIF-1302](https://vizzuality.atlassian.net/browse/LANDGRIF-1302)
 - Uploading excel [LANDGRIF-1304](https://vizzuality.atlassian.net/browse/LANDGRIF-1304)
 - Styles amendments for the contextual layers modal
 - Fixed callback Url after login [LANDGRIF-1260](https://vizzuality.atlassian.net/browse/LANDGRIF-1260)

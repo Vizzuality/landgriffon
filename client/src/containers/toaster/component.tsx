@@ -20,6 +20,11 @@ export const ALERT_CLASSES = {
     backgroundColor: 'bg-orange-50',
     messagesColor: 'text-orange-500',
   },
+  loading: {
+    iconColor: 'mr-2 h-5 w-5 fill-orange-300',
+    backgroundColor: 'bg-orange-50',
+    messagesColor: 'text-orange-500',
+  },
 };
 
 const ToastContainer: React.FC<ToasterProps> = (props) => (

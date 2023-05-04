@@ -16,6 +16,8 @@ const DEFAULT_QUERY_OPTIONS = {
   retry: false,
   keepPreviousData: true,
   refetchOnWindowFocus: false,
+  refetchOnMount: false,
+  refetchOnReconnect: false,
 };
 
 export const useTasks = <T = TasksAPIResponse>(

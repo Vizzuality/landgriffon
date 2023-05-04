@@ -59,7 +59,7 @@ const locationTypeSchema = yup
 
 const schemaValidation = yup.object({
   title: yup.string().label('Title').max(60).required(),
-  volume: yup.number().optional(),
+  volume: yup.number().optional().typeError('Volume should be a number'),
   interventionType: yup
     .string()
     .label('Intervention type')
@@ -70,15 +70,23 @@ const schemaValidation = yup.object({
       value: yup.number(),
     })
     .label('Start year')
-    .required(),
+    .required()
+    .typeError('Start should be a number'),
   endYear: yup
     .object({
       label: yup.string(),
       value: yup.number(),
     })
     .label('End year')
-    .optional(),
-  percentage: yup.number().label('Percentage').moreThan(0).max(100).required(),
+    .optional()
+    .typeError('Start should be a number'),
+  percentage: yup
+    .number()
+    .label('Percentage')
+    .moreThan(0)
+    .max(100)
+    .required()
+    .typeError('Percentage should be a number greater than 0 and less or equal than 100'),
   scenarioId: yup.string().label('Scenario ID').required(),
 
   // Filters
@@ -160,7 +168,8 @@ const schemaValidation = yup.object({
         ),
       then: (schema) => schema.min(-180).max(180).required('Longitude field is required'),
       otherwise: (schema) => schema.nullable(),
-    }),
+    })
+    .typeError('Longitude should be a number'),
   newLocationLatitude: yup
     .number()
     .label('Latitude')
@@ -171,7 +180,8 @@ const schemaValidation = yup.object({
         ),
       then: (schema) => schema.min(-90).max(90).required('Latitude field is required'),
       otherwise: (schema) => schema.nullable(),
-    }),
+    })
+    .typeError('Latitude should be a number'),
 
   // Coefficients
   coefficients: yup.lazy((coefficientObject = {}) => {
@@ -181,7 +191,7 @@ const schemaValidation = yup.object({
         [currentValue]: yup.lazy((v) => {
           if (v === '') return yup.string().required('This coefficient is required.');
 
-          return yup.number();
+          return yup.number().typeError('Coefficient should be a number');
         }),
       }),
       {},
@@ -389,6 +399,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
         },
       }),
     shouldFocusError: true,
+    criteriaMode: 'all',
   });
 
   const {

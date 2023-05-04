@@ -43,6 +43,7 @@ const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
       isPublic: scenario?.isPublic || false,
       description: scenario?.description || null,
     },
+    criteriaMode: 'all',
   });
 
   const { hasPermission } = usePermissions(scenario?.user?.id);

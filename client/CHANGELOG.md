@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Add filter by year on analysis table. [LANDGRIF-965](https://vizzuality.atlassian.net/browse/LANDGRIF-965)
 
 ### Changed
+- Updated date and time format in the upload data page, also added the author [LANDGRIF-1297](https://vizzuality.atlassian.net/browse/LANDGRIF-1297)
 - Updated axios version.
 - Intervention form: list only supported location types.
 - Analysis filters: location types options now listed according to scenarios (if any). [LANDGRIF-1255](https://vizzuality.atlassian.net/browse/LANDGRIF-1255)
@@ -20,8 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Updated Nextjs to v13, updated eslint-config-next, updated next-auth [LANDGRIF-1114](https://vizzuality.atlassian.net/browse/LANDGRIF-1144)
 - Intervention form: list only supported location types.
 - Analysis filters: location types options now listed according to scenarios (if any). [LANDGRIF-1255](https://vizzuality.atlassian.net/browse/LANDGRIF-1255)
-
-### Changed
 - Replaced Deck.gl map with `react-map-gl` to prepare migration to Layer Manager. [LANDGRIF-812](https://vizzuality.atlassian.net/browse/LANDGRIF-812)
 
 ### Fixed

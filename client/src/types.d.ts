@@ -348,6 +348,7 @@ export type Task = {
   type: string;
   status: string;
   errors?: Record<string, string>[];
+  user?: User;
 };
 
 // User

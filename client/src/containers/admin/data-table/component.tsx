@@ -21,8 +21,9 @@ import { RoleName } from 'hooks/permissions/enums';
 
 import type { PaginationState, SortingState, VisibilityState } from '@tanstack/react-table';
 import type { TableProps } from 'components/table/component';
+import type { Task } from 'types';
 
-const AdminDataPage: React.FC = () => {
+const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
   const { push, query } = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -214,7 +215,10 @@ const AdminDataPage: React.FC = () => {
         {!isSourcingLocationsLoading && (
           <div className="flex justify-end w-full">
             <span className="text-sm text-gray-400">
-              Last update: {format(new Date(sourcingLocations.data[0].updatedAt), 'd MMM yyyy')}
+              Last update at{' '}
+              {format(new Date(sourcingLocations.data[0].updatedAt), 'd MMM yyyy HH:mm z')}
+              {' by '}
+              {task?.user.displayName || task?.user.email}
             </span>
           </div>
         )}

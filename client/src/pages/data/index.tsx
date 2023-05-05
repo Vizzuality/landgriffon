@@ -32,12 +32,13 @@ const AdminDataPage: React.FC = () => {
     {
       'page[size]': 1,
       sort: '-createdAt',
+      include: 'user',
     },
     {
       refetchInterval: 10000,
     },
   );
-  const lastTask = useMemo(() => tasks?.[0] as Task, [tasks]);
+  const lastTask: Task = tasks?.[0];
 
   const isLoading = useMemo(
     () => isTasksLoading && isSourcingLocationsLoading,
@@ -67,7 +68,7 @@ const AdminDataPage: React.FC = () => {
       )}
 
       {/* Content when data */}
-      {isFetched && thereIsData && <AdminDataTable />}
+      {isFetched && thereIsData && <AdminDataTable task={lastTask} />}
     </AdminLayout>
   );
 };

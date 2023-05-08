@@ -7,6 +7,7 @@ import {
   createIndicator,
   createMaterial,
   createScenarioIntervention,
+  createSupplier,
 } from '../../../entity-mocks';
 import {
   clearEntityTables,
@@ -28,6 +29,7 @@ import {
   MATERIALS_STATUS,
 } from '../../../../src/modules/materials/material.entity';
 import { HttpStatus } from '@nestjs/common';
+import { Supplier } from 'modules/suppliers/supplier.entity';
 
 describe('Interventions E2E Tests (Controller Validations)', () => {
   let jwtToken: string;
@@ -326,36 +328,11 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
 
     async () => {
       const material: Material = await createMaterial();
-      const response = await request(testApplication.getHttpServer())
-        .post('/api/v1/scenario-interventions')
-        .set('Authorization', `Bearer ${jwtToken}`)
-        .send({
-          title: 'test scenario intervention',
-          startYear: 2025,
-          percentage: 50,
-          scenarioId: uuidv4(),
-          materialIds: [uuidv4()],
-          supplierIds: [uuidv4()],
-          businessUnitIds: [uuidv4()],
-          adminRegionIds: [uuidv4()],
-          type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
-          newLocationCountryInput: 'TestCountry',
-          newLocationType: 'unknown',
-          newMaterialId: material.id,
-        });
-
-      expect(response.body.errors).toBeUndefined();
-    },
-  );
-
-  test(
-    'When I Create new intervention with replacing material ' +
-      +'But the replacing material is Inactive ' +
-      +'Then I should get a relevant error message',
-    async () => {
-      const material: Material = await createMaterial({
-        name: 'Inactive Material',
-        status: MATERIALS_STATUS.INACTIVE,
+      const unkNownT1Supplier: Supplier = await createSupplier({
+        name: 'unknownT1',
+      });
+      const unknownProducer: Supplier = await createSupplier({
+        name: 'unknownProducer',
       });
       const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
@@ -373,6 +350,49 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
           newLocationCountryInput: 'TestCountry',
           newLocationType: 'unknown',
           newMaterialId: material.id,
+          newT1SupplierId: unkNownT1Supplier.id,
+          newProducerId: unknownProducer.id,
+        });
+
+      console.log(response.body.errors);
+
+      expect(response.body.errors).toBeUndefined();
+    },
+  );
+
+  test(
+    'When I Create new intervention with replacing material ' +
+      +'But the replacing material is Inactive ' +
+      +'Then I should get a relevant error message',
+    async () => {
+      const material: Material = await createMaterial({
+        name: 'Inactive Material',
+        status: MATERIALS_STATUS.INACTIVE,
+      });
+      const unkNownT1Supplier: Supplier = await createSupplier({
+        name: 'unknownT1',
+      });
+      const unknownProducer: Supplier = await createSupplier({
+        name: 'unknownProducer',
+      });
+      const response = await request(testApplication.getHttpServer())
+        .post('/api/v1/scenario-interventions')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({
+          title: 'test scenario intervention',
+          startYear: 2025,
+          percentage: 50,
+          scenarioId: uuidv4(),
+          materialIds: [uuidv4()],
+          supplierIds: [uuidv4()],
+          businessUnitIds: [uuidv4()],
+          adminRegionIds: [uuidv4()],
+          type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
+          newLocationCountryInput: 'TestCountry',
+          newLocationType: 'unknown',
+          newMaterialId: material.id,
+          newT1SupplierId: unkNownT1Supplier.id,
+          newProducerId: unknownProducer.id,
         });
 
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);

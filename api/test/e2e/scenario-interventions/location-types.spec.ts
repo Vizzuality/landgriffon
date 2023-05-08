@@ -83,6 +83,8 @@ describe('Interventions E2E Tests (Location Types)', () => {
             supplierIds: [uuidv4()],
             businessUnitIds: [uuidv4()],
             adminRegionIds: [uuidv4()],
+            newProducerId: uuidv4(),
+            newT1SupplierId: uuidv4(),
             newLocationType: LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION,
             type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
             newIndicatorCoefficients: {

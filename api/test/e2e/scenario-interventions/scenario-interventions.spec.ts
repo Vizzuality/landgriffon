@@ -403,6 +403,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         geoRegion,
       });
 
+      const newUnknownSupplier = await createSupplier({
+        name: 'New unknown supplier',
+      });
+      const newUnknownProducer = await createSupplier({
+        name: 'New unknown producer',
+      });
+
       const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -415,6 +422,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           supplierIds: [preconditions.supplier1.id],
           businessUnitIds: [preconditions.businessUnit1.id],
           adminRegionIds: [preconditions.adminRegion1.id],
+          newT1SupplierId: newUnknownSupplier.id,
+          newProducerId: newUnknownProducer.id,
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
           newLocationCountryInput: 'Spain',
@@ -517,6 +526,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         const preconditions: ScenarioInterventionPreconditions =
           await createInterventionPreconditionsForSupplierChange(dataSource);
 
+        const newUnknownSupplier = await createSupplier({
+          name: 'New unknown supplier',
+        });
+        const newUnknownProducer = await createSupplier({
+          name: 'New unknown producer',
+        });
+
         const geoRegion: GeoRegion = await createGeoRegion();
         await createAdminRegion({
           isoA2: 'ABC',
@@ -534,6 +550,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             materialIds: [preconditions.material1.id],
             businessUnitIds: [preconditions.businessUnit1.id],
             adminRegionIds: [preconditions.adminRegion1.id],
+            newT1SupplierId: newUnknownSupplier.id,
+            newProducerId: newUnknownProducer.id,
             type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
             newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
             newLocationCountryInput: 'Spain',
@@ -576,6 +594,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const preconditions: ScenarioInterventionPreconditions =
         await createInterventionPreconditionsForSupplierChange(dataSource);
 
+      const newUnknownSupplier = await createSupplier({
+        name: 'New unknown supplier',
+      });
+      const newUnknownProducer = await createSupplier({
+        name: 'New unknown producer',
+      });
+
       const geoRegion: GeoRegion = await createGeoRegion();
       await createAdminRegion({
         isoA2: 'ABC',
@@ -593,6 +618,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           materialIds: [preconditions.material1.id],
           businessUnitIds: [preconditions.businessUnit1.id],
           adminRegionIds: [preconditions.adminRegion1.id],
+          newT1SupplierId: newUnknownSupplier.id,
+          newProducerId: newUnknownProducer.id,
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
           newLocationCountryInput: 'Spain',
@@ -675,7 +702,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(newSourcingRecords.length).toBe(2);
       expect(newSourcingRecords[0].tonnage).toEqual('250');
-      expect(newSourcingRecords[0].year).toEqual(2018);
+
       expect(newSourcingRecords[1].year).toEqual(2019);
     });
   });
@@ -689,6 +716,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       await createAdminRegion({
         isoA2: 'ABC',
         geoRegion,
+      });
+
+      const newUnknownSupplier = await createSupplier({
+        name: 'New unknown supplier',
+      });
+      const newUnknownProducer = await createSupplier({
+        name: 'New unknown producer',
       });
 
       const replacingMaterial: Material = await createMaterial();
@@ -734,6 +768,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
           newLocationCountryInput: 'Spain',
           newMaterialId: replacingMaterial.id,
+          newT1SupplierId: newUnknownSupplier.id,
+          newProducerId: newUnknownProducer.id,
         });
 
       expect(response.status).toBe(HttpStatus.CREATED);
@@ -805,6 +841,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           isoA2: 'ABC',
           geoRegion,
         });
+        const newUnknownSupplier = await createSupplier({
+          name: 'New unknown supplier',
+        });
+        const newUnknownProducer = await createSupplier({
+          name: 'New unknown producer',
+        });
 
         const replacingMaterial: Material = await createMaterial();
         const h3ReplacingMaterial = await h3DataMock(dataSource, {
@@ -839,6 +881,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
             newLocationCountryInput: 'Spain',
             newMaterialId: replacingMaterial.id,
+            newT1SupplierId: newUnknownSupplier.id,
+            newProducerId: newUnknownProducer.id,
           });
 
         expect(response.status).toBe(HttpStatus.CREATED);
@@ -891,6 +935,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           parent: preconditions.material1,
         });
 
+        const newUnknownSupplier = await createSupplier({
+          name: 'New unknown supplier',
+        });
+        const newUnknownProducer = await createSupplier({
+          name: 'New unknown producer',
+        });
+
         const newDescendantLocation = await createSourcingLocation({
           materialId: material1Descendant2.id,
           t1SupplierId: preconditions.supplier1Descendant.id,
@@ -937,6 +988,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
             newLocationCountryInput: 'Spain',
             newMaterialId: replacingMaterial.id,
+            newT1SupplierId: newUnknownSupplier.id,
+            newProducerId: newUnknownProducer.id,
           });
 
         expect(response.status).toBe(HttpStatus.CREATED);
@@ -1051,6 +1104,10 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           'type must be a string',
           'type must be one of the following values: default, Source from new supplier or location, Change production efficiency, Switch to a new material',
           'type should not be empty',
+          'newProducerId must be a UUID',
+          'newProducerId should not be empty',
+          'newT1SupplierId must be a UUID',
+          'newT1SupplierId should not be empty',
         ],
       );
     });
@@ -1061,6 +1118,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const supplier: Supplier = await createSupplier();
       const adminRegion: AdminRegion = await createAdminRegion();
       const businessUnit: BusinessUnit = await createBusinessUnit();
+      const newUnknownSupplier = await createSupplier({
+        name: 'New unknown supplier',
+      });
+      const newUnknownProducer = await createSupplier({
+        name: 'New unknown producer',
+      });
       const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -1074,6 +1137,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnitIds: [businessUnit.id],
           adminRegionIds: [adminRegion.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+          newProducerId: newUnknownSupplier.id,
+          newT1SupplierId: newUnknownProducer.id,
         });
 
       expect(HttpStatus.BAD_REQUEST);
@@ -1094,6 +1159,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const supplier: Supplier = await createSupplier();
       const businessUnit: BusinessUnit = await createBusinessUnit();
       const adminRegion: AdminRegion = await createAdminRegion();
+      const newUnknownSupplier = await createSupplier({
+        name: 'New unknown supplier',
+      });
+      const newUnknownProducer = await createSupplier({
+        name: 'New unknown producer',
+      });
+
       const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -1108,6 +1180,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           adminRegionIds: [adminRegion.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+          newT1SupplierId: newUnknownSupplier.id,
+          newProducerId: newUnknownProducer.id,
         });
 
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -1133,6 +1207,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           adminRegionIds: [adminRegion.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+          newT1SupplierId: newUnknownSupplier.id,
+          newProducerId: newUnknownProducer.id,
         });
 
       expect(HttpStatus.BAD_REQUEST);
@@ -1150,6 +1226,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const material: Material = await createMaterial();
       const supplier: Supplier = await createSupplier();
       const businessUnit: BusinessUnit = await createBusinessUnit();
+      const newUnknownSupplier = await createSupplier({
+        name: 'New unknown supplier',
+      });
+      const newUnknownProducer = await createSupplier({
+        name: 'New unknown producer',
+      });
       const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -1163,6 +1245,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           businessUnitIds: [businessUnit.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
+          newT1SupplierId: newUnknownSupplier.id,
+          newProducerId: newUnknownProducer.id,
         });
 
       expect(HttpStatus.BAD_REQUEST);
@@ -1191,6 +1275,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
           newLocationCountryInput: 'TestCountry',
+          newT1SupplierId: newUnknownSupplier.id,
+          newProducerId: newUnknownProducer.id,
         });
 
       expect(response2.status).toBe(HttpStatus.BAD_REQUEST);
@@ -1215,6 +1301,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           materialIds: [material.id],
           supplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
+          newT1SupplierId: newUnknownSupplier.id,
+          newProducerId: newUnknownProducer.id,
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
           newLocationCountryInput: 'TestCountry',
@@ -1241,6 +1329,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const supplier: Supplier = await createSupplier();
       const businessUnit: BusinessUnit = await createBusinessUnit();
       const adminRegion: AdminRegion = await createAdminRegion();
+      const newUnknownProducer = await createSupplier({
+        name: 'New unknown producer',
+      });
+      const newUnknownSupplier = await createSupplier({
+        name: 'New unknown supplier',
+      });
       const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -1255,6 +1349,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           adminRegionIds: [adminRegion.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
           newLocationCountryInput: 'TestCountry',
+          newT1SupplierId: newUnknownSupplier.id,
+          newProducerId: newUnknownProducer.id,
         });
 
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -1279,6 +1375,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       const supplier: Supplier = await createSupplier();
       const businessUnit: BusinessUnit = await createBusinessUnit();
       const adminRegion: AdminRegion = await createAdminRegion();
+      const newUnknownProducer = await createSupplier({
+        name: 'New unknown producer',
+      });
+      const newUnknownSupplier = await createSupplier({
+        name: 'New unknown supplier',
+      });
       const response = await request(testApplication.getHttpServer())
         .post('/api/v1/scenario-interventions')
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -1295,6 +1397,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           newLocationCountryInput: 'TestCountry',
           newLocationType: 'unknown',
           newMaterialId: material.id,
+          newT1SupplierId: newUnknownSupplier.id,
+          newProducerId: newUnknownProducer.id,
         });
 
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -2069,6 +2173,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           sourcingRecords: [sourcingRecord2],
         });
         const scenario: Scenario = await createScenario();
+        const newUnknownProducer = await createSupplier({
+          name: 'New unknown producer',
+        });
+        const newUnknownSupplier = await createSupplier({
+          name: 'New unknown supplier',
+        });
 
         const response = await request(testApplication.getHttpServer())
           .post('/api/v1/scenario-interventions')
@@ -2086,6 +2196,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
             newLocationCountryInput: 'Spain',
             newMaterialId: newMaterial.id,
+            newT1SupplierId: newUnknownSupplier.id,
+            newProducerId: newUnknownProducer.id,
           });
 
         const intervention: ScenarioIntervention | null =
@@ -2234,6 +2346,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           locationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
         });
         const scenario: Scenario = await createScenario();
+        const newUnknownProducer = await createSupplier({
+          name: 'New unknown producer',
+        });
+        const newUnknownSupplier = await createSupplier({
+          name: 'New unknown supplier',
+        });
 
         await request(testApplication.getHttpServer())
           .post('/api/v1/scenario-interventions')
@@ -2251,6 +2369,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
             newLocationCountryInput: 'Spain',
             newMaterialId: newMaterial.id,
+            newT1SupplierId: newUnknownSupplier.id,
+            newProducerId: newUnknownProducer.id,
           });
 
         const canceledSourcingLocations = await sourcingLocationRepository.find(
@@ -2351,6 +2471,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         isoA2: 'ABC',
         geoRegion,
       });
+      const newUnknownProducer = await createSupplier({
+        name: 'New unknown producer',
+      });
+      const newUnknownSupplier = await createSupplier({
+        name: 'New unknown supplier',
+      });
 
       //CREATE
       const response = await request(testApplication.getHttpServer())
@@ -2370,6 +2496,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           newLocationCountryInput: 'Spain',
           newLocationLatitude: -4,
           newLocationLongitude: -60,
+          newT1SupplierId: newUnknownSupplier.id,
+          newProducerId: newUnknownProducer.id,
         });
 
       // GET

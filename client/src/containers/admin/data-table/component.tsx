@@ -129,6 +129,9 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
         align: 'left',
         isSticky: 'left',
         enableSorting: true,
+        cell: ({ row }) => (
+          <div className="flex align-center my-[30px]">{row.original?.material as string}</div>
+        ),
       },
       {
         id: 'businessUnit',

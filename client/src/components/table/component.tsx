@@ -37,6 +37,7 @@ export interface TableProps<T>
   };
   noDataMessage?: React.ReactNode;
   handleExpandedChange?: (table: Table<T>) => void;
+  firstProjectedYear?: number;
 }
 
 const columnToColumnDef = <T,>(
@@ -70,6 +71,7 @@ const ComposedTable = <T,>({
   isLoading,
   noDataMessage = 'No data',
   handleExpandedChange = () => null,
+  firstProjectedYear,
   ...options
 }: TableProps<T>) => {
   const columnHelper = useMemo(() => createColumnHelper<T>(), []);
@@ -142,7 +144,7 @@ const ComposedTable = <T,>({
 
   return (
     <div className="space-y-6">
-      <div className="relative shadow-xl rounded-2xl">
+      <div className="relative">
         {isLoading && (
           <div className="absolute z-40 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
             <Loading className="w-5 h-5 text-navy-400" />
@@ -153,15 +155,26 @@ const ComposedTable = <T,>({
             'blur-sm pointer-events-none': isLoading,
           })}
         >
-          <table className="w-full border-separate table-fixed border-spacing-0">
+          <table
+            className={classNames('w-full table-fixed', {
+              'border-spacing-0 border-separate': true,
+              'mt-8': !!firstProjectedYear,
+            })}
+          >
             <thead>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableHeaderRow key={headerGroup.id} headerGroup={headerGroup} />
-              ))}
+              {table.getHeaderGroups().map((headerGroup) => {
+                return (
+                  <TableHeaderRow
+                    firstProjectedYear={firstProjectedYear}
+                    key={headerGroup.id}
+                    headerGroup={headerGroup}
+                  />
+                );
+              })}
             </thead>
             <tbody>
               {bodyRows.length === 0 && (
-                <tr className="">
+                <tr>
                   <td colSpan={table.getAllColumns().length}>
                     <p className="py-16 text-sm text-center">{noDataMessage}</p>
                   </td>
@@ -183,6 +196,7 @@ const ComposedTable = <T,>({
                     theme={table.options.meta.theme}
                     key={row.id}
                     row={row}
+                    firstProjectedYear={firstProjectedYear}
                   />
                 );
               })}

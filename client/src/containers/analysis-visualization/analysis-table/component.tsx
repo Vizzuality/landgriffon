@@ -1,7 +1,7 @@
-import { useCallback, useMemo, useState } from 'react';
-import classNames from 'classnames';
-import { DownloadIcon } from '@heroicons/react/outline';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { DownloadIcon, InformationCircleIcon } from '@heroicons/react/outline';
 import { uniq, omit } from 'lodash-es';
+import { ArrowLeftIcon } from '@heroicons/react/solid';
 
 import ComparisonCell from './comparison-cell/component';
 import ChartCell from './chart-cell';
@@ -13,12 +13,19 @@ import { useIndicators } from 'hooks/indicators';
 import { useImpactData } from 'hooks/impact';
 import { useImpactComparison, useImpactScenarioComparison } from 'hooks/impact/comparison';
 import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
-import { Anchor } from 'components/button';
+import { Anchor, Button } from 'components/button';
 import Table from 'components/table/component';
 import { NUMBER_FORMAT } from 'utils/number-format';
 import { DEFAULT_PAGE_SIZES } from 'components/table/pagination/constants';
 
-import type { ExpandedState, PaginationState, SortingState } from '@tanstack/react-table';
+import type {
+  ExpandedState,
+  PaginationState,
+  RowSelectionState,
+  SortingState,
+  TableState,
+  Table as TableType,
+} from '@tanstack/react-table';
 import type { TableProps } from 'components/table/component';
 import type { ColumnDefinition } from 'components/table/column';
 import type { ChartData } from './chart-cell/types';
@@ -45,9 +52,9 @@ const dataToCsv = <Mode extends ComparisonMode>(tableData: AnalysisTableProps<Mo
       .map((column) => column.header || column.id)
       .join(';') + LINE_SEPARATOR;
 
-  tableData.data.forEach(({ name, values }) => {
+  tableData.data?.forEach(({ name, values }) => {
     const rowData: (string | number)[] = [name];
-    (values as unknown[] as ImpactRowType<false>['values']).forEach(({ value }) => {
+    (values as unknown[] as ImpactRowType<false>['values'])?.forEach(({ value }) => {
       rowData.push(value);
     });
 
@@ -63,11 +70,17 @@ const AnalysisTable = () => {
     pageSize: DEFAULT_PAGE_SIZES[0],
   });
   const [sortingState, setSortingState] = useState<SortingState>([]);
-  const [expandedState, setExpandedState] = useState<ExpandedState>({});
-  const tableState = useMemo(
-    () => ({ pagination: paginationState, sorting: sortingState, expanded: expandedState }),
-    [expandedState, paginationState, sortingState],
-  );
+  const [expandedName, setExpandedName] = useState<string>(null);
+  const [expandedState, setExpandedState] = useState<ExpandedState>(null);
+  const [rowSelectionState, setRowSelectionState] = useState<RowSelectionState>({});
+  const tableState: Partial<TableState> = useMemo(() => {
+    return {
+      pagination: paginationState,
+      sorting: sortingState,
+      expanded: expandedState,
+      rowSelection: rowSelectionState,
+    };
+  }, [expandedState, paginationState, rowSelectionState, sortingState]);
 
   const { scenarioToCompare, isComparisonEnabled, currentScenario } = useAppSelector(scenarios);
   const { data: indicators } = useIndicators(
@@ -171,11 +184,31 @@ const AnalysisTable = () => {
     return { data: { impactTable: [] }, metadata: {} };
   }, [impactData]);
 
+  const firstProjectedYear = useMemo(() => {
+    if (!impactTable) return null;
+    return impactTable[0]?.rows[0]?.values.find((value) => value.isProjected)?.year;
+  }, [impactTable]);
+
   // Total rows count
-  const [totalRows, setTotalRows] = useState<number>(0);
-  const handleExpandedChange = useCallback((table) => {
-    setTotalRows(table.getRowModel().rows.length);
-  }, []);
+  const handleExpandedChange = useCallback(
+    <Mode extends ComparisonMode>(table: TableType<ImpactRowType<Mode>>) => {
+      if (!!expandedState) {
+        const expandedIds = Object.keys(expandedState);
+        const rowsToSelect = {};
+        table
+          .getRowModel()
+          .rows.filter((row) => expandedIds.includes(row.id))
+          .forEach((row) => {
+            rowsToSelect[row.id] = true;
+            row.originalSubRows.forEach(
+              (_subRow, index) => (rowsToSelect[`${row.id}.${index}`] = true),
+            );
+          });
+        setRowSelectionState(rowsToSelect);
+      }
+    },
+    [expandedState],
+  );
 
   // Years from impact table
   const years = useMemo(() => {
@@ -187,8 +220,8 @@ const AnalysisTable = () => {
     return uniq(years);
   }, [impactTable]);
 
-  const tableData = useMemo(
-    <Mode extends ComparisonMode>(): ImpactRowType<Mode>[] =>
+  const initialTableData: ImpactRowType<ComparisonMode>[] = useMemo(
+    () =>
       impactTable.map(({ indicatorShortName, yearSum, rows, ...impact }) => ({
         ...impact,
         children: rows,
@@ -202,6 +235,21 @@ const AnalysisTable = () => {
       })),
     [impactTable],
   );
+
+  const [tableData, setTableData] = useState<ImpactRowType<ComparisonMode>[]>([]);
+
+  useEffect(() => {
+    // Selected indicator data
+    const selectedData =
+      expandedName && initialTableData.find((data) => data.name === expandedName)?.children;
+    // If there is no selected indicator data (table is nor expanded or the current indicators don't match the last selected one), use full initial data
+    setTableData(selectedData || initialTableData);
+    // If there is no selected indicator data, reset expanded name
+    setExpandedName(!!selectedData ? expandedName : null);
+    // Reset expanded state and row selection state
+    setExpandedState(null);
+    setRowSelectionState({});
+  }, [initialTableData, expandedName]);
 
   const isComparison = useIsComparison(tableData);
   const isScenarioComparison = useIsScenarioComparison(tableData);
@@ -222,9 +270,10 @@ const AnalysisTable = () => {
       };
 
       return {
+        header: () => <span className="text-gray-900">{year}</span>,
         id: `${year}`,
         size: 170,
-        align: 'left',
+        align: 'center',
         enableSorting: true,
         cell: ({ row: { original: data, id }, table }) => {
           //* The metadata is only present at the parent row, so we need to get it from there
@@ -236,7 +285,7 @@ const AnalysisTable = () => {
 
           const unit: string = parentRowData.metadata?.unit;
 
-          const value = data.values.find((value) => value.year === year);
+          const value = data.values?.find((value) => value.year === year);
           const isComparison = valueIsComparison(value);
           const isScenarioComparison = valueIsScenarioComparison(value);
 
@@ -244,7 +293,7 @@ const AnalysisTable = () => {
             if (unit) {
               return `${NUMBER_FORMATTER(value.value)} ${unit}`;
             }
-            return NUMBER_FORMATTER(value.value);
+            return NUMBER_FORMATTER(value?.value);
           }
 
           if (isScenarioComparison) {
@@ -256,6 +305,7 @@ const AnalysisTable = () => {
                 scenarioValue={comparedScenarioValue}
                 unit={unit}
                 formatter={NUMBER_FORMATTER}
+                isFirs
               />
             );
           }
@@ -273,43 +323,86 @@ const AnalysisTable = () => {
     [isComparison, isScenarioComparison, valueIsScenarioComparison],
   );
 
+  const handleExitExpanded = useCallback(() => {
+    setTableData(initialTableData);
+    setExpandedName(null);
+    setExpandedState({});
+  }, [initialTableData]);
+
+  const handleExpandRow = (children: any[], name: string) => {
+    const newData = children;
+    setTableData(newData);
+    setExpandedName(name);
+    setExpandedState({});
+  };
+
   const baseColumns = useMemo(
     <Mode extends ComparisonMode>(): ColumnDefinition<ImpactRowType<Mode>>[] => [
       {
         id: 'name',
-        header: '',
+        header: () => (
+          <div>
+            {!!expandedName ? (
+              <Button
+                variant="transparent"
+                className="px-0 py-0 border-0 bg-transparent text-gray-900 text-sm font-semibold"
+                onClick={handleExitExpanded}
+                icon={<ArrowLeftIcon className="mr-3.5" />}
+              >
+                {expandedName}
+              </Button>
+            ) : (
+              <span className="text-sm block text-gray-400 normal-case py-[0.70rem]">
+                Selected Indicators
+              </span>
+            )}
+          </div>
+        ),
         align: 'left',
         isSticky: true,
         size: 260,
         cell: ({ row: { original, depth } }) => {
           return (
-            <>
-              <span
-                className={classNames({
-                  'font-bold': depth === 0,
-                })}
-                title={original.name}
-              >
-                {original.name}
-                {isParentRow(original) && depth === 0 && <> ({original.metadata.unit})</>}
-              </span>
-            </>
+            <div className="py-5 flex gap-4">
+              {!expandedName && (
+                <InformationCircleIcon className="w-4 h-4 text-gray-900 shrink-0" />
+              )}
+              <div>
+                <span className="block" title={original.name}>
+                  {original.name}
+                  {isParentRow(original) && depth === 0 && <> ({original.metadata.unit})</>}
+                </span>
+                {!expandedName && (
+                  <Button
+                    variant="white"
+                    className="mt-4"
+                    onClick={() => handleExpandRow(original.children, original.name)}
+                  >
+                    View detail
+                  </Button>
+                )}
+              </div>
+            </div>
           );
         },
       },
       {
         id: 'datesRangeChart',
-        header: years?.length ? `${years[0]}-${years[years.length - 1]}` : '-',
+        header: () => (
+          <span className="text-gray-900">
+            {years?.length ? `${years[0]}-${years[years.length - 1]}` : '-'}
+          </span>
+        ),
         className: 'px-2 mx-auto',
+        align: 'center',
         cell: ({
           row: {
             original: { values },
           },
         }) => {
           const chartData = values as ChartData[];
-
           return (
-            <div className="h-20 overflow-hidden">
+            <div className="h-5 my-3 w-[130px]">
               <ChartCell data={chartData} />
             </div>
           );
@@ -317,11 +410,13 @@ const AnalysisTable = () => {
       },
       ...years.map((year) => comparisonColumn<Mode>(year as number)),
     ],
-    [years, comparisonColumn],
+    [years, expandedName, handleExitExpanded, comparisonColumn],
   );
 
   const tableProps = useMemo(
-    <Mode extends ComparisonMode>(): TableProps<ImpactRowType<Mode>> => ({
+    <Mode extends ComparisonMode>(): TableProps<ImpactRowType<Mode>> & {
+      firstProjectedYear: number;
+    } => ({
       paginationProps: {
         totalItems: metadata.totalItems,
         totalPages: metadata.totalPages,
@@ -334,12 +429,15 @@ const AnalysisTable = () => {
       onPaginationChange: setPaginationState,
       onExpandedChange: setExpandedState,
       isLoading: isFetching,
+      enableExpanding: !!expandedName,
       data: tableData as ImpactRowType<Mode>[],
       columns: baseColumns as ColumnDefinition<ImpactRowType<Mode>>[],
       handleExpandedChange,
+      firstProjectedYear,
     }),
     [
       baseColumns,
+      expandedName,
       handleExpandedChange,
       isFetching,
       metadata.page,
@@ -348,6 +446,7 @@ const AnalysisTable = () => {
       metadata.totalPages,
       tableData,
       tableState,
+      firstProjectedYear,
     ],
   );
 
@@ -370,9 +469,6 @@ const AnalysisTable = () => {
             >
               Download Data
             </Anchor>
-            <div className="mt-3 font-sans text-xs font-bold leading-4 text-right text-gray-500 uppercase">
-              Total {totalRows} {totalRows === 1 ? 'row' : 'rows'}
-            </div>
           </div>
         </div>
       </div>

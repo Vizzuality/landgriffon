@@ -61,6 +61,18 @@ const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
           { id: 'task-status' },
         );
       }
+      if (lastTask?.status === 'completed') {
+        toast.success(
+          <div>
+            The data uploading has been completed. Please,{' '}
+            <Link href="/data" className="underline">
+              refresh the page
+            </Link>
+            .
+          </div>,
+          { id: 'task-status' },
+        );
+      }
     }
   }, [lastTask, router.isReady, router.pathname]);
 

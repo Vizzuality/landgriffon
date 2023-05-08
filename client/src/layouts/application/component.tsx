@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { CollectionIcon, ChartBarIcon } from '@heroicons/react/outline';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 import { useTasks } from 'hooks/tasks';
 import Navigation from 'containers/navigation/desktop';
@@ -17,6 +19,7 @@ const navigationItems: NavigationList = [
 ];
 
 const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
+  const router = useRouter();
   const { data: tasks } = useTasks(
     {
       'page[size]': 1,
@@ -31,15 +34,35 @@ const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
   const lastTask: Task = tasks?.[0];
 
   useEffect(() => {
-    if (lastTask?.status === 'failed') {
-      toast.error('Last upload failed, please try again.', {
-        id: 'task-status',
-      });
+    if (router.isReady && router.pathname !== '/data') {
+      if (lastTask?.status === 'failed') {
+        toast.error(
+          <div>
+            Last upload failed, please{' '}
+            <Link href="/data" className="underline">
+              try again
+            </Link>
+            .
+          </div>,
+          {
+            id: 'task-status',
+            duration: Infinity,
+          },
+        );
+      }
+      if (lastTask?.status === 'processing') {
+        toast.loading(
+          <div>
+            <Link href="/data" className="underline">
+              Uploading data
+            </Link>{' '}
+            in progress...
+          </div>,
+          { id: 'task-status' },
+        );
+      }
     }
-    if (lastTask?.status === 'processing') {
-      toast.loading('Uploading data in progress...', { id: 'task-status' });
-    }
-  }, [lastTask]);
+  }, [lastTask, router.isReady, router.pathname]);
 
   return (
     <div className="flex h-screen overflow-hidden min-h-[700px] min-w-screen-lg bg-navy-600">

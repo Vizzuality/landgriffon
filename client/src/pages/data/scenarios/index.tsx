@@ -4,7 +4,9 @@ import { useRouter } from 'next/router';
 import { PlusIcon, SortDescendingIcon } from '@heroicons/react/solid';
 import { useDebounceCallback } from '@react-hook/debounce';
 import { omit } from 'lodash-es';
+import Lottie from 'lottie-react';
 
+import newScenarioAnimation from 'containers/scenarios/animations/new-scenario.json';
 import ListIcon from 'components/icons/list';
 import GridIcon from 'components/icons/grid';
 import ButtonGroup, { LinkGroupItem } from 'components/button-group';
@@ -91,7 +93,7 @@ const ScenariosAdminPage: React.FC = () => {
 
   const searchTerm = useMemo(() => query.search || null, [query.search]);
 
-  const { data, isLoading } = useScenarios({
+  const { data, isLoading, isFetched } = useScenarios({
     params: {
       disablePagination: true,
       sort: currentSort.value,
@@ -101,55 +103,37 @@ const ScenariosAdminPage: React.FC = () => {
     options: { select: (data) => data.data },
   });
 
+  const thereAreScenarios = isFetched && data.length > 0;
+
   return (
     <AdminLayout title="Manage scenarios data">
       <Head>
         <title>Admin scenarios | Landgriffon</title>
       </Head>
-      <div className="flex justify-between mb-6 space-x-4">
-        <div className="w-full">
-          <Search
-            placeholder="Search by scenario name"
-            defaultValue={searchTerm}
-            onChange={handleSearchByTerm}
-            data-testid="search-name-scenario"
-          />
+
+      {(!isFetched || isLoading) && (
+        <div className="flex items-center justify-center w-full h-full">
+          <Loading className="w-5 h-5 text-navy-400" />
         </div>
-        <div className="flex justify-end space-x-4">
-          <div className="flex space-x-2">
-            <Select
-              value={currentSort}
-              options={SORT_OPTIONS}
-              onChange={handleSort}
-              icon={<SortDescendingIcon className="w-4 h-4" />}
-              data-testid="sort-scenario"
-            />
-            <ButtonGroup>
-              {DISPLAY_OPTIONS.map((display) => (
-                <LinkGroupItem
-                  key={display}
-                  active={currentDisplay === display}
-                  href={{ pathname: '/data/scenarios', query: { ...query, display } }}
-                  data-testid={`scenario-display-${display}`}
-                >
-                  {display === 'grid' && <GridIcon className="w-6 h-6" aria-hidden="true" />}
-                  {display === 'list' && <ListIcon className="w-6 h-6" aria-hidden="true" />}
-                </LinkGroupItem>
-              ))}
-            </ButtonGroup>
-          </div>
-          <div>
+      )}
+
+      {!thereAreScenarios && (
+        <div className="flex items-center justify-center w-full h-full">
+          <div className="text-center space-y-8">
+            <div className="m-auto w-[125px] h-[125px]">
+              <Lottie animationData={newScenarioAnimation} loop autoplay />
+            </div>
+            <h3>Add your scenarios</h3>
+            <p className="text-gray-500">Assess future scenarios on sourcing decisions.</p>
             <Anchor
               href="/data/scenarios/new"
-              variant="secondary"
               data-testid="scenario-add-button"
-              disabled={!canCreateScenario}
               icon={
                 <div
                   aria-hidden="true"
-                  className="flex items-center justify-center w-5 h-5 rounded-full bg-navy-400"
+                  className="flex items-center justify-center w-5 h-5 rounded-full bg-white"
                 >
-                  <PlusIcon className="w-4 h-4 text-white" />
+                  <PlusIcon className="w-4 h-4 text-navy-400" />
                 </div>
               }
             >
@@ -157,13 +141,64 @@ const ScenariosAdminPage: React.FC = () => {
             </Anchor>
           </div>
         </div>
-      </div>
-      {isLoading && (
-        <div className="flex justify-center">
-          <Loading className="w-5 h-5 text-navy-400" />
+      )}
+
+      {thereAreScenarios && (
+        <div className="flex justify-between mb-6 space-x-4">
+          <div className="w-full">
+            <Search
+              placeholder="Search by scenario name"
+              defaultValue={searchTerm}
+              onChange={handleSearchByTerm}
+              data-testid="search-name-scenario"
+            />
+          </div>
+          <div className="flex justify-end space-x-4">
+            <div className="flex space-x-2">
+              <Select
+                value={currentSort}
+                options={SORT_OPTIONS}
+                onChange={handleSort}
+                icon={<SortDescendingIcon className="w-4 h-4" />}
+                data-testid="sort-scenario"
+              />
+              <ButtonGroup>
+                {DISPLAY_OPTIONS.map((display) => (
+                  <LinkGroupItem
+                    key={display}
+                    active={currentDisplay === display}
+                    href={{ pathname: '/data/scenarios', query: { ...query, display } }}
+                    data-testid={`scenario-display-${display}`}
+                  >
+                    {display === 'grid' && <GridIcon className="w-6 h-6" aria-hidden="true" />}
+                    {display === 'list' && <ListIcon className="w-6 h-6" aria-hidden="true" />}
+                  </LinkGroupItem>
+                ))}
+              </ButtonGroup>
+            </div>
+            <div>
+              <Anchor
+                href="/data/scenarios/new"
+                variant="secondary"
+                data-testid="scenario-add-button"
+                disabled={!canCreateScenario}
+                icon={
+                  <div
+                    aria-hidden="true"
+                    className="flex items-center justify-center w-5 h-5 rounded-full bg-navy-400"
+                  >
+                    <PlusIcon className="w-4 h-4 text-white" />
+                  </div>
+                }
+              >
+                Add scenario
+              </Anchor>
+            </div>
+          </div>
         </div>
       )}
-      {currentDisplay === 'list' && (
+
+      {thereAreScenarios && currentDisplay === 'list' && (
         <div className="grid grid-cols-5 gap-4 mx-6">
           <div className={listColumnClasses}>Scenario</div>
           <div className={listColumnClasses}>Growth Rates</div>
@@ -171,16 +206,19 @@ const ScenariosAdminPage: React.FC = () => {
           <div className={listColumnClasses}>Access</div>
         </div>
       )}
-      <div className={displayClasses[currentDisplay]}>
-        {!isLoading &&
-          data?.map((scenarioData) => (
-            <ScenarioCard
-              key={`scenario-card-${scenarioData.id}`}
-              data={scenarioData}
-              display={currentDisplay}
-            />
-          ))}
-      </div>
+
+      {thereAreScenarios && (
+        <div className={displayClasses[currentDisplay]}>
+          {!isLoading &&
+            data?.map((scenarioData) => (
+              <ScenarioCard
+                key={`scenario-card-${scenarioData.id}`}
+                data={scenarioData}
+                display={currentDisplay}
+              />
+            ))}
+        </div>
+      )}
     </AdminLayout>
   );
 };

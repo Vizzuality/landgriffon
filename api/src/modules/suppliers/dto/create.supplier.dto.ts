@@ -27,8 +27,12 @@ export class CreateSupplierDto {
   @ApiPropertyOptional()
   description?: string;
 
-  @IsEnum({ name: 'type', enum: SUPPLIER_STATUS })
-  type: SUPPLIER_TYPES;
+  @ApiProperty({
+    enum: SUPPLIER_TYPES,
+    description: `Type of the supplier. Available options: Tier 1 Supplier, Producer. Defaults to Tier 1 Supplier`,
+  })
+  @IsOptional()
+  type?: SUPPLIER_TYPES;
 
   @IsString()
   @IsOptional()

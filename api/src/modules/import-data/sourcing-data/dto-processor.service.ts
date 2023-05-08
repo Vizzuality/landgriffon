@@ -19,6 +19,7 @@ import { plainToClass } from 'class-transformer';
 import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto';
 import { replaceStringWhiteSpacesWithDash } from 'utils/transform-location-type.util';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
+import { convertToSupplierTypeEnum } from 'modules/suppliers/utils/supplier-type.normalizer';
 
 /**
  * @debt: Define a more accurate DTO / Interface / Class for API-DB trades
@@ -342,6 +343,7 @@ export class SourcingRecordsDtoProcessorService {
   ): CreateSupplierDto {
     const suppliersDto: CreateSupplierDto = new CreateSupplierDto();
     suppliersDto.name = supplierData.name;
+    suppliersDto.type = convertToSupplierTypeEnum(supplierData.type);
     suppliersDto.description = supplierData.description;
     suppliersDto.mpath = supplierData.path_id;
     return suppliersDto;

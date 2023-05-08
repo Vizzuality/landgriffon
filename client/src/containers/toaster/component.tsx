@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import { Toaster, resolveValue } from 'react-hot-toast';
-import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/solid';
+import { toast, Toaster, resolveValue } from 'react-hot-toast';
+import { CheckCircleIcon, XCircleIcon, XIcon } from '@heroicons/react/solid';
 
 import type { ToasterProps } from 'react-hot-toast';
 
@@ -11,17 +11,17 @@ export const ALERT_CLASSES = {
     messagesColor: 'text-green-800',
   },
   error: {
-    iconColor: 'mr-2 h-5 w-5 fill-red-400',
+    iconColor: 'fill-red-400',
     backgroundColor: 'bg-red-50',
     messagesColor: 'text-red-800',
   },
   warning: {
-    iconColor: 'mr-2 h-5 w-5 fill-orange-300',
+    iconColor: 'fill-orange-300',
     backgroundColor: 'bg-orange-50',
     messagesColor: 'text-orange-500',
   },
   loading: {
-    iconColor: 'mr-2 h-5 w-5 fill-orange-300',
+    iconColor: 'fill-orange-300',
     backgroundColor: 'bg-orange-50',
     messagesColor: 'text-orange-500',
   },
@@ -32,7 +32,9 @@ const ToastContainer: React.FC<ToasterProps> = (props) => (
     {(t) => {
       const { iconColor, backgroundColor, messagesColor } = ALERT_CLASSES[t.type];
       return (
-        <div className={classNames('rounded text-sm py-4 px-5 max-w-4xl', backgroundColor)}>
+        <div
+          className={classNames('rounded text-sm py-4 px-5 max-w-4xl relative', backgroundColor)}
+        >
           <div className="flex items-start">
             <div className="flex-none">
               {t.type === 'success' && (
@@ -49,6 +51,13 @@ const ToastContainer: React.FC<ToasterProps> = (props) => (
               {resolveValue(t.message, t)}
             </div>
           </div>
+          <button
+            type="button"
+            onClick={() => toast.dismiss(t.id)}
+            className="absolute right-1 top-1"
+          >
+            <XIcon className={classNames('h-4 w-4', iconColor)} />
+          </button>
         </div>
       );
     }}

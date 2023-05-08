@@ -157,6 +157,9 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
   return (
     <div className="p-6 bg-white rounded-md shadow-sm" data-testid="analysis-chart">
       {isFetching && <Loading className="w-5 h-5 m-auto text-navy-400" />}
+      {!data && !isFetching && (
+        <div className="flex flex-col items-center justify-center h-[370px]">No data</div>
+      )}
       {!isFetching && isFetched && data && (
         <div>
           <h2 className="flex-shrink-0 text-base">

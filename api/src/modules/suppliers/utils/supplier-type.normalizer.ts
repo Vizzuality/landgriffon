@@ -7,7 +7,7 @@ import { SUPPLIER_TYPES } from 'modules/suppliers/supplier.entity';
 export function convertToSupplierTypeEnum(
   supplierType: string,
 ): SUPPLIER_TYPES {
-  if (!supplierType) throw new Error('Supplier type is required');
+  if (!supplierType) return SUPPLIER_TYPES.T1SUPPLIER;
   switch (supplierType.toLowerCase()) {
     case 'tier 1 supplier':
       return SUPPLIER_TYPES.T1SUPPLIER;

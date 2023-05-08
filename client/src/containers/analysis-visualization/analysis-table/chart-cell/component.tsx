@@ -8,7 +8,7 @@ import type { ResultChartData, ChartCellProps } from './types';
 
 const ChartCell: FC<ChartCellProps> = ({ data }) => {
   const parsedData: ResultChartData[] = sortBy(
-    data.map((d) => ({
+    data?.map((d) => ({
       year: d.year,
       value: !d.isProjected ? d.value : null,
       comparedScenarioValue: !d.isProjected ? d.comparedScenarioValue : null,
@@ -17,6 +17,7 @@ const ChartCell: FC<ChartCellProps> = ({ data }) => {
     })),
     'year',
   );
+
   const nonProjectedData = parsedData.filter((d) => d.value);
   const nonProjectedComparedScenarioData = parsedData.filter((d) => d.comparedScenarioValue);
   const lastNonProjectedYear = nonProjectedData[nonProjectedData.length - 1]?.year;
@@ -33,7 +34,7 @@ const ChartCell: FC<ChartCellProps> = ({ data }) => {
 
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <LineChart width={200} height={60} data={resultData}>
+      <LineChart width={140} height={60} data={resultData}>
         <YAxis hide />
         <XAxis dataKey="year" hide />
         <Line
@@ -41,8 +42,8 @@ const ChartCell: FC<ChartCellProps> = ({ data }) => {
           dataKey="comparedScenarioValueProjected"
           dot={false}
           stroke={themeColors.gray[300]}
-          strokeDasharray="4 2"
-          strokeWidth={2}
+          strokeDasharray="3.6 2.4"
+          strokeWidth={1.2}
           type="monotone"
         />
         <Line
@@ -57,17 +58,17 @@ const ChartCell: FC<ChartCellProps> = ({ data }) => {
           activeDot={false}
           dataKey="projectedValue"
           dot={false}
-          stroke={themeColors.gray[900]}
-          strokeDasharray="4 2"
-          strokeWidth={2}
+          stroke={themeColors.gray[500]}
+          strokeDasharray="3.6 2.4"
+          strokeWidth={1.2}
           type="monotone"
         />
         <Line
           activeDot={false}
           dataKey="value"
           dot={false}
-          stroke={themeColors.gray[900]}
-          strokeWidth={2}
+          stroke={themeColors.gray[500]}
+          strokeWidth={2.4}
           type="monotone"
         />
       </LineChart>

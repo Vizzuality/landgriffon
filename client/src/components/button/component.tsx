@@ -36,6 +36,11 @@ const classes = {
         'bg-white text-red-400 border border-gray-200 shadow-sm hover:shadow-md hover:bg-gray-100 focus:ring-red-400/20',
       disabled: 'opacity-50',
     },
+    transparent: {
+      default: 'bg-transparent shadow-none text-gray-900 border-0 focus:ring-transparent',
+      danger: '',
+      disabled: '',
+    },
   },
 };
 

@@ -50,7 +50,6 @@ const AdminDataPage: React.FC = () => {
   );
 
   const lastTask: Task = tasks?.[0];
-  console.log(lastTask);
 
   return (
     <AdminLayout title="Manage data">
@@ -58,21 +57,19 @@ const AdminDataPage: React.FC = () => {
         <title>Manage data | Landgriffon</title>
       </Head>
 
-      {isLoading && (
+      {(!isFetched || isLoading) && (
         <div className="flex items-center justify-center w-full h-full">
           <Loading className="w-5 h-5 text-navy-400" />
         </div>
       )}
 
       {/* Content when empty, or upload is processing or failed */}
-      {isFetched && (lastTask?.status === 'processing' || lastTask?.status === 'failed') && (
+      {isFetched && (lastTask?.status === 'processing' || !thereIsData) && (
         <AdminDataUploader task={lastTask} />
       )}
 
       {/* Content when data and upload is completed */}
-      {isFetched && lastTask?.status === 'completed' && thereIsData && (
-        <AdminDataTable task={lastTask} />
-      )}
+      {isFetched && thereIsData && <AdminDataTable task={lastTask} />}
     </AdminLayout>
   );
 };

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { merge } from 'lodash-es';
-import { PlusIcon, DownloadIcon } from '@heroicons/react/solid';
+import { PlusIcon, DownloadIcon, XCircleIcon } from '@heroicons/react/solid';
 // import { useDebounceCallback } from '@react-hook/debounce'; FEATURE DISABLED
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
@@ -223,6 +223,34 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
             Upload data source
           </Button>
         </div>
+
+        {task?.status === 'failed' && task?.errors.length > 0 && (
+          <div className="p-4 mt-6 text-sm text-left text-red-400 rounded-md bg-red-50">
+            <div className="flex">
+              <XCircleIcon className="inline-block w-5 h-5 mr-2 text-red-400 align-top" />
+              <div>
+                <p className="text-sm text-red-400">
+                  Last upload at{' '}
+                  {format(new Date(sourcingLocations.data[0].updatedAt), 'd MMM yyyy HH:mm z')}
+                  {task?.user && ' by '}
+                  {task?.user?.displayName || task?.user?.email} failed. The data has been rollback
+                  to the previous version.
+                </p>
+                <p className="mt-2">
+                  There {task.errors.length === 1 ? 'is' : 'are'} {task.errors.length} error
+                  {task.errors.length > 1 && 's'} with your file. Please correct them and try again.
+                </p>
+                <ul className="pl-10 mt-2 space-y-2 list-disc">
+                  {task.errors.map((error) =>
+                    Object.values(error).map((errorMessage) => (
+                      <li key={errorMessage}>{errorMessage}</li>
+                    )),
+                  )}
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
 
         {!isSourcingLocationsLoading && (
           <div className="flex justify-end w-full">

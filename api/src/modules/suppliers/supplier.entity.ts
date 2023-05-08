@@ -65,6 +65,14 @@ export class Supplier extends TimestampedBaseEntity {
   @Column({ nullable: true })
   description?: string;
 
+  @ApiProperty({ enum: SUPPLIER_TYPES })
+  @Column({
+    type: 'enum',
+    enum: SUPPLIER_TYPES,
+    default: SUPPLIER_TYPES.T1SUPPLIER,
+  })
+  type: SUPPLIER_TYPES;
+
   @ApiProperty()
   @Column({
     type: 'enum',

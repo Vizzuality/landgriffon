@@ -3,7 +3,6 @@ import {
   IsEnum,
   IsNotEmpty,
   IsNumber,
-  IsOptional,
   IsString,
   Max,
   Min,

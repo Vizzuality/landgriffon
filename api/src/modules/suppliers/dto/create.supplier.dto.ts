@@ -8,7 +8,11 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { Supplier, SUPPLIER_STATUS } from 'modules/suppliers/supplier.entity';
+import {
+  Supplier,
+  SUPPLIER_STATUS,
+  SUPPLIER_TYPES,
+} from 'modules/suppliers/supplier.entity';
 
 export class CreateSupplierDto {
   @IsString()
@@ -22,6 +26,9 @@ export class CreateSupplierDto {
   @IsOptional()
   @ApiPropertyOptional()
   description?: string;
+
+  @IsEnum({ name: 'type', enum: SUPPLIER_STATUS })
+  type: SUPPLIER_TYPES;
 
   @IsString()
   @IsOptional()

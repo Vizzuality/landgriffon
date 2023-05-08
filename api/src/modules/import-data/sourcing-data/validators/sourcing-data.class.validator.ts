@@ -34,11 +34,10 @@ export class SourcingDataExcelValidator {
   'business_unit.path': string;
 
   @IsString()
-  @IsOptional()
   't1_supplier.name': string;
 
+  @IsNotEmpty({ message: 'Producer name cannot be empty' })
   @IsString()
-  @IsOptional()
   'producer.name': string;
 
   @IsNotEmpty({

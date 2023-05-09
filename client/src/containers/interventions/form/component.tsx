@@ -245,6 +245,10 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
       })),
     [suppliers],
   );
+  const defaultSupplier = useMemo<Option>(
+    () => optionsSuppliers.find(({ label }) => label === 'Unknown'),
+    [optionsSuppliers],
+  );
 
   // Producers
   const { data: producers, isLoading: isLoadingProducers } = useSuppliersTypes({
@@ -257,6 +261,10 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
         value: producer.id,
       })),
     [producers],
+  );
+  const defaultProducer = useMemo<Option>(
+    () => optionsProducers.find(({ label }) => label === 'Unknown'),
+    [optionsProducers],
   );
 
   // Location types
@@ -1085,7 +1093,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                             <Controller
                               name="newT1SupplierId"
                               control={control}
-                              defaultValue={null}
+                              defaultValue={defaultSupplier}
                               render={({ field }) => (
                                 <div data-testid="new-t1-supplier-select">
                                   <AutoCompleteSelect
@@ -1106,7 +1114,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                             <Controller
                               name="newProducerId"
                               control={control}
-                              defaultValue={null}
+                              defaultValue={defaultProducer}
                               render={({ field }) => (
                                 <div data-testid="new-producer-select">
                                   <AutoCompleteSelect

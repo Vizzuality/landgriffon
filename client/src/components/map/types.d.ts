@@ -26,4 +26,7 @@ export interface CustomMapProps extends MapProps {
 
   /** A function that exposes the viewport */
   onMapViewStateChange?: (viewstate: Partial<ViewState>) => void;
+
+  /** Whether the side menu is collapsed. Defaults to 'false' */
+  sidebarCollapsed?: boolean;
 }

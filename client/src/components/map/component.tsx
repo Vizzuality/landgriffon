@@ -32,6 +32,7 @@ export const Map: FC<CustomMapProps> = ({
   scrollZoom,
   doubleClickZoom,
   onLoad,
+  sidebarCollapsed = false,
   ...mapboxProps
 }: CustomMapProps) => {
   /**
@@ -76,6 +77,20 @@ export const Map: FC<CustomMapProps> = ({
     },
     [onMapViewStateChangeDebounced],
   );
+
+  useEffect(() => {
+    let resizeWhenCollapse: NodeJS.Timeout;
+
+    // Cancel last timeout if a new one it triggered
+    clearTimeout(resizeWhenCollapse);
+
+    // Trigger the map resize if the sibe bar has been collapsed. There is no need to resize if the sidebar has been expanded because the container will hide the excess width
+    if (sidebarCollapsed) {
+      resizeWhenCollapse = setTimeout(() => {
+        mapRef?.resize();
+      }, 150);
+    }
+  }, [sidebarCollapsed, mapRef]);
 
   useEffect(() => {
     if (mapRef && bounds) {

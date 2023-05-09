@@ -4,6 +4,7 @@ import { XCircleIcon } from '@heroicons/react/solid';
 import LayerManager from 'components/map/layer-manager';
 import { useAppSelector } from 'store/hooks';
 import { analysisMap } from 'store/features/analysis';
+import { analysisUI } from 'store/features/analysis/ui';
 import { useImpactLayer } from 'hooks/layers/impact';
 import Legend from 'containers/analysis-visualization/analysis-legend';
 import PageLoading from 'containers/page-loading';
@@ -21,6 +22,7 @@ import type { BasemapValue } from 'components/map/controls/basemap/types';
 
 const AnalysisMap = () => {
   const { layers } = useAppSelector(analysisMap);
+  const { isSidebarCollapsed } = useAppSelector(analysisUI);
 
   const [mapStyle, setMapStyle] = useState<MapStyle>('terrain');
   const [viewState, setViewState] = useState<Partial<ViewState>>(INITIAL_VIEW_STATE);
@@ -77,7 +79,14 @@ const AnalysisMap = () => {
   return (
     <div className="absolute top-0 left-0 w-full h-full overflow-hidden" data-testid="analysis-map">
       {isFetching && <PageLoading />}
-      <Map mapStyle={mapStyle} viewState={viewState} onMapViewStateChange={handleViewState}>
+      <Map
+        className="w-screen h-full"
+        mapStyle={mapStyle}
+        viewState={viewState}
+        onMapViewStateChange={handleViewState}
+        // style={{ width}}
+        sidebarCollapsed={isSidebarCollapsed}
+      >
         {() => (
           <>
             <LayerManager layers={sortedLayers} onHoverLayer={onHoverLayer} />

@@ -386,13 +386,13 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                 label: intervention.newT1Supplier.name,
                 value: intervention.newT1Supplier.id,
               }
-            : null,
+            : defaultSupplier,
           newProducerId: intervention?.newProducer
             ? {
                 label: intervention.newProducer.name,
                 value: intervention.newProducer.id,
               }
-            : null,
+            : defaultProducer,
           // coefficients
           coefficients: {
             ...(Object.keys(intervention?.newIndicatorCoefficients || {}).length &&
@@ -486,14 +486,24 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     }
 
     // * resets supplier and producer info whenever the intervention type changes
-    resetField('newT1SupplierId', { defaultValue: null });
-    resetField('newProducerId', { defaultValue: null });
+    if (currentInterventionType !== InterventionTypes.Efficiency) {
+      resetField('newT1SupplierId', { defaultValue: defaultSupplier });
+      resetField('newProducerId', { defaultValue: defaultProducer });
+    }
 
     // * closes "Supplier" panel whenever the intervention type changes
     if (closeSupplierRef.current !== null) {
       closeSupplierRef.current();
     }
-  }, [currentInterventionType, resetField, closeSupplierRef, intervention, indicatorNameCodes]);
+  }, [
+    currentInterventionType,
+    resetField,
+    closeSupplierRef,
+    intervention,
+    indicatorNameCodes,
+    defaultSupplier,
+    defaultProducer,
+  ]);
 
   useEffect(() => {
     clearErrors([

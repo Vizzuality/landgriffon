@@ -712,11 +712,12 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
               <Select<number>
                 {...omit(field, 'ref')}
                 id="startYear"
-                defaultValue={value}
+                value={value}
                 options={optionsYears}
                 placeholder="Select a year"
                 onChange={(value: Option<number>) => setValue('startYear', value)}
                 loading={isLoadingYears}
+                required
                 error={errors?.startYear?.value?.message}
               />
             )}
@@ -731,7 +732,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
               <Select<number>
                 {...omit(field, 'ref')}
                 id="endYear"
-                value={value}
+                defaultValue={value}
                 options={[]}
                 placeholder="Select a year"
                 onChange={(value: Option<number>) => setValue('endYear', value)}
@@ -906,7 +907,8 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                                   if (invalid) clearErrors('newLocationType');
                                   setValue('newLocationType', value);
                                 }}
-                                error={errors?.newLocationType?.value?.message}
+                                required
+                                error={errors?.newLocationType?.message}
                               />
                             )}
                           />
@@ -938,7 +940,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
 
                                   setValue('newLocationCountryInput', value);
                                 }}
-                                error={errors?.newLocationCountryInput?.value?.message}
+                                error={errors?.newLocationCountryInput?.message}
                               />
                             )}
                           />

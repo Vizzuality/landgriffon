@@ -28,15 +28,9 @@ const Select = <T,>({
   theme = 'light',
   ...props
 }: SelectProps<T>) => {
-  const [selected, setSelected] = useState<Option<T> | Option<string> | Option<T>[]>(() => {
-    if (multiple && !value) {
-      return [];
-    }
-    if (defaultValue) return defaultValue;
-    if (value) return value;
-
-    return { label: '', value: '' };
-  });
+  const [selected, setSelected] = useState<Option<T> | Option<string> | Option<T>[]>(
+    multiple ? [] : { label: '', value: '' },
+  );
   const { x, y, reference, floating, strategy } = useFloating<HTMLButtonElement>({
     middleware: [
       flip(),
@@ -77,8 +71,12 @@ const Select = <T,>({
 
   // ? in case the value is not set in the hook initialization, it will be set here after first render.
   useEffect(() => {
-    if (value) setSelected(value);
-  }, [value]);
+    if (defaultValue && !value) {
+      setSelected(defaultValue);
+    } else if (value) {
+      setSelected(value);
+    }
+  }, [defaultValue, value]);
 
   const labelSelect = useMemo(() => {
     if (isArray(selected) && selected?.[0]?.label) {

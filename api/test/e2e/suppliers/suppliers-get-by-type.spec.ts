@@ -1,12 +1,12 @@
 import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
-import { Supplier, SUPPLIER_TYPES } from 'modules/suppliers/supplier.entity';
+import { SUPPLIER_TYPES } from 'modules/suppliers/supplier.entity';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { setupTestUser } from '../../utils/userAuth';
 import ApplicationManager, {
   TestApplication,
 } from '../../utils/application-manager';
-import { createSourcingLocation, createSupplier } from '../../entity-mocks';
+import { createSupplier } from '../../entity-mocks';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 import { MaterialRepository } from 'modules/materials/material.repository';
@@ -49,16 +49,16 @@ describe('Suppliers - Get by type', () => {
         'Then I should get all available suppliers from the selected type',
       async () => {
         for await (const number of [1, 2, 3, 4]) {
-          const supplier: Supplier = await createSupplier({
+          await createSupplier({
             name: `T1 Supplier ${number}`,
+            type: SUPPLIER_TYPES.T1SUPPLIER,
           });
-          await createSourcingLocation({ t1SupplierId: supplier.id });
         }
         for await (const number of [1, 2, 3, 4]) {
-          const supplier: Supplier = await createSupplier({
+          await createSupplier({
             name: `Producer ${number}`,
+            type: SUPPLIER_TYPES.PRODUCER,
           });
-          await createSourcingLocation({ producerId: supplier.id });
         }
 
         const t1SupplierResponse = await request(

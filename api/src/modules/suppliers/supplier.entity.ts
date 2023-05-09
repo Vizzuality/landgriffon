@@ -6,6 +6,7 @@ import {
   Tree,
   TreeChildren,
   TreeParent,
+  Index,
 } from 'typeorm';
 
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
@@ -66,6 +67,7 @@ export class Supplier extends TimestampedBaseEntity {
   description?: string;
 
   @ApiProperty({ enum: SUPPLIER_TYPES })
+  @Index('idx_supplier_type', { unique: false })
   @Column({
     type: 'enum',
     enum: SUPPLIER_TYPES,

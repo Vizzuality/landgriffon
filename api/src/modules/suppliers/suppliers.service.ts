@@ -3,25 +3,18 @@ import {
   HttpException,
   Inject,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
 } from 'utils/app-base.service';
-import {
-  Supplier,
-  SUPPLIER_TYPES,
-  supplierResource,
-} from 'modules/suppliers/supplier.entity';
+import { Supplier, supplierResource } from 'modules/suppliers/supplier.entity';
 import { AppInfoDTO } from 'dto/info.dto';
 import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
 import { UpdateSupplierDto } from 'modules/suppliers/dto/update.supplier.dto';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
-import { SelectQueryBuilder } from 'typeorm';
-import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetSupplierByType } from 'modules/suppliers/dto/get-supplier-by-type.dto';
 import { GetSupplierTreeWithOptions } from 'modules/suppliers/dto/get-supplier-tree-with-options.dto';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
@@ -64,6 +57,7 @@ export class SuppliersService extends AppBaseService<
         'children',
         'createdAt',
         'updatedAt',
+        'type',
       ],
       keyForAttribute: 'camelCase',
     };
@@ -141,16 +135,8 @@ export class SuppliersService extends AppBaseService<
     await this.supplierRepository.delete({});
   }
 
-  async getSuppliersByIds(ids: string[]): Promise<Supplier[]> {
-    return this.supplierRepository.findByIds(ids);
-  }
-
   async findTreesWithOptions(depth?: number): Promise<Supplier[]> {
     return this.supplierRepository.findTrees({ depth });
-  }
-
-  async findAllUnpaginated(): Promise<Supplier[]> {
-    return this.supplierRepository.find({});
   }
 
   /**
@@ -175,19 +161,7 @@ export class SuppliersService extends AppBaseService<
 
   async getSupplierByType(typeOptions: GetSupplierByType): Promise<Supplier[]> {
     const { type } = typeOptions;
-    const queryBuilder: SelectQueryBuilder<Supplier> = this.supplierRepository
-      .createQueryBuilder('s')
-      .innerJoin(
-        SourcingLocation,
-        'sl',
-        's.id = sl.t1SupplierId OR s.id = sl.producerId',
-      );
-    if (type === SUPPLIER_TYPES.T1SUPPLIER) {
-      queryBuilder.where('sl.t1SupplierId IS NOT NULL');
-    } else if (type === SUPPLIER_TYPES.PRODUCER) {
-      queryBuilder.where('sl.producerId IS NOT NULL');
-    }
-    return queryBuilder.getMany();
+    return this.supplierRepository.find({ where: { type } });
   }
 
   async getSuppliersDescendants(supplierIds: string[]): Promise<string[]> {

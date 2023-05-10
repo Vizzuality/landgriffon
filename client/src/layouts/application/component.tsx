@@ -38,7 +38,7 @@ const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
       if (lastTask?.status === 'failed') {
         toast.error(
           <div>
-            Last upload failed, please{' '}
+            Last data upload failed, please{' '}
             <Link href="/data" className="underline">
               try again
             </Link>

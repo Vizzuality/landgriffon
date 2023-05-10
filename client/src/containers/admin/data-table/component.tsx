@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { merge } from 'lodash-es';
-import { PlusIcon, DownloadIcon, XCircleIcon } from '@heroicons/react/solid';
+import { PlusIcon, DownloadIcon } from '@heroicons/react/solid';
 // import { useDebounceCallback } from '@react-hook/debounce'; FEATURE DISABLED
+import { ExclamationIcon } from '@heroicons/react/outline';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/router';
@@ -225,28 +226,57 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
         </div>
 
         {task?.status === 'failed' && task?.errors.length > 0 && (
-          <div className="p-4 mt-6 text-sm text-left text-red-400 rounded-md bg-red-50">
-            <div className="flex">
-              <XCircleIcon className="inline-block w-5 h-5 mr-2 text-red-400 align-top" />
-              <div>
-                <p className="text-sm text-red-400">
-                  Last upload at{' '}
-                  {format(new Date(sourcingLocations.data[0].updatedAt), 'd MMM yyyy HH:mm z')}
-                  {task?.user && ' by '}
-                  {task?.user?.displayName || task?.user?.email} failed. The data has been rollback
-                  to the previous version.
+          <div className="p-6 mt-6 text-sm text-left rounded-md bg-white border border-red-400">
+            <div className="flex space-x-6 items-center">
+              <div className="flex-none">
+                <div className="flex items-center justify-center rounded-full bg-red-50 w-[72px] h-[72px]">
+                  <ExclamationIcon className="w-8 h-8 text-red-400" />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <h3>Upload failed</h3>
+                <p className="text-gray-500">
+                  Sorry, we couldn&apos;t upload your latest changes made on{' '}
+                  {format(new Date(sourcingLocations.data[0].updatedAt), 'MMM 4, yyyy HH:mm z')}. We
+                  have <strong className="text-gray-900">reverted to the previous version</strong>{' '}
+                  to avoid data loss. Please{' '}
+                  <strong className="text-gray-900">
+                    download your file to see the {task.errors.length} error
+                    {task.errors.length > 1 && 's'}
+                  </strong>
+                  , correct them and try uploading again.
                 </p>
-                <p className="mt-2">
-                  There {task.errors.length === 1 ? 'is' : 'are'} {task.errors.length} error
-                  {task.errors.length > 1 && 's'} with your file. Please correct them and try again.
+              </div>
+              <div className="flex-none">
+                <Button variant="white">Download</Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {task?.status === 'completed' && task?.errors.length > 0 && (
+          <div className="p-6 mt-6 text-sm text-left rounded-md bg-white border border-orange-500">
+            <div className="flex space-x-6 items-center">
+              <div className="flex-none">
+                <div className="flex items-center justify-center rounded-full bg-orange-50 w-[72px] h-[72px]">
+                  <ExclamationIcon className="w-8 h-8 text-orange-500" />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <h3>Upload failed</h3>
+                <p className="text-gray-500">
+                  We have successfully uploaded your file, but we have detected{' '}
+                  <strong className="text-gray-900">
+                    {task.errors.length} error{task.errors.length > 1 && 's'}
+                  </strong>
+                  . To ensure accurate results, we recommend that you correct the errors before
+                  proceeding. Please{' '}
+                  <strong className="text-gray-900">download your file to see the errors</strong>,
+                  correct them and try
                 </p>
-                <ul className="pl-10 mt-2 space-y-2 list-disc">
-                  {task.errors.map((error) =>
-                    Object.values(error).map((errorMessage) => (
-                      <li key={errorMessage}>{errorMessage}</li>
-                    )),
-                  )}
-                </ul>
+              </div>
+              <div className="flex-none">
+                <Button variant="white">Download</Button>
               </div>
             </div>
           </div>
@@ -254,12 +284,12 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
 
         {!isSourcingLocationsLoading && (
           <div className="flex justify-end w-full">
-            <span className="text-sm text-gray-400">
-              Last update at{' '}
+            <div className="text-sm text-gray-400">
+              <span className="text-navy-400 underline">Last update</span> at{' '}
               {format(new Date(sourcingLocations.data[0].updatedAt), 'd MMM yyyy HH:mm z')}
               {task?.user && ' by '}
               {task?.user?.displayName || task?.user?.email}
-            </span>
+            </div>
           </div>
         )}
 

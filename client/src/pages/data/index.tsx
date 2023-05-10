@@ -32,7 +32,7 @@ const AdminDataPage: React.FC = () => {
     {
       'page[size]': 1,
       sort: '-createdAt',
-      // include: 'user', // TODO: uncomment when user is available
+      include: 'user',
     },
     {
       refetchInterval: 10000,

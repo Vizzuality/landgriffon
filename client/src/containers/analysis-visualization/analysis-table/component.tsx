@@ -17,6 +17,7 @@ import { Anchor, Button } from 'components/button';
 import Table from 'components/table/component';
 import { NUMBER_FORMAT } from 'utils/number-format';
 import { DEFAULT_PAGE_SIZES } from 'components/table/pagination/constants';
+import { useIndicatorParam } from 'utils/indicator-param';
 
 import type {
   ExpandedState,
@@ -87,6 +88,7 @@ const AnalysisTable = () => {
     { 'filter[status]': 'active' },
     { select: (data) => data.data },
   );
+
   const filters = useAppSelector(filtersForTabularAPI);
 
   const useIsComparison = useCallback(
@@ -189,7 +191,6 @@ const AnalysisTable = () => {
     return impactTable[0]?.rows[0]?.values.find((value) => value.isProjected)?.year;
   }, [impactTable]);
 
-  // Total rows count
   const handleExpandedChange = useCallback(
     <Mode extends ComparisonMode>(table: TableType<ImpactRowType<Mode>>) => {
       if (!!expandedState) {
@@ -239,14 +240,30 @@ const AnalysisTable = () => {
   const [tableData, setTableData] = useState<ImpactRowType<ComparisonMode>[]>([]);
 
   useEffect(() => {
-    // Selected indicator data
-    const selectedData =
-      expandedName && initialTableData.find((data) => data.name === expandedName)?.children;
-    // If there is no selected indicator data (table is nor expanded or the current indicators don't match the last selected one), use full initial data
-    setTableData(selectedData || initialTableData);
-    // If there is no selected indicator data, reset expanded name
-    setExpandedName(!!selectedData ? expandedName : null);
-    // Reset expanded state and row selection state
+    if (indicatorId === 'all') {
+      setExpandedName(null);
+    } else {
+      setExpandedName(initialTableData[0]?.name);
+    }
+  }, [indicatorId]);
+
+  useEffect(() => {
+    const expandedData =
+      indicatorId === 'all' &&
+      expandedName &&
+      initialTableData.find((data) => data.name === expandedName)?.children;
+
+    if (expandedData?.length) {
+      // All indicators are selected and one indicator is expanded
+      setTableData(expandedData);
+    } else if (indicatorId !== 'all') {
+      // A single indicator is selected so we force its expanction
+      setTableData(initialTableData[0]?.children);
+    } else {
+      // All indicators are selected and no indicator is expanded
+      setTableData(initialTableData);
+    }
+
     setExpandedState(null);
     setRowSelectionState({});
   }, [initialTableData, expandedName]);
@@ -323,15 +340,20 @@ const AnalysisTable = () => {
     [isComparison, isScenarioComparison, valueIsScenarioComparison],
   );
 
+  const setIndicatorParam = useIndicatorParam();
+
   const handleExitExpanded = useCallback(() => {
-    setTableData(initialTableData);
     setExpandedName(null);
     setExpandedState({});
-  }, [initialTableData]);
+    if (indicatorId !== 'all') {
+      setIndicatorParam('all');
+    } else {
+      setTableData(initialTableData);
+    }
+  }, [indicatorId, setIndicatorParam, initialTableData]);
 
   const handleExpandRow = (children: any[], name: string) => {
-    const newData = children;
-    setTableData(newData);
+    setTableData(children);
     setExpandedName(name);
     setExpandedState({});
   };
@@ -359,7 +381,7 @@ const AnalysisTable = () => {
           </div>
         ),
         align: 'left',
-        isSticky: true,
+        isSticky: 'left',
         size: 260,
         cell: ({ row: { original, depth } }) => {
           return (
@@ -368,10 +390,15 @@ const AnalysisTable = () => {
                 <InformationCircleIcon className="w-4 h-4 text-gray-900 shrink-0" />
               )}
               <div>
-                <span className="block" title={original.name}>
-                  {original.name}
-                  {isParentRow(original) && depth === 0 && <> ({original.metadata.unit})</>}
-                </span>
+                {expandedName ? (
+                  original.name
+                ) : (
+                  <div className="block font-semibold">
+                    {original.name}
+                    {isParentRow(original) && depth === 0 && <> ({original.metadata.unit})</>}
+                  </div>
+                )}
+
                 {!expandedName && (
                   <Button
                     variant="white"
@@ -395,6 +422,7 @@ const AnalysisTable = () => {
         ),
         className: 'px-2 mx-auto',
         align: 'center',
+        size: 170,
         cell: ({
           row: {
             original: { values },
@@ -402,7 +430,7 @@ const AnalysisTable = () => {
         }) => {
           const chartData = values as ChartData[];
           return (
-            <div className="h-5 my-3 w-[130px]">
+            <div className="h-5 my-3 mx-auto w-[130px]">
               <ChartCell data={chartData} />
             </div>
           );

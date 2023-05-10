@@ -37,8 +37,7 @@ const TableRow = <T,>({ row, theme, isLast, firstProjectedYear, ...props }: Tabl
                 'bg-white group-hover:border-l-gray-100': theme === 'default',
                 'group-odd:bg-white group-even:bg-gray-50': theme === 'striped',
                 'sticky z-[1]': !!cell.column.columnDef.meta?.isSticky,
-                [theme === 'striped' ? 'shadow-lg' : 'shadow-sm']:
-                  !!cell.column.columnDef.meta?.isSticky,
+                'shadow-lg': !!cell.column.columnDef.meta?.isSticky,
                 'left-0': cell.column.columnDef.meta?.isSticky === 'left',
                 'right-0': cell.column.columnDef.meta?.isSticky === 'right',
                 'border-r-2 border-r-gray-200': isProjectedFirstYear,
@@ -52,7 +51,9 @@ const TableRow = <T,>({ row, theme, isLast, firstProjectedYear, ...props }: Tabl
           );
         })}
       </tr>
-      {isLast && theme !== 'striped' && <tr aria-hidden className="h-0.5 last:hidden"></tr>}
+      {isLast && theme !== 'striped' && (
+        <tr aria-hidden className="h-0.5 bg-gray-100 last:hidden"></tr>
+      )}
     </>
   );
 };
@@ -61,9 +62,14 @@ interface TableHeaderRowProps<T> {
   headerGroup: HeaderGroup<T>;
   firstProjectedYear?: number;
   className?: string;
+  headerTheme?: 'clean' | 'default';
 }
 
-export const TableHeaderRow = <T,>({ headerGroup, firstProjectedYear }: TableHeaderRowProps<T>) => {
+export const TableHeaderRow = <T,>({
+  headerGroup,
+  firstProjectedYear,
+  headerTheme = 'default',
+}: TableHeaderRowProps<T>) => {
   return (
     <tr key={headerGroup.id} className="border-b-2 border-b-gray-200">
       {headerGroup.headers.map((header) => {
@@ -71,16 +77,17 @@ export const TableHeaderRow = <T,>({ headerGroup, firstProjectedYear }: TableHea
           !!firstProjectedYear && (firstProjectedYear - 1)?.toString() === header.id;
         const isFirstColumn = header.index === 0;
         const isLastColumn = header.index === headerGroup.headers.length - 1;
+        const sticky = header.column.columnDef.meta?.isSticky;
         return (
           <th
             className={classNames('sticky z-[2] top-0 bg-gray-50', {
-              'left-0 z-[3]': header.column.columnDef.meta?.isSticky === 'left',
-              'right-0 z-[3]': header.column.columnDef.meta?.isSticky === 'right',
+              'left-0 z-[3]': sticky === 'left',
+              'right-0 z-[3]': sticky === 'right',
               'rounded-tr-lg': isLastColumn,
               'rounded-tl-lg': isFirstColumn,
               'border-r border-r-gray-200':
-                !isFirstColumn && !isLastColumn && !isProjectedFirstYear,
-              'border-r-2 border-l-gray-200 border-dashed': isProjectedFirstYear,
+                headerTheme === 'default' && !isLastColumn && !isProjectedFirstYear,
+              'border-r-2 border-dashed': isProjectedFirstYear,
             })}
             key={header.id}
             style={{ width: header.column.getSize() }}

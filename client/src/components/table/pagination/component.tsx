@@ -78,7 +78,7 @@ const Pagination: React.FC<PaginationProps> = ({
     <div
       className={classNames(
         className,
-        'flex flex-col md:flex-row gap-2 md:gap-0 justify-between items-center',
+        'flex flex-col md:flex-row gap-2 sm:gap-10 items-center justify-start',
       )}
     >
       <div className="flex items-center space-x-2">
@@ -89,7 +89,7 @@ const Pagination: React.FC<PaginationProps> = ({
           onChange={handlePageSizeChange}
         />
       </div>
-      <div className="flex-1 text-sm text-center text-gray-500">
+      <div className="text-sm text-center text-gray-500">
         {itemsRange.start}-{itemsRange.end} of {totalItems}
       </div>
       <div className="flex items-center">

@@ -71,7 +71,6 @@ const AnalysisTable = () => {
     pageSize: DEFAULT_PAGE_SIZES[0],
   });
   const [sortingState, setSortingState] = useState<SortingState>([]);
-  const [expandedName, setExpandedName] = useState<string>(null);
   const [expandedState, setExpandedState] = useState<ExpandedState>(null);
   const [rowSelectionState, setRowSelectionState] = useState<RowSelectionState>({});
   const tableState: Partial<TableState> = useMemo(() => {
@@ -239,34 +238,51 @@ const AnalysisTable = () => {
 
   const [tableData, setTableData] = useState<ImpactRowType<ComparisonMode>[]>([]);
 
+  const [expandedName, setExpandedName] = useState<string>(
+    indicatorId === 'all' ? null : initialTableData[0]?.name,
+  );
+
   useEffect(() => {
     if (indicatorId === 'all') {
       setExpandedName(null);
-    } else {
-      setExpandedName(initialTableData[0]?.name);
     }
   }, [indicatorId]);
 
   useEffect(() => {
-    const expandedData =
-      indicatorId === 'all' &&
-      expandedName &&
-      initialTableData.find((data) => data.name === expandedName)?.children;
-
-    if (expandedData?.length) {
-      // All indicators are selected and one indicator is expanded
-      setTableData(expandedData);
-    } else if (indicatorId !== 'all') {
+    if (indicatorId !== 'all') {
       // A single indicator is selected so we force its expanction
       setTableData(initialTableData[0]?.children);
+      setExpandedName(initialTableData[0]?.name);
     } else {
-      // All indicators are selected and no indicator is expanded
-      setTableData(initialTableData);
+      const expandedData =
+        expandedName && initialTableData.find((data) => data.name === expandedName)?.children;
+      if (expandedData?.length) {
+        // All indicators are selected and one indicator is expanded
+        setTableData(expandedData);
+      } else {
+        // All indicators are selected and no indicator is expanded
+        setTableData(initialTableData);
+      }
     }
-
     setExpandedState(null);
     setRowSelectionState({});
-  }, [initialTableData, expandedName]);
+  }, [initialTableData]);
+
+  const setIndicatorParam = useIndicatorParam();
+
+  const handleExitExpanded = useCallback(() => {
+    setExpandedName(null);
+    setExpandedState({});
+    if (indicatorId !== 'all') {
+      setIndicatorParam('all');
+    }
+  }, [indicatorId, setIndicatorParam]);
+
+  const handleExpandRow = (children: any[], name: string) => {
+    setTableData(children);
+    setExpandedName(name);
+    setExpandedState({});
+  };
 
   const isComparison = useIsComparison(tableData);
   const isScenarioComparison = useIsScenarioComparison(tableData);
@@ -339,24 +355,6 @@ const AnalysisTable = () => {
     },
     [isComparison, isScenarioComparison, valueIsScenarioComparison],
   );
-
-  const setIndicatorParam = useIndicatorParam();
-
-  const handleExitExpanded = useCallback(() => {
-    setExpandedName(null);
-    setExpandedState({});
-    if (indicatorId !== 'all') {
-      setIndicatorParam('all');
-    } else {
-      setTableData(initialTableData);
-    }
-  }, [indicatorId, setIndicatorParam, initialTableData]);
-
-  const handleExpandRow = (children: any[], name: string) => {
-    setTableData(children);
-    setExpandedName(name);
-    setExpandedState({});
-  };
 
   const baseColumns = useMemo(
     <Mode extends ComparisonMode>(): ColumnDefinition<ImpactRowType<Mode>>[] => [
@@ -458,7 +456,7 @@ const AnalysisTable = () => {
       onExpandedChange: setExpandedState,
       isLoading: isFetching,
       enableExpanding: !!expandedName,
-      data: tableData as ImpactRowType<Mode>[],
+      data: (tableData as ImpactRowType<Mode>[]) || [],
       columns: baseColumns as ColumnDefinition<ImpactRowType<Mode>>[],
       handleExpandedChange,
       firstProjectedYear,

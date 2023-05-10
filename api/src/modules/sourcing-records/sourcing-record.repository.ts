@@ -201,17 +201,11 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
         );
         break;
       case GROUP_BY_VALUES.SUPPLIER:
-        basicSelectQuery
-          .leftJoin(
-            Supplier,
-            't1supplier',
-            `t1supplier.id = sourcingLocation.t1SupplierId`,
-          )
-          .leftJoin(
-            Supplier,
-            'producer',
-            `producer.id = sourcingLocation.producerId`,
-          );
+        basicSelectQuery.leftJoin(
+          Supplier,
+          'supplier',
+          'sourcingLocation.producerId = supplier.id or sourcingLocation.t1SupplierId = supplier.id',
+        );
         break;
       case GROUP_BY_VALUES.BUSINESS_UNIT:
         basicSelectQuery.leftJoin(
@@ -258,12 +252,15 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       );
     }
     if (impactDataDto.supplierIds) {
-      selectQueryBuilder.andWhere('t1supplier.id IN (:...supplierIds)', {
-        supplierIds: impactDataDto.supplierIds,
-      });
-      selectQueryBuilder.andWhere('producer.id IN (:...supplierIds)', {
-        supplierIds: impactDataDto.supplierIds,
-      });
+      selectQueryBuilder.andWhere(
+        new Brackets((qb: WhereExpressionBuilder) => {
+          qb.where('sourcingLocation.t1SupplierId IN (:...supplierIds)', {
+            supplierIds: impactDataDto.supplierIds,
+          }).orWhere('sourcingLocation.producerId IN (:...supplierIds)', {
+            supplierIds: impactDataDto.supplierIds,
+          });
+        }),
+      );
     }
 
     if (impactDataDto.locationTypes) {
@@ -295,8 +292,9 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
         break;
       case GROUP_BY_VALUES.SUPPLIER:
         selectQueryBuilder
-          .addSelect('COALESCE(t1supplier.name, producer.name)', 'name')
-          .groupBy('COALESCE(t1supplier.name, producer.name)');
+          .addSelect('supplier.name', 'name')
+          //.andWhere('supplier.name IS NOT NULL')
+          .groupBy('supplier.name');
         break;
       case GROUP_BY_VALUES.BUSINESS_UNIT:
         selectQueryBuilder

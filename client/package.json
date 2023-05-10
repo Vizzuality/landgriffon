@@ -31,7 +31,7 @@
     "@floating-ui/react": "0.19.1",
     "@floating-ui/react-dom": "1.2.2",
     "@headlessui/react": "1.7.8",
-    "@heroicons/react": "1.0.6",
+    "@heroicons/react": "v1.0.6",
     "@hookform/resolvers": "2.8.8",
     "@loaders.gl/core": "3.3.1",
     "@luma.gl/constants": "8.5.18",

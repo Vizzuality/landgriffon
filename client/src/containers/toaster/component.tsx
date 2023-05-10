@@ -33,16 +33,14 @@ const ToastContainer: React.FC<ToasterProps> = (props) => (
       const { iconColor, backgroundColor, messagesColor } = ALERT_CLASSES[t.type];
       return (
         <div
-          className={classNames('rounded text-sm py-4 px-5 max-w-4xl relative', backgroundColor)}
+          className={classNames('rounded-md text-sm py-4 px-4 max-w-4xl relative', backgroundColor)}
         >
-          <div className="flex items-start">
+          <div className="flex items-center space-x-4">
             <div className="flex-none">
               {t.type === 'success' && (
-                <CheckCircleIcon className={classNames('mr-2 h-5 w-5', iconColor)} />
+                <CheckCircleIcon className={classNames('h-5 w-5', iconColor)} />
               )}
-              {t.type === 'error' && (
-                <XCircleIcon className={classNames('mr-2 h-5 w-5', iconColor)} />
-              )}
+              {t.type === 'error' && <XCircleIcon className={classNames('h-5 w-5', iconColor)} />}
             </div>
             <div
               className={classNames('flex-1 text-sm', messagesColor)}
@@ -50,14 +48,10 @@ const ToastContainer: React.FC<ToasterProps> = (props) => (
             >
               {resolveValue(t.message, t)}
             </div>
+            <button type="button" onClick={() => toast.dismiss(t.id)} className="flex-none">
+              <XIcon className={classNames('h-4 w-4', iconColor)} />
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => toast.dismiss(t.id)}
-            className="absolute right-1 top-1"
-          >
-            <XIcon className={classNames('h-4 w-4', iconColor)} />
-          </button>
         </div>
       );
     }}

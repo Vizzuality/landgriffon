@@ -6,12 +6,14 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import classNames from 'classnames';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import TableRow, { TableHeaderRow } from './row';
 
+import { analysisUI } from 'store/features/analysis/ui';
 import Loading from 'components/loading';
 import Pagination from 'components/table/pagination';
+import { useAppSelector } from 'store/hooks';
 
 import type { ColumnDefinition } from './column';
 import type {
@@ -22,11 +24,11 @@ import type {
   DeepValue,
   DeepKeys,
 } from '@tanstack/react-table';
-
 export interface TableProps<T>
   extends Omit<TableOptions<T>, 'columns' | 'getCoreRowModel' | 'pageCount'> {
   columns: ColumnDefinition<T>[];
   isLoading?: boolean;
+  headerTheme?: 'default' | 'clean';
   theme?: 'default' | 'striped';
   paginationProps?: {
     totalItems: number;
@@ -142,16 +144,32 @@ const ComposedTable = <T,>({
     handleExpandedChange(table);
   }, [rowModel, handleExpandedChange, table]);
 
+  const containerRef = useRef<HTMLDivElement>();
+  const [width, setWidth] = useState<number>(0);
+  const { isSidebarCollapsed } = useAppSelector(analysisUI);
+
+  useEffect(() => {
+    const { width } = containerRef.current?.getBoundingClientRect();
+    const sideBarWidth = 410;
+    const newWidth = isSidebarCollapsed ? width + sideBarWidth : width - sideBarWidth;
+    setWidth(newWidth);
+  }, [isSidebarCollapsed]);
+
+  useEffect(() => {
+    const width = containerRef.current?.getBoundingClientRect()?.width || 0;
+    setWidth(width);
+  }, []);
+
   return (
-    <div className="space-y-6">
-      <div className="relative">
+    <div ref={containerRef} className="table-container h-full flex flex-col justify-between">
+      <div className="relative overflow-auto">
         {isLoading && (
           <div className="absolute z-40 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
             <Loading className="w-5 h-5 text-navy-400" />
           </div>
         )}
         <div
-          className={classNames('overflow-x-auto', {
+          className={classNames('', {
             'blur-sm pointer-events-none': isLoading,
           })}
         >
@@ -168,6 +186,7 @@ const ComposedTable = <T,>({
                     firstProjectedYear={firstProjectedYear}
                     key={headerGroup.id}
                     headerGroup={headerGroup}
+                    headerTheme={options.headerTheme}
                   />
                 );
               })}
@@ -186,7 +205,6 @@ const ComposedTable = <T,>({
                 );
 
                 const isLastRow = groupRows[groupRows.length - 1].id === row.id;
-
                 return (
                   <TableRow
                     isLast={isLastRow}
@@ -205,16 +223,19 @@ const ComposedTable = <T,>({
         </div>
       </div>
 
-      <div>
-        <Pagination
-          availableSizes={pagination.pageSizes}
-          pageSize={pagination.pageSize}
-          onChangePageSize={onChangePageSize}
-          totalItems={pagination.totalItems}
-          totalPages={pagination.totalPages}
-          currentPage={pagination.currentPage}
-          onPageChange={handlePageChange}
-        />
+      <div className="h-12 w-full">
+        <div style={{ width }} className="z-10 w-[inherit] fixed py-4 bottom-0 bg-gray-100">
+          <Pagination
+            className="justify-between"
+            availableSizes={pagination.pageSizes}
+            pageSize={pagination.pageSize}
+            onChangePageSize={onChangePageSize}
+            totalItems={pagination.totalItems}
+            totalPages={pagination.totalPages}
+            currentPage={pagination.currentPage}
+            onPageChange={handlePageChange}
+          />
+        </div>
       </div>
     </div>
   );

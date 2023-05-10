@@ -38,18 +38,32 @@ const AdminUsersPage: React.FC = () => {
     () => ({
       state: { pagination, sorting },
       columns: [
-        { id: 'displayName', header: 'Name', size: 110, align: 'left', enableSorting: true },
-        { id: 'email', header: 'Email', align: 'left', enableSorting: true },
+        {
+          id: 'displayName',
+          header: 'Name',
+          size: 110,
+          align: 'left',
+          enableSorting: true,
+          cell: ({ row }) => <div className="my-6 ml-4 name">{row.original.displayName}</div>,
+        },
+        {
+          id: 'email',
+          header: 'Email',
+          align: 'left',
+          enableSorting: true,
+        },
         {
           id: 'isActive',
           header: 'Active',
-          cell: ({ row }) => (row.original.isActive ? 'Yes' : 'No'),
+          cell: ({ row }) => (
+            <div className="my-6 name">{row.original.isActive ? 'Yes' : 'No'}</div>
+          ),
           align: 'left',
           enableSorting: true,
         },
       ],
       data: data?.data ?? [],
-      theme: 'striped',
+      headerTheme: 'clean',
       onPaginationChange: setPaginationState,
       onSortingChange: setSorting,
       paginationProps: {

@@ -43,22 +43,21 @@ const CellWrapper = <T, C>({ children, context }: React.PropsWithChildren<CellPr
         'relative flex items-center justify-start w-full min-h-20',
         {
           'cursor-pointer': isExpandible,
-          'pl-2.5 font-bold text-sm': !canExpand && isFirstColumn && depth === 0,
-          'pl-4 font-normal text-sm': canExpand && isFirstColumn && depth === 0,
+          'ml-7 pr-7': canExpand && !isExpandible && isFirstColumn,
+          'pl-3 font-normal text-sm': isFirstColumn && depth === 0,
           'pl-10 uppercase text-2xs font-semibold': isFirstColumn && depth === 1,
-          'pl-[72px] text-xs font-normal': isFirstColumn && depth === 2,
+          'pl-[72px] text-xs font-normal': isFirstColumn && depth >= 2,
           'text-sm': !isFirstColumn,
         },
       )}
     >
       <div className="w-full mx-auto my-auto">
-        {canExpand ? (
-          <div className="flex items-center gap-4">
+        {isExpandible ? (
+          <div className="flex items-center gap-3">
             <div className="w-4 h-4">
               <ChevronRightIcon
                 className={classNames(' text-gray-900', {
                   'rotate-90': isExpanded,
-                  hidden: !isExpandible,
                 })}
               />
             </div>

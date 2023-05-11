@@ -76,9 +76,11 @@ export class ImpactService extends BaseImpactService {
       impactTableDto,
     );
 
+    // TODO: Move pagination after the table is calculated.
     const paginatedEntities: PaginatedEntitiesDto =
       ImpactService.paginateRootEntities(entities, fetchSpecification);
 
+    // TODO: this updates the filtering Ids accortding to the resultant entities of the pagination
     this.updateGroupByCriteriaFromEntityTree(
       impactTableDto,
       paginatedEntities.entities,
@@ -251,6 +253,8 @@ export class ImpactService extends BaseImpactService {
     // construct result impact Table
     const impactTable: ImpactTableDataByIndicator[] = [];
 
+    // TODO: map of entities
+
     for (const [indicatorId, entityMap] of indicatorEntityMap.entries()) {
       const indicator: Indicator = auxIndicatorMap.get(
         indicatorId,
@@ -368,6 +372,7 @@ export class ImpactService extends BaseImpactService {
 
     const valuesToAggregate: ImpactTableRowsValues[][] = [];
     const selfData: Map<number, ImpactTableRowsValues> | undefined =
+      // TODO: USE THE ID TO AVOID MERGING VALUES OF ENTITIES WITH SAME NAME
       entityMap.get(entity.name);
     if (selfData) {
       const sortedSelfData: ImpactTableRowsValues[] = Array.from(

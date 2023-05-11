@@ -66,6 +66,11 @@ export class BaseImpactService {
         );
     if (impactTableDto.supplierIds)
       impactTableDto.supplierIds =
+        // TODO: check if provided ID is t1supplier or producer. if its t1, exclude all t1 and include children
+        //       if its a producer, include itself and all the children
+
+        // TODO: We might not need any filtering as we will only filter sourcing locations by SL.ProducerID, only filtering by supplierID
+
         await this.suppliersService.getSuppliersDescendants(
           impactTableDto.supplierIds,
         );
@@ -357,12 +362,13 @@ export class BaseImpactService {
         entityMap = new Map();
         indicatorEntityMap.set(impactTableData.indicatorId, entityMap);
       }
-
+      // TODO: GET ID INSTEAD OF NAME
       let yearMap: Map<number, RowsValues> | undefined = entityMap.get(
         impactTableData.name,
       );
       if (!yearMap) {
         yearMap = new Map();
+        // TODO: SET ID INSTEAD OF NAME
         entityMap.set(impactTableData.name, yearMap);
       }
 

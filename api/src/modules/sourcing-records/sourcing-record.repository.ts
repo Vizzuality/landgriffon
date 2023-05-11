@@ -90,6 +90,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
   async getDataForImpactTable(
     getImpactTaleDto: GetImpactTableDto,
   ): Promise<ImpactTableData[]> {
+    // TODO: GROUP BY ID to avoid merging entities / producer with same name (Cargil.Moll, Unknown.Moll)
     const impactDataQueryBuilder: SelectQueryBuilder<SourcingRecord> =
       this.createBasicSelectQuery(getImpactTaleDto);
 
@@ -185,6 +186,8 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
           'indicator.id = indicatorRecord.indicatorId',
         );
 
+    // TODO: SELECT IDS OF ALL ENTITIES ALONG WITH THE NAME, TO BE USED IN THE AGGREGATION ALGORITHM LATER ON
+
     switch (impactDataDto.groupBy) {
       case GROUP_BY_VALUES.MATERIAL:
         basicSelectQuery.leftJoin(
@@ -252,6 +255,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       );
     }
     if (impactDataDto.supplierIds) {
+      // TODO: filter only by producer, we want only to retrieve impact associated to producers
       selectQueryBuilder.andWhere(
         new Brackets((qb: WhereExpressionBuilder) => {
           qb.where('sourcingLocation.t1SupplierId IN (:...supplierIds)', {

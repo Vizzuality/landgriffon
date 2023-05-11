@@ -32,7 +32,7 @@ export class TasksService extends AppBaseService<
   get serializerConfig(): JSONAPISerializerConfig<Task> {
     return {
       attributes: [
-        'timestamp',
+        'createdAt',
         'topic',
         'status',
         'data',

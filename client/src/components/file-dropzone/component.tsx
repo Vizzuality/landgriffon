@@ -1,5 +1,5 @@
 import { useDropzone } from 'react-dropzone';
-import { useLottie } from 'lottie-react';
+import Lottie from 'lottie-react';
 import classNames from 'classnames';
 
 import uploaderAnimation from './icon-animation.json';
@@ -21,7 +21,6 @@ const FileDropZone: React.FC<FileDropZoneProps> = ({ isUploading, ...dropZoneOpt
     ...dropZoneOptions,
   };
   const { getRootProps, getInputProps, isDragActive } = useDropzone(options);
-  const { View } = useLottie({ animationData: uploaderAnimation, loop: true, autoplay: true });
 
   return (
     <div
@@ -37,7 +36,13 @@ const FileDropZone: React.FC<FileDropZoneProps> = ({ isUploading, ...dropZoneOpt
       <input {...getInputProps()} />
 
       <div className="space-y-1">
-        <div className="flex justify-center w-full mb-4">{isUploading ? View : <UploadIcon />}</div>
+        <div className="flex justify-center w-full mb-4">
+          {isUploading ? (
+            <Lottie animationData={uploaderAnimation} loop autoplay />
+          ) : (
+            <UploadIcon />
+          )}
+        </div>
 
         {!isUploading && (
           <>

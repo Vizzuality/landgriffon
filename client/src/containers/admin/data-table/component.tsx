@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { merge } from 'lodash-es';
 import { PlusIcon, DownloadIcon } from '@heroicons/react/solid';
 // import { useDebounceCallback } from '@react-hook/debounce'; FEATURE DISABLED
-import { ExclamationIcon } from '@heroicons/react/outline';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/router';
@@ -11,6 +10,7 @@ import useModal from 'hooks/modals';
 import { useSourcingLocations, useSourcingLocationsMaterials } from 'hooks/sourcing-locations';
 import DownloadMaterialsDataButton from 'containers/admin/download-materials-data-button';
 // import YearsRangeFilter, { useYearsRange } from 'containers/filters/years-range'; FEATURE DISABLED
+import DataUploadError from 'containers/admin/data-upload-error';
 import DataUploader from 'containers/uploader';
 import Button, { Anchor } from 'components/button';
 // import Search from 'components/search'; FEATURE DISABLED
@@ -225,62 +225,7 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
           </Button>
         </div>
 
-        {task?.status === 'failed' && task?.errors.length > 0 && (
-          <div className="p-6 mt-6 text-sm text-left rounded-md bg-white border border-red-400">
-            <div className="flex space-x-6 items-center">
-              <div className="flex-none">
-                <div className="flex items-center justify-center rounded-full bg-red-50 w-[72px] h-[72px]">
-                  <ExclamationIcon className="w-8 h-8 text-red-400" />
-                </div>
-              </div>
-              <div className="space-y-1.5">
-                <h3>Upload failed</h3>
-                <p className="text-gray-500">
-                  Sorry, we couldn&apos;t upload your latest changes made on{' '}
-                  {format(new Date(sourcingLocations.data[0].updatedAt), 'MMM 4, yyyy HH:mm z')}. We
-                  have <strong className="text-gray-900">reverted to the previous version</strong>{' '}
-                  to avoid data loss. Please{' '}
-                  <strong className="text-gray-900">
-                    download your file to see the {task.errors.length} error
-                    {task.errors.length > 1 && 's'}
-                  </strong>
-                  , correct them and try uploading again.
-                </p>
-              </div>
-              <div className="flex-none">
-                <Button variant="white">Download</Button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {task?.status === 'completed' && task?.errors.length > 0 && (
-          <div className="p-6 mt-6 text-sm text-left rounded-md bg-white border border-orange-500">
-            <div className="flex space-x-6 items-center">
-              <div className="flex-none">
-                <div className="flex items-center justify-center rounded-full bg-orange-50 w-[72px] h-[72px]">
-                  <ExclamationIcon className="w-8 h-8 text-orange-500" />
-                </div>
-              </div>
-              <div className="space-y-1.5">
-                <h3>Upload failed</h3>
-                <p className="text-gray-500">
-                  We have successfully uploaded your file, but we have detected{' '}
-                  <strong className="text-gray-900">
-                    {task.errors.length} error{task.errors.length > 1 && 's'}
-                  </strong>
-                  . To ensure accurate results, we recommend that you correct the errors before
-                  proceeding. Please{' '}
-                  <strong className="text-gray-900">download your file to see the errors</strong>,
-                  correct them and try
-                </p>
-              </div>
-              <div className="flex-none">
-                <Button variant="white">Download</Button>
-              </div>
-            </div>
-          </div>
-        )}
+        <DataUploadError task={task} />
 
         {!isSourcingLocationsLoading && (
           <div className="flex justify-end w-full">
@@ -344,7 +289,8 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
               Upload a new file will replace all the current data.
             </p>
             <div className="mt-10">
-              <DataUploader variant="inline" />
+              <DataUploader variant="inline" isProcessing={task?.status === 'processing'} />
+              {task?.status !== 'processing' && <DataUploadError task={task} />}
             </div>
           </div>
 

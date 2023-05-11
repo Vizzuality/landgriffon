@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 import classNames from 'classnames';
 
@@ -26,6 +26,7 @@ const DataUploader: React.FC<DataUploaderProps> = ({
   variant = 'default',
   isProcessing = false,
 }) => {
+  const [isFetchedAndSuccess, setIsFetchedAndSucess] = useState(false);
   const uploadDataSource = useUploadDataSource();
 
   const handleOnDrop: FileDropZoneProps['onDrop'] = useCallback(
@@ -37,6 +38,7 @@ const DataUploader: React.FC<DataUploaderProps> = ({
       });
 
       uploadDataSource.mutate(formData, {
+        onSuccess: () => setIsFetchedAndSucess(true),
         onError: ({ response }) => {
           const errors = response?.data?.errors;
           if (errors && !!errors.length) {
@@ -60,10 +62,10 @@ const DataUploader: React.FC<DataUploaderProps> = ({
     });
   }, []);
 
-  const isUploadingOrProcessing = uploadDataSource.isLoading || isProcessing;
+  const isUploadingOrProcessing = uploadDataSource.isLoading || isProcessing || isFetchedAndSuccess;
 
   return (
-    <div className="relative w-[640px]">
+    <div className="relative min-w-[640px] w-full">
       <div
         className={classNames('relative z-10 bg-white rounded-xl', {
           'p-4 shadow-lg': variant === 'default',
@@ -73,7 +75,7 @@ const DataUploader: React.FC<DataUploaderProps> = ({
           {...uploadOptions}
           onDrop={handleOnDrop}
           onDropRejected={handleFileRejected}
-          disabled={isUploadingOrProcessing}
+          disabled={isUploadingOrProcessing || isFetchedAndSuccess}
           isUploading={isUploadingOrProcessing}
         />
       </div>
@@ -84,7 +86,10 @@ const DataUploader: React.FC<DataUploaderProps> = ({
             <div className="w-full h-[4px] rounded bg-gradient-to-r from-[#5FCFF9] via-[#42A56A] to-[#F5CA7D]" />
             <p className="mt-1 text-xs text-left text-gray-500">
               {uploadDataSource.isLoading && 'Uploading file...'}
-              {isProcessing && 'Processing file...'}
+              {isFetchedAndSuccess && isProcessing && 'Processing file...'}
+              {isFetchedAndSuccess &&
+                !isProcessing &&
+                'File uploaded successfully! Starting to process the data...'}
             </p>
           </div>
         </div>

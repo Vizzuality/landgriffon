@@ -238,51 +238,32 @@ const AnalysisTable = () => {
 
   const [tableData, setTableData] = useState<ImpactRowType<ComparisonMode>[]>([]);
 
-  const [expandedName, setExpandedName] = useState<string>(
-    indicatorId === 'all' ? null : initialTableData[0]?.name,
-  );
-
-  useEffect(() => {
-    if (indicatorId === 'all') {
-      setExpandedName(null);
-    }
-  }, [indicatorId]);
-
   useEffect(() => {
     if (indicatorId !== 'all') {
-      // A single indicator is selected so we force its expanction
+      // A single indicator is selected so we force its expansion
       setTableData(initialTableData[0]?.children);
-      setExpandedName(initialTableData[0]?.name);
     } else {
-      const expandedData =
-        expandedName && initialTableData.find((data) => data.name === expandedName)?.children;
-      if (expandedData?.length) {
-        // All indicators are selected and one indicator is expanded
-        setTableData(expandedData);
-      } else {
-        // All indicators are selected and no indicator is expanded
-        setTableData(initialTableData);
-      }
+      // All indicators are selected and no indicator is expanded
+      setTableData(initialTableData);
     }
     setExpandedState(null);
     setRowSelectionState({});
-  }, [initialTableData]);
+  }, [indicatorId, initialTableData]);
 
   const setIndicatorParam = useIndicatorParam();
 
   const handleExitExpanded = useCallback(() => {
-    setExpandedName(null);
     setExpandedState({});
-    if (indicatorId !== 'all') {
-      setIndicatorParam('all');
-    }
-  }, [indicatorId, setIndicatorParam]);
+    setIndicatorParam('all');
+  }, [setIndicatorParam]);
 
-  const handleExpandRow = (children: any[], name: string) => {
-    setTableData(children);
-    setExpandedName(name);
-    setExpandedState({});
-  };
+  const handleExpandRow = useCallback(
+    (indicatorId: string) => {
+      setExpandedState({});
+      setIndicatorParam(indicatorId);
+    },
+    [setIndicatorParam],
+  );
 
   const isComparison = useIsComparison(tableData);
   const isScenarioComparison = useIsScenarioComparison(tableData);
@@ -356,6 +337,11 @@ const AnalysisTable = () => {
     [isComparison, isScenarioComparison, valueIsScenarioComparison],
   );
 
+  const expandedName = useMemo(
+    () => (indicatorId === 'all' ? null : indicators.find((i) => i.id === indicatorId)?.name),
+    [indicatorId, indicators],
+  );
+
   const baseColumns = useMemo(
     <Mode extends ComparisonMode>(): ColumnDefinition<ImpactRowType<Mode>>[] => [
       {
@@ -364,12 +350,14 @@ const AnalysisTable = () => {
           <div>
             {!!expandedName ? (
               <Button
+                className="pt-1 pb-1 pr-0 pl-0 border-0 bg-transparent"
                 variant="transparent"
-                className="px-0 py-0 border-0 bg-transparent text-gray-900 text-sm font-semibold"
                 onClick={handleExitExpanded}
-                icon={<ArrowLeftIcon className="mr-3.5" />}
               >
-                {expandedName}
+                <div className="flex text-gray-900 text-sm text-start font-semibold max-w-[200px] whitespace-normal">
+                  <ArrowLeftIcon className="mr-3.5 w-4 h-4" />
+                  {expandedName}
+                </div>
               </Button>
             ) : (
               <span className="text-sm block text-gray-400 normal-case py-[0.70rem]">
@@ -382,6 +370,11 @@ const AnalysisTable = () => {
         isSticky: 'left',
         size: 260,
         cell: ({ row: { original, depth } }) => {
+          const name =
+            isParentRow(original) &&
+            depth === 0 &&
+            indicators.find((i) => i.id === original.indicatorId)?.name;
+
           return (
             <div className="py-5 flex gap-4">
               {!expandedName && (
@@ -392,16 +385,16 @@ const AnalysisTable = () => {
                   original.name
                 ) : (
                   <div className="block font-semibold">
-                    {original.name}
+                    {name || original.name}
                     {isParentRow(original) && depth === 0 && <> ({original.metadata.unit})</>}
                   </div>
                 )}
 
-                {!expandedName && (
+                {!expandedName && isParentRow(original) && (
                   <Button
                     variant="white"
                     className="mt-4"
-                    onClick={() => handleExpandRow(original.children, original.name)}
+                    onClick={() => handleExpandRow(original.indicatorId)}
                   >
                     View detail
                   </Button>
@@ -436,7 +429,7 @@ const AnalysisTable = () => {
       },
       ...years.map((year) => comparisonColumn<Mode>(year as number)),
     ],
-    [years, expandedName, handleExitExpanded, comparisonColumn],
+    [years, expandedName, handleExitExpanded, handleExpandRow, comparisonColumn],
   );
 
   const tableProps = useMemo(
@@ -455,23 +448,20 @@ const AnalysisTable = () => {
       onPaginationChange: setPaginationState,
       onExpandedChange: setExpandedState,
       isLoading: isFetching,
-      enableExpanding: !!expandedName,
+      enableExpanding: indicatorId !== 'all',
       data: (tableData as ImpactRowType<Mode>[]) || [],
       columns: baseColumns as ColumnDefinition<ImpactRowType<Mode>>[],
       handleExpandedChange,
       firstProjectedYear,
     }),
     [
-      baseColumns,
-      expandedName,
-      handleExpandedChange,
-      isFetching,
-      metadata.page,
-      metadata.size,
-      metadata.totalItems,
-      metadata.totalPages,
-      tableData,
+      metadata,
       tableState,
+      isFetching,
+      indicatorId,
+      tableData,
+      baseColumns,
+      handleExpandedChange,
       firstProjectedYear,
     ],
   );

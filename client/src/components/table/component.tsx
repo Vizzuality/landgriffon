@@ -156,8 +156,16 @@ const ComposedTable = <T,>({
   }, [isSidebarCollapsed]);
 
   useEffect(() => {
-    const width = containerRef.current?.getBoundingClientRect()?.width || 0;
-    setWidth(width);
+    const changeWidth = () => {
+      const width = containerRef.current?.getBoundingClientRect()?.width || 0;
+      setWidth(width);
+    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', changeWidth);
+    }
+    return () => {
+      window.removeEventListener('resize', changeWidth);
+    };
   }, []);
 
   return (
@@ -224,7 +232,16 @@ const ComposedTable = <T,>({
       </div>
 
       <div className="h-12 w-full">
-        <div style={{ width }} className="z-10 w-[inherit] fixed py-4 bottom-0 bg-gray-100">
+        <div
+          style={{ width }}
+          className={classNames(
+            'z-10 w-[inherit] fixed py-4 bottom-0 bg-gray-100 transition-all ease-in-out duration-100',
+            {
+              'opacity-0': !options.enableExpanding,
+              'opacity-100': !!options.enableExpanding,
+            },
+          )}
+        >
           <Pagination
             className="justify-between"
             availableSizes={pagination.pageSizes}

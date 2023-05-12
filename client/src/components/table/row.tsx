@@ -37,7 +37,8 @@ const TableRow = <T,>({ row, theme, isLast, firstProjectedYear, ...props }: Tabl
                 'bg-white group-hover:border-l-gray-100': theme === 'default',
                 'group-odd:bg-white group-even:bg-gray-50': theme === 'striped',
                 'sticky z-[1]': !!cell.column.columnDef.meta?.isSticky,
-                'shadow-lg': !!cell.column.columnDef.meta?.isSticky,
+                'shadow-[4px_1px_10px_-2px] shadow-gray-100':
+                  !!cell.column.columnDef.meta?.isSticky,
                 'left-0': cell.column.columnDef.meta?.isSticky === 'left',
                 'right-0': cell.column.columnDef.meta?.isSticky === 'right',
                 'border-r-2 border-r-gray-200': isProjectedFirstYear,
@@ -81,12 +82,12 @@ export const TableHeaderRow = <T,>({
         return (
           <th
             className={classNames('sticky z-[2] top-0 bg-gray-50', {
-              'left-0 z-[3]': sticky === 'left',
+              'left-0 z-[3] shadow-[4px_1px_10px_-2px_rgba(21,24,31,0.08)]': sticky === 'left',
               'right-0 z-[3]': sticky === 'right',
               'rounded-tr-lg': isLastColumn,
               'rounded-tl-lg': isFirstColumn,
               'border-r border-r-gray-200':
-                headerTheme === 'default' && !isLastColumn && !isProjectedFirstYear,
+                !sticky && headerTheme === 'default' && !isLastColumn && !isProjectedFirstYear,
               'border-r-2 border-dashed': isProjectedFirstYear,
             })}
             key={header.id}

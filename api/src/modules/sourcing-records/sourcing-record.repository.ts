@@ -283,25 +283,31 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
     switch (impactDataDto.groupBy) {
       case GROUP_BY_VALUES.MATERIAL:
         selectQueryBuilder
+          .addSelect('material.id', 'entityId')
           .addSelect('material.name', 'name')
-          .groupBy('material.name');
+          .groupBy('material.id');
         break;
       case GROUP_BY_VALUES.REGION:
         selectQueryBuilder
+          .addSelect('adminRegion.id', 'entityId')
           .addSelect('adminRegion.name', 'name')
-          .groupBy('adminRegion.name');
+          .groupBy('adminRegion.id');
         break;
       case GROUP_BY_VALUES.SUPPLIER:
         selectQueryBuilder
+          .addSelect('supplier.id', 'entityId')
           .addSelect('supplier.name', 'name')
           //.andWhere('supplier.name IS NOT NULL')
-          .groupBy('supplier.name');
+          .groupBy('supplier.id');
         break;
       case GROUP_BY_VALUES.BUSINESS_UNIT:
         selectQueryBuilder
+          .addSelect('businessUnit.id', 'entityId')
           .addSelect('businessUnit.name', 'name')
-          .groupBy('businessUnit.name');
+          .groupBy('businessUnit.id');
         break;
+
+      // TODO: WHAT TO DO IN THIS CASE?? IT HAS NO ID
       case GROUP_BY_VALUES.LOCATION_TYPE:
         selectQueryBuilder
           .addSelect('sourcingLocation.locationType', 'name')

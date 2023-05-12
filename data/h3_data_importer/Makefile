@@ -23,13 +23,13 @@ export AWS_ACCESS_KEY_ID = $(DATA_S3_ACCESS_KEY)
 export AWS_SECRET_ACCESS_KEY = $(DATA_S3_SECRET_KEY)
 
 all:
-@aws s3 ls $(AWS_S3_BUCKET_URL) 2>&1 > /dev/null; \
-if [ $$? -ne 0 ]; \
-then \
-	echo "Error: Cannot access the expected AWS S3 bucket."; \
-	false; \
-fi
-@echo "AWS S3 bucket access confirmed, proceeding with import..."
+	@aws s3 ls $(AWS_S3_BUCKET_URL) 2>&1 > /dev/null; \
+	if [ $$? -ne 0 ]; \
+	then \
+		echo "Error: Cannot access the expected AWS S3 bucket."; \
+		false; \
+	fi
+	@echo "AWS S3 bucket access confirmed, proceeding with import..."
 	make clean
 	make -j 2 crop indicators
 
@@ -137,7 +137,7 @@ extract-mapspam-crop-production: download-mapspam-crop-production
 		-C $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_GROU_A.tif \
 		-D $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_OOIL_A.tif \
 		-E $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_SUNF_A.tif \
-		-F $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_SUNF_A.tif \
+		-F $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_CNUT_A.tif \
 		-G $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_RAPE_A.tif \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_oilpsoybgrouooilsunfcnutrape_A.tif
 

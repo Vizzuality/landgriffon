@@ -207,7 +207,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
         basicSelectQuery.leftJoin(
           Supplier,
           'supplier',
-          'sourcingLocation.producerId = supplier.id or sourcingLocation.t1SupplierId = supplier.id',
+          'sourcingLocation.producerId = supplier.id',
         );
         break;
       case GROUP_BY_VALUES.BUSINESS_UNIT:

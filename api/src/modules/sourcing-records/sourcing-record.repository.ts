@@ -37,6 +37,7 @@ export class ImpactTableData {
   year: number;
   indicatorId: string;
   indicatorShortName: string;
+  id: string;
   name: string;
   tonnes: string;
   impact: number;
@@ -283,26 +284,26 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
     switch (impactDataDto.groupBy) {
       case GROUP_BY_VALUES.MATERIAL:
         selectQueryBuilder
-          .addSelect('material.id', 'entityId')
+          .addSelect('material.id', 'id')
           .addSelect('material.name', 'name')
           .groupBy('material.id');
         break;
       case GROUP_BY_VALUES.REGION:
         selectQueryBuilder
-          .addSelect('adminRegion.id', 'entityId')
+          .addSelect('adminRegion.id', 'id')
           .addSelect('adminRegion.name', 'name')
           .groupBy('adminRegion.id');
         break;
       case GROUP_BY_VALUES.SUPPLIER:
         selectQueryBuilder
-          .addSelect('supplier.id', 'entityId')
+          .addSelect('supplier.id', 'id')
           .addSelect('supplier.name', 'name')
           //.andWhere('supplier.name IS NOT NULL')
           .groupBy('supplier.id');
         break;
       case GROUP_BY_VALUES.BUSINESS_UNIT:
         selectQueryBuilder
-          .addSelect('businessUnit.id', 'entityId')
+          .addSelect('businessUnit.id', 'id')
           .addSelect('businessUnit.name', 'name')
           .groupBy('businessUnit.id');
         break;

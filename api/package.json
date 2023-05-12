@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
+    "start": "yarn typeorm schema:sync && nest start",
     "start:watch": "yarn typeorm schema:sync && nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "yarn typeorm schema:sync && NODE_PATH=dist/src node dist/src/main",

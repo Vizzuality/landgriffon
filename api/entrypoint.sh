@@ -3,8 +3,6 @@ set -e
 
 case "$1" in
     develop)
-        echo "Synchronizing database..."
-        exec yarn typeorm schema:sync
         echo "Running api application in development mode"
         exec yarn start
         ;;

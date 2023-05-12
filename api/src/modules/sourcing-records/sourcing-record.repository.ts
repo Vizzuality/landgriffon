@@ -257,13 +257,10 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
     if (impactDataDto.supplierIds) {
       // TODO: filter only by producer, we want only to retrieve impact associated to producers
       selectQueryBuilder.andWhere(
-        new Brackets((qb: WhereExpressionBuilder) => {
-          qb.where('sourcingLocation.t1SupplierId IN (:...supplierIds)', {
-            supplierIds: impactDataDto.supplierIds,
-          }).orWhere('sourcingLocation.producerId IN (:...supplierIds)', {
-            supplierIds: impactDataDto.supplierIds,
-          });
-        }),
+        'sourcingLocation.producerId IN (:...supplierIds)',
+        {
+          supplierIds: impactDataDto.supplierIds,
+        },
       );
     }
 

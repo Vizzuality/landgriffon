@@ -76,21 +76,11 @@ export class ImpactService extends BaseImpactService {
       impactTableDto,
     );
 
-    // TODO: Move pagination after the table is calculated.
-    const paginatedEntities: PaginatedEntitiesDto =
-      ImpactService.paginateRootEntities(entities, fetchSpecification);
-
     // TODO: this updates the filtering Ids accortding to the resultant entities of the pagination
-    this.updateGroupByCriteriaFromEntityTree(
-      impactTableDto,
-      paginatedEntities.entities,
-    );
+    this.updateGroupByCriteriaFromEntityTree(impactTableDto, entities);
 
     let dataForImpactTable: ImpactTableData[] =
-      await this.getDataForImpactTable(
-        impactTableDto,
-        paginatedEntities.entities,
-      );
+      await this.getDataForImpactTable(impactTableDto, entities);
 
     if (impactTableDto.scenarioId) {
       dataForImpactTable =
@@ -101,7 +91,7 @@ export class ImpactService extends BaseImpactService {
       impactTableDto,
       indicators,
       dataForImpactTable,
-      paginatedEntities.entities,
+      entities,
     );
 
     this.sortEntitiesByImpactOfYear(
@@ -109,8 +99,12 @@ export class ImpactService extends BaseImpactService {
       impactTableDto.sortingYear,
       impactTableDto.sortingOrder,
     );
+    const paginatedTable: any = ImpactService.paginateTable(
+      impactTable,
+      fetchSpecification,
+    );
 
-    return { data: impactTable, metadata: paginatedEntities.metadata };
+    return paginatedTable;
   }
 
   /**

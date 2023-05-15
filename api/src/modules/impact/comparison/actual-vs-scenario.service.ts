@@ -72,16 +72,10 @@ export class ActualVsScenarioImpactService extends BaseImpactService {
     // given ids and add children and parent ids to them to get full data for aggregations
     const entities: ImpactTableEntityType[] = await this.getEntityTree(dto);
 
-    const paginatedEntities: PaginatedEntitiesDto =
-      ActualVsScenarioImpactService.paginateRootEntities(
-        entities,
-        fetchSpecification,
-      );
-
-    this.updateGroupByCriteriaFromEntityTree(dto, paginatedEntities.entities);
+    this.updateGroupByCriteriaFromEntityTree(dto, entities);
 
     const dataForActualVsScenarioImpactTable: ImpactTableData[] =
-      await this.getDataForImpactTable(dto, paginatedEntities.entities);
+      await this.getDataForImpactTable(dto, entities);
 
     const processedDataForComparison: ActualVsScenarioImpactTableData[] =
       ActualVsScenarioImpactService.processDataForComparison(
@@ -93,7 +87,7 @@ export class ActualVsScenarioImpactService extends BaseImpactService {
         dto,
         indicators,
         processedDataForComparison,
-        paginatedEntities.entities,
+        entities,
       );
 
     this.sortEntitiesByImpactOfYear(
@@ -102,7 +96,12 @@ export class ActualVsScenarioImpactService extends BaseImpactService {
       dto.sortingOrder,
     );
 
-    return { data: impactTable, metadata: paginatedEntities.metadata };
+    const paginatedTable: any = BaseImpactService.paginateTable(
+      impactTable,
+      fetchSpecification,
+    );
+
+    return paginatedTable;
   }
 
   private buildActualVsScenarioImpactTable(

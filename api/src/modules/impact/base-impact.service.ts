@@ -303,6 +303,46 @@ export class BaseImpactService {
     };
   }
 
+  protected static paginateTable(
+    data: any,
+    fetchSpecification: FetchSpecification,
+  ): any {
+    if (fetchSpecification.disablePagination) {
+      return {
+        data,
+        metadata: undefined,
+      };
+    }
+
+    const pageSize: number =
+      fetchSpecification?.pageSize ?? DEFAULT_PAGINATION.pageSize ?? 25;
+    const page: number =
+      fetchSpecification?.pageNumber ?? DEFAULT_PAGINATION.pageNumber ?? 1;
+
+    // Make a shallow copy of the data to avoid mutating the original
+    const paginatedData: any = { ...data };
+
+    const totalItems: number = paginatedData.impactTable[0].rows.length;
+    const totalPages: number = Math.ceil(totalItems / pageSize);
+
+    // For each indicator, paginate its rows array
+    for (let i: number = 0; i < paginatedData.impactTable.length; i++) {
+      paginatedData.impactTable[i].rows = paginatedData.impactTable[
+        i
+      ].rows.slice((page - 1) * pageSize, page * pageSize);
+    }
+
+    return {
+      data: paginatedData,
+      metadata: new PaginationMeta({
+        totalPages,
+        totalItems,
+        size: pageSize,
+        page,
+      }),
+    };
+  }
+
   /**
    * Converts an array of flat Impact Table Data (either for normal, Actual Vs Scenario or Scenario vs Scenario)
    * to a pseudo-tree structure of corresponding RowsValues Instance  based on maps for easier/faster access, like this

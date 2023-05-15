@@ -19,7 +19,6 @@ import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { ImpactTableEntityType } from 'types/impact-table-entity.type';
 import { FetchSpecification } from 'nestjs-base-service';
-import { PaginatedEntitiesDto } from 'modules/impact/dto/paginated-entities.dto';
 import {
   ScenarioVsScenarioImpactTable,
   ScenarioVsScenarioImpactTableDataByIndicator,
@@ -74,13 +73,7 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
 
     const entities: ImpactTableEntityType[] = await this.getEntityTree(dto);
 
-    const paginatedEntities: PaginatedEntitiesDto =
-      ScenarioVsScenarioImpactService.paginateRootEntities(
-        entities,
-        fetchSpecification,
-      );
-
-    this.updateGroupByCriteriaFromEntityTree(dto, paginatedEntities.entities);
+    this.updateGroupByCriteriaFromEntityTree(dto, entities);
 
     // Getting and proceesing impact data separetely for each scenario for further merge
 
@@ -97,16 +90,10 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
     };
 
     const dataForScenarioOneAndActual: ImpactTableData[] =
-      await this.getDataForImpactTable(
-        scenarioOneDto,
-        paginatedEntities.entities,
-      );
+      await this.getDataForImpactTable(scenarioOneDto, entities);
 
     const dataForScenarioTwoAndActual: ImpactTableData[] =
-      await this.getDataForImpactTable(
-        scenarioTwoDto,
-        paginatedEntities.entities,
-      );
+      await this.getDataForImpactTable(scenarioTwoDto, entities);
     const processedScenarioVsScenarioData: ScenarioVsScenarioImpactTableData[] =
       ScenarioVsScenarioImpactService.processTwoScenariosData(
         dataForScenarioOneAndActual,
@@ -116,7 +103,7 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
       dto,
       indicators,
       processedScenarioVsScenarioData,
-      paginatedEntities.entities,
+      entities,
     );
 
     this.sortEntitiesByImpactOfYear(
@@ -125,10 +112,12 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
       dto.sortingOrder,
     );
 
-    return {
-      data: impactTable,
-      metadata: paginatedEntities.metadata,
-    };
+    const paginatedTable: any = BaseImpactService.paginateTable(
+      impactTable,
+      fetchSpecification,
+    );
+
+    return paginatedTable;
   }
 
   private buildImpactTable(

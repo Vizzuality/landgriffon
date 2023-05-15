@@ -21,7 +21,7 @@ def check_file_exists_in_s3(cog_name: str):
     )
     s3 = aws_session.client("s3")
     # TODO: get bucket name from env? hardcoded? Alex help here 🙏
-    bucket = os.getenv("S3_BUCKET_NAME")
+    bucket = os.getenv("S3_BUCKET_NAME", "")
     try:
         s3.head_object(Bucket=bucket, Key=str(Path(os.getenv("S3_COG_PATH")) / cog_name))
     except ClientError as e:

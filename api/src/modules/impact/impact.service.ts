@@ -356,7 +356,7 @@ export class ImpactService extends BaseImpactService {
    * aggregated data of parent entity and all its children
    */
   private populateValuesRecursively(
-    entity: ImpactTableRows,
+    entity: any,
     entityMap: Map<string, Map<number, ImpactTableRowsValues>>,
     rangeOfYears: number[],
   ): ImpactTableRowsValues[] {
@@ -373,7 +373,7 @@ export class ImpactService extends BaseImpactService {
     const valuesToAggregate: ImpactTableRowsValues[][] = [];
     const selfData: Map<number, ImpactTableRowsValues> | undefined =
       // TODO: USE THE ID TO AVOID MERGING VALUES OF ENTITIES WITH SAME NAME
-      entityMap.get(entity.name);
+      entityMap.get(entity.id);
     if (selfData) {
       const sortedSelfData: ImpactTableRowsValues[] = Array.from(
         selfData.values(),
@@ -402,6 +402,7 @@ export class ImpactService extends BaseImpactService {
   ): ImpactTableRows[] {
     return entities.map((item: ImpactTableEntityType) => {
       return {
+        id: item.id,
         name: item.name || '',
         children:
           item.children.length > 0

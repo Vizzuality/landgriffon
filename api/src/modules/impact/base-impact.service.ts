@@ -364,12 +364,12 @@ export class BaseImpactService {
       }
       // TODO: GET ID INSTEAD OF NAME
       let yearMap: Map<number, RowsValues> | undefined = entityMap.get(
-        impactTableData.name,
+        impactTableData.id,
       );
       if (!yearMap) {
         yearMap = new Map();
         // TODO: SET ID INSTEAD OF NAME
-        entityMap.set(impactTableData.name, yearMap);
+        entityMap.set(impactTableData.id, yearMap);
       }
 
       yearMap.set(impactTableData.year, dataToRowsValuesFunc(impactTableData));

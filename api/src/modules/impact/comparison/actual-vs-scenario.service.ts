@@ -306,7 +306,7 @@ export class ActualVsScenarioImpactService extends BaseImpactService {
     const valuesToAggregate: ActualVsScenarioImpactTableRowsValues[][] = [];
     const selfData:
       | Map<number, ActualVsScenarioImpactTableRowsValues>
-      | undefined = entityDataMap.get(entity.name);
+      | undefined = entityDataMap.get(entity.id + entity.name);
     if (selfData) {
       const sortedSelfData: ActualVsScenarioImpactTableRowsValues[] =
         Array.from(selfData.values()).sort(

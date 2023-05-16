@@ -785,7 +785,7 @@ export class H3DataRepository extends Repository<H3Data> {
     // If map type is Impact Map, sum up values from previous subquery
     if (mapType === IMPACT_MAP_TYPE.IMPACT_MAP) {
       impactViewAggregationQueryBuilder.addSelect(
-        'round(sum(impactview.value * reduced.scaled_value)::numeric, 2)',
+        'round(sum(impactview.value * reduced.scaled_value)::numeric, 4)',
         'v',
       );
     }

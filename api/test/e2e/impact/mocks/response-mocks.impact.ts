@@ -3,6 +3,7 @@ import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.ent
 export const groupByMaterialResponseData = {
   rows: [
     {
+      id: expect.any(String),
       name: 'Fake Material 1',
       values: [
         {
@@ -29,6 +30,7 @@ export const groupByMaterialResponseData = {
       children: [],
     },
     {
+      id: expect.any(String),
       name: 'Fake Material 2',
       values: [
         {
@@ -78,6 +80,7 @@ export const groupByMaterialResponseData = {
 export const groupByMaterialNestedResponseData = {
   rows: [
     {
+      id: expect.any(String),
       name: 'Fake Material Parent',
       values: [
         {
@@ -103,6 +106,7 @@ export const groupByMaterialNestedResponseData = {
       ],
       children: [
         {
+          id: expect.any(String),
           name: 'Fake Material Child',
           values: [
             {
@@ -128,6 +132,7 @@ export const groupByMaterialNestedResponseData = {
           ],
           children: [
             {
+              id: expect.any(String),
               name: 'Fake Material Grandchild',
               values: [
                 {
@@ -181,6 +186,7 @@ export const groupByMaterialNestedResponseData = {
 export const groupByMaterialNestedResponseDataForGrandchild = {
   rows: [
     {
+      id: expect.any(String),
       name: 'Fake Material Parent',
       values: [
         {
@@ -206,6 +212,7 @@ export const groupByMaterialNestedResponseDataForGrandchild = {
       ],
       children: [
         {
+          id: expect.any(String),
           name: 'Fake Material Child',
           values: [
             {
@@ -231,6 +238,7 @@ export const groupByMaterialNestedResponseDataForGrandchild = {
           ],
           children: [
             {
+              id: expect.any(String),
               name: 'Fake Material Grandchild',
               values: [
                 {
@@ -284,6 +292,7 @@ export const groupByMaterialNestedResponseDataForGrandchild = {
 export const groupByOriginResponseData = {
   rows: [
     {
+      id: expect.any(String),
       name: 'Fake AdminRegion 1',
       values: [
         { isProjected: false, value: 600, year: 2010 },
@@ -294,6 +303,7 @@ export const groupByOriginResponseData = {
       children: [],
     },
     {
+      id: expect.any(String),
       name: 'Fake AdminRegion 2',
       values: [
         { isProjected: false, value: 500, year: 2010 },
@@ -327,6 +337,7 @@ export const groupByOriginResponseData = {
 export const groupBySupplierResponseData = {
   rows: [
     {
+      id: expect.any(String),
       name: 'Fake Supplier 1',
       values: [
         { isProjected: false, value: 100, year: 2010 },
@@ -337,6 +348,7 @@ export const groupBySupplierResponseData = {
       children: [],
     },
     {
+      id: expect.any(String),
       name: 'Fake Supplier 2',
       values: [
         { isProjected: false, value: 300, year: 2010 },
@@ -358,6 +370,7 @@ export const groupBySupplierResponseData = {
 export const groupByBusinessUnitResponseData = {
   rows: [
     {
+      id: expect.any(String),
       name: 'Fake BusinessUnit 1',
       values: [
         { isProjected: false, value: 100, year: 2010 },
@@ -368,6 +381,7 @@ export const groupByBusinessUnitResponseData = {
       children: [],
     },
     {
+      id: expect.any(String),
       name: 'Fake BusinessUnit 2',
       values: [
         { isProjected: false, value: 300, year: 2010 },
@@ -389,6 +403,7 @@ export const groupByBusinessUnitResponseData = {
 export const groupByLocationTypeResponseData = {
   rows: [
     {
+      id: expect.any(String),
       name: `${LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT}`,
       children: [],
       values: [
@@ -415,6 +430,7 @@ export const groupByLocationTypeResponseData = {
       ],
     },
     {
+      id: expect.any(String),
       name: `${LOCATION_TYPES.COUNTRY_OF_PRODUCTION}`,
       children: [],
       values: [
@@ -452,6 +468,7 @@ export const groupByLocationTypeResponseData = {
 export const filteredByLocationTypeResponseData = {
   rows: [
     {
+      id: expect.any(String),
       name: 'Fake Material',
       children: [],
       values: [
@@ -489,6 +506,7 @@ export const filteredByLocationTypeResponseData = {
 export const filteredByLocationTypeResponseData2 = {
   rows: [
     {
+      id: expect.any(String),
       name: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
       children: [],
       values: [
@@ -531,9 +549,11 @@ export const impactTableWithScenario = {
       groupBy: 'material',
       rows: [
         {
+          id: expect.any(String),
           name: 'Textile',
           children: [
             {
+              id: expect.any(String),
               name: 'Cotton',
               children: [],
               values: [
@@ -570,6 +590,7 @@ export const impactTableWithScenario = {
               ],
             },
             {
+              id: expect.any(String),
               name: 'Linen',
               children: [],
               values: [
@@ -606,6 +627,7 @@ export const impactTableWithScenario = {
               ],
             },
             {
+              id: expect.any(String),
               name: 'Wool',
               children: [],
               values: [
@@ -718,9 +740,11 @@ export const rankingTableWithScenario = {
       groupBy: 'material',
       rows: [
         {
+          id: expect.any(String),
           name: 'Textile',
           children: [
             {
+              id: expect.any(String),
               name: 'Cotton',
               children: [],
               values: [
@@ -752,6 +776,7 @@ export const rankingTableWithScenario = {
               ],
             },
             {
+              id: expect.any(String),
               name: 'Linen',
               children: [],
               values: [
@@ -783,6 +808,7 @@ export const rankingTableWithScenario = {
               ],
             },
             {
+              id: expect.any(String),
               name: 'Wool',
               children: [],
               values: [

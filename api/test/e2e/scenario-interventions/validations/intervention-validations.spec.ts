@@ -354,8 +354,6 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
           newProducerId: unknownProducer.id,
         });
 
-      console.log(response.body.errors);
-
       expect(response.body.errors).toBeUndefined();
     },
   );

@@ -27,6 +27,7 @@ import {
 } from '../../../../entity-mocks';
 import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
+import { v4 } from 'uuid';
 
 export async function createNewMaterialInterventionPreconditions(
   customScenario?: Scenario,
@@ -36,8 +37,13 @@ export async function createNewMaterialInterventionPreconditions(
   scenarioIntervention: ScenarioIntervention;
   replacingMaterials: Record<string, Material>;
   replacedMaterials: Record<string, Material>;
+  entityIds: Record<string, string>;
 }> {
+  const entityIds: Record<string, string> = {};
+
+  entityIds['India'] = v4();
   const adminRegion: AdminRegion = await createAdminRegion({
+    id: entityIds['India'],
     name: 'India',
   });
   const unit: Unit = await createUnit({ shortName: 'fakeUnit' });
@@ -49,27 +55,42 @@ export async function createNewMaterialInterventionPreconditions(
         nameCode: INDICATOR_TYPES.DEFORESTATION,
       });
 
-  const textile: Material = await createMaterial({ name: 'Textile' });
+  entityIds['Textile'] = v4();
+  const textile: Material = await createMaterial({
+    name: 'Textile',
+    id: entityIds['Textile'],
+  });
 
+  entityIds['Wool'] = v4();
   const wool: Material = await createMaterial({
+    id: entityIds['Wool'],
     name: 'Wool',
     parent: textile,
   });
+
+  entityIds['Cotton'] = v4();
   const cotton: Material = await createMaterial({
+    id: entityIds['Cotton'],
     name: 'Cotton',
     parent: textile,
   });
 
+  entityIds['Linen'] = v4();
   const linen: Material = await createMaterial({
+    id: entityIds['Linen'],
     name: 'Linen',
     parent: textile,
   });
 
+  entityIds['Fake Business Unit'] = v4();
   const businessUnit: BusinessUnit = await createBusinessUnit({
+    id: entityIds['Fake Business Unit'],
     name: 'Fake Business Unit',
   });
 
+  entityIds['Fake Supplier'] = v4();
   const supplier: Supplier = await createSupplier({
+    id: entityIds['Fake Supplier'],
     name: 'Fake Supplier',
   });
 
@@ -96,7 +117,7 @@ export async function createNewMaterialInterventionPreconditions(
     {
       material: cotton,
       businessUnit,
-      t1Supplier: supplier,
+      producer: supplier,
       adminRegion,
     },
   );
@@ -104,7 +125,7 @@ export async function createNewMaterialInterventionPreconditions(
   const woolSourcingLocation: SourcingLocation = await createSourcingLocation({
     material: wool,
     businessUnit,
-    t1Supplier: supplier,
+    producer: supplier,
     adminRegion,
   });
 
@@ -114,7 +135,7 @@ export async function createNewMaterialInterventionPreconditions(
     await createSourcingLocation({
       material: cotton,
       businessUnit,
-      t1Supplier: supplier,
+      producer: supplier,
       adminRegion,
       scenarioInterventionId: scenarioIntervention.id,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
@@ -124,7 +145,7 @@ export async function createNewMaterialInterventionPreconditions(
     await createSourcingLocation({
       material: wool,
       businessUnit,
-      t1Supplier: supplier,
+      producer: supplier,
       adminRegion,
       scenarioInterventionId: scenarioIntervention.id,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
@@ -134,7 +155,7 @@ export async function createNewMaterialInterventionPreconditions(
     await createSourcingLocation({
       material: wool,
       businessUnit,
-      t1Supplier: supplier,
+      producer: supplier,
       adminRegion,
       scenarioInterventionId: scenarioInterventionInactive.id,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
@@ -146,7 +167,7 @@ export async function createNewMaterialInterventionPreconditions(
     await createSourcingLocation({
       material: linen,
       businessUnit,
-      t1Supplier: supplier,
+      producer: supplier,
       adminRegion,
       scenarioInterventionId: scenarioIntervention.id,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
@@ -156,7 +177,7 @@ export async function createNewMaterialInterventionPreconditions(
     await createSourcingLocation({
       material: linen,
       businessUnit,
-      t1Supplier: supplier,
+      producer: supplier,
       adminRegion,
       scenarioInterventionId: scenarioInterventionInactive.id,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
@@ -257,5 +278,6 @@ export async function createNewMaterialInterventionPreconditions(
     scenarioIntervention,
     replacedMaterials: { wool, cotton },
     replacingMaterials: { linen },
+    entityIds,
   };
 }

@@ -8,15 +8,15 @@ import ApplicationManager, {
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { createNewMaterialInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-material-intervention.preconditions';
 import { createNewCoefficientsInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-coefficients-intervention.preconditions';
-import { newCoefficientsScenarioInterventionTable } from '../mocks/actual-vs-scenario-responses/new-coefficients-intervention.response';
-import { newMaterialScenarioInterventionTable } from '../mocks/actual-vs-scenario-responses/new-materials-intervention.response';
+import { getNewCoefficientsScenarioInterventionResponse } from '../mocks/actual-vs-scenario-responses/new-coefficients-intervention.response';
+import { getNewMaterialsScenarioInterventionResponse } from '../mocks/actual-vs-scenario-responses/new-materials-intervention.response';
 import { createNewSupplierInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-supplier-intervention.preconditions';
-import { newSupplierScenarioInterventionTable } from '../mocks/actual-vs-scenario-responses/new-supplier-intervention.response';
+import { getNewSupplierScenarioInterventionResponse } from '../mocks/actual-vs-scenario-responses/new-supplier-intervention.response';
 import { createMultipleInterventionsPreconditions } from '../mocks/actual-vs-scenario-preconditions/mixed-interventions-scenario.preconditions';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import {
-  mixedInterventionsScenarioTable,
-  mixedInterventionsScenarioTable2019,
+  getMixedInterventionsScenarioInterventionResponse,
+  getMixedInterventionsScenarioTable2019,
 } from '../mocks/actual-vs-scenario-responses/mixed-interventions-scenario.response';
 import {
   clearTestDataFromDatabase,
@@ -35,7 +35,7 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { createScenario } from '../../../entity-mocks';
-import { DataSource } from 'typeorm';
+import { DataSource, ObjectLiteral } from 'typeorm';
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { createImpactTableSortingPreconditions } from '../mocks/sorting.preconditions';
 import { ImpactTableRows } from 'modules/impact/dto/response-impact-table.dto';
@@ -82,7 +82,11 @@ describe('Actual VS Scenario Impact Table test suite (e2e)', () => {
     const preconditions: {
       indicator: Indicator;
       scenarioIntervention: ScenarioIntervention;
+      entityIds: ObjectLiteral;
     } = await createNewCoefficientsInterventionPreconditions(scenario);
+
+    const newCoefficientsScenarioInterventionTable =
+      getNewCoefficientsScenarioInterventionResponse(preconditions.entityIds);
 
     const response = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/compare/scenario/vs/actual')
@@ -112,7 +116,13 @@ describe('Actual VS Scenario Impact Table test suite (e2e)', () => {
     const preconditions: {
       indicator: Indicator;
       scenarioIntervention: ScenarioIntervention;
+      replacingMaterials: Record<string, Material>;
+      replacedMaterials: Record<string, Material>;
+      entityIds: Record<string, string>;
     } = await createNewMaterialInterventionPreconditions(scenario);
+
+    const newMaterialScenarioInterventionTable =
+      getNewMaterialsScenarioInterventionResponse(preconditions.entityIds);
 
     const response = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/compare/scenario/vs/actual')
@@ -136,7 +146,11 @@ describe('Actual VS Scenario Impact Table test suite (e2e)', () => {
     const preconditions: {
       indicator: Indicator;
       scenarioIntervention: ScenarioIntervention;
+      entityIds: Record<string, string>;
     } = await createNewSupplierInterventionPreconditions(scenario);
+
+    const newSupplierScenarioInterventionTable =
+      getNewSupplierScenarioInterventionResponse(preconditions.entityIds);
 
     const response = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/compare/scenario/vs/actual')
@@ -162,7 +176,13 @@ describe('Actual VS Scenario Impact Table test suite (e2e)', () => {
       const preconditions: {
         indicator: Indicator;
         newScenario: Scenario;
+        entityIds: Record<string, string>;
       } = await createMultipleInterventionsPreconditions();
+
+      const mixedInterventionsScenarioTable =
+        getMixedInterventionsScenarioInterventionResponse(
+          preconditions.entityIds,
+        );
 
       const response1 = await request(testApplication.getHttpServer())
         .get('/api/v1/impact/compare/scenario/vs/actual')
@@ -179,6 +199,9 @@ describe('Actual VS Scenario Impact Table test suite (e2e)', () => {
       expect(response1.body.data.impactTable[0].rows).toEqual(
         mixedInterventionsScenarioTable.impactTable[0].rows,
       );
+
+      const mixedInterventionsScenarioTable2019 =
+        getMixedInterventionsScenarioTable2019(preconditions.entityIds);
 
       const response2 = await request(testApplication.getHttpServer())
         .get('/api/v1/impact/compare/scenario/vs/actual')

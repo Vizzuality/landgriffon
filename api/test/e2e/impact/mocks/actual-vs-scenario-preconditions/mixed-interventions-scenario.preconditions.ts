@@ -29,12 +29,18 @@ import {
   createUnit,
 } from '../../../../entity-mocks';
 import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
+import { v4 } from 'uuid';
 
 export async function createMultipleInterventionsPreconditions(): Promise<{
   indicator: Indicator;
   newScenario: Scenario;
+  entityIds: Record<string, string>;
 }> {
+  const entityIds: Record<string, string> = {};
+
+  entityIds['India'] = v4();
   const adminRegion: AdminRegion = await createAdminRegion({
+    id: entityIds['India'],
     name: 'India',
   });
   const unit: Unit = await createUnit({ shortName: 'fakeUnit' });
@@ -44,31 +50,48 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
     nameCode: INDICATOR_TYPES.DEFORESTATION,
   });
 
-  const textile: Material = await createMaterial({ name: 'Textile' });
+  entityIds['Textile'] = v4();
+  const textile: Material = await createMaterial({
+    name: 'Textile',
+    id: entityIds['Textile'],
+  });
 
+  entityIds['Wool'] = v4();
   const wool: Material = await createMaterial({
+    id: entityIds['Wool'],
     name: 'Wool',
     parent: textile,
   });
+
+  entityIds['Cotton'] = v4();
   const cotton: Material = await createMaterial({
+    id: entityIds['Cotton'],
     name: 'Cotton',
     parent: textile,
   });
 
+  entityIds['Linen'] = v4();
   const linen: Material = await createMaterial({
+    id: entityIds['Linen'],
     name: 'Linen',
     parent: textile,
   });
 
+  entityIds['Fake Business Unit'] = v4();
   const businessUnit: BusinessUnit = await createBusinessUnit({
+    id: entityIds['Fake Business Unit'],
     name: 'Fake Business Unit',
   });
 
+  entityIds['Supplier A'] = v4();
   const supplierA: Supplier = await createSupplier({
+    id: entityIds['Supplier A'],
     name: 'Supplier A',
   });
 
+  entityIds['Supplier B'] = v4();
   const supplierB: Supplier = await createSupplier({
+    id: entityIds['Supplier B'],
     name: 'Supplier B',
   });
 
@@ -101,7 +124,7 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
     {
       material: cotton,
       businessUnit,
-      t1Supplier: supplierA,
+      producer: supplierA,
       adminRegion,
     },
   );
@@ -109,7 +132,7 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
   const woolSourcingLocation: SourcingLocation = await createSourcingLocation({
     material: wool,
     businessUnit,
-    t1Supplier: supplierB,
+    producer: supplierB,
     adminRegion,
   });
 
@@ -121,7 +144,7 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
     await createSourcingLocation({
       material: wool,
       businessUnit,
-      t1Supplier: supplierA,
+      producer: supplierA,
       adminRegion,
       scenarioInterventionId: scenarioIntervention1.id,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
@@ -133,7 +156,7 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
     await createSourcingLocation({
       material: cotton,
       businessUnit,
-      t1Supplier: supplierA,
+      producer: supplierA,
       adminRegion,
       scenarioInterventionId: scenarioIntervention2.id,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
@@ -143,7 +166,7 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
     await createSourcingLocation({
       material: cotton,
       businessUnit,
-      t1Supplier: supplierA,
+      producer: supplierA,
       adminRegion,
       scenarioInterventionId: scenarioIntervention3.id,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.CANCELED,
@@ -168,7 +191,7 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
     await createSourcingLocation({
       material: linen,
       businessUnit,
-      t1Supplier: supplierB,
+      producer: supplierB,
       adminRegion,
       scenarioInterventionId: scenarioIntervention2.id,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
@@ -178,7 +201,7 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
     await createSourcingLocation({
       material: linen,
       businessUnit,
-      t1Supplier: supplierB,
+      producer: supplierB,
       adminRegion,
       scenarioInterventionId: scenarioIntervention3.id,
       interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
@@ -286,5 +309,5 @@ export async function createMultipleInterventionsPreconditions(): Promise<{
     sourcingLocation: sourcingLocation2ReplacingLinenInactive,
   });
 
-  return { indicator, newScenario };
+  return { indicator, newScenario, entityIds };
 }

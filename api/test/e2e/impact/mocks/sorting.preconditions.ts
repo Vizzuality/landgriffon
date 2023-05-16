@@ -81,7 +81,7 @@ export async function createImpactTableSortingPreconditions(
         await createSourcingLocation({
           material: material,
           businessUnit,
-          t1Supplier: supplier,
+          producer: supplier,
           adminRegion,
         }),
     ),

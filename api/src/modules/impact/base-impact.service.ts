@@ -140,7 +140,7 @@ export class BaseImpactService {
             treeOptions,
           )
         ).map((entity: LOCATION_TYPES) => {
-          return { name: entity, children: [] };
+          return { id: entity, name: entity, children: [] };
         });
 
       default:

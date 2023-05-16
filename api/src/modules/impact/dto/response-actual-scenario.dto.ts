@@ -52,7 +52,9 @@ export class ActualVsScenarioImpactTablePurchasedTonnes {
   @ApiProperty()
   isProjected: boolean;
 }
+
 export class ActualVsScenarioImpactTableRows {
+  id: string;
   @ApiProperty()
   name: string;
   @ApiProperty({

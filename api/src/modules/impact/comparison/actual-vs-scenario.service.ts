@@ -11,20 +11,21 @@ import {
 } from 'modules/sourcing-records/sourcing-record.repository';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { range } from 'lodash';
-import { ImpactTablePurchasedTonnes } from 'modules/impact/dto/response-impact-table.dto';
+import {
+  ImpactTablePurchasedTonnes,
+  PaginatedImpactTable,
+} from 'modules/impact/dto/response-impact-table.dto';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { ImpactTableEntityType } from 'types/impact-table-entity.type';
 import { FetchSpecification } from 'nestjs-base-service';
-import { PaginatedEntitiesDto } from 'modules/impact/dto/paginated-entities.dto';
 import {
   ActualVsScenarioImpactTable,
   ActualVsScenarioImpactTableDataByIndicator,
   ActualVsScenarioImpactTableRows,
   ActualVsScenarioImpactTableRowsValues,
-  ActualVsScenarioPaginatedImpactTable,
   ActualVsScenarioIndicatorSumByYear,
 } from 'modules/impact/dto/response-actual-scenario.dto';
 import {
@@ -60,7 +61,7 @@ export class ActualVsScenarioImpactService extends BaseImpactService {
   async getActualVsScenarioImpactTable(
     dto: GetActualVsScenarioImpactTableDto,
     fetchSpecification: FetchSpecification,
-  ): Promise<ActualVsScenarioPaginatedImpactTable> {
+  ): Promise<PaginatedImpactTable> {
     const indicators: Indicator[] =
       await this.indicatorService.getIndicatorsById(dto.indicatorIds);
     this.logger.log('Retrieving data from DB to build Impact Table...');
@@ -96,12 +97,7 @@ export class ActualVsScenarioImpactService extends BaseImpactService {
       dto.sortingOrder,
     );
 
-    const paginatedTable: any = BaseImpactService.paginateTable(
-      impactTable,
-      fetchSpecification,
-    );
-
-    return paginatedTable;
+    return BaseImpactService.paginateTable(impactTable, fetchSpecification);
   }
 
   private buildActualVsScenarioImpactTable(
@@ -355,6 +351,7 @@ export class ActualVsScenarioImpactService extends BaseImpactService {
   ): ActualVsScenarioImpactTableRows[] {
     return entities.map((item: ImpactTableEntityType) => {
       return {
+        id: item.id,
         name: item.name || '',
         children:
           item.children.length > 0

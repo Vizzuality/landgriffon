@@ -8,6 +8,7 @@ import {
   ScenarioVsScenarioImpactTableRows,
   ScenarioVsScenarioImpactTableRowsValues,
 } from 'modules/impact/dto/response-scenario-scenario.dto';
+import { AnyImpactTable } from 'modules/impact/base-impact.service';
 
 export class ImpactTable {
   @ApiProperty({ type: () => ImpactTableDataByIndicator, isArray: true })
@@ -18,7 +19,7 @@ export class ImpactTable {
 
 export class PaginatedImpactTable {
   @ApiProperty({ type: () => ImpactTable })
-  data: ImpactTable;
+  data: AnyImpactTable;
   @ApiProperty({ type: () => PaginationMeta })
   metadata?: PaginationMeta;
 }
@@ -28,6 +29,7 @@ export class ImpactTableDataAggregationInfo {
   numberOfAggregatedEntities: number;
   sort: string;
 }
+
 export class ImpactTableDataAggregatedValue {
   year: number;
   value: number;
@@ -61,7 +63,9 @@ export class ImpactTablePurchasedTonnes {
   @ApiProperty()
   isProjected: boolean;
 }
+
 export class ImpactTableRows {
+  id: string;
   @ApiProperty()
   name: string;
   @ApiProperty({ type: () => ImpactTableRowsValues, isArray: true })
@@ -74,22 +78,26 @@ export class ImpactTableRows {
   })
   children: ImpactTableRows[];
 }
+
 export class BaseIndicatorSumByYearData {
   @ApiProperty()
   year: number;
   @ApiProperty()
   isProjected: boolean;
 }
+
 export class YearSumData {
   @ApiProperty()
   value: number;
 }
+
 export class ImpactTableBaseRowsValues {
   @ApiProperty()
   year: number;
   @ApiProperty()
   isProjected: boolean;
 }
+
 export class ImpactTableRowsValues extends ImpactTableBaseRowsValues {
   @ApiProperty()
   value: number;

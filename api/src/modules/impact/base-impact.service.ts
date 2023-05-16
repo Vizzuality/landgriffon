@@ -14,7 +14,9 @@ import {
 } from 'modules/sourcing-records/sourcing-record.repository';
 import {
   AnyImpactTableRowsValues,
+  ImpactTable,
   ImpactTablePurchasedTonnes,
+  PaginatedImpactTable,
 } from 'modules/impact/dto/response-impact-table.dto';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
@@ -23,11 +25,17 @@ import { MaterialsService } from 'modules/materials/materials.service';
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { ImpactTableEntityType } from 'types/impact-table-entity.type';
 import { DEFAULT_PAGINATION, FetchSpecification } from 'nestjs-base-service';
-import { PaginatedEntitiesDto } from 'modules/impact/dto/paginated-entities.dto';
 import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 import { PaginationMeta } from 'utils/app-base.service';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
+import { ScenarioVsScenarioImpactTable } from 'modules/impact/dto/response-scenario-scenario.dto';
+import { ActualVsScenarioImpactTable } from 'modules/impact/dto/response-actual-scenario.dto';
+
+export type AnyImpactTable =
+  | ImpactTable
+  | ActualVsScenarioImpactTable
+  | ScenarioVsScenarioImpactTable;
 
 @Injectable()
 export class BaseImpactService {
@@ -278,12 +286,12 @@ export class BaseImpactService {
   }
 
   protected static paginateTable(
-    data: any,
+    impactTable: AnyImpactTable,
     fetchSpecification: FetchSpecification,
-  ): any {
+  ): PaginatedImpactTable {
     if (fetchSpecification.disablePagination) {
       return {
-        data,
+        data: impactTable,
         metadata: undefined,
       };
     }
@@ -294,7 +302,7 @@ export class BaseImpactService {
       fetchSpecification?.pageNumber ?? DEFAULT_PAGINATION.pageNumber ?? 1;
 
     // Make a shallow copy of the data to avoid mutating the original
-    const paginatedData: any = { ...data };
+    const paginatedData: any = { ...impactTable };
 
     const totalItems: number = paginatedData.impactTable[0].rows.length;
     const totalPages: number = Math.ceil(totalItems / pageSize);

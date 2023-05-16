@@ -25,7 +25,6 @@ import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { ImpactTableEntityType } from 'types/impact-table-entity.type';
 import { FetchSpecification } from 'nestjs-base-service';
-import { PaginatedEntitiesDto } from 'modules/impact/dto/paginated-entities.dto';
 import {
   BaseImpactService,
   ImpactDataTableAuxMap,
@@ -76,9 +75,6 @@ export class ImpactService extends BaseImpactService {
       impactTableDto,
     );
 
-    // TODO: this updates the filtering Ids accortding to the resultant entities of the pagination
-    this.updateGroupByCriteriaFromEntityTree(impactTableDto, entities);
-
     let dataForImpactTable: ImpactTableData[] =
       await this.getDataForImpactTable(impactTableDto, entities);
 
@@ -99,12 +95,7 @@ export class ImpactService extends BaseImpactService {
       impactTableDto.sortingYear,
       impactTableDto.sortingOrder,
     );
-    const paginatedTable: any = ImpactService.paginateTable(
-      impactTable,
-      fetchSpecification,
-    );
-
-    return paginatedTable;
+    return ImpactService.paginateTable(impactTable, fetchSpecification);
   }
 
   /**
@@ -350,7 +341,7 @@ export class ImpactService extends BaseImpactService {
    * aggregated data of parent entity and all its children
    */
   private populateValuesRecursively(
-    entity: any,
+    entity: ImpactTableRows,
     entityMap: Map<string, Map<number, ImpactTableRowsValues>>,
     rangeOfYears: number[],
   ): ImpactTableRowsValues[] {

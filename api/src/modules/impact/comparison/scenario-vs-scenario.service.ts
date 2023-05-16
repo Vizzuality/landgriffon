@@ -19,20 +19,21 @@ import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { ImpactTableEntityType } from 'types/impact-table-entity.type';
 import { FetchSpecification } from 'nestjs-base-service';
-import { PaginatedEntitiesDto } from 'modules/impact/dto/paginated-entities.dto';
 import {
   ScenarioVsScenarioImpactTable,
   ScenarioVsScenarioImpactTableDataByIndicator,
   ScenarioVsScenarioImpactTableRows,
   ScenarioVsScenarioImpactTableRowsValues,
   ScenarioVsScenarioIndicatorSumByYearData,
-  ScenarioVsScenarioPaginatedImpactTable,
 } from 'modules/impact/dto/response-scenario-scenario.dto';
 import {
   BaseImpactService,
   ImpactDataTableAuxMap,
 } from 'modules/impact/base-impact.service';
-import { ImpactTablePurchasedTonnes } from 'modules/impact/dto/response-impact-table.dto';
+import {
+  ImpactTablePurchasedTonnes,
+  PaginatedImpactTable,
+} from 'modules/impact/dto/response-impact-table.dto';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 
 @Injectable()
@@ -62,7 +63,7 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
   async getScenarioVsScenarioImpactTable(
     dto: GetScenarioVsScenarioImpactTableDto,
     fetchSpecification: FetchSpecification,
-  ): Promise<ScenarioVsScenarioPaginatedImpactTable> {
+  ): Promise<PaginatedImpactTable> {
     const indicators: Indicator[] =
       await this.indicatorService.getIndicatorsById(dto.indicatorIds);
     this.logger.log('Retrieving data from DB to build Impact Table...');
@@ -73,8 +74,6 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
     // Getting entities and processing that correspond to Scenario 1 and filtered actual data
 
     const entities: ImpactTableEntityType[] = await this.getEntityTree(dto);
-
-    this.updateGroupByCriteriaFromEntityTree(dto, entities);
 
     // Getting and proceesing impact data separetely for each scenario for further merge
 
@@ -113,12 +112,7 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
       dto.sortingOrder,
     );
 
-    const paginatedTable: any = BaseImpactService.paginateTable(
-      impactTable,
-      fetchSpecification,
-    );
-
-    return paginatedTable;
+    return BaseImpactService.paginateTable(impactTable, fetchSpecification);
   }
 
   private buildImpactTable(

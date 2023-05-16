@@ -97,7 +97,7 @@ export class ImpactController {
     @ProcessFetchSpecification() fetchSpecification: FetchSpecification,
     @Query(ValidationPipe)
     scenarioVsScenarioImpactTableDto: GetScenarioVsScenarioImpactTableDto,
-  ): Promise<ScenarioVsScenarioPaginatedImpactTable> {
+  ): Promise<PaginatedImpactTable> {
     await this.indicatorService.areRequestedIndicatorsActive(
       scenarioVsScenarioImpactTableDto.indicatorIds,
     );

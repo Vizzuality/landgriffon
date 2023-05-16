@@ -277,32 +277,6 @@ export class BaseImpactService {
       : idsFromTree;
   }
 
-  protected static paginateRootEntities(
-    entities: ImpactTableEntityType[],
-    fetchSpecification: FetchSpecification,
-  ): PaginatedEntitiesDto {
-    if (fetchSpecification.disablePagination) {
-      return {
-        entities,
-        metadata: undefined,
-      };
-    }
-    const totalItems: number = entities.length;
-    const pageSize: number =
-      fetchSpecification?.pageSize ?? DEFAULT_PAGINATION.pageSize ?? 25;
-    const page: number =
-      fetchSpecification?.pageNumber ?? DEFAULT_PAGINATION.pageNumber ?? 1;
-    return {
-      entities: entities.slice((page - 1) * pageSize, page * pageSize),
-      metadata: new PaginationMeta({
-        totalPages: Math.ceil(totalItems / pageSize),
-        totalItems,
-        size: pageSize,
-        page,
-      }),
-    };
-  }
-
   protected static paginateTable(
     data: any,
     fetchSpecification: FetchSpecification,
@@ -404,12 +378,12 @@ export class BaseImpactService {
       }
       // TODO: GET ID INSTEAD OF NAME
       let yearMap: Map<number, RowsValues> | undefined = entityMap.get(
-        impactTableData.id,
+        impactTableData.id + impactTableData.name,
       );
       if (!yearMap) {
         yearMap = new Map();
         // TODO: SET ID INSTEAD OF NAME
-        entityMap.set(impactTableData.id, yearMap);
+        entityMap.set(impactTableData.id + impactTableData.name, yearMap);
       }
 
       yearMap.set(impactTableData.year, dataToRowsValuesFunc(impactTableData));

@@ -224,7 +224,7 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
     const valuesToAggregate: ScenarioVsScenarioImpactTableRowsValues[][] = [];
     const selfData:
       | Map<number, ScenarioVsScenarioImpactTableRowsValues>
-      | undefined = entityDataMap.get(entity.name);
+      | undefined = entityDataMap.get(entity.id + entity.name);
     if (selfData) {
       const sortedSelfData: ScenarioVsScenarioImpactTableRowsValues[] =
         Array.from(selfData.values()).sort(
@@ -276,6 +276,7 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
   ): ScenarioVsScenarioImpactTableRows[] {
     return entities.map((item: ImpactTableEntityType) => {
       return {
+        id: item.id,
         name: item.name || '',
         children:
           item.children.length > 0

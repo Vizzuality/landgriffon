@@ -367,7 +367,7 @@ export class ImpactService extends BaseImpactService {
     const valuesToAggregate: ImpactTableRowsValues[][] = [];
     const selfData: Map<number, ImpactTableRowsValues> | undefined =
       // TODO: USE THE ID TO AVOID MERGING VALUES OF ENTITIES WITH SAME NAME
-      entityMap.get(entity.id);
+      entityMap.get(entity.id + entity.name);
     if (selfData) {
       const sortedSelfData: ImpactTableRowsValues[] = Array.from(
         selfData.values(),

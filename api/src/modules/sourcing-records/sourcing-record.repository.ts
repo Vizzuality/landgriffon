@@ -19,7 +19,7 @@ import { IndicatorRecord } from 'modules/indicator-records/indicator-record.enti
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { Material } from 'modules/materials/material.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
-import { Supplier, SUPPLIER_TYPES } from 'modules/suppliers/supplier.entity';
+import { Supplier } from 'modules/suppliers/supplier.entity';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
@@ -311,6 +311,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
       // TODO: WHAT TO DO IN THIS CASE?? IT HAS NO ID
       case GROUP_BY_VALUES.LOCATION_TYPE:
         selectQueryBuilder
+          .addSelect('sourcingLocation.locationType', 'id')
           .addSelect('sourcingLocation.locationType', 'name')
           .groupBy('sourcingLocation.locationType');
         break;

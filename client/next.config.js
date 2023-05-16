@@ -20,6 +20,11 @@ const nextConfig = {
         destination: '/analysis/map',
         permanent: false,
       },
+      {
+        source: '/auth/signup',
+        destination: '/auth/signin',
+        permanent: false,
+      },
     ];
   },
 };

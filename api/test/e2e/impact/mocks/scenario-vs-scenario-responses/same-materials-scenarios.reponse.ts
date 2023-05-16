@@ -1,5 +1,8 @@
+import { ObjectLiteral } from 'typeorm';
+
 export function getSameMaterialScenarioComparisonResponse(
   indicatorId: string,
+  entityIds: ObjectLiteral,
 ): any {
   return {
     impactTable: [
@@ -10,8 +13,10 @@ export function getSameMaterialScenarioComparisonResponse(
         rows: [
           {
             name: 'Textile',
+            id: entityIds['Textile'],
             children: [
               {
+                id: entityIds['Cotton'],
                 name: 'Cotton',
                 children: [],
                 values: [
@@ -34,6 +39,7 @@ export function getSameMaterialScenarioComparisonResponse(
                 ],
               },
               {
+                id: entityIds['Linen'],
                 name: 'Linen',
                 children: [],
                 values: [
@@ -56,6 +62,7 @@ export function getSameMaterialScenarioComparisonResponse(
                 ],
               },
               {
+                id: entityIds['Wool'],
                 name: 'Wool',
                 children: [],
                 values: [
@@ -139,6 +146,7 @@ export function getSameMaterialScenarioComparisonResponse(
 
 export function getScenarioComparisonResponseBySupplier(
   indicatorId: string,
+  entityIds: ObjectLiteral,
 ): any {
   return {
     impactTable: [
@@ -149,6 +157,7 @@ export function getScenarioComparisonResponseBySupplier(
         rows: [
           {
             children: [],
+            id: entityIds['Supplier A Textile'],
             name: 'Supplier A Textile',
             values: [
               {
@@ -171,6 +180,7 @@ export function getScenarioComparisonResponseBySupplier(
           },
           {
             children: [],
+            id: entityIds['Supplier B Textile'],
             name: 'Supplier B Textile',
             values: [
               {
@@ -231,6 +241,7 @@ export function getScenarioComparisonResponseBySupplier(
 
 export function getComparisonResponseWithProjectedYears(
   indicatorId: string,
+  entityIds: ObjectLiteral,
 ): any {
   return {
     impactTable: [
@@ -241,9 +252,11 @@ export function getComparisonResponseWithProjectedYears(
         rows: [
           {
             name: 'Textile',
+            id: entityIds['Textile'],
             children: [
               {
                 name: 'Cotton',
+                id: entityIds['Cotton'],
                 children: [],
                 values: [
                   {
@@ -290,6 +303,7 @@ export function getComparisonResponseWithProjectedYears(
               },
               {
                 name: 'Linen',
+                id: entityIds['Linen'],
                 children: [],
                 values: [
                   {
@@ -336,6 +350,7 @@ export function getComparisonResponseWithProjectedYears(
               },
               {
                 name: 'Wool',
+                id: entityIds['Wool'],
                 children: [],
                 values: [
                   {

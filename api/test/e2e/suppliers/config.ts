@@ -6,4 +6,5 @@ export const expectedJSONAPIAttributes: string[] = [
   'parentId',
   'createdAt',
   'updatedAt',
+  'type',
 ];

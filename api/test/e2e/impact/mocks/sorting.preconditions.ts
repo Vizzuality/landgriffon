@@ -19,7 +19,7 @@ import {
 } from 'modules/indicators/indicator.entity';
 import { Material } from 'modules/materials/material.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
-import { Supplier } from 'modules/suppliers/supplier.entity';
+import { Supplier, SUPPLIER_TYPES } from 'modules/suppliers/supplier.entity';
 import {
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
@@ -72,6 +72,7 @@ export async function createImpactTableSortingPreconditions(
 
   const supplier: Supplier = await createSupplier({
     name: 'Fake Supplier',
+    type: SUPPLIER_TYPES.PRODUCER,
   });
 
   const parentLocations: SourcingLocation[] = await Promise.all(
@@ -92,7 +93,7 @@ export async function createImpactTableSortingPreconditions(
         await createSourcingLocation({
           material: material,
           businessUnit,
-          t1Supplier: supplier,
+          producer: supplier,
           adminRegion,
         }),
     ),
@@ -130,7 +131,7 @@ export async function createImpactTableSortingPreconditions(
 
     const sharedLocationAdditionalData: Partial<SourcingLocation> = {
       businessUnit,
-      t1Supplier: supplier,
+      producer: supplier,
       adminRegion,
       scenarioInterventionId: scenarioIntervention.id,
     };
@@ -188,7 +189,7 @@ export async function createImpactTableSortingPreconditions(
 
     const sharedLocationAdditionalData: Partial<SourcingLocation> = {
       businessUnit,
-      t1Supplier: supplier,
+      producer: supplier,
       adminRegion,
       scenarioInterventionId: scenarioIntervention.id,
     };

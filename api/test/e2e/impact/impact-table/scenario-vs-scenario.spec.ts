@@ -28,7 +28,7 @@ import {
   getScenarioComparisonResponseBySupplier,
 } from '../mocks/scenario-vs-scenario-responses/same-materials-scenarios.reponse';
 import { createSameMaterialScenariosPreconditions } from '../mocks/scenario-vs-scenario-preconditions/same-materials-scenarios.preconditions';
-import { DataSource } from 'typeorm';
+import { DataSource, ObjectLiteral } from 'typeorm';
 import { createImpactTableSortingPreconditions } from '../mocks/sorting.preconditions';
 import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { ImpactTableRows } from 'modules/impact/dto/response-impact-table.dto';
@@ -72,9 +72,10 @@ describe('Scenario VS Scenario Impact Table test suite (e2e)', () => {
 
   test('When I request scenario comparison for 2 Scenarios, then I should get the correct response within expected structure', async () => {
     const preconditions: {
+      indicator: Indicator;
       newScenarioChangeSupplier: Scenario;
       newScenarioChangeMaterial: Scenario;
-      indicator: Indicator;
+      entityIds: ObjectLiteral;
     } = await createSameMaterialScenariosPreconditions();
 
     const responseGroupByMaterial = await request(
@@ -94,7 +95,10 @@ describe('Scenario VS Scenario Impact Table test suite (e2e)', () => {
     expect(responseGroupByMaterial.status).toBe(HttpStatus.OK);
 
     const expectedScenariosTableMByMaterial =
-      getSameMaterialScenarioComparisonResponse(preconditions.indicator.id);
+      getSameMaterialScenarioComparisonResponse(
+        preconditions.indicator.id,
+        preconditions.entityIds,
+      );
 
     expect(responseGroupByMaterial.body.data.impactTable[0].rows).toEqual(
       expect.arrayContaining(
@@ -127,7 +131,10 @@ describe('Scenario VS Scenario Impact Table test suite (e2e)', () => {
     expect(responseGroupBySupplier.status).toBe(HttpStatus.OK);
 
     const expectedScenariosTableBySupplier =
-      getScenarioComparisonResponseBySupplier(preconditions.indicator.id);
+      getScenarioComparisonResponseBySupplier(
+        preconditions.indicator.id,
+        preconditions.entityIds,
+      );
 
     expect(responseGroupBySupplier.body.data.impactTable[0].rows).toEqual(
       expect.arrayContaining(
@@ -147,6 +154,7 @@ describe('Scenario VS Scenario Impact Table test suite (e2e)', () => {
         newScenarioChangeSupplier: Scenario;
         newScenarioChangeMaterial: Scenario;
         indicator: Indicator;
+        entityIds: ObjectLiteral;
       } = await createSameMaterialScenariosPreconditions();
 
       const response = await request(testApplication.getHttpServer())
@@ -164,7 +172,10 @@ describe('Scenario VS Scenario Impact Table test suite (e2e)', () => {
       expect(response.status).toBe(HttpStatus.OK);
 
       const expectedScenariosTableMByMaterial =
-        getComparisonResponseWithProjectedYears(preconditions.indicator.id);
+        getComparisonResponseWithProjectedYears(
+          preconditions.indicator.id,
+          preconditions.entityIds,
+        );
 
       expect(response.body.data.impactTable[0].rows).toEqual(
         expect.arrayContaining(

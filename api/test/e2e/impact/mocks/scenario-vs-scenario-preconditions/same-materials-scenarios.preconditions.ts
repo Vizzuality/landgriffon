@@ -29,47 +29,73 @@ import {
   createUnit,
 } from '../../../../entity-mocks';
 import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
+import { v4 as uuidv4 } from 'uuid';
+import { ObjectLiteral } from 'typeorm';
 
 export async function createSameMaterialScenariosPreconditions(): Promise<{
   indicator: Indicator;
   newScenarioChangeSupplier: Scenario;
   newScenarioChangeMaterial: Scenario;
+  entityIds: ObjectLiteral;
 }> {
+  const entityIds: ObjectLiteral = {};
+
+  entityIds['India'] = uuidv4();
   const adminRegion: AdminRegion = await createAdminRegion({
     name: 'India',
   });
+
+  entityIds['Fake Unit'] = uuidv4();
   const unit: Unit = await createUnit({ shortName: 'fakeUnit' });
+
   const indicator: Indicator = await createIndicator({
     name: 'Deforestation',
     unit,
     nameCode: INDICATOR_TYPES.DEFORESTATION,
   });
+  entityIds['Textile'] = uuidv4();
+  const textile: Material = await createMaterial({
+    id: entityIds['Textile'],
+    name: 'Textile',
+  });
 
-  const textile: Material = await createMaterial({ name: 'Textile' });
-
+  entityIds['Wool'] = uuidv4();
   const wool: Material = await createMaterial({
+    id: entityIds['Wool'],
     name: 'Wool',
     parent: textile,
   });
+
+  entityIds['Cotton'] = uuidv4();
   const cotton: Material = await createMaterial({
+    id: entityIds['Cotton'],
     name: 'Cotton',
     parent: textile,
   });
+  entityIds['Linen'] = uuidv4();
 
   const linen: Material = await createMaterial({
+    id: entityIds['Linen'],
     name: 'Linen',
     parent: textile,
   });
 
+  entityIds['Clothes'] = uuidv4();
+
   const businessUnitClothes: BusinessUnit = await createBusinessUnit({
+    id: entityIds['Clothes'],
     name: 'Clothes',
   });
 
+  entityIds['Supplier A Textile'] = uuidv4();
   const supplierATextile: Supplier = await createSupplier({
+    id: entityIds['Supplier A Textile'],
     name: 'Supplier A Textile',
   });
 
+  entityIds['Supplier B Textile'] = uuidv4();
   const supplierBTextile: Supplier = await createSupplier({
+    id: entityIds['Supplier B Textile'],
     name: 'Supplier B Textile',
   });
 
@@ -446,5 +472,10 @@ export async function createSameMaterialScenariosPreconditions(): Promise<{
     tonnage: 300,
   });
 
-  return { indicator, newScenarioChangeSupplier, newScenarioChangeMaterial };
+  return {
+    indicator,
+    newScenarioChangeSupplier,
+    newScenarioChangeMaterial,
+    entityIds,
+  };
 }

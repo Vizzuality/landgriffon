@@ -6,14 +6,12 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import classNames from 'classnames';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 import TableRow, { TableHeaderRow } from './row';
 
-import { analysisUI } from 'store/features/analysis/ui';
 import Loading from 'components/loading';
 import Pagination from 'components/table/pagination';
-import { useAppSelector } from 'store/hooks';
 
 import type { ColumnDefinition } from './column';
 import type {
@@ -30,6 +28,7 @@ export interface TableProps<T>
   isLoading?: boolean;
   headerTheme?: 'default' | 'clean';
   theme?: 'default' | 'striped';
+  showPagination?: boolean;
   paginationProps?: {
     totalItems: number;
     totalPages: number;
@@ -72,6 +71,7 @@ const ComposedTable = <T,>({
   theme = 'default',
   isLoading,
   noDataMessage = 'No data',
+  showPagination = true,
   handleExpandedChange = () => null,
   firstProjectedYear,
   ...options
@@ -144,47 +144,23 @@ const ComposedTable = <T,>({
     handleExpandedChange(table);
   }, [rowModel, handleExpandedChange, table]);
 
-  const containerRef = useRef<HTMLDivElement>();
-  const [width, setWidth] = useState<number>(0);
-  const { isSidebarCollapsed } = useAppSelector(analysisUI);
-
-  useEffect(() => {
-    const { width } = containerRef.current?.getBoundingClientRect();
-    const sideBarWidth = 410;
-    const newWidth = isSidebarCollapsed ? width + sideBarWidth : width - sideBarWidth;
-    setWidth(newWidth);
-  }, [isSidebarCollapsed]);
-
-  useEffect(() => {
-    const changeWidth = () => {
-      const width = containerRef.current?.getBoundingClientRect()?.width || 0;
-      setWidth(width);
-    };
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', changeWidth);
-    }
-    return () => {
-      window.removeEventListener('resize', changeWidth);
-    };
-  }, []);
-
   return (
-    <div ref={containerRef} className="table-container h-full flex flex-col justify-between">
-      <div className="relative overflow-auto">
+    <div className="flex flex-col w-full h-full">
+      <div className="relative flex-1">
         {isLoading && (
           <div className="absolute z-40 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
             <Loading className="w-5 h-5 text-navy-400" />
           </div>
         )}
         <div
-          className={classNames('', {
+          className={classNames('absolute top-0 left-0 overflow-auto w-full h-full', {
             'blur-sm pointer-events-none': isLoading,
           })}
         >
           <table
-            className={classNames('w-full table-fixed', {
+            className={classNames('w-full max-h-full min-h-content table-fixed', {
               'border-spacing-0 border-separate': true,
-              'mt-8': !!firstProjectedYear,
+              'mt-[24px]': !!firstProjectedYear,
             })}
           >
             <thead>
@@ -231,16 +207,9 @@ const ComposedTable = <T,>({
         </div>
       </div>
 
-      <div className="h-12 w-full">
+      {showPagination && (
         <div
-          style={{ width }}
-          className={classNames(
-            'z-10 w-[inherit] fixed py-4 bottom-0 bg-gray-100 transition-all ease-in-out duration-100',
-            {
-              'opacity-0': !options.enableExpanding,
-              'opacity-100': !!options.enableExpanding,
-            },
-          )}
+          className={classNames('grow-0 py-4 bg-gray-100 transition-all ease-in-out duration-100')}
         >
           <Pagination
             className="justify-between"
@@ -253,7 +222,7 @@ const ComposedTable = <T,>({
             onPageChange={handlePageChange}
           />
         </div>
-      </div>
+      )}
     </div>
   );
 };

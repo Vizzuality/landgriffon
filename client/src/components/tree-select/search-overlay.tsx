@@ -13,13 +13,15 @@ interface SearchOverlayProps {
   options: (WithRequiredProperty<Partial<FlattenNode<TreeDataNode>>, 'key' | 'title'> & {
     isSelected: boolean;
     matchingParts: MatchResult[];
+    disabled?: boolean;
   })[];
   onChange: Dispatch<Key>;
 }
 
 const SearchOverlay = ({ options, onChange }: SearchOverlayProps) => {
   const getHandleChange = useCallback(
-    (value: TreeSelectOption['value']) => () => {
+    (value: TreeSelectOption['value'], disabled?: boolean) => () => {
+      if (disabled) return;
       onChange(value);
     },
     [onChange],
@@ -27,18 +29,19 @@ const SearchOverlay = ({ options, onChange }: SearchOverlayProps) => {
 
   return (
     <div data-testid="tree-select-search-results">
-      {options.map(({ matchingParts, data: { label }, key, isSelected, parent }) => {
+      {options.map(({ matchingParts, data: { label }, key, isSelected, parent, disabled }) => {
         const parents = getParents({ parent } as FlattenNode<TreeDataNode>);
         return (
           <button
             title={label}
             type="button"
-            className={classNames(
-              'text-sm p-2 hover:bg-navy-50 cursor-pointer w-full text-left',
-              isSelected ? 'font-bold text-navy-400' : 'text-gray-900',
-            )}
+            className={classNames('text-sm p-2 w-full text-left', {
+              'font-bold cursor-pointer text-navy-400 hover:bg-navy-50': isSelected,
+              'text-gray-300 hover:bg-white cursor-default pointer-events-none': disabled,
+              'text-gray-900 cursor-pointer hover:bg-navy-50': !isSelected && !disabled,
+            })}
             key={key}
-            onClick={getHandleChange(key as string)}
+            onClick={getHandleChange(key as string, disabled)}
           >
             {matchingParts.map(({ value, isMatch }, i) => {
               return (

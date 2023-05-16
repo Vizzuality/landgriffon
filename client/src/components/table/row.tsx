@@ -96,7 +96,7 @@ export const TableHeaderRow = <T,>({
             {header.isPlaceholder ? null : (
               <HeaderCell context={header.getContext()}>
                 {firstProjectedYear?.toString() === header.id && (
-                  <div className="font-medium absolute leading-4 -translate-y-[45px] -translate-x-[58px] bg-gray-200 text-2xs py-1 px-4 rounded-t-lg text-gray-600 normal-case">
+                  <div className="font-medium absolute leading-4 top-0 h-[24px] -translate-y-[24px] -translate-x-[58px] bg-gray-200 text-2xs py-1 px-4 rounded-t-lg text-gray-600 normal-case">
                     Projected years
                   </div>
                 )}

@@ -429,13 +429,14 @@ const AnalysisTable = () => {
       },
       ...years.map((year) => comparisonColumn<Mode>(year as number)),
     ],
-    [years, expandedName, handleExitExpanded, handleExpandRow, comparisonColumn],
+    [years, expandedName, handleExitExpanded, indicators, handleExpandRow, comparisonColumn],
   );
 
   const tableProps = useMemo(
     <Mode extends ComparisonMode>(): TableProps<ImpactRowType<Mode>> & {
       firstProjectedYear: number;
     } => ({
+      showPagination: indicatorId !== 'all',
       paginationProps: {
         totalItems: metadata.totalItems,
         totalPages: metadata.totalPages,
@@ -469,7 +470,7 @@ const AnalysisTable = () => {
   const csv = useMemo<string | null>(() => encodeURI(dataToCsv(tableProps)), [tableProps]);
 
   return (
-    <>
+    <div className="flex flex-col flex-1">
       <div className="flex justify-between px-6">
         <div className="flex items-end justify-between w-full">
           <AnalysisDynamicMetadata />
@@ -488,10 +489,10 @@ const AnalysisTable = () => {
           </div>
         </div>
       </div>
-      <div className="relative px-6 my-6" data-testid="analysis-table">
+      <div className="relative flex-1 px-6 my-6" data-testid="analysis-table">
         <Table {...tableProps} />
       </div>
-    </>
+    </div>
   );
 };
 

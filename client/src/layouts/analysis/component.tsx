@@ -38,7 +38,7 @@ const AnalysisLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
         </Transition>
       </aside>
 
-      <section className="relative flex-1 h-screen overflow-auto">
+      <section className="relative flex flex-col flex-1 h-screen overflow-auto">
         <div
           className={classNames(
             {

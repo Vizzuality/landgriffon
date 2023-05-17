@@ -1,3 +1,5 @@
+import { format } from 'date-fns';
+
 import Disclaimer from 'components/disclaimer';
 import Button from 'components/button';
 
@@ -44,9 +46,9 @@ const DataUploadError: React.FC<DataUploadErrorProps> = ({ task }) => {
               <h3>Upload failed</h3>
               <p className="text-gray-500">
                 Sorry, we couldn&apos;t upload your latest changes made on{' '}
-                {/* {format(new Date(sourcingLocations.data[0].updatedAt), 'MMM 4, yyyy HH:mm z')}. We */}
-                have <strong className="text-gray-900">reverted to the previous version</strong> to
-                avoid data loss. Please{' '}
+                {format(new Date(task.createdAt), 'MMM 4, yyyy HH:mm z')}. We have{' '}
+                <strong className="text-gray-900">reverted to the previous version</strong> to avoid
+                data loss. Please{' '}
                 <strong className="text-gray-900">
                   download your file to see the {task.errors.length} error
                   {task.errors.length > 1 && 's'}

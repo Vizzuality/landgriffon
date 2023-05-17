@@ -202,7 +202,7 @@ Cypress.Commands.add('interceptAllRequests', (): void => {
   cy.intercept('GET', '/api/v1/sourcing-locations*', {
     statusCode: 200,
     fixture: 'sourcing-locations/index',
-  });
+  }).as('sourcingLocations');
 
   // Sourcing record years requests
   cy.intercept('GET', '/api/v1/sourcing-records/years', {

@@ -11,6 +11,7 @@ describe('Data page', () => {
     cy.interceptAllRequests();
     cy.login();
     cy.visit('/data');
+    cy.wait('@sourcingLocations');
   });
 
   afterEach(() => {
@@ -33,12 +34,12 @@ describe('Data page', () => {
   });
 
   it('admin should be able to upload data source', () => {
-    cy.intercept('api/v1/users/me', { fixture: 'profiles/admin' });
+    cy.intercept('/api/v1/users/me', { fixture: 'profiles/admin' });
     cy.get('[data-testid="upload-data-source-btn"]').should('not.be.disabled');
   });
 
   it('not admin user should not be able to upload data source', () => {
-    cy.intercept('api/v1/users/me', { fixture: 'profiles/no-permissions' });
+    cy.intercept('/api/v1/users/me', { fixture: 'profiles/no-permissions' });
     cy.get('[data-testid="upload-data-source-btn"]').should('be.disabled');
   });
 });

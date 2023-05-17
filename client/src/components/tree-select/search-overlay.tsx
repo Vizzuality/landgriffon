@@ -20,10 +20,7 @@ interface SearchOverlayProps {
 
 const SearchOverlay = ({ options, onChange }: SearchOverlayProps) => {
   const getHandleChange = useCallback(
-    (value: TreeSelectOption['value'], disabled?: boolean) => () => {
-      if (disabled) return;
-      onChange(value);
-    },
+    (value: TreeSelectOption['value']) => onChange(value),
     [onChange],
   );
 

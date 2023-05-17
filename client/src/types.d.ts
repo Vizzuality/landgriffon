@@ -349,6 +349,7 @@ export type Task = {
   status: 'completed' | 'abort' | 'failed' | 'processing';
   errors?: Record<string, string>[];
   user?: User;
+  createdAt: string;
 };
 
 // User

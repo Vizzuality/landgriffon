@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
+// import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
@@ -128,6 +129,14 @@ const SignIn: NextPageWithLayout = () => {
             </div>
           </form>
         </div>
+        {/* <div className="my-4">
+          <p className="text-sm text-center">
+            <span className="text-white/50">Don&apos;t have an account? </span>
+            <Link href="/auth/signup" className="text-white">
+              Sign-up
+            </Link>
+          </p>
+        </div> */}
       </div>
     </>
   );

@@ -38,7 +38,7 @@ const SearchOverlay = ({ options, onChange }: SearchOverlayProps) => {
               'text-gray-900 cursor-pointer hover:bg-navy-50': !isSelected && !disabled,
             })}
             key={key}
-            onClick={!disabled && getHandleChange(key as string)}
+            onClick={() => !disabled && getHandleChange(key as string)}
           >
             {matchingParts.map(({ value, isMatch }, i) => {
               return (

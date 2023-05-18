@@ -1,114 +1,34 @@
-import classNames from 'classnames';
 import React, { useCallback, useMemo, useState } from 'react';
 import { EyeIcon } from '@heroicons/react/solid';
 
-import PreviewMap from './previewMap';
-import MaterialSettings from './materialSettings';
-import TogglePreview from './togglePreview';
+import PreviewMap from './preview-map';
+import MaterialSettings from './materials';
+import CategoryLayer from './categories/category-layer';
+import CategoryHeader from './categories/category-header';
 
 import Accordion from 'components/accordion';
 import { Button } from 'components/button';
-import InfoToolTip from 'components/info-tooltip';
 import Search from 'components/search';
-import Toggle from 'components/toggle';
 import useFuse from 'hooks/fuse';
 import { analysisMap } from 'store/features/analysis';
 import { useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
-import Loading from 'components/loading';
-import Callout from 'components/callout';
 
-import type { UseQueryResult } from '@tanstack/react-query';
 import type { UseFuseOptions } from 'hooks/fuse';
 import type { CategoryWithLayers } from 'hooks/layers/getContextualLayers';
 import type { Dispatch } from 'react';
 import type { Layer, Material } from 'types';
 import type { AnalysisMapState } from 'store/features/analysis/map';
+import type {
+  PreviewStatus,
+  CategoryLayerProps as LayerSettingsProps,
+} from './categories/category-layer/types';
 
 interface LegendSettingsProps {
   categories: CategoryWithLayers[];
   onApply?: Dispatch<{ layers: Layer[]; material: Material['id'] }>;
   onDismiss?: () => void;
 }
-
-type PreviewStatus = UseQueryResult['status'];
-
-export interface LayerSettingsProps {
-  layer: Layer;
-  onChange: (id: Layer['id'], layer: Partial<Layer>) => void;
-  onPreviewChange: (id: Layer['id'], active: boolean) => void;
-  isPreviewActive: boolean;
-  previewStatus: PreviewStatus;
-}
-
-const LayerSettings = ({
-  layer,
-  onChange,
-  onPreviewChange,
-  isPreviewActive,
-  previewStatus,
-}: LayerSettingsProps) => {
-  const onToggleVisible = useCallback(
-    (visible: boolean) => {
-      onChange(layer.id, { visible });
-    },
-    [layer.id, onChange],
-  );
-
-  const handlePreviewToggle = useCallback(
-    (active: boolean) => {
-      onPreviewChange(layer.id, active);
-    },
-    [layer.id, onPreviewChange],
-  );
-
-  return (
-    <div className="p-2 pl-8" data-testid={`layer-settings-item-${layer.metadata?.name}`}>
-      <div className="flex flex-row justify-between gap-5 place-items-center">
-        <div className="flex-grow text-sm">{layer.metadata?.name}</div>
-        <div className="flex flex-row gap-2 place-items-center">
-          <InfoToolTip icon="solid" info={layer.metadata?.description} />
-          {previewStatus === 'loading' && isPreviewActive ? (
-            <Loading />
-          ) : (
-            <TogglePreview
-              isPreviewActive={isPreviewActive}
-              onPreviewChange={handlePreviewToggle}
-            />
-          )}
-          <Toggle onChange={onToggleVisible} active={!!layer.visible} />
-        </div>
-      </div>
-      <div>
-        {previewStatus === 'error' && isPreviewActive && (
-          <Callout type="error">
-            <p>Something went wrong while loading this layer.</p>
-            <p>Please refresh and try again later.</p>
-          </Callout>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const CategoryHeader: React.FC<{
-  category: CategoryWithLayers['category'];
-  visibleLayers: number;
-}> = ({ category, visibleLayers }) => {
-  return (
-    <div className="flex flex-row justify-between" data-testid={`category-header-${category}`}>
-      <div className="text-sm font-semibold text-gray-500">{category}</div>
-      <div
-        className={classNames(
-          'w-4 h-4 my-auto text-xs font-semibold text-center text-white rounded-full',
-          visibleLayers === 0 ? 'bg-gray-200' : 'bg-navy-400',
-        )}
-      >
-        {visibleLayers}
-      </div>
-    </div>
-  );
-};
 
 interface CategorySettingsProps
   extends Pick<LayerSettingsProps, 'onPreviewChange' | 'previewStatus'> {
@@ -137,7 +57,7 @@ const CategorySettings = ({
     <Accordion.Entry header={<CategoryHeader visibleLayers={visibleLayers} category={category} />}>
       {layers.length ? (
         layers.map((layer) => (
-          <LayerSettings
+          <CategoryLayer
             isPreviewActive={layer.id === activePreviewLayerId}
             onChange={onLayerStateChange}
             layer={layer}
@@ -215,31 +135,6 @@ const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onAppl
     );
   }, [categories, filteredLayersIds, localLayerState]);
 
-  const contextualAccordionEntries = useMemo(
-    () =>
-      categories.map((cat) => (
-        <CategorySettings
-          previewStatus={previewStatus}
-          activePreviewLayerId={selectedLayerForPreview}
-          visibleLayers={cat.layers.filter((layer) => localLayerState[layer.id].visible).length}
-          layers={layerStateByCategory[cat.category]}
-          onLayerStateChange={handleLayerStateChange}
-          onPreviewChange={handleTogglePreview}
-          key={cat.category}
-          category={cat.category}
-        />
-      )),
-    [
-      categories,
-      handleLayerStateChange,
-      handleTogglePreview,
-      layerStateByCategory,
-      localLayerState,
-      previewStatus,
-      selectedLayerForPreview,
-    ],
-  );
-
   const localSelectedLayerNumber = useMemo<number>(
     () => Object.values(localLayerState).filter((l) => l.visible).length,
     [localLayerState],
@@ -270,17 +165,32 @@ const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onAppl
               onPreviewChange={handleTogglePreview}
               isPreviewActive={localLayerState.material.id === selectedLayerForPreview}
             />
-            {contextualAccordionEntries}
+            {categories.map((cat) => (
+              <CategorySettings
+                previewStatus={previewStatus}
+                activePreviewLayerId={selectedLayerForPreview}
+                visibleLayers={
+                  cat.layers.filter((layer) => localLayerState[layer.id].visible).length
+                }
+                layers={layerStateByCategory[cat.category]}
+                onLayerStateChange={handleLayerStateChange}
+                onPreviewChange={handleTogglePreview}
+                key={cat.category}
+                category={cat.category}
+              />
+            ))}
           </Accordion>
         </div>
-        <div className="flex flex-row justify-between">
-          <Button variant="secondary" onClick={onDismiss}>
+        <div className="flex flex-row gap-2 justify-between">
+          <Button variant="white" onClick={onDismiss}>
             Cancel
           </Button>
           <Button
+            className="flex-1"
             onClick={handleApply}
             variant="primary"
             data-testid="contextual-layer-apply-button"
+            disabled={localSelectedLayerNumber === 0}
           >
             Apply
           </Button>

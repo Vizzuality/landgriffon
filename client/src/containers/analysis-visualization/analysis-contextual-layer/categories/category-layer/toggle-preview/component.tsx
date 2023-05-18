@@ -30,7 +30,11 @@ const TogglePreview = ({
 
   return (
     <div className={className} onClick={disabled ? undefined : handleToggle}>
-      {isPreviewActive ? <EyeIcon className="w-4 h-4" /> : <EyeOffIcon className="w-4 h-4" />}
+      {isPreviewActive ? (
+        <EyeIcon className="w-4 h-4 text-gray-900" />
+      ) : (
+        <EyeOffIcon className="w-4 h-4 text-gray-900" />
+      )}
     </div>
   );
 };

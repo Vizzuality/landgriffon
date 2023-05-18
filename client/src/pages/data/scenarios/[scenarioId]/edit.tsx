@@ -108,10 +108,7 @@ const UpdateScenarioPage: React.FC = () => {
               <div>
                 <div className="flex items-baseline mb-4 space-x-1">
                   <h2>Growth rates</h2>
-                  <InfoTooltip
-                    icon="outline"
-                    info="Growth rates set your expectations of how  purchases of raw materials will change into the future. Add a new rule to get started."
-                  />
+                  <InfoTooltip info="Growth rates set your expectations of how  purchases of raw materials will change into the future. Add a new rule to get started." />
                 </div>
                 <div className="grid grid-cols-8 gap-4">
                   <div className="col-span-4">
@@ -142,10 +139,7 @@ const UpdateScenarioPage: React.FC = () => {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-baseline space-x-1">
                     <h2 className="flex-1">Interventions</h2>
-                    <InfoTooltip
-                      icon="outline"
-                      info="Each intervention is a specific change in sourcing. Create an intervention to get started."
-                    />
+                    <InfoTooltip info="Each intervention is a specific change in sourcing. Create an intervention to get started." />
                   </div>
                   {!isInterventionsLoading && interventions.length > 0 && (
                     <Anchor

@@ -39,8 +39,9 @@ const AccordionEntry = ({ header, children, expanded, onExpandedChange }: Accord
 
   return (
     <div
-      className={classNames('rounded-lg border border-gray-50 shadow divide-y divide-gray-100', {
-        'bg-gray-50': localIsExpanded,
+      className={classNames('rounded-lg border border-gray-200', {
+        'shadow-md': localIsExpanded,
+        'shadow-sm': !localIsExpanded,
       })}
     >
       <div
@@ -56,7 +57,7 @@ const AccordionEntry = ({ header, children, expanded, onExpandedChange }: Accord
         </div>
         <div className="flex-grow">{header}</div>
       </div>
-      {localIsExpanded && <div className="divide-y divide-gray-100">{children}</div>}
+      {localIsExpanded && <div className="pb-2">{children}</div>}
     </div>
   );
 };

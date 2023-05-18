@@ -30,7 +30,10 @@ export function useLayer({
   }, [contextualData, id]);
 
   const settings = useMemo(() => layerDeckGLProps[id] || {}, [layerDeckGLProps, id]);
-  const metadata = useMemo(() => layersMetadata[id]['metadata'], [layersMetadata, id]);
+  const metadata = useMemo(
+    () => ({ layerId: id, ...layersMetadata[id]['metadata'] }),
+    [layersMetadata, id],
+  );
 
   const layer = useMemo(() => {
     return {

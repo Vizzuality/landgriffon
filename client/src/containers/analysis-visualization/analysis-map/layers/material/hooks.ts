@@ -19,7 +19,10 @@ export function useLayer(props: LayerProps<LayerSettings>['settings']) {
   });
 
   const settings = useMemo(() => layerDeckGLProps['material'] || {}, [layerDeckGLProps]);
-  const metadata = useMemo(() => layersMetadata['material']['metadata'], [layersMetadata]);
+  const metadata = useMemo(
+    () => ({ layerId: 'material', ...layersMetadata['material']['metadata'] }),
+    [layersMetadata],
+  );
 
   const layer = useMemo(() => {
     return {

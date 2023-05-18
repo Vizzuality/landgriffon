@@ -1,10 +1,10 @@
 {
     "$schema": "./contextual_metadata_schema.json",
     "name": "Forest GHG emissions - 2001-2021",
-    "description": "Forest GHG emissions -2001-2021 (tCO2e/ha) displays the net forest greenhouse gas emissions from stand-replacing disturbances.",
+    "description": "The forest carbon emissions layer provides data on greenhouse gas emissions resulting from significant forest disturbances. It includes emissions from various carbon pools and greenhouse gases. The estimates are calculated based on global forest data and recognized guidelines.These emissions represent a gross estimate and do not account for carbon removals from subsequent regrowth. The layer complements this by considering carbon removals resulting from regrowth after clearing. The emission factor is influenced by factors such as the type of disturbance, presence of fire, and occurrence on peat. The emissions data is part of a comprehensive forest carbon flux model aimed at monitoring global carbon fluxes. It supports efforts to reduce emissions and increase carbon removals. The data is available in different units for visualization and calculation purposes, facilitating analysis at various scales.",
     "aggType": "sum",
     "legend": {
-        "name": "Net forest GHG flux - 2001-2021",
+        "name": "Forest GHG emissions - 2001-2021",
         "id": "",
         "unit": "tCO2e/ha",
         "min": 0,
@@ -42,7 +42,7 @@
             }
         ]
     },
-    "source": "Harris, N.L., D.A. Gibbs, A. Baccini, R.A. Birdsey, S. de Bruin, M. Farina, L. Fatoyinbo, M.C. Hansen, M. Herold, R.A. Houghton, P.V. Potapov, D. Requena Suarez, R.M. Roman-Cuesta, S.S. Saatchi, C.M. Slay, S.A. Turubanova, A. Tyukavina. 2021. Global maps of twenty-first century forest carbon fluxes. Nature Climate Change. https://doi.org/10.1038/s41558-020-00976-6",
+    "source": "Harris et al. 2021",
     "license":  "CC BY 4.0"
 }
 

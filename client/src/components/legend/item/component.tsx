@@ -75,7 +75,7 @@ export const LegendItem = ({
               <div className="flex flex-row items-center">
                 <div className="flex items-center gap-x-1 mt-0.5">
                   <OpacityControl opacity={opacity} onChange={onChangeOpacity} />
-                  {info && <InfoToolTip icon="outline" info={info} />}
+                  {info && <InfoToolTip info={info} />}
                   <button type="button" onClick={handleToggleActive}>
                     {isActive ? (
                       <EyeOffIcon className="w-4 h-4"></EyeOffIcon>

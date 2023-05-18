@@ -4,9 +4,9 @@ import { ChevronDoubleRightIcon } from '@heroicons/react/solid';
 
 import ContextualLegendItem from './contextual-legend-item';
 import ImpactLayer from './impact-legend-item';
-import LegendSettings from './settings';
 import MaterialLayer from './material-legend-item';
 
+import ContextualLayers from 'containers/analysis-visualization/analysis-contextual-layer';
 import Sortable from 'components/sortable';
 import { SortableItem } from 'components/sortable/component';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
@@ -179,7 +179,7 @@ export const Legend: React.FC = () => {
         open={showSettings}
         onDismiss={dismissLegendSettings}
       >
-        <LegendSettings
+        <ContextualLayers
           onApply={applyLegendSettings}
           onDismiss={dismissLegendSettings}
           categories={layersByCategory || []}

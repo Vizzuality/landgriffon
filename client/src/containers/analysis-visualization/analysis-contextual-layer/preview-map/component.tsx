@@ -3,6 +3,7 @@ import { H3HexagonLayer } from '@deck.gl/geo-layers/typed';
 
 import DeckLayer from 'components/map/layers/deck';
 import Map from 'components/map';
+import ZoomControl from 'components/map/controls/zoom';
 import LayerManager from 'components/map/layer-manager';
 import { useH3Data } from 'hooks/h3-data';
 import PageLoading from 'containers/page-loading';
@@ -23,6 +24,7 @@ interface PreviewMapProps {
 const INITIAL_PREVIEW_SETTINGS = {
   minZoom: 0,
   zoom: 1,
+  attributionControl: false,
 };
 
 const PREVIEW_LAYER_ID = 'preview';
@@ -72,12 +74,15 @@ const PreviewMap = ({ selectedLayerId, selectedMaterialId, onStatusChange }: Pre
   const layers = useMemo(() => ({ [PREVIEW_LAYER_ID]: PreviewLayer }), [PreviewLayer]);
 
   return (
-    <>
+    <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
       {isFetching && <PageLoading />}
       <Map id="contextual-preview-map" mapStyle="terrain" viewState={INITIAL_PREVIEW_SETTINGS}>
         {() => <LayerManager layers={layers} />}
       </Map>
-    </>
+      <div className="absolute z-10 w-10 space-y-2 bottom-2 right-2">
+        <ZoomControl mapId="contextual-preview-map" />
+      </div>
+    </div>
   );
 };
 

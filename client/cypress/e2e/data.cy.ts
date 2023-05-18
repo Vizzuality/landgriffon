@@ -27,11 +27,12 @@ describe('Data page', () => {
     });
   });
 
-  it('should search input be disabled', () => {
-    cy.get('input[data-testid="data-search-input"]')
-      .should('be.disabled')
-      .should('have.class', 'bg-gray-300/20');
-  });
+  // THIS FEATURE IS DISABLED
+  // it('should search input be disabled', () => {
+  //   cy.get('input[data-testid="data-search-input"]')
+  //     .should('be.disabled')
+  //     .should('have.class', 'bg-gray-300/20');
+  // });
 
   it('admin should be able to upload data source', () => {
     cy.intercept('/api/v1/users/me', { fixture: 'profiles/admin' });

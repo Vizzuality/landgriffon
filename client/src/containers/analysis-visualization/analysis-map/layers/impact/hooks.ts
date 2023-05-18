@@ -17,7 +17,10 @@ export function useLayer(props: LayerProps<LayerSettings>['settings']) {
   } = useImpactLayer();
 
   const settings = useMemo(() => layerDeckGLProps['impact'] || {}, [layerDeckGLProps]);
-  const metadata = useMemo(() => layersMetadata['impact']['metadata'], [layersMetadata]);
+  const metadata = useMemo(
+    () => ({ layerId: 'impact', ...layersMetadata['impact']['metadata'] }),
+    [layersMetadata],
+  );
 
   const layer = useMemo(() => {
     return {

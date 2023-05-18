@@ -22,11 +22,18 @@ import type { MapStyle } from 'components/map/types';
 import type { BasemapValue } from 'components/map/controls/basemap/types';
 import type { Layer, Legend as LegendType } from 'types';
 
-const getValueInRange = (value: number, legendInfo: LegendType): string => {
-  const threshold = legendInfo.items.map((item) => item.value);
-  const rangeValues = legendInfo.items.map((item) => item.label);
-  const scale = scaleByLegendType(legendInfo?.type, threshold as number[], rangeValues);
-  return scale(value);
+const getLegendScale = (legendInfo: LegendType) => {
+  if (legendInfo?.type === 'range' || legendInfo?.type === 'category') {
+    const threshold = legendInfo.items.map((item) => item.value);
+    const rangeValues = legendInfo.items.map((item) => item.label);
+    const scale = scaleByLegendType(legendInfo?.type, threshold as number[], rangeValues);
+    return scale;
+  }
+  return (value: number) => {
+    if (!value) return null;
+    if (!Number.isNaN(value)) return NUMBER_FORMAT(Number(value));
+    return value.toString();
+  };
 };
 
 const AnalysisMap = () => {
@@ -38,26 +45,32 @@ const AnalysisMap = () => {
   const handleViewState = useCallback((viewState: ViewState) => setViewState(viewState), []);
   const [tooltipData, setTooltipData] = useState(null);
 
+  // Pre-Calculating legend scales
+  const legendScales = useMemo(() => {
+    const scales = {};
+    Object.values(layers).forEach((layer) => {
+      scales[layer.id] = getLegendScale(layer.metadata?.legend);
+    });
+    return scales;
+  }, [layers]);
+
   // Loading layers
   const { isError, isFetching } = useImpactLayer();
 
   const onHoverLayer = useCallback(
     (
       { object, coordinate, viewport, x, y }: Parameters<H3HexagonLayerProps['onHover']>[0],
-      metadata: Layer['metadata'],
+      metadata: Layer['metadata'] & { layerId?: string },
     ): void => {
-      const v =
-        metadata?.legend?.type === 'range'
-          ? getValueInRange(object?.v, metadata?.legend)
-          : NUMBER_FORMAT(Number(object?.v));
-
       setTooltipData({
         x,
         y,
         viewport,
         data: {
           ...object,
-          v,
+          v: legendScales[metadata?.layerId]
+            ? legendScales[metadata?.layerId](object?.v)
+            : object?.v,
           coordinate,
           name: metadata?.name || metadata?.legend.name,
           unit: metadata?.legend?.unit,
@@ -65,7 +78,7 @@ const AnalysisMap = () => {
         },
       });
     },
-    [setTooltipData],
+    [legendScales],
   );
 
   const handleMapStyleChange = useCallback((newStyle: BasemapValue) => {

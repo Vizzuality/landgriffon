@@ -39,6 +39,23 @@ export const storeToQueryParams = ({
 
 export const scaleByLegendType = (
   type: Legend['type'],
+  threshold: number[],
+  rangeValues: string[],
+): ScaleOrdinal<number, string> | ScaleThreshold<number, string> => {
+  switch (type) {
+    case 'category':
+      return scaleOrdinal<number, string>()
+        .domain(threshold as number[])
+        .range(rangeValues);
+    default:
+      return scaleThreshold<number, string>()
+        .domain(threshold as number[])
+        .range(rangeValues);
+  }
+};
+
+export const colorScaleByLegendType = (
+  type: Legend['type'],
   threshold: Legend['items'][0]['value'][],
   colors: H3Item['c'][],
 ): ScalesType => {

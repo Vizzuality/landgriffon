@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { XCircleIcon } from '@heroicons/react/solid';
 
+import { scaleByLegendType } from 'hooks/h3-data/utils';
 import LayerManager from 'components/map/layer-manager';
 import { useAppSelector } from 'store/hooks';
 import { analysisMap } from 'store/features/analysis';
@@ -19,6 +20,14 @@ import type { H3HexagonLayerProps } from '@deck.gl/geo-layers/typed';
 import type { ViewState } from 'react-map-gl';
 import type { MapStyle } from 'components/map/types';
 import type { BasemapValue } from 'components/map/controls/basemap/types';
+import type { Layer, Legend as LegendType } from 'types';
+
+const getValueInRange = (value: number, legendInfo: LegendType): string => {
+  const threshold = legendInfo.items.map((item) => item.value);
+  const rangeValues = legendInfo.items.map((item) => item.label);
+  const scale = scaleByLegendType(legendInfo?.type, threshold as number[], rangeValues);
+  return scale(value);
+};
 
 const AnalysisMap = () => {
   const { layers } = useAppSelector(analysisMap);
@@ -35,17 +44,24 @@ const AnalysisMap = () => {
   const onHoverLayer = useCallback(
     (
       { object, coordinate, viewport, x, y }: Parameters<H3HexagonLayerProps['onHover']>[0],
-      metadata,
+      metadata: Layer['metadata'],
     ): void => {
+      const v =
+        metadata?.legend?.type === 'range'
+          ? getValueInRange(object?.v, metadata?.legend)
+          : NUMBER_FORMAT(Number(object?.v));
+
       setTooltipData({
         x,
         y,
         viewport,
         data: {
           ...object,
+          v,
           coordinate,
           name: metadata?.name || metadata?.legend.name,
           unit: metadata?.legend?.unit,
+          legend: metadata?.legend,
         },
       });
     },
@@ -100,7 +116,7 @@ const AnalysisMap = () => {
               >
                 <div className="p-4 space-y-2 bg-white rounded-md shadow-md">
                   <div className="text-sm font-semibold text-gray-900">
-                    {NUMBER_FORMAT(Number(tooltipData.data.v))}
+                    {tooltipData.data.v}
                     {tooltipData.data.unit && ` ${tooltipData.data.unit}`}
                   </div>
                   <div className="text-xs text-gray-500">{tooltipData.data.name}</div>

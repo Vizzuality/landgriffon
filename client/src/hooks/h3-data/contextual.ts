@@ -1,7 +1,7 @@
 import { useQuery, useQueries } from '@tanstack/react-query';
 import chroma from 'chroma-js';
 
-import { DEFAULT_QUERY_OPTIONS, scaleByLegendType } from './utils';
+import { DEFAULT_QUERY_OPTIONS, colorScaleByLegendType } from './utils';
 
 import { apiRawService } from 'services/api';
 import { analysisFilters, analysisMap } from 'store/features/analysis';
@@ -20,7 +20,7 @@ const responseContextualParser = (response: AxiosResponse<H3APIResponse>): H3API
   const threshold = items.map((item) => item.value);
   const colors = items.map((item) => chroma(item.color).rgb());
 
-  const scale = scaleByLegendType(type, threshold, colors);
+  const scale = colorScaleByLegendType(type, threshold, colors);
 
   const h3DataWithColor: H3Item[] = data.map(
     (d: H3Item): H3Item => ({

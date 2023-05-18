@@ -22,7 +22,6 @@ import type { MapStyle } from 'components/map/types';
 import type { BasemapValue } from 'components/map/controls/basemap/types';
 import type { Layer, Legend as LegendType } from 'types';
 
-<<<<<<< HEAD
 const getLegendScale = (legendInfo: LegendType) => {
   if (legendInfo?.type === 'range' || legendInfo?.type === 'category') {
     const threshold = legendInfo.items.map((item) => item.value);
@@ -35,13 +34,6 @@ const getLegendScale = (legendInfo: LegendType) => {
     if (!Number.isNaN(value)) return NUMBER_FORMAT(Number(value));
     return value.toString();
   };
-=======
-const getValueInRange = (value: number, legendInfo: LegendType): string => {
-  const threshold = legendInfo.items.map((item) => item.value);
-  const rangeValues = legendInfo.items.map((item) => item.label);
-  const scale = scaleByLegendType(legendInfo?.type, threshold as number[], rangeValues);
-  return scale(value);
->>>>>>> 552c41e8 (update legend pop-up in map view)
 };
 
 const AnalysisMap = () => {
@@ -68,30 +60,17 @@ const AnalysisMap = () => {
   const onHoverLayer = useCallback(
     (
       { object, coordinate, viewport, x, y }: Parameters<H3HexagonLayerProps['onHover']>[0],
-<<<<<<< HEAD
       metadata: Layer['metadata'] & { layerId?: string },
-=======
-      metadata: Layer['metadata'],
->>>>>>> 552c41e8 (update legend pop-up in map view)
     ): void => {
-      const v =
-        metadata?.legend?.type === 'range'
-          ? getValueInRange(object?.v, metadata?.legend)
-          : NUMBER_FORMAT(Number(object?.v));
-
       setTooltipData({
         x,
         y,
         viewport,
         data: {
           ...object,
-<<<<<<< HEAD
           v: legendScales[metadata?.layerId]
             ? legendScales[metadata?.layerId](object?.v)
             : object?.v,
-=======
-          v,
->>>>>>> 552c41e8 (update legend pop-up in map view)
           coordinate,
           name: metadata?.name || metadata?.legend.name,
           unit: metadata?.legend?.unit,

@@ -48,12 +48,18 @@ const DataUploadError: React.FC<DataUploadErrorProps> = ({ task }) => {
                 Sorry, we couldn&apos;t upload your latest changes made on{' '}
                 {format(new Date(task.createdAt), 'MMM 4, yyyy HH:mm z')}. We have{' '}
                 <strong className="text-gray-900">reverted to the previous version</strong> to avoid
-                data loss. Please{' '}
+                data loss. There had been{' '}
+                <strong className="text-gray-900">
+                  {task.errors.length} error
+                  {task.errors.length > 1 && 's'}
+                </strong>
+                . Please, correct them and try uploading again.
+                {/* Please{' '}
                 <strong className="text-gray-900">
                   download your file to see the {task.errors.length} error
                   {task.errors.length > 1 && 's'}
                 </strong>
-                , correct them and try uploading again.
+                , correct them and try uploading again. */}
               </p>
             </>
           )}

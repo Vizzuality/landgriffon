@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { merge } from 'lodash-es';
 import { PlusIcon, DownloadIcon } from '@heroicons/react/solid';
-import { useDebounceCallback } from '@react-hook/debounce';
+// import { useDebounceCallback } from '@react-hook/debounce'; FEATURE DISABLED
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/router';
@@ -9,10 +9,10 @@ import { useRouter } from 'next/router';
 import useModal from 'hooks/modals';
 import { useSourcingLocations, useSourcingLocationsMaterials } from 'hooks/sourcing-locations';
 import DownloadMaterialsDataButton from 'containers/admin/download-materials-data-button';
-import YearsRangeFilter, { useYearsRange } from 'containers/filters/years-range';
+// import YearsRangeFilter, { useYearsRange } from 'containers/filters/years-range'; FEATURE DISABLED
 import DataUploader from 'containers/uploader';
 import Button, { Anchor } from 'components/button';
-import Search from 'components/search';
+// import Search from 'components/search'; FEATURE DISABLED
 import Modal from 'components/modal';
 import Table from 'components/table';
 import { DEFAULT_PAGE_SIZES } from 'components/table/pagination/constants';
@@ -23,6 +23,8 @@ import type { PaginationState, SortingState, VisibilityState } from '@tanstack/r
 import type { TableProps } from 'components/table/component';
 import type { Task } from 'types';
 
+const YEARS_COLUMNS_UNIT = 't/yr';
+
 const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
   const { push, query } = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -30,17 +32,18 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
   const { hasRole } = usePermissions();
   const isAdmin = hasRole(RoleName.ADMIN);
 
-  // Search
-  const [searchText, setSearchText] = useState<string>('');
   const [pagination, setPagination] = useState<PaginationState>({
     pageSize: DEFAULT_PAGE_SIZES[0],
     pageIndex: !!query.page ? Number(query.page) : 1,
   });
-  const handleSearch = useDebounceCallback((term) => {
-    setSearchText(term);
-    // reset pagination to first page when search term changes
-    setPagination(() => ({ ...pagination, pageIndex: 1 }));
-  }, 600);
+
+  // Search FEATURE DISABLED
+  // const [searchText, setSearchText] = useState<string>('');
+  // const handleSearch = useDebounceCallback((term) => {
+  //   setSearchText(term);
+  //   // reset pagination to first page when search term changes
+  //   setPagination(() => ({ ...pagination, pageIndex: 1 }));
+  // }, 600);
 
   // Getting sourcing locations to extract the update date
   const { data: sourcingLocations, isLoading: isSourcingLocationsLoading } = useSourcingLocations({
@@ -59,7 +62,7 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
         orderBy: sorting[0].id,
         order: sorting[0].desc ? 'desc' : 'asc',
       }),
-      search: searchText,
+      // search: searchText, FEATURE DISABLED
       'page[size]': pagination.pageSize,
       'page[number]': pagination.pageIndex,
     },
@@ -84,10 +87,11 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
     [sourcingData],
   );
 
+  // FEATURE DISABLED
   // Getting the years range by filtering the years from the data
-  const { startYear, endYear, yearsInRange, setYearsRange } = useYearsRange({
-    years: yearsFromData,
-  });
+  // const { startYear, endYear, yearsInRange, setYearsRange } = useYearsRange({
+  //   years: yearsFromData,
+  // });
 
   // Preparing table columns by years from the range of filters
   const yearsData = useMemo(() => {
@@ -96,7 +100,9 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
         id: `${year}`,
         title: `${year}`,
         width: 80,
-        visible: yearsInRange.includes(year),
+        visible: true,
+        // FEATURE DISABLED
+        // yearsInRange.includes(year),
       })),
       data: sourcingData.map((dataRow) => ({
         ...dataRow,
@@ -105,7 +111,7 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
           .reduce((a, b) => ({ ...a, ...b })),
       })),
     };
-  }, [yearsFromData, sourcingData, yearsInRange]);
+  }, [yearsFromData, sourcingData]);
 
   /** Data fot the table */
   const yearsColumns = useMemo(
@@ -114,6 +120,7 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
         id: column.id,
         title: column.title,
         isVisible: column.visible,
+        cell: ({ row }) => <div>{`${row.original?.[column.id]} ${YEARS_COLUMNS_UNIT}`}</div>,
       })),
     [yearsData.columns],
   );
@@ -179,23 +186,25 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
       <div className="flex flex-col h-full space-y-6">
         <div className="flex w-full gap-2">
           <div className="flex-1">
-            <Search
+            {/* FEATURE TEMPORARILY DISABLED */}
+            {/* <Search
               value={searchText}
               placeholder="Search table"
               onChange={handleSearch}
               autoFocus
               disabled
               data-testid="data-search-input"
-            />
+            /> */}
           </div>
-          <YearsRangeFilter
+          {/* FEATURE TEMPORARILY DISABLED */}
+          {/* <YearsRangeFilter
             startYear={startYear}
             endYear={endYear}
             years={yearsFromData}
             onChange={setYearsRange}
             placeholderFrom="Select a year"
             placeholderTo="Select a year"
-          />
+          /> */}
           <DownloadMaterialsDataButton onError={(errorMessage) => toast.error(errorMessage)} />
           <Button
             variant="primary"
@@ -251,15 +260,16 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
             enableMultiRowSelection={false}
             onPaginationChange={setPagination}
             onSortingChange={setSorting}
-            noDataMessage={
-              sourcingData.length === 0 && searchText !== '' ? (
-                <span>
-                  No data found for the search term <strong>{searchText}</strong>
-                </span>
-              ) : (
-                'No data found'
-              )
-            }
+            // FEATURE DISABLED
+            // noDataMessage={
+            //   sourcingData.length === 0 && searchText !== '' ? (
+            //     <span>
+            //       No data found for the search term <strong>{searchText}</strong>
+            //     </span>
+            //   ) : (
+            //     'No data found'
+            //   )
+            // }
           />
         </div>
       </div>

@@ -58,7 +58,7 @@ def download_ghg(url: str, name: str, store_path: str) -> Union[Path, None]:
     # log.info(f"Downloading {name} tile from {url}")
     filename = Path(store_path) / f"{name}.tif"
     if filename.exists():
-        return
+        return filename
     with requests.Session() as s:
         # define some retry policies because GFW api is flaky as hell
         try:

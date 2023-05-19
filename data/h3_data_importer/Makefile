@@ -7,17 +7,20 @@
 PARALLELIZATION_FACTOR=10
 
 AWS_S3_BUCKET_URL=s3://landgriffon-raw-data
+
 WORKDIR_MAPSPAM=data/mapspam
 WORKDIR_GLW3=data/glw3
 WORKDIR_WATER_FOOTPRINT=data/waterFootprint
-WORKDIR_DEFORESTATION=data/hansen_loss
 WORKDIR_SPECIESRICHNESS=data/satelligence/species_richness
 WORKDIR_ABOVEGROUNDBIOMASS=data/satelligence/above_ground_biomass
 WORKDIR_SATDEFORESTATION=data/satelligence/deforestation
 WORKDIR_AQUEDUCT=data/contextual/aqueduct
 WORKDIR_HDI=data/contextual/hdi
+WORKDIR_DEFORESTATION=data/hansen_loss
 WORKDIR_GHG=data/forest_ghg
 WORKDIR_WOODPULP=data/woodpulp
+
+CHECKSUMS_PATH=data_checksums
 
 export AWS_ACCESS_KEY_ID = $(DATA_S3_ACCESS_KEY)
 export AWS_SECRET_ACCESS_KEY = $(DATA_S3_SECRET_KEY)
@@ -330,15 +333,24 @@ convert-water-footprint: get-bwf_irrigated_prod
 	python raster_folder_to_h3_table.py $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint h3_grid_wf_global indicator UWU_T 2005 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 
-convert-deforestation: preprocess-deforestation
+download-deforestation:
+	# download and check
+	mkdir -p $(WORKDIR_DEFORESTATION)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/deforestation $(WORKDIR_DEFORESTATION)
+	cd $(WORKDIR_DEFORESTATION) && sha256sum --check ../../$(CHECKSUMS_PATH)/deforestation
+
+convert-deforestation: download-deforestation
 	@echo "Converting deforestation data... "
-	python raster_folder_to_h3_table.py data/hansen_loss/Hansen_GFC_2020_lossyear/merged_tiles h3_grid_deforestation_global \
-		indicator DF_LUC_T 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_DEFORESTATION) h3_grid_deforestation_global indicator DF_LUC_T 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
+download-forestGHG:
+	mkdir -p $(WORKDIR_GHG)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/forestGHG $(WORKDIR_GHG)
+	cd $(WORKDIR_GHG) && sha256sum --check ../../$(CHECKSUMS_PATH)/forestGHG
 
-convert-forestGHG: preprocess-forestGHG
+convert-forestGHG: download-forestGHG
 	@echo "Converting forest GHG data..."
-	python raster_folder_to_h3_table.py $(WORKDIR_GHG)/resampled/merged_tiles h3_grid_ghg_global indicator GHG_LUC_T 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_GHG) h3_grid_ghg_global indicator GHG_LUC_T 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 ##################################
 #        Satelligence data       #

@@ -1,8 +1,8 @@
 import argparse
 import json
-import logging
+import os
 from functools import partial
-from multiprocessing import Pool
+from multiprocessing import set_start_method
 from pathlib import Path
 from typing import Tuple, Union
 
@@ -12,12 +12,15 @@ import requests
 from rasterio.enums import Resampling
 from rasterio.warp import calculate_default_transform, reproject
 from requests.adapters import HTTPAdapter
-from tqdm import tqdm
+from tqdm.contrib.concurrent import process_map
 from urllib3 import Retry
 from urllib3.exceptions import MaxRetryError
 
-logging.basicConfig(level=logging.INFO)
-log = logging.getLogger("preprocess_forestGHG")
+set_start_method("spawn", force=True)
+
+
+# logging.basicConfig(level=logging.INFO)
+# log = logging.getLogger("preprocess_forestGHG")
 
 
 def parse_json(json_file: str) -> Tuple[str, str]:
@@ -52,7 +55,10 @@ def download_ghg(url: str, name: str, store_path: str) -> Union[Path, None]:
     Path or None
         Path is returned if download is successful, None otherwise
     """
-    log.info(f"Downloading {name} tile from {url}")
+    # log.info(f"Downloading {name} tile from {url}")
+    filename = Path(store_path) / f"{name}.tif"
+    if filename.exists():
+        return
     with requests.Session() as s:
         # define some retry policies because GFW api is flaky as hell
         try:
@@ -60,26 +66,15 @@ def download_ghg(url: str, name: str, store_path: str) -> Union[Path, None]:
             s.mount("https://", HTTPAdapter(max_retries=retries))
             r = s.get(url, stream=True)
         except MaxRetryError:
-            log.error(
-                f"Tile {name} download returned bad status code {r.status_code} and retries failed. Url: {url}"
-            )
+            # log.error(f"Tile {name} download returned bad status code {r.status_code} and retries failed. Url: {url}")
             return
         if r.status_code == 200:
-            filename = Path(store_path) / f"{name}.tif"
-            total = int(r.headers.get("content-length", 0))
-            with open(filename, "wb") as f, tqdm(
-                desc=name,
-                total=total,
-                unit="iB",
-                unit_scale=True,
-                unit_divisor=1024,
-            ) as bar:
+            with open(filename, "wb") as f:
                 for chunk in r.iter_content(chunk_size=1024):
-                    size = f.write(chunk)
-                    bar.update(size)
+                    f.write(chunk)
             return filename
         else:
-            log.error(f"Tile {name} download returned bad status code {r.status_code}. Url: {url}")
+            # log.error(f"Tile {name} download returned bad status code {r.status_code}. Url: {url}")
             return
 
 
@@ -112,16 +107,13 @@ def process_ghg(ghg_file: Path, hansen_file: Path, outfile: Path) -> Path:
     """
     with rio.open(ghg_file) as ref, rio.open(hansen_file) as hansen_src:
         if ref.transform != hansen_src.transform:
-            log.error(
-                f"{ghg_file} and {hansen_file} don't have the same Transform."
-                f" Can't compute masking."
-            )
+            # log.error(f"{ghg_file} and {hansen_file} don't have the same Transform." f" Can't compute masking.")
             raise ValueError("Rasters have different transform")
 
         dest_profile = ref.profile.copy()
         dest_profile["nodata"] = 0
         with rio.open(outfile, "w", **dest_profile) as dest:
-            log.info(f"Filtering {ghg_file} and writing to {outfile}...")
+            # log.info(f"Filtering {ghg_file} and writing to {outfile}...")
             for ij, win in ref.block_windows(1):
                 # sanity check that window transform is the same
                 ghg = ref.read(1, window=win)
@@ -130,7 +122,7 @@ def process_ghg(ghg_file: Path, hansen_file: Path, outfile: Path) -> Path:
                 # convert nan to 0 to avoid having both nan and 0 coexisting as nodata
                 result = np.nan_to_num(result)
                 dest.write(result, window=win, indexes=1)
-            log.info(f"Done wrinting to {outfile}...")
+            # log.info(f"Done wrinting to {outfile}...")
     return outfile
 
 
@@ -146,7 +138,7 @@ def resample_ghg(ghg_file: Path, dst_file: Path, dst_resolution: Tuple[float, fl
     dst_resolution: tuple[float, float]
         final resolution in the units of the ghg raster crs (degrees normally)
     """
-    log.info(f"Resampling {ghg_file} to resolution {dst_resolution}...")
+    # log.info(f"Resampling {ghg_file} to resolution {dst_resolution}...")
     with rio.open(ghg_file) as src:
         dst_transf, dst_width, dst_height = calculate_default_transform(
             src.crs, src.crs, src.width, src.height, *src.bounds, resolution=dst_resolution
@@ -165,7 +157,7 @@ def resample_ghg(ghg_file: Path, dst_file: Path, dst_resolution: Tuple[float, fl
             )
 
 
-def main(out_folder: str, hansen_folder: str, tile_name: str, url: str) -> None:
+def main(remove_intermediates: bool, out_folder: str, hansen_folder: str, tile_name_url: tuple) -> None:
     """Processing pipeline for a single raster
         - Download
         - Filter according to the given hansen loss
@@ -174,20 +166,23 @@ def main(out_folder: str, hansen_folder: str, tile_name: str, url: str) -> None:
     This function is used as the entrypoint in each process spawned by the
     multiprocessing pool
     """
+    tile_name, url = tile_name_url  # bypass the use of starmap to map by giving a tuple
     filename = download_ghg(url, tile_name, out_folder)
     if not filename:
         return  # early return to avoid exceptions since the download failed.
-    hansen_file = Path(hansen_folder) / f"{tile_name}.tif"
+    hansen_file = Path(hansen_folder) / "tiles" / f"{tile_name}.tif"
     if not hansen_file.exists():
-        log.error(f"Couldn't find hansen tile {hansen_file} to use as mask.")
+        # log.error(f"Couldn't find hansen tile {hansen_file} to use as mask.")
         raise FileNotFoundError(f"Hansen tile {tile_name} not found")
     out_file = filename.with_name(filename.stem + "_2020" + filename.suffix)
     ghg_file = process_ghg(filename, hansen_file, out_file)
-    resampled_out_file = (
-        Path(out_folder) / "resampled" / (out_file.stem + "_10km" + out_file.suffix)
-    )
+    resampled_out_file = Path(out_folder) / "resampled" / (out_file.stem + "_10km" + out_file.suffix)
     resample_ghg(ghg_file, resampled_out_file, (0.0833333333333286, 0.0833333333333286))
-    log.info(f"Done with {tile_name}")
+    # log.info(f"Done with {tile_name}")
+    if remove_intermediates:
+        os.remove(filename)
+        os.remove(hansen_file)
+        os.remove(ghg_file)
 
 
 if __name__ == "__main__":
@@ -196,8 +191,10 @@ if __name__ == "__main__":
     parser.add_argument("out_folder")
     parser.add_argument("hansen_folder")
     parser.add_argument("--processes", type=int, default=10)
+    parser.add_argument("--remove_intermediates", action="store_true", default=False)
     args = parser.parse_args()
 
-    main_part = partial(main, args.out_folder, args.hansen_folder)
-    with Pool(processes=args.processes) as pool:
-        pool.starmap(main_part, parse_json(args.urls_list))
+    main_part = partial(main, args.remove_intermediates, args.out_folder, args.hansen_folder)
+
+    tiles = list(parse_json(args.urls_list))
+    process_map(main_part, tiles, max_workers=args.processes)

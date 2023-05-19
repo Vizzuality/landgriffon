@@ -111,9 +111,12 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
     expect(response.body.data).toEqual(
       expect.arrayContaining([
-        { h: '861203a6fffffff', v: '500.00' },
-        { h: '861203a5fffffff', v: '617.00' },
-        { h: '861203a4fffffff', v: '1117.00' },
+        { h: '861203a6fffffff', v: '500.0000' },
+        {
+          h: '861203a5fffffff',
+          v: '617.0000',
+        },
+        { h: '861203a4fffffff', v: '1117.0000' },
       ]),
     );
     expect(response.body.metadata.unit).toEqual('tonnes');
@@ -138,7 +141,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         });
 
       expect(response.body.data).toEqual(
-        expect.arrayContaining([{ h: '821207fffffffff', v: '2234.00' }]),
+        expect.arrayContaining([{ h: '821207fffffffff', v: '2234.0000' }]),
       );
       expect(response.body.metadata).toEqual({
         quantiles: [0, 2234, 2234, 2234, 2234, 2234, 2234],
@@ -157,7 +160,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         });
 
       expect(response.body.data).toEqual(
-        expect.arrayContaining([{ h: '841203bffffffff', v: '2234.00' }]),
+        expect.arrayContaining([{ h: '841203bffffffff', v: '2234.0000' }]),
       );
       expect(response.body.metadata).toEqual({
         quantiles: [0, 2234, 2234, 2234, 2234, 2234, 2234],
@@ -177,9 +180,12 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a6fffffff', v: '500.00' },
-          { h: '861203a5fffffff', v: '617.00' },
-          { h: '861203a4fffffff', v: '1117.00' },
+          { h: '861203a6fffffff', v: '500.0000' },
+          {
+            h: '861203a5fffffff',
+            v: '617.0000',
+          },
+          { h: '861203a4fffffff', v: '1117.0000' },
         ]),
       );
       expect(response.body.metadata.unit).toEqual('tonnes');
@@ -207,8 +213,8 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a4fffffff', v: '617.00' },
-          { h: '861203a5fffffff', v: '617.00' },
+          { h: '861203a5fffffff', v: '617.0000' },
+          { h: '861203a4fffffff', v: '617.0000' },
         ]),
       );
       expect(response.body.metadata).toEqual({
@@ -242,8 +248,8 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a4fffffff', v: '617.00' },
-          { h: '861203a5fffffff', v: '617.00' },
+          { h: '861203a5fffffff', v: '617.0000' },
+          { h: '861203a4fffffff', v: '617.0000' },
         ]),
       );
       expect(response.body.metadata).toEqual({
@@ -265,8 +271,8 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a4fffffff', v: '617.00' },
-          { h: '861203a5fffffff', v: '617.00' },
+          { h: '861203a5fffffff', v: '617.0000' },
+          { h: '861203a4fffffff', v: '617.0000' },
         ]),
       );
       expect(response.body.metadata).toEqual({
@@ -288,8 +294,14 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a4fffffff', v: '617.00' },
-          { h: '861203a5fffffff', v: '617.00' },
+          {
+            h: '861203a5fffffff',
+            v: '617.0000',
+          },
+          {
+            h: '861203a4fffffff',
+            v: '617.0000',
+          },
         ]),
       );
       expect(response.body.metadata).toEqual({
@@ -311,8 +323,8 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a4fffffff', v: '617.00' },
-          { h: '861203a5fffffff', v: '617.00' },
+          { h: '861203a5fffffff', v: '617.0000' },
+          { h: '861203a4fffffff', v: '617.0000' },
         ]),
       );
       expect(response.body.metadata).toEqual({
@@ -334,8 +346,8 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a4fffffff', v: '617.00' },
-          { h: '861203a5fffffff', v: '617.00' },
+          { h: '861203a5fffffff', v: '617.0000' },
+          { h: '861203a4fffffff', v: '617.0000' },
         ]),
       );
       expect(response.body.metadata).toEqual({
@@ -361,9 +373,12 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a4fffffff', v: '1042.00' },
-          { h: '861203a5fffffff', v: '592.00' },
-          { h: '861203a6fffffff', v: '450.00' },
+          { h: '861203a6fffffff', v: '450.0000' },
+          {
+            h: '861203a5fffffff',
+            v: '592.0000',
+          },
+          { h: '861203a4fffffff', v: '1042.0000' },
         ]),
       );
       expect(response.body.metadata).toBeDefined();

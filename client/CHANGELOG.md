@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Hide the manage data table search bar and years filter.[LANDGRIF-1310](https://vizzuality.atlassian.net/browse/LANDGRIF-1310)
 - Add unit for the volumes in the procurement data table view.[LANDGRIF-1315](https://vizzuality.atlassian.net/browse/LANDGRIF-1315)
 - Showing correct value for contextual layer type range in the pop-up. [LANDGRIF-1317](https://vizzuality.atlassian.net/browse/LANDGRIF-1317)
+- Changed the layers info from a tooltip for a modal.[LANDGRIF-1341](https://vizzuality.atlassian.net/browse/LANDGRIF-1341) 
 - Signup removed from auth page.[LANDGRIF-1314](https://vizzuality.atlassian.net/browse/LANDGRIF-1314) 
 - Updated date and time format in the upload data page, also added the author [LANDGRIF-1297](https://vizzuality.atlassian.net/browse/LANDGRIF-1297)
 - Changed table style. [LANDGRIF-1299](https://vizzuality.atlassian.net/browse/LANDGRIF-1299)

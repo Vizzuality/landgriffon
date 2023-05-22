@@ -76,7 +76,11 @@ const ContextualLegendItem = ({ layer }: ContextualLegendItemProps) => {
       isLoading={areLayersLoading || isLoadingData}
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       name={layer.metadata!.legend.name}
-      info={layer.metadata?.description}
+      info={{
+        description: layer.metadata?.description,
+        source: layer.metadata?.source,
+        title: layer.metadata.name,
+      }}
       opacity={layer.opacity}
       {...layer.metadata?.legend}
       onChangeOpacity={handleOpacity}

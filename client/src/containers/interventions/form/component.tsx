@@ -486,7 +486,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     }
 
     // * resets supplier and producer info whenever the intervention type changes
-    if (currentInterventionType !== InterventionTypes.Efficiency) {
+    if (!intervention && currentInterventionType !== InterventionTypes.Efficiency) {
       resetField('newT1SupplierId', { defaultValue: defaultSupplier });
       resetField('newProducerId', { defaultValue: defaultProducer });
     }

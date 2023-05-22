@@ -59,11 +59,16 @@ const ImpactLayer = () => {
 
   if (!layer.metadata) return null;
   // TODO: add Loading component
+
   return (
     <LegendItem
       isActive={layer.active}
       onToggle={onToggleLayer}
-      info={indicator?.metadata?.description}
+      info={{
+        source: indicator?.metadata?.source,
+        description: indicator?.metadata?.description,
+        title: name,
+      }}
       {...layer.metadata.legend}
       name={name}
       opacity={layer.opacity}

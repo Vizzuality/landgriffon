@@ -105,7 +105,11 @@ const MaterialLayer = () => {
       isActive={layer.active}
       onToggle={onToggleLayer}
       name={Selector}
-      info={material?.metadata?.name}
+      info={{
+        title: material?.metadata?.name,
+        description: material?.metadata?.overview,
+        source: material?.metadata?.source,
+      }}
       {...data?.metadata?.legend}
       unit={data?.metadata?.unit}
       showToolbar

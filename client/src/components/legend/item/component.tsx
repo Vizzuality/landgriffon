@@ -5,19 +5,19 @@ import { useCallback } from 'react';
 import OpacityControl from './opacityControl';
 import DragHandle from './dragHandle';
 import { ComparisonToggle } from './comparisonModeToggle';
+import InfoModal from './info-modal';
 
-import InfoToolTip from 'components/info-tooltip/component';
 import Loading from 'components/loading';
 import { useAppSelector } from 'store/hooks';
 import { scenarios } from 'store/features/analysis';
 
 import type { Dispatch } from 'react';
+import type { InfoModalProps } from './info-modal';
 
 export type LegendItemProps = {
   name: React.ReactNode;
-  info?: string;
+  info?: InfoModalProps['info'];
   unit?: string;
-  description?: string;
   isLoading?: boolean;
   showToolbar?: boolean;
   children?: React.ReactNode;
@@ -75,7 +75,7 @@ export const LegendItem = ({
               <div className="flex flex-row items-center">
                 <div className="flex items-center gap-x-1 mt-0.5">
                   <OpacityControl opacity={opacity} onChange={onChangeOpacity} />
-                  {info && <InfoToolTip info={info} />}
+                  {info && <InfoModal info={info} />}
                   <button type="button" onClick={handleToggleActive}>
                     {isActive ? (
                       <EyeOffIcon className="w-4 h-4"></EyeOffIcon>

@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { format } from 'date-fns';
 
+import UploadIcon from 'components/icons/upload-icon';
 import Disclaimer from 'components/disclaimer';
 import Button from 'components/button';
 
@@ -18,13 +20,31 @@ type DataUploadErrorProps = {
 };
 
 const DataUploadError: React.FC<DataUploadErrorProps> = ({ task }) => {
-  // Do not show disclaimer if there is not any error and task is completed
-  if (task?.status === 'completed' && task?.errors.length === 0) return null;
+  const [open, setOpen] = useState(true);
 
   return (
-    <Disclaimer variant={VARIANT_STATUS[task.status] || 'default'}>
+    <Disclaimer
+      open={open}
+      variant={
+        task?.status === 'completed' && task?.errors.length === 0
+          ? 'default'
+          : VARIANT_STATUS[task.status] || 'default'
+      }
+      icon={task?.status === 'completed' && task?.errors.length === 0 && <UploadIcon />}
+    >
       <div className="flex w-full space-x-6 items-center">
         <div className="space-y-1.5 flex-1">
+          {task?.status === 'completed' && task?.errors.length === 0 && (
+            <>
+              <h3>Upload completed</h3>
+              <p className="text-gray-500">
+                Great news! Your latest changes made on{' '}
+                {format(new Date(task.createdAt), 'MMM 4, yyyy HH:mm z')} have been successfully
+                uploaded.
+              </p>
+            </>
+          )}
+
           {task?.status === 'completed' && task?.errors.length > 0 && (
             <>
               <h3>Upload completed with errors</h3>
@@ -65,9 +85,15 @@ const DataUploadError: React.FC<DataUploadErrorProps> = ({ task }) => {
           )}
         </div>
         <div className="flex-none">
-          <Button variant="white" disabled>
-            Download
-          </Button>
+          {task?.status === 'completed' && task?.errors.length === 0 ? (
+            <Button variant="white" onClick={() => setOpen(false)}>
+              Close
+            </Button>
+          ) : (
+            <Button variant="white" disabled>
+              Download
+            </Button>
+          )}
         </div>
       </div>
     </Disclaimer>

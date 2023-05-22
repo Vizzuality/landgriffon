@@ -73,4 +73,8 @@ export class Task extends TimestampedBaseEntity {
   @ApiProperty()
   @Column('jsonb', { array: false, default: () => "'[]'" })
   errors!: Array<Record<string, any>>;
+
+  @ApiProperty()
+  @Column({ type: 'text', nullable: true })
+  dismissedBy?: string;
 }

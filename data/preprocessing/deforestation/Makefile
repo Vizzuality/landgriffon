@@ -5,8 +5,10 @@ WORKDIR_DEFORESTATION_RESULTS=$(WORKDIR_DEFORESTATION)/results
 WORKDIR_GHG=data/forest_ghg
 WORKDIR_GHG_RESULTS=$(WORKDIR_GHG)/results
 HANSEN_LOSSYEAR_URL = "https://storage.googleapis.com/earthenginepartners-hansen/GFC-2021-v1.9/lossyear.txt"
-# Year to fiter the deforestation data from. format: YY, i.e. 16 for using only 2016 - 202X deforestation data
-HANSEN_STARTING_YEAR = 16
+# Year to fiter the deforestation data from. format: YY, i.e. 16 and 21 for using only 2016 - 20XX deforestation data
+# END_YEAR also depends on the dataset version used (check url above) it will be caped to the hansen dataset version.
+HANSEN_START_YEAR = 16
+HANSEN_END_YEAR = 21
 
 .SILENT: transform-deforestation-file
 download-deforestation-list:
@@ -51,8 +53,8 @@ transform-deforestation-file:
 	rio warp --resampling "nearest" "$${mask_path}" \
 		-o "$(WORKDIR_DEFORESTATION)/$${mask_table_name}.tif" \
 		--like "$(WORKDIR_DEFORESTATION)/tiles/$${table_name}.tif"; \
-	gdal_calc.py --quiet --calc "(A>$(HANSEN_STARTING_YEAR))*(B<12)" \
-		--format GTiff --co NBITS=1 --co compress=PACKBITS --co tiled=YES --co BLOCKXSIZE=400 --co BLOCKYSIZE=400  --NoDataValue 0 --overwrite --extent=intersect \
+	gdal_calc.py --quiet --calc "((A>=$(HANSEN_START_YEAR)) & (A<=$(HANSEN_END_YEAR)))*(B<12)" \
+		--format GTiff --co compress=DEFLATE --co tiled=YES --co BLOCKXSIZE=512 --co BLOCKYSIZE=512  --NoDataValue 0 --overwrite --extent=intersect \
 		-A "$(WORKDIR_DEFORESTATION)/tiles/$${table_name}.tif" \
 		-B "$(WORKDIR_DEFORESTATION)/$${mask_table_name}.tif" \
 		--outfile  "$(WORKDIR_DEFORESTATION)/tiles/$${table_name}.tif"; \
@@ -71,10 +73,12 @@ preprocess-deforestation: download-deforestation
 	@echo "Preprocessing deforestation data... "
 	mkdir -p $(WORKDIR_DEFORESTATION_RESULTS)
 	gdalbuildvrt $(WORKDIR_DEFORESTATION_RESULTS)/hansen_loss.vrt $(WORKDIR_DEFORESTATION)/Hansen_GFC_lossyear/*.tif
-	gdal_translate -q -of GTiff -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 \
+	gdal_translate -q -of GTiff -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co COMPRESS=DEFLATE -co PREDICTOR=2 -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 \
 		$(WORKDIR_DEFORESTATION_RESULTS)/hansen_loss.vrt \
-		$(WORKDIR_DEFORESTATION_RESULTS)/hansen_loss.tif
-	python rolling_average.py $(WORKDIR_DEFORESTATION_RESULTS)/hansen_loss.tif $(WORKDIR_DEFORESTATION_RESULTS)/hansen_loss_buffered.tif
+		$(WORKDIR_DEFORESTATION_RESULTS)/hansen_loss_20$(HANSEN_END_YEAR).tif
+	python rolling_average.py $(WORKDIR_DEFORESTATION_RESULTS)/hansen_loss_20$(HANSEN_END_YEAR).tif $(WORKDIR_DEFORESTATION_RESULTS)/hansen_loss_buffered_20$(HANSEN_END_YEAR).tif
+	cd $(WORKDIR_DEFORESTATION_RESULTS) && sha256sum *.tif > checksums
+
 
 
 download-process-forestGHG-list: preprocess-deforestation
@@ -87,11 +91,11 @@ download-process-forestGHG-list: preprocess-deforestation
 preprocess-forestGHG: download-process-forestGHG-list
 	mkdir -p $(WORKDIR_GHG)/resampled/merged_tiles
 	gdalbuildvrt $(WORKDIR_GHG_RESULTS)/forest_GHG.vrt $(WORKDIR_GHG)/resampled/*.tif
-	gdal_translate -q -of GTiff -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co COMPRESS=DEFLATE -co PREDICTOR=3 -co ZLEVEL=9 -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 \
+	gdal_translate -q -of GTiff -co COMPRESS=DEFLATE -co PREDICTOR=3 -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 \
 		$(WORKDIR_GHG_RESULTS)/forest_GHG.vrt \
-		$(WORKDIR_GHG_RESULTS)/forest_GHG.tif
-	python rolling_average.py $(WORKDIR_GHG_RESULTS)/forest_GHG.tif $(WORKDIR_GHG_RESULTS)/forest_GHG_buffered.tif
-
+		$(WORKDIR_GHG_RESULTS)/forest_GHG_20$(HANSEN_END_YEAR).tif
+	python rolling_average.py $(WORKDIR_GHG_RESULTS)/forest_GHG_20$(HANSEN_END_YEAR).tif $(WORKDIR_GHG_RESULTS)/forest_GHG_buffered_20$(HANSEN_END_YEAR).tif
+	cd $(WORKDIR_GHG_RESULTS) && sha256sum *.tif > checksums
 
 all: preprocess-forestGHG
 	@echo "Done"

@@ -28,6 +28,7 @@ def main(filename: str, out_file: str, radius: int = 50):
     # Also, it is 100x faster than scipy's convolve ¯\_(ツ)_/¯
     res_buff = cv2.filter2D(arr, ddepth=-1, kernel=kernel) / np.sum(kernel)
 
+    meta.update({"compress": "deflate"})
     with rio.open(out_file, "w", **meta) as dest:
         dest.write(res_buff[np.newaxis, :])
 

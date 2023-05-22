@@ -19,6 +19,7 @@ from urllib3.exceptions import MaxRetryError
 set_start_method("spawn", force=True)
 
 
+# NOTE! Logs are disabled because they are not working properly with multiprocessing
 # logging.basicConfig(level=logging.INFO)
 # log = logging.getLogger("preprocess_forestGHG")
 

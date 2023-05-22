@@ -4,11 +4,12 @@
 # It does not necessarily represent a max thread count, but it's probably similar to that
 # Lower if you are having issues. Increase at your own risk
 #########################
-PARALLELIZATION_FACTOR=10
+PARALLELIZATION_FACTOR=8
 
 AWS_S3_BUCKET_URL=s3://landgriffon-raw-data
 
-WORKDIR_MAPSPAM=data/mapspam
+WORKDIR_MAPSPAM_PROD=data/mapspam_prod
+WORKDIR_MAPSPAM_HA=data/mapspam_ha
 WORKDIR_GLW3=data/glw3
 WORKDIR_WATER_FOOTPRINT=data/waterFootprint
 WORKDIR_SPECIESRICHNESS=data/satelligence/species_richness
@@ -54,20 +55,20 @@ contextual-layers: convert-hdi-contextual convert-blue-water-contextual
 
 
 download-mapspam-crop-production:
-	mkdir -p $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod
-	aws s3 sync $(AWS_S3_BUCKET_URL)/mapspam/spam2010v2r0_global_prod $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod
-	cd $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod && sha256sum --check ../../../$(CHECKSUMS_PATH)/mapspam_prod
+	mkdir -p $(WORKDIR_MAPSPAM_PROD)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/mapspam/spam2010v2r0_global_prod $(WORKDIR_MAPSPAM_PROD)
+	cd $(WORKDIR_MAPSPAM_PROD) && sha256sum --check ../../$(CHECKSUMS_PATH)/mapspam_prod
 
 convert-mapspam-crop-production: download-mapspam-crop-production
-	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod h3_grid_spam2010v2r0_global_prod production spam 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM_PROD) h3_grid_spam2010v2r0_global_prod production spam 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 download-mapspam-crop-harvest:
-	mkdir -p $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha
-	aws s3 sync $(AWS_S3_BUCKET_URL)/mapspam/spam2010v2r0_global_ha $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha
-	cd $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha && sha256sum --check ../../../$(CHECKSUMS_PATH)/mapspam_ha
+	mkdir -p $(WORKDIR_MAPSPAM_HA)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/mapspam/spam2010v2r0_global_ha $(WORKDIR_MAPSPAM_HA)
+	cd $(WORKDIR_MAPSPAM_HA) && sha256sum --check ../../$(CHECKSUMS_PATH)/mapspam_ha
 
 convert-mapspam-crop-harvest: download-mapspam-crop-harvest
-	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha h3_grid_spam2010v2r0_global_ha harvest_area spam 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM_HA) h3_grid_spam2010v2r0_global_ha harvest_area spam 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 # DOWNLOAD PASTURE AND CROPLAND DATASET
  #https://s3.us-east-2.amazonaws.com/earthstatdata/CroplandPastureArea2000_Geotiff.zip

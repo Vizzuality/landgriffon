@@ -75,6 +75,11 @@ extract-mapspam-crop-production:
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TROF_A.tif \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TEMF_A.tif \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TrofTemf_A.tif
+	# Compress all files since they come uncompressed
+	for file in $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_*.tif; do \
+		gdal_translate -co COMPRESS=DEFLATE -co PREDICTOR=3 $$file $$file.tmp.tif;\
+		mv $$file.tmp.tif $$file;\
+	done
 
 extract-mapspam-crop-harvest:
 	mkdir -p $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha
@@ -136,6 +141,10 @@ extract-mapspam-crop-harvest:
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TROF_A.tif --A_band 1 \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TEMF_A.tif --B_band 1 \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TrofTemf_A.tif
+	for file in $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_*.tif; do \
+		gdal_translate -co COMPRESS=DEFLATE -co PREDICTOR=3 $$file $$file.tmp.tif;\
+		mv $$file.tmp.tif $$file;\
+	done
 
 all:
 	make -j 2 extract-mapspam-crop-production extract-mapspam-crop-harvest

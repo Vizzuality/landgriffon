@@ -10,15 +10,18 @@ import {
   JSONAPISerializerConfig,
 } from 'utils/app-base.service';
 import { CreateTaskDto } from 'modules/tasks/dto/create-task.dto';
-import { UpdateJobEventDto } from 'modules/tasks/dto/update-task.dto';
 import { TasksRepository } from 'modules/tasks/tasks.repository';
 import { AppInfoDTO } from 'dto/info.dto';
+import {
+  UpdateImportTask,
+  UpdateTaskDto,
+} from 'modules/tasks/dto/update-task.dto';
 
 @Injectable()
 export class TasksService extends AppBaseService<
   Task,
   CreateTaskDto,
-  UpdateJobEventDto,
+  UpdateTaskDto,
   AppInfoDTO
 > {
   constructor(public readonly taskRepository: TasksRepository) {
@@ -39,6 +42,7 @@ export class TasksService extends AppBaseService<
         'errors',
         'logs',
         'user',
+        'dismissedBy',
       ],
       keyForAttribute: 'camelCase',
     };
@@ -66,13 +70,7 @@ export class TasksService extends AppBaseService<
   }
 
   // TODO: First version. Add better typing to data & errors and enhance storage of both. We need to decide how we want to tackle this
-  async updateImportJobEvent(updateTask: {
-    taskId: string;
-    newStatus?: TASK_STATUS;
-    newData?: Record<string, any>;
-    newErrors?: Error;
-    newLogs?: string[];
-  }): Promise<Task> {
+  async updateImportTask(updateTask: UpdateImportTask): Promise<Task> {
     /**
      * @debt
      * TypeORM does not provide a friendly API to handle json fields on a UPDATE statement

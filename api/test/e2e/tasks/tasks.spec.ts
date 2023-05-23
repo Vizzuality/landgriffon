@@ -104,35 +104,36 @@ describe('Tasks Module (e2e)', () => {
       });
 
       const response = await request(testApplication.getHttpServer())
-        .put(`/api/v1/tasks`)
+        .patch(`/api/v1/tasks/${task.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
-          taskId: task.id,
-          newStatus: TASK_STATUS.FAILED,
-          newData: {
-            file2: 'File2',
-          },
+          status: TASK_STATUS.FAILED,
         })
         .expect(HttpStatus.OK);
 
-      expect(response.body.data.attributes.status).toEqual('failed');
-      expect(response.body.data.attributes.data.file2).toEqual('File2');
+      expect(response.body.data.attributes.status).toEqual(TASK_STATUS.FAILED);
     });
 
-    test('Updating a task without task id should return proper error message', async () => {
-      await createTask();
+    test('Marking a task as dismissed without the value being a UUID should throw an error', async () => {
+      const task = await createTask();
+
+      await request(testApplication.getHttpServer())
+        .patch(`/api/v1/tasks/${task.id}`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({ dismissedBy: 'not a uuid' })
+        .expect(HttpStatus.BAD_REQUEST);
+    });
+
+    test('Marking a task as dismissed should be successful (happy case)', async () => {
+      const task = await createTask();
 
       const response = await request(testApplication.getHttpServer())
-        .put(`/api/v1/tasks`)
+        .patch(`/api/v1/tasks/${task.id}`)
         .set('Authorization', `Bearer ${jwtToken}`)
-        .send()
-        .expect(HttpStatus.BAD_REQUEST);
+        .send({ dismissedBy: userId })
+        .expect(HttpStatus.OK);
 
-      expect(response).toHaveErrorMessage(
-        HttpStatus.BAD_REQUEST,
-        'Bad Request Exception',
-        ['taskId must be a UUID', 'taskId should not be empty'],
-      );
+      expect(response.body.data.attributes.dismissedBy).toEqual(userId);
     });
   });
 

@@ -16,6 +16,7 @@ import { importQueueName } from 'modules/import-data/workers/import-queue.name';
 @Processor(importQueueName)
 export class ImportDataConsumer {
   logger: Logger = new Logger(ImportDataService.name);
+
   constructor(
     public readonly importDataService: ImportDataService,
     public readonly tasksService: TasksService,
@@ -30,13 +31,11 @@ export class ImportDataConsumer {
 
   @OnQueueFailed()
   async onJobFailed(job: Job<ExcelImportJob>, err: Error): Promise<void> {
-    const task: Task | undefined = await this.tasksService.updateImportJobEvent(
-      {
-        taskId: job.data.taskId,
-        newStatus: TASK_STATUS.FAILED,
-        newErrors: err,
-      },
-    );
+    const task: Task | undefined = await this.tasksService.updateImportTask({
+      taskId: job.data.taskId,
+      newStatus: TASK_STATUS.FAILED,
+      newErrors: err,
+    });
     this.logger.error(
       `Import Failed for file: ${job.data.xlsxFileData.filename} for task: ${task.id}: ${err}`,
     );
@@ -47,11 +46,12 @@ export class ImportDataConsumer {
     this.logger.log(
       `Import XLSX with TASK ID: ${job.data.taskId} completed successfully`,
     );
-    await this.tasksService.updateImportJobEvent({
+    await this.tasksService.updateImportTask({
       taskId: job.data.taskId,
       newStatus: TASK_STATUS.COMPLETED,
     });
   }
+
   @Process('excel-import-job')
   async readImportDataJob(job: Job<ExcelImportJob>): Promise<void> {
     await this.importDataService.processImportJob(job);

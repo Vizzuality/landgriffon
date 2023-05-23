@@ -4,8 +4,8 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
-  Put,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
@@ -27,7 +27,7 @@ import {
 import { PaginationMeta } from 'utils/app-base.service';
 import { Task, taskResource } from 'modules/tasks/task.entity';
 import { TasksService } from 'modules/tasks/tasks.service';
-import { UpdateTaskWithControllerDto } from 'modules/tasks/dto/update-task-with-controller.dto';
+import { UpdateTaskDto } from 'modules/tasks/dto/update-task.dto';
 import { CreateTaskDto } from 'modules/tasks/dto/create-task.dto';
 import { SetUserInterceptor } from 'decorators/set-user.interceptor';
 import {
@@ -109,15 +109,14 @@ export class TasksController {
   @ApiOperation({ description: 'Updates a task' })
   @ApiNotFoundResponse({ description: 'Task not found' })
   @ApiOkResponse({ type: Task })
-  @Put()
+  @Patch(':id')
   @UsePipes(ValidationPipe)
   async update(
+    @Param('id') id: string,
     @Body()
-    dto: UpdateTaskWithControllerDto,
+    dto: UpdateTaskDto,
   ): Promise<Task> {
-    return this.taskService.serialize(
-      await this.taskService.updateImportJobEvent(dto),
-    );
+    return this.taskService.serialize(await this.taskService.update(id, dto));
   }
 
   @ApiOperation({ description: 'Deletes a task' })

@@ -116,7 +116,7 @@ export class SourcingDataImportService {
       const activeMaterials: Material[] =
         await this.materialService.activateMaterials(dtoMatchedData.materials);
 
-      await this.tasksService.updateImportJobEvent({
+      await this.tasksService.updateImportTask({
         taskId,
         newLogs: [
           `Activated indicators: ${activeIndicators
@@ -151,7 +151,7 @@ export class SourcingDataImportService {
         if (elem.locationWarning) warnings.push(elem.locationWarning);
       });
       warnings.length > 0 &&
-        (await this.tasksService.updateImportJobEvent({
+        (await this.tasksService.updateImportTask({
           taskId,
           newLogs: warnings,
         }));

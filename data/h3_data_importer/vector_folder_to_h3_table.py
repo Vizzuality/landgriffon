@@ -32,7 +32,10 @@ import geopandas as gpd
 import pandas as pd
 import psycopg2
 from h3ronpy import vector
+from psycopg2 import sql
 from psycopg2.pool import ThreadedConnectionPool
+
+from data.h3_data_importer.utils import h3_table_schema
 from utils import insert_to_h3_data_and_contextual_layer_tables, link_to_indicator_table, slugify
 
 DTYPES_TO_PG = {
@@ -115,12 +118,11 @@ def create_h3_grid_table(
 ):
     """Creates the h3 data table (like `h3_grid_nio_global`) with the correct data types"""
     dtypes = df.dtypes.to_dict()
-    schema = ", ".join([f'"{slugify(col)}" {DTYPES_TO_PG[str(dtype)]}' for col, dtype in dtypes.items()])
     cursor = connection.cursor()
     if drop_if_exists:
-        cursor.execute(f"DROP TABLE IF EXISTS {table_name};")
+        cursor.execute(sql.SQL("DROP TABLE IF EXISTS {};").format(sql.Identifier(table_name)))
         log.info(f"Dropped table {table_name}")
-    cursor.execute(f"CREATE TABLE {table_name} (h3index h3index PRIMARY KEY, {schema});")
+    cursor.execute(sql.SQL("CREATE TABLE {} ({})").format(sql.Identifier(table_name), h3_table_schema(df)))
     log.info(f"Created table {table_name} with columns {', '.join(dtypes.keys())}")
     connection.commit()
     cursor.close()

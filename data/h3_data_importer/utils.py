@@ -5,8 +5,10 @@ from pathlib import Path
 from re import sub
 
 import jsonschema
+import pandas as pd
 import psycopg
 from jsonschema import ValidationError
+from psycopg2 import sql
 from psycopg2.extensions import connection
 
 log = logging.getLogger(__name__)  # here we can use __name__ because it is an imported module
@@ -62,30 +64,42 @@ def insert_to_h3_data_and_contextual_layer_tables(
     with connection:
         with connection.cursor() as cursor:
             # remove existing entries
-            cursor.execute(f"""DELETE FROM "h3_data" WHERE "h3tableName" = '{table}';""")
-            cursor.execute(f"""DELETE FROM "contextual_layer" WHERE "name" = '{dataset}'""")
+            cursor.execute('DELETE FROM "h3_data" WHERE "h3tableName" = (%s)', (table,))
+            cursor.execute('DELETE FROM "contextual_layer" WHERE "name" = (%s)', (dataset,))
 
             # insert new entries
             log.info("Inserting record into h3_data table...")
-
-            cursor.execute(
-                f"""INSERT INTO "h3_data" ("h3tableName", "h3columnName", "h3resolution", "year")
-                 VALUES ('{table}', '{column}', {h3_res}, {year});"""
+            h3_data_query = sql.SQL(
+                """
+                INSERT INTO "h3_data" ("h3tableName", "h3columnName", "h3resolution", "year")
+                VALUES ({table}, {column}, {h3_res}, {year})
+                """
+            ).format(
+                table=sql.Identifier(table),
+                column=sql.Identifier(column),
+                h3_res=sql.Literal(h3_res),
+                year=sql.Literal(year),
             )
+            cursor.execute(h3_data_query)
 
             log.info("Inserting record into contextual_layer table...")
-            cursor.execute(
-                f"""INSERT INTO "contextual_layer"  ("name", "metadata", "category")
-                 VALUES ('{dataset}', '{json.dumps(get_metadata(table))}', '{category}')
-                 RETURNING id;
+            metadata = json.dumps(get_metadata(table))
+            insert_query = sql.SQL(
                 """
-            )
+                INSERT INTO "contextual_layer" ("name", "metadata", "category")
+                VALUES ({dataset}, {metadata}, {category})
+                RETURNING id;
+            """
+            ).format(dataset=sql.Literal(dataset), metadata=sql.Literal(metadata), category=sql.Literal(category))
+            cursor.execute(insert_query)
             contextual_data_id = cursor.fetchall()[0][0]
-            # insert contextual_layer entry id into h3_table
-            cursor.execute(
-                f"""update "h3_data"  set "contextualLayerId" = '{contextual_data_id}'
-                where  "h3tableName" = '{table}';"""
-            )
+            update_query = sql.SQL(
+                """
+                UPDATE "h3_data" SET "contextualLayerId" = {contextual_data_id}
+                WHERE "h3tableName" = {table};
+            """
+            ).format(contextual_data_id=sql.Literal(contextual_data_id), table=sql.Identifier(table))
+            cursor.execute(update_query)
 
 
 def get_metadata(table: str) -> dict:
@@ -137,3 +151,19 @@ def get_connection_info() -> str:
         user=os.getenv("API_POSTGRES_USERNAME"),
         password=os.getenv("API_POSTGRES_PASSWORD"),
     )
+
+
+def h3_table_schema(df: pd.DataFrame) -> sql.Composable:
+    """Construct an SQL schema for an H3 table from a pandas DataFrame
+    TODO: make this func used everywhere and carefull with psycpg version
+    Examples:
+        >>> schema = h3_table_schema(df)
+        >>> sql.SQL("CREATE TABLE {} ({})").format(sql.Identifier(table), schema)
+    """
+    index = [sql.SQL("h3index h3index PRIMARY KEY")]
+    extra = [
+        sql.SQL("{} {}").format(sql.Identifier(col), sql.SQL(DTYPES_TO_PG[str(dtype)]))
+        for col, dtype in zip(df.columns, df.dtypes)
+    ]
+    schema = sql.SQL(", ").join(index + extra)
+    return schema

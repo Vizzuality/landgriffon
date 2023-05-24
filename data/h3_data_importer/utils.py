@@ -75,8 +75,8 @@ def insert_to_h3_data_and_contextual_layer_tables(
                 VALUES ({table}, {column}, {h3_res}, {year})
                 """
             ).format(
-                table=sql.Identifier(table),
-                column=sql.Identifier(column),
+                table=sql.Literal(table),
+                column=sql.Literal(column),
                 h3_res=sql.Literal(h3_res),
                 year=sql.Literal(year),
             )
@@ -98,7 +98,7 @@ def insert_to_h3_data_and_contextual_layer_tables(
                 UPDATE "h3_data" SET "contextualLayerId" = {contextual_data_id}
                 WHERE "h3tableName" = {table};
             """
-            ).format(contextual_data_id=sql.Literal(contextual_data_id), table=sql.Identifier(table))
+            ).format(contextual_data_id=sql.Literal(contextual_data_id), table=sql.Literal(table))
             cursor.execute(update_query)
 
 
@@ -155,7 +155,7 @@ def get_connection_info() -> str:
 
 def h3_table_schema(df: pd.DataFrame) -> sql.Composable:
     """Construct an SQL schema for an H3 table from a pandas DataFrame
-    TODO: make this func used everywhere and carefull with psycpg version
+    TODO: make this func used everywhere and carefull with psycpg version in the future.
     Examples:
         >>> schema = h3_table_schema(df)
         >>> sql.SQL("CREATE TABLE {} ({})").format(sql.Identifier(table), schema)

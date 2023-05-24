@@ -35,8 +35,7 @@ from h3ronpy import vector
 from psycopg2 import sql
 from psycopg2.pool import ThreadedConnectionPool
 
-from data.h3_data_importer.utils import h3_table_schema
-from utils import insert_to_h3_data_and_contextual_layer_tables, link_to_indicator_table, slugify
+from utils import insert_to_h3_data_and_contextual_layer_tables, link_to_indicator_table, slugify, h3_table_schema
 
 DTYPES_TO_PG = {
     "object": "text",

@@ -9,10 +9,16 @@ resource "random_id" "eks-node-group" {
   byte_length = 8
 }
 
+data "aws_ssm_parameter" "eks_ami_release_version" {
+  name = "/aws/service/eks/optimized-ami/${var.cluster.version}/amazon-linux-2/recommended/release_version"
+}
+
 resource "aws_eks_node_group" "eks-node-group" {
   cluster_name    = var.cluster_name
   node_group_name = "${var.node_group_name}-${random_id.eks-node-group.hex}"
   node_role_arn   = var.node_role_arn
+  version         = var.cluster.version
+  release_version = nonsensitive(data.aws_ssm_parameter.eks_ami_release_version.value)
   subnet_ids      = var.subnet_ids
 
   scaling_config {

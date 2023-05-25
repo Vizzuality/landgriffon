@@ -17,10 +17,10 @@ module "bootstrap" {
 
 # Internal module which defines the VPC
 module "vpc" {
-  source  = "./modules/aws/vpc"
-  region  = var.aws_region
-  project = var.project_name
-  tags    = local.tags
+  source              = "./modules/aws/vpc"
+  region              = var.aws_region
+  project             = var.project_name
+  tags                = local.tags
   private_subnet_tags = {
     "kubernetes.io/role/internal-elb" : 1
 
@@ -42,8 +42,8 @@ module "bastion" {
 }
 
 module "dns" {
-  source = "./modules/aws/dns"
-  domain = var.domain
+  source              = "./modules/aws/dns"
+  domain              = var.domain
   site_server_ip_list = [
     module.load_balancer.load-balancer-ip
   ]
@@ -51,11 +51,14 @@ module "dns" {
 }
 
 module "eks" {
-  source     = "./modules/aws/eks"
-  project    = var.project_name
-  vpc_id     = module.vpc.id
-  subnet_ids = module.vpc.private_subnets.*.id
-  aws_region = var.aws_region
+  source                = "./modules/aws/eks"
+  project               = var.project_name
+  vpc_id                = module.vpc.id
+  subnet_ids            = module.vpc.private_subnets.*.id
+  aws_region            = var.aws_region
+  ebs_csi_addon_version = var.ebs_csi_addon_version
+  k8s_version           = var.eks_cluster_version
+  coredns_addon_version = var.coredns_addon_version
 }
 
 module "default-node-group" {
@@ -69,7 +72,7 @@ module "default-node-group" {
   desired_size    = var.default_node_group_desired_size
   node_role_arn   = module.eks.node_role.arn
   subnet_ids      = module.vpc.private_subnets.*.id
-  labels = {
+  labels          = {
     type : "default"
   }
 }
@@ -85,7 +88,7 @@ module "data-node-group" {
   desired_size    = var.data_node_group_desired_size
   node_role_arn   = module.eks.node_role.arn
   subnet_ids      = [module.vpc.private_subnets[0].id]
-  labels = {
+  labels          = {
     type : "data"
   }
 }
@@ -125,13 +128,13 @@ resource "aws_iam_policy" "raw_s3_rw_access" {
   description = "Read + write access to the raw data S3 bucket"
 
   policy = jsonencode({
-    Version = "2012-10-17"
+    Version   = "2012-10-17"
     Statement = [
       {
         "Action" : [
           "s3:*",
         ],
-        Effect = "Allow"
+        Effect   = "Allow"
         Resource = [
           module.s3_bucket.bucket_arn,
           "${module.s3_bucket.bucket_arn}/*",
@@ -155,14 +158,14 @@ resource "aws_iam_policy" "raw_s3_read_access" {
   description = "Read access to the raw data S3 bucket"
 
   policy = jsonencode({
-    Version = "2012-10-17"
+    Version   = "2012-10-17"
     Statement = [
       {
         "Action" : [
           "s3:Get*",
           "s3:List*",
         ],
-        Effect = "Allow"
+        Effect   = "Allow"
         Resource = [
           module.s3_bucket.bucket_arn,
           "${module.s3_bucket.bucket_arn}/*",

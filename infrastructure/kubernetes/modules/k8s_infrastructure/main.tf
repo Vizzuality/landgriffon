@@ -1,16 +1,7 @@
-// https://docs.aws.amazon.com/eks/latest/userguide/cluster-autoscaler.html
-// AWS Cluster autoscaler
-// File has changes - see link above for details
-data "kubectl_path_documents" "cluster_autoscaler_manifests" {
-  pattern = "${path.module}/cluster_autoscaler/cluster-autoscaler-autodiscover.yaml.tmpl"
-  vars = {
-    cluster_name : var.cluster_name
-  }
-}
-
-resource "kubectl_manifest" "cluster_autoscaler" {
-  count     = length(data.kubectl_path_documents.cluster_autoscaler_manifests.documents)
-  yaml_body = element(data.kubectl_path_documents.cluster_autoscaler_manifests.documents, count.index)
+module "cluster_autoscaler" {
+  source       = "./cluster_autoscaler"
+  cluster_name = var.cluster_name
+  aws_region   = var.aws_region
 }
 
 // https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html
@@ -30,7 +21,7 @@ resource "kubectl_manifest" "metrics_server" {
 // File has changes - see link above for details
 data "kubectl_path_documents" "container_insights_manifests" {
   pattern = "${path.module}/container_insights/container_insights.yaml.tmpl"
-  vars = {
+  vars    = {
     aws_region : var.aws_region,
     cluster_name : var.cluster_name
   }
@@ -44,17 +35,22 @@ resource "kubectl_manifest" "container_insights" {
 // https://github.com/aws/amazon-vpc-cni-k8s/releases
 // AWS VPC CNI plugin for Kubernetes
 // File has changes - see link above for details
-data "kubectl_path_documents" "cni_plugin_manifests" {
-  pattern = "${path.module}/cni_plugin/aws-k8s-cni-v1.11.yaml"
-}
-
-resource "kubectl_manifest" "cni_plugin" {
-  count     = length(data.kubectl_path_documents.cni_plugin_manifests.documents)
-  yaml_body = element(data.kubectl_path_documents.cni_plugin_manifests.documents, count.index)
+module "cni" {
+  source                = "./cni_plugin"
+  aws_region            = var.aws_region
+  cluster_name          = var.cluster_name
+  vpc_cni_addon_version = var.vpc_cni_addon_version
 }
 
 module "lb_controller" {
   source       = "./lb_controller"
   cluster_name = var.cluster_name
   aws_region   = var.aws_region
+}
+
+module "kube_proxy" {
+  source                   = "./kube-proxy"
+  cluster_name             = var.cluster_name
+  aws_region               = var.aws_region
+  kube_proxy_addon_version = var.kube_proxy_addon_version
 }

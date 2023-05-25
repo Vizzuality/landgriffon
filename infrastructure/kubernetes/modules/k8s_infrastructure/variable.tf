@@ -18,3 +18,13 @@ variable "deploy_metrics_server" {
   type        = bool
   description = "If AWS Metrics server should be deployed"
 }
+
+variable "vpc_cni_addon_version" {
+  type        = string
+  description = "Version of AWS VPC CNI addon to use"
+}
+
+variable "kube_proxy_addon_version" {
+  type        = string
+  description = "Version of AWS Kube proxy addon to use"
+}

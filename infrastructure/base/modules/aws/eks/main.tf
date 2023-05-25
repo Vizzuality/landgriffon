@@ -1,6 +1,11 @@
 #
 # EKS resources
 #
+
+locals {
+  oicd_id = element(split("/", aws_eks_cluster.eks_cluster.identity.0.oidc.0.issuer), length(split("/", aws_eks_cluster.eks_cluster.identity.0.oidc.0.issuer)) - 1)
+}
+
 resource "aws_eks_cluster" "eks_cluster" {
   name     = "${replace(var.project, " ", "-")}-k8s-cluster"
   role_arn = aws_iam_role.eks-cluster-admin.arn
@@ -17,10 +22,12 @@ resource "aws_eks_cluster" "eks_cluster" {
     aws_iam_role_policy_attachment.eks-admin-AmazonEKSClusterPolicy,
     aws_iam_role_policy_attachment.eks-admin-AmazonEKSServicePolicy,
   ]
+}
 
-  lifecycle {
-    ignore_changes = [version]
-  }
+resource "aws_eks_addon" "aws_coredns" {
+  cluster_name             = aws_eks_cluster.eks_cluster.name
+  addon_name               = "coredns"
+  addon_version            = var.coredns_addon_version
 }
 
 resource "aws_security_group" "eks_cluster_security_group" {
@@ -76,16 +83,6 @@ resource "aws_iam_role_policy_attachment" "eks-admin-AmazonEKSServicePolicy" {
   role       = aws_iam_role.eks-cluster-admin.name
 }
 
-data "external" "thumbprint" {
-  program = ["${path.module}/thumbprint.sh", var.aws_region]
-}
-
-resource "aws_iam_openid_connect_provider" "example" {
-  client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = [data.external.thumbprint.result.thumbprint]
-  url             = aws_eks_cluster.eks_cluster.identity.0.oidc.0.issuer
-}
-
 #
 # Node Group shared resources
 #
@@ -105,28 +102,8 @@ resource "aws_iam_role" "eks-node-group-iam-role" {
   })
 }
 
-data "aws_iam_policy_document" "eks-admin-ClusterAutoscaleAccessPolicy-document" {
-  source_policy_documents = [file("${path.module}/cluster-autoscale-access-policy.json")]
-}
-
-resource "aws_iam_policy" "eks-admin-ClusterAutoscaleAccessPolicy" {
-  name   = "ClusterAutoscaleAccessPolicy"
-  path   = "/"
-  policy = data.aws_iam_policy_document.eks-admin-ClusterAutoscaleAccessPolicy-document.json
-}
-
-resource "aws_iam_role_policy_attachment" "eks-admin-ClusterAutoscaleAccessPolicy" {
-  policy_arn = aws_iam_policy.eks-admin-ClusterAutoscaleAccessPolicy.arn
-  role       = aws_iam_role.eks-node-group-iam-role.name
-}
-
 resource "aws_iam_role_policy_attachment" "eks-node-group-admin-AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role       = aws_iam_role.eks-node-group-iam-role.name
-}
-
-resource "aws_iam_role_policy_attachment" "eks-node-group-admin-AmazonEKS_CNI_Policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   role       = aws_iam_role.eks-node-group-iam-role.name
 }
 

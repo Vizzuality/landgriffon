@@ -85,6 +85,25 @@ variable "rds_backup_retention_period" {
 }
 
 #
+# EKS
+#
+
+variable "ebs_csi_addon_version" {
+  type        = string
+  description = "Version of AWS EBS CRI driver to use"
+}
+
+variable "coredns_addon_version" {
+  type        = string
+  description = "Version of AWS Core DNS addon to use"
+}
+
+variable "eks_cluster_version" {
+  type        = string
+  description = "Version of EKS (kubernetes) cluster deploy"
+}
+
+#
 # EKS default node group
 #
 

@@ -18,9 +18,17 @@ variable "vpc_id" {
   description = "ID of the VPC."
 }
 
-
 variable "k8s_version" {
   type        = string
   description = "Version of Kubernetes to use"
-  default     = "1.21"
+}
+
+variable "ebs_csi_addon_version" {
+  type        = string
+  description = "Version of AWS EBS CRI driver to use"
+}
+
+variable "coredns_addon_version" {
+  type        = string
+  description = "Version of AWS Core DNS addon to use"
 }

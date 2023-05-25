@@ -32,11 +32,13 @@ resource "aws_iam_access_key" "access_key" {
 }
 
 module "k8s_infrastructure" {
-  source                = "./modules/k8s_infrastructure"
-  cluster_name          = data.terraform_remote_state.core.outputs.eks_cluster_name
-  aws_region            = var.aws_region
-  vpc_id                = data.aws_eks_cluster.cluster.vpc_config[0].vpc_id
-  deploy_metrics_server = false
+  source                   = "./modules/k8s_infrastructure"
+  cluster_name             = data.terraform_remote_state.core.outputs.eks_cluster_name
+  aws_region               = var.aws_region
+  vpc_id                   = data.aws_eks_cluster.cluster.vpc_config[0].vpc_id
+  deploy_metrics_server    = false
+  vpc_cni_addon_version    = var.vpc_cni_addon_version
+  kube_proxy_addon_version = var.kube_proxy_addon_version
 
   providers = {
     helm       = helm.aws_helm

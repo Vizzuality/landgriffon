@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { v4 as uuidv4 } from 'uuid';
+import { merge } from 'lodash-es';
 
 import apiService from 'services/api';
 
@@ -33,6 +33,7 @@ export type SourcingLocationsParams = {
   fields?: string;
   'page[number]'?: number;
   'page[size]'?: number;
+  disablePagination?: boolean;
 } & Partial<ApiSortParams>;
 
 export function useSourcingLocations(
@@ -62,11 +63,11 @@ export function useSourcingLocationsMaterials(
   params: SourcingLocationsParams,
   queryOptions?: UseQueryOptions<SourcingLocationsMaterialsAPIResponse>,
 ): SourcingLocationsMaterialsDataResponse {
-  const query = useQuery(
+  const query = useQuery<SourcingLocationsMaterialsAPIResponse>(
     ['sourcingLocationsMaterials', params],
     () =>
       apiService
-        .request({
+        .request<SourcingLocationsMaterialsAPIResponse>({
           method: 'GET',
           url: '/sourcing-locations/materials',
           params,
@@ -90,7 +91,7 @@ export function useSourcingLocationsMaterials(
           // duplicate rows when updating the table data. A workaround is to generate uuids.
           // We won't be loading many rows at once so it shouldn't be a huge performance hit.
           ((response as SourcingLocationsMaterialsAPIResponse).data || []).map((data) => ({
-            id: uuidv4(),
+            // id: uuidv4(),
             ...data,
           })) || [],
         meta: (response as SourcingLocationsMaterialsAPIResponse).meta || {},
@@ -98,3 +99,46 @@ export function useSourcingLocationsMaterials(
     [query, response],
   );
 }
+
+export const useSourcingLocationsMaterialsTabularData = (
+  sourcingData: SourcingLocationsMaterialsDataResponse['data'],
+) => {
+  // Getting all the years from the data
+  const yearsFromData = useMemo(
+    () =>
+      Array.from(
+        new Set(sourcingData.flatMap(({ purchases }) => purchases.map((p) => p.year))),
+      ).sort(),
+    [sourcingData],
+  );
+
+  // Preparing table columns by years from the range of filters
+  const yearsData = useMemo(() => {
+    return {
+      columns: yearsFromData.map((year) => ({
+        id: `${year}`,
+        title: `${year}`,
+        width: 80,
+        visible: true,
+      })),
+      data: sourcingData.map(({ purchases, ...dataRow }) => ({
+        ...dataRow,
+        ...purchases
+          .map(({ year, tonnage }) => ({ [year]: tonnage }))
+          .reduce((a, b) => ({ ...a, ...b })),
+      })),
+    };
+  }, [yearsFromData, sourcingData]);
+
+  const sourcingDataParsed = useMemo(
+    () => sourcingData.map(({ purchases, ...dataRow }) => dataRow),
+    [sourcingData],
+  );
+
+  const data = useMemo(
+    () => merge(sourcingDataParsed, yearsData.data),
+    [sourcingDataParsed, yearsData.data],
+  );
+
+  return { yearsData, data };
+};

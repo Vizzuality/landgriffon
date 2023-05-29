@@ -2228,6 +2228,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@json2csv/formatters@npm:^6.1.3":
+  version: 6.1.3
+  resolution: "@json2csv/formatters@npm:6.1.3"
+  checksum: cec4956364f45220f9d109de5c1b193e970bd83e53ce1b912879b878ef93c3e60f63aa31de226e30e3a4d2f344ac895421153a3e4b136d774283134dd117e550
+  languageName: node
+  linkType: hard
+
+"@json2csv/plainjs@npm:^6.1.3":
+  version: 6.1.3
+  resolution: "@json2csv/plainjs@npm:6.1.3"
+  dependencies:
+    "@json2csv/formatters": ^6.1.3
+    "@streamparser/json": ^0.0.12
+    lodash.get: ^4.4.2
+  checksum: 2d90b68958cf4390ec332f604b2e8ee87526125ddb4dafe965c0d68cd49d977ac360fade6ba9e4b993d529a4821ef066c5768e7433d3dc71fa996e86b69b7a66
+  languageName: node
+  linkType: hard
+
 "@loaders.gl/3d-tiles@npm:^3.2.5":
   version: 3.3.1
   resolution: "@loaders.gl/3d-tiles@npm:3.3.1"
@@ -4989,6 +5007,13 @@ __metadata:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
   checksum: 026ddc42d00773ad711824a5374b040b589e8a87b8500db4d6a8cb67263eba0789d6e6afe7fd8e0fcb798380eba210b4225af197f064d3e88ec0bda97a83b28b
+  languageName: node
+  linkType: hard
+
+"@streamparser/json@npm:^0.0.12":
+  version: 0.0.12
+  resolution: "@streamparser/json@npm:0.0.12"
+  checksum: 976975f0169253c6397240434ca8bb87c09be09597b949a8d473be009a6aac6469d5e0df8c8bc47b5a0a9e679ebb48d415f4bcef3169cb1707e45e9296211197
   languageName: node
   linkType: hard
 
@@ -13509,6 +13534,7 @@ __metadata:
     "@headlessui/react": 1.7.8
     "@heroicons/react": v1.0.6
     "@hookform/resolvers": 2.8.8
+    "@json2csv/plainjs": ^6.1.3
     "@loaders.gl/core": 3.3.1
     "@luma.gl/constants": 8.5.18
     "@react-hook/debounce": 4.0.0
@@ -13566,7 +13592,6 @@ __metadata:
     prettier: 2.8.3
     rc-tree: 5.7.0
     react: 18.2.0
-    react-csv: 2.2.2
     react-dom: 18.2.0
     react-dropzone: 14.2.2
     react-hook-form: 7.43.1
@@ -13788,6 +13813,13 @@ __metadata:
   version: 4.4.0
   resolution: "lodash.flattendeep@npm:4.4.0"
   checksum: 8521c919acac3d4bcf0aaf040c1ca9cb35d6c617e2d72e9b4d51c9a58b4366622cd6077441a18be626c3f7b28227502b3bf042903d447b056ee7e0b11d45c722
+  languageName: node
+  linkType: hard
+
+"lodash.get@npm:^4.4.2":
+  version: 4.4.2
+  resolution: "lodash.get@npm:4.4.2"
+  checksum: e403047ddb03181c9d0e92df9556570e2b67e0f0a930fcbbbd779370972368f5568e914f913e93f3b08f6d492abc71e14d4e9b7a18916c31fa04bd2306efe545
   languageName: node
   linkType: hard
 
@@ -16779,13 +16811,6 @@ __metadata:
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
   checksum: e432b7cb0df57e8f0bcdc3b012d2e93fcbcb6092c9e0f85654788d5ebfc4442536d8cc35b2418061ba3c4afb8b7788cc101c606d86a1732407921de7a9244c8d
-  languageName: node
-  linkType: hard
-
-"react-csv@npm:2.2.2":
-  version: 2.2.2
-  resolution: "react-csv@npm:2.2.2"
-  checksum: a6ffabd67fc9ba1478b003977923cfa3ccdd9553ac5edcc3824b4a5ea849b87cb2acfcc0781b0cd0a259bf56e6a7dfd35cfc307576aa51819fc5a32b03118fab
   languageName: node
   linkType: hard
 

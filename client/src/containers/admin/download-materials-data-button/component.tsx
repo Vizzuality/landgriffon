@@ -1,87 +1,77 @@
-import { useState } from 'react';
-import { flatten, noop, pick, uniq } from 'lodash-es';
+import { useCallback, useEffect, useState } from 'react';
 import { DownloadIcon } from '@heroicons/react/solid';
 
-import Downloader from 'containers/downloader';
 import Button from 'components/button';
+import {
+  useSourcingLocations,
+  useSourcingLocationsMaterials,
+  useSourcingLocationsMaterialsTabularData,
+} from 'hooks/sourcing-locations';
+import { csvDownload } from 'utils/csv-download';
 
-import type { DownloaderHeadersType, DownloaderTransformProps } from 'containers/downloader';
-import type { DownloadMaterialsDataButtonProps } from './types';
-
-const DEFAULT_HEADERS: DownloaderHeadersType[] = [
-  { key: 'materialName', label: 'Material' },
-  { key: 'businessUnit', label: 'Business unit' },
-  { key: 't1Supplier', label: 'Tier 1 Supplier' },
-  { key: 'producer', label: 'Producer' },
-  { key: 'locationType', label: 'Location type' },
-  { key: 'country', label: 'Country' },
-];
-
-const DownloadMaterialsDataButton: React.FC<DownloadMaterialsDataButtonProps> = ({
-  className,
-  onDownloading = noop,
-  onSuccess = noop,
-  onError = noop,
-  buttonProps = {},
-}: DownloadMaterialsDataButtonProps) => {
+const DownloadMaterialsDataButton: React.FC = () => {
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
 
-  const transformer = ({
-    data: originalData,
-  }: DownloaderTransformProps): DownloaderTransformProps => {
-    const years = uniq(
-      flatten(originalData.map(({ purchases }) => purchases.map(({ year }) => year))).sort(),
-    );
+  const {
+    data: sourcingLocations,
+    isLoading: isSourcingLocationsLoading,
+    refetch: sourcingLocationsRefetch,
+  } = useSourcingLocations(
+    {
+      fields: 'updatedAt',
+      'page[number]': 1,
+      'page[size]': 1,
+    },
+    {
+      keepPreviousData: false,
+      enabled: false,
+    },
+  );
 
-    const headers = [
-      ...DEFAULT_HEADERS,
-      ...(years.map((year) => ({ key: year.toString(), label: year })) as {
-        label: string;
-        key: string;
-      }[]),
-    ];
+  const {
+    data: sourcingData,
+    isFetching: isSourcingDataFetching,
+    isSuccess,
+    isFetched,
+    refetch: sourcingDataRefetch,
+  } = useSourcingLocationsMaterials(
+    {
+      disablePagination: true,
+    },
+    {
+      keepPreviousData: false,
+      enabled: false,
+    },
+  );
 
-    const fieldsToExport = headers.map(({ key }) => key);
+  const { data } = useSourcingLocationsMaterialsTabularData(sourcingData);
+  const { updatedAt } = sourcingLocations?.data?.[0];
 
-    const data = originalData
-      ?.map((dataRow: Record<string, unknown>) => ({
-        ...dataRow,
-        ...(dataRow.purchases as { year: number; tonnage: number }[])
-          .map(({ year, tonnage }) => ({ [year]: tonnage }))
-          .reduce((a, b) => ({ ...a, ...b })),
-      }))
-      .map((dataRow) => pick(dataRow, fieldsToExport));
-    return { headers, data };
-  };
-
-  const handleOnDownloading = () => {
+  const handleDownload = useCallback(() => {
     setIsDownloading(true);
-    onDownloading();
-  };
+    sourcingLocationsRefetch();
+    sourcingDataRefetch();
+  }, [sourcingDataRefetch, sourcingLocationsRefetch]);
 
-  const handleOnSuccess = () => {
-    setIsDownloading(false);
-    onSuccess();
-  };
-
-  const handleOnError = () => {
-    setIsDownloading(false);
-    onError('There was an error processing the data for download.');
-  };
+  useEffect(() => {
+    if (isFetched && isSuccess && isDownloading) {
+      csvDownload({
+        data,
+        filename: `data_procurement_${updatedAt || ''}.csv`,
+      });
+      setIsDownloading(false);
+    }
+  }, [isFetched, isSuccess, data, updatedAt, isDownloading]);
 
   return (
-    <Downloader
-      className={className}
-      url="/sourcing-locations/materials"
-      transformer={transformer}
-      onDownloading={handleOnDownloading}
-      onSuccess={handleOnSuccess}
-      onError={handleOnError}
+    <Button
+      variant="secondary"
+      loading={isSourcingDataFetching || isSourcingLocationsLoading || isDownloading}
+      icon={<DownloadIcon />}
+      onClick={handleDownload}
     >
-      <Button variant="secondary" loading={isDownloading} icon={<DownloadIcon />} {...buttonProps}>
-        Download
-      </Button>
-    </Downloader>
+      Download
+    </Button>
   );
 };
 

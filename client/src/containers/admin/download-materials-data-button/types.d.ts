@@ -11,4 +11,6 @@ export type DownloadMaterialsDataButtonProps = {
   onError?: (error: undefined | string) => void;
 
   buttonProps?: ButtonProps;
+  /** Name of the downloaded file */
+  fileName?: string;
 };

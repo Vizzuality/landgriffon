@@ -94,6 +94,10 @@ module "k8s_api" {
     {
       name  = "USE_NEW_METHODOLOGY"
       value = "true"
+    },
+    {
+      name  = "FILE_SIZE_LIMIT"
+      value = 31457280
     }
   ])
 

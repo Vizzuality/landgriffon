@@ -75,6 +75,20 @@ extract-mapspam-crop-production:
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TROF_A.tif \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TEMF_A.tif \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_TrofTemf_A.tif
+	gdal_calc.py --quiet --calc "A+B+C" --format GTiff --type Float32 \
+		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_VEGE_A.tif \
+		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_POTA_A.tif \
+		-C $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_OPUL_A.tif \
+		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_vegepotaopul_A.tif
+	gdal_calc.py --quiet --calc "A+B+C+D+E+F+G" --format GTiff --type Float32 \
+		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_OILP_A.tif \
+		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_SOYB_A.tif \
+		-C $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_GROU_A.tif \
+		-D $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_OOIL_A.tif \
+		-E $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_SUNF_A.tif \
+		-F $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_CNUT_A.tif \
+		-G $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_RAPE_A.tif \
+		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_oilpsoybgrouooilsunfcnutrape_A.tif
 	# Compress all files since they come uncompressed
 	for file in $(WORKDIR_MAPSPAM)/spam2010v2r0_global_prod/spam2010V2r0_global_P_*.tif; do \
 		gdal_translate -co COMPRESS=DEFLATE -co PREDICTOR=3 $$file $$file.tmp.tif;\
@@ -141,6 +155,20 @@ extract-mapspam-crop-harvest:
 		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TROF_A.tif --A_band 1 \
 		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TEMF_A.tif --B_band 1 \
 		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_TrofTemf_A.tif
+	gdal_calc.py --quiet --calc "A+B+C" --format GTiff --type Float32 \
+		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_VEGE_A.tif --A_band 1 \
+		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_POTA_A.tif --B_band 1 \
+		-C $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_OPUL_A.tif --C_band 1 \
+		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_vegepotaopul_A.tif
+	gdal_calc.py --quiet --calc "A+B+C+D+E+F+G" --format GTiff --type Float32 \
+		-A $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_OILP_A.tif --A_band 1 \
+		-B $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_SOYB_A.tif --B_band 1 \
+		-C $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_GROU_A.tif --C_band 1 \
+		-D $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_OOIL_A.tif --D_band 1 \
+		-E $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_SUNF_A.tif --E_band 1 \
+		-F $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_CNUT_A.tif --F_band 1 \
+		-G $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_RAPE_A.tif --G_band 1 \
+		--outfile $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_oilpsoybgrouooilsunfcnutrape_A.tif
 	for file in $(WORKDIR_MAPSPAM)/spam2010v2r0_global_ha/spam2010V2r0_global_H_*.tif; do \
 		gdal_translate -co COMPRESS=DEFLATE -co PREDICTOR=3 $$file $$file.tmp.tif;\
 		mv $$file.tmp.tif $$file;\

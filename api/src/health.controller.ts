@@ -26,6 +26,7 @@ export class HealthController {
     return this.health.check([
       (): Promise<HealthIndicatorResult> =>
         this.microservice.pingCheck<RedisOptions>('redis', {
+          timeout: 900000000,
           transport: Transport.REDIS,
           options: {
             host: `${queueConfig.host}`,

@@ -1,14 +1,14 @@
 module "k8s_namespace" {
-  source       = "../../k8s_namespace"
-  namespace    = var.environment
+  source    = "../../k8s_namespace"
+  namespace = var.environment
 }
 
 module "k8s_database" {
-  source       = "../database"
-  namespace    = var.environment
-  username     = module.k8s_secrets.postgres_username
-  password     = module.k8s_secrets.postgres_password
-  database     = module.k8s_secrets.postgres_database
+  source    = "../database"
+  namespace = var.environment
+  username  = module.k8s_secrets.postgres_username
+  password  = module.k8s_secrets.postgres_password
+  database  = module.k8s_secrets.postgres_database
 
   depends_on = [
     module.k8s_namespace
@@ -16,8 +16,8 @@ module "k8s_database" {
 }
 
 module "k8s_redis" {
-  source       = "../redis"
-  namespace    = var.environment
+  source    = "../redis"
+  namespace = var.environment
 
   depends_on = [
     module.k8s_namespace
@@ -35,35 +35,35 @@ module "k8s_api" {
       name        = "DB_HOST"
       secret_name = "db"
       secret_key  = "DB_HOST"
-      }, {
+    }, {
       name        = "DB_USERNAME"
       secret_name = "db"
       secret_key  = "DB_USERNAME"
-      }, {
+    }, {
       name        = "DB_PASSWORD"
       secret_name = "db"
       secret_key  = "DB_PASSWORD"
-      }, {
+    }, {
       name        = "DB_DATABASE"
       secret_name = "db"
       secret_key  = "DB_DATABASE"
-      }, {
+    }, {
       name        = "QUEUE_HOST"
       secret_name = "db"
       secret_key  = "REDIS_HOST"
-      }, {
+    }, {
       name        = "GEOCODING_CACHE_HOST"
       secret_name = "db"
       secret_key  = "REDIS_HOST"
-      }, {
+    }, {
       name        = "DB_CACHE_HOST"
       secret_name = "db"
       secret_key  = "REDIS_HOST"
-      }, {
+    }, {
       name        = "JWT_SECRET"
       secret_name = "api"
       secret_key  = "JWT_SECRET"
-      }, {
+    }, {
       name        = "GMAPS_API_KEY"
       secret_name = "api"
       secret_key  = "GMAPS_API_KEY"
@@ -117,7 +117,7 @@ module "k8s_tiler" {
       value = "${module.k8s_api.api_service_name}.${var.environment}.svc.cluster.local"
     },
     {
-      name = "API_PORT"
+      name  = "API_PORT"
       // TODO: get port from api k8s service
       value = 3000
     },
@@ -139,18 +139,17 @@ module "k8s_tiler" {
     },
 
     {
-      name = "DEFAULT_COG"
+      name  = "DEFAULT_COG"
       value = "biomass.tif"
     },
     {
-      name = "REQUIRE_AUTH"
+      name  = "REQUIRE_AUTH"
       value = "false"
     }
 
   ])
 
 }
-
 
 
 module "k8s_client" {
@@ -167,18 +166,26 @@ module "k8s_client" {
 }
 
 module "k8s_data_import" {
-  source       = "../../data_import"
-  job_name     = "data-import"
-  image        = "${var.data_import_container_registry_url}:${var.image_tag}"
-  namespace    = var.environment
-  load_data    = var.load_fresh_data
-  arguments    = var.data_import_arguments
+  source    = "../../data_import"
+  job_name  = "data-import"
+  image     = "${var.data_import_container_registry_url}:${var.image_tag}"
+  namespace = var.environment
+  load_data = var.load_fresh_data
+  arguments = var.data_import_arguments
 
   env_vars = [
     {
       name  = "API_POSTGRES_PORT"
       value = "5432"
-    }
+    },
+    {
+      name  = "S3_BUCKET_NAME"
+      value = var.science_bucket_name
+    },
+    {
+      name  = "S3_COG_PATH"
+      value = "processed/cogs"
+    },
   ]
 
   secrets = [
@@ -245,7 +252,7 @@ module "data-import-group" {
   desired_size       = 1
   namespace          = var.environment
   subnet_ids         = [var.private_subnet_ids[0]]
-  labels = {
+  labels             = {
     type : "data-import-${var.environment}"
   }
 }

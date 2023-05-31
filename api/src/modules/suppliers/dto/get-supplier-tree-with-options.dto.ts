@@ -61,9 +61,6 @@ export class GetSupplierTreeWithOptions {
       'Available options: ' +
       Object.values(LOCATION_TYPES).toString().toLowerCase(),
   })
-  // @Transform(({ value }: { value: LOCATION_TYPES[] }) =>
-  //   transformLocationType(value),
-  // )
   @Type(() => String)
   locationTypes?: LOCATION_TYPES[];
 

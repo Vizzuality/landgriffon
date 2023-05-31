@@ -3,7 +3,6 @@ import {
   HttpException,
   Inject,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import {
@@ -174,18 +173,16 @@ export class SuppliersService extends AppBaseService<
   }
 
   async getSupplierByType(typeOptions: GetSupplierByType): Promise<Supplier[]> {
-    const { type } = typeOptions;
-    const queryBuilder: SelectQueryBuilder<Supplier> = this.supplierRepository
-      .createQueryBuilder('s')
-      .innerJoin(
-        SourcingLocation,
-        'sl',
-        's.id = sl.t1SupplierId OR s.id = sl.producerId',
-      );
+    const { type, sort } = typeOptions;
+    const queryBuilder: SelectQueryBuilder<Supplier> =
+      this.supplierRepository.createQueryBuilder('s');
+    queryBuilder.distinct(true);
+    queryBuilder.orderBy('s.name', sort ?? 'ASC');
     if (type === SUPPLIER_TYPES.T1SUPPLIER) {
-      queryBuilder.where('sl.t1SupplierId IS NOT NULL');
-    } else if (type === SUPPLIER_TYPES.PRODUCER) {
-      queryBuilder.where('sl.producerId IS NOT NULL');
+      queryBuilder.innerJoin(SourcingLocation, 'sl', 'sl.t1SupplierId = s.id');
+    }
+    if (type === SUPPLIER_TYPES.PRODUCER) {
+      queryBuilder.innerJoin(SourcingLocation, 'sl', 'sl.producerId = s.id');
     }
     return queryBuilder.getMany();
   }

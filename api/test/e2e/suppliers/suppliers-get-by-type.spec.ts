@@ -6,7 +6,12 @@ import { setupTestUser } from '../../utils/userAuth';
 import ApplicationManager, {
   TestApplication,
 } from '../../utils/application-manager';
-import { createSourcingLocation, createSupplier } from '../../entity-mocks';
+import {
+  createAdminRegion,
+  createMaterial,
+  createSourcingLocation,
+  createSupplier,
+} from '../../entity-mocks';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { DataSource } from 'typeorm';
 import { MaterialRepository } from 'modules/materials/material.repository';
@@ -109,6 +114,57 @@ describe('Suppliers - Get by type', () => {
         expect(
           response.body.errors[0].meta.rawError.response.message[0],
         ).toEqual('Allowed Supplier types: t1supplier, producer');
+      },
+    );
+    test(
+      'When I query the API to get a supplier' +
+        'And I filter by several other entities' +
+        'Then I should get the suppliers matching the criteria',
+      async () => {
+        const t1Supplier: Supplier = await createSupplier({
+          name: 'T1 Supplier 1',
+        });
+        const producer: Supplier = await createSupplier({
+          name: 'Producer 1',
+        });
+        const material = await createMaterial({ name: 'Material 1' });
+        const adminRegion = await createAdminRegion({
+          name: 'Admin Region 1',
+        });
+        await createSourcingLocation({
+          t1SupplierId: t1Supplier.id,
+          material,
+          adminRegion,
+        });
+        await createSourcingLocation({
+          producerId: producer.id,
+          material,
+          adminRegion,
+        });
+
+        const response1 = await request(testApplication.getHttpServer())
+          .get('/api/v1/suppliers/types')
+          .query({
+            type: SUPPLIER_TYPES.T1SUPPLIER,
+            'materialIds[]': [material.id],
+            'originIds[]': [adminRegion.id],
+          })
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send();
+
+        const response2 = await request(testApplication.getHttpServer())
+          .get('/api/v1/suppliers/types')
+          .query({
+            type: SUPPLIER_TYPES.PRODUCER,
+            'materialIds[]': [material.id],
+            'originIds[]': [adminRegion.id],
+          })
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send();
+
+        expect(response1.body.data[0].id).toEqual(t1Supplier.id);
+
+        expect(response2.body.data[0].id).toEqual(producer.id);
       },
     );
   });

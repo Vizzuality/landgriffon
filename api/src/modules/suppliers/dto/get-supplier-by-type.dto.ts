@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { SUPPLIER_TYPES } from 'modules/suppliers/supplier.entity';
 import { Type } from 'class-transformer';
-import { LOCATION_TYPES } from '../../sourcing-locations/sourcing-location.entity';
+import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 
 export class GetSupplierByType {
   @ApiProperty()
@@ -64,12 +64,8 @@ export class GetSupplierByType {
 
   @ApiPropertyOptional({
     description: 'Array of Scenario Ids to include in the supplier search',
+    name: 'scenarioIds[]',
   })
-  @IsOptional()
-  @IsUUID('4')
-  scenarioId?: string;
-
-  @ApiPropertyOptional()
   @IsOptional()
   @IsUUID('4', { each: true })
   scenarioIds?: string[];

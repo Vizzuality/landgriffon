@@ -59,9 +59,10 @@ class BaseGetImpactMapDto {
   @IsOptional()
   @IsUUID('4', { each: true })
   @Type(() => String)
-  t1supplierIds?: string[];
+  t1SupplierIds?: string[];
 
-  @ApiPropertyOptional({ name: 'supplierIds[]' })
+  @ApiPropertyOptional({ name: 'producerIds[]' })
+  @IsOptional()
   @IsUUID('4', { each: true })
   @Type(() => String)
   producerIds?: string[];

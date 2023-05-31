@@ -1,13 +1,15 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEnum,
   IsIn,
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
 } from 'class-validator';
 import { SUPPLIER_TYPES } from 'modules/suppliers/supplier.entity';
 import { Type } from 'class-transformer';
+import { LOCATION_TYPES } from '../../sourcing-locations/sourcing-location.entity';
 
 export class GetSupplierByType {
   @ApiProperty()
@@ -18,6 +20,59 @@ export class GetSupplierByType {
     )}`,
   })
   type!: SUPPLIER_TYPES;
+
+  // Below fields for smart filtering
+  @IsUUID('4', { each: true })
+  @ApiPropertyOptional()
+  @IsOptional()
+  materialIds?: string[];
+
+  @IsUUID('4', { each: true })
+  @ApiPropertyOptional()
+  @IsOptional()
+  businessUnitIds?: string[];
+
+  @IsUUID('4', { each: true })
+  @ApiPropertyOptional()
+  @IsOptional()
+  originIds?: string[];
+
+  @IsUUID('4', { each: true })
+  @ApiPropertyOptional()
+  @IsOptional()
+  t1SupplierIds?: string[];
+
+  @IsUUID('4', { each: true })
+  @ApiPropertyOptional()
+  @IsOptional()
+  producerIds?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Types of Sourcing Locations, written with hyphens',
+    enum: Object.values(LOCATION_TYPES),
+    name: 'locationTypes[]',
+  })
+  @IsOptional()
+  @IsEnum(LOCATION_TYPES, {
+    each: true,
+    message:
+      'Available options: ' +
+      Object.values(LOCATION_TYPES).toString().toLowerCase(),
+  })
+  @Type(() => String)
+  locationTypes?: LOCATION_TYPES[];
+
+  @ApiPropertyOptional({
+    description: 'Array of Scenario Ids to include in the supplier search',
+  })
+  @IsOptional()
+  @IsUUID('4')
+  scenarioId?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID('4', { each: true })
+  scenarioIds?: string[];
 
   @ApiProperty({
     description: `The sort order by Name for the resulting entities. Can be 'ASC' (Ascendant) or 'DESC' (Descendent). Defaults to ASC`,

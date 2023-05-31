@@ -170,12 +170,6 @@ export class H3DataMapService {
         );
     }
 
-    if (mapDto.supplierIds) {
-      mapDto.supplierIds = await this.supplierService.getSuppliersDescendants(
-        mapDto.supplierIds,
-      );
-    }
-
     if (mapDto.materialIds) {
       mapDto.materialIds = await this.materialService.getMaterialsDescendants(
         mapDto.materialIds,

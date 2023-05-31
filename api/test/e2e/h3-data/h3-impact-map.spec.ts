@@ -264,7 +264,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           indicatorId: impactMapMockData.indicatorId,
-          'supplierIds[]': [impactMapMockData.t1SupplierOneId],
+          't1SupplierIds[]': [impactMapMockData.t1SupplierOneId],
           year: 2020,
           resolution: 6,
         });
@@ -287,7 +287,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           indicatorId: impactMapMockData.indicatorId,
-          'supplierIds[]': [impactMapMockData.producerOneId],
+          'producerIds[]': [impactMapMockData.producerOneId],
           year: 2020,
           resolution: 6,
         });
@@ -316,7 +316,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           indicatorId: impactMapMockData.indicatorId,
-          'supplierIds[]': [impactMapMockData.producerOneId],
+          'producerIds[]': [impactMapMockData.producerOneId],
           year: 2020,
           resolution: 6,
         });

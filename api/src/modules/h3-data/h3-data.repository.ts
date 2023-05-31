@@ -402,7 +402,8 @@ export class H3DataRepository extends Repository<H3Data> {
       false,
       dto.materialIds,
       dto.originIds,
-      dto.supplierIds,
+      dto.t1supplierIds,
+      dto.producerIds,
       dto.locationTypes,
       baseQueryExtend,
       false,
@@ -436,24 +437,13 @@ export class H3DataRepository extends Repository<H3Data> {
           }),
         );
 
-      // Add the aggregation formula
-      // Absolute: ((compared - actual)  / scaler
-      // Relative: 100 * ((compared - actual) / ((compared + actual) / 2 ) / scaler
-
-      // Sums indicator record values for actual data and selected scenario
       const sumDataWithScenario: string = 'sum(ir.value / ir.scaler)';
 
       // Sums values for actual data only
       const sumOnlyActualData: string =
         'sum(case when si."scenarioId" is null then ir.value else 0 end / ir.scaler)';
-      //let aggregateExpression: string;
 
-      // if (dto.relative) {
-      //   // TODO "edge" case when sumDataWithoutScenario is 0, the result will always be 200%, pending to search for a more accurate formula by Elena
-      //   aggregateExpression = `100 * ( ABS(${sumDataWithScenario}) - ABS(${sumDataWithoutScenario}) ) / ( ( ABS(${sumDataWithScenario}) + ABS(${sumDataWithoutScenario}) ) / 2 ) / ir.scaler `;
-      // } else {
-      //   aggregateExpression = `( ${sumDataWithScenario} - ${sumDataWithoutScenario} ) / ir.scaler `;
-      // }
+      // TODO "edge" case when sumDataWithoutScenario is 0, the result will always be 200%, pending to search for a more accurate formula by Elena
 
       baseQuery.addSelect(sumDataWithScenario, 'sum_compared_scenario');
       baseQuery.addSelect(sumOnlyActualData, 'sum_actual_data');
@@ -467,7 +457,8 @@ export class H3DataRepository extends Repository<H3Data> {
       dto.relative,
       dto.materialIds,
       dto.originIds,
-      dto.supplierIds,
+      dto.t1supplierIds,
+      dto.producerIds,
       dto.locationTypes,
       baseQueryExtend,
       true,
@@ -501,24 +492,12 @@ export class H3DataRepository extends Repository<H3Data> {
           }),
         );
 
-      // Add the aggregation formula
-      // Absolute: ((compared - base)  / scaler
-      // Relative: 100 * ((compared - base) / ((compared + base) / 2 ) / scaler
-
-      // Sums values of indicator records for the base scenario to compare
       const sumDataWithBaseScenario: string = `sum(case when si."scenarioId" = '${dto.baseScenarioId}' or si."scenarioId" is null then ir.value else 0 end / ir.scaler)`;
 
       // Sums values of indicator records for the comparing scenario
       const sumDataWitComparedScenario: string = `sum(case when si."scenarioId" = '${dto.comparedScenarioId}' or si."scenarioId" is null then ir.value else 0 end / ir.scaler)`;
 
-      //let aggregateExpression: string;
-
-      // if (dto.relative) {
-      //   // TODO "edge" case when sumDataWithoutScenario is 0, the result will always be 200%, pending to search for a more accurate formula by Elena
-      //   aggregateExpression = `100 * ( ABS(${sumDataWitComparedScenario}) - ABS(${sumDataWithBaseScenario}) ) / ( ( ABS(${sumDataWitComparedScenario}) + ABS(${sumDataWithBaseScenario}) ) / 2 ) / ir.scaler `;
-      // } else {
-      //   aggregateExpression = `( ${sumDataWithBaseScenario} - ${sumDataWitComparedScenario} ) / ir.scaler `;
-      // }
+      // TODO "edge" case when sumDataWithoutScenario is 0, the result will always be 200%, pending to search for a more accurate formula by Elena
 
       baseQuery.addSelect(sumDataWithBaseScenario, 'sum_base_scenario');
       baseQuery.addSelect(sumDataWitComparedScenario, 'sum_compared_scenario');
@@ -532,31 +511,14 @@ export class H3DataRepository extends Repository<H3Data> {
       dto.relative,
       dto.materialIds,
       dto.originIds,
-      dto.supplierIds,
+      dto.t1supplierIds,
+      dto.producerIds,
       dto.locationTypes,
       baseQueryExtend,
       true,
     );
   }
 
-  /**
-   * This functions is used as a basis for all Impact functions. It builds a query with different levels of nesting
-   * to generate the map values. The base query will be "extended" by the incoming baseQueryExtend parameter, which is
-   * a function that will receive baseMapQuery so that the appropriate aggregation formulas and further selection criteria
-   * can be added.
-   * ATTENTION: This baseQueryExtend function must add a select statement with an aggregation formula and alias "scaled_value"
-   * @param indicatorId Indicator data of a Indicator
-   * @param resolution Integer value that represent the resolution which the h3 response should be calculated
-   * @param year
-   * @param mapType
-   * @param isRelative
-   * @param materialIds
-   * @param originIds
-   * @param supplierIds
-   * @param locationTypes
-   * @param baseQueryExtend
-   * @param scenarioComparisonQuantiles
-   */
   //TODO Pending refactoring of Quantiles temp table, and aggregation formulas
   private async baseGetImpactMap(
     indicatorId: string,
@@ -566,7 +528,8 @@ export class H3DataRepository extends Repository<H3Data> {
     isRelative?: boolean,
     materialIds?: string[],
     originIds?: string[],
-    supplierIds?: string[],
+    t1SupplierIds?: string[],
+    producerIds?: string[],
     locationTypes?: LOCATION_TYPES[],
     baseQueryExtend?: (baseQuery: SelectQueryBuilder<any>) => void,
     scenarioComparisonQuantiles?: boolean,
@@ -579,7 +542,8 @@ export class H3DataRepository extends Repository<H3Data> {
     baseMapQuery = this.addFiltering(
       baseMapQuery,
       materialIds,
-      supplierIds,
+      t1SupplierIds,
+      producerIds,
       originIds,
       locationTypes,
     );
@@ -627,12 +591,6 @@ export class H3DataRepository extends Repository<H3Data> {
       finalQueryBuiler.from('(' + aggregatedResultQuery.getSql() + ')', `q`);
     }
 
-    // const comparisonQuery: SelectQueryBuilder<any> =
-    //   this.addComparisonExpression(aggregatedResultQuery, mapType, isRelative);
-
-    // NOTE the query structure is like this: withDynamicResolution FROM (aggregatedResult FROM (baseMapQuery))
-    // the base query, which has the most parameters, is nested as a subquery 2 levels
-    // the statement below is made with the assumption that none of the queries above baseMapQuery have any query params
     const [queryString, params] = baseMapQuery.getQueryAndParameters();
 
     return this.executeQueryAndQuantiles(
@@ -708,7 +666,8 @@ export class H3DataRepository extends Repository<H3Data> {
   private addFiltering(
     subqueryBuilder: SelectQueryBuilder<any>,
     materialIds?: string[],
-    supplierIds?: string[],
+    t1SupplierIds?: string[],
+    producerIds?: string[],
     originIds?: string[],
     locationTypes?: string[],
   ): SelectQueryBuilder<any> {
@@ -717,14 +676,15 @@ export class H3DataRepository extends Repository<H3Data> {
         materialIds,
       });
     }
-    if (supplierIds) {
-      subqueryBuilder.andWhere(
-        new Brackets((qb: WhereExpressionBuilder) => {
-          qb.where('sl.t1SupplierId IN (:...supplierIds)', {
-            supplierIds,
-          }).orWhere('sl.producerId IN (:...supplierIds)', { supplierIds });
-        }),
-      );
+    if (t1SupplierIds) {
+      subqueryBuilder.andWhere('sl.t1SupplierId IN (:...t1SupplierIds)', {
+        t1SupplierIds,
+      });
+    }
+    if (producerIds) {
+      subqueryBuilder.andWhere('sl.producerId IN (:...producerIds)', {
+        producerIds,
+      });
     }
     if (originIds) {
       subqueryBuilder.andWhere('sl.adminRegionId IN (:...originIds)', {

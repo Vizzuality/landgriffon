@@ -55,11 +55,16 @@ class BaseGetImpactMapDto {
   @Type(() => String)
   originIds?: string[];
 
-  @ApiPropertyOptional({ name: 'supplierIds[]' })
+  @ApiPropertyOptional({ name: 't1supplierIds[]' })
   @IsOptional()
-  @IsString({ each: true })
+  @IsUUID('4', { each: true })
   @Type(() => String)
-  supplierIds?: string[];
+  t1supplierIds?: string[];
+
+  @ApiPropertyOptional({ name: 'supplierIds[]' })
+  @IsUUID('4', { each: true })
+  @Type(() => String)
+  producerIds?: string[];
 
   @ApiPropertyOptional({
     description: 'Types of Sourcing Locations, written with hyphens',

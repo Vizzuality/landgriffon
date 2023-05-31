@@ -16,6 +16,8 @@ from utils import DTYPES_TO_PG, slugify, snakify, get_connection_info
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("raster_to_h3")
+# we don't want to see the botocore logs that somehow pop up. I have no clue where they come from
+logging.getLogger("botocore.credentials").setLevel(logging.WARNING)
 
 
 def check_srs(reference_raster: DatasetReader, raster: DatasetReader):

@@ -72,7 +72,7 @@ describe('Materials - Get trees - Smart Filters', () => {
   });
 
   test(
-    'When I query a Supplier Tree endpoint ' +
+    'When I query a Material Tree endpoint ' +
       'And I query the ones with sourcing locations' +
       'And I filter them by a related supplier or suppliers' +
       'Then I should receive a tree list of materials where there are sourcing-locations for',
@@ -134,7 +134,6 @@ describe('Materials - Get trees - Smart Filters', () => {
         })
         .set('Authorization', `Bearer ${jwtToken}`);
 
-      expect(HttpStatus.OK);
       expect(response.body.data[0].id).toEqual(parentMaterial1.id);
       expect(response.body.data[0].attributes.children[0].name).toEqual(
         childMaterial1.name,

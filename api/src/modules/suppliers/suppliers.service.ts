@@ -19,13 +19,17 @@ import { SupplierRepository } from 'modules/suppliers/supplier.repository';
 import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
 import { UpdateSupplierDto } from 'modules/suppliers/dto/update.supplier.dto';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
-import { SelectQueryBuilder } from 'typeorm';
+import { Brackets, SelectQueryBuilder, WhereExpressionBuilder } from 'typeorm';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetSupplierByType } from 'modules/suppliers/dto/get-supplier-by-type.dto';
 import { GetSupplierTreeWithOptions } from 'modules/suppliers/dto/get-supplier-tree-with-options.dto';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { MaterialsService } from 'modules/materials/materials.service';
+import {
+  SCENARIO_INTERVENTION_STATUS,
+  ScenarioIntervention,
+} from 'modules/scenario-interventions/scenario-intervention.entity';
 
 @Injectable()
 export class SuppliersService extends AppBaseService<
@@ -159,31 +163,87 @@ export class SuppliersService extends AppBaseService<
 
   async getSuppliersWithSourcingLocations(
     supplierTreeOptions: GetSupplierTreeWithOptions,
-    withAncesty: boolean = true,
+    withAncestry: boolean = true,
   ): Promise<any> {
     const supplierLineage: Supplier[] =
       await this.supplierRepository.getSuppliersFromSourcingLocations(
         supplierTreeOptions,
-        withAncesty,
+        withAncestry,
       );
-    if (!withAncesty) {
+    if (!withAncestry) {
       return supplierLineage;
     }
     return this.buildTree<Supplier>(supplierLineage, null);
   }
 
-  async getSupplierByType(typeOptions: GetSupplierByType): Promise<Supplier[]> {
-    const { type, sort } = typeOptions;
+  async getSupplierByType(options: GetSupplierByType): Promise<Supplier[]> {
     const queryBuilder: SelectQueryBuilder<Supplier> =
       this.supplierRepository.createQueryBuilder('s');
     queryBuilder.distinct(true);
-    queryBuilder.orderBy('s.name', sort ?? 'ASC');
-    if (type === SUPPLIER_TYPES.T1SUPPLIER) {
+    queryBuilder.orderBy('s.name', options.sort ?? 'ASC');
+    if (options.type === SUPPLIER_TYPES.T1SUPPLIER) {
       queryBuilder.innerJoin(SourcingLocation, 'sl', 'sl.t1SupplierId = s.id');
     }
-    if (type === SUPPLIER_TYPES.PRODUCER) {
+    if (options.type === SUPPLIER_TYPES.PRODUCER) {
       queryBuilder.innerJoin(SourcingLocation, 'sl', 'sl.producerId = s.id');
     }
+    if (options.materialIds) {
+      queryBuilder.andWhere('sl.materialId IN (:...materialIds)', {
+        materialIds: options.materialIds,
+      });
+    }
+    if (options.businessUnitIds) {
+      queryBuilder.andWhere('sl.businessUnitId IN (:...businessUnitIds)', {
+        businessUnitIds: options.businessUnitIds,
+      });
+    }
+    if (options.originIds) {
+      queryBuilder.andWhere('sl.adminRegionId IN (:...originIds)', {
+        originIds: options.originIds,
+      });
+    }
+    if (options.producerIds) {
+      queryBuilder.andWhere('sl.producerId IN (:...producerIds)', {
+        producerIds: options.producerIds,
+      });
+    }
+    if (options.t1SupplierIds) {
+      queryBuilder.andWhere('sl.t1SupplierId IN (:...t1SupplierIds)', {
+        t1SupplierIds: options.t1SupplierIds,
+      });
+    }
+    if (options.locationTypes) {
+      queryBuilder.andWhere('sl.locationType IN (:...locationTypes)', {
+        locationTypes: options.locationTypes,
+      });
+    }
+    if (options.scenarioIds) {
+      queryBuilder.leftJoin(
+        ScenarioIntervention,
+        'scenarioIntervention',
+        'sl.scenarioInterventionId = scenarioIntervention.id',
+      );
+
+      queryBuilder.andWhere(
+        new Brackets((qb: WhereExpressionBuilder) => {
+          qb.where('sl.scenarioInterventionId is null').orWhere(
+            new Brackets((qbInterv: WhereExpressionBuilder) => {
+              qbInterv
+                .where('scenarioIntervention.scenarioId IN (:...scenarioIds)', {
+                  scenarioIds: options.scenarioIds,
+                })
+                .andWhere(`scenarioIntervention.status = :status`, {
+                  status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+                });
+            }),
+          );
+        }),
+      );
+    } else {
+      queryBuilder.andWhere('sl.scenarioInterventionId is null');
+      queryBuilder.andWhere('sl.interventionType is null');
+    }
+
     return queryBuilder.getMany();
   }
 

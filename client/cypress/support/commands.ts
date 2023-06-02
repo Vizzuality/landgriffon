@@ -223,7 +223,7 @@ Cypress.Commands.add('interceptAllRequests', (): void => {
       statusCode: 200,
       fixture: 'suppliers/types-t1supplier',
     },
-  );
+  ).as('t1Suppliers');
 
   cy.intercept(
     {
@@ -237,7 +237,7 @@ Cypress.Commands.add('interceptAllRequests', (): void => {
       statusCode: 200,
       fixture: 'suppliers/types-producer',
     },
-  );
+  ).as('producers');
 
   // Profile
   cy.intercept('api/v1/users/me', { fixture: 'profiles/all-permissions' }).as('profile');

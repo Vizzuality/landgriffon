@@ -17,6 +17,7 @@ const values = 'absolute';
 const materialArticle = 'of';
 const originArticle = 'in';
 const supplierArticle = 'from';
+const producerArticle = 'and from';
 const locationTypeArticle = 'aggregated by';
 
 type AnalysisDynamicMetadataTypes = {
@@ -41,7 +42,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
     [scenarioToCompare, scenarioB?.title],
   );
 
-  const { materials, origins, suppliers, locationTypes, indicator } =
+  const { materials, origins, t1Suppliers, producers, locationTypes, indicator } =
     useAppSelector(analysisFilters);
 
   const handleRemoveBadge = useCallback(
@@ -117,16 +118,16 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
   );
   const supplierTemplate = useMemo(
     () =>
-      !!suppliers.length && (
+      !!t1Suppliers.length && (
         <span>
           {supplierArticle}{' '}
           <ul className="inline-flex gap-1">
-            {suppliers.map((supplier) => (
+            {t1Suppliers.map((supplier) => (
               <li key={supplier.value}>
                 <Badge
                   key={supplier.value}
                   data={supplier}
-                  onClick={() => handleRemoveBadge('suppliers', suppliers, supplier)}
+                  onClick={() => handleRemoveBadge('suppliers', t1Suppliers, supplier)}
                   removable
                 >
                   {supplier.label}
@@ -136,7 +137,30 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
           </ul>
         </span>
       ),
-    [handleRemoveBadge, suppliers],
+    [handleRemoveBadge, t1Suppliers],
+  );
+  const producerTemplate = useMemo(
+    () =>
+      !!producers.length && (
+        <span>
+          {producerArticle}{' '}
+          <ul className="inline-flex gap-1">
+            {producers.map((producer) => (
+              <li key={producer.value}>
+                <Badge
+                  key={producer.value}
+                  data={producer}
+                  onClick={() => handleRemoveBadge('producers', producers, producer)}
+                  removable
+                >
+                  {producer.label}
+                </Badge>
+              </li>
+            ))}
+          </ul>
+        </span>
+      ),
+    [handleRemoveBadge, producers],
   );
   const locationTypeTemplate = useMemo(
     () =>
@@ -178,6 +202,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
       {materialTemplate}
       {originTemplate}
       {supplierTemplate}
+      {producerTemplate}
       {locationTypeTemplate}
     </div>
   );

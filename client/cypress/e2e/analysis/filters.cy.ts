@@ -39,16 +39,16 @@ describe('Analysis filters', () => {
   it('should update the params playing with the filters', () => {
     // Step 1: open more filters
     cy.get('[data-testid="more-filters-button"]').click();
-    cy.wait(['@materialsTrees', '@originsTrees', '@suppliersTrees', '@fetchImpactTable']);
+    cy.wait(['@materialsTrees', '@originsTrees', '@t1Suppliers', '@fetchImpactTable']);
 
     // Adding new interceptors after selecting a filter
     cy.intercept(
       'GET',
-      '/api/v1/suppliers/trees?*originIds[]=8bd7e578-f64f-4042-8a3a-2a7652ce850b*',
+      '/api/v1/suppliers/types?*originIds[]=8bd7e578-f64f-4042-8a3a-2a7652ce850b*',
       {
         fixture: 'trees/suppliers-filtered.json',
       },
-    ).as('suppliersTreesFiltered');
+    ).as('t1SuppliersFiltered');
 
     cy.intercept(
       {
@@ -76,9 +76,9 @@ describe('Analysis filters', () => {
       .type('{enter}');
     cy.wait('@locationTypes');
     // Step 3: Selecting Moll in the material selector
-    cy.wait('@suppliersTreesFiltered');
-    cy.get('[data-testid="tree-select-suppliers-filter"]').find('div[role="combobox"]').click();
-    cy.get('[data-testid="tree-select-suppliers-filter"]')
+    cy.wait('@t1SuppliersFiltered');
+    cy.get('[data-testid="tree-select-t1-suppliers-filter"]').find('div[role="combobox"]').click();
+    cy.get('[data-testid="tree-select-t1-suppliers-filter"]')
       .find('div[role="listbox"]')
       .find('.rc-tree-treenode')
       .eq(1)

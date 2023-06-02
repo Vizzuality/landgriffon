@@ -13,6 +13,18 @@ const DEFAULT_QUERY_OPTIONS = {
   refetchOnWindowFocus: false,
 };
 
+export type SupplierTypesParams = {
+  type: 't1supplier' | 'producer';
+  materialIds?: string[];
+  businessUnitIds?: string[];
+  originIds?: string[];
+  t1SupplierIds?: string[];
+  producerIds?: string[];
+  locationTypes?: string[];
+  scenarioIds?: string[];
+  sort?: string;
+};
+
 export interface SuppliersTreesParams extends BaseTreeSearchParams {
   withSourcingLocations?: boolean;
   locationTypes?: string[];
@@ -62,7 +74,7 @@ export const useSuppliersTrees = <T = Supplier[]>(
 };
 
 export const useSuppliersTypes = <T = Supplier[]>(
-  params: { type: 't1supplier' | 'producer' },
+  params: SupplierTypesParams = { type: 't1supplier', sort: 'ASC' },
   options?: UseQueryOptions<Supplier[], unknown, T, ['suppliers', typeof params]>,
 ) => {
   const query = useQuery(

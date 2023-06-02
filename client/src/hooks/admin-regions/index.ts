@@ -18,7 +18,8 @@ type ResponseData = UseQueryResult<OriginRegion[]>;
 
 export interface AdminRegionsTreesParams extends BaseTreeSearchParams {
   withSourcingLocations?: boolean;
-  supplierIds?: string[];
+  t1SupplierIds?: string[];
+  producerIds?: string[];
   locationTypes?: string[];
 }
 

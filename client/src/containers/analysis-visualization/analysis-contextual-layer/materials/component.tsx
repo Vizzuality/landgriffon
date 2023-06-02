@@ -3,12 +3,12 @@ import { useState, useCallback, useMemo } from 'react';
 import TogglePreview from '../categories/category-layer/toggle-preview';
 
 import Accordion from 'components/accordion';
-import InfoToolTip from 'components/info-tooltip';
 import Toggle from 'components/toggle';
 import ToolTip from 'components/tooltip';
 import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
 import { useMaterial } from 'hooks/materials';
 import Loading from 'components/loading';
+import InfoModal from 'components/legend/item/info-modal';
 
 import type { CategoryLayerProps as LayerSettingsProps } from '../categories/category-layer/types';
 import type { Option } from 'components/forms/select';
@@ -69,7 +69,14 @@ const MaterialSettings = ({
         <div className="flex flex-row justify-between" data-testid="contextual-material-header">
           <div className="text-sm font-semibold text-gray-500">Food and agriculture</div>
           <div className="flex flex-row gap-2 place-items-center">
-            <InfoToolTip info="Food and agriculture represents agricultural production and global livestock distribution for all commodities incorporated in LandGriffon." />
+            <InfoModal
+              info={{
+                description:
+                  'Food and agriculture represents agricultural production and global livestock distribution for all commodities incorporated in LandGriffon.',
+                source: null,
+                title: 'Materials layer',
+              }}
+            />
             <div className="w-0.5 h-full bg-gray-200 rounded-full" />
             <ToolTip
               className="z-10"

@@ -15,7 +15,8 @@ interface OriginRegionsFilterProps<IsMulti extends boolean>
   /** Only regions with sourcing locations. */
   withSourcingLocations?: AdminRegionsTreesParams['withSourcingLocations'];
   businessUnitIds?: AdminRegionsTreesParams['businessUnitIds'];
-  supplierIds?: AdminRegionsTreesParams['supplierIds'];
+  t1SupplierIds?: AdminRegionsTreesParams['t1SupplierIds'];
+  producerIds?: AdminRegionsTreesParams['producerIds'];
   materialIds?: AdminRegionsTreesParams['materialIds'];
   theme?: 'default' | 'inline-primary';
 }
@@ -27,7 +28,8 @@ const InnerOriginRegionsFilter = <IsMulti extends boolean>(
     depth = 1,
     withSourcingLocations, // Do not a default; backend will override depth if this is set at all
     materialIds,
-    supplierIds,
+    t1SupplierIds,
+    producerIds,
     businessUnitIds,
     onChange,
     theme = 'default',
@@ -42,7 +44,8 @@ const InnerOriginRegionsFilter = <IsMulti extends boolean>(
     depth,
     withSourcingLocations,
     materialIds,
-    supplierIds,
+    t1SupplierIds,
+    producerIds,
     businessUnitIds,
   });
 

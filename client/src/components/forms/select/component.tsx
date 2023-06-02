@@ -1,6 +1,7 @@
-import { cloneElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { cloneElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import classnames from 'classnames';
 import { Listbox, Transition } from '@headlessui/react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/solid';
 import { flip, useFloating, size } from '@floating-ui/react-dom';
 import { autoUpdate } from '@floating-ui/react';
@@ -20,7 +21,7 @@ const Select = <T,>({
   icon,
   label,
   loading = false,
-  options,
+  options = [],
   placeholder = 'Select an option',
   showHint,
   onChange,
@@ -28,6 +29,7 @@ const Select = <T,>({
   theme = 'light',
   ...props
 }: SelectProps<T>) => {
+  const parentRef = useRef();
   const [selected, setSelected] = useState<Option<T> | Option<string> | Option<T>[]>(
     multiple ? [] : { label: '', value: '' },
   );
@@ -48,6 +50,12 @@ const Select = <T,>({
     placement: 'bottom-start',
     whileElementsMounted: autoUpdate,
     strategy: 'fixed',
+  });
+
+  const rowVirtualizer = useVirtualizer({
+    count: options.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 35,
   });
 
   const handleChange = useCallback(
@@ -195,35 +203,53 @@ const Select = <T,>({
               }}
               ref={floating}
             >
-              <Listbox.Options className="mt-2 overflow-auto text-base bg-white rounded-md shadow-sm max-h-60 ring-1 ring-gray-200 focus:outline-none">
-                {options.map((option) => (
-                  <Listbox.Option
-                    key={`option-item-${option.value}`}
-                    className={({ active, disabled }) =>
-                      classnames(
-                        'relative cursor-default text-sm select-none py-2 pl-3 pr-9 hover:cursor-pointer',
-                        {
-                          'bg-navy-50': active,
-                          'pointer-events-none cursor-default': disabled,
-                        },
-                      )
-                    }
-                    value={option}
-                    disabled={option.disabled}
-                  >
-                    {({ selected, disabled }) => (
-                      <div
-                        className={classnames('block truncate', {
-                          'text-navy-400': selected,
-                          'text-gray-300': disabled,
-                          'text-gray-900': !selected && !disabled,
-                        })}
+              <Listbox.Options
+                ref={parentRef}
+                className="mt-2 overflow-auto text-base bg-white rounded-md shadow-sm max-h-60 ring-1 ring-gray-200 focus:outline-none"
+              >
+                <div
+                  style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
+                  className="w-full relative"
+                >
+                  {rowVirtualizer.getVirtualItems().map((virtualItem) => {
+                    const option = options[virtualItem.index];
+                    return (
+                      <Listbox.Option
+                        key={virtualItem.index}
+                        className={({ active, disabled }) =>
+                          classnames(
+                            'absolute top-0 left-0 w-full cursor-default text-sm select-none py-2 pl-3 pr-9 hover:cursor-pointer',
+                            {
+                              'bg-navy-50': active,
+                              'pointer-events-none cursor-default': disabled,
+                            },
+                          )
+                        }
+                        style={{
+                          height: `${virtualItem.size}px`,
+                          transform: `translateY(${virtualItem.start}px)`,
+                        }}
+                        value={option}
+                        disabled={option.disabled}
                       >
-                        {option.label}
-                      </div>
-                    )}
-                  </Listbox.Option>
-                ))}
+                        {({ selected, disabled }) => (
+                          <div
+                            className={classnames('block truncate', {
+                              'text-navy-400': selected,
+                              'text-gray-300': disabled,
+                              'text-gray-900': !selected && !disabled,
+                            })}
+                          >
+                            {option.label}
+                          </div>
+                        )}
+                      </Listbox.Option>
+                    );
+                  })}
+                </div>
+                {!options.length && (
+                  <div className="px-3 py-2 text-sm text-gray-500">No results</div>
+                )}
               </Listbox.Options>
             </Transition>
 

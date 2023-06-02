@@ -16,7 +16,8 @@ const DEFAULT_QUERY_OPTIONS = {
 export type MaterialsTreesParams = {
   depth?: number;
   withSourcingLocations?: boolean;
-  supplierIds?: string[];
+  t1SupplierIds?: string[];
+  producerIds?: string[];
   businessUnitIds?: string[];
   originIds?: string[];
   locationTypes?: string[];

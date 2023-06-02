@@ -14,7 +14,8 @@ const DEFAULT_QUERY_OPTIONS = {
 };
 
 export interface LocationTypesParams extends BaseTreeSearchParams {
-  supplierIds?: string[];
+  t1SupplierIds?: string[];
+  producerIds?: string[];
   sort?: 'ASC' | 'DESC';
   // ! Due to an issue in NestJS framework (API side), sending supported with value `false`
   // ! will be treated as a truthy value, so for this specific case, do not send it.

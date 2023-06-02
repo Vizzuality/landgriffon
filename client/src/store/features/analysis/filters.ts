@@ -15,7 +15,8 @@ export type AnalysisFiltersState = {
   endYear: number;
   materials: Option[];
   origins: Option[];
-  suppliers: Option[];
+  t1Suppliers: Option[];
+  producers: Option[];
   locationTypes: Option<LocationTypes>[];
   // used for the material layer
   materialId: Material['id'];
@@ -31,7 +32,8 @@ export const initialState: AnalysisFiltersState = {
   endYear: null,
   materials: [],
   origins: [],
-  suppliers: [],
+  t1Suppliers: [],
+  producers: [],
   locationTypes: [],
   materialId: null,
 };

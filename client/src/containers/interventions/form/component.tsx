@@ -626,7 +626,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                   withSourcingLocations
                   current={value?.[0]}
                   businessUnitIds={currentBusinessUnitIds?.map(({ value }) => value)}
-                  supplierIds={currentSupplierIds?.map(({ value }) => value)}
+                  t1SupplierIds={currentSupplierIds?.map(({ value }) => value)}
                   originIds={currentLocationIds?.map(({ value }) => value)}
                   onChange={(selected) => {
                     if (invalid) clearErrors('materialIds');
@@ -671,7 +671,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                 multiple
                 placeholder="All regions"
                 materialIds={currentMaterialIds?.map(({ value }) => value)}
-                supplierIds={currentSupplierIds?.map(({ value }) => value)}
+                t1SupplierIds={currentSupplierIds?.map(({ value }) => value)}
                 businessUnitIds={currentBusinessUnitIds?.map(({ value }) => value)}
                 withSourcingLocations
                 current={value}

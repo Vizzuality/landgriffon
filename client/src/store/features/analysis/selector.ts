@@ -14,7 +14,8 @@ export const filtersForTabularAPI = createSelector(
     by,
     indicator,
     materials,
-    suppliers,
+    t1Suppliers,
+    producers,
     origins,
     locationTypes,
   }: AnalysisFiltersState): ImpactTabularAPIParams => {
@@ -25,7 +26,8 @@ export const filtersForTabularAPI = createSelector(
         groupBy: by,
         indicatorId: indicator?.value,
         materialIds: materials?.map(({ value }) => value),
-        supplierIds: suppliers?.map(({ value }) => value),
+        t1SupplierIds: t1Suppliers?.map(({ value }) => value),
+        producerIds: producers?.map(({ value }) => value),
         originIds: origins?.map(({ value }) => value),
         locationTypes: locationTypes?.map(({ value }) => value),
       };

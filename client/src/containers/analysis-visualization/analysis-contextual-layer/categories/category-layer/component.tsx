@@ -2,10 +2,10 @@ import React, { useCallback } from 'react';
 
 import TogglePreview from './toggle-preview';
 
-import InfoToolTip from 'components/info-tooltip';
 import Toggle from 'components/toggle';
 import Loading from 'components/loading';
 import Callout from 'components/callout';
+import InfoModal from 'components/legend/item/info-modal';
 
 import type { CategoryLayerProps } from './types';
 
@@ -37,7 +37,13 @@ const CategoryLayer = ({
         <div className="flex flex-row justify-between gap-5 place-items-center">
           <div className="flex-grow text-sm">{layer.metadata?.name}</div>
           <div className="flex flex-row gap-2 place-items-center">
-            <InfoToolTip info={layer.metadata?.description} />
+            <InfoModal
+              info={{
+                description: layer.metadata?.description,
+                source: layer.metadata?.source,
+                title: layer.metadata.name,
+              }}
+            />
             {previewStatus === 'loading' && isPreviewActive ? (
               <Loading />
             ) : (

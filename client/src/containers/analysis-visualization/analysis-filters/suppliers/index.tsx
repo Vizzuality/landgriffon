@@ -14,7 +14,7 @@ const MaterialsFilter: React.FC<{ multiple?: boolean }> = (props) => {
     [dispatch],
   );
 
-  return <Component current={filters.suppliers} multiple={multiple} onChange={handleChange} />;
+  return <Component current={filters.t1Suppliers} multiple={multiple} onChange={handleChange} />;
 };
 
 export default MaterialsFilter;

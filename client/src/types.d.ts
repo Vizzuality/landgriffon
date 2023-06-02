@@ -63,7 +63,8 @@ export type ImpactH3APIParams = CommonH3APIParams & {
   indicatorId: Indicator['id'];
   materialIds?: Material['id'][];
   originIds?: OriginRegion['id'][];
-  supplierIds?: Supplier['id'][];
+  t1supplierIds?: Supplier['id'][];
+  producerIds?: Supplier['id'][];
   scenarioId?: Scenario['id'];
   locationTypes?: string[];
 };
@@ -77,7 +78,8 @@ export type ImpactTabularAPIParams = {
   indicatorId: string;
   materialIds?: string[];
   originIds?: string[];
-  supplierIds?: string[];
+  t1SupplierIds?: Supplier['id'][];
+  producerIds?: Supplier['id'][];
   locationTypes?: string[];
   scenarioId?: string;
 };
@@ -168,6 +170,9 @@ export type SourcingLocationsParams = {
   'page[number]'?: number;
 };
 
+/**
+ * Valid for Suppliers and Producers
+ */
 export type Supplier = {
   id: string;
   name: string;

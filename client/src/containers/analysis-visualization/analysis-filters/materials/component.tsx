@@ -14,7 +14,8 @@ export interface MaterialsFilterProps<IsMulti extends boolean>
 
 const MaterialsFilter = <IsMulti extends boolean>({
   depth = 1,
-  supplierIds,
+  t1SupplierIds,
+  producerIds,
   businessUnitIds,
   originIds,
   locationTypes,
@@ -26,7 +27,8 @@ const MaterialsFilter = <IsMulti extends boolean>({
   const { data: materials, isFetching } = useMaterialsTrees<TreeSelectOption<string>[]>(
     {
       depth,
-      supplierIds,
+      t1SupplierIds,
+      producerIds,
       businessUnitIds,
       originIds,
       locationTypes,

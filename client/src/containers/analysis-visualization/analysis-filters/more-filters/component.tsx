@@ -14,18 +14,18 @@ import { useRouter } from 'next/router';
 
 import Materials from '../materials/component';
 import OriginRegions from '../origin-regions/component';
-import Suppliers from '../suppliers/component';
 
 import { flattenTree, recursiveMap, recursiveSort } from 'components/tree-select/utils';
 import Select from 'components/forms/select';
+import Button from 'components/button/component';
+import TreeSelect from 'components/tree-select';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters, setFilters } from 'store/features/analysis/filters';
 import { setFilter } from 'store/features/analysis';
 import { useMaterialsTrees } from 'hooks/materials';
 import { useAdminRegionsTrees } from 'hooks/admin-regions';
-import { useSuppliersTrees } from 'hooks/suppliers';
+import { useSuppliersTypes } from 'hooks/suppliers';
 import { useLocationTypes } from 'hooks/location-types';
-import Button from 'components/button/component';
 
 import type { Option } from 'components/forms/select';
 import type { LocationTypes as LocationTyping } from 'containers/interventions/enums';
@@ -35,14 +35,16 @@ import type { AnalysisFiltersState } from 'store/features/analysis/filters';
 type MoreFiltersState = {
   materials: AnalysisFiltersState['materials'];
   origins: AnalysisFiltersState['origins'];
-  suppliers: AnalysisFiltersState['suppliers'];
+  t1Suppliers: AnalysisFiltersState['t1Suppliers'];
+  producers: AnalysisFiltersState['producers'];
   locationTypes: AnalysisFiltersState['locationTypes'];
 };
 
 const INITIAL_FILTERS: MoreFiltersState = {
   materials: [],
   origins: [],
-  suppliers: [],
+  t1Suppliers: [],
+  producers: [],
   locationTypes: [],
 };
 
@@ -64,11 +66,12 @@ const MoreFilters = () => {
   const { scenarioId, compareScenarioId } = query;
 
   const dispatch = useAppDispatch();
-  const { materials, origins, suppliers, locationTypes } = useAppSelector(analysisFilters);
+  const { materials, origins, t1Suppliers, producers, locationTypes } =
+    useAppSelector(analysisFilters);
 
   const moreFilters: MoreFiltersState = useMemo(
-    () => ({ materials, origins, suppliers, locationTypes }),
-    [materials, origins, suppliers, locationTypes],
+    () => ({ materials, origins, t1Suppliers, producers, locationTypes }),
+    [materials, origins, t1Suppliers, producers, locationTypes],
   );
 
   const [selectedFilters, setSelectedFilters] = useState(moreFilters);
@@ -83,9 +86,14 @@ const MoreFilters = () => {
     [selectedFilters.origins],
   );
 
-  const supplierIds = useMemo(
-    () => selectedFilters.suppliers.map(({ value }) => value),
-    [selectedFilters.suppliers],
+  const t1SupplierIds = useMemo(
+    () => selectedFilters.t1Suppliers.map(({ value }) => value),
+    [selectedFilters.t1Suppliers],
+  );
+
+  const producerIds = useMemo(
+    () => selectedFilters.producers.map(({ value }) => value),
+    [selectedFilters.producers],
   );
 
   const locationTypesIds = useMemo(
@@ -136,13 +144,14 @@ const MoreFilters = () => {
     [scenarioId, compareScenarioId],
   );
 
-  const { data: materialOptions } = useMaterialsTrees(
+  const { data: materialOptions, isLoading: materialOptionsIsLoading } = useMaterialsTrees(
     {
       depth: 1,
       withSourcingLocations: true,
       scenarioIds,
       originIds,
-      supplierIds,
+      t1SupplierIds,
+      producerIds,
       locationTypes: locationTypesIds,
     },
     {
@@ -158,20 +167,22 @@ const MoreFilters = () => {
     },
   );
 
-  const { data: originOptions } = useAdminRegionsTrees(
+  const { data: originOptions, isLoading: originOptionsIsLoading } = useAdminRegionsTrees(
     {
       withSourcingLocations: true,
       materialIds,
-      supplierIds,
+      t1SupplierIds,
+      producerIds,
       locationTypes: locationTypesIds,
       scenarioIds,
     },
     DEFAULT_QUERY_OPTIONS,
   );
 
-  const { data: supplierOptions } = useSuppliersTrees(
+  const { data: t1SupplierOptions, isLoading: t1SupplierOptionsIsLoading } = useSuppliersTypes(
     {
-      withSourcingLocations: true,
+      type: 't1supplier',
+      producerIds,
       materialIds,
       originIds,
       locationTypes: locationTypesIds,
@@ -180,11 +191,24 @@ const MoreFilters = () => {
     DEFAULT_QUERY_OPTIONS,
   );
 
-  const { data: locationTypeOptions } = useLocationTypes(
+  const { data: producerOptions, isLoading: producerOptionsIsLoading } = useSuppliersTypes(
+    {
+      type: 'producer',
+      t1SupplierIds,
+      materialIds,
+      originIds,
+      locationTypes: locationTypesIds,
+      scenarioIds,
+    },
+    DEFAULT_QUERY_OPTIONS,
+  );
+
+  const { data: locationTypeOptions, isLoading: locationTypeOptionsIsLoading } = useLocationTypes(
     {
       materialIds,
       originIds,
-      supplierIds,
+      t1SupplierIds,
+      producerIds,
       scenarioIds,
     },
     {
@@ -224,8 +248,19 @@ const MoreFilters = () => {
     reviewFilterContent('materials', materials, materialOptions);
     reviewFilterContent('locationTypes', locationTypes, locationTypes);
     reviewFilterContent('origins', origins, origins);
-    reviewFilterContent('suppliers', suppliers, suppliers);
-  }, [locationTypes, materialOptions, materials, origins, reviewFilterContent, suppliers]);
+    reviewFilterContent('t1Suppliers', t1Suppliers, t1SupplierOptions);
+    reviewFilterContent('producers', producers, producerOptions);
+  }, [
+    locationTypes,
+    materialOptions,
+    materials,
+    origins,
+    producerOptions,
+    producers,
+    reviewFilterContent,
+    t1SupplierOptions,
+    t1Suppliers,
+  ]);
 
   useEffect(() => {
     const counters = Object.values(moreFilters).map((value) => value.length);
@@ -295,6 +330,7 @@ const MoreFilters = () => {
                       multiple
                       current={selectedFilters.materials}
                       fitContent
+                      loading={materialOptionsIsLoading}
                       onChange={(values) => handleChangeFilter('materials', values)}
                       id="materials-filter"
                     />
@@ -306,19 +342,35 @@ const MoreFilters = () => {
                       multiple
                       current={selectedFilters.origins}
                       fitContent
+                      loading={originOptionsIsLoading}
                       onChange={(values) => handleChangeFilter('origins', values)}
                       id="origins-filter"
                     />
                   </div>
                   <div>
-                    <div className="mb-1">Suppliers</div>
-                    <Suppliers
+                    <div className="mb-1">T1 Suppliers</div>
+                    <TreeSelect
+                      showSearch
                       multiple
-                      options={supplierOptions}
-                      current={selectedFilters.suppliers}
-                      fitContent
-                      onChange={(values) => handleChangeFilter('suppliers', values)}
-                      id="suppliers-filter"
+                      placeholder="T1 Suppliers"
+                      options={t1SupplierOptions}
+                      current={selectedFilters.t1Suppliers}
+                      loading={t1SupplierOptionsIsLoading}
+                      onChange={(values) => handleChangeFilter('t1Suppliers', values)}
+                      id="t1-suppliers-filter"
+                    />
+                  </div>
+                  <div>
+                    <div className="mb-1">Producers</div>
+                    <TreeSelect
+                      showSearch
+                      multiple
+                      options={producerOptions}
+                      placeholder="Producers"
+                      loading={producerOptionsIsLoading}
+                      current={selectedFilters.producers}
+                      onChange={(values) => handleChangeFilter('producers', values)}
+                      id="producers-filter"
                     />
                   </div>
                   <div>
@@ -326,6 +378,7 @@ const MoreFilters = () => {
                     <Select<LocationTyping>
                       id="location-type-filter"
                       multiple
+                      loading={locationTypeOptionsIsLoading}
                       options={locationTypeOptions}
                       placeholder="Location types"
                       onChange={(values) => handleChangeFilter('locationTypes', values)}

@@ -15,7 +15,8 @@ interface OriginRegionsFilterProps<IsMulti extends boolean>
 const OriginRegionsFilter = <IsMulti extends boolean>({
   depth = 1,
   withSourcingLocations, // Do not a default; backend will override depth if this is set at all
-  supplierIds,
+  t1SupplierIds,
+  producerIds,
   businessUnitIds,
   materialIds,
   locationTypes,
@@ -27,7 +28,8 @@ const OriginRegionsFilter = <IsMulti extends boolean>({
     {
       depth,
       withSourcingLocations,
-      supplierIds,
+      t1SupplierIds,
+      producerIds,
       businessUnitIds,
       materialIds,
       locationTypes,

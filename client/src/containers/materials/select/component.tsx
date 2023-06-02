@@ -15,7 +15,8 @@ type MaterialsFilterProps<IsMulti extends boolean> = Omit<TreeSelectProps<IsMult
   withSourcingLocations?: MaterialsTreesParams['withSourcingLocations'];
   theme?: 'default' | 'inline-primary';
   businessUnitIds?: MaterialsTreesParams['businessUnitIds'];
-  supplierIds?: MaterialsTreesParams['supplierIds'];
+  t1SupplierIds?: MaterialsTreesParams['t1SupplierIds'];
+  producerIds?: MaterialsTreesParams['producerIds'];
   originIds?: MaterialsTreesParams['originIds'];
   locationTypes?: MaterialsTreesParams['locationTypes'];
 };
@@ -25,7 +26,8 @@ const InnerMaterialsFilter = <IsMulti extends boolean>(
     multiple,
     current,
     depth = 1,
-    supplierIds,
+    t1SupplierIds,
+    producerIds,
     businessUnitIds,
     originIds,
     locationTypes,
@@ -41,7 +43,8 @@ const InnerMaterialsFilter = <IsMulti extends boolean>(
   const { data, isFetching } = useMaterialsTrees(
     {
       depth,
-      supplierIds,
+      t1SupplierIds,
+      producerIds,
       businessUnitIds,
       originIds,
       locationTypes,

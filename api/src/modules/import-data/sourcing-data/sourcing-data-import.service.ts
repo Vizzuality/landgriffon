@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  ServiceUnavailableException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
@@ -29,7 +24,8 @@ import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-
 import { TasksService } from 'modules/tasks/tasks.service';
 import { ScenariosService } from 'modules/scenarios/scenarios.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
-import { Indicator } from 'modules/indicators/indicator.entity';
+import { CreateIndicatorDto } from '../../indicators/dto/create.indicator.dto';
+import { Indicator } from '../../indicators/indicator.entity';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -93,10 +89,25 @@ export class SourcingDataImportService {
         });
 
       const dtoMatchedData: SourcingRecordsDtos =
-        await this.dtoProcessor.createDTOsFromSourcingRecordsSheets(
+        await this.validateAndCreateDTOs(
           parsedXLSXDataset,
           sourcingLocationGroup.id,
         );
+
+      const geoCodedSourcingData: SourcingData[] =
+        await this.geoCodingService.geoCodeLocations(
+          dtoMatchedData.sourcingData,
+        );
+
+      const warnings: string[] = [];
+      geoCodedSourcingData.forEach((elem: SourcingData) => {
+        if (elem.locationWarning) warnings.push(elem.locationWarning);
+      });
+      warnings.length > 0 &&
+        (await this.tasksService.updateImportTask({
+          taskId,
+          newLogs: warnings,
+        }));
 
       await this.cleanDataBeforeImport();
 
@@ -135,28 +146,16 @@ export class SourcingDataImportService {
         dtoMatchedData.suppliers,
       );
       const sourcingDataWithOrganizationalEntities: any =
-        this.relateSourcingDataWithOrganizationalEntities(
+        await this.relateSourcingDataWithOrganizationalEntities(
           suppliers,
           businessUnits,
           materials,
-          dtoMatchedData.sourcingData,
+          geoCodedSourcingData,
         );
 
-      const geoCodedSourcingData: SourcingData[] =
-        await this.geoCodingService.geoCodeLocations(
-          sourcingDataWithOrganizationalEntities,
-        );
-      const warnings: string[] = [];
-      geoCodedSourcingData.forEach((elem: SourcingData) => {
-        if (elem.locationWarning) warnings.push(elem.locationWarning);
-      });
-      warnings.length > 0 &&
-        (await this.tasksService.updateImportTask({
-          taskId,
-          newLogs: warnings,
-        }));
-
-      await this.sourcingLocationService.save(geoCodedSourcingData);
+      await this.sourcingLocationService.save(
+        sourcingDataWithOrganizationalEntities,
+      );
 
       this.logger.log('Generating Indicator Records...');
 
@@ -249,12 +248,12 @@ export class SourcingDataImportService {
    * It's what we can use to know which material/business unit relates to which sourcing-location
    * in a synchronous way avoiding hitting the DB
    */
-  relateSourcingDataWithOrganizationalEntities(
+  async relateSourcingDataWithOrganizationalEntities(
     suppliers: Supplier[],
     businessUnits: Record<string, any>[],
     materials: Material[],
     sourcingData: SourcingData[],
-  ): any {
+  ): Promise<SourcingData[] | void> {
     this.logger.log(`Relating sourcing data with organizational entities`);
     this.logger.log(`Supplier count: ${suppliers.length}`);
     this.logger.log(`Business Units count: ${businessUnits.length}`);
@@ -300,48 +299,17 @@ export class SourcingDataImportService {
     return sourcingData;
   }
 
-  async validateFile(
-    filePath: string,
-    filename: string,
-  ): Promise<void | Array<ErrorConstructor>> {
-    let parsedXLSXDataset: SourcingRecordsSheets;
-    try {
-      parsedXLSXDataset = await this.fileService.transformToJson(
-        filePath,
-        SHEETS_MAP,
+  async validateAndCreateDTOs(
+    parsedXLSXDataset: SourcingRecordsSheets,
+    sourcingLocationGroupId: string,
+  ): Promise<SourcingRecordsDtos> {
+    const dtoMatchedData: SourcingRecordsDtos =
+      await this.dtoProcessor.createDTOsFromSourcingRecordsSheets(
+        parsedXLSXDataset,
+        sourcingLocationGroupId,
       );
-    } catch (error) {
-      this.logger.error(error);
-      await this.fileService.deleteDataFromFS(filePath);
-      throw new ServiceUnavailableException(
-        `File: ${filename} could not have been loaded. Please try again later or contact the administrator`,
-      );
-    }
 
-    /**
-     * @note: If we decide to path DTOs to task instead of path
-     * this has to change to generate valid id
-     */
-
-    let dtoMatchedData: SourcingRecordsDtos;
-
-    try {
-      dtoMatchedData =
-        await this.dtoProcessor.createDTOsFromSourcingRecordsSheets(
-          parsedXLSXDataset,
-        );
-    } catch (error) {
-      this.logger.error(error);
-      await this.fileService.deleteDataFromFS(filePath);
-      throw error;
-    }
-
-    this.logger.log(`Validating DTOs`);
-    try {
-      await this.validateDTOs(dtoMatchedData);
-    } catch (error) {
-      await this.fileService.deleteDataFromFS(filePath);
-      throw error;
-    }
+    await this.validateDTOs(dtoMatchedData);
+    return dtoMatchedData;
   }
 }

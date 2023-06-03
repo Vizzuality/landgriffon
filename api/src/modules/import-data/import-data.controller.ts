@@ -47,7 +47,7 @@ export class ImportDataController {
       throw new UnauthorizedException();
     }
     const userId: string = user.id;
-    const task: Task = await this.importDataService.validateAndLoadXlsxFile(
+    const task: Task = await this.importDataService.loadXlsxFile(
       userId,
       xlsxFile,
     );

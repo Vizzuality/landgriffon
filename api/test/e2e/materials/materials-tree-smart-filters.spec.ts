@@ -127,7 +127,7 @@ describe('Materials - Get trees - Smart Filters', () => {
         .get('/api/v1/materials/trees')
         .query({
           withSourcingLocations: true,
-          'supplierIds[]': [
+          't1SupplierIds[]': [
             childSupplierWithRelatedMaterial.id,
             supplierWithRelatedMaterial3.id,
           ],
@@ -373,11 +373,10 @@ describe('Materials - Get trees - Smart Filters', () => {
             withSourcingLocations: true,
             scenarioId: scenario.id,
             'originIds[]': [adminRegion.id],
-            'supplierIds[]': [supplier.id],
+            't1SupplierIds[]': [supplier.id],
           })
           .set('Authorization', `Bearer ${jwtToken}`);
 
-        expect(HttpStatus.OK);
         expect(response.body.data).toHaveLength(2);
         expect(response.body.data[0].id).toEqual(parentMaterial1.id);
         expect(response.body.data[0].attributes.children[0].name).toEqual(

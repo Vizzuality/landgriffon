@@ -378,7 +378,7 @@ describe('Admin Regions - Get trees - Smart Filters', () => {
             withSourcingLocations: true,
             scenarioId: scenario.id,
             'materialIds[]': [parentMaterial1.id, parentMaterial2.id],
-            'supplierIds[]': [supplier.id],
+            't1SupplierIds[]': [supplier.id],
           })
           .set('Authorization', `Bearer ${jwtToken}`);
 

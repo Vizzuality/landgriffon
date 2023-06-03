@@ -13,20 +13,12 @@ import { Task } from 'modules/tasks/task.entity';
 @Injectable()
 export class ImportDataService {
   logger: Logger = new Logger(ImportDataService.name);
+
   constructor(
     private readonly importDataProducer: ImportDataProducer,
     private readonly sourcingDataImportService: SourcingDataImportService,
     private readonly tasksService: TasksService,
   ) {}
-
-  async validateAndLoadXlsxFile(
-    userId: string,
-    xlsxFileData: Express.Multer.File,
-  ): Promise<Task> {
-    const { filename, path } = xlsxFileData;
-    await this.sourcingDataImportService.validateFile(path, filename);
-    return await this.loadXlsxFile(userId, xlsxFileData);
-  }
 
   async loadXlsxFile(
     userId: string,

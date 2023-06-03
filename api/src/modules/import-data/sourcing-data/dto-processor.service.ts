@@ -211,9 +211,9 @@ export class SourcingRecordsDtoProcessorService {
     importData: Record<string, any>[],
   ): Promise<CreateMaterialDto[]> {
     const materialList: CreateMaterialDto[] = [];
-    importData.forEach((importRow: Record<string, any>) => {
-      materialList.push(this.createMaterialDTOFromData(importRow));
-    });
+    for (const importRow of importData) {
+      materialList.push(await this.createMaterialDTOFromData(importRow));
+    }
     return materialList;
   }
 
@@ -227,9 +227,12 @@ export class SourcingRecordsDtoProcessorService {
     importData: Record<string, any>[],
   ): Promise<CreateBusinessUnitDto[]> {
     const businessUnitDtos: CreateBusinessUnitDto[] = [];
-    importData.forEach((importRow: Record<string, any>) => {
-      businessUnitDtos.push(this.createBusinessUnitDTOFromData(importRow));
-    });
+    for (const importRow of importData) {
+      businessUnitDtos.push(
+        await this.createBusinessUnitDTOFromData(importRow),
+      );
+    }
+
     return businessUnitDtos;
   }
 
@@ -243,9 +246,10 @@ export class SourcingRecordsDtoProcessorService {
     importData: Record<string, any>[],
   ): Promise<CreateSupplierDto[]> {
     const supplierDtos: CreateSupplierDto[] = [];
-    importData.forEach((importRow: Record<string, any>) => {
-      supplierDtos.push(this.crateSuppliersDTOFromData(importRow));
-    });
+    for (const importRow of importData) {
+      supplierDtos.push(await this.crateSuppliersDTOFromData(importRow));
+    }
+
     return supplierDtos;
   }
 
@@ -259,9 +263,9 @@ export class SourcingRecordsDtoProcessorService {
     importData: Record<string, any>[],
   ): Promise<CreateAdminRegionDto[]> {
     const adminRegionDtos: CreateAdminRegionDto[] = [];
-    importData.forEach((importRow: Record<string, any>) => {
-      adminRegionDtos.push(this.createAdminRegionDTOFromData(importRow));
-    });
+    for (const importRow of importData) {
+      adminRegionDtos.push(await this.createAdminRegionDTOFromData(importRow));
+    }
     return adminRegionDtos;
   }
 
@@ -269,9 +273,9 @@ export class SourcingRecordsDtoProcessorService {
     importData: Record<string, any>[],
   ): Promise<CreateIndicatorDto[]> {
     const indicatorsDtos: CreateIndicatorDto[] = [];
-    importData.forEach((importRow: Record<string, any>) => {
-      indicatorsDtos.push(this.createIndicatorDTOFromData(importRow));
-    });
+    for (const importRow of importData) {
+      indicatorsDtos.push(await this.createIndicatorDTOFromData(importRow));
+    }
     return indicatorsDtos;
   }
 
@@ -291,24 +295,23 @@ export class SourcingRecordsDtoProcessorService {
     );
 
     const sourcingLocationDtos: any[] = [];
-    importData.forEach((importRow: Record<string, any>) => {
+    for (const importRow of importData) {
       const sourcingLocationDto: CreateSourcingLocationDto =
-        this.createSourcingLocationDTOFromData(
+        await this.createSourcingLocationDTOFromData(
           importRow,
           sourcingLocationGroupId,
         );
       const sourcingRecords: CreateSourcingRecordDto[] =
         importRow.sourcingRecords.map(
-          (sourcingRecord: CreateSourcingRecordDto) => {
-            return this.createSourcingRecordDTOFromData(sourcingRecord);
+          async (sourcingRecord: CreateSourcingRecordDto) => {
+            return await this.createSourcingRecordDTOFromData(sourcingRecord);
           },
         );
       sourcingLocationDtos.push({
         ...sourcingLocationDto,
         sourcingRecords,
       });
-    });
-
+    }
     this.logger.debug(
       `Created ${sourcingLocationDtos.length} sourcing location DTOs`,
     );
@@ -316,7 +319,9 @@ export class SourcingRecordsDtoProcessorService {
     return sourcingLocationDtos;
   }
 
-  private createMaterialDTOFromData(materialData: Record<string, any>): any {
+  private async createMaterialDTOFromData(
+    materialData: Record<string, any>,
+  ): Promise<CreateMaterialDto> {
     const materialDto: CreateMaterialDto = new CreateMaterialDto();
     materialDto.name = materialData.name;
     materialDto.description = materialData.description;
@@ -327,9 +332,9 @@ export class SourcingRecordsDtoProcessorService {
     return materialDto;
   }
 
-  private createBusinessUnitDTOFromData(
+  private async createBusinessUnitDTOFromData(
     businessUnitData: Record<string, any>,
-  ): CreateBusinessUnitDto {
+  ): Promise<CreateBusinessUnitDto> {
     const businessUnitDto: CreateBusinessUnitDto = new CreateBusinessUnitDto();
     businessUnitDto.name = businessUnitData.name;
     businessUnitDto.description = businessUnitData.description;
@@ -337,9 +342,9 @@ export class SourcingRecordsDtoProcessorService {
     return businessUnitDto;
   }
 
-  private crateSuppliersDTOFromData(
+  private async crateSuppliersDTOFromData(
     supplierData: Record<string, any>,
-  ): CreateSupplierDto {
+  ): Promise<CreateSupplierDto> {
     const suppliersDto: CreateSupplierDto = new CreateSupplierDto();
     suppliersDto.name = supplierData.name;
     suppliersDto.description = supplierData.description;
@@ -347,9 +352,9 @@ export class SourcingRecordsDtoProcessorService {
     return suppliersDto;
   }
 
-  private createAdminRegionDTOFromData(
+  private async createAdminRegionDTOFromData(
     adminRegionData: Record<string, any>,
-  ): CreateAdminRegionDto {
+  ): Promise<CreateAdminRegionDto> {
     const adminRegionDto: CreateAdminRegionDto = new CreateAdminRegionDto();
     adminRegionDto.name = adminRegionData.name;
     adminRegionDto.isoA3 = adminRegionData.iso_a3;
@@ -367,10 +372,10 @@ export class SourcingRecordsDtoProcessorService {
     return indicatorDto;
   }
 
-  private createSourcingLocationDTOFromData(
+  private async createSourcingLocationDTOFromData(
     sourcingLocationData: Record<string, any>,
     sourcingLocationGroupId?: string,
-  ): CreateSourcingLocationDto {
+  ): Promise<CreateSourcingLocationDto> {
     const sourcingLocationDto: CreateSourcingLocationDto =
       new CreateSourcingLocationDto();
     sourcingLocationDto.locationType = replaceStringWhiteSpacesWithDash(
@@ -412,9 +417,9 @@ export class SourcingRecordsDtoProcessorService {
     return sourcingLocationDto;
   }
 
-  private createSourcingRecordDTOFromData(
+  private async createSourcingRecordDTOFromData(
     sourcingRecordData: Record<string, any>,
-  ): CreateSourcingRecordDto {
+  ): Promise<CreateSourcingRecordDto> {
     const sourcingRecordDto: CreateSourcingRecordDto =
       new CreateSourcingRecordDto();
     sourcingRecordDto.tonnage = sourcingRecordData.tonnage;

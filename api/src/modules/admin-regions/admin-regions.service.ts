@@ -205,12 +205,6 @@ export class AdminRegionsService extends AppBaseService<
             adminRegionTreeOptions.businessUnitIds,
           );
       }
-      if (adminRegionTreeOptions.supplierIds) {
-        adminRegionTreeOptions.supplierIds =
-          await this.supplierService.getSuppliersDescendants(
-            adminRegionTreeOptions.supplierIds,
-          );
-      }
       if (adminRegionTreeOptions.materialIds) {
         adminRegionTreeOptions.materialIds =
           await this.materialService.getMaterialsDescendants(

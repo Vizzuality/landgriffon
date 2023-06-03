@@ -1,18 +1,9 @@
-/**
- * Get Supplier with options:
- */
-import {
-  IsBoolean,
-  IsEnum,
-  IsNumber,
-  IsOptional,
-  IsUUID,
-} from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsUUID } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform, TransformFnParams, Type } from 'class-transformer';
-import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
+import { CommonFiltersDto } from 'utils/base.query-builder';
+import { Type } from 'class-transformer';
 
-export class GetAdminRegionTreeWithOptionsDto {
+export class GetAdminRegionTreeWithOptionsDto extends CommonFiltersDto {
   @ApiPropertyOptional({
     description:
       'Return Admin Regions with related Sourcing Locations. Setting this to true will override depth param',
@@ -28,51 +19,8 @@ export class GetAdminRegionTreeWithOptionsDto {
   @IsNumber()
   depth?: number;
 
-  // Below fields for smart filtering
-  @IsUUID('4', { each: true })
-  @ApiPropertyOptional()
-  @IsOptional()
-  supplierIds?: string[];
-
-  @IsUUID('4', { each: true })
-  @ApiPropertyOptional()
-  @IsOptional()
-  materialIds?: string[];
-
-  @IsUUID('4', { each: true })
-  @ApiPropertyOptional()
-  @IsOptional()
-  businessUnitIds?: string[];
-
-  @IsUUID('4', { each: true })
-  @ApiPropertyOptional()
-  @IsOptional()
-  originIds?: string[];
-
-  @ApiPropertyOptional({
-    description: 'Types of Sourcing Locations, written with hyphens',
-    enum: Object.values(LOCATION_TYPES),
-    name: 'locationTypes[]',
-  })
-  @IsOptional()
-  @IsEnum(LOCATION_TYPES, {
-    each: true,
-    message:
-      'Available options: ' +
-      Object.values(LOCATION_TYPES).toString().toLowerCase(),
-  })
-  @Type(() => String)
-  locationTypes?: LOCATION_TYPES[];
-
   @ApiPropertyOptional()
   @IsOptional()
   @IsUUID('4')
   scenarioId?: string;
-
-  @ApiPropertyOptional({
-    description: 'Array of Scenario Ids to include in the admin region search',
-  })
-  @IsOptional()
-  @IsUUID('4', { each: true })
-  scenarioIds?: string[];
 }

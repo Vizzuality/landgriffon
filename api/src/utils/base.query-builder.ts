@@ -6,23 +6,22 @@ import {
 } from 'typeorm';
 import { IsEnum, IsOptional, IsUUID } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  LOCATION_TYPES,
-  SourcingLocation,
-} from 'modules/sourcing-locations/sourcing-location.entity';
+import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 import { Type } from 'class-transformer';
 import {
   SCENARIO_INTERVENTION_STATUS,
   ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 
+/**
+ * @description Utility to manipulate a query builder with common operations for different repositories
+ */
+
 export class BaseQueryBuilder {
   static addFilters<Entity extends ObjectLiteral>(
     queryBuilder: SelectQueryBuilder<Entity>,
     filters: CommonFiltersDto,
   ): SelectQueryBuilder<Entity> {
-    queryBuilder.innerJoin(SourcingLocation, 'sl', 'sl.materialId = m.id');
-
     if (filters.materialIds) {
       queryBuilder.andWhere('sl.materialId IN (:...materialIds)', {
         materialIds: filters.materialIds,
@@ -54,7 +53,6 @@ export class BaseQueryBuilder {
         locationTypes: filters.locationTypes,
       });
     }
-    // TODO: we could externalise this to something generic as well
     if (filters.scenarioIds) {
       queryBuilder.leftJoin(
         ScenarioIntervention,
@@ -88,27 +86,27 @@ export class BaseQueryBuilder {
 
 export class CommonFiltersDto {
   @IsUUID('4', { each: true })
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ name: 't1SupplierIds[]' })
   @IsOptional()
   t1SupplierIds?: string[];
 
   @IsUUID('4', { each: true })
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ name: 'producerIds[]' })
   @IsOptional()
   producerIds?: string[];
 
   @IsUUID('4', { each: true })
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ name: 'businessUnitIds[]' })
   @IsOptional()
   businessUnitIds?: string[];
 
   @IsUUID('4', { each: true })
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ name: 'originIds[]' })
   @IsOptional()
   originIds?: string[];
 
   @IsUUID('4', { each: true })
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ name: 'materialIds[]' })
   @IsOptional()
   materialIds?: string[];
 
@@ -128,7 +126,7 @@ export class CommonFiltersDto {
   locationTypes?: LOCATION_TYPES[];
 
   @ApiPropertyOptional({
-    description: 'Array of Scenario Ids to include in the material search',
+    description: 'Array of Scenario Ids to include entities present in them',
   })
   @IsOptional()
   @IsUUID('4', { each: true })

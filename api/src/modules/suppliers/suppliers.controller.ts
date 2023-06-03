@@ -103,12 +103,6 @@ export class SuppliersController {
   })
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
-  @ApiQuery({
-    name: 'type',
-    required: true,
-    description:
-      'Type of the supplier depending on to the external company (whether you buy directly from them or not) ',
-  })
   @Get('/types')
   async getSupplierByType(
     @Query(ValidationPipe) type: GetSupplierByType,

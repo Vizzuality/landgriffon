@@ -203,12 +203,6 @@ export class MaterialsService extends AppBaseService<
             materialTreeOptions.businessUnitIds,
           );
       }
-      if (materialTreeOptions.supplierIds) {
-        materialTreeOptions.supplierIds =
-          await this.suppliersService.getSuppliersDescendants(
-            materialTreeOptions.supplierIds,
-          );
-      }
       return this.getMaterialsTreeFromSourcingLocations(materialTreeOptions);
     }
 

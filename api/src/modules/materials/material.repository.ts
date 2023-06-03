@@ -5,6 +5,7 @@ import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { Injectable, Logger } from '@nestjs/common';
 import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
 import { BaseQueryBuilder } from 'utils/base.query-builder';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 
 @Injectable()
 export class MaterialRepository extends ExtendedTreeRepository<
@@ -28,7 +29,9 @@ export class MaterialRepository extends ExtendedTreeRepository<
     withAncestry: boolean = true,
   ): Promise<Material[]> {
     const initialQueryBuilder: SelectQueryBuilder<Material> =
-      this.createQueryBuilder('m').distinct(true);
+      this.createQueryBuilder('m')
+        .innerJoin(SourcingLocation, 'sl', 'sl.materialId = m.id')
+        .distinct(true);
 
     const queryBuilder: SelectQueryBuilder<Material> =
       BaseQueryBuilder.addFilters<Material>(

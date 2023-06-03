@@ -1,20 +1,12 @@
-import {
-  Brackets,
-  DataSource,
-  SelectQueryBuilder,
-  WhereExpressionBuilder,
-} from 'typeorm';
+import { DataSource, SelectQueryBuilder } from 'typeorm';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-region.dto';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetAdminRegionTreeWithOptionsDto } from 'modules/admin-regions/dto/get-admin-region-tree-with-options.dto';
-import {
-  SCENARIO_INTERVENTION_STATUS,
-  ScenarioIntervention,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
 import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
+import { BaseQueryBuilder } from 'utils/base.query-builder';
 
 @Injectable()
 export class AdminRegionRepository extends ExtendedTreeRepository<
@@ -175,68 +167,12 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
     withAncestry: boolean = true,
   ): Promise<AdminRegion[]> {
     // Join and filters over materials present in sourcing-locations. Resultant query returns IDs of elements meeting the filters
-    const queryBuilder: SelectQueryBuilder<AdminRegion> =
+    const initialQueryBuilder: SelectQueryBuilder<AdminRegion> =
       this.createQueryBuilder('ar')
         .innerJoin(SourcingLocation, 'sl', 'sl.adminRegionId = ar.id')
         .distinct(true);
-    if (adminRegionTreeOptions.originIds) {
-      queryBuilder.andWhere('ar.id IN (:...originIds)', {
-        originIds: adminRegionTreeOptions.originIds,
-      });
-    }
-    if (adminRegionTreeOptions.supplierIds) {
-      queryBuilder.andWhere(
-        new Brackets((qb: WhereExpressionBuilder) => {
-          qb.where('sl."t1SupplierId" IN (:...suppliers)', {
-            suppliers: adminRegionTreeOptions.supplierIds,
-          }).orWhere('sl."producerId" IN (:...suppliers)', {
-            suppliers: adminRegionTreeOptions.supplierIds,
-          });
-        }),
-      );
-    }
-    if (adminRegionTreeOptions.materialIds) {
-      queryBuilder.andWhere('sl.materialId IN (:...materialIds)', {
-        materialIds: adminRegionTreeOptions.materialIds,
-      });
-    }
-    if (adminRegionTreeOptions.businessUnitIds) {
-      queryBuilder.andWhere('sl.businessUnitId IN (:...businessUnitIds)', {
-        businessUnitIds: adminRegionTreeOptions.businessUnitIds,
-      });
-    }
-
-    if (adminRegionTreeOptions.locationTypes) {
-      queryBuilder.andWhere('sl.locationType IN (:...locationTypes)', {
-        locationTypes: adminRegionTreeOptions.locationTypes,
-      });
-    }
-
-    if (adminRegionTreeOptions.scenarioIds) {
-      queryBuilder.leftJoin(
-        ScenarioIntervention,
-        'scenarioIntervention',
-        'sl.scenarioInterventionId = scenarioIntervention.id',
-      );
-      queryBuilder.andWhere(
-        new Brackets((qb: WhereExpressionBuilder) => {
-          qb.where('sl.scenarioInterventionId is null').orWhere(
-            new Brackets((qbInterv: WhereExpressionBuilder) => {
-              qbInterv
-                .where('scenarioIntervention.scenarioId IN (:...scenarioIds)', {
-                  scenarioIds: adminRegionTreeOptions.scenarioIds,
-                })
-                .andWhere(`scenarioIntervention.status = :status`, {
-                  status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
-                });
-            }),
-          );
-        }),
-      );
-    } else {
-      queryBuilder.andWhere('sl.scenarioInterventionId is null');
-      queryBuilder.andWhere('sl.interventionType is null');
-    }
+    const queryBuilder: SelectQueryBuilder<AdminRegion> =
+      BaseQueryBuilder.addFilters(initialQueryBuilder, adminRegionTreeOptions);
 
     if (!withAncestry) {
       return queryBuilder.getMany();

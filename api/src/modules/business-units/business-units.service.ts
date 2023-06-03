@@ -2,7 +2,6 @@ import {
   forwardRef,
   Inject,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import {
@@ -88,17 +87,10 @@ export class BusinessUnitsService extends AppBaseService<
   async getTrees(
     businessUnitTreeOptions: GetBusinessUnitTreeWithOptionsDto,
   ): Promise<BusinessUnit[]> {
-    //const { depth, withSourcingLocations } = treeOptions;
     if (businessUnitTreeOptions.materialIds) {
       businessUnitTreeOptions.materialIds =
         await this.materialsService.getMaterialsDescendants(
           businessUnitTreeOptions.materialIds,
-        );
-    }
-    if (businessUnitTreeOptions.supplierIds) {
-      businessUnitTreeOptions.supplierIds =
-        await this.suppliersService.getSuppliersDescendants(
-          businessUnitTreeOptions.supplierIds,
         );
     }
     if (businessUnitTreeOptions.originIds) {

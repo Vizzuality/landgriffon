@@ -4,7 +4,7 @@ import {
   SelectQueryBuilder,
   WhereExpressionBuilder,
 } from 'typeorm';
-import { Supplier } from 'modules/suppliers/supplier.entity';
+import { Supplier, SUPPLIER_TYPES } from 'modules/suppliers/supplier.entity';
 import { ExtendedTreeRepository } from 'utils/tree.repository';
 import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
 import { Injectable, Logger } from '@nestjs/common';
@@ -14,6 +14,8 @@ import {
   SCENARIO_INTERVENTION_STATUS,
   ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { GetSupplierByType } from 'modules/suppliers/dto/get-supplier-by-type.dto';
+import { BaseQueryBuilder } from 'utils/base.query-builder';
 
 @Injectable()
 export class SupplierRepository extends ExtendedTreeRepository<
@@ -30,6 +32,9 @@ export class SupplierRepository extends ExtendedTreeRepository<
    * @description Get all suppliers that are present in Sourcing Locations with given filters
    *              Additionally if withAncestry set to true (default) it will return the ancestry of each
    *              element up to the root
+   *
+   *@deprecated: This function is deprecated and will be removed in the future. Use getSuppliersFromSourcingLocationsV2 instead
+   *
    */
 
   async getSuppliersFromSourcingLocations(
@@ -106,5 +111,31 @@ export class SupplierRepository extends ExtendedTreeRepository<
     queryBuilder.select('s.id');
 
     return this.getEntityAncestry<Supplier>(queryBuilder, Supplier.name);
+  }
+
+  async getSuppliersFromSourcingLocationsV2(
+    options: GetSupplierByType,
+  ): Promise<Supplier[]> {
+    const initialQueryBuilder: SelectQueryBuilder<Supplier> =
+      this.createQueryBuilder('s').distinct(true);
+    initialQueryBuilder.orderBy('s.name', options.sort ?? 'ASC');
+    if (options.type === SUPPLIER_TYPES.T1SUPPLIER) {
+      initialQueryBuilder.innerJoin(
+        SourcingLocation,
+        'sl',
+        'sl.t1SupplierId = s.id',
+      );
+    }
+    if (options.type === SUPPLIER_TYPES.PRODUCER) {
+      initialQueryBuilder.innerJoin(
+        SourcingLocation,
+        'sl',
+        'sl.producerId = s.id',
+      );
+    }
+    const queryBuilder: SelectQueryBuilder<Supplier> =
+      BaseQueryBuilder.addFilters(initialQueryBuilder, options);
+
+    return queryBuilder.getMany();
   }
 }

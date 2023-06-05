@@ -36,49 +36,57 @@ export class GeoCodingService extends GeoCodingAbstractClass {
 
   async geoCodeLocations(
     sourcingData: SourcingData[],
-  ): Promise<SourcingData[]> {
+  ): Promise<{ geoCodedSourcingData: SourcingData[]; errors: any[] }> {
     this.logger.log(
       `Geocoding locations for ${sourcingData.length} sourcing record elements`,
     );
     const geoCodedSourcingData: SourcingData[] = [];
-    for await (const location of sourcingData) {
-      if (location.locationType === LOCATION_TYPES.UNKNOWN) {
-        geoCodedSourcingData.push(
-          await this.geoCodeUnknownLocationType(location),
-        );
-      }
-      if (location.locationType === LOCATION_TYPES.COUNTRY_OF_PRODUCTION) {
-        geoCodedSourcingData.push(
-          await this.geoCodeCountryOfProduction(location),
-        );
-      }
+    const errors: any[] = [];
+    for (let i: number = 0; i < sourcingData.length; i++) {
+      const location: SourcingData = sourcingData[i];
+      try {
+        if (location.locationType === LOCATION_TYPES.UNKNOWN) {
+          geoCodedSourcingData.push(
+            await this.geoCodeUnknownLocationType(location),
+          );
+        }
+        if (location.locationType === LOCATION_TYPES.COUNTRY_OF_PRODUCTION) {
+          geoCodedSourcingData.push(
+            await this.geoCodeCountryOfProduction(location),
+          );
+        }
 
-      if (
-        location.locationType === LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT
-      ) {
-        geoCodedSourcingData.push(await this.geoCodeAggregationPoint(location));
-      }
-      if (location.locationType === LOCATION_TYPES.POINT_OF_PRODUCTION) {
-        geoCodedSourcingData.push(
-          await this.geoCodePointOfProduction(location),
-        );
-      }
-      if (location.locationType === LOCATION_TYPES.COUNTRY_OF_DELIVERY) {
-        geoCodedSourcingData.push(
-          await this.geoCodeCountryOfDeliveryLocationType(location),
-        );
-      }
-      if (
-        location.locationType ===
-        LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION
-      ) {
-        geoCodedSourcingData.push(
-          await this.geoCodeAdminRegionOfProductionLocationType(location),
-        );
+        if (
+          location.locationType === LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT
+        ) {
+          geoCodedSourcingData.push(
+            await this.geoCodeAggregationPoint(location),
+          );
+        }
+        if (location.locationType === LOCATION_TYPES.POINT_OF_PRODUCTION) {
+          geoCodedSourcingData.push(
+            await this.geoCodePointOfProduction(location),
+          );
+        }
+        if (location.locationType === LOCATION_TYPES.COUNTRY_OF_DELIVERY) {
+          geoCodedSourcingData.push(
+            await this.geoCodeCountryOfDeliveryLocationType(location),
+          );
+        }
+        if (
+          location.locationType ===
+          LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION
+        ) {
+          geoCodedSourcingData.push(
+            await this.geoCodeAdminRegionOfProductionLocationType(location),
+          );
+        }
+      } catch (e: any) {
+        errors.push({ line: i + 2, error: e.message });
       }
     }
 
-    return geoCodedSourcingData;
+    return { geoCodedSourcingData, errors };
   }
 
   async geoCodeSourcingLocation(

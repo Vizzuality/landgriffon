@@ -105,29 +105,9 @@ export class SourcingDataImportService {
           );
         });
 
-      //TODO: Implement transactional import.
+      //TODO: Implement transactional import. Move geocoding to first step
 
       await this.cleanDataBeforeImport();
-
-      const { geoCodedSourcingData, errors } =
-        await this.geoCodingService.geoCodeLocations(
-          dtoMatchedData.sourcingData,
-        );
-      if (errors.length) {
-        await this.tasksService.updateImportTask({ taskId, newErrors: errors });
-        throw new BadRequestException(
-          'Import failed. There are GeoCoding errors present in the file',
-        );
-      }
-      const warnings: string[] = [];
-      geoCodedSourcingData.forEach((elem: SourcingData) => {
-        if (elem.locationWarning) warnings.push(elem.locationWarning);
-      });
-      warnings.length > 0 &&
-        (await this.tasksService.updateImportTask({
-          taskId,
-          newLogs: warnings,
-        }));
 
       const materials: Material[] =
         await this.materialService.findAllUnpaginated();
@@ -163,6 +143,27 @@ export class SourcingDataImportService {
       const suppliers: Supplier[] = await this.supplierService.createTree(
         dtoMatchedData.suppliers,
       );
+
+      const { geoCodedSourcingData, errors } =
+        await this.geoCodingService.geoCodeLocations(
+          dtoMatchedData.sourcingData,
+        );
+      if (errors.length) {
+        await this.tasksService.updateImportTask({ taskId, newErrors: errors });
+        throw new BadRequestException(
+          'Import failed. There are GeoCoding errors present in the file',
+        );
+      }
+      const warnings: string[] = [];
+      geoCodedSourcingData.forEach((elem: SourcingData) => {
+        if (elem.locationWarning) warnings.push(elem.locationWarning);
+      });
+      warnings.length > 0 &&
+        (await this.tasksService.updateImportTask({
+          taskId,
+          newLogs: warnings,
+        }));
+
       const sourcingDataWithOrganizationalEntities: any =
         await this.relateSourcingDataWithOrganizationalEntities(
           suppliers,

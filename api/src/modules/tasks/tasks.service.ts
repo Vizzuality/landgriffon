@@ -79,7 +79,8 @@ export class TasksService extends AppBaseService<
      * @todo: Make this work nicely in distributed systems.
      *
      */
-    const { taskId, newStatus, newData, newErrors, newLogs } = updateTask;
+    const { taskId, newStatus, newData, newErrors, newLogs, message } =
+      updateTask;
     const task: Task | null = await this.taskRepository.findOne({
       where: { id: taskId },
     });
@@ -88,12 +89,14 @@ export class TasksService extends AppBaseService<
     }
     const { data } = task;
 
+    task.message = message;
+
     if (newData) {
       task.data = { ...data, ...newData };
     }
 
     if (newErrors) {
-      task.errors.push({ [newErrors.name]: newErrors.message });
+      task.errors.push(...newErrors);
     }
 
     if (newLogs) {

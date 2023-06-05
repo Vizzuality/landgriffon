@@ -16,6 +16,8 @@ import {
   UpdateImportTask,
   UpdateTaskDto,
 } from 'modules/tasks/dto/update-task.dto';
+import { GetReportsDto } from 'modules/tasks/dto/get-reports.dto';
+import { ErrorRecord, ReportService } from 'modules/tasks/report.service';
 
 @Injectable()
 export class TasksService extends AppBaseService<
@@ -24,7 +26,10 @@ export class TasksService extends AppBaseService<
   UpdateTaskDto,
   AppInfoDTO
 > {
-  constructor(public readonly taskRepository: TasksRepository) {
+  constructor(
+    public readonly taskRepository: TasksRepository,
+    public readonly reportService: ReportService,
+  ) {
     super(
       taskRepository,
       taskResource.name.singular,
@@ -123,5 +128,21 @@ export class TasksService extends AppBaseService<
         'Task failed due to a system error. Please contact support.';
       await stalledTask.save();
     }
+  }
+
+  async getTaskErrorReport(
+    taskId: string,
+    reportDto: GetReportsDto,
+  ): Promise<string> {
+    const task: Task | null = await this.taskRepository.findOne({
+      where: { id: taskId, type: reportDto.type },
+    });
+    if (!task) {
+      throw new NotFoundException(`Could not found Task with ID: ${taskId}`);
+    }
+    const { errors } = task;
+    return this.reportService.generateImportErrorReportStream(
+      errors as ErrorRecord[],
+    );
   }
 }

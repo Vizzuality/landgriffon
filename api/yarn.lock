@@ -691,6 +691,27 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
+"@json2csv/formatters@^7.0.1":
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/@json2csv/formatters/-/formatters-7.0.1.tgz#c025f0795f9bbab480de77e2248ab593987296b9"
+  integrity sha512-eCmYKIIoFDXUB0Fotet2RmcoFTtNLXLmSV7j6aEQH/D2GiO749Uan3ts03PtAhXpE11QghxBjS0toXom8VQNBw==
+
+"@json2csv/node@^7.0.1":
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/@json2csv/node/-/node-7.0.1.tgz#b94d0335fba430e1dc3e4fb714d4b307e8c30c81"
+  integrity sha512-9+degE3m/ZPlBo10U5scqIpQ8bUDSmaojdTrtRfqPa7muOiFZJiJrbl+DSIuPJO/1vXTVILbi+rqsT9HQjtSiQ==
+  dependencies:
+    "@json2csv/plainjs" "^7.0.1"
+
+"@json2csv/plainjs@^7.0.1":
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/@json2csv/plainjs/-/plainjs-7.0.1.tgz#361d849f04a2a5013c7880738f08b6bc193c24eb"
+  integrity sha512-UAdaZwahrUeYhMYYilJwDsRfE7wDRsmGMsszYH67j8FLD5gZitqG38RXpUgHEH0s6YjsY8iKYWeEQ19WILncFA==
+  dependencies:
+    "@json2csv/formatters" "^7.0.1"
+    "@streamparser/json" "^0.0.15"
+    lodash.get "^4.4.2"
+
 "@mapbox/node-pre-gyp@^1.0.10":
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/@mapbox/node-pre-gyp/-/node-pre-gyp-1.0.10.tgz#8e6735ccebbb1581e5a7e652244cadc8a844d03c"
@@ -942,6 +963,11 @@
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/@sqltools/formatter/-/formatter-1.2.5.tgz#3abc203c79b8c3e90fd6c156a0c62d5403520e12"
   integrity sha512-Uy0+khmZqUrUGm5dmMqVlnvufZRSK0FbYzVgp0UMstm+F5+W2/jnEEQyc9vo1ZR/E5ZI/B1WjjoTqBqwJL6Krw==
+
+"@streamparser/json@^0.0.15":
+  version "0.0.15"
+  resolved "https://registry.yarnpkg.com/@streamparser/json/-/json-0.0.15.tgz#405fbe94877ce0cbd3cf650b4d9186a0ec6acd0a"
+  integrity sha512-6oikjkMTYAHGqKmcC9leE4+kY4Ch4eiTImXUN/N4d2bNGBYs0LJ/tfxmpvF5eExSU7iiPlV9jYlADqvj3NWA3Q==
 
 "@tsconfig/node10@^1.0.7":
   version "1.0.9"
@@ -4257,6 +4283,11 @@ lodash.flattendeep@^4.4.0:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/lodash.flattendeep/-/lodash.flattendeep-4.4.0.tgz#fb030917f86a3134e5bc9bec0d69e0013ddfedb2"
   integrity sha512-uHaJFihxmJcEX3kT4I23ABqKKalJ/zDrDg0lsFtc1h+3uw49SIJ5beyhx5ExVRti3AvKoOJngIj7xz3oylPdWQ==
+
+lodash.get@^4.4.2:
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
+  integrity sha512-z+Uw/vLuy6gQe8cfaFWD7p0wVv8fJl3mbzXh33RS+0oW2wvUqiRXiQ69gLWSLpgB5/6sU+r6BlQR0MBILadqTQ==
 
 lodash.includes@^4.3.0:
   version "4.3.0"

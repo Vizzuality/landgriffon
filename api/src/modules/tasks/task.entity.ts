@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { BaseServiceResource } from 'types/resource.interface';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { User } from 'modules/users/user.entity';
 
 export const taskResource: BaseServiceResource = {
@@ -57,6 +57,10 @@ export class Task extends TimestampedBaseEntity {
   @ApiProperty()
   @Column({ type: 'enum', enum: TASK_STATUS, default: TASK_STATUS.PROCESSING })
   status!: TASK_STATUS;
+
+  @ApiPropertyOptional()
+  @Column({ type: 'text', nullable: true })
+  message?: string;
 
   @ApiProperty()
   @Column({ type: 'json' })

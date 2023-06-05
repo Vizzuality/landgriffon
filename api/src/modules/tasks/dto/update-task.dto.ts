@@ -20,11 +20,13 @@ export class UpdateTaskDto {
 export type UpdateImportTask = {
   taskId: string;
 
+  message?: string;
+
   newStatus?: TASK_STATUS;
 
   newData?: Record<string, any>;
 
-  newErrors?: Record<string, any>;
+  newErrors?: Error[];
 
   newLogs?: string[];
 };

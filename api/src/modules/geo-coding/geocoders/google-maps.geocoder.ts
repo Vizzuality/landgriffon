@@ -1,4 +1,8 @@
-import { Logger, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Logger,
+  ServiceUnavailableException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { Client as ClientType } from '@googlemaps/google-maps-services-js/dist/client';
 import * as config from 'config';
 import { Client, GeocodeRequest } from '@googlemaps/google-maps-services-js';
@@ -28,6 +32,16 @@ export class GoogleMapsGeocoder implements GeocoderInterface {
   }
 
   async geocode(args: GeocodeArgs): Promise<GeocodeResponseData> {
+    if (!this.apiKey) {
+      this.logger.error(
+        'Google API key missing when attempting to geocode location. Cannot process request.',
+      );
+      throw new ServiceUnavailableException(
+        `Location ${
+          args.address ?? args.latlng
+        } needs external geocoding and it's not available. Please contact administrator.`,
+      );
+    }
     this.logger.debug('Geocoding');
     let response: GeocodeResponse;
 

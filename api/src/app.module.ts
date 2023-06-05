@@ -37,6 +37,7 @@ import { CachedDataModule } from 'modules/cached-data/cached-data.module';
 import * as config from 'config';
 import { AuthorizationModule } from 'modules/authorization/authorization.module';
 import { AuthorizationService } from 'modules/authorization/authorization.service';
+import { TasksService } from 'modules/tasks/tasks.service';
 
 const queueConfig: any = config.get('queue');
 
@@ -91,9 +92,14 @@ const queueConfig: any = config.get('queue');
   controllers: [HealthController],
 })
 export class AppModule implements OnModuleInit {
-  constructor(private readonly authorizationService: AuthorizationService) {}
+  constructor(
+    private readonly authorizationService: AuthorizationService,
+    private readonly taskService: TasksService,
+  ) {}
 
   async onModuleInit(): Promise<void> {
     await this.authorizationService.seedRolesAndPermissions();
+    await this.taskService.cleanStalledTasks();
+    //TODO: Clean possible stalled async jobs
   }
 }

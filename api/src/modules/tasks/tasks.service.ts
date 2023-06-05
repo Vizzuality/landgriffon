@@ -110,4 +110,18 @@ export class TasksService extends AppBaseService<
     if (newStatus) task.status = newStatus;
     return task.save();
   }
+
+  async cleanStalledTasks(): Promise<void> {
+    const stalledTask: Task | null = await this.taskRepository
+      .createQueryBuilder('task')
+      .where('task.status = :status', { status: TASK_STATUS.PROCESSING })
+      .orderBy('task.createdAt', 'DESC') // assuming you have a createdAt field
+      .getOne();
+    if (stalledTask) {
+      stalledTask.status = TASK_STATUS.FAILED;
+      stalledTask.message =
+        'Task failed due to a system error. Please contact support.';
+      await stalledTask.save();
+    }
+  }
 }

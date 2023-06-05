@@ -301,12 +301,13 @@ export class SourcingRecordsDtoProcessorService {
           importRow,
           sourcingLocationGroupId,
         );
-      const sourcingRecords: CreateSourcingRecordDto[] =
-        importRow.sourcingRecords.map(
-          async (sourcingRecord: CreateSourcingRecordDto) => {
-            return await this.createSourcingRecordDTOFromData(sourcingRecord);
-          },
+      const sourcingRecords: CreateSourcingRecordDto[] = [];
+      for (const sourcingRecord of importRow.sourcingRecords) {
+        sourcingRecords.push(
+          await this.createSourcingRecordDTOFromData(sourcingRecord),
         );
+      }
+
       sourcingLocationDtos.push({
         ...sourcingLocationDto,
         sourcingRecords,

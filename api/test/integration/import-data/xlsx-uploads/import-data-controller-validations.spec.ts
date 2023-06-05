@@ -60,7 +60,8 @@ describe('XLSX Upload Feature Validation Tests', () => {
     });
   });
 
-  describe('XLSX Upload Feature File Content Validation Tests', () => {
+  // TODO: Move this to integration tests sets as all types of validations will be moved to a async queue
+  describe.skip('XLSX Upload Feature File Content Validation Tests', () => {
     test('When file with invalid content is sent to the API it should return 400 "Bad Request" error', async () => {
       await request(testApplication.getHttpServer())
         .post('/api/v1/import/sourcing-data')

@@ -34,7 +34,7 @@ export class ImportDataConsumer {
     const task: Task | undefined = await this.tasksService.updateImportTask({
       taskId: job.data.taskId,
       newStatus: TASK_STATUS.FAILED,
-      newErrors: err,
+      message: err.message,
     });
     this.logger.error(
       `Import Failed for file: ${job.data.xlsxFileData.filename} for task: ${task.id}: ${err}`,

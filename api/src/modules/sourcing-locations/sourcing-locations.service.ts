@@ -216,12 +216,6 @@ export class SourcingLocationsService extends AppBaseService<
           locationTypesOptions.businessUnitIds,
         );
     }
-    if (locationTypesOptions.supplierIds) {
-      locationTypesOptions.supplierIds =
-        await this.suppliersService.getSuppliersDescendants(
-          locationTypesOptions.supplierIds,
-        );
-    }
 
     const locationTypes: { locationType: string }[] =
       await this.sourcingLocationRepository.getAvailableLocationTypes(

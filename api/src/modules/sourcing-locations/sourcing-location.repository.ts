@@ -1,17 +1,9 @@
-import {
-  Brackets,
-  DataSource,
-  SelectQueryBuilder,
-  WhereExpressionBuilder,
-} from 'typeorm';
+import { DataSource, SelectQueryBuilder } from 'typeorm';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GetLocationTypesDto } from 'modules/sourcing-locations/dto/location-types-options.sourcing-locations.dto';
 import { AppBaseRepository } from 'utils/app-base.repository';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import {
-  SCENARIO_INTERVENTION_STATUS,
-  ScenarioIntervention,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+import { BaseQueryBuilder } from 'utils/base.query-builder';
 
 @Injectable()
 export class SourcingLocationRepository extends AppBaseRepository<SourcingLocation> {
@@ -25,73 +17,14 @@ export class SourcingLocationRepository extends AppBaseRepository<SourcingLocati
     const queryBuilder: SelectQueryBuilder<SourcingLocation> =
       this.createQueryBuilder('sl')
         .select('sl.locationType', 'locationType')
-        .distinct();
-    if (locationTypesOptions.materialIds) {
-      queryBuilder.andWhere('sl.materialId IN (:...materialIds)', {
-        materialIds: locationTypesOptions.materialIds,
-      });
-    }
-    if (locationTypesOptions.supplierIds) {
-      queryBuilder.andWhere(
-        new Brackets((qb: WhereExpressionBuilder) => {
-          qb.where('sl."t1SupplierId" IN (:...suppliers)', {
-            suppliers: locationTypesOptions.supplierIds,
-          }).orWhere('sl."producerId" IN (:...suppliers)', {
-            suppliers: locationTypesOptions.supplierIds,
-          });
-        }),
-      );
-    }
-    if (locationTypesOptions.businessUnitIds) {
-      queryBuilder.andWhere('sl.businessUnitId IN (:...businessUnitIds)', {
-        businessUnitIds: locationTypesOptions.businessUnitIds,
-      });
-    }
-    if (locationTypesOptions.originIds) {
-      queryBuilder.andWhere('sl.adminRegionId IN (:...originIds)', {
-        originIds: locationTypesOptions.originIds,
-      });
-    }
+        .distinct()
+        .orderBy('sl.locationType', locationTypesOptions.sort ?? 'DESC');
 
-    if (locationTypesOptions.locationTypes) {
-      queryBuilder.andWhere('sl.locationType IN (:...locationTypes)', {
-        locationTypes: locationTypesOptions.locationTypes,
-      });
-    }
-
-    if (locationTypesOptions.scenarioIds) {
-      queryBuilder.leftJoin(
-        ScenarioIntervention,
-        'scenarioIntervention',
-        'sl.scenarioInterventionId = scenarioIntervention.id',
-      );
-      queryBuilder.andWhere(
-        new Brackets((qb: WhereExpressionBuilder) => {
-          qb.where('sl.scenarioInterventionId is null').orWhere(
-            new Brackets((qbInterv: WhereExpressionBuilder) => {
-              qbInterv
-                .where('scenarioIntervention.scenarioId IN (:...scenarioIds)', {
-                  scenarioIds: locationTypesOptions.scenarioIds,
-                })
-                .andWhere(`scenarioIntervention.status = :status`, {
-                  status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
-                });
-            }),
-          );
-        }),
-      );
-    } else {
-      queryBuilder.andWhere('sl.scenarioInterventionId is null');
-      queryBuilder.andWhere('sl.interventionType is null');
-    }
-
-    queryBuilder.orderBy(
-      'sl.locationType',
-      locationTypesOptions.sort ?? 'DESC',
-    );
+    const queryBuilderWithFilters: SelectQueryBuilder<SourcingLocation> =
+      BaseQueryBuilder.addFilters(queryBuilder, locationTypesOptions);
 
     const locationTypes: { locationType: string }[] =
-      await queryBuilder.getRawMany();
+      await queryBuilderWithFilters.getRawMany();
 
     if (!locationTypes) {
       throw new NotFoundException(`No Location Types were found`);

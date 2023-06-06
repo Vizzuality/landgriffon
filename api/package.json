@@ -20,7 +20,7 @@
     "test:cov": "node --expose-gc ./node_modules/.bin/jest --config test/jest-config.json --coverage --forceExit",
     "test:debug": "node --inspect-brk --expose-gc -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --config test/jest-config.json --detectOpenHandles --forceExit",
     "test:integration": "node --expose-gc ./node_modules/.bin/jest --config test/jest-config.json --forceExit test/integration/",
-    "test:e2e": "NODE_OPTIONS=\"--max-old-space-size=6144\" node --expose-gc ./node_modules/.bin/jest --config test/jest-config.json --logHeapUsage --forceExit test/e2e/"
+    "test:e2e": "NODE_OPTIONS=\"--max-old-space-size=8192\" node --expose-gc ./node_modules/.bin/jest --config test/jest-config.json --logHeapUsage --forceExit test/e2e/"
   },
   "engines": {
     "node": "^18.12"

@@ -218,7 +218,7 @@ describe('SourcingLocationsModule (e2e)', () => {
       )
         .get(`/api/v1/sourcing-locations/location-types`)
         .query({
-          'supplierIds[]': supplierOne.id,
+          't1SupplierIds[]': supplierOne.id,
         })
         .set('Authorization', `Bearer ${jwtToken}`)
         .expect(HttpStatus.OK);
@@ -354,7 +354,7 @@ describe('SourcingLocationsModule (e2e)', () => {
           .get('/api/v1/sourcing-locations/location-types')
           .query({
             'materialIds[]': [parentMaterial.id],
-            'supplierIds[]': [supplierOne.id],
+            't1SupplierIds[]': [supplierOne.id],
             supported: true,
           })
           .set('Authorization', `Bearer ${jwtToken}`);
@@ -623,7 +623,7 @@ describe('SourcingLocationsModule (e2e)', () => {
           .query({
             scenarioId: scenario.id,
             'originIds[]': [adminRegionThatShouldShowResults.id],
-            'supplierIds[]': [supplierThatShouldShowResults.id],
+            't1SupplierIds[]': [supplierThatShouldShowResults.id],
           })
           .set('Authorization', `Bearer ${jwtToken}`);
 

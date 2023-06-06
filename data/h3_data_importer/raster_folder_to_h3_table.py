@@ -157,7 +157,9 @@ def update_for_material(cursor: psycopg.Cursor, dataset: str, column_name: str, 
         datatype=sql.Literal(type_map[data_type]),
     )
     cursor.execute('SELECT id FROM "material" WHERE "datasetId" = %s', (dataset_id,))
-    for material_id in cursor:
+    # cursor is going to be reused in the loop, so we need to fetch all the results before the loop
+    material_ids = cursor.fetchall()
+    for material_id in material_ids:
         cursor.execute(delete_query, (material_id[0],))
         cursor.execute(insert_query, (material_id[0],))
         log.info(f"Updated materialId '{material_id[0]}' in material_to_h3 for {column_name}")

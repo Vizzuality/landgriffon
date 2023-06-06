@@ -16,7 +16,7 @@
     "strict": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": false,
-    "target": "es2017",
+    "target": "es2020"
   },
   "exclude": [
     "node_modules",

@@ -106,6 +106,8 @@ def vector_file_to_h3dataframe(
     if not h3df.empty:
         # we want h3index as hex, do we?
         h3df.index = pd.Series(h3df.index).apply(lambda x: hex(x))
+        # slugify column name to be ColumnName as everywhere else
+        h3df = h3df.rename(columns={column: slugify(column)})
         return h3df
 
 
@@ -168,7 +170,7 @@ def main(
     if len(vectors) == 1:  # folder just contains one vector file
         df = vector_file_to_h3dataframe(vectors[0], column, h3_res)
         create_h3_grid_table(table, df, conn)
-        insert_to_h3_grid_table(table, df, conn)  # apply multiprocessing here if needed
+        insert_to_h3_grid_table(table, df, conn)
         # slugify the column name to follow the convention of db column naming
         column = slugify(column)
         insert_to_h3_data_and_contextual_layer_tables(table, column, h3_res, dataset, category, year, conn)

@@ -55,20 +55,17 @@
     "cacheHost": "localhost",
     "cacheDatabase": 3
   },
-
   "tiler": {
     "host": "localhost",
     "port": 4000
   },
-
   "fileUploads": {
-    "sizeLimit": 8388608,
+    "sizeLimit": 31457280,
     "storagePath": "/tmp/csv-uploads"
   },
   "geolocation": {
     "gmapsApiKey": null
   },
-
   "map": {
     "distributed": true
   }

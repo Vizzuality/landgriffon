@@ -74,7 +74,7 @@ const DownloadMaterialsDataButton: React.FC = () => {
     if (isFetched && isSuccess && isDownloading) {
       csvDownload({
         data: parsedData,
-        filename: `data_procurement_${updatedAt || ''}.csv`,
+        filename: `procurement_data_${updatedAt || ''}.csv`,
       });
       setIsDownloading(false);
     }

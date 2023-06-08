@@ -10,9 +10,9 @@ const Step05: React.FC = () => {
       <div className="w-full space-y-10">
         <header className="relative">
           <div className="relative z-10 space-y-5 md:space-y-12">
-            <h2 className="text-xl font-black uppercase font-display">Strategize</h2>
+            <h2 className="text-xl font-black uppercase font-display">Prioritize</h2>
             <h3 className="text-4xl font-black uppercase md:text-6xl font-display">
-              FIND THE BEST PATH FORWARD.
+              YOUR SUSTAINABLE ACTIONS.
             </h3>
           </div>
           <div className="absolute z-0 top-0 right-0 font-display text-[220px] leading-[160px] text-blue-400">
@@ -22,9 +22,13 @@ const Step05: React.FC = () => {
 
         <div className="space-y-5">
           <p className="text-xl">
-            Forecast interventions and growth scenarios, then see what it takes to reach your
-            company&apos;s targets. Prioritize the actions to transform your business for a better
-            future.
+            Gain insights into your environmental impact over time, compare scenarios, evaluate
+            tradeoffs, and prioritize resources for informed and sustainable decision-making.
+          </p>
+          <p className="text-xl">
+            LandGriffon, with its open methodology, accurate data, and alignment with evolving ESG
+            and nature standards like SBTN and TNFD, will adapt alongside your business&apos;s
+            sustainability journey and contribute to the broader sustainable movement.
           </p>
         </div>
       </div>

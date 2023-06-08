@@ -1,5 +1,6 @@
 import cx from 'classnames';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const Step02: React.FC = () => {
   return (
@@ -22,20 +23,22 @@ const Step02: React.FC = () => {
         </header>
 
         <div className="space-y-5">
+          <p className="text-2xl font-bold">
+            LandGriffon works with all levels of sourcing precision.
+          </p>
           <p className="text-xl">
+            For example, if you source from intermediate suppliers rather than having farm and field
+            locations, it uses a probabilistic model to estimate where your materials are most
+            likely produced.
+          </p>
+          <p className="text-xl font-bold">
             No matter your level of sourcing data we work with you to map what you can and fill the
             gaps where needed.
           </p>
-          <p className="text-xl">
-            Our team assists you to gather, process, and import your sourcing data into LandGriffon
-            and builds a complete picture of your supply chain. LandGriffon then geolocates your
-            data for analysis.
-          </p>
-          <p className="text-xl">
-            LandGriffon works with all levels of sourcing precision. For example, if you source from
-            intermediate suppliers rather than having farm and field locations, it uses a
-            probabilistic model to estimate where your materials are most likely produced.
-          </p>
+
+          <Link href="/methodology" passHref>
+            <p className="cursor-pointer text-xl">Find out how our sourcing model works</p>
+          </Link>
         </div>
       </div>
 

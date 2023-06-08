@@ -15,17 +15,6 @@ const Values: React.FC = () => {
               The impacts from interconnected supply chains are never isolated, so we believe the
               approach to making them sustainable shouldn’t be either.
             </h3>
-            <p className="leading-relaxed">
-              Corporate sustainability is many things, from high-level goals and metrics to
-              simplifying complex information and balancing competing priorities. It’s taking action
-              based on what you have while simultaneously working towards more accurate data and
-              information. It’s seeing the connection between the workforce, the supply chain, the
-              environment it depends on, and the climate that affects it.{' '}
-              <strong className="font-semibold">
-                Collaboration will ensure a future where this ecosystem can thrive, from the
-                environment it relies on to the businesses that keep it evolving.
-              </strong>
-            </p>
           </div>
         </FadeIn>
       </Wrapper>

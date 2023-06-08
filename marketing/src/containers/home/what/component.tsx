@@ -21,8 +21,8 @@ const SLIDES = [
     description: (
       <div className="text-xl text-white">
         <p>
-          <span className="text-orange-500">Analyze and manage</span> impacts across your entire
-          supply chain.
+          Overcome <span className="text-orange-500">traceability</span> barriers with our spatial
+          sourcing model.
         </p>
       </div>
     ),
@@ -40,8 +40,8 @@ const SLIDES = [
     description: (
       <div className="text-xl text-white">
         <p>
-          <span className="text-orange-500">Locate the critical areas</span> for action to help you
-          meet your sustainability targets.
+          Boost<span className="text-orange-500">confidence</span> in your sustainability measures
+          with the best-available geospatial data.
         </p>
       </div>
     ),
@@ -59,8 +59,8 @@ const SLIDES = [
     description: (
       <div className="text-xl text-white">
         <p>
-          Compare strategies using our forecasting tool to
-          <span className="text-orange-500"> determine the best path forward.</span>
+          <span className="text-orange-500"> Strategise</span> your supply chain sustainability by
+          assessing trade-offs between actions and forecasting the outcomes
         </p>
       </div>
     ),

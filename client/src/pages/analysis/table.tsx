@@ -5,13 +5,11 @@ import ApplicationLayout from 'layouts/application';
 import AnalysisLayout from 'layouts/analysis';
 import AnalysisTable from 'containers/analysis-visualization/analysis-table';
 import TitleTemplate from 'utils/titleTemplate';
+import { tasksSSR } from 'services/ssr';
 
 import type { NextPageWithLayout } from 'pages/_app';
 import type { ReactElement } from 'react';
-
-export const getServerSideProps = ({ query }) => {
-  return { props: { query } };
-};
+import type { GetServerSideProps } from 'next';
 
 const TablePage: NextPageWithLayout = () => {
   const dispatch = useAppDispatch();
@@ -33,6 +31,21 @@ TablePage.Layout = function getLayout(page: ReactElement) {
       <AnalysisLayout>{page}</AnalysisLayout>
     </ApplicationLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
+  const tasks = await tasksSSR({ req, res });
+
+  if (tasks && tasks[0]?.attributes.status === 'processing') {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/data',
+      },
+    };
+  }
+
+  return { props: { query } };
 };
 
 export default TablePage;

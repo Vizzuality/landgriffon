@@ -7,9 +7,11 @@ import ApplicationLayout from 'layouts/application';
 import AnalysisLayout from 'layouts/analysis';
 import AnalysisMap from 'containers/analysis-visualization/analysis-map';
 import TitleTemplate from 'utils/titleTemplate';
+import { tasksSSR } from 'services/ssr';
 
 import type { NextPageWithLayout } from 'pages/_app';
 import type { ReactElement } from 'react';
+import type { GetServerSideProps } from 'next';
 
 const MapPage: NextPageWithLayout = () => {
   const dispatch = useAppDispatch();
@@ -36,8 +38,19 @@ MapPage.Layout = function getLayout(page: ReactElement) {
   );
 };
 
-export function getServerSideProps({ query }) {
+export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
+  const tasks = await tasksSSR({ req, res });
+
+  if (tasks && tasks[0]?.attributes.status === 'processing') {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/data',
+      },
+    };
+  }
+
   return { props: { query } };
-}
+};
 
 export default MapPage;

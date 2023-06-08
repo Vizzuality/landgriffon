@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { format } from 'date-fns';
 
+import { useUpdateTask } from 'hooks/tasks';
+import { useProfile } from 'hooks/profile';
 import UploadIcon from 'components/icons/upload-icon';
 import Disclaimer from 'components/disclaimer';
 import Button from 'components/button';
@@ -21,6 +23,14 @@ type DataUploadErrorProps = {
 
 const DataUploadError: React.FC<DataUploadErrorProps> = ({ task }) => {
   const [open, setOpen] = useState(true);
+  const updateTask = useUpdateTask();
+  const { data: profile, isLoading: profileIsLoading } = useProfile();
+
+  const handleDismiss = useCallback(() => {
+    updateTask.mutate({ id: task.id, data: { dismissedBy: profile?.id } });
+  }, [profile?.id, task.id, updateTask]);
+
+  if (task?.dismissedBy) return null;
 
   return (
     <Disclaimer
@@ -80,7 +90,14 @@ const DataUploadError: React.FC<DataUploadErrorProps> = ({ task }) => {
         </div>
         <div className="flex-none">
           {task?.status === 'completed' && task?.errors.length === 0 ? (
-            <Button variant="white" onClick={() => setOpen(false)}>
+            <Button
+              variant="white"
+              disabled={profileIsLoading}
+              onClick={() => {
+                setOpen(false);
+                handleDismiss();
+              }}
+            >
               Close
             </Button>
           ) : (

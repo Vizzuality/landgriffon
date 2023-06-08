@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { PlusIcon, DownloadIcon } from '@heroicons/react/solid';
 import { format } from 'date-fns';
 import { useRouter } from 'next/router';
+import { useSession } from 'next-auth/react';
 
 import useModal from 'hooks/modals';
 import {
@@ -28,6 +29,7 @@ const YEARS_COLUMNS_UNIT = 't/yr';
 const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
   const { push, query } = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
+  const { data: session } = useSession();
 
   const { hasRole } = usePermissions();
   const isAdmin = hasRole(RoleName.ADMIN);
@@ -160,7 +162,7 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
           </Button>
         </div>
 
-        <DataUploadError task={task} />
+        {task.user?.email === session.user?.email && <DataUploadError task={task} />}
 
         {!isSourcingLocationsLoading && (
           <div className="flex justify-end w-full">

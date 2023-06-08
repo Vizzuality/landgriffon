@@ -20,8 +20,8 @@ const defaultConfig: AxiosRequestConfig = {
 
 const authorizedRequest = async (config) => {
   const session = await getSession();
-
   config.headers['Authorization'] = `Bearer ${session?.accessToken}`;
+
   return config;
 };
 

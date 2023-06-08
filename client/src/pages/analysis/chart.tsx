@@ -12,10 +12,12 @@ import AnalysisChart from 'containers/analysis-chart';
 import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
 import Loading from 'components/loading';
 import TitleTemplate from 'utils/titleTemplate';
+import { tasksSSR } from 'services/ssr';
 
 import type { ReactElement } from 'react';
 import type { NextPageWithLayout } from 'pages/_app';
 import type { Indicator } from 'types';
+import type { GetServerSideProps } from 'next';
 
 const ChartPage: NextPageWithLayout = () => {
   const dispatch = useAppDispatch();
@@ -74,8 +76,19 @@ ChartPage.Layout = function getLayout(page: ReactElement) {
   );
 };
 
-export function getServerSideProps({ query }) {
+export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
+  const tasks = await tasksSSR({ req, res });
+
+  if (tasks && tasks[0]?.attributes.status === 'processing') {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/data',
+      },
+    };
+  }
+
   return { props: { query } };
-}
+};
 
 export default ChartPage;

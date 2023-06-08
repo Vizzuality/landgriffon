@@ -10,7 +10,7 @@ type CustomCredentials = Credential & {
   username: string;
 };
 
-const options: NextAuthOptions = {
+export const options: NextAuthOptions = {
   /**
    * Defining custom pages
    * By default Next-Auth provides /api/auth/signin

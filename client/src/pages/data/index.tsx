@@ -31,11 +31,15 @@ const AdminDataPage: React.FC = () => {
   } = useTasks(
     {
       'page[size]': 1,
+      'page[number]': 1,
       sort: '-createdAt',
       include: 'user',
     },
     {
       refetchInterval: 10000,
+      refetchOnReconnect: true,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
     },
   );
 

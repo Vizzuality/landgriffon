@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { apiService } from 'services/api';
 
-import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
+import type { UseQueryResult, UseQueryOptions, UseMutationResult } from '@tanstack/react-query';
 import type { APIMetadataPagination, ErrorResponse, Task } from 'types';
 
 type TaskAPIResponse = Task;
@@ -63,4 +63,23 @@ export function useTask(
   );
 
   return query;
+}
+
+export function useUpdateTask(): UseMutationResult<TaskAPIResponse> {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    ({ id, data }: { id: Task['id']; data: Partial<Task> }) =>
+      apiService.request({
+        method: 'PATCH',
+        data,
+        url: `/tasks/${decodeURIComponent(id)}`,
+      }),
+    {
+      mutationKey: ['updateTask'],
+      onSettled: () => {
+        queryClient.invalidateQueries(['tasks']);
+      },
+    },
+  );
 }

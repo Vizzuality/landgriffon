@@ -19,62 +19,19 @@ const navigationItems: NavigationList = [
 ];
 
 const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const router = useRouter();
   const { data: tasks } = useTasks(
     {
       'page[size]': 1,
+      'page[number]': 1,
       sort: '-createdAt',
     },
     {
-      refetchInterval: 10000,
+      refetchInterval: 60000,
       refetchOnReconnect: true,
-      refetchOnWindowFocus: true,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
     },
   );
-  const lastTask: Task = tasks?.[0];
-
-  useEffect(() => {
-    if (router.isReady && router.pathname !== '/data') {
-      if (lastTask?.status === 'failed') {
-        toast.error(
-          <div>
-            Last data upload failed, please{' '}
-            <Link href="/data" className="underline">
-              try again
-            </Link>
-            .
-          </div>,
-          {
-            id: 'task-status',
-            duration: Infinity,
-          },
-        );
-      }
-      if (lastTask?.status === 'processing') {
-        toast.loading(
-          <div>
-            <Link href="/data" className="underline">
-              Uploading data
-            </Link>{' '}
-            in progress...
-          </div>,
-          { id: 'task-status' },
-        );
-      }
-      if (lastTask?.status === 'completed') {
-        toast.success(
-          <div>
-            The data uploading has been completed. Please,{' '}
-            <Link href="/data" className="underline">
-              refresh the page
-            </Link>
-            .
-          </div>,
-          { id: 'task-status' },
-        );
-      }
-    }
-  }, [lastTask, router.isReady, router.pathname]);
 
   return (
     <div className="flex h-screen overflow-hidden min-h-[700px] min-w-screen-lg bg-navy-600">

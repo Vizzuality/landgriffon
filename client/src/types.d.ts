@@ -350,6 +350,7 @@ export type Task = {
   errors?: Record<string, string>[];
   user?: User;
   createdAt: string;
+  dismissedBy: string;
 };
 
 // User

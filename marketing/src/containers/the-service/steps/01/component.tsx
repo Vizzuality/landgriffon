@@ -10,10 +10,8 @@ const Step01: React.FC = () => {
       <div className="w-full space-y-10">
         <header className="relative">
           <div className="relative z-10 space-y-5 md:space-y-12">
-            <h2 className="text-xl font-black uppercase font-display">Benchmark</h2>
-            <h3 className="text-4xl font-black uppercase md:text-6xl font-display">
-              Your sustainability journey.
-            </h3>
+            <h2 className="text-xl font-black uppercase font-display">Import</h2>
+            <h3 className="text-4xl font-black uppercase md:text-6xl font-display">Your data.</h3>
           </div>
           <div className="absolute z-0 top-0 right-0 font-display text-[220px] leading-[160px] text-green-400">
             01
@@ -22,9 +20,10 @@ const Step01: React.FC = () => {
 
         <div className="space-y-5">
           <p className="text-xl">
-            Our sustainability experts and technical team work closely with you to understand your
-            sustainability priorities and existing systems. We leverage the capabilities of
-            LandGriffon to create your transformation strategy and roadmap.
+            Our team works closely with you to understand your sustainability priorities and
+            existing systems. We assist you to gather, process, and import your sourcing data into
+            LandGriffon and builds a complete picture of your supply chain. LandGriffon then
+            geolocates your data for analysis.
           </p>
         </div>
       </div>

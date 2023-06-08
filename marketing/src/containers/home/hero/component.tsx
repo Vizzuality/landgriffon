@@ -28,8 +28,9 @@ const Hero: React.FC = () => {
 
             <div className="bottom-0 right-0 mt-5 xl:absolute xl:w-7/12 xl:mt-0">
               <h2 className="max-w-md font-light text-white">
-                LandGriffon empowers companies to measure, manage, and transform agricultural supply
-                chain impacts.
+                LandGriffon uses an open scientific methodology and an innovative digital tool to
+                empower companies to measure, manage, and transform agricultural supply chain
+                impacts.
               </h2>
             </div>
           </motion.div>

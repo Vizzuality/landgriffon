@@ -5,6 +5,8 @@ WORKDIR_MAPSPAM=data
 
 .SILENT: download-mapspam-crop-production download-mapspam-crop-harvest extract-mapspam-crop-production extract-mapspam-crop-harvest
 
+foo:
+	echo faa!
 # Download IS BROKEN
 # ZIPs obtained from https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/PRFF8V
 download-mapspam-crop-production:

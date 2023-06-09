@@ -82,7 +82,7 @@ export class GeoCodingService extends GeoCodingAbstractClass {
           );
         }
       } catch (e: any) {
-        errors.push({ line: i + 2, error: e.message });
+        errors.push({ line: i + 5, error: e.message });
       }
     }
 

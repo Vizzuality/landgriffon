@@ -1,6 +1,10 @@
+import Link from 'next/link';
 import Wrapper from 'containers/wrapper';
 import FadeIn from 'components/fade';
 import Image from 'next/image';
+
+import ARROW_TOP_RIGHT_SVG from 'svgs/ui/arrow-top-right.svg?sprite';
+import Icon from 'components/icon/component';
 
 const Developed: React.FC = () => {
   return (
@@ -14,17 +18,14 @@ const Developed: React.FC = () => {
             <div className="space-y-10">
               <h3 className="text-2xl font-light text-white">
                 Sustainable transformation requires whole systems thinking. That&apos;s why
-                <strong className="font-semibold">
-                  {' '}
-                  LandGriffon is made up of a consortium of experts
-                </strong>
-                , combining the disciplines of design, science, technology, sustainability, and
-                business.
+                LandGriffon is made up of experts combining the disciplines of design, science,
+                technology, sustainability, and business.
               </h3>
               <h3 className="text-2xl font-light text-white">
-                We help companies access, understand, and easily use the data and recommendations of
-                the sustainability community. Together we can transform sustainable ambitions into
-                action.
+                For
+                <strong className="font-semibold"> over a decade, Vizzuality </strong>
+                has helped companies access, understand, and easily use the data and recommendations
+                of the sustainability community.
               </h3>
             </div>
           </FadeIn>
@@ -68,17 +69,25 @@ const Developed: React.FC = () => {
                       alt="SEI"
                     />
                   </div>
-                  {/* <div>
-                    <Image
-                      className="inline-block"
-                      width={180}
-                      height={27}
-                      src="/images/home/developed/trase.png"
-                      alt="Trase"
-                    />
-                  </div> */}
                 </div>
               </div>
+            </div>
+          </FadeIn>
+
+          <FadeIn>
+            <div className="space-y-10">
+              <h3 className="text-2xl font-light text-white">
+                LandGriffon facilitates access, transparency, and global collaboration by embracing
+                open source and open science. We encourage you to review it and welcome input and
+                feedback.
+              </h3>
+
+              <Link href="/methodology">
+                <a className="text-xl text-orange-500 inline-flex justify-center items-center space-x-2.5">
+                  <span>Learn how it works</span>
+                  <Icon icon={ARROW_TOP_RIGHT_SVG} className="w-3 h-3" />
+                </a>
+              </Link>
             </div>
           </FadeIn>
         </div>

@@ -308,7 +308,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
 
     // for some reason, there's an invisible .rc-tree-treenode outside of the list. With this selector we ensure to get the element only if it has a sibling of the same type
     const firstChild = listContainer.querySelector('.rc-tree-treenode ~ .rc-tree-treenode');
-    const offset = firstChild.clientHeight;
+    const offset = firstChild?.clientHeight || 0;
 
     listContainer.scrollTop = offset * (elementIndex + 1) - listHeight / 2;
     setKeyToScroll(undefined);

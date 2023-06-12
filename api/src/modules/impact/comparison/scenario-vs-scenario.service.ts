@@ -288,7 +288,7 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
       return {
         name: item.name || '',
         children:
-          item.children.length > 0
+          item.children?.length > 0
             ? this.buildScenarioVsScenarioImpactTableRowsSkeleton(item.children)
             : [],
         values: [],

@@ -162,7 +162,7 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
           </Button>
         </div>
 
-        {task.user?.email === session.user?.email && <DataUploadError task={task} />}
+        {task?.user?.email === session.user?.email && <DataUploadError task={task} />}
 
         {!isSourcingLocationsLoading && (
           <div className="flex justify-end w-full">
@@ -217,8 +217,7 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
               Upload a new file will replace all the current data.
             </p>
             <div className="mt-10">
-              <DataUploader variant="inline" isProcessing={task?.status === 'processing'} />
-              {task?.status !== 'processing' && <DataUploadError task={task} />}
+              <DataUploader variant="inline" />
             </div>
           </div>
 

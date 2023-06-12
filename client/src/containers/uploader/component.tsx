@@ -1,15 +1,18 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import classNames from 'classnames';
+import { useRouter } from 'next/router';
 
 import { useUploadDataSource } from 'hooks/sourcing-data';
+import { useLasTask } from 'hooks/tasks';
 import FileDropzone from 'components/file-dropzone';
 
 import type { FileDropZoneProps } from 'components/file-dropzone/types';
+import type { Task } from 'types';
 
 type DataUploaderProps = {
   variant?: 'default' | 'inline'; // Visually it removes a shadow when it's true
-  isProcessing?: boolean; // Overriding the processing state
+  onUploadInProgress?: (inProgress: boolean) => void;
 };
 
 const MAX_SIZE = Number(process.env.NEXT_PUBLIC_FILE_UPLOADER_MAX_SIZE || '10000000');
@@ -22,12 +25,12 @@ const uploadOptions = {
   maxSize: MAX_SIZE,
 };
 
-const DataUploader: React.FC<DataUploaderProps> = ({
-  variant = 'default',
-  isProcessing = false,
-}) => {
-  const [isFetchedAndSuccess, setIsFetchedAndSucess] = useState(false);
+const DataUploader: React.FC<DataUploaderProps> = ({ variant = 'default', onUploadInProgress }) => {
+  const [currentTaskId, setCurrentTaskId] = useState<Task['id']>(null);
+  const router = useRouter();
   const uploadDataSource = useUploadDataSource();
+  const lastTask = useLasTask();
+  const { refetch: refetchLastTask } = lastTask;
 
   const handleOnDrop: FileDropZoneProps['onDrop'] = useCallback(
     (acceptedFiles) => {
@@ -38,7 +41,9 @@ const DataUploader: React.FC<DataUploaderProps> = ({
       });
 
       uploadDataSource.mutate(formData, {
-        onSuccess: () => setIsFetchedAndSucess(true),
+        onSuccess: () => {
+          refetchLastTask();
+        },
         onError: ({ response }) => {
           const errors = response?.data?.errors;
           if (errors && !!errors.length) {
@@ -49,7 +54,7 @@ const DataUploader: React.FC<DataUploaderProps> = ({
         },
       });
     },
-    [uploadDataSource],
+    [refetchLastTask, uploadDataSource],
   );
 
   const handleFileRejected: FileDropZoneProps['onDropRejected'] = useCallback((rejectedFiles) => {
@@ -62,7 +67,34 @@ const DataUploader: React.FC<DataUploaderProps> = ({
     });
   }, []);
 
-  const isUploadingOrProcessing = uploadDataSource.isLoading || isProcessing || isFetchedAndSuccess;
+  // Status of the uploading process
+  const isUploading = uploadDataSource.isLoading;
+  const isWaiting = uploadDataSource.isSuccess && currentTaskId === lastTask.data?.id;
+  const isProcessing = lastTask.data?.status === 'processing';
+  const isWorking = isUploading || isWaiting || isProcessing;
+  const isCompleted =
+    !isWorking &&
+    uploadDataSource.isSuccess &&
+    (lastTask.data?.status === 'completed' || lastTask.data?.status === 'failed');
+
+  useEffect(() => {
+    if (!currentTaskId && lastTask.data?.id) {
+      setCurrentTaskId(lastTask.data.id);
+    }
+  }, [currentTaskId, lastTask.data?.id]);
+
+  useEffect(() => {
+    if (isCompleted && router.isReady) {
+      router.reload();
+      onUploadInProgress(false);
+    }
+  }, [isCompleted, onUploadInProgress, router]);
+
+  useEffect(() => {
+    if (isWorking && onUploadInProgress) {
+      onUploadInProgress(true);
+    }
+  }, [isWorking, onUploadInProgress]);
 
   return (
     <div className="relative min-w-[640px] w-full">
@@ -75,21 +107,19 @@ const DataUploader: React.FC<DataUploaderProps> = ({
           {...uploadOptions}
           onDrop={handleOnDrop}
           onDropRejected={handleFileRejected}
-          disabled={isUploadingOrProcessing || isFetchedAndSuccess}
-          isUploading={isUploadingOrProcessing}
+          disabled={isWorking}
+          isUploading={isWorking}
         />
       </div>
 
-      {isUploadingOrProcessing && (
+      {isWorking && (
         <div className="w-full px-20">
           <div className="px-10 py-4 bg-white rounded-b-xl">
             <div className="w-full h-[4px] rounded bg-gradient-to-r from-[#5FCFF9] via-[#42A56A] to-[#F5CA7D]" />
             <p className="mt-1 text-xs text-left text-gray-500">
-              {uploadDataSource.isLoading && 'Uploading file...'}
-              {isFetchedAndSuccess && isProcessing && 'Processing file...'}
-              {isFetchedAndSuccess &&
-                !isProcessing &&
-                'File uploaded successfully! Starting to process the data...'}
+              {isUploading && 'Uploading file...'}
+              {isWaiting && 'File uploaded successfully! Starting to process the data...'}
+              {isProcessing && 'Processing file...'}
             </p>
           </div>
         </div>

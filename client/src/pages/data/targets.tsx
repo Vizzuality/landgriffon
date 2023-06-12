@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { InformationCircleIcon } from '@heroicons/react/outline';
 import { PlusIcon } from '@heroicons/react/solid';
 
+import { tasksSSR } from 'services/ssr';
 import Button from 'components/button';
 import Radio from 'components/forms/radio';
 import Loading from 'components/loading';
@@ -13,6 +14,7 @@ import { useTargets } from 'hooks/targets';
 import AdminLayout from 'layouts/admin';
 
 import type { Target } from 'types';
+import type { GetServerSideProps } from 'next';
 
 const AdminTargetsPage: React.FC = () => {
   const { data: indicators } = useIndicators({}, { select: (data) => data.data });
@@ -91,6 +93,21 @@ const AdminTargetsPage: React.FC = () => {
       )}
     </AdminLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
+  const tasks = await tasksSSR({ req, res });
+
+  if (tasks && tasks[0]?.attributes.status === 'processing') {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/data',
+      },
+    };
+  }
+
+  return { props: { query } };
 };
 
 export default AdminTargetsPage;

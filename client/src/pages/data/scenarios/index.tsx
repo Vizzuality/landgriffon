@@ -6,6 +6,7 @@ import { useDebounceCallback } from '@react-hook/debounce';
 import { omit } from 'lodash-es';
 import Lottie from 'lottie-react';
 
+import { tasksSSR } from 'services/ssr';
 import newScenarioAnimation from 'containers/scenarios/animations/new-scenario.json';
 import ListIcon from 'components/icons/list';
 import GridIcon from 'components/icons/grid';
@@ -22,6 +23,7 @@ import { Permission } from 'hooks/permissions/enums';
 
 import type { Option } from 'components/forms/select';
 import type { ScenarioCardProps } from 'containers/scenarios/card/types';
+import type { GetServerSideProps } from 'next';
 
 const DISPLAY_OPTIONS: ScenarioCardProps['display'][] = ['grid', 'list'];
 
@@ -221,6 +223,21 @@ const ScenariosAdminPage: React.FC = () => {
       )}
     </AdminLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
+  const tasks = await tasksSSR({ req, res });
+
+  if (tasks && tasks[0]?.attributes.status === 'processing') {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/data',
+      },
+    };
+  }
+
+  return { props: { query } };
 };
 
 export default ScenariosAdminPage;

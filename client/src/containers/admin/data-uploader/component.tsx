@@ -27,7 +27,7 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
         <div className="space-y-4 text-lg text-center w-[640px]">
           <p className="font-semibold">2. Upload the filled Excel file.</p>
           <DataUploader isProcessing={task?.status === 'processing'} />
-          {task?.status !== 'processing' && <DataUploadError task={task} />}
+          {task?.status === 'failed' && <DataUploadError task={task} />}
         </div>
       </div>
     </div>

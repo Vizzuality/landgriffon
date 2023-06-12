@@ -1,37 +1,24 @@
-import { useEffect } from 'react';
 import { CollectionIcon, ChartBarIcon } from '@heroicons/react/outline';
-import toast from 'react-hot-toast';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
 
-import { useTasks } from 'hooks/tasks';
+import { useLasTask } from 'hooks/tasks';
 import Navigation from 'containers/navigation/desktop';
 import UserDropdown from 'containers/user-dropdown';
 import LandgriffonLogo from 'containers/logo';
 import ToastContainer from 'containers/toaster';
 
 import type { NavigationList } from 'containers/navigation/types';
-import type { Task } from 'types';
-
-const navigationItems: NavigationList = [
-  { name: 'Data', href: '/data', icon: CollectionIcon },
-  { name: 'Analysis', href: '/analysis', icon: ChartBarIcon },
-];
 
 const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { data: tasks } = useTasks(
+  const { data: lastTask } = useLasTask();
+  const navigationItems: NavigationList = [
+    { name: 'Data', href: '/data', icon: CollectionIcon },
     {
-      'page[size]': 1,
-      'page[number]': 1,
-      sort: '-createdAt',
+      name: 'Analysis',
+      href: '/analysis',
+      icon: ChartBarIcon,
+      disabled: !lastTask || lastTask?.status === 'processing',
     },
-    {
-      refetchInterval: 60000,
-      refetchOnReconnect: true,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-    },
-  );
+  ];
 
   return (
     <div className="flex h-screen overflow-hidden min-h-[700px] min-w-screen-lg bg-navy-600">

@@ -12,7 +12,6 @@ import {
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 
-import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 import { replaceStringWhiteSpacesWithDash } from 'utils/transform-location-type.util';
 import { ValidSortingYearValidator } from 'modules/impact/validation/valid-sorting-year.validator';
@@ -27,6 +26,15 @@ export type AnyImpactTableDto =
   | GetRankedImpactTableDto
   | GetActualVsScenarioImpactTableDto
   | GetScenarioVsScenarioImpactTableDto;
+
+export enum GROUP_BY_VALUES {
+  MATERIAL = 'material',
+  BUSINESS_UNIT = 'business-unit',
+  REGION = 'region',
+  T1_SUPPLIER = 't1Supplier',
+  PRODUCER = 'producer',
+  LOCATION_TYPE = 'location-type',
+}
 
 export class BaseImpactTableDto {
   @ApiProperty({
@@ -55,9 +63,7 @@ export class BaseImpactTableDto {
   @IsString()
   @IsNotEmpty()
   @IsEnum(GROUP_BY_VALUES, {
-    message:
-      'Available options: ' +
-      Object.values(GROUP_BY_VALUES).toString().toLowerCase(),
+    message: 'Available options: ' + Object.values(GROUP_BY_VALUES).toString(),
   })
   groupBy!: string;
 

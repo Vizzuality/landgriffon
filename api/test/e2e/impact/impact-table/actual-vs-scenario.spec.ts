@@ -36,9 +36,9 @@ import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.e
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { createScenario } from '../../../entity-mocks';
 import { DataSource } from 'typeorm';
-import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { createImpactTableSortingPreconditions } from '../mocks/sorting.preconditions';
 import { ImpactTableRows } from 'modules/impact/dto/response-impact-table.dto';
+import { GROUP_BY_VALUES } from 'modules/impact/dto/impact-table.dto';
 
 describe('Actual VS Scenario Impact Table test suite (e2e)', () => {
   let testApplication: TestApplication;

@@ -30,8 +30,8 @@ import {
 import { createSameMaterialScenariosPreconditions } from '../mocks/scenario-vs-scenario-preconditions/same-materials-scenarios.preconditions';
 import { DataSource } from 'typeorm';
 import { createImpactTableSortingPreconditions } from '../mocks/sorting.preconditions';
-import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { ImpactTableRows } from 'modules/impact/dto/response-impact-table.dto';
+import { GROUP_BY_VALUES } from 'modules/impact/dto/impact-table.dto';
 
 describe('Scenario VS Scenario Impact Table test suite (e2e)', () => {
   let testApplication: TestApplication;

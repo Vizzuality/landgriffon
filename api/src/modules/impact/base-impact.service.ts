@@ -4,6 +4,7 @@ import {
   GetActualVsScenarioImpactTableDto,
   GetImpactTableDto,
   GetRankedImpactTableDto,
+  GROUP_BY_VALUES,
 } from 'modules/impact/dto/impact-table.dto';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
@@ -20,14 +21,14 @@ import { BusinessUnitsService } from 'modules/business-units/business-units.serv
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { MaterialsService } from 'modules/materials/materials.service';
-import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { ImpactTableEntityType } from 'types/impact-table-entity.type';
 import { DEFAULT_PAGINATION, FetchSpecification } from 'nestjs-base-service';
 import { PaginatedEntitiesDto } from 'modules/impact/dto/paginated-entities.dto';
-import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 import { PaginationMeta } from 'utils/app-base.service';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
+import { CommonFiltersDto } from 'utils/base.query-builder';
+import { SUPPLIER_TYPES } from 'modules/suppliers/supplier.entity';
 
 @Injectable()
 export class BaseImpactService {
@@ -77,16 +78,20 @@ export class BaseImpactService {
   protected async getEntityTree(
     impactTableDto: AnyImpactTableDto,
   ): Promise<ImpactTableEntityType[]> {
-    const treeOptions: GetMaterialTreeWithOptionsDto = {
+    const treeOptions: CommonFiltersDto = {
       ...(impactTableDto.materialIds && {
         materialIds: impactTableDto.materialIds,
       }),
       ...(impactTableDto.originIds && {
         originIds: impactTableDto.originIds,
       }),
-      ...(impactTableDto.supplierIds && {
-        supplierIds: impactTableDto.supplierIds,
+      ...(impactTableDto.t1SupplierIds && {
+        t1SupplierIds: impactTableDto.t1SupplierIds,
       }),
+      ...(impactTableDto.producerIds && {
+        producerIds: impactTableDto.producerIds,
+      }),
+
       ...(impactTableDto.scenarioIds && {
         scenarioIds: impactTableDto.scenarioIds,
       }),
@@ -106,10 +111,17 @@ export class BaseImpactService {
           treeOptions,
         );
       }
-      case GROUP_BY_VALUES.SUPPLIER: {
-        return this.suppliersService.getSuppliersWithSourcingLocations(
-          treeOptions,
-        );
+      case GROUP_BY_VALUES.T1_SUPPLIER: {
+        return this.suppliersService.getSupplierByType({
+          ...treeOptions,
+          type: SUPPLIER_TYPES.T1SUPPLIER,
+        });
+      }
+      case GROUP_BY_VALUES.PRODUCER: {
+        return this.suppliersService.getSupplierByType({
+          ...treeOptions,
+          type: SUPPLIER_TYPES.PRODUCER,
+        });
       }
       case GROUP_BY_VALUES.BUSINESS_UNIT:
         return this.businessUnitsService.getBusinessUnitWithSourcingLocations(
@@ -152,12 +164,6 @@ export class BaseImpactService {
         impactTableDto.originIds = BaseImpactService.getIdsFromTree(
           entities,
           impactTableDto.originIds,
-        );
-        break;
-      case GROUP_BY_VALUES.SUPPLIER:
-        impactTableDto.supplierIds = BaseImpactService.getIdsFromTree(
-          entities,
-          impactTableDto.supplierIds,
         );
         break;
       default:

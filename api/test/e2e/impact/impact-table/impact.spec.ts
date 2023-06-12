@@ -57,8 +57,7 @@ import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing
 import { createNewMaterialInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-material-intervention.preconditions';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { DataSource } from 'typeorm';
-import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
-import { ORDER_BY } from 'modules/impact/dto/impact-table.dto';
+import { GROUP_BY_VALUES, ORDER_BY } from 'modules/impact/dto/impact-table.dto';
 import { ImpactTableRows } from 'modules/impact/dto/response-impact-table.dto';
 import { createImpactTableSortingPreconditions } from '../mocks/sorting.preconditions';
 
@@ -110,7 +109,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       'startYear must be a number conforming to the specified constraints',
       'endYear should not be empty',
       'endYear must be a number conforming to the specified constraints',
-      'Available options: material,business-unit,region,supplier,location-type',
+      'Available options: material,business-unit,region,t1Supplier,producer,location-type',
       'groupBy should not be empty',
       'groupBy must be a string',
     ]);
@@ -290,12 +289,12 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         'indicatorIds[]': [indicator.id],
         endYear: 2012,
         startYear: 2010,
-        groupBy: GROUP_BY_VALUES.SUPPLIER,
+        groupBy: GROUP_BY_VALUES.T1_SUPPLIER,
       })
       .expect(HttpStatus.OK);
 
     expect(response3.body.data.impactTable[0].rows[0].name).toEqual(
-      supplier.name,
+      supplierDescendant.name,
     );
     const response4 = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/table')
@@ -434,7 +433,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           'indicatorIds[]': [uuidv4()],
-          'supplierIds[]': [uuidv4()],
+          'producerIds[]': [uuidv4()],
           sortingYear: 2019,
           endYear: 2021,
           startYear: 2020,
@@ -446,7 +445,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           'indicatorIds[]': [uuidv4()],
-          'supplierIds[]': [uuidv4()],
+          'producerIds[]': [uuidv4()],
           sortingYear: 3145,
           endYear: 2030,
           startYear: 2025,
@@ -473,7 +472,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           'indicatorIds[]': [indicator.id],
-          'supplierIds[]': [supplier.id],
+          't1SupplierIds[]': [supplier.id],
           startYear: 2020,
           endYear: 2021,
           sortingYear: 2020,
@@ -484,7 +483,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           'indicatorIds[]': [indicator.id],
-          'supplierIds[]': [supplier.id],
+          't1SupplierIds[]': [supplier.id],
           startYear: 2020,
           endYear: 2021,
           sortingYear: 2021,
@@ -583,7 +582,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           'indicatorIds[]': [indicator.id],
-          'supplierIds[]': [supplier.id],
+          't1SupplierIds[]': [supplier.id],
           endYear: 2021,
           startYear: 2020,
           groupBy: GROUP_BY_VALUES.MATERIAL,
@@ -595,7 +594,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           'indicatorIds[]': [indicator.id],
-          'supplierIds[]': [supplier.id],
+          't1SupplierIds[]': [supplier.id],
           endYear: 2021,
           startYear: 2020,
           groupBy: GROUP_BY_VALUES.MATERIAL,
@@ -719,7 +718,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           'indicatorIds[]': [indicator.id],
-          'supplierIds[]': [supplier.id],
+          't1SupplierIds[]': [supplier.id],
           endYear: 2013,
           startYear: 2010,
           groupBy: GROUP_BY_VALUES.MATERIAL,
@@ -727,7 +726,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         .expect(HttpStatus.OK);
 
       // TODO: Refactor this tests when updating t1producer & supplier filters
-      expect(response.body.data.impactTable[0].rows).toHaveLength(3);
+      expect(response.body.data.impactTable[0].rows).toHaveLength(2);
       // expect(response.body.data.impactTable[0].rows).toEqual(
       //   expect.arrayContaining(groupByMaterialResponseData.rows),
       // );
@@ -1052,7 +1051,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           'indicatorIds[]': [indicator.id],
           endYear: 2013,
           startYear: 2010,
-          groupBy: GROUP_BY_VALUES.SUPPLIER,
+          groupBy: GROUP_BY_VALUES.T1_SUPPLIER,
         })
         .expect(HttpStatus.OK);
 
@@ -1063,7 +1062,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           'indicatorIds[]': [indicator.id],
           endYear: 2013,
           startYear: 2010,
-          groupBy: GROUP_BY_VALUES.SUPPLIER,
+          groupBy: GROUP_BY_VALUES.T1_SUPPLIER,
           'materialIds[]': [material2.id],
         })
         .expect(HttpStatus.OK);
@@ -1444,14 +1443,13 @@ describe('Impact Table and Charts test suite (e2e)', () => {
           locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
         });
 
-      const sourcingLocationMaterial2: SourcingLocation =
-        await createSourcingLocation({
-          material: material2,
-          businessUnit: businessUnit1,
-          t1Supplier: supplier1,
-          adminRegion: adminRegion,
-          locationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
-        });
+      await createSourcingLocation({
+        material: material2,
+        businessUnit: businessUnit1,
+        t1Supplier: supplier1,
+        adminRegion: adminRegion,
+        locationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
+      });
 
       // Creating Sourcing Records and Indicator Records for previously created Sourcing Locations of different Location Types
       for await (const [index, year] of [2010, 2011, 2012].entries()) {

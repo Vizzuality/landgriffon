@@ -119,7 +119,7 @@ describe('Scenario VS Scenario Impact Table test suite (e2e)', () => {
         'indicatorIds[]': [preconditions.indicator.id],
         endYear: 2021,
         startYear: 2020,
-        groupBy: 'supplier',
+        groupBy: GROUP_BY_VALUES.T1_SUPPLIER,
         baseScenarioId: preconditions.newScenarioChangeSupplier.id,
         comparedScenarioId: preconditions.newScenarioChangeMaterial.id,
       });
@@ -205,7 +205,7 @@ describe('Scenario VS Scenario Impact Table test suite (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .query({
           'indicatorIds[]': [indicator.id],
-          'supplierIds[]': [supplier.id],
+          't1SupplierIds[]': [supplier.id],
           sortingYear: 2020,
           endYear: 2021,
           startYear: 2020,

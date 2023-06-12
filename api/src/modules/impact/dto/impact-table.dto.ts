@@ -79,13 +79,13 @@ export class BaseImpactTableDto {
   @Type(() => String)
   originIds?: string[];
 
-  @ApiPropertyOptional({ name: 'supplierIds[]' })
+  @ApiPropertyOptional({ name: 't1SupplierIds[]' })
   @IsOptional()
   @IsUUID(4, { each: true })
   @Type(() => String)
   t1SupplierIds?: string[];
 
-  @ApiPropertyOptional({ name: 'supplierIds[]' })
+  @ApiPropertyOptional({ name: 'producerIds[]' })
   @IsOptional()
   @IsUUID(4, { each: true })
   @Type(() => String)

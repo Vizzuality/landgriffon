@@ -1,19 +1,5 @@
 export const TEAM = [
   {
-    name: 'Toby Gardner',
-    company: 'SEI - Trase',
-    role: 'Advisor',
-    group: 'support',
-    linkedin: 'https://www.linkedin.com/in/toby-gardner-072b6213/',
-  },
-  {
-    name: 'Shirish Bhattarai',
-    company: 'SEI - Trase',
-    role: 'Advisor',
-    group: 'support',
-    linkedin: 'https://www.linkedin.com/in/shirishbt/',
-  },
-  {
     name: 'Emma Gollub',
     company: 'Global Canopy & Trase',
     role: 'Advisor',
@@ -75,13 +61,6 @@ export const TEAM = [
     role: 'Engineering',
     group: 'core',
     linkedin: 'https://www.linkedin.com/in/davidsingal',
-  },
-  {
-    name: 'Joaquín Triñanes',
-    company: 'Vizzuality',
-    role: 'Engineering',
-    group: 'core',
-    linkedin: 'https://www.linkedin.com/in/joaquintrinanes',
   },
   {
     name: 'Simão Rodrigues',
@@ -200,13 +179,6 @@ export const TEAM = [
     linkedin: 'http://www.linkedin.com/in/ane-lizariturry-apollonio',
   },
   {
-    name: 'Rebecca Mankinen Sousa',
-    company: 'Vizzuality',
-    role: 'Business',
-    group: 'support',
-    linkedin: 'https://www.linkedin.com/in/rebecca-mankinen-sousa/',
-  },
-  {
     name: 'Susana Romao',
     company: 'Vizzuality',
     role: 'Project Management',
@@ -233,48 +205,6 @@ export const TEAM = [
     role: 'Marketing Consultant',
     group: 'support',
     linkedin: 'https://www.linkedin.com/in/pablo-urrutia/',
-  },
-  {
-    name: 'Arjen Vrielink',
-    company: 'Satelligence',
-    role: 'Science',
-    group: 'core',
-    linkedin: 'https://www.linkedin.com/in/arjenvrielink/',
-  },
-  {
-    name: 'Rens Masselink',
-    company: 'Satelligence',
-    role: 'Science',
-    group: 'core',
-    linkedin: 'https://www.linkedin.com/in/rensmasselink/',
-  },
-  {
-    name: 'Luca Foresta',
-    company: 'Satelligence',
-    role: 'Science',
-    group: 'core',
-    linkedin: 'https://www.linkedin.com/in/lucaforesta',
-  },
-  {
-    name: 'Nanne Tolsma',
-    company: 'Satelligence',
-    role: 'Business',
-    group: 'core',
-    linkedin: 'https://www.linkedin.com/in/nannetolsma/',
-  },
-  {
-    name: 'India Flora Mazzei',
-    company: 'Satelligence',
-    role: 'Marketing Consultant',
-    group: 'support',
-    linkedin: 'https://www.linkedin.com/in/indiafloramazzei/',
-  },
-  {
-    name: 'Tina el Chaer',
-    company: 'Satelligence',
-    role: 'Design',
-    group: 'support',
-    linkedin: 'https://www.linkedin.com/in/tina-chaer-0005/',
   },
   {
     name: 'Lidia Arranz',

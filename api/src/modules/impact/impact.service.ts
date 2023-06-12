@@ -399,7 +399,7 @@ export class ImpactService extends BaseImpactService {
       return {
         name: item.name || '',
         children:
-          item.children.length > 0
+          item.children?.length > 0
             ? this.buildImpactTableRowsSkeleton(item.children)
             : [],
         values: [],

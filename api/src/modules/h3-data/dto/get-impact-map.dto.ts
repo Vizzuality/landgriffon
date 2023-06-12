@@ -13,14 +13,6 @@ import { Transform, Type } from 'class-transformer';
 import { AvailableResolutions } from 'modules/h3-data/dto/get-material-h3-by-resolution.dto';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 
-export enum GROUP_BY_VALUES {
-  MATERIAL = 'material',
-  BUSINESS_UNIT = 'business-unit',
-  REGION = 'region',
-  SUPPLIER = 'supplier',
-  LOCATION_TYPE = 'location-type',
-}
-
 class BaseGetImpactMapDto {
   @ApiProperty()
   @IsString()

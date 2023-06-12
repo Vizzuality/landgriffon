@@ -14,6 +14,7 @@ import {
   GetActualVsScenarioImpactTableDto,
   BaseImpactTableDto,
   GetImpactTableDto,
+  GROUP_BY_VALUES,
 } from 'modules/impact/dto/impact-table.dto';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { Indicator } from 'modules/indicators/indicator.entity';
@@ -21,7 +22,6 @@ import { Material } from 'modules/materials/material.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { GROUP_BY_VALUES } from 'modules/h3-data/dto/get-impact-map.dto';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import {
   SCENARIO_INTERVENTION_STATUS,
@@ -200,11 +200,18 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
           'sourcingLocation.adminRegionId = adminRegion.id ',
         );
         break;
-      case GROUP_BY_VALUES.SUPPLIER:
+      case GROUP_BY_VALUES.T1_SUPPLIER:
         basicSelectQuery.leftJoin(
           Supplier,
           'supplier',
-          'sourcingLocation.producerId = supplier.id or sourcingLocation.t1SupplierId = supplier.id',
+          'sourcingLocation.t1SupplierId = supplier.id',
+        );
+        break;
+      case GROUP_BY_VALUES.PRODUCER:
+        basicSelectQuery.leftJoin(
+          Supplier,
+          'supplier',
+          'sourcingLocation.producerId = supplier.id',
         );
         break;
       case GROUP_BY_VALUES.BUSINESS_UNIT:
@@ -251,15 +258,16 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
         },
       );
     }
-    if (impactDataDto.supplierIds) {
+    if (impactDataDto.t1SupplierIds) {
       selectQueryBuilder.andWhere(
-        new Brackets((qb: WhereExpressionBuilder) => {
-          qb.where('sourcingLocation.t1SupplierId IN (:...supplierIds)', {
-            supplierIds: impactDataDto.supplierIds,
-          }).orWhere('sourcingLocation.producerId IN (:...supplierIds)', {
-            supplierIds: impactDataDto.supplierIds,
-          });
-        }),
+        'sourcingLocation.t1SupplierId IN (:...t1SupplierIds)',
+        { t1SupplierIds: impactDataDto.t1SupplierIds },
+      );
+    }
+    if (impactDataDto.producerIds) {
+      selectQueryBuilder.andWhere(
+        'sourcingLocation.producerId IN (:...producerIds)',
+        { producerIds: impactDataDto.producerIds },
       );
     }
 
@@ -290,7 +298,7 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
           .addSelect('adminRegion.name', 'name')
           .groupBy('adminRegion.name');
         break;
-      case GROUP_BY_VALUES.SUPPLIER:
+      case GROUP_BY_VALUES.T1_SUPPLIER || GROUP_BY_VALUES.PRODUCER:
         selectQueryBuilder
           .addSelect('supplier.name', 'name')
           .andWhere('supplier.name IS NOT NULL')

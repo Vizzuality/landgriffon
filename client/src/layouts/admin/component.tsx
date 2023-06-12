@@ -10,6 +10,7 @@ import {
 } from './constants';
 
 import ApplicationLayout from 'layouts/application';
+import { useLasTask } from 'hooks/tasks';
 
 import type { AdminLayoutProps } from './types';
 
@@ -19,6 +20,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
   adminTabs = ADMIN_TABS,
 }) => {
   const { pathname } = useRouter();
+  const { data: lastTask } = useLasTask();
+
+  adminTabs.SCENARIOS.disabled = !lastTask || lastTask?.status === 'processing';
+  adminTabs.TARGETS.disabled = !lastTask || lastTask?.status === 'processing';
 
   return (
     <ApplicationLayout>

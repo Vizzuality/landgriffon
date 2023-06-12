@@ -17,10 +17,13 @@ const DesktopNavigation: React.FC<NavigationProps> = ({ items }: NavigationProps
       {items.map((item) => (
         <a
           key={item.name}
-          href={item.href}
+          href={item.disabled ? '' : item.href}
           className={classNames(
             'text-white group w-full p-3 rounded-md flex flex-col items-center text-xs font-medium transition-colors',
-            { 'bg-black/30': isCurrentItem(item.href) },
+            {
+              'bg-black/30': isCurrentItem(item.href),
+              'opacity-50 cursor-not-allowed pointer-events-none': item.disabled,
+            },
           )}
         >
           <item.icon className="w-6 h-6" aria-hidden="true" />

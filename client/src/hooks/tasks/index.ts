@@ -20,15 +20,15 @@ const DEFAULT_QUERY_OPTIONS = {
   refetchOnReconnect: false,
 };
 
-export const useTasks = <T = TasksAPIResponse>(
+export const useTasks = (
   params: Record<string, string | number | boolean> = {},
-  options: UseQueryOptions<TasksAPIResponse, ErrorResponse, T, ['tasks', typeof params]> = {},
+  options: UseQueryOptions<TasksAPIResponse['data']> = {},
 ) => {
-  const query = useQuery(
+  const query = useQuery<TasksAPIResponse['data'], ErrorResponse>(
     ['tasks', params],
     () =>
       apiService
-        .request<{ data: TasksAPIResponse }>({
+        .request({
           method: 'GET',
           url: '/tasks',
           params,
@@ -41,6 +41,23 @@ export const useTasks = <T = TasksAPIResponse>(
   );
 
   return query;
+};
+
+export const useLasTask = () => {
+  const tasks = useTasks(
+    {
+      'page[size]': 1,
+      'page[number]': 1,
+      sort: '-createdAt',
+      include: 'user',
+    },
+    {
+      refetchInterval: 30000,
+      refetchOnReconnect: true,
+    },
+  );
+
+  return { ...tasks, data: tasks.data?.[0] };
 };
 
 export function useTask(

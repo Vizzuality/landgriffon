@@ -22,8 +22,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
   const { pathname } = useRouter();
   const { data: lastTask } = useLasTask();
 
-  adminTabs.SCENARIOS.disabled = !lastTask || lastTask?.status === 'processing';
-  adminTabs.TARGETS.disabled = !lastTask || lastTask?.status === 'processing';
+  if (adminTabs.SCENARIOS) {
+    adminTabs.SCENARIOS.disabled = !!(!lastTask || lastTask?.status === 'processing');
+  }
+  if (adminTabs.TARGETS) {
+    adminTabs.TARGETS.disabled = !!(!lastTask || lastTask?.status === 'processing');
+  }
 
   return (
     <ApplicationLayout>

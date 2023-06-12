@@ -16,7 +16,7 @@ const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
       name: 'Analysis',
       href: '/analysis',
       icon: ChartBarIcon,
-      disabled: !lastTask || lastTask?.status === 'processing',
+      disabled: !!(!lastTask || lastTask?.status === 'processing'),
     },
   ];
 

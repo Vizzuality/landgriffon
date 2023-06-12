@@ -52,7 +52,7 @@ export const useLasTask = () => {
       include: 'user',
     },
     {
-      refetchInterval: 30000,
+      refetchInterval: 20000,
       refetchOnReconnect: true,
     },
   );

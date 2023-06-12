@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { DownloadIcon } from '@heroicons/react/solid';
 
 import DataUploadError from 'containers/admin/data-upload-error';
@@ -7,6 +8,8 @@ import { Anchor } from 'components/button';
 import type { Task } from 'types';
 
 const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
+  const [isUploading, setIsUploading] = useState(false);
+
   return (
     <div className="flex items-center justify-center w-full h-full">
       <div className="space-y-16">
@@ -26,8 +29,8 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
         </div>
         <div className="space-y-4 text-lg text-center w-[640px]">
           <p className="font-semibold">2. Upload the filled Excel file.</p>
-          <DataUploader isProcessing={task?.status === 'processing'} />
-          {task?.status === 'failed' && <DataUploadError task={task} />}
+          <DataUploader onUploadInProgress={setIsUploading} />
+          {!isUploading && task?.status === 'failed' && <DataUploadError task={task} />}
         </div>
       </div>
     </div>

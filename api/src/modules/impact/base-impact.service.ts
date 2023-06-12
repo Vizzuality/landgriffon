@@ -64,11 +64,6 @@ export class BaseImpactService {
         await this.materialsService.getMaterialsDescendants(
           impactTableDto.materialIds,
         );
-    if (impactTableDto.supplierIds)
-      impactTableDto.supplierIds =
-        await this.suppliersService.getSuppliersDescendants(
-          impactTableDto.supplierIds,
-        );
 
     return impactTableDto;
   }

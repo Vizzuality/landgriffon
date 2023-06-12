@@ -27,6 +27,7 @@ export type AnyImpactTableDto =
   | GetRankedImpactTableDto
   | GetActualVsScenarioImpactTableDto
   | GetScenarioVsScenarioImpactTableDto;
+
 export class BaseImpactTableDto {
   @ApiProperty({
     name: 'indicatorIds[]',
@@ -76,7 +77,13 @@ export class BaseImpactTableDto {
   @IsOptional()
   @IsUUID(4, { each: true })
   @Type(() => String)
-  supplierIds?: string[];
+  t1SupplierIds?: string[];
+
+  @ApiPropertyOptional({ name: 'supplierIds[]' })
+  @IsOptional()
+  @IsUUID(4, { each: true })
+  @Type(() => String)
+  producerIds?: string[];
 
   @ApiPropertyOptional({
     description: 'Types of Sourcing Locations, written with hyphens',

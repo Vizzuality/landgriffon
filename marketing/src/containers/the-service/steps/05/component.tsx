@@ -35,6 +35,7 @@ const Step05: React.FC = () => {
 
       <div className="w-full space-y-20">
         <div className="space-y-10">
+          <p className="text-xl font-semibold">Take control of your impacts.</p>
           <h4 className="text-2xl border-b border-black pb-2.5">Suppliers actions.</h4>
 
           <ul className="space-y-5 font-light">
@@ -70,7 +71,7 @@ const Step05: React.FC = () => {
           <ul className="space-y-5 font-light">
             <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
               <p>
-                <strong className="font-semibold">Product formula. </strong> Identify lower impact
+                <strong className="font-semibold">Product formula. </strong> Identify lower-impact
                 alternatives.
               </p>
             </li>
@@ -80,13 +81,12 @@ const Step05: React.FC = () => {
                 business lines.
               </p>
             </li>
-          </ul>
-        </div>
-
-        <div className="space-y-10">
-          <h4 className="text-2xl border-b border-black pb-2.5">Community actions.</h4>
-
-          <ul className="space-y-5 font-light">
+            <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
+              <p>
+                <strong className="font-semibold">Sourcing. </strong> Opt for more sustainable
+                locations.
+              </p>
+            </li>
             <li className="relative pl-5 before:absolute before:top-2 before:left-0 before:w-1.5 before:h-1.5 before:bg-black">
               <p>
                 <strong className="font-semibold">Communicate. </strong> Show progress internally

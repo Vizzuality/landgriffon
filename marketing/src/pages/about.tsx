@@ -30,7 +30,7 @@ const AboutPage: FC = () => {
           />
           <meta name="og:type" content="website" />
           <meta name="og:url" content="https://landgriffon.com/about" />
-          <meta name="og:image" content="https://landgriffon.com/images/og/OG-About.png" />
+          <meta name="og:image" content="https://landgriffon.com/images/og/OG-LandGriffon.png" />
         </Head>
 
         <About />

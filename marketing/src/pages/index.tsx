@@ -26,7 +26,7 @@ const HomePage: FC = () => {
           />
           <meta name="og:type" content="website" />
           <meta name="og:url" content="https://landgriffon.com" />
-          <meta name="og:image" content="https://landgriffon.com/images/og/OG-Home.png" />
+          <meta name="og:image" content="https://landgriffon.com/images/og/OG-LandGriffon.png" />
         </Head>
 
         <Home />

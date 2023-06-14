@@ -5,4 +5,6 @@ export interface BaseTreeSearchParams {
   originIds?: string[];
   scenarioId?: string;
   scenarioIds?: string[];
+  producerIds?: string[];
+  t1SupplierIds?: string[];
 }

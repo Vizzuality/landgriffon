@@ -23,7 +23,8 @@ export function parseInterventionFormDataToDto(
     endYear,
     materialIds,
     businessUnitIds,
-    supplierIds,
+    t1SupplierIds,
+    producerIds,
     adminRegionIds,
     newMaterialId,
     newT1SupplierId,
@@ -46,7 +47,8 @@ export function parseInterventionFormDataToDto(
 
     materialIds: materialIds?.map(getValue).map(emptyStringIsNull) as string[],
     businessUnitIds: businessUnitIds?.map(getValue).map(emptyStringIsNull) as string[],
-    supplierIds: supplierIds?.map(getValue).map(emptyStringIsNull) as string[],
+    t1SupplierIds: t1SupplierIds?.map(getValue).map(emptyStringIsNull) as string[],
+    producerIds: producerIds?.map(getValue).map(emptyStringIsNull) as string[],
     adminRegionIds: adminRegionIds?.map(getValue).map(emptyStringIsNull) as string[],
 
     newMaterialId: newMaterialId?.length ? newMaterialId[0].value : null,

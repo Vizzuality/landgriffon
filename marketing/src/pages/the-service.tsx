@@ -11,13 +11,13 @@ const TheServicePage: FC = () => {
     <ApplicationLayout>
       <>
         <Head>
-          <title>The Service | LandGriffon</title>
+          <title>How We Help You Transform Your Supply Chain | LandGriffon</title>
           <link rel="icon" href="/favicon.ico" />
           <meta name="viewport" content="width=device-width" />
 
           <meta
             name="description"
-            content="LandGriffon uses six key steps to help you sustainably transform your supply chain."
+            content="LandGriffon helps companies strategize the sustainable transformation of their supply chains by using technology, data and scientific-based analysis to manage environmental impacts.."
           />
 
           <meta
@@ -27,7 +27,7 @@ const TheServicePage: FC = () => {
 
           <meta
             name="og:description"
-            content="LandGriffon uses six key steps to help you sustainably transform your supply chain."
+            content="LandGriffon helps companies strategize the sustainable transformation of their supply chains by using technology, data and scientific-based analysis to manage environmental impacts."
           />
           <meta name="og:type" content="website" />
           <meta name="og:url" content="https://landgriffon.com/the-service" />

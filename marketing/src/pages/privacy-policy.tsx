@@ -27,11 +27,11 @@ const PrivacyPolicyPage: FC = () => {
 
           <meta
             name="og:description"
-            content="LandGriffon uses six key steps to help you sustainably transform your supply chain."
+            content="LandGriffon helps companies strategize the sustainable transformation of their supply chains by using technology, data and scientific-based analysis to manage environmental impacts."
           />
           <meta name="og:type" content="website" />
           <meta name="og:url" content="https://landgriffon.com/privacy-policy" />
-          <meta name="og:image" content="https://landgriffon.com/images/og/OG-FAQ.png" />
+          <meta name="og:image" content="https://landgriffon.com/images/og/OG-LandGriffon.png" />
         </Head>
 
         <PrivacyPolicy />

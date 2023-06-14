@@ -16,13 +16,13 @@ const HomePage: FC = () => {
           <meta name="viewport" content="width=device-width" />
           <meta
             name="description"
-            content="LandGriffon empowers companies to measure, manage, and transform agricultural supply chain impacts."
+            content="LandGriffon helps companies strategize the sustainable transformation of their supply chains by using technology, data and scientific-based analysis to manage environmental impacts."
           />
 
           <meta name="og:title" content="Sustainable Supply Chain Solutions" />
           <meta
             name="og:description"
-            content="LandGriffon empowers companies to measure, manage, and transform agricultural supply chain impacts."
+            content="LandGriffon helps companies strategize the sustainable transformation of their supply chains by using technology, data and scientific-based analysis to manage environmental impacts."
           />
           <meta name="og:type" content="website" />
           <meta name="og:url" content="https://landgriffon.com" />

@@ -11,7 +11,9 @@ const AboutPage: FC = () => {
     <ApplicationLayout>
       <>
         <Head>
-          <title>About - Landgriffon</title>
+          <title>
+            The Mission? Sustainable Supply Chains. This Is How We Get There | LandGriffon
+          </title>
           <link rel="icon" href="/favicon.ico" />
           <meta name="viewport" content="width=device-width" />
           <meta
@@ -26,7 +28,7 @@ const AboutPage: FC = () => {
 
           <meta
             name="og:description"
-            content="We urgently need to move towards a zero-carbon and nature positive future. We help companies evolve at the speed and scale needed for this, through technology, data, and advice on how to manage supply chain impacts."
+            content="We urgently need to move towards a zero-carbon and nature-positive future. We help companies evolve at the speed and scale needed for this, through technology, data, and advice on how to manage supply chain impacts."
           />
           <meta name="og:type" content="website" />
           <meta name="og:url" content="https://landgriffon.com/about" />

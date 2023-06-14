@@ -31,7 +31,7 @@ const DataUploadError: React.FC<DataUploadErrorProps> = ({ task }) => {
     updateTask.mutate({ id: task.id, data: { dismissedBy: profile?.id } });
   }, [profile?.id, task.id, updateTask]);
 
-  const { data: taskErrors, isLoading: isTaskErrorsLoading } = useTaskErrors(task.id, {
+  const { data: taskErrors, isFetching } = useTaskErrors(task.id, {
     enabled: task?.status === 'failed' && task?.errors.length > 0,
   });
 
@@ -117,7 +117,7 @@ const DataUploadError: React.FC<DataUploadErrorProps> = ({ task }) => {
             </Button>
           ) : (
             <Button
-              loading={isTaskErrorsLoading}
+              loading={isFetching}
               variant="white"
               disabled={!taskErrors}
               onClick={handleDownload}

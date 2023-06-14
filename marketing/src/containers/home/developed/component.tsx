@@ -3,91 +3,131 @@ import Wrapper from 'containers/wrapper';
 import FadeIn from 'components/fade';
 import Image from 'next/image';
 
-import ARROW_TOP_RIGHT_SVG from 'svgs/ui/arrow-top-right.svg?sprite';
+import ARROW_RIGHT_SVG from 'svgs/ui/arrow-right.svg?sprite';
 import Icon from 'components/icon/component';
 
 const Developed: React.FC = () => {
   return (
-    <section
-      className="relative py-32 bg-white bg-cover"
-      style={{ backgroundImage: `url('/images/home/developed/image2_landing.jpg')` }}
-    >
+    <section className="relative py-32 bg-white bg-cover">
       <Wrapper>
         <div className="space-y-10 md:space-y-20">
           <FadeIn>
             <div className="space-y-10">
-              <h3 className="text-2xl font-light text-white">
+              <h2 className="text-6xl font-black uppercase font-display">Powered by Vizzuality</h2>
+              <h3 className="text-2xl font-light">
                 Sustainable transformation requires whole systems thinking. That&apos;s why
                 LandGriffon is made up of experts combining the disciplines of design, science,
                 technology, sustainability, and business.
               </h3>
-              <h3 className="text-2xl font-light text-white">
-                For
-                <strong className="font-semibold"> over a decade, Vizzuality </strong>
+
+              <h3 className="text-2xl font-light">
+                <strong className="font-bold">For over a decade, Vizzuality </strong>
                 has helped companies access, understand, and easily use the data and recommendations
                 of the sustainability community.
               </h3>
-            </div>
-          </FadeIn>
 
-          <FadeIn>
-            <div className="flex flex-col justify-between space-y-5 md:items-end md:flex-row md:space-y-0">
-              <div>
-                <h4 className="text-xs font-light text-white uppercase">Developed by</h4>
-
-                <div className="flex items-end mt-5 space-x-10">
-                  <div>
-                    <Image
-                      className="inline-block"
-                      width={130}
-                      height={30}
-                      src="/images/home/developed/vizzuality.png"
-                      alt="Vizzuality"
-                    />
-                  </div>
-                  <div>
-                    <Image
-                      className="inline-block"
-                      width={185}
-                      height={28}
-                      src="/images/home/developed/satelligence.png"
-                      alt="Satelligence"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div>
-                <h4 className="text-xs font-light text-white uppercase">Advised by</h4>
-
-                <div className="flex items-end mt-5 space-x-10">
-                  <div>
-                    <Image
-                      className="inline-block"
-                      width={100}
-                      height={41.8}
-                      src="/images/home/developed/sei.png"
-                      alt="SEI"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </FadeIn>
-
-          <FadeIn>
-            <div className="space-y-10">
-              <h3 className="text-2xl font-light text-white">
+              <h3 className="text-2xl font-light">
                 LandGriffon facilitates access, transparency, and global collaboration by embracing
                 open source and open science. We encourage you to review it and welcome input and
                 feedback.
               </h3>
 
               <Link href="/methodology">
-                <a className="text-xl text-orange-500 inline-flex justify-center items-center space-x-2.5">
-                  <span>Learn how it works</span>
-                  <Icon icon={ARROW_TOP_RIGHT_SVG} className="w-3 h-3" />
+                <a className="text-base font-semibold inline-flex justify-center items-center space-x-7 underline underline-offset-4">
+                  <span>Discover the Methodology behind</span>
+                  <Icon icon={ARROW_RIGHT_SVG} className="w-12 h-10" />
                 </a>
               </Link>
+            </div>
+          </FadeIn>
+
+          <FadeIn>
+            <div className="grid grid-cols-4 gap-x-20 gap-y-14 items-center">
+              <div>
+                <a href="https://www.google.com/" target="_blank" rel="noreferrer noopener">
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/google_color.png"
+                    alt="Google"
+                    width={145.66}
+                    height={84}
+                  />
+                </a>
+              </div>
+              <div>
+                <a href="https://www.mars.com/" target="_blank" rel="noreferrer noopener">
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/Mars.png"
+                    alt="Mars"
+                    width={111.69}
+                    height={33}
+                  />
+                </a>
+              </div>
+
+              <div>
+                <a
+                  href="https://www.microsoft.com/es-es/"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/Microsoft.png"
+                    alt="Microsoft"
+                    width={168.59}
+                    height={36}
+                  />
+                </a>
+              </div>
+
+              <div>
+                <a href="https://www.wri.org/" target="_blank" rel="noreferrer noopener">
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/WRI.png"
+                    alt="WRI"
+                    width={157.12}
+                    height={61}
+                  />
+                </a>
+              </div>
+              <div>
+                <a href="https://www.worldwildlife.org/" target="_blank" rel="noreferrer noopener">
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/WWF.png"
+                    alt="WWD"
+                    width={66.24}
+                    height={97}
+                  />
+                </a>
+              </div>
+
+              <div>
+                <a href="https://www.nasa.gov/" target="_blank" rel="noreferrer noopener">
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/NASA_color.png"
+                    alt="NASA"
+                    width={104.86}
+                    height={97}
+                  />
+                </a>
+              </div>
+
+              <div>
+                <a href="https://www.esa.int/" target="_blank" rel="noreferrer noopener">
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/ESA_logo.png"
+                    alt="ESA"
+                    width={145.6}
+                    height={64}
+                  />
+                </a>
+              </div>
             </div>
           </FadeIn>
         </div>

@@ -27,7 +27,8 @@ export type Intervention = {
   startYear: number;
   replacedMaterials: { id: string; name: string }[];
   replacedBusinessUnits: { id: string; name: string }[];
-  replacedSuppliers: T1Supplier[];
+  replacedT1Suppliers: T1Supplier[];
+  replacedProducers: Producer[];
   replacedAdminRegions: AdminRegion[];
   newMaterial: { id: string; name: string };
   newBusinessUnit: { name: string };

@@ -23,9 +23,9 @@ const InterventionPhrase: React.FC<InterventionPhraseProps> = ({ intervention, s
   );
 
   const suppliers = useMemo(() => {
-    if (intervention.replacedSuppliers?.length)
-      return <strong>{intervention.replacedSuppliers[0].name}</strong>;
-  }, [intervention.replacedSuppliers]);
+    if (intervention.replacedT1Suppliers?.length)
+      return <strong>{intervention.replacedT1Suppliers[0].name}</strong>;
+  }, [intervention.replacedT1Suppliers]);
 
   const regions = useMemo(
     () => <strong>{intervention.replacedAdminRegions[0].name}</strong>,

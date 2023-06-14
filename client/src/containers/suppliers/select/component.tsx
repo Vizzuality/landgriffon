@@ -47,14 +47,9 @@ const InnerSuppliersFilter = <IsMulti extends boolean>(
   const treeOptions: TreeSelectProps['options'] = useMemo(
     () =>
       sortBy(
-        data?.map(({ name, id, children }) => ({
+        data?.map(({ name, id }) => ({
           label: name,
           value: id,
-          children: children?.map(({ name, id, children }) => ({
-            label: name,
-            value: id,
-            children: children?.map(({ name, id }) => ({ label: name, value: id })),
-          })),
         })),
         'label',
       ),

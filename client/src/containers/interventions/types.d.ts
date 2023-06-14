@@ -53,7 +53,8 @@ export type InterventionFormData = {
 
   materialIds: Option[];
   businessUnitIds?: Option[];
-  supplierIds?: Option[];
+  t1SupplierIds?: Option[];
+  producerIds?: Option[];
   adminRegionIds: Option[];
 
   newT1SupplierId?: Option;
@@ -85,7 +86,8 @@ export type InterventionDto = {
 
   materialIds: string[];
   businessUnitIds?: string[];
-  supplierIds?: string[];
+  t1SupplierIds?: string[];
+  producerIds?: string[];
   adminRegionIds: string[];
 
   newT1SupplierId?: string;

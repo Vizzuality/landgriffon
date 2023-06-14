@@ -22,8 +22,8 @@ postgres_thread_pool = ThreadedConnectionPool(
 
 
 def load_data(filename: Path) -> pd.DataFrame:
-    df = pd.read_csv(filename)
-    df["hs_2017_code"] = df["hs_2017_code"].astype(str)
+    dtype_mapping = {'hs_2017_code': str}
+    df = pd.read_csv(filename, dtype=dtype_mapping)
     return df
 
 
@@ -56,7 +56,7 @@ def copy_from_stringio(conn: connection, df: pd.DataFrame):
     """
     # save dataframe to an in memory buffer
 
-    
+
     buffer = StringIO()
     df.to_csv(buffer, index=False, header=False, na_rep="NULL")
     buffer.seek(0)

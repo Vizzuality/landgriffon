@@ -84,7 +84,7 @@ const DataProviders: FC = () => {
                   layout="intrinsic"
                   src="/images/logos/WRI.png"
                   alt="WRI"
-                  width={120}
+                  width={186}
                   height={72}
                 />
               </a>

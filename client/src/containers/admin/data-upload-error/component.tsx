@@ -1,11 +1,12 @@
 import { useCallback, useState } from 'react';
 import { format } from 'date-fns';
 
-import { useUpdateTask } from 'hooks/tasks';
+import { useUpdateTask, useTaskErrors } from 'hooks/tasks';
 import { useProfile } from 'hooks/profile';
 import UploadIcon from 'components/icons/upload-icon';
 import Disclaimer from 'components/disclaimer';
 import Button from 'components/button';
+import { triggerCsvDownload } from 'utils/csv-download';
 
 import type { Task } from 'types';
 import type { DisclaimerProps } from 'components/disclaimer/component';
@@ -30,7 +31,16 @@ const DataUploadError: React.FC<DataUploadErrorProps> = ({ task }) => {
     updateTask.mutate({ id: task.id, data: { dismissedBy: profile?.id } });
   }, [profile?.id, task.id, updateTask]);
 
+  const { data: taskErrors, isLoading: isTaskErrorsLoading } = useTaskErrors(task.id, {
+    enabled: task?.status === 'failed' && task?.errors.length > 0,
+  });
+
   if (task?.dismissedBy) return null;
+
+  const handleDownload = () => {
+    if (!taskErrors) return;
+    triggerCsvDownload(taskErrors, `${task.data?.filename}_errors.csv`);
+  };
 
   return (
     <Disclaimer
@@ -66,7 +76,7 @@ const DataUploadError: React.FC<DataUploadErrorProps> = ({ task }) => {
                 . To ensure accurate results, we recommend that you correct the errors before
                 proceeding. Please{' '}
                 <strong className="text-gray-900">download your file to see the errors</strong>,
-                correct them and try
+                correct them and try uploading again.
               </p>
             </>
           )}
@@ -78,7 +88,12 @@ const DataUploadError: React.FC<DataUploadErrorProps> = ({ task }) => {
                 Sorry, we couldn&apos;t upload your latest changes made on{' '}
                 {format(new Date(task.createdAt), 'MMM 4, yyyy HH:mm z')}. We have{' '}
                 <strong className="text-gray-900">reverted to the previous version</strong> to avoid
-                data loss. Please{' '}
+                data loss. There had been{' '}
+                <strong className="text-gray-900">
+                  {task.errors.length} error
+                  {task.errors.length > 1 && 's'}
+                </strong>
+                . Please{' '}
                 <strong className="text-gray-900">
                   download your file to see the {task.errors.length} error
                   {task.errors.length > 1 && 's'}
@@ -101,7 +116,12 @@ const DataUploadError: React.FC<DataUploadErrorProps> = ({ task }) => {
               Close
             </Button>
           ) : (
-            <Button variant="white" disabled>
+            <Button
+              loading={isTaskErrorsLoading}
+              variant="white"
+              disabled={!taskErrors}
+              onClick={handleDownload}
+            >
               Download
             </Button>
           )}

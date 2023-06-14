@@ -214,7 +214,7 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
         <div>
           <div>
             <p className="text-sm text-gray-500">
-              Upload a new file will replace all the current data.
+              Uploading a new file will replace all the current data.
             </p>
             <div className="mt-10">
               <DataUploader variant="inline" />

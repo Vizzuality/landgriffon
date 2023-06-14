@@ -14,15 +14,15 @@ const SLIDES = [
       <div className="w-full">
         <div
           className="w-full border-4 border-white pb-[45%] bg-cover"
-          style={{ backgroundImage: `url('/images/home/what/screen_1.jpg')` }}
+          style={{ backgroundImage: `url('/images/home/what/screen_1.png')` }}
         />
       </div>
     ),
     description: (
       <div className="text-xl text-white">
         <p>
-          Overcome <span className="text-orange-500">traceability</span> barriers with our spatial
-          sourcing model.
+          <span className="text-orange-500">Centralize</span> your supply chain data and decision
+          making.
         </p>
       </div>
     ),
@@ -33,15 +33,15 @@ const SLIDES = [
       <div className="w-full">
         <div
           className="w-full border-4 border-white pb-[45%] bg-cover"
-          style={{ backgroundImage: `url('/images/home/what/screen_2.jpg')` }}
+          style={{ backgroundImage: `url('/images/home/what/screen_2.png')` }}
         />
       </div>
     ),
     description: (
       <div className="text-xl text-white">
         <p>
-          Boost<span className="text-orange-500">confidence</span> in your sustainability measures
-          with the best-available geospatial data.
+          <span className="text-orange-500">Overcome</span> traceability limitations with our
+          spatian sourcing model.
         </p>
       </div>
     ),
@@ -52,15 +52,15 @@ const SLIDES = [
       <div className="w-full">
         <div
           className="w-full border-4 border-white pb-[45%] bg-cover"
-          style={{ backgroundImage: `url('/images/home/what/screen_3.jpg')` }}
+          style={{ backgroundImage: `url('/images/home/what/screen_3.png')` }}
         />
       </div>
     ),
     description: (
       <div className="text-xl text-white">
         <p>
-          <span className="text-orange-500"> Strategize</span> your supply chain sustainability by
-          assessing trade-offs between actions and forecasting the outcomes
+          <span className="text-orange-500"> Focus on tomorrow&apos;s risks and opportunities</span>
+          , not the past, and prioritize actions to excel into the future.
         </p>
       </div>
     ),

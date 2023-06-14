@@ -19,7 +19,8 @@ export type BusinessUnitsTreesParams = {
   depth?: number;
   withSourcingLocations?: boolean;
   materialIds?: string[];
-  supplierIds?: string[];
+  t1SupplierIds?: string[];
+  producerIds?: string[];
   originIds?: string[];
   locationTypes?: string[];
 };

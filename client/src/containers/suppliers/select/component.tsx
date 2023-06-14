@@ -2,25 +2,18 @@ import React, { useMemo } from 'react';
 import { sortBy } from 'lodash-es';
 
 import TreeSelect from 'components/tree-select';
-import { useSuppliersTrees } from 'hooks/suppliers';
+import { useSuppliersTypes } from 'hooks/suppliers';
 
-import type { SuppliersTreesParams } from 'hooks/suppliers';
+import type { SupplierTypesParams } from 'hooks/suppliers';
 import type { Ref } from 'react';
 import type { TreeSelectOption, TreeSelectProps } from 'components/tree-select/types';
 
 interface SuppliersFilterProps<IsMulti extends boolean>
   extends Pick<
-    TreeSelectProps<IsMulti>,
-    'current' | 'multiple' | 'onChange' | 'theme' | 'ellipsis' | 'error' | 'fitContent'
-  > {
-  /** Tree depth. Defaults to `1` */
-  depth?: SuppliersTreesParams['depth'];
-  /** Only suppliers with sourcing locations. */
-  withSourcingLocations?: SuppliersTreesParams['withSourcingLocations'];
-  materialIds?: SuppliersTreesParams['materialIds'];
-  businessUnitIds?: SuppliersTreesParams['businessUnitIds'];
-  originIds?: SuppliersTreesParams['originIds'];
-  locationTypes?: SuppliersTreesParams['locationTypes'];
+      TreeSelectProps<IsMulti>,
+      'current' | 'multiple' | 'onChange' | 'theme' | 'ellipsis' | 'error' | 'fitContent'
+    >,
+    Omit<SupplierTypesParams, 'sort'> {
   theme?: 'default' | 'inline-primary';
 }
 
@@ -28,9 +21,9 @@ const InnerSuppliersFilter = <IsMulti extends boolean>(
   {
     multiple,
     current,
-    depth = 1,
-    withSourcingLocations, // Do not a default; backend will override depth if this is set at all
     materialIds,
+    producerIds,
+    t1SupplierIds,
     businessUnitIds,
     originIds,
     onChange,
@@ -38,18 +31,19 @@ const InnerSuppliersFilter = <IsMulti extends boolean>(
     ellipsis,
     fitContent,
     error,
+    type,
     ...props
   }: SuppliersFilterProps<IsMulti>,
   ref: Ref<HTMLInputElement>,
 ) => {
-  const { data, isFetching } = useSuppliersTrees({
-    depth,
-    withSourcingLocations,
+  const { data, isFetching } = useSuppliersTypes({
+    type,
+    producerIds,
     materialIds,
     businessUnitIds,
+    t1SupplierIds,
     originIds,
   });
-
   const treeOptions: TreeSelectProps['options'] = useMemo(
     () =>
       sortBy(
@@ -90,7 +84,7 @@ const InnerSuppliersFilter = <IsMulti extends boolean>(
       showSearch
       loading={isFetching}
       options={treeOptions}
-      placeholder="All suppliers"
+      placeholder={type === 't1supplier' ? 'All t1 suppliers' : 'All producers'}
       onChange={onChange}
       current={currentOptions}
       theme={theme}
@@ -98,6 +92,7 @@ const InnerSuppliersFilter = <IsMulti extends boolean>(
       error={error}
       fitContent={fitContent}
       ref={ref}
+      id={`${type}-filter`}
     />
   );
 };

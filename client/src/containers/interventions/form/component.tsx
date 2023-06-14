@@ -92,7 +92,8 @@ const schemaValidation = yup.object({
   // Filters
   materialIds: yup.array().label('Material IDs').of(optionSchema).required(),
   businessUnitIds: yup.array().label('Business Unit IDs').of(optionSchema),
-  supplierIds: yup.array().label('Supplier IDs').of(optionSchema),
+  t1SupplierIds: yup.array().label('T1 Supplier IDs').of(optionSchema),
+  producerIds: yup.array().label('Producer IDs').of(optionSchema),
   adminRegionIds: yup.array().label('Admin region IDs').of(optionSchema),
 
   // Supplier
@@ -330,7 +331,11 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
             label: name,
             value: id,
           })),
-          supplierIds: intervention.replacedSuppliers.map(({ id, name }) => ({
+          t1SupplierIds: intervention.replacedT1Suppliers.map(({ id, name }) => ({
+            label: name,
+            value: id,
+          })),
+          producerIds: intervention.replacedProducers.map(({ id, name }) => ({
             label: name,
             value: id,
           })),
@@ -406,11 +411,12 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     materialIds: currentMaterialIds,
     businessUnitIds: currentBusinessUnitIds,
     adminRegionIds: currentLocationIds,
-    supplierIds: currentSupplierIds,
+    t1SupplierIds: currentT1SupplierIds,
+    producerIds: currentProducerIds,
     interventionType: currentInterventionType,
     newLocationType: locationType,
-    newT1SupplierId: currentT1SupplierId,
-    newProducerId: currentProducerId,
+    newT1SupplierId: currentNewT1SupplierId,
+    newProducerId: currentNewProducerId,
     newLocationCountryInput: currentCountry,
     coefficients = {},
   } = watch();
@@ -554,8 +560,8 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   }, [coefficientValues]);
 
   const areSupplierEdited = useMemo(
-    () => Boolean(currentT1SupplierId || currentProducerId),
-    [currentT1SupplierId, currentProducerId],
+    () => Boolean(currentNewT1SupplierId || currentNewProducerId),
+    [currentNewT1SupplierId, currentNewProducerId],
   );
 
   useEffect(() => {
@@ -626,7 +632,8 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                   withSourcingLocations
                   current={value?.[0]}
                   businessUnitIds={currentBusinessUnitIds?.map(({ value }) => value)}
-                  t1SupplierIds={currentSupplierIds?.map(({ value }) => value)}
+                  t1SupplierIds={currentT1SupplierIds?.map(({ value }) => value)}
+                  producerIds={currentProducerIds?.map(({ value }) => value)}
                   originIds={currentLocationIds?.map(({ value }) => value)}
                   onChange={(selected) => {
                     if (invalid) clearErrors('materialIds');
@@ -650,7 +657,8 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                 placeholder="All business units"
                 checkedStrategy={isCreation ? 'CHILD' : undefined}
                 materialIds={currentMaterialIds?.map(({ value }) => value)}
-                supplierIds={currentSupplierIds?.map(({ value }) => value)}
+                t1SupplierIds={currentT1SupplierIds?.map(({ value }) => value)}
+                producerIds={currentProducerIds?.map(({ value }) => value)}
                 originIds={currentLocationIds?.map(({ value }) => value)}
                 withSourcingLocations
                 current={value}
@@ -671,7 +679,8 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                 multiple
                 placeholder="All regions"
                 materialIds={currentMaterialIds?.map(({ value }) => value)}
-                t1SupplierIds={currentSupplierIds?.map(({ value }) => value)}
+                t1SupplierIds={currentT1SupplierIds?.map(({ value }) => value)}
+                producerIds={currentProducerIds?.map(({ value }) => value)}
                 businessUnitIds={currentBusinessUnitIds?.map(({ value }) => value)}
                 withSourcingLocations
                 current={value}
@@ -682,21 +691,40 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
           />
         </div>
         <div>
-          <label className={LABEL_CLASSNAMES}>Suppliers</label>
+          <label className={LABEL_CLASSNAMES}>T1 Suppliers</label>
           <Controller
-            name="supplierIds"
+            name="t1SupplierIds"
             control={control}
             render={({ field: { value, ...field } }) => (
               <SuppliersSelect
                 {...field}
+                type="t1supplier"
                 multiple
-                materialIds={currentMaterialIds?.map(({ value }) => value)}
-                businessUnitIds={currentBusinessUnitIds?.map(({ value }) => value)}
-                originIds={currentLocationIds?.map(({ value }) => value)}
-                withSourcingLocations
                 current={value}
-                error={!!errors?.supplierIds}
-                data-testid="supplier-ids-select"
+                producerIds={currentProducerIds?.map(({ value }) => value)}
+                originIds={currentLocationIds?.map(({ value }) => value)}
+                businessUnitIds={currentBusinessUnitIds?.map(({ value }) => value)}
+                materialIds={currentMaterialIds?.map(({ value }) => value)}
+                error={!!errors?.t1SupplierIds}
+              />
+            )}
+          />
+        </div>
+        <div>
+          <label className={LABEL_CLASSNAMES}>Producers</label>
+          <Controller
+            name="producerIds"
+            control={control}
+            render={({ field: { value, ...field } }) => (
+              <SuppliersSelect
+                {...field}
+                type="producer"
+                multiple
+                current={value}
+                t1SupplierIds={currentT1SupplierIds?.map(({ value }) => value)}
+                originIds={currentLocationIds?.map(({ value }) => value)}
+                businessUnitIds={currentBusinessUnitIds?.map(({ value }) => value)}
+                materialIds={currentMaterialIds?.map(({ value }) => value)}
               />
             )}
           />

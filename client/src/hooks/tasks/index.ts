@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { apiService } from 'services/api';
+import { apiRawService, apiService } from 'services/api';
 
 import type { UseQueryResult, UseQueryOptions, UseMutationResult } from '@tanstack/react-query';
 import type { APIMetadataPagination, ErrorResponse, Task } from 'types';
@@ -99,4 +99,28 @@ export function useUpdateTask(): UseMutationResult<TaskAPIResponse> {
       },
     },
   );
+}
+
+export function useTaskErrors(
+  id: Task['id'],
+  options: UseQueryOptions<string> = {},
+): UseQueryResult<string> {
+  const query = useQuery<string>(
+    ['task-error', id],
+    () =>
+      apiRawService
+        .request({
+          method: 'GET',
+          url: `/tasks/report/errors/${id}`,
+          params: {
+            type: 'sourcing_data_import',
+          },
+        })
+        .then(({ data: responseData }) => responseData),
+    {
+      ...DEFAULT_QUERY_OPTIONS,
+      ...options,
+    },
+  );
+  return query;
 }

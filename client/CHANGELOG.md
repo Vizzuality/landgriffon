@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [v0.5.0 Unreleased]
 
 ### Added
+- Download file with upload errors [LANGRIF-1342](https://vizzuality.atlassian.net/browse/LANDGRIF-1342)
 - Showing progress and errors for data upload [LANDGRIF-1293](https://vizzuality.atlassian.net/browse/LANDGRIF-1293)
 - Integration of local layer to handle different type of layers in the future. [LANDGRIF-1248](https://vizzuality.atlassian.net/browse/LANDGRIF-1248)
 - New purple style for scenario select in analysis page. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)

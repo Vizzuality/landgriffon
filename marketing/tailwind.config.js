@@ -34,6 +34,7 @@ module.exports = {
       yellow: colors.yellow,
       transparent: colors.transparent,
       green: {
+        300: '#10AC4F',
         400: '#129B4A',
         500: '#078A3C',
       },

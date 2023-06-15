@@ -6,6 +6,8 @@ import { useMediaMatch } from 'rooks';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import lockScroll from 'react-lock-scroll';
+import Icon from 'components/icon/component';
+import ARROW_RIGHT_SVG from 'svgs/ui/arrow-right.svg?sprite';
 
 export interface NavProps {
   open: boolean;
@@ -133,8 +135,11 @@ const HeaderNav: React.FC<NavProps> = ({ open }: NavProps) => {
           </ul>
           <div className="mt-4 lg:mt-0">
             <Link href="/contact">
-              <a className="block px-10 mx-5 text-base text-center text-white bg-green-500 lg:mx-0 py-7">
-                Contact
+              <a className="group flex items-center justify-center w-36 text-base text-center text-white bg-green-500 hover:bg-green-300 lg:mx-0 py-7">
+                <span>Contact</span>
+                <div className="flex justify-end transition-all duration-300 w-0 group-hover:w-7">
+                  <Icon icon={ARROW_RIGHT_SVG} className="w-4 h-3 fill-white" />
+                </div>
               </a>
             </Link>
           </div>

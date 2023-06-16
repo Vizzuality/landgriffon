@@ -269,7 +269,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           percentage: 50,
           scenarioId: preconditions.scenario.id,
           materialIds: [preconditions.material1.id],
-          supplierIds: [preconditions.supplier1.id],
+          t1SupplierIds: [preconditions.supplier1Descendant.id],
           businessUnitIds: [preconditions.businessUnit1.id],
           adminRegionIds: [preconditions.adminRegion1.id],
           newLocationCountryInput: 'TestCountry',
@@ -412,7 +412,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           percentage: 50,
           scenarioId: preconditions.scenario.id,
           materialIds: [preconditions.material1.id],
-          supplierIds: [preconditions.supplier1.id],
+          t1SupplierIds: [preconditions.supplier1Descendant.id],
           businessUnitIds: [preconditions.businessUnit1.id],
           adminRegionIds: [preconditions.adminRegion1.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
@@ -721,7 +721,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           percentage: 50,
           scenarioId: preconditions.scenario.id,
           materialIds: [preconditions.material1.id],
-          supplierIds: [preconditions.supplier1.id],
+          t1SupplierIds: [preconditions.supplier1Descendant.id],
           businessUnitIds: [
             preconditions.businessUnit1.id,
             preconditions.businessUnit2.id,
@@ -985,7 +985,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           percentage: 50,
           scenarioId: preconditions.scenario.id,
           materialIds: [preconditions.material1.id],
-          supplierIds: [preconditions.supplier1.id],
+          t1SupplierIds: [preconditions.supplier1Descendant.id],
           businessUnitIds: [preconditions.businessUnit1.id],
           adminRegionIds: [preconditions.adminRegion1.id],
           newLocationCountryInput: 'TestCountry',
@@ -1011,7 +1011,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           percentage: 50,
           scenarioId: preconditions.scenario.id,
           materialIds: [preconditions.material1.id],
-          supplierIds: [preconditions.supplier2.id],
+          t1SupplierIds: [preconditions.supplier2.id],
           businessUnitIds: [preconditions.businessUnit2.id],
           adminRegionIds: [preconditions.adminRegion2.id],
           newLocationCountryInput: 'TestCountry',
@@ -1070,7 +1070,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           percentage: 50,
           scenarioId: scenario.id,
           materialIds: [material.id],
-          supplierIds: [supplier.id],
+          t1SupplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
           adminRegionIds: [adminRegion.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
@@ -1103,7 +1103,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           percentage: 50,
           scenarioId: scenario.id,
           materialIds: [material.id],
-          supplierIds: [supplier.id],
+          t1SupplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
           adminRegionIds: [adminRegion.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
@@ -1128,7 +1128,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           percentage: 50,
           scenarioId: scenario.id,
           materialIds: [material.id],
-          supplierIds: [supplier.id],
+          t1SupplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
           adminRegionIds: [adminRegion.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
@@ -1159,7 +1159,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           percentage: 50,
           scenarioId: scenario.id,
           materialIds: [material.id],
-          supplierIds: [supplier.id],
+          t1SupplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
@@ -1186,7 +1186,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           percentage: 50,
           scenarioId: scenario.id,
           materialIds: [material.id],
-          supplierIds: [supplier.id],
+          t1SupplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.POINT_OF_PRODUCTION,
@@ -1213,7 +1213,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           percentage: 50,
           scenarioId: scenario.id,
           materialIds: [material.id],
-          supplierIds: [supplier.id],
+          t1SupplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
           newLocationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
@@ -1250,7 +1250,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           percentage: 50,
           scenarioId: scenario.id,
           materialIds: [material.id],
-          supplierIds: [supplier.id],
+          t1SupplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
           adminRegionIds: [adminRegion.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
@@ -1288,7 +1288,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           percentage: 50,
           scenarioId: scenario.id,
           materialIds: [material.id, material2.id],
-          supplierIds: [supplier.id],
+          t1SupplierIds: [supplier.id],
           businessUnitIds: [businessUnit.id],
           adminRegionIds: [adminRegion.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
@@ -1353,7 +1353,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           percentage: 50,
           scenarioId: preconditions.scenario.id,
           materialIds: [preconditions.material1.id],
-          supplierIds: [preconditions.supplier1.id],
+          t1SupplierIds: [preconditions.supplier1Descendant.id],
           businessUnitIds: [preconditions.businessUnit1.id],
           adminRegionIds: [preconditions.adminRegion1.id],
           newLocationCountryInput: 'TestCountry',
@@ -1658,7 +1658,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             percentage: 50,
             scenarioId: scenario.id,
             materialIds: [parentMaterial.id],
-            supplierIds: [parentSupplier.id],
+            t1SupplierIds: [childSupplier.id],
             businessUnitIds: [parentBusinessUnit.id],
             adminRegionIds: [parentAdminRegion.id],
             type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
@@ -1688,8 +1688,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         expect(intervention?.replacedBusinessUnits[0].id).toEqual(
           parentBusinessUnit.id,
         );
-        expect(intervention?.replacedSuppliers[0].id).toEqual(
-          parentSupplier.id,
+        expect(intervention?.replacedT1Suppliers[0].id).toEqual(
+          childSupplier.id,
         );
       },
     );
@@ -1846,7 +1846,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             percentage: 50,
             scenarioId: scenario.id,
             materialIds: [parentMaterial.id],
-            supplierIds: [parentSupplier.id, parentSupplier2.id],
+            t1SupplierIds: [childSupplier.id],
             businessUnitIds: [parentBusinessUnit.id],
             type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
             newIndicatorCoefficients: {
@@ -1869,15 +1869,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         expect(createdScenarioIntervention1.replacedMaterials[0].id).toEqual(
           parentMaterial.id,
         );
-        expect(
-          createdScenarioIntervention1.replacedSuppliers
-            .map((sup: Supplier) => sup.id)
-            .sort(),
-        ).toEqual([parentSupplier.id, parentSupplier2.id].sort());
-
-        expect(
-          createdScenarioIntervention1.replacedBusinessUnits[0].id,
-        ).toEqual(parentBusinessUnit.id);
+        expect(createdScenarioIntervention1.replacedT1Suppliers[0].id).toEqual(
+          childSupplier.id,
+        ),
+          expect(
+            createdScenarioIntervention1.replacedBusinessUnits[0].id,
+          ).toEqual(parentBusinessUnit.id);
 
         const responseBusinessUnits = await request(
           testApplication.getHttpServer(),
@@ -1890,7 +1887,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             percentage: 50,
             scenarioId: scenario.id,
             materialIds: [parentMaterial.id],
-            supplierIds: [parentSupplier.id],
+            t1SupplierIds: [childSupplier.id],
             type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
             newIndicatorCoefficients: {
               UWU_T: 5,
@@ -1933,7 +1930,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           await scenarioInterventionRepository.findOneOrFail({
             where: { id: responseSuppliers.body.data.id },
           });
-        expect(createdScenarioIntervention3.replacedSuppliers).toHaveLength(0);
+        expect(createdScenarioIntervention3.replacedT1Suppliers).toHaveLength(
+          0,
+        );
       },
     );
 
@@ -2079,7 +2078,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             percentage: 50,
             scenarioId: scenario.id,
             materialIds: [parentMaterial.id],
-            supplierIds: [parentSupplier.id],
+            t1SupplierIds: [childSupplier.id],
             businessUnitIds: [parentBusinessUnit.id],
             adminRegionIds: [parentAdminRegion.id],
             type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
@@ -2244,7 +2243,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             percentage: 50,
             scenarioId: scenario.id,
             materialIds: [parentMaterial.id],
-            supplierIds: [parentSupplier.id],
+            t1SupplierIds: [childSupplier.id],
             businessUnitIds: [parentBusinessUnit.id],
             adminRegionIds: [parentAdminRegion.id],
             type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
@@ -2362,7 +2361,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           percentage: 50,
           scenarioId: preconditions.scenario.id,
           materialIds: [preconditions.material1.id],
-          supplierIds: [preconditions.supplier1.id],
+          t1SupplierIds: [preconditions.supplier1Descendant.id],
           businessUnitIds: [preconditions.businessUnit1.id],
           adminRegionIds: [preconditions.adminRegion1.id],
           type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,

@@ -14,11 +14,13 @@ import {
   REPLACED_ADMIN_REGIONS_TABLE_NAME,
   REPLACED_BUSINESS_UNITS_TABLE_NAME,
   REPLACED_MATERIALS_TABLE_NAME,
-  REPLACED_SUPPLIERS_TABLE_NAME,
+  REPLACED_PRODUCERS_TABLE_NAME,
+  REPLACED_T1SUPPLIERS_TABLE_NAME,
   ReplacedAdminRegion,
   ReplacedBusinessUnits,
   ReplacedMaterial,
-  ReplacedSuppliers,
+  ReplacedProducer,
+  ReplacedT1Supplier,
 } from 'modules/scenario-interventions/intermediate-table-names/intermediate.table.names';
 import { chunk } from 'lodash';
 import * as config from 'config';
@@ -104,7 +106,8 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
       replacedAdminRegions,
       replacedMaterials,
       replacedBusinessUnits,
-      replacedSuppliers,
+      replacedT1Suppliers,
+      replacedProducers,
       ...remainingData
     } = newIntervention;
     const allLocations: SourcingLocation[] = replacedSourcingLocations.concat(
@@ -125,15 +128,24 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
       }
     }
 
-    const replacedSuppliersToSave: ReplacedSuppliers[] = [];
+    const replacedT1SuppliersToSave: ReplacedT1Supplier[] = [];
+    const replacedProducersToSave: ReplacedProducer[] = [];
     const replacedAdminRegionsToSave: ReplacedAdminRegion[] = [];
     const replacedBusinessUnitsToSave: ReplacedBusinessUnits[] = [];
     const replacedMaterialsToSave: ReplacedMaterial[] = [];
 
-    if (replacedSuppliers?.length) {
-      for (const supplier of replacedSuppliers) {
-        replacedSuppliersToSave.push({
-          supplierId: supplier.id,
+    if (replacedT1Suppliers?.length) {
+      for (const supplier of replacedT1Suppliers) {
+        replacedT1SuppliersToSave.push({
+          t1SupplierId: supplier.id,
+          scenarioInterventionId: newIntervention.id,
+        });
+      }
+    }
+    if (replacedProducers?.length) {
+      for (const supplier of replacedProducers) {
+        replacedProducersToSave.push({
+          producerId: supplier.id,
           scenarioInterventionId: newIntervention.id,
         });
       }
@@ -222,8 +234,14 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
       await queryRunner.manager
         .createQueryBuilder()
         .insert()
-        .into(REPLACED_SUPPLIERS_TABLE_NAME)
-        .values(replacedSuppliersToSave)
+        .into(REPLACED_T1SUPPLIERS_TABLE_NAME)
+        .values(replacedT1SuppliersToSave)
+        .execute();
+      await queryRunner.manager
+        .createQueryBuilder()
+        .insert()
+        .into(REPLACED_PRODUCERS_TABLE_NAME)
+        .values(replacedProducersToSave)
         .execute();
       this.logger.log(`Replacing admin regions...`);
       await queryRunner.manager

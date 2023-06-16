@@ -19,7 +19,7 @@ import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create
 import { UpdateSourcingLocationDto } from 'modules/sourcing-locations/dto/update.sourcing-location.dto';
 
 import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
-import { Brackets, SelectQueryBuilder, WhereExpressionBuilder } from 'typeorm';
+import { SelectQueryBuilder } from 'typeorm';
 import {
   LocationTypesDto,
   LocationTypeWithLabel,
@@ -157,33 +157,23 @@ export class SourcingLocationsService extends AppBaseService<
 
     // Optional filters:
 
-    if (
-      createInterventionDto.businessUnitIds &&
-      createInterventionDto.businessUnitIds.length > 0
-    )
+    if (createInterventionDto.businessUnitIds?.length)
       queryBuilder.andWhere('sl."businessUnitId" IN (:...businessUnits)', {
         businessUnits: createInterventionDto.businessUnitIds,
       });
-    if (
-      createInterventionDto.adminRegionIds &&
-      createInterventionDto.adminRegionIds.length > 0
-    )
+    if (createInterventionDto.adminRegionIds?.length)
       queryBuilder.andWhere('sl.adminRegionId IN (:...adminRegion)', {
         adminRegion: createInterventionDto.adminRegionIds,
       });
-    if (
-      createInterventionDto.supplierIds &&
-      createInterventionDto.supplierIds.length > 0
-    ) {
-      queryBuilder.andWhere(
-        new Brackets((qb: WhereExpressionBuilder) => {
-          qb.where('sl."t1SupplierId" IN (:...suppliers)', {
-            suppliers: createInterventionDto.supplierIds,
-          }).orWhere('sl."producerId" IN (:...suppliers)', {
-            suppliers: createInterventionDto.supplierIds,
-          });
-        }),
-      );
+    if (createInterventionDto.t1SupplierIds?.length) {
+      queryBuilder.andWhere('sl."t1SupplierId" IN (:...suppliers)', {
+        suppliers: createInterventionDto.t1SupplierIds,
+      });
+    }
+    if (createInterventionDto.producerIds?.length) {
+      queryBuilder.andWhere('sl."producerId" IN (:...producers)', {
+        producers: createInterventionDto.producerIds,
+      });
     }
 
     return queryBuilder.getMany();

@@ -6,7 +6,9 @@ export const REPLACED_MATERIALS_TABLE_NAME: string = 'replaced_materials';
 export const REPLACED_BUSINESS_UNITS_TABLE_NAME: string =
   'replaced_business_units';
 
-export const REPLACED_SUPPLIERS_TABLE_NAME: string = 'replaced_suppliers';
+export const REPLACED_T1SUPPLIERS_TABLE_NAME: string = 'replaced_suppliers';
+
+export const REPLACED_PRODUCERS_TABLE_NAME: string = 'replaced_producers';
 
 type interventionId = { scenarioInterventionId: string };
 

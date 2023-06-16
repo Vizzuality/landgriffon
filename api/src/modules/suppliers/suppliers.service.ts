@@ -89,7 +89,7 @@ export class SuppliersService extends AppBaseService<
     return found;
   }
 
-  async getSuppliersById(id: string[]): Promise<Supplier[]> {
+  async getSupplierByIds(id: string[]): Promise<Supplier[]> {
     return await this.repository.findByIds(id);
   }
 

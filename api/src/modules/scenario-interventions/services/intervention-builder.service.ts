@@ -62,10 +62,6 @@ export class InterventionBuilder {
           dto.businessUnitIds,
         );
 
-    if (dto.supplierIds)
-      dtoWithDescendants.supplierIds =
-        await this.suppliersService.getSuppliersDescendants(dto.supplierIds);
-
     return dtoWithDescendants;
   }
 
@@ -96,9 +92,13 @@ export class InterventionBuilder {
           dto.businessUnitIds,
         );
     }
-    if (dto.supplierIds?.length) {
-      newIntervention.replacedSuppliers =
-        await this.suppliersService.getSuppliersById(dto.supplierIds);
+    if (dto.t1SupplierIds?.length) {
+      newIntervention.replacedT1Suppliers =
+        await this.suppliersService.getSupplierByIds(dto.t1SupplierIds);
+    }
+    if (dto.producerIds?.length) {
+      newIntervention.replacedProducers =
+        await this.suppliersService.getSupplierByIds(dto.producerIds);
     }
 
     newIntervention.replacedSourcingLocations = cancelledSourcingLocations;

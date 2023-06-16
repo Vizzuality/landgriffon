@@ -131,11 +131,17 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   replacedBusinessUnits: BusinessUnit[];
 
   @ManyToMany(() => Supplier, { eager: true })
-  @JoinTable({ name: REPLACED_T1SUPPLIERS_TABLE_NAME })
+  @JoinTable({
+    name: REPLACED_T1SUPPLIERS_TABLE_NAME,
+    inverseJoinColumn: { name: 't1SupplierId' },
+  })
   replacedT1Suppliers: Supplier[];
 
   @ManyToMany(() => Supplier, { eager: true })
-  @JoinTable({ name: REPLACED_PRODUCERS_TABLE_NAME })
+  @JoinTable({
+    name: REPLACED_PRODUCERS_TABLE_NAME,
+    inverseJoinColumn: { name: 'producerId' },
+  })
   replacedProducers: Supplier[];
 
   @ManyToMany(() => AdminRegion, { eager: true })

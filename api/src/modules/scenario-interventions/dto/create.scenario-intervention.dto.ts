@@ -118,12 +118,20 @@ export class CreateScenarioInterventionDto {
   @IsUUID(4, { each: true })
   @IsOptional()
   @ApiPropertyOptional({
-    description:
-      'Ids of Suppliers or Producers that will be affected by intervention',
+    description: 'Ids of T1 Suppliers that will be affected by intervention',
     type: [String],
     example: 'bc5e4933-cd9a-4afc-bd53-56941b865432',
   })
-  supplierIds?: string[];
+  t1SupplierIds?: string[];
+
+  @IsUUID(4, { each: true })
+  @IsOptional()
+  @ApiPropertyOptional({
+    description: 'Ids of Producers that will be affected by intervention',
+    type: [String],
+    example: 'bc5e4933-cd9a-4afc-bd53-56941b865432',
+  })
+  producerIds?: string[];
 
   @IsUUID(4, { each: true })
   @IsOptional()
@@ -384,12 +392,20 @@ export class CreateScenarioInterventionDtoV2 {
   @IsUUID(4, { each: true })
   @IsOptional()
   @ApiPropertyOptional({
-    description:
-      'Ids of Suppliers or Producers that will be affected by intervention',
+    description: 'Ids of T1 Suppliers that will be affected by intervention',
     type: [String],
     example: 'bc5e4933-cd9a-4afc-bd53-56941b865432',
   })
-  supplierIds?: string[];
+  t1SupplierIds?: string[];
+
+  @IsUUID(4, { each: true })
+  @IsOptional()
+  @ApiPropertyOptional({
+    description: 'Ids of Producers that will be affected by intervention',
+    type: [String],
+    example: 'bc5e4933-cd9a-4afc-bd53-56941b865432',
+  })
+  producerIds?: string[];
 
   @IsUUID(4, { each: true })
   @IsOptional()

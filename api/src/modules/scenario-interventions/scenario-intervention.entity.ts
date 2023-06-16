@@ -27,8 +27,10 @@ import {
   REPLACED_ADMIN_REGIONS_TABLE_NAME,
   REPLACED_BUSINESS_UNITS_TABLE_NAME,
   REPLACED_MATERIALS_TABLE_NAME,
-  REPLACED_SUPPLIERS_TABLE_NAME,
+  REPLACED_PRODUCERS_TABLE_NAME,
+  REPLACED_T1SUPPLIERS_TABLE_NAME,
 } from 'modules/scenario-interventions/intermediate-table-names/intermediate.table.names';
+
 export enum SCENARIO_INTERVENTION_STATUS {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
@@ -129,8 +131,12 @@ export class ScenarioIntervention extends TimestampedBaseEntity {
   replacedBusinessUnits: BusinessUnit[];
 
   @ManyToMany(() => Supplier, { eager: true })
-  @JoinTable({ name: REPLACED_SUPPLIERS_TABLE_NAME })
-  replacedSuppliers: Supplier[];
+  @JoinTable({ name: REPLACED_T1SUPPLIERS_TABLE_NAME })
+  replacedT1Suppliers: Supplier[];
+
+  @ManyToMany(() => Supplier, { eager: true })
+  @JoinTable({ name: REPLACED_PRODUCERS_TABLE_NAME })
+  replacedProducers: Supplier[];
 
   @ManyToMany(() => AdminRegion, { eager: true })
   @JoinTable({ name: REPLACED_ADMIN_REGIONS_TABLE_NAME })

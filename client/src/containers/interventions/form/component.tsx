@@ -331,11 +331,11 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
             label: name,
             value: id,
           })),
-          t1SupplierIds: intervention.replacedT1Suppliers.map(({ id, name }) => ({
+          t1SupplierIds: intervention.replacedT1Suppliers?.map(({ id, name }) => ({
             label: name,
             value: id,
           })),
-          producerIds: intervention.replacedProducers.map(({ id, name }) => ({
+          producerIds: intervention.replacedProducers?.map(({ id, name }) => ({
             label: name,
             value: id,
           })),
@@ -482,10 +482,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
         resetField(`coefficients.${indicatorKey}`, { defaultValue: 0 });
       });
     }
-
-    // * resets supplier and producer info whenever the intervention type changes
-    resetField('newT1SupplierId', { defaultValue: null });
-    resetField('newProducerId', { defaultValue: null });
 
     // * closes "Supplier" panel whenever the intervention type changes
     if (closeSupplierRef.current !== null) {

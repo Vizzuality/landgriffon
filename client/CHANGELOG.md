@@ -15,11 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Add filter by year on analysis table. [LANDGRIF-965](https://vizzuality.atlassian.net/browse/LANDGRIF-965)
 
 ### Changed
-<<<<<<< HEAD
 - Updated sidebar design. [LANDGRIF-1035](https://vizzuality.atlassian.net/browse/LANDGRIF-1035)
-=======
 - Separate 'T1 supplier' and 'producers' in different dropdowns [LANGRIF-1404](https://vizzuality.atlassian.net/browse/LANDGRIF-1404)
->>>>>>> 19100c7c (Separate 'T1 supplier' and 'producers' in different dropdowns)
 - T1 supplier and producers are different dropdowns [LANDGRIF-1402](https://vizzuality.atlassian.net/browse/LANDGRIF-1402)
 - Hide the manage data table search bar and years filter.[LANDGRIF-1310](https://vizzuality.atlassian.net/browse/LANDGRIF-1310)
 - Add unit for the volumes in the procurement data table view.[LANDGRIF-1315](https://vizzuality.atlassian.net/browse/LANDGRIF-1315)

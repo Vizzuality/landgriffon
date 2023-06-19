@@ -31,16 +31,12 @@ const DataUploadError: React.FC<DataUploadErrorProps> = ({ task }) => {
     updateTask.mutate({ id: task.id, data: { dismissedBy: profile?.id } });
   }, [profile?.id, task.id, updateTask]);
 
-  const { data: taskErrors, isFetching } = useTaskErrors(task.id, {
-    enabled: task?.status === 'failed' && task?.errors.length > 0,
+  const { isFetching, refetch } = useTaskErrors(task.id, {
+    enabled: false,
+    onSuccess: (data) => triggerCsvDownload(data, `${task.data?.filename}_errors.csv`),
   });
 
   if (task?.dismissedBy) return null;
-
-  const handleDownload = () => {
-    if (!taskErrors) return;
-    triggerCsvDownload(taskErrors, `${task.data?.filename}_errors.csv`);
-  };
 
   return (
     <Disclaimer
@@ -119,8 +115,8 @@ const DataUploadError: React.FC<DataUploadErrorProps> = ({ task }) => {
             <Button
               loading={isFetching}
               variant="white"
-              disabled={!taskErrors}
-              onClick={handleDownload}
+              disabled={!task.errors?.length}
+              onClick={() => refetch()}
             >
               Download
             </Button>

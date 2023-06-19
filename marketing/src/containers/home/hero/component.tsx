@@ -6,14 +6,14 @@ import Link from 'next/link';
 const Hero: React.FC = () => {
   return (
     <section className="relative flex flex-col items-center justify-center w-full py-12 overflow-hidden bg-blue-600 md:h-screen">
-      <div
-        className="absolute bottom-0 right-0 hidden w-full h-full bg-right-bottom bg-no-repeat pointer-events-none md:block"
-        style={{
-          backgroundImage: `url('/images/home/hero/bg_circles.svg')`,
-          backgroundSize: 'auto 125%',
-          backgroundPosition: '100% bottom',
-        }}
-      ></div>
+      <div className="absolute top-0 right-0 hidden w-[800px] h-[800px] bg-right-bottom bg-no-repeat pointer-events-none md:block">
+        <object
+          type="image/svg+xml"
+          data="/images/home/hero/hero-animation.svg"
+          width="800"
+          height="900"
+        />
+      </div>
       <Wrapper>
         <div className="space-y-9">
           <motion.div

@@ -65,7 +65,7 @@ const Step02: React.FC = () => {
               width={1960}
               height={886}
               layout="responsive"
-              src="/images/home/what/screen_1.jpg"
+              src="/images/home/what/screen_1.png"
               className="block w-full"
               alt="Data"
             />

@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { useScrollDirection } from 'react-use-scroll-direction';
 import { motion, useViewportScroll } from 'framer-motion';
 
+import dynamic from 'next/dynamic';
+
 import Icon from 'components/icon';
 
 import BURGER_SVG from 'svgs/ui/burger.svg?sprite';
@@ -10,7 +12,9 @@ import CLOSE_SVG from 'svgs/ui/close.svg?sprite';
 
 import { useMemo, useRef, useState } from 'react';
 
-import Nav from './nav';
+const Nav = dynamic(() => import('./nav'), {
+  ssr: false,
+});
 
 const Header: React.FC = () => {
   const [open, setOpen] = useState(false);

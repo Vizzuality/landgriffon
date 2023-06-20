@@ -16,6 +16,7 @@ import { NUMBER_FORMAT } from 'utils/number-format';
 import Map, { INITIAL_VIEW_STATE } from 'components/map';
 import { getLayerConfig } from 'components/map/layers/utils';
 
+import type { LayerConstructor } from 'components/map/layers/utils';
 import type { H3HexagonLayerProps } from '@deck.gl/geo-layers/typed';
 import type { ViewState } from 'react-map-gl';
 import type { MapStyle } from 'components/map/types';
@@ -44,7 +45,7 @@ const AnalysisMap = () => {
   const [viewState, setViewState] = useState<Partial<ViewState>>(INITIAL_VIEW_STATE);
   const handleViewState = useCallback((viewState: ViewState) => setViewState(viewState), []);
   const [tooltipData, setTooltipData] = useState(null);
-console.log(layers);
+
   // Pre-Calculating legend scales
   const legendScales = useMemo(() => {
     const scales = {};
@@ -85,24 +86,15 @@ console.log(layers);
     setMapStyle(newStyle);
   }, []);
 
-  const sortedLayers = useMemo(() => {
-    const layerIds = Object.values(layers)
-      .filter((layer) => layer.active)
+  const sortedLayers: { id: string; layer: LayerConstructor; props: Layer }[] = useMemo(() => {
+    return Object.values(layers)
+      .filter((layer) => layer.active && !!layers[layer.id])
       .sort((a, b) => {
         if (a.order > b.order) return 1;
         if (a.order < b.order) return -1;
         return 0;
       })
-      .map(({ id }) => id);
-
-    // ! review this: not sure outputting an object ensures the order of the layers
-    return layerIds.reduce(
-      (current, next) => ({
-        ...current,
-        [next]: getLayerConfig(layers[next]),
-      }),
-      {},
-    );
+      .map((layer) => ({ id: layer.id, layer: getLayerConfig(layers[layer.id]), props: layer }));
   }, [layers]);
 
   return (

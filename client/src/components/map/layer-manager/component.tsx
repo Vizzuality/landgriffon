@@ -1,5 +1,6 @@
 import { MapboxOverlayProvider } from './provider';
 
+import type { Layer } from 'types';
 import type { LayerSettings } from 'components/map/layers/types';
 import type { LayerConstructor } from 'components/map/layers/utils';
 
@@ -7,26 +8,26 @@ const LayerManager = ({
   layers,
   onHoverLayer,
 }: {
-  layers: Record<string, LayerConstructor>;
+  layers: { id: string; layer: LayerConstructor; props?: Layer }[];
   onHoverLayer?: LayerSettings['onHoverLayer'];
 }) => {
-  const LAYERS_FILTERED = Object.keys(layers).filter((layerId) => !!layers[layerId]);
-
   return (
     <MapboxOverlayProvider>
-      {LAYERS_FILTERED.map((layerId, i) => {
-        const LayerComponent = layers[layerId];
+      {layers.map(({ layer, id, props }, i) => {
+        const LayerComponent = layer;
         // ? sets how the layers will be displayed on the map
-        const beforeId = i === 0 ? 'custom-layers' : `${LAYERS_FILTERED[i - 1]}-layer`;
+        const beforeId = i === 0 ? 'custom-layers' : `${layers[i - 1].id}-layer`;
 
         return (
           <LayerComponent
-            key={layerId}
-            id={`${layerId}-layer`}
+            key={id}
+            id={`${id}-layer`}
             beforeId={beforeId}
             zIndex={1000 - i}
             settings={{
               onHoverLayer,
+              opacity: props?.opacity,
+              visibility: props?.visible,
             }}
           />
         );

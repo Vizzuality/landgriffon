@@ -14,19 +14,19 @@ const DeckLayer = <T,>({
 }: DeckLayerProps<T, LayerSettings>) => {
   const i = `${id}-deck`;
   const { addLayer, removeLayer } = useMapboxOverlayContext();
-
   useEffect(() => {
     addLayer({ ...props, id: i, beforeId });
   }, [i, beforeId, props, addLayer]);
 
   useEffect(() => {
     return () => {
-      removeLayer(id);
+      removeLayer(i);
     };
-  }, [id, removeLayer]);
+  }, [i, removeLayer]);
 
   return (
     <Layer
+      {...props}
       id={id}
       type="background"
       paint={{

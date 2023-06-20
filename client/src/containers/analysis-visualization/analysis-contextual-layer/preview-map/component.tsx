@@ -71,7 +71,7 @@ const PreviewMap = ({ selectedLayerId, selectedMaterialId, onStatusChange }: Pre
     );
   }, [data]);
 
-  const layers = useMemo(() => ({ [PREVIEW_LAYER_ID]: PreviewLayer }), [PreviewLayer]);
+  const layers = useMemo(() => [{ id: PREVIEW_LAYER_ID, layer: PreviewLayer }], [PreviewLayer]);
 
   return (
     <div className="absolute top-0 left-0 w-full h-full overflow-hidden">

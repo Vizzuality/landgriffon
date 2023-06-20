@@ -7,7 +7,7 @@ import useContextualLayers from 'hooks/layers/getContextualLayers';
 
 import type { LayerSettings, LayerProps } from 'components/map/layers/types';
 
-const ContextualLayer = ({ id, beforeId, zIndex }: LayerProps<LayerSettings>) => {
+const ContextualLayer = ({ id, beforeId, zIndex, settings }: LayerProps<LayerSettings>) => {
   // const { layerDeckGLProps, layers: layersMetadata } = useAppSelector(analysisMap);
 
   // ? the incoming id is set by the layer manager with the format `${id}-layer`, but for fetching data purposes, we need to pass the real ID to the hook configuration
@@ -31,7 +31,7 @@ const ContextualLayer = ({ id, beforeId, zIndex }: LayerProps<LayerSettings>) =>
       <MapboxRasterLayer
         id={id}
         beforeId={beforeId}
-        settings={{}}
+        settings={settings}
         tilerUrl={contextualLayer.tilerUrl}
         defaultTilerParams={contextualLayer.defaultTilerParams}
       />

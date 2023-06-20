@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Fixed intervention creation: business units check strategy [LANDGRIF-1444](https://vizzuality.atlassian.net/browse/LANDGRIF-1444)
 - Fixed analysis filters selectors width [LANDGRIF-1437](https://vizzuality.atlassian.net/browse/LANDGRIF-1437)
 - Fixed treeselect auto scroll [LANDGRIF-1435](https://vizzuality.atlassian.net/browse/LANDGRIF-1435)
+  Added the mapbox-raster layers [LANDGRIF-1277](https://vizzuality.atlassian.net/browse/LANDGRIF-1277)
 
 ## [v0.5.0]
 

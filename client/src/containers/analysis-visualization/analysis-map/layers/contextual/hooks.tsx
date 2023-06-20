@@ -29,18 +29,18 @@ export const ContextualDeckLayer = ({
     const contextualDataById = Object.fromEntries(
       contextualData
         .filter((d) => {
-          return d.isSuccess && layersMetadata[_id].visible;
+          return d.isSuccess;
         })
         .map(({ data: { layerId, ...rest } }) => [layerId, rest]),
     );
 
     return contextualDataById[_id]?.data || [];
-  }, [contextualData, _id, layersMetadata]);
-  const settings = useMemo(() => layerDeckGLProps[id] || {}, [layerDeckGLProps, id]);
+  }, [contextualData, _id]);
+  const settings = useMemo(() => layerDeckGLProps[_id] || {}, [layerDeckGLProps, _id]);
 
   const metadata = useMemo(
-    () => ({ layerId: id, ...layersMetadata[_id]['metadata'] }),
-    [layersMetadata, id, _id],
+    () => ({ layerId: _id, ...layersMetadata[_id]['metadata'] }),
+    [layersMetadata, _id],
   );
 
   const layer = useMemo(() => {

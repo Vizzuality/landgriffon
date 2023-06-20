@@ -1,12 +1,13 @@
-import { FC } from 'react';
-
 import Head from 'next/head';
 
 import ApplicationLayout from 'layouts/application';
 
 import Contact from 'containers/contact';
+import type { GetServerSideProps, NextPage } from 'next';
 
-const ContactPage: FC = () => {
+type PageProps = { domain: string | null };
+
+const ContactPage: NextPage<PageProps> = ({ domain }) => {
   return (
     <ApplicationLayout>
       <>
@@ -28,13 +29,21 @@ const ContactPage: FC = () => {
           />
           <meta name="og:type" content="website" />
           <meta name="og:url" content="https://landgriffon.com/contact" />
-          <meta name="og:image" content="https://landgriffon.com/images/og/OG-LandGriffon.png" />
+          <meta name="og:image" content={`${domain}/images/og/OG-LandGriffon.png`} />
         </Head>
 
         <Contact />
       </>
     </ApplicationLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps<PageProps> = async (context) => {
+  const { referer } = context.req.headers;
+  const url = new URL(referer || '');
+  return {
+    props: { domain: `${url.protocol}//${url.host}` || null },
+  };
 };
 
 export default ContactPage;

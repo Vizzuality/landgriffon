@@ -21,8 +21,8 @@ const SLIDES = [
     description: (
       <div className="text-xl text-white">
         <p>
-          <span className="text-orange-500">Centralize</span> your supply chain data and decision
-          making.
+          Overcome <span className="text-orange-500">traceability</span> barriers with our spatial
+          sourcing model.
         </p>
       </div>
     ),
@@ -40,8 +40,8 @@ const SLIDES = [
     description: (
       <div className="text-xl text-white">
         <p>
-          <span className="text-orange-500">Overcome</span> traceability limitations with our
-          spatian sourcing model.
+          Boost <span className="text-orange-500">confidence</span> in your sustainability measures
+          with the best-available geospatial dat
         </p>
       </div>
     ),
@@ -59,8 +59,9 @@ const SLIDES = [
     description: (
       <div className="text-xl text-white">
         <p>
-          <span className="text-orange-500"> Focus on tomorrow&apos;s risks and opportunities</span>
-          , not the past, and prioritize actions to excel into the future.
+          <span className="text-orange-500"> Strategize</span>
+          your supply chain sustainability by assessing trade-offs between actions and forecasting
+          the outcomes.
         </p>
       </div>
     ),

@@ -1,12 +1,14 @@
-import { FC } from 'react';
-
 import Head from 'next/head';
 
 import ApplicationLayout from 'layouts/application';
 
 import Methodology from 'containers/methodology';
 
-const MethodologyPage: FC = () => {
+import type { GetServerSideProps, NextPage } from 'next';
+
+type PageProps = { domain: string | null };
+
+const MethodologyPage: NextPage<PageProps> = ({ domain }) => {
   return (
     <ApplicationLayout>
       <>
@@ -27,13 +29,21 @@ const MethodologyPage: FC = () => {
           />
           <meta name="og:type" content="website" />
           <meta name="og:url" content="https://landgriffon.com/methodology" />
-          <meta name="og:image" content="https://landgriffon.com/images/og/OG-Methodology.png" />
+          <meta name="og:image" content={`${domain}/images/og/OG-Methodology.png`} />
         </Head>
 
         <Methodology />
       </>
     </ApplicationLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps<PageProps> = async (context) => {
+  const { referer } = context.req.headers;
+  const url = new URL(referer || '');
+  return {
+    props: { domain: `${url.protocol}//${url.host}` || null },
+  };
 };
 
 export default MethodologyPage;

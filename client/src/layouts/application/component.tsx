@@ -24,7 +24,7 @@ const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
     <div className="flex h-screen overflow-hidden min-h-[700px] min-w-screen-lg bg-navy-600">
       <div className="flex flex-col shrink-0 grow-0 w-28">
         <div className="flex justify-center py-12 shrink-0">
-          <LandgriffonLogo />
+          <LandgriffonLogo className="drop-shadow-md shadow-md shadow-black/25 rounded-xl" />
         </div>
         <div className="grow">
           <Navigation items={navigationItems} />

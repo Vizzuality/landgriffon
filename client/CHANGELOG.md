@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Add filter by year on analysis table. [LANDGRIF-965](https://vizzuality.atlassian.net/browse/LANDGRIF-965)
 
 ### Changed
+- Updated sidebar design. [LANDGRIF-1035](https://vizzuality.atlassian.net/browse/LANDGRIF-1035)
 - Hide the manage data table search bar and years filter.[LANDGRIF-1310](https://vizzuality.atlassian.net/browse/LANDGRIF-1310)
 - Add unit for the volumes in the procurement data table view.[LANDGRIF-1315](https://vizzuality.atlassian.net/browse/LANDGRIF-1315)
 - Showing correct value for contextual layer type range in the pop-up. [LANDGRIF-1317](https://vizzuality.atlassian.net/browse/LANDGRIF-1317)

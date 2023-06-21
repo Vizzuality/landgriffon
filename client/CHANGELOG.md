@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Updated sidebar design. [LANDGRIF-1035](https://vizzuality.atlassian.net/browse/LANDGRIF-1035)
 - Separate 'T1 supplier' and 'producers' in different dropdowns [LANGRIF-1404](https://vizzuality.atlassian.net/browse/LANDGRIF-1404)
 - T1 supplier and producers are different dropdowns [LANDGRIF-1402](https://vizzuality.atlassian.net/browse/LANDGRIF-1402)
+- Updated analisys view-toggle buttons. [LANDGRIF-1041](https://vizzuality.atlassian.net/browse/LANDGRIF-1041)
 - Hide the manage data table search bar and years filter.[LANDGRIF-1310](https://vizzuality.atlassian.net/browse/LANDGRIF-1310)
 - Add unit for the volumes in the procurement data table view.[LANDGRIF-1315](https://vizzuality.atlassian.net/browse/LANDGRIF-1315)
 - Showing correct value for contextual layer type range in the pop-up. [LANDGRIF-1317](https://vizzuality.atlassian.net/browse/LANDGRIF-1317)

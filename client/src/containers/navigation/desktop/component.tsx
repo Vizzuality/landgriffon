@@ -13,13 +13,13 @@ const DesktopNavigation: React.FC<NavigationProps> = ({ items }: NavigationProps
   };
 
   return (
-    <nav aria-label="Sidebar" className="w-full px-2 space-y-1">
+    <nav aria-label="Sidebar" className="w-full px-4 space-y-4">
       {items.map((item) => (
         <a
           key={item.name}
           href={item.disabled ? '' : item.href}
           className={classNames(
-            'text-white group w-full p-3 rounded-md flex flex-col items-center text-xs font-medium transition-colors',
+            'text-white group w-full h-20 rounded-md flex flex-col items-center justify-center text-xs font-medium transition-colors hover:bg-black/30',
             {
               'bg-black/30': isCurrentItem(item.href),
               'opacity-50 cursor-not-allowed pointer-events-none': item.disabled,

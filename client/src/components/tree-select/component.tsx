@@ -308,7 +308,9 @@ const InnerTreeSelect = <IsMulti extends boolean>(
 
     // for some reason, there's an invisible .rc-tree-treenode outside of the list. With this selector we ensure to get the element only if it has a sibling of the same type
     const firstChild = listContainer.querySelector('.rc-tree-treenode ~ .rc-tree-treenode');
-    const offset = firstChild?.clientHeight || 0;
+
+    // ELEMENT.getBoundingClientRect().height returns the height with decimals, and ELEMENT.clientHeight returns just the integer. If the list size is large, the decimals are enough to make the scroll not work properly
+    const offset = firstChild?.getBoundingClientRect().height || 0;
 
     listContainer.scrollTop = offset * (elementIndex + 1) - listHeight / 2;
     setKeyToScroll(undefined);
@@ -548,6 +550,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
               'bg-white max-h-80 overflow-y-auto',
               fitContent ? 'max-w-full w-full' : 'max-w-xs',
             )}
+            id="list-container"
           >
             {loading ? (
               <div className="p-4">

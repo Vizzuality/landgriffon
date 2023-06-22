@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Replaced Deck.gl map with `react-map-gl` to prepare migration to Layer Manager. [LANDGRIF-812](https://vizzuality.atlassian.net/browse/LANDGRIF-812)
 
 ### Fixed
+- Fixed treeselect auto scroll [LANDGRIF-1435](https://vizzuality.atlassian.net/browse/LANDGRIF-1435)
 - Fix selectors allowing select disabled options when searching [LANDGRIF-1318](https://vizzuality.atlassian.net/browse/LANDGRIF-1318)
 - Wrong error message in the scenario creation [LANDGRIF-1302](https://vizzuality.atlassian.net/browse/LANDGRIF-1302)
 - Fix map resizing when sidebar is collapsed [LANDGRIF-1305](https://vizzuality.atlassian.net/browse/LANDGRIF-1305)

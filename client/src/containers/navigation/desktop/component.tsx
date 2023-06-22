@@ -19,7 +19,7 @@ const DesktopNavigation: React.FC<NavigationProps> = ({ items }: NavigationProps
           key={item.name}
           href={item.disabled ? '' : item.href}
           className={classNames(
-            'text-white group w-full h-20 rounded-md flex flex-col items-center justify-center text-xs font-medium transition-colors hover:bg-black/30',
+            'text-white w-full h-[86px] rounded-md flex flex-col items-center justify-center text-xs font-medium transition-colors hover:bg-black/30 focus-visible:shadow-button-focused focus-visible:outline-none ',
             {
               'bg-black/30': isCurrentItem(item.href),
               'opacity-50 cursor-not-allowed pointer-events-none': item.disabled,

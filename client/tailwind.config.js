@@ -31,6 +31,12 @@ module.exports = {
       backgroundImage: {
         auth: 'linear-gradient(240.36deg, #2E34B0 0%, #0C1063 68.13%)',
       },
+      boxShadow: {
+        menu: '0 4px 4px 0px rgba(0, 0, 0, 0.25)',
+        'button-hovered':
+          '0px 0px 0px 6px rgba(0, 0, 0, 0.26), 0px 4px 4px 0px rgba(0, 0, 0, 0.25)',
+        'button-focused': '0px 0px 0px 4px rgba(63, 89, 224, 0.20), 0px 0px 0px 1px #FFF',
+      },
     },
     colors: {
       black: colors.black,

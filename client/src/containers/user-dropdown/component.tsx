@@ -35,14 +35,15 @@ const UserDropdown: React.FC = () => {
   );
 
   return (
-    <Menu as="div" className="flex justify-center w-full mb-5">
+    <Menu as="div" className="flex justify-center flex-col items-center w-full mb-5">
       {(!session || status === 'loading') && <Loading className="w-5 h-5 text-white" />}
       <Menu.Button
-        className="rounded-full focus:outline-none focus-visible:outline-1 focus-visible:outline-white"
+        className="focus-visible:shadow-button-focused focus-visible:outline-none rounded-lg shadow-menu hover:shadow-button-hovered"
         ref={reference}
       >
         {renderAvatar('bg-black/20')}
       </Menu.Button>
+      <span className="text-white text-xs mt-3">Account</span>
       {!!session &&
         createPortal(
           <Menu.Items

@@ -45,11 +45,11 @@ export const createWorldToCalculateIndicatorRecords = async (
     h3tableName: 'h3_grid_spam2010v2r0_global_ha',
   });
   const weightedCarbonH3Data = await createH3Data({
-    h3columnName: 'forestGhg2020Buffered',
+    h3columnName: 'forestGhgBuffered2021',
     h3tableName: 'h3_grid_ghg_global',
   });
   const weightedDeforestationH3Data = await createH3Data({
-    h3columnName: 'hansenLoss2020HaBuffered',
+    h3columnName: 'hansenLossBuffered2021',
     h3tableName: 'h3_grid_deforestation_global',
   });
   const waterStressH3Data = await createH3Data({

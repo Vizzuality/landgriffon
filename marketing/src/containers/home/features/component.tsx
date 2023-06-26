@@ -5,10 +5,9 @@ import Icon from 'components/icon';
 import Wrapper from 'containers/wrapper';
 import FadeIn from 'components/fade';
 
-import ARROW_RIGHT_SVG from 'svgs/ui/arrow-right.svg?sprite';
-import FLEXIBLE_SVG from 'svgs/home/features/icn_flexible.svg?sprite';
-import COMMUNITY_SVG from 'svgs/home/features/icn_comm.svg?sprite';
-import ETHOS_SVG from 'svgs/home/features/icn_search.svg?sprite';
+import ENTERPRISE_SVG from 'svgs/home/features/icn_enterprise.svg?sprite';
+import PICTURE_SVG from 'svgs/home/features/icn_picture.svg?sprite';
+import SCIENCE_SVG from 'svgs/home/features/icn_science.svg?sprite';
 
 const Features: React.FC = () => {
   return (
@@ -25,57 +24,43 @@ const Features: React.FC = () => {
             <li>
               <FadeIn className="space-y-5 md:space-y-10">
                 <div className="space-y-5">
-                  <Icon icon={FLEXIBLE_SVG} className="w-14 h-14" />
-                  <h3 className="text-3xl font-medium font-display">Flexible to your needs.</h3>
+                  <Icon icon={ENTERPRISE_SVG} className="w-14 h-14" />
+                  <h3 className="text-3xl font-medium font-display">Enterprise-ready.</h3>
                 </div>
                 <p className="text-xl">
-                  LandGriffon is designed to adapt to each company&apos;s unique context and
-                  ambitions. Regardless of the amount or detail of your existing data, we can work
-                  with you.
+                  Align with new standards and requirements (ESRS, TNFD, SBTN). Produce transparent,
+                  repeatable, and auditable analysis.
                 </p>
               </FadeIn>
             </li>
             <li>
               <FadeIn className="space-y-5 md:space-y-10">
                 <div className="space-y-5">
-                  <Icon icon={COMMUNITY_SVG} className="w-14 h-14" />
-                  <h3 className="text-3xl font-medium font-display">Community powered.</h3>
+                  <Icon icon={PICTURE_SVG} className="w-14 h-14" />
+                  <h3 className="text-3xl font-medium font-display">See the big picture.</h3>
                 </div>
 
                 <p className="text-xl">
-                  LandGriffon brings together the most trusted data from across the sustainability
-                  community.
+                  Manage the whole of your supply chain, rather than one material or one impact at a
+                  time. Bring in any data source or API: spatial, non-spatial, financial, social, or
+                  otherwise.
                 </p>
-                <Link href="/methodology">
-                  <a className="flex items-center justify-between space-x-5">
-                    <span className="font-semibold underline">
-                      Learn more about the indicators we use.
-                    </span>
-                    <Icon icon={ARROW_RIGHT_SVG} className="w-12 h-12" />
-                  </a>
-                </Link>
               </FadeIn>
             </li>
             <li>
               <FadeIn className="space-y-5 md:space-y-10">
                 <div className="space-y-5">
-                  <Icon icon={ETHOS_SVG} className="w-14 h-14" />
-                  <h3 className="text-3xl font-medium font-display">An ethos of transparency.</h3>
+                  <Icon icon={SCIENCE_SVG} className="w-14 h-14" />
+                  <h3 className="text-3xl font-medium font-display">
+                    Built with the best available science.
+                  </h3>
                 </div>
 
                 <p className="text-xl">
-                  We&apos;re confident in our technology, and you should be too. Our methods and
-                  code are open for all to see, use, and verify.
+                  Leverage the latest data and recommendations from satellite monitoring and the
+                  scientific community. Our open-science methodology is trusted to help you plan and
+                  prepare for tomorrow’s risks and opportunities.
                 </p>
-
-                <Link href="/methodology">
-                  <a className="flex items-center justify-between space-x-5">
-                    <span className="font-semibold underline">
-                      Learn more about our methodology.
-                    </span>
-                    <Icon icon={ARROW_RIGHT_SVG} className="w-12 h-12" />
-                  </a>
-                </Link>
               </FadeIn>
             </li>
             <li>

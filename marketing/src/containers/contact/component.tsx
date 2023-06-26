@@ -221,13 +221,13 @@ const Contact: React.FC = () => {
                   <select
                     id="topic"
                     className={cx({
-                      'block w-full py-5 bg-transparent border-t-transparent border-l-transparent border-r-transparent  border-b-2 border-black/20 placeholder:text-black/30 focus:outline-none focus:ring-0':
+                      'block w-full py-5 bg-transparent border-transparent placeholder:text-black/30 focus:outline-none focus:ring-0':
                         true,
                       'border-red-500': errors.topic,
                     })}
                     {...register('topic')}
                   >
-                    <option value="">Select a topic</option>
+                    <option value="">Select</option>
                     <option value="demo">Request a demo</option>
                     <option value="support">Technical support</option>
                     <option value="contact">General contact</option>
@@ -254,14 +254,15 @@ const Contact: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex flex-col items-end justify-between space-y-10 md:flex-row md:space-x-10 md:space-y-0">
-                <div>
+              {/* <div className="flex flex-col items-center justify-between space-y-10 md:flex-row md:space-x-10 md:space-y-0"> */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="col-span-2">
                   <div className="flex items-center space-x-2.5">
                     <input
                       id="terms"
                       type="checkbox"
                       {...register('terms')}
-                      className={cx('w-5 h-5 border-2 border-black', {
+                      className={cx('w-7 h-7 rounded-full border-2 border-black bg-orange-500', {
                         'border-red-500': errors.terms,
                       })}
                     />
@@ -279,7 +280,7 @@ const Contact: React.FC = () => {
                       id="newsletter"
                       type="checkbox"
                       {...register('newsletter')}
-                      className={cx('w-5 h-5 border-2 border-black', {
+                      className={cx('w-7 h-7 rounded-full border-2 border-black bg-orange-500', {
                         'border-red-500': errors.newsletter,
                       })}
                     />
@@ -290,12 +291,14 @@ const Contact: React.FC = () => {
                   </div>
                 </div>
 
-                <button
-                  type="submit"
-                  className="py-8 font-semibold text-black bg-transparent border border-black px-14 hover:bg-black/10"
-                >
-                  Send message
-                </button>
+                <div className="justify-self-end">
+                  <button
+                    type="submit"
+                    className="py-8 px-10 max-h-44 font-semibold text-black bg-transparent border-2 border-black hover:bg-black/10"
+                  >
+                    Send message
+                  </button>
+                </div>
               </div>
             </form>
           </Wrapper>

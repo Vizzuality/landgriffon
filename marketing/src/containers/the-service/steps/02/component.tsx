@@ -1,5 +1,11 @@
+import Link from 'next/link';
+
 import cx from 'classnames';
 import Image from 'next/image';
+
+import Icon from 'components/icon';
+
+import ARROW_RIGHT_SVG from 'svgs/ui/arrow-right.svg?sprite';
 
 const Step02: React.FC = () => {
   return (
@@ -22,20 +28,25 @@ const Step02: React.FC = () => {
         </header>
 
         <div className="space-y-5">
-          <p className="text-xl">
-            No matter your level of sourcing data we work with you to map what you can and fill the
-            gaps where needed.
+          <p className="text-2xl font-bold">
+            LandGriffon works with all levels of sourcing precision.
           </p>
           <p className="text-xl">
-            Our team assists you to gather, process, and import your sourcing data into LandGriffon
-            and builds a complete picture of your supply chain. LandGriffon then geolocates your
-            data for analysis.
+            For example, if you source from intermediate suppliers rather than having farm and field
+            locations, it uses a probabilistic model to estimate where your materials are most
+            likely produced.{' '}
+            <b>
+              No matter your level of sourcing data we work with you to map what you can and fill
+              the gaps where needed.
+            </b>
           </p>
-          <p className="text-xl">
-            LandGriffon works with all levels of sourcing precision. For example, if you source from
-            intermediate suppliers rather than having farm and field locations, it uses a
-            probabilistic model to estimate where your materials are most likely produced.
-          </p>
+
+          <Link href="/methodology">
+            <a className="flex items-center space-x-5">
+              <span className="font-semibold underline">Find out how our sourcing model works</span>
+              <Icon icon={ARROW_RIGHT_SVG} className="w-12 h-12" />
+            </a>
+          </Link>
         </div>
       </div>
 
@@ -65,7 +76,7 @@ const Step02: React.FC = () => {
               width={1960}
               height={886}
               layout="responsive"
-              src="/images/home/what/screen_1.png"
+              src="/images/service/steps/step_2.png"
               className="block w-full"
               alt="Data"
             />

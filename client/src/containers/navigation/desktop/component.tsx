@@ -14,22 +14,29 @@ const DesktopNavigation: React.FC<NavigationProps> = ({ items }: NavigationProps
 
   return (
     <nav aria-label="Sidebar" className="w-full px-4 space-y-4">
-      {items.map((item) => (
-        <a
-          key={item.name}
-          href={item.disabled ? '' : item.href}
-          className={classNames(
-            'text-white w-full h-[86px] rounded-md flex flex-col items-center justify-center text-xs font-medium transition-colors hover:bg-black/30 focus-visible:shadow-button-focused focus-visible:outline-none ',
-            {
-              'bg-black/30': isCurrentItem(item.href),
-              'opacity-50 cursor-not-allowed pointer-events-none': item.disabled,
-            },
-          )}
-        >
-          <item.icon className="w-6 h-6" aria-hidden="true" />
-          <span className="mt-2">{item.name}</span>
-        </a>
-      ))}
+      {items.map((item) => {
+        const isActive = isCurrentItem(item.href);
+        return (
+          <a
+            key={item.name}
+            href={item.disabled ? '' : item.href}
+            className={classNames(
+              'text-white w-full h-[86px] rounded-md flex flex-col items-center justify-center text-xs font-medium transition-colors hover:bg-black/30 focus-visible:shadow-button-focused focus-visible:outline-none ',
+              {
+                'bg-black/30': isCurrentItem(item.href),
+                'opacity-50 cursor-not-allowed pointer-events-none': item.disabled,
+              },
+            )}
+          >
+            {isActive ? (
+              <item.icon.active strokeWidth={1.5} className="w-6 h-6" aria-hidden="true" />
+            ) : (
+              <item.icon.default strokeWidth={1.5} className="w-6 h-6" aria-hidden="true" />
+            )}
+            <span className="mt-2">{item.name}</span>
+          </a>
+        );
+      })}
     </nav>
   );
 };

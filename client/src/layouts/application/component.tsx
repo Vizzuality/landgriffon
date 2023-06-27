@@ -1,4 +1,8 @@
-import { CollectionIcon, ChartBarIcon } from '@heroicons/react/outline';
+import { CollectionIcon as CollectionIconOutline } from '@heroicons/react/outline';
+import { CollectionIcon as CollectionIconSolid } from '@heroicons/react/solid';
+
+// The'ChartBarIcon' fom the modules @heroicons/react are different from the website (and design)
+import { ChartBarIconOutline, ChartBarIconSolid } from './icons/chart-bar';
 
 import { useLasTask } from 'hooks/tasks';
 import Navigation from 'containers/navigation/desktop';
@@ -11,11 +15,18 @@ import type { NavigationList } from 'containers/navigation/types';
 const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { data: lastTask } = useLasTask();
   const navigationItems: NavigationList = [
-    { name: 'Data', href: '/data', icon: CollectionIcon },
+    {
+      name: 'Data',
+      href: '/data',
+      icon: {
+        default: CollectionIconOutline,
+        active: CollectionIconSolid,
+      },
+    },
     {
       name: 'Analysis',
       href: '/analysis',
-      icon: ChartBarIcon,
+      icon: { default: ChartBarIconOutline, active: ChartBarIconSolid },
       disabled: !!(!lastTask || lastTask?.status === 'processing'),
     },
   ];

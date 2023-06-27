@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [v0.6.0 Unreleased]
 
+### Changed
+- Updated sidebar design. [LANDGRIF-1035](https://vizzuality.atlassian.net/browse/LANDGRIF-1035)
+
 ## [v0.5.0]
 
 ### Added
@@ -17,7 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Add filter by year on analysis table. [LANDGRIF-965](https://vizzuality.atlassian.net/browse/LANDGRIF-965)
 
 ### Changed
-- Updated sidebar design. [LANDGRIF-1035](https://vizzuality.atlassian.net/browse/LANDGRIF-1035)
 - Separate 'T1 supplier' and 'producers' in different dropdowns [LANGRIF-1404](https://vizzuality.atlassian.net/browse/LANDGRIF-1404)
 - T1 supplier and producers are different dropdowns [LANDGRIF-1402](https://vizzuality.atlassian.net/browse/LANDGRIF-1402)
 - Updated analisys view-toggle buttons. [LANDGRIF-1041](https://vizzuality.atlassian.net/browse/LANDGRIF-1041)

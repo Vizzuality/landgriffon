@@ -9,7 +9,9 @@ import { Button } from 'components/button';
 
 import type { NavigationList } from 'containers/navigation/types';
 
-const navigationItems: NavigationList = [{ name: 'Help', href: '#', icon: QuestionMarkCircleIcon }];
+const navigationItems: NavigationList = [
+  { name: 'Help', href: '#', icon: { default: QuestionMarkCircleIcon } },
+];
 
 const Page500: React.FC = () => {
   const route = useRouter();

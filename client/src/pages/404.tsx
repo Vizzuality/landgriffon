@@ -14,9 +14,9 @@ import Logo from 'containers/logo';
 import type { NavigationList } from 'containers/navigation/types';
 
 const navigationItems: NavigationList = [
-  { name: 'Analysis', href: '/analysis', icon: CollectionIcon },
-  { name: 'Admin', href: '#', icon: CogIcon },
-  { name: 'Help', href: '#', icon: QuestionMarkCircleIcon },
+  { name: 'Analysis', href: '/analysis', icon: { default: CollectionIcon } },
+  { name: 'Admin', href: '#', icon: { default: CogIcon } },
+  { name: 'Help', href: '#', icon: { default: QuestionMarkCircleIcon } },
 ];
 
 const Page404: React.FC = () => {

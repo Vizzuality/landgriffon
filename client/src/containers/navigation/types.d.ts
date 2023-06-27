@@ -1,7 +1,7 @@
 export type NavigationItem = {
   name: string;
   href: string;
-  icon: { default: typeof JSX.Element; active: typeof JSX.Element };
+  icon: { default: typeof JSX.Element; active?: typeof JSX.Element };
   disabled?: boolean;
 };
 

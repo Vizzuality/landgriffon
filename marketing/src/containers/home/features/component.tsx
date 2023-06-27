@@ -1,5 +1,7 @@
 import Link from 'next/link';
 
+import { motion } from 'framer-motion';
+
 import Icon from 'components/icon';
 
 import Wrapper from 'containers/wrapper';
@@ -94,6 +96,22 @@ const Features: React.FC = () => {
               </FadeIn>
             </li>
           </ul>
+        </div>
+
+        <div className="flex space-x-2 translate-y-16 md:space-x-6">
+          <motion.iframe
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.75, delay: 0.1 }}
+            width="853"
+            height="480"
+            src="https://www.youtube.com/embed/rUl8jQkyJuw"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            title="Landgriffon: Sustainable Supply Chain Solutions"
+            className="w-full h-[190px] md:h-[438px] lg:h-[603px]"
+          />
         </div>
       </Wrapper>
     </section>

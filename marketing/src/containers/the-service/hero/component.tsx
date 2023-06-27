@@ -21,18 +21,35 @@ const Hero: React.FC = () => {
         </motion.div>
 
         <div className="flex space-x-2 translate-y-16 md:space-x-6">
-          <motion.iframe
+          <motion.div
+            className="relative w-5/12 h-32 md:h-[460px] bg-cover"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, delay: 0.1 }}
-            width="853"
-            height="480"
-            src="https://www.youtube.com/embed/rUl8jQkyJuw"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            title="Landgriffon: Sustainable Supply Chain Solutions"
-            className="w-full h-[190px] md:h-[438px] lg:h-[603px]"
+            style={{
+              backgroundImage: `url('/images/service/hero/image3_service.jpg')`,
+              // y: 20 * percentage,
+            }}
+          />
+          <motion.div
+            className="relative w-4/12 h-32 md:h-[460px] bg-cover mt-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.75, delay: 0.1 }}
+            style={{
+              backgroundImage: `url('/images/service/hero/image4_service.jpg')`,
+              // y: 50 * percentage,
+            }}
+          />
+          <motion.div
+            className="relative w-4/12 h-32 md:h-[460px] bg-cover"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.75, delay: 0.1 }}
+            style={{
+              backgroundImage: `url('/images/service/hero/image5_service.jpg')`,
+              // y: 20 * percentage,
+            }}
           />
         </div>
       </Wrapper>

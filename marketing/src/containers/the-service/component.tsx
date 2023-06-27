@@ -16,7 +16,6 @@ import Testimonials from 'containers/testimonials';
 import Newsletter from 'containers/newsletter';
 import ScrollDown from 'containers/scroll-down';
 import BlogPosts from 'containers/blog-posts';
-import Chart from './chart/component';
 
 const TheService: React.FC = () => {
   return (
@@ -41,7 +40,6 @@ const TheService: React.FC = () => {
       </Steps>
 
       <Testimonials />
-      <Chart />
       <BlogPosts />
       <Newsletter />
     </div>

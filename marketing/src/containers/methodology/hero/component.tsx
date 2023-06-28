@@ -47,7 +47,8 @@ const Hero: React.FC = () => {
                 Analyze impacts with world-renowned datasets.
               </h1>
               <h2 className="text-2xl font-medium text-black font-display md:text-3xl">
-                Download our methodology and find out how LandGriffon works.
+                Our open-source and open-science software ensures total transparency to align
+                companies with nature standards and ESG regulations, such as SBTN and TNFD guidance.
               </h2>
 
               <div className="flex flex-col space-y-6 sm:flex-row sm:space-y-0 sm:space-x-6 xl:justify-between">

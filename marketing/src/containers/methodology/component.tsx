@@ -4,9 +4,6 @@ import Hero from 'containers/methodology/hero';
 import StayUpToDate from 'containers/methodology/stay-up-to-date';
 import DataProviders from 'containers/methodology/data-providers';
 
-import Steps from 'containers/methodology/steps';
-import Step01 from 'containers/methodology/steps/01';
-import Step02 from 'containers/methodology/steps/02';
 import ContactUs from 'containers/methodology/contact-us';
 import KnowMore from 'containers/methodology/know-more';
 
@@ -39,11 +36,6 @@ const Methodology: React.FC = () => {
       <Hero />
       <StayUpToDate />
       <DataProviders />
-
-      <Steps>
-        <Step01 />
-        <Step02 />
-      </Steps>
 
       <ContactUs />
 

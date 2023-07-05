@@ -9,6 +9,8 @@ import { JwtAuthGuard } from 'guards/jwt-auth.guard';
 import { useContainer } from 'class-validator';
 import { SensitiveInfoGuard } from 'guards/sensitive-info.guard';
 
+console.log('testing ci');
+
 async function bootstrap(): Promise<void> {
   const logger: Logger = new Logger('bootstrap');
   const serverConfig: any = config.get('server');

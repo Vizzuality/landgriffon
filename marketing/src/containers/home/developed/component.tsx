@@ -99,7 +99,7 @@ const Developed: React.FC = () => {
                     layout="intrinsic"
                     src="/images/logos/WWF.png"
                     alt="WWD"
-                    width={66.24}
+                    width={90}
                     height={97}
                   />
                 </a>

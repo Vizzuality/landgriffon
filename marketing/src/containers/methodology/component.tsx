@@ -6,6 +6,7 @@ import DataProviders from 'containers/methodology/data-providers';
 
 import ContactUs from 'containers/methodology/contact-us';
 import KnowMore from 'containers/methodology/know-more';
+import SourcingModel from 'containers/methodology/sourcing-model';
 
 import Testimonials from 'containers/testimonials';
 import Newsletter from 'containers/newsletter';
@@ -35,6 +36,8 @@ const Methodology: React.FC = () => {
       <ScrollDown theme="light" />
       <Hero />
       <StayUpToDate />
+
+      <SourcingModel />
       <DataProviders />
 
       <ContactUs />

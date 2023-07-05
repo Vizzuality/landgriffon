@@ -71,13 +71,15 @@ const GroupByFilter: React.FC = () => {
   }, [dispatch, currentValue, filters.by]);
 
   return (
-    <Select
-      icon={<span className="text-sm text-gray-400">by</span>}
-      value={currentValue}
-      options={options}
-      onChange={handleChange}
-      data-testid="group-filters"
-    />
+    <div className="w-[168px]">
+      <Select
+        icon={<span className="text-sm text-gray-400">by</span>}
+        value={currentValue}
+        options={options}
+        onChange={handleChange}
+        data-testid="group-filters"
+      />
+    </div>
   );
 };
 

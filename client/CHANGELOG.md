@@ -8,14 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [v0.6.0 Unreleased]
 
 ### Changed
+
 - Updated sidebar design. [LANDGRIF-1035](https://vizzuality.atlassian.net/browse/LANDGRIF-1035)
 
 ### Fixed
+
+- Fixed analysis filters selectors width [LANDGRIF-1437](https://vizzuality.atlassian.net/browse/LANDGRIF-1437)
 - Fixed treeselect auto scroll [LANDGRIF-1435](https://vizzuality.atlassian.net/browse/LANDGRIF-1435)
 
 ## [v0.5.0]
 
 ### Added
+
 - Download file with upload errors [LANGRIF-1342](https://vizzuality.atlassian.net/browse/LANDGRIF-1342)
 - Showing progress and errors for data upload [LANDGRIF-1293](https://vizzuality.atlassian.net/browse/LANDGRIF-1293)
 - Integration of local layer to handle different type of layers in the future. [LANDGRIF-1248](https://vizzuality.atlassian.net/browse/LANDGRIF-1248)
@@ -23,14 +27,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Add filter by year on analysis table. [LANDGRIF-965](https://vizzuality.atlassian.net/browse/LANDGRIF-965)
 
 ### Changed
+
 - Separate 'T1 supplier' and 'producers' in different dropdowns [LANGRIF-1404](https://vizzuality.atlassian.net/browse/LANDGRIF-1404)
 - T1 supplier and producers are different dropdowns [LANDGRIF-1402](https://vizzuality.atlassian.net/browse/LANDGRIF-1402)
 - Updated analisys view-toggle buttons. [LANDGRIF-1041](https://vizzuality.atlassian.net/browse/LANDGRIF-1041)
 - Hide the manage data table search bar and years filter.[LANDGRIF-1310](https://vizzuality.atlassian.net/browse/LANDGRIF-1310)
 - Add unit for the volumes in the procurement data table view.[LANDGRIF-1315](https://vizzuality.atlassian.net/browse/LANDGRIF-1315)
 - Showing correct value for contextual layer type range in the pop-up. [LANDGRIF-1317](https://vizzuality.atlassian.net/browse/LANDGRIF-1317)
-- Changed the layers info from a tooltip for a modal.[LANDGRIF-1341](https://vizzuality.atlassian.net/browse/LANDGRIF-1341) 
-- Signup removed from auth page.[LANDGRIF-1314](https://vizzuality.atlassian.net/browse/LANDGRIF-1314) 
+- Changed the layers info from a tooltip for a modal.[LANDGRIF-1341](https://vizzuality.atlassian.net/browse/LANDGRIF-1341)
+- Signup removed from auth page.[LANDGRIF-1314](https://vizzuality.atlassian.net/browse/LANDGRIF-1314)
 - Updated date and time format in the upload data page, also added the author [LANDGRIF-1297](https://vizzuality.atlassian.net/browse/LANDGRIF-1297)
 - Changed table style. [LANDGRIF-1299](https://vizzuality.atlassian.net/browse/LANDGRIF-1299)
 - Updated axios version.
@@ -43,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Replaced Deck.gl map with `react-map-gl` to prepare migration to Layer Manager. [LANDGRIF-812](https://vizzuality.atlassian.net/browse/LANDGRIF-812)
 
 ### Fixed
+
 - Fix selectors allowing select disabled options when searching [LANDGRIF-1318](https://vizzuality.atlassian.net/browse/LANDGRIF-1318)
 - Wrong error message in the scenario creation [LANDGRIF-1302](https://vizzuality.atlassian.net/browse/LANDGRIF-1302)
 - Fix map resizing when sidebar is collapsed [LANDGRIF-1305](https://vizzuality.atlassian.net/browse/LANDGRIF-1305)
@@ -57,12 +63,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Fix permissions for edit scenarios on analysis pages [LANDGRIF-1253](https://vizzuality.atlassian.net/browse/LANDGRIF-1253)
 
 ## [v0.4.0]
+
 ### Added
+
 - Added role check to enable upload data source button[LANGRIF-1125](https://vizzuality.atlassian.net/browse/LANDGRIF-1125)
 
 ## [v0.3.6]
 
 ### Added
+
 - Added role check to enable upload data source button [LANDGRIF-1125](https://vizzuality.atlassian.net/browse/LANDGRIF-1125)
 - Added `@floating-ui/react` and `@floating-ui/react-dom` dependencies. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
 - Added disabled option styles for single and autocomplete selects. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
@@ -78,6 +87,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Added a volume field in the intervention form [LANDGRIF-1112](https://vizzuality.atlassian.net/browse/LANDGRIF-1112)
 
 ### Changed
+
 - Filter indicators in the chart and table view [LANDGRIF-1173](https://vizzuality.atlassian.net/browse/LANDGRIF-1173)
 - Disables materials in tree-select when needed. Also, materials are sorted alphabetically now. [LANDGRIF-1108](https://vizzuality.atlassian.net/browse/LANDGRIF-1108)
 - Disabled `Country of delivery` and `Unknown` location types options from intervention form. [LANDGRIF-1148](https://vizzuality.atlassian.net/browse/LANDGRIF-1148)
@@ -90,6 +100,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Move the users page from data to user [LANDGRIF-1122](https://vizzuality.atlassian.net/browse/LANDGRIF-1122)
 
 ### Fixed
+
 - Intervention form: an empty object was being sent for coefficients when these were `undefined`. [LANDGRIF-1238](https://vizzuality.atlassian.net/browse/LANDGRIF-1238)
 - Material layer fixed to resolution 4 [LANDGRIF-1234](https://vizzuality.atlassian.net/browse/LANDGRIF-1234)
 - Issue preventing new users to sign up in the platform. [LANDGRIF-1222](https://vizzuality.atlassian.net/browse/LANDGRIF-1222)
@@ -108,12 +119,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Contextual layers should render in resolution 4 [LANDGRIF-1130](https://vizzuality.atlassian.net/browse/LANDGRIF-1130)
 
 ### Removed
+
 - Removed deprecated `@floating-ui/react-dom-interactions` dependency.
 - Removed `components/select` and `react-select` library. [LANDGRIF-1037](https://vizzuality.atlassian.net/browse/LANDGRIF-1037)
 
 ## [v0.3.5]
 
 ### Fixed
+
 - Contextual layers were not showed in the map
 - Styles of the legend were not applied correctly
 - Styles of the opacity control were not applied correctly

@@ -5,7 +5,7 @@ export interface WrapperProps {
 }
 
 const Wrapper: React.FC<WrapperProps> = ({ children }: WrapperProps) => {
-  return <div className="max-w-6xl px-5 mx-auto whitespace-normal lg:px-10">{children}</div>;
+  return <div className="max-w-5xl px-5 mx-auto whitespace-normal lg:px-10">{children}</div>;
 };
 
 export default Wrapper;

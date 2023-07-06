@@ -3,13 +3,13 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 
 import { apiService } from 'services/api';
 
-import type { ProfilePayload, PasswordPayload, ErrorResponse } from 'types';
+import type { User, PasswordPayload, ErrorResponse, ProfilePayload } from 'types';
 import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
 import type { AxiosPromise } from 'axios';
 
-type ResponseData = UseQueryResult<ProfilePayload>;
+type ResponseData = UseQueryResult<User>;
 
-const DEFAULT_QUERY_OPTIONS: UseQueryOptions<ProfilePayload> = {
+const DEFAULT_QUERY_OPTIONS: UseQueryOptions<User> = {
   retry: false,
   keepPreviousData: true,
   refetchOnWindowFocus: false,

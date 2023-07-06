@@ -364,6 +364,10 @@ export type User = {
   displayName: string;
   email: string;
   isActive: boolean;
+  fname: string;
+  lname: string;
+  avatarDataUrl?: string;
+  isDeleted: boolean;
 };
 
 export type UserPayload = {

@@ -9,6 +9,7 @@ import Button from 'components/button';
 import Search from 'components/search';
 import Table from 'components/table';
 import { DEFAULT_PAGE_SIZES } from 'components/table/pagination/constants';
+import UserAvatar from 'containers/user-avatar/component';
 
 import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type { TableProps } from 'components/table/component';
@@ -44,7 +45,12 @@ const AdminUsersPage: React.FC = () => {
           size: 110,
           align: 'left',
           enableSorting: true,
-          cell: ({ row }) => <div className="my-6 ml-4 name">{row.original.displayName}</div>,
+          cell: ({ row }) => (
+            <div className="my-6 name flex items-center gap-x-4">
+              <UserAvatar user={row.original} className="w-10 h-10" />
+              <span>{row.original.displayName}</span>
+            </div>
+          ),
         },
         {
           id: 'email',

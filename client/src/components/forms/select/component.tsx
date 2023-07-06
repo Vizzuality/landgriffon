@@ -203,11 +203,9 @@ const Select = <T,>({
               }}
               ref={floating}
             >
-              <Listbox.Options
-                ref={parentRef}
-                className="mt-2 overflow-auto text-base bg-white rounded-md shadow-sm max-h-60 ring-1 ring-gray-200 focus:outline-none"
-              >
-                <div
+              <div className="mt-2 overflow-y-auto text-base bg-white rounded-md shadow-sm max-h-60 ring-1 ring-gray-200 focus:outline-none max-w-sm">
+                <Listbox.Options
+                  ref={parentRef}
                   style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
                   className="w-full relative"
                 >
@@ -218,7 +216,7 @@ const Select = <T,>({
                         key={virtualItem.index}
                         className={({ active, disabled }) =>
                           classnames(
-                            'absolute top-0 left-0 w-full cursor-default text-sm select-none py-2 pl-3 pr-9 hover:cursor-pointer',
+                            'relative cursor-default text-sm select-none py-2 pl-3 pr-9 hover:cursor-pointer',
                             {
                               'bg-navy-50': active,
                               'pointer-events-none cursor-default': disabled,
@@ -227,7 +225,6 @@ const Select = <T,>({
                         }
                         style={{
                           height: `${virtualItem.size}px`,
-                          transform: `translateY(${virtualItem.start}px)`,
                         }}
                         value={option}
                         disabled={option.disabled}
@@ -246,11 +243,11 @@ const Select = <T,>({
                       </Listbox.Option>
                     );
                   })}
-                </div>
-                {!options.length && (
-                  <div className="px-3 py-2 text-sm text-gray-500">No results</div>
-                )}
-              </Listbox.Options>
+                  {!options.length && (
+                    <div className="px-3 py-2 text-sm text-gray-500">No results</div>
+                  )}
+                </Listbox.Options>
+              </div>
             </Transition>
 
             {showHint && error && typeof error === 'string' && (

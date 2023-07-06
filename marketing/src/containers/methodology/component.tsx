@@ -10,6 +10,7 @@ import KnowMore from 'containers/methodology/know-more';
 import Testimonials from 'containers/testimonials';
 import Newsletter from 'containers/newsletter';
 import ScrollDown from 'containers/scroll-down';
+import Regulations from './regulations/component';
 
 const Methodology: React.FC = () => {
   useEffect(() => {
@@ -35,6 +36,8 @@ const Methodology: React.FC = () => {
       <ScrollDown theme="light" />
       <Hero />
       <StayUpToDate />
+
+      <Regulations />
       <DataProviders />
 
       <ContactUs />

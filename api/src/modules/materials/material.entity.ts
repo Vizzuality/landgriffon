@@ -64,7 +64,7 @@ export class Material extends TimestampedBaseEntity {
   @ApiPropertyOptional()
   description?: string;
 
-  @Column({ nullable: false, unique: true })
+  @Column({ type: 'varchar', nullable: false, unique: true })
   @ApiPropertyOptional()
   hsCodeId: string;
 

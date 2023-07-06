@@ -274,12 +274,12 @@ export class SourcingDataImportService {
     this.logger.log(`Materials count: ${materials.length}`);
     this.logger.log(`Sourcing Data count: ${sourcingData.length}`);
 
-    const materialMap: Record<number, string> = {};
+    const materialMap: Record<string, string> = {};
     materials.forEach((material: Material) => {
       if (!material.hsCodeId) {
         return;
       }
-      materialMap[parseInt(material.hsCodeId)] = material.id;
+      materialMap[material.hsCodeId] = material.id;
     });
 
     for (const sourcingLocation of sourcingData) {
@@ -299,9 +299,7 @@ export class SourcingDataImportService {
       if (typeof sourcingLocation.materialId === 'undefined') {
         return;
       }
-      const sourcingLocationMaterialId: number = parseInt(
-        sourcingLocation.materialId,
-      );
+      const sourcingLocationMaterialId: string = sourcingLocation.materialId;
 
       if (!(sourcingLocationMaterialId in materialMap)) {
         throw new Error(

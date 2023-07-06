@@ -11,6 +11,7 @@ import SourcingModel from 'containers/methodology/sourcing-model';
 import Testimonials from 'containers/testimonials';
 import Newsletter from 'containers/newsletter';
 import ScrollDown from 'containers/scroll-down';
+import Regulations from './regulations/component';
 
 const Methodology: React.FC = () => {
   useEffect(() => {
@@ -37,6 +38,7 @@ const Methodology: React.FC = () => {
       <Hero />
       <StayUpToDate />
 
+      <Regulations />
       <SourcingModel />
       <DataProviders />
 

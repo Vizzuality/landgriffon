@@ -23,6 +23,7 @@ const SLIDES = [
               >
                 <Image
                   layout="intrinsic"
+                  priority
                   src="/images/logos/gfw.png"
                   alt="GFW"
                   width={88}
@@ -39,6 +40,7 @@ const SLIDES = [
               >
                 <Image
                   layout="intrinsic"
+                  priority
                   src="/images/logos/copernicus_logo.png"
                   alt="copernicus"
                   width={191}
@@ -63,6 +65,7 @@ const SLIDES = [
               <a href="http://www.earthstat.org/" target="_blank" rel="noopener noreferrer">
                 <Image
                   layout="intrinsic"
+                  priority
                   src="/images/logos/earthstat.png"
                   alt="earthstat"
                   width={228}
@@ -75,6 +78,7 @@ const SLIDES = [
               <a href="https://www.mapspam.info/" target="_blank" rel="noopener noreferrer">
                 <Image
                   layout="intrinsic"
+                  priority
                   src="/images/logos/mapspam.png"
                   alt="mapspam"
                   width={88}
@@ -87,6 +91,7 @@ const SLIDES = [
               <a href="https://www.fao.org/faostat/en/" target="_blank" rel="noopener noreferrer">
                 <Image
                   layout="intrinsic"
+                  priority
                   src="/images/logos/FAO.png"
                   alt="FAO"
                   width={88}

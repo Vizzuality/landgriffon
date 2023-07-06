@@ -99,12 +99,12 @@ async function createMaterialTreeForXLSXImport(
     },
     {
       name: 'Bananas, including plantains; fresh or dried',
-      hsCodeId: '803',
+      hsCodeId: '0803',
       parentHsCodeId: '08',
     },
     {
       name: 'Coffee, whether or not roasted or decaffeinated; husks and skins; coffee substitutes containing coffee in any proportion',
-      hsCodeId: '901',
+      hsCodeId: '0901',
       parentHsCodeId: '09',
     },
     {

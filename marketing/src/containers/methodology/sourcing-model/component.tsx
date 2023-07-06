@@ -3,10 +3,6 @@ import Image from 'next/image';
 import Wrapper from 'containers/wrapper';
 import FadeIn from 'components/fade';
 
-import Icon from 'components/icon';
-
-import ARROW_TOP_RIGHT_SVG from 'svgs/ui/arrow-top-right.svg?sprite';
-
 const SourcingModel: React.FC = () => {
   return (
     <section className="relative py-12 space-y-12 bg-blue-600 bg-cover md:space-y-64 md:py-64">
@@ -20,9 +16,9 @@ const SourcingModel: React.FC = () => {
 
           <div className="space-y-4">
             <FadeIn>
-              <p className="text-white inline-block text-2xl font-light leading-relaxed">
+              <p className="text-white inline-block text-2xl font-light leading-tight">
                 Nature metrics need spatial information.{' '}
-                <span className="text-black bg-orange-500 px-2.5 -mx-2.5 mb-5">
+                <span className="text-black bg-orange-500">
                   Regardless of how much data you have on your supply chain, LandGriffon is built
                   for you.
                 </span>
@@ -48,7 +44,10 @@ const SourcingModel: React.FC = () => {
           <FadeIn>
             <div className="space-y-10 lg:space-x-20 lg:space-y-0">
               <div className="w-full space-y-4">
-                <h4 className="text-xs uppercase">Sourcing location time</h4>
+                <div className="grid grid-cols-2 gap-8">
+                  <h4 className="text-xs uppercase">Sourcing location time</h4>
+                  <h4 className="text-xs uppercase">Modeled likely production areas</h4>
+                </div>
 
                 <div className="grid grid-cols-2 gap-8 border-t border-white pt-4">
                   <div className="space-y-2">

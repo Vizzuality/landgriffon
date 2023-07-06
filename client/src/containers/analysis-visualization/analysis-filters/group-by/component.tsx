@@ -22,8 +22,12 @@ const GROUP_BY_OPTIONS: Group[] = [
     name: 'Region',
   },
   {
-    id: 'supplier',
-    name: 'Supplier',
+    id: 't1Supplier',
+    name: 'T1 Supplier',
+  },
+  {
+    id: 'producer',
+    name: 'Producer',
   },
   {
     id: 'location-type',

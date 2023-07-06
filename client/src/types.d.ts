@@ -368,6 +368,8 @@ export type User = {
   lname: string;
   avatarDataUrl?: string;
   isDeleted: boolean;
+  id: string;
+  roles: Role[];
 };
 
 export type UserPayload = {

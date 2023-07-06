@@ -5,7 +5,7 @@ import FadeIn from 'components/fade';
 
 const SourcingModel: React.FC = () => {
   return (
-    <section className="relative py-12 space-y-12 bg-blue-600 bg-cover md:space-y-64 md:py-64">
+    <section className="relative py-12 space-y-12 bg-blue-600 bg-cover md:space-y-64 md:py-32">
       <Wrapper>
         <div className="space-y-10 text-white md:space-y-20">
           <FadeIn>

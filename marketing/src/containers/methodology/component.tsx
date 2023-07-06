@@ -45,11 +45,6 @@ const Methodology: React.FC = () => {
       <OpenScience />
 
       <ContactUs />
-
-      <KnowMore />
-
-      <Testimonials />
-      <Newsletter />
     </>
   );
 };

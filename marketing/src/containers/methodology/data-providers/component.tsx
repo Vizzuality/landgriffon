@@ -189,7 +189,7 @@ const SLIDES = [
 const DataProviders: FC = () => {
   const [slide, setSlide] = useState(0);
   return (
-    <section className="bg-white ">
+    <section className="bg-white py-12 space-y-1 bg-cover md:space-y-64 md:py-36">
       <Wrapper>
         <FadeIn>
           <div className="space-y-10 pb-20">

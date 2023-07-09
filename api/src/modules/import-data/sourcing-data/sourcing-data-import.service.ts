@@ -144,16 +144,11 @@ export class SourcingDataImportService {
         dtoMatchedData.suppliers,
       );
 
-      const { geoCodedSourcingData, errors } =
+      const geoCodedSourcingData: any =
         await this.geoCodingService.geoCodeLocations(
           dtoMatchedData.sourcingData,
         );
-      if (errors.length) {
-        await this.tasksService.updateImportTask({ taskId, newErrors: errors });
-        throw new BadRequestException(
-          'Import failed. There are GeoCoding errors present in the file',
-        );
-      }
+
       const warnings: string[] = [];
       geoCodedSourcingData.forEach((elem: SourcingData) => {
         if (elem.locationWarning) warnings.push(elem.locationWarning);
@@ -215,7 +210,7 @@ export class SourcingDataImportService {
             await validateOrReject(dto);
           } catch (err: any) {
             validationErrorArray.push({
-              line: i + 5,
+              line: i + 2,
               property: err[0].property,
               message: err[0].constraints,
             });

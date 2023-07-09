@@ -7,7 +7,7 @@ import {
 export abstract class GeoCodingAbstractClass {
   abstract geoCodeLocations(
     sourcingData: SourcingData[],
-  ): Promise<{ geoCodedSourcingData: SourcingData[]; errors: any[] }>;
+  ): Promise<SourcingData[]>;
 
   abstract geoCodeSourcingLocation(locationInfo: {
     locationAdminRegionInput?: string;

@@ -149,6 +149,15 @@ export class SourcingDataImportService {
           dtoMatchedData.sourcingData,
         );
 
+      const errors: Error[] = [];
+
+      if (errors.length) {
+        await this.tasksService.updateImportTask({ taskId, newErrors: errors });
+        throw new BadRequestException(
+          'Import failed. There are GeoCoding errors present in the file',
+        );
+      }
+
       const warnings: string[] = [];
       geoCodedSourcingData.forEach((elem: SourcingData) => {
         if (elem.locationWarning) warnings.push(elem.locationWarning);

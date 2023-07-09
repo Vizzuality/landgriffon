@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  ServiceUnavailableException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
@@ -25,10 +20,12 @@ import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
+import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 import { TasksService } from 'modules/tasks/tasks.service';
 import { ScenariosService } from 'modules/scenarios/scenarios.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
-import { Indicator } from 'modules/indicators/indicator.entity';
+import { CreateIndicatorDto } from '../../indicators/dto/create.indicator.dto';
+import { Indicator } from '../../indicators/indicator.entity';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -95,24 +92,29 @@ export class SourcingDataImportService {
         await this.validateAndCreateDTOs(
           parsedXLSXDataset,
           sourcingLocationGroup.id,
-        ).catch(async (err: any) => {
-          await this.tasksService.updateImportTask({
-            taskId,
-            newErrors: err.message,
-          });
-          throw new BadRequestException(
-            'Import failed. There are constraint errors present in the file',
-          );
-        });
+        );
 
-      //TODO: Implement transactional import. Move geocoding to first step
+      const geoCodedSourcingData: SourcingData[] =
+        await this.geoCodingService.geoCodeLocations(
+          dtoMatchedData.sourcingData,
+        );
+
+      const warnings: string[] = [];
+      geoCodedSourcingData.forEach((elem: SourcingData) => {
+        if (elem.locationWarning) warnings.push(elem.locationWarning);
+      });
+      warnings.length > 0 &&
+        (await this.tasksService.updateImportTask({
+          taskId,
+          newLogs: warnings,
+        }));
 
       await this.cleanDataBeforeImport();
 
       const materials: Material[] =
         await this.materialService.findAllUnpaginated();
       if (!materials.length) {
-        throw new ServiceUnavailableException(
+        throw new Error(
           'No Materials found present in the DB. Please check the LandGriffon installation manual',
         );
       }
@@ -143,22 +145,6 @@ export class SourcingDataImportService {
       const suppliers: Supplier[] = await this.supplierService.createTree(
         dtoMatchedData.suppliers,
       );
-
-      const { geoCodedSourcingData, errors } =
-        await this.geoCodingService.geoCodeLocations(
-          dtoMatchedData.sourcingData,
-        );
-
-      const warnings: string[] = [];
-      geoCodedSourcingData.forEach((elem: SourcingData) => {
-        if (elem.locationWarning) warnings.push(elem.locationWarning);
-      });
-      warnings.length > 0 &&
-        (await this.tasksService.updateImportTask({
-          taskId,
-          newLogs: warnings,
-        }));
-
       const sourcingDataWithOrganizationalEntities: any =
         await this.relateSourcingDataWithOrganizationalEntities(
           suppliers,
@@ -182,11 +168,16 @@ export class SourcingDataImportService {
         );
 
         this.logger.log('Indicator Records generated');
+        // TODO: Hack to force m.view refresh once Indicator Records are persisted. This should be automagically
+        //       done by the AfterInsert() event listener placed in indicator-record.entity.ts
         await this.indicatorRecordsService.updateImpactView();
       } catch (err: any) {
-        throw new ServiceUnavailableException(
-          'Could not calculate Impact for current data. Please contact with the administrator',
-        );
+        if (err instanceof MissingH3DataError) {
+          throw new MissingH3DataError(
+            `Missing H3 Data to calculate Impact in Import`,
+          );
+        }
+        throw err;
       }
     } finally {
       await this.fileService.deleteDataFromFS(filePath);
@@ -210,7 +201,7 @@ export class SourcingDataImportService {
             await validateOrReject(dto);
           } catch (err: any) {
             validationErrorArray.push({
-              line: i + 5,
+              line: i + 2,
               property: err[0].property,
               message: err[0].constraints,
             });

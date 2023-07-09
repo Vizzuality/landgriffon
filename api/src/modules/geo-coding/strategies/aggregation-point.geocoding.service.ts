@@ -10,7 +10,6 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
   aggregationPointGeocodingLogger: Logger = new Logger(
     AggregationPointGeocodingStrategy.name,
   );
-
   async geoCodeAggregationPoint(sourcingData: SourcingData): Promise<any> {
     /**
      * The user must specify a country, and either an address OR coordinates
@@ -48,14 +47,12 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
           )
         ).adminRegionId;
       } catch (e) {
-        /**
-         * If no AdminRegion found, remove the GeoRegion
-         * , but only if it is not used by another SourcingLocation
-         */
         const existingSourcingLocation: SourcingLocation | null =
-          await this.findExistingSourcingLocationByGeoRegionId(geoRegionId);
+          await this.findExistingSourcingLocationByGeoRegionId(
+            geoRegionId as unknown as string,
+          );
         if (!existingSourcingLocation) {
-          await this.geoRegionService.remove(geoRegionId);
+          await this.geoRegionService.remove(geoRegionId as unknown as string);
         }
         throw e;
       }

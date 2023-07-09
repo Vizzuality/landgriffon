@@ -94,7 +94,7 @@ export class SourcingDataImportService {
           sourcingLocationGroup.id,
         );
 
-      const geoCodedSourcingData: SourcingData[] =
+      const geoCodedSourcingData: any =
         await this.geoCodingService.geoCodeLocations(
           dtoMatchedData.sourcingData,
         );

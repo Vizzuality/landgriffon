@@ -27,7 +27,6 @@
   },
   "dependencies": {
     "@googlemaps/google-maps-services-js": "~3.3.2",
-    "@json2csv/node": "^7.0.1",
     "@nestjs/axios": "^1.0.0",
     "@nestjs/bull": "^0.6.2",
     "@nestjs/common": "^9.2.1",

@@ -256,12 +256,6 @@ export class SourcingDataImportService {
     }
   }
 
-  /**
-   * @note: Type hack as mpath property does not exist on Materials and BusinessUnits, but its created
-   * by typeorm when using @Tree('materialized-path)'.
-   * It's what we can use to know which material/business unit relates to which sourcing-location
-   * in a synchronous way avoiding hitting the DB
-   */
   async relateSourcingDataWithOrganizationalEntities(
     suppliers: Supplier[],
     businessUnits: Record<string, any>[],

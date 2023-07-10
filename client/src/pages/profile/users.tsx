@@ -10,6 +10,8 @@ import Search from 'components/search';
 import Table from 'components/table';
 import { DEFAULT_PAGE_SIZES } from 'components/table/pagination/constants';
 import UserAvatar from 'containers/user-avatar/component';
+import { useProfile } from 'hooks/profile';
+import EditUser from 'containers/edit-user/component';
 
 import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type { TableProps } from 'components/table/component';
@@ -27,13 +29,22 @@ const AdminUsersPage: React.FC = () => {
     return sorting.map((sort) => (sort.desc ? `-${sort.id}` : sort.id)).join(',') || null;
   }, [sorting]);
 
-  const { data, isFetching } = useUsers({
+  const { data: user, isFetching: isFetchingUser } = useProfile();
+
+  const { data, isFetching: isFetchingData } = useUsers({
     'page[size]': pagination.pageSize,
     'page[number]': pagination.pageIndex,
     sort: sortStr,
   });
 
   const handleOnSearch = useDebounceCallback((searchTerm: string) => setSearch(searchTerm), 250);
+
+  const tableData = useMemo(() => {
+    if (data?.data && user) {
+      return data?.data?.filter(({ id }) => id !== user?.id);
+    }
+    return [];
+  }, [data, user]);
 
   const tableProps = useMemo<TableProps<User>>(
     () => ({
@@ -67,8 +78,19 @@ const AdminUsersPage: React.FC = () => {
           align: 'left',
           enableSorting: true,
         },
+        {
+          id: 'id',
+          header: '',
+          size: 100,
+          align: 'right',
+          cell: ({ row }) => (
+            <div className="pr-6">
+              <EditUser user={row.original} />
+            </div>
+          ),
+        },
       ],
-      data: data?.data ?? [],
+      data: tableData,
       headerTheme: 'clean',
       onPaginationChange: setPaginationState,
       onSortingChange: setSorting,
@@ -80,7 +102,7 @@ const AdminUsersPage: React.FC = () => {
         totalItems: data?.meta?.totalItems,
       },
     }),
-    [data, pagination, sorting],
+    [data, tableData, pagination, sorting],
   );
 
   return (
@@ -109,7 +131,7 @@ const AdminUsersPage: React.FC = () => {
           </Button>
         </div>
       </div>
-      <Table {...tableProps} isLoading={isFetching} />
+      <Table {...tableProps} isLoading={isFetchingUser || isFetchingData} />
     </ProfileLayout>
   );
 };

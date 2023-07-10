@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { apiService } from 'services/api';
 
@@ -39,4 +39,19 @@ export const useUsers = (
   );
 
   return query;
+};
+
+export const useDeleteUser = () => {
+  const deleteUser = (id: string) =>
+    apiService.request({
+      method: 'DELETE',
+      url: `/users/${id}`,
+    });
+
+  const queryClient = useQueryClient();
+
+  return useMutation(deleteUser, {
+    mutationKey: ['delete-user'],
+    onSuccess: () => queryClient.invalidateQueries(['users']),
+  });
 };

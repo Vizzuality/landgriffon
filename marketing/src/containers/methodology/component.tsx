@@ -5,11 +5,8 @@ import StayUpToDate from 'containers/methodology/stay-up-to-date';
 import DataProviders from 'containers/methodology/data-providers';
 
 import ContactUs from 'containers/methodology/contact-us';
-import KnowMore from 'containers/methodology/know-more';
 import SourcingModel from 'containers/methodology/sourcing-model';
 
-import Testimonials from 'containers/testimonials';
-import Newsletter from 'containers/newsletter';
 import ScrollDown from 'containers/scroll-down';
 import Regulations from './regulations/component';
 import OpenScience from './open-science/component';

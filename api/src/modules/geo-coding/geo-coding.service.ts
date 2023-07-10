@@ -34,9 +34,7 @@ export class GeoCodingService extends GeoCodingAbstractClass {
     super();
   }
 
-  async geoCodeLocations(
-    sourcingData: SourcingData[],
-  ): Promise<{ geoCodedSourcingData: SourcingData[]; errors: any[] }> {
+  async geoCodeLocations(sourcingData: SourcingData[]): Promise<any> {
     this.logger.log(
       `Geocoding locations for ${sourcingData.length} sourcing record elements`,
     );

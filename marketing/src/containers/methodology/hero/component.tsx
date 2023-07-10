@@ -62,7 +62,7 @@ const Hero: React.FC = () => {
                     <div className="relative block flex-none w-10 h-10 transition-colors bg-orange-500 rounded-full group-hover:bg-black">
                       <Icon
                         icon={DOWNLOAD_SVG}
-                        className="absolute w-5 h-5 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 fill-white"
+                        className="absolute w-5 h-5 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 group-hover:fill-white"
                       />
                     </div>
 
@@ -84,7 +84,7 @@ const Hero: React.FC = () => {
                     <div className="relative block w-10 h-10 transition-colors bg-orange-500 rounded-full group-hover:bg-black">
                       <Icon
                         icon={DOWNLOAD_SVG}
-                        className="absolute w-5 h-5 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 fill-white"
+                        className="absolute w-5 h-5 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 group-hover:fill-white"
                       />
                     </div>
 

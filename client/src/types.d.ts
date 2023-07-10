@@ -362,10 +362,10 @@ export type Task = {
 // User
 export type User = {
   displayName: string;
+  fname?: string;
+  lname?: string;
   email: string;
   isActive: boolean;
-  fname: string;
-  lname: string;
   avatarDataUrl?: string;
   isDeleted: boolean;
   id: string;

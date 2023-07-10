@@ -130,27 +130,4 @@ export class TasksController {
   async delete(@Param('id') id: string): Promise<void> {
     return this.taskService.remove(id);
   }
-
-  @ApiOperation({
-    description: 'Get a CSV report of errors by Task Id and type',
-  })
-  @ApiNotFoundResponse({ description: 'Task not found' })
-  @ApiOkResponse()
-  @Get('report/errors/:id')
-  async getErrorsReport(
-    @Param('id') id: string,
-    @Query(ValidationPipe) getReportDto: GetReportsDto,
-    @Res() res: Response,
-  ): Promise<any> {
-    const report: string = await this.taskService.getTaskErrorReport(
-      id,
-      getReportDto,
-    );
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader(
-      'Content-Disposition',
-      'attachment; filename=error_report.csv',
-    );
-    res.send(report);
-  }
 }

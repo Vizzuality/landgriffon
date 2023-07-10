@@ -125,18 +125,4 @@ export class TasksService extends AppBaseService<
       await stalledTask.save();
     }
   }
-
-  async getTaskErrorReport(
-    taskId: string,
-    reportDto: GetReportsDto,
-  ): Promise<string> {
-    const task: Task | null = await this.taskRepository.findOne({
-      where: { id: taskId, type: reportDto.type },
-    });
-    if (!task) {
-      throw new NotFoundException(`Could not found Task with ID: ${taskId}`);
-    }
-    const { errors } = task;
-    return [] as any;
-  }
 }

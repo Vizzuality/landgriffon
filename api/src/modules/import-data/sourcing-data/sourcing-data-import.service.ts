@@ -215,7 +215,7 @@ export class SourcingDataImportService {
             await validateOrReject(dto);
           } catch (err: any) {
             validationErrorArray.push({
-              line: i + 5,
+              line: i + 2,
               property: err[0].property,
               message: err[0].constraints,
             });

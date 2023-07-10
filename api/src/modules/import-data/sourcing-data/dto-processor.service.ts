@@ -448,14 +448,14 @@ export class SourcingRecordsDtoProcessorService {
           if (error.children?.length) {
             error.children.forEach((nestedError: ValidationError) => {
               excelErrors.push({
-                line: index + 5,
+                line: index + 2,
                 column: nestedError.value.year,
                 errors: nestedError.children?.[0].constraints,
               });
             });
           } else {
             excelErrors.push({
-              line: index + 5,
+              line: index + 2,
               column: error?.property,
               errors: error?.constraints,
             });

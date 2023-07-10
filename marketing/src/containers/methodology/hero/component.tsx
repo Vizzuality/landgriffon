@@ -56,13 +56,13 @@ const Hero: React.FC = () => {
                   href="https://bit.ly/3ONp1MJ"
                   rel="noreferrer noopener"
                   target="_blank"
-                  className="flex-1 p-5 border-2 border-black group hover:bg-black/10"
+                  className="flex-1 p-5 border-2 border-black group hover:bg-orange-500"
                 >
                   <div className="flex space-x-3">
-                    <div className="relative block w-10 h-10 transition-colors bg-gray-100 rounded-full group-hover:bg-orange-500">
+                    <div className="relative block flex-none w-10 h-10 transition-colors bg-orange-500 rounded-full group-hover:bg-black">
                       <Icon
                         icon={DOWNLOAD_SVG}
-                        className="absolute w-5 h-5 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"
+                        className="absolute w-5 h-5 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 fill-white"
                       />
                     </div>
 
@@ -78,13 +78,13 @@ const Hero: React.FC = () => {
                   href="https://bit.ly/3gIJq9n"
                   rel="noreferrer noopener"
                   target="_blank"
-                  className="flex-1 p-5 border-2 border-black group hover:bg-black/10"
+                  className="flex-1 p-5 border-2 border-black group hover:bg-orange-500"
                 >
                   <div className="flex space-x-3">
-                    <div className="relative block w-10 h-10 transition-colors bg-gray-100 rounded-full group-hover:bg-orange-500">
+                    <div className="relative block w-10 h-10 transition-colors bg-orange-500 rounded-full group-hover:bg-black">
                       <Icon
                         icon={DOWNLOAD_SVG}
-                        className="absolute w-5 h-5 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"
+                        className="absolute w-5 h-5 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 fill-white"
                       />
                     </div>
 

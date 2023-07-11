@@ -100,6 +100,6 @@ export class AppModule implements OnModuleInit {
   async onModuleInit(): Promise<void> {
     await this.authorizationService.seedRolesAndPermissions();
     await this.taskService.cleanStalledTasks();
-    //TODO: Clean possible stalled async jobs
+    //TODO: Clean possible stalled async jobs from redis
   }
 }

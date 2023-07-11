@@ -18,7 +18,7 @@ env:
 jobs:
   testing-api-e2e:
     name: E2E Tests
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 30
 
     services:
@@ -38,12 +38,14 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Use Node.js 18.12
-        uses: actions/setup-node@v2
+      - name: Setup node
+        working-directory: api
+        uses: actions/setup-node@v3
         with:
-          node-version: '18.12'
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
 
       - name: Install API dependencies
         working-directory: api
@@ -57,11 +59,11 @@ jobs:
         working-directory: api
         run: yarn test:e2e
 
-#      - name: Generate API coverage artifact
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: api-report
-#          path: ${{github.workspace}}/api/coverage/lcov.info
+  #      - name: Generate API coverage artifact
+  #        uses: actions/upload-artifact@v2
+  #        with:
+  #          name: api-report
+  #          path: ${{github.workspace}}/api/coverage/lcov.info
 
 
   testing-api-integration:
@@ -86,12 +88,14 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Use Node.js 18.12
-        uses: actions/setup-node@v2
+      - name: Setup node
+        working-directory: api
+        uses: actions/setup-node@v3
         with:
-          node-version: '18.12'
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
 
       - name: Install API dependencies
         working-directory: api

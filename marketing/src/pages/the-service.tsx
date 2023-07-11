@@ -19,7 +19,7 @@ const TheServicePage: NextPage<PageProps> = ({ domain }) => {
 
           <meta
             name="description"
-            content="LandGriffon helps companies strategize the sustainable transformation of their supply chains by using technology, data and scientific-based analysis to manage environmental impacts.."
+            content="Transform your supply chain sustainably with our advanced technology-driven service. LandGriffon leverages data and scientific analysis to empower companies in strategizing their environmental impact management, driving sustainable practices for a greener future."
           />
 
           <meta
@@ -29,7 +29,7 @@ const TheServicePage: NextPage<PageProps> = ({ domain }) => {
 
           <meta
             name="og:description"
-            content="LandGriffon helps companies strategize the sustainable transformation of their supply chains by using technology, data and scientific-based analysis to manage environmental impacts."
+            content="Transform your supply chain sustainably with our advanced technology-driven service. LandGriffon leverages data and scientific analysis to empower companies in strategizing their environmental impact management, driving sustainable practices for a greener future."
           />
           <meta name="og:type" content="website" />
           <meta name="og:url" content="https://landgriffon.com/the-service" />

@@ -1,13 +1,16 @@
-import { DataSource, QueryRunner, Repository } from 'typeorm';
+import { DataSource, ObjectLiteral, QueryRunner, Repository } from 'typeorm';
 import { SaveOptions } from 'typeorm/repository/SaveOptions';
 import { chunk } from 'lodash';
 import { Injectable, Logger } from '@nestjs/common';
 import * as config from 'config';
+
 const dbConfig: any = config.get('db');
 const batchChunkSize: number = parseInt(`${dbConfig.batchChunkSize}`, 10);
 
 @Injectable()
-export abstract class AppBaseRepository<Entity> extends Repository<Entity> {
+export abstract class AppBaseRepository<
+  Entity extends ObjectLiteral,
+> extends Repository<Entity> {
   logger: Logger = new Logger(this.constructor.name);
   protected dataSource: DataSource;
 

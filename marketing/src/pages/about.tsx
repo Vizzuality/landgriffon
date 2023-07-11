@@ -14,7 +14,7 @@ const AboutPage: NextPage<PageProps> = ({ domain }) => {
       <>
         <Head>
           <title>
-            The Mission? Sustainable Supply Chains. This Is How We Get There | LandGriffon
+            The Mission? Sustainable Supply Chains. This Is How We Get There | About LandGriffon
           </title>
           <link rel="icon" href="/favicon.ico" />
           <meta name="viewport" content="width=device-width" />

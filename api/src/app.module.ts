@@ -30,7 +30,6 @@ import { BullModule } from '@nestjs/bull';
 import { ImpactModule } from 'modules/impact/impact.module';
 import { TasksModule } from 'modules/tasks/tasks.module';
 import { TargetsModule } from 'modules/targets/targets.module';
-import { CommandModule } from 'nestjs-command';
 import { UrlParamsModule } from 'modules/url-params/url-params.module';
 import { ContextualLayersModule } from 'modules/contextual-layers/contextual-layers.module';
 import { CachedDataModule } from 'modules/cached-data/cached-data.module';
@@ -57,7 +56,6 @@ const queueConfig: any = config.get('queue');
     AuthenticationModule,
     BusinessUnitsModule,
     CachedDataModule,
-    CommandModule,
     ContextualLayersModule,
     GeoCodingModule,
     GeoRegionsModule,

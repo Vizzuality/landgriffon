@@ -5,7 +5,6 @@ import {
   Status,
 } from '@googlemaps/google-maps-services-js';
 import { Test } from '@nestjs/testing';
-import { CACHE_MANAGER } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { AppModule } from 'app.module';
 import { CacheGeocoder } from 'modules/geo-coding/geocoders/cache.geocoder';
@@ -15,6 +14,7 @@ import { geocodeResponses } from './mocks/geo-coding.mock-response';
 import ApplicationManager, {
   TestApplication,
 } from '../../utils/application-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 describe('GeoCoding Service (Integration Testing)', () => {
   let testApplication: TestApplication;

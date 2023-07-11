@@ -40,12 +40,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup node
-        working-directory: api
+      - name: Use Node.js 18.16
         uses: actions/setup-node@v3
         with:
-          node-version-file: '.nvmrc'
-          cache: 'yarn'
+          node-version: '18.16'
 
       - name: Install API dependencies
         working-directory: api
@@ -68,7 +66,7 @@ jobs:
 
   testing-api-integration:
     name: Integration Tests
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 30
 
     services:
@@ -90,12 +88,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup node
-        working-directory: api
+      - name: Use Node.js 18.16
         uses: actions/setup-node@v3
         with:
-          node-version-file: '.nvmrc'
-          cache: 'yarn'
+          node-version: '18.16'
 
       - name: Install API dependencies
         working-directory: api

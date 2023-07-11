@@ -1,4 +1,5 @@
-import { CACHE_MANAGER, Inject } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import {
   GeocodeArgs,
   GeocoderInterface,

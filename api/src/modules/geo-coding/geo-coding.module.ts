@@ -1,4 +1,5 @@
-import { CacheModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { CacheModule } from '@nestjs/cache-manager';
 import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { GeoRegionsModule } from 'modules/geo-regions/geo-regions.module';
 import { UnknownLocationGeoCodingStrategy } from 'modules/geo-coding/strategies/unknown-location.geocoding.service';

@@ -5,7 +5,7 @@ import {
   Status,
 } from '@googlemaps/google-maps-services-js';
 import { Test } from '@nestjs/testing';
-import { CACHE_MANAGER } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { AppModule } from 'app.module';
 import { CacheGeocoder } from 'modules/geo-coding/geocoders/cache.geocoder';

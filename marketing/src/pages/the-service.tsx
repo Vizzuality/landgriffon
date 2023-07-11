@@ -13,7 +13,7 @@ const TheServicePage: NextPage<PageProps> = ({ domain }) => {
     <ApplicationLayout>
       <>
         <Head>
-          <title>How We Help You Transform Your Supply Chain | LandGriffon</title>
+          <title>How We Help You Transform Your Supply Chain | LandGriffon Service</title>
           <link rel="icon" href="/favicon.ico" />
           <meta name="viewport" content="width=device-width" />
 

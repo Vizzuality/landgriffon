@@ -818,6 +818,11 @@
     "@nestjs/bull-shared" "^0.1.2"
     tslib "2.4.1"
 
+"@nestjs/cache-manager@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@nestjs/cache-manager/-/cache-manager-2.0.1.tgz#a0a6f2a8322176739d8871bf1a251addffe159d2"
+  integrity sha512-UxDeuarskoSPVzLRl6SVNaUlGnwclhq48JCvQ/zu7W2RRaBqlxzfM8/CaRjrpSwC7/LVrLKv+f9EoAWYOvSULg==
+
 "@nestjs/cli@^9.1.5":
   version "9.1.5"
   resolved "https://registry.yarnpkg.com/@nestjs/cli/-/cli-9.1.5.tgz#aa150991b209dc2b459c974cc1c43ea10a276ff8"
@@ -845,6 +850,15 @@
     typescript "4.8.4"
     webpack "5.74.0"
     webpack-node-externals "3.0.0"
+
+"@nestjs/common@^10.0.5":
+  version "10.0.5"
+  resolved "https://registry.yarnpkg.com/@nestjs/common/-/common-10.0.5.tgz#2d834f1713b16d66f514c969b915fd6e020de391"
+  integrity sha512-0E+SBI+SKswXbFG+Nwtnctrei5dvdFJ7b9/fQDL6KzDBtZwsglJpD86S3ooxnc7ek4vRG57oN2iLmMTjrcesMg==
+  dependencies:
+    uid "2.0.2"
+    iterare "1.2.1"
+    tslib "2.6.0"
 
 "@nestjs/common@^9.2.1":
   version "9.2.1"

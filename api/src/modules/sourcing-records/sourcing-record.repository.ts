@@ -100,6 +100,8 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
 
     this.addGroupAndOrderByToQuery(impactDataQueryBuilder, getImpactTaleDto);
 
+    console.log(impactDataQueryBuilder.getQueryAndParameters());
+
     const dataForImpactTable: ImpactTableData[] =
       await impactDataQueryBuilder.getRawMany();
 
@@ -298,7 +300,13 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
           .addSelect('adminRegion.name', 'name')
           .groupBy('adminRegion.name');
         break;
-      case GROUP_BY_VALUES.T1_SUPPLIER || GROUP_BY_VALUES.PRODUCER:
+      case GROUP_BY_VALUES.T1_SUPPLIER:
+        selectQueryBuilder
+          .addSelect('supplier.name', 'name')
+          .andWhere('supplier.name IS NOT NULL')
+          .groupBy('supplier.name');
+        break;
+      case GROUP_BY_VALUES.PRODUCER:
         selectQueryBuilder
           .addSelect('supplier.name', 'name')
           .andWhere('supplier.name IS NOT NULL')

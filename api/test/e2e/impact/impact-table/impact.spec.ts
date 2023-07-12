@@ -154,7 +154,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         'materialIds[]': [material.id],
         endYear: 1,
         startYear: 2,
-        groupBy: 'material',
+        groupBy: GROUP_BY_VALUES.MATERIAL,
       })
       .expect(HttpStatus.BAD_REQUEST);
 
@@ -182,7 +182,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
         'indicatorIds[]': [inactiveIndicator.id, activeIndicator.id],
         endYear: 1,
         startYear: 2,
-        groupBy: 'material',
+        groupBy: GROUP_BY_VALUES.MATERIAL,
       })
       .expect(HttpStatus.BAD_REQUEST);
 
@@ -296,6 +296,18 @@ describe('Impact Table and Charts test suite (e2e)', () => {
     expect(response3.body.data.impactTable[0].rows[0].name).toEqual(
       supplierDescendant.name,
     );
+
+    const response5 = await request(testApplication.getHttpServer())
+      .get('/api/v1/impact/table')
+      .set('Authorization', `Bearer ${jwtToken}`)
+      .query({
+        'indicatorIds[]': [indicator.id],
+        endYear: 2012,
+        startYear: 2010,
+        groupBy: GROUP_BY_VALUES.PRODUCER,
+      })
+      .expect(HttpStatus.OK);
+
     const response4 = await request(testApplication.getHttpServer())
       .get('/api/v1/impact/table')
       .set('Authorization', `Bearer ${jwtToken}`)

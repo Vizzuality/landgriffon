@@ -20,7 +20,7 @@ const EditUser = ({ user }: EditUserProps) => {
 
   return (
     <>
-      <Button size="xs" variant="white" onClick={() => setOpenModal(true)}>
+      <Button size="xs" variant="white" className="!text-sm" onClick={() => setOpenModal(true)}>
         Edit
       </Button>
       <Modal open={open} title={`Edit user ${userName}`} onDismiss={() => setOpenModal(false)}>

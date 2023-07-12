@@ -1,10 +1,10 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { PlusIcon, SortDescendingIcon } from '@heroicons/react/solid';
-import { useDebounceCallback } from '@react-hook/debounce';
-import { omit } from 'lodash-es';
 import Lottie from 'lottie-react';
+import classNames from 'classnames';
+import toast from 'react-hot-toast';
 
 import { tasksSSR } from 'services/ssr';
 import newScenarioAnimation from 'containers/scenarios/animations/new-scenario.json';
@@ -13,13 +13,15 @@ import GridIcon from 'components/icons/grid';
 import ButtonGroup, { LinkGroupItem } from 'components/button-group';
 import Select from 'components/forms/select';
 import Search from 'components/search';
-import { useScenarios } from 'hooks/scenarios';
+import { useDeleteScenario, useScenarios } from 'hooks/scenarios';
 import AdminLayout from 'layouts/admin';
 import ScenarioCard from 'containers/scenarios/card';
 import { Anchor } from 'components/button';
 import Loading from 'components/loading';
 import { usePermissions } from 'hooks/permissions';
 import { Permission } from 'hooks/permissions/enums';
+import ScenarioTable from 'containers/scenarios/table';
+import DeleteDialog from 'components/dialogs/delete/component';
 
 import type { Option } from 'components/forms/select';
 import type { ScenarioCardProps } from 'containers/scenarios/card/types';
@@ -28,11 +30,9 @@ import type { GetServerSideProps } from 'next';
 const DISPLAY_OPTIONS: ScenarioCardProps['display'][] = ['grid', 'list'];
 
 const displayClasses = {
-  grid: 'grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3',
-  list: 'space-y-6 mt-4',
+  grid: 'grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3',
+  list: 'space-y-1 mt-4 w-full',
 };
-
-const listColumnClasses = 'font-bold text-gray-400 uppercase text-xs xl:text-base';
 
 const SORT_OPTIONS = [
   {
@@ -49,9 +49,30 @@ const ScenariosAdminPage: React.FC = () => {
   const router = useRouter();
   const { query } = router;
 
+  const [scenatioToDelete, setScenatioToDelete] = useState<string>(null);
+  const onDeleteScenario = (id: string) => {
+    setScenatioToDelete(id);
+  };
+  const deleteScenario = useDeleteScenario();
+  const handleCloseDialog = useCallback(() => {
+    setScenatioToDelete(null);
+  }, []);
+
+  const handleDeleteScenario = useCallback(() => {
+    if (scenatioToDelete) {
+      deleteScenario.mutate(scenatioToDelete, {
+        onSuccess: () => {
+          setScenatioToDelete(null);
+          toast.success(`Scenario deleted successfully`);
+        },
+      });
+    }
+  }, [deleteScenario, scenatioToDelete]);
+
   const { hasPermission } = usePermissions();
   const canCreateScenario = hasPermission(Permission.CAN_CREATE_SCENARIO, false);
-
+  const canDeleteScenario = hasPermission(Permission.CAN_DELETE_SCENARIO);
+  const canEditScenario = hasPermission(Permission.CAN_EDIT_SCENARIO);
   const handleSort = useCallback(
     ({ value }: Option<string>) => {
       router.replace(
@@ -69,20 +90,6 @@ const ScenariosAdminPage: React.FC = () => {
     [router, query],
   );
 
-  const handleSearchByTerm = useDebounceCallback((value) => {
-    router.replace(
-      {
-        pathname: router.pathname,
-        query: {
-          ...omit(query, 'search'),
-          ...(value !== '' && { search: value }),
-        },
-      },
-      null,
-      { shallow: true },
-    );
-  }, 250);
-
   const currentSort = useMemo(
     () => SORT_OPTIONS.find(({ value }) => value === query.sortBy) || SORT_OPTIONS[0],
     [query.sortBy],
@@ -93,14 +100,17 @@ const ScenariosAdminPage: React.FC = () => {
     [query.display],
   );
 
-  const searchTerm = useMemo(() => query.search || null, [query.search]);
+  const searchTerm = useMemo(
+    () => (typeof query.search === 'string' ? query.search : null),
+    [query.search],
+  );
 
   const { data, isLoading, isFetched } = useScenarios({
     params: {
       disablePagination: true,
       sort: currentSort.value,
-      'search[title]': searchTerm as string,
       include: 'user',
+      ...(searchTerm && { 'search[title]': searchTerm }),
     },
     options: { select: (data) => data.data },
   });
@@ -108,7 +118,18 @@ const ScenariosAdminPage: React.FC = () => {
   const thereAreScenarios = isFetched && data.length > 0;
 
   return (
-    <AdminLayout title="Manage scenarios data">
+    <AdminLayout
+      title="Manage scenarios data"
+      searchSection={
+        <Search
+          placeholder="Search by scenario name..."
+          data-testid="search-name-scenario"
+          className="border-none"
+          searchQuery="search"
+          disabled
+        />
+      }
+    >
       <Head>
         <title>Admin scenarios | Landgriffon</title>
       </Head>
@@ -135,7 +156,7 @@ const ScenariosAdminPage: React.FC = () => {
                   aria-hidden="true"
                   className="flex items-center justify-center w-5 h-5 rounded-full bg-white"
                 >
-                  <PlusIcon className="w-4 h-4 text-navy-400" />
+                  <PlusIcon className="w-4 h-4 fill-navy-400" />
                 </div>
               }
             >
@@ -145,82 +166,91 @@ const ScenariosAdminPage: React.FC = () => {
         </div>
       )}
 
-      {thereAreScenarios && (
-        <div className="flex justify-between mb-6 space-x-4">
-          <div className="w-full">
-            <Search
-              placeholder="Search by scenario name"
-              defaultValue={searchTerm}
-              onChange={handleSearchByTerm}
-              data-testid="search-name-scenario"
-            />
-          </div>
-          <div className="flex justify-end space-x-4">
-            <div className="flex space-x-2">
-              <Select
-                value={currentSort}
-                options={SORT_OPTIONS}
-                onChange={handleSort}
-                icon={<SortDescendingIcon className="w-4 h-4" />}
-                data-testid="sort-scenario"
-              />
-              <ButtonGroup>
-                {DISPLAY_OPTIONS.map((display) => (
-                  <LinkGroupItem
-                    key={display}
-                    active={currentDisplay === display}
-                    href={{ pathname: '/data/scenarios', query: { ...query, display } }}
-                    data-testid={`scenario-display-${display}`}
-                  >
-                    {display === 'grid' && <GridIcon className="w-6 h-6" aria-hidden="true" />}
-                    {display === 'list' && <ListIcon className="w-6 h-6" aria-hidden="true" />}
-                  </LinkGroupItem>
-                ))}
-              </ButtonGroup>
-            </div>
-            <div>
-              <Anchor
-                href="/data/scenarios/new"
-                variant="secondary"
-                data-testid="scenario-add-button"
-                disabled={!canCreateScenario}
-                icon={
-                  <div
-                    aria-hidden="true"
-                    className="flex items-center justify-center w-5 h-5 rounded-full bg-navy-400"
-                  >
-                    <PlusIcon className="w-4 h-4 text-white" />
-                  </div>
-                }
-              >
-                Add scenario
-              </Anchor>
+      <div className="flex-1 flex  h-full flex-col">
+        {thereAreScenarios && (
+          <div className="mb-6 space-x-4">
+            <div className="w-full bg-white"></div>
+            <div className="flex justify-end space-x-4">
+              <div className="flex space-x-2">
+                <Select
+                  value={currentSort}
+                  options={SORT_OPTIONS}
+                  onChange={handleSort}
+                  icon={<SortDescendingIcon className="w-4 h-4" />}
+                  data-testid="sort-scenario"
+                />
+                <ButtonGroup>
+                  {DISPLAY_OPTIONS.map((display) => (
+                    <LinkGroupItem
+                      key={display}
+                      active={currentDisplay === display}
+                      href={{ pathname: '/data/scenarios', query: { ...query, display } }}
+                      data-testid={`scenario-display-${display}`}
+                    >
+                      {display === 'grid' && <GridIcon className="w-3 h-3" aria-hidden="true" />}
+                      {display === 'list' && <ListIcon className="w-3 h-3" aria-hidden="true" />}
+                    </LinkGroupItem>
+                  ))}
+                </ButtonGroup>
+              </div>
+              <div>
+                <Anchor
+                  href="/data/scenarios/new"
+                  variant="secondary"
+                  data-testid="scenario-add-button"
+                  disabled={!canCreateScenario}
+                  icon={
+                    <div
+                      aria-hidden="true"
+                      className="flex items-center justify-center w-5 h-5 rounded-full bg-navy-400"
+                    >
+                      <PlusIcon className="w-4 h-4 text-white" />
+                    </div>
+                  }
+                >
+                  Add scenario
+                </Anchor>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {thereAreScenarios && currentDisplay === 'list' && (
-        <div className="grid grid-cols-5 gap-4 mx-6">
-          <div className={listColumnClasses}>Scenario</div>
-          <div className={listColumnClasses}>Growth Rates</div>
-          <div className={listColumnClasses}>Interventions</div>
-          <div className={listColumnClasses}>Access</div>
-        </div>
-      )}
-
-      {thereAreScenarios && (
-        <div className={displayClasses[currentDisplay]}>
-          {!isLoading &&
-            data?.map((scenarioData) => (
-              <ScenarioCard
-                key={`scenario-card-${scenarioData.id}`}
-                data={scenarioData}
-                display={currentDisplay}
+        <div
+          className={classNames('flex-1', {
+            'overflow-y-auto': currentDisplay === 'list',
+          })}
+        >
+          {thereAreScenarios &&
+            (currentDisplay === 'grid' ? (
+              <div className={displayClasses[currentDisplay]}>
+                {!isLoading &&
+                  data?.map((scenarioData) => (
+                    <ScenarioCard
+                      key={`scenario-card-${scenarioData.id}`}
+                      data={scenarioData}
+                      canEditScenario={canEditScenario}
+                      canDeleteScenario={canDeleteScenario}
+                      onDelete={onDeleteScenario}
+                    />
+                  ))}
+              </div>
+            ) : (
+              <ScenarioTable
+                data={data}
+                canEditScenario={canEditScenario}
+                canDeleteScenario={canDeleteScenario}
+                onDelete={onDeleteScenario}
               />
             ))}
         </div>
-      )}
+        <DeleteDialog
+          isOpen={!!scenatioToDelete}
+          title="Delete Scenario"
+          onDelete={handleDeleteScenario}
+          onClose={handleCloseDialog}
+          description="All of this scenario data will be permanently removed from our servers forever. This action cannot be undone."
+        />
+      </div>
     </AdminLayout>
   );
 };

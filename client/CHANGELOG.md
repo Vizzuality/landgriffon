@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Changed analysis/table 'group by' filter value 'Supplier' to 'T1 Supplier' and 'Producer' [LANDGRIF-1441](https://vizzuality.atlassian.net/browse/LANDGRIF-1441)
 - Add avatar to user list [LANDGRIF-1344](https://vizzuality.atlassian.net/browse/LANDGRIF-1344)
 - Change users list to don't show the current user [LANDGRIF-1346](https://vizzuality.atlassian.net/browse/LANDGRIF-1346)
+- Updated styles
 - Updated sidebar design. [LANDGRIF-1035](https://vizzuality.atlassian.net/browse/LANDGRIF-1035)
 
 ### Fixed

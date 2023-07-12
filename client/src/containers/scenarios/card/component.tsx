@@ -1,82 +1,33 @@
-import { useState, useCallback } from 'react';
 import { format } from 'date-fns';
-import toast from 'react-hot-toast';
-import { TrashIcon } from '@heroicons/react/outline';
-import { Popover } from '@headlessui/react';
 import classNames from 'classnames';
-import { useQueryClient } from '@tanstack/react-query';
 
-import { useDeleteScenario, useUpdateScenario } from 'hooks/scenarios';
-import { useScenarioInterventions } from 'hooks/interventions';
-import Loading from 'components/loading';
-import { Anchor, Button } from 'components/button';
-import DeleteDialog from 'components/dialogs/delete';
-import Pill from 'components/pill';
-import Toggle from 'components/toggle';
-import { usePermissions } from 'hooks/permissions';
-import { Permission } from 'hooks/permissions/enums';
-import { handleResponseError } from 'services/api';
+import ScenarioInterventions from '../scenario-items/interventions';
+import ScenarioGrowthRate from '../scenario-items/growth-rate';
+import ScenarioMakePublic from '../scenario-items/make-public';
+import ScenarioActions from '../scenario-items/actions';
 
 import type { ScenarioCardProps } from './types';
 
-const ScenarioCard: React.FC<ScenarioCardProps> = ({ data, display = 'grid' }) => {
-  const [isDeleteVisible, setDeleteVisibility] = useState(false);
-  const queryClient = useQueryClient();
-  const deleteScenario = useDeleteScenario();
-  const updateScenario = useUpdateScenario();
-  const { data: interventions, isLoading: isInterventionsLoading } = useScenarioInterventions({
-    scenarioId: data?.id,
-  });
-
-  const { hasPermission } = usePermissions(data?.user?.id);
-  const canEditScenario = hasPermission(Permission.CAN_EDIT_SCENARIO);
-  const canDeleteScenario = hasPermission(Permission.CAN_DELETE_SCENARIO);
-
-  const handleChangeVisibility = useCallback(
-    (isActive: boolean) => {
-      updateScenario.mutate(
-        { id: data.id, data: { isPublic: isActive } },
-        {
-          onSuccess: () => {
-            toast.success('Your changes were successfully saved.');
-            queryClient.invalidateQueries(['scenariosList']);
-            queryClient.invalidateQueries(['scenario', data.id]);
-          },
-          onError: handleResponseError,
-        },
-      );
-    },
-    [data.id, updateScenario, queryClient],
-  );
-
-  const handleDeleteClick = useCallback(() => {
-    setDeleteVisibility(true);
-  }, []);
-
-  const handleCloseDialog = useCallback(() => {
-    setDeleteVisibility(false);
-  }, []);
-
-  const handleDeleteScenario = useCallback(() => {
-    deleteScenario.mutate(data.id, {
-      onSuccess: () => {
-        setDeleteVisibility(false);
-        toast.success(`Scenario deleted successfully`);
-      },
-    });
-  }, [data?.id, deleteScenario]);
-
+const ScenarioCard: React.FC<ScenarioCardProps> = ({
+  data,
+  display = 'grid',
+  canDeleteScenario,
+  canEditScenario,
+  onDelete,
+}) => {
   return (
     <>
       <div
-        className={classNames('bg-white rounded-md shadow-sm', {
-          'w-full max-w-[1280px] xl:max-w-none overflow-auto': display === 'list',
+        className={classNames('bg-white', {
+          'w-full  xl:max-w-none': display === 'list',
+          'rounded-[10px] shadow-gray-200 shadow-sm border border-gray-200': display === 'grid',
         })}
         data-testid="scenario-card"
       >
         <div
           className={classNames('p-6', {
-            'grid grid-cols-5 gap-4': display === 'list',
+            'grid auto grid-cols-[repeat(5,_minmax(fit-content(100px),_1fr))] gap-4':
+              display === 'list',
             'flex flex-col space-y-6 h-full': display === 'grid',
           })}
         >
@@ -96,127 +47,23 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({ data, display = 'grid' }) =
             )}
           </div>
           {/* TO-DO: Fix growth rate of 1.5% meanwhile is implemented in the API */}
-          <div>
-            {display === 'grid' && <h3 className="text-xs">Growth rates</h3>}
-            <div
-              className={classNames({
-                'flex mt-2 space-x-4': display === 'grid',
-              })}
-            >
-              <Pill className="bg-blue-200">Entire company +1.5%/yr</Pill>
-            </div>
-          </div>
-          <div
-            className={classNames({
-              'flex-1': display === 'grid',
-            })}
-          >
-            {display === 'grid' && <h3 className="mb-2 text-xs">Interventions</h3>}
-            {isInterventionsLoading && <Loading />}
-            {!isInterventionsLoading && interventions && (
-              <>
-                <div className="flex flex-wrap gap-2">
-                  {interventions.slice(0, 2).map((intervention) => (
-                    <Pill
-                      key={intervention.id}
-                      className="bg-orange-100"
-                      data-testid="scenario-interventions-item"
-                    >
-                      {intervention.title}
-                    </Pill>
-                  ))}
-                </div>
-                {interventions.length > 2 && (
-                  <Popover className="relative mt-2 text-xs">
-                    Show{' '}
-                    <Popover.Button>
-                      <Pill className="bg-orange-100">+{interventions.length - 2} more</Pill>
-                    </Popover.Button>
-                    <Popover.Panel className="absolute flex flex-col p-4 space-y-2 bg-white border border-gray-100 rounded-md shadow-md">
-                      {interventions.slice(2, interventions.length).map((intervention) => (
-                        <Pill key={intervention.id} className="bg-orange-100">
-                          {intervention.title}
-                        </Pill>
-                      ))}
-                    </Popover.Panel>
-                  </Popover>
-                )}
-              </>
-            )}
-            {!isInterventionsLoading && interventions.length === 0 && (
-              <p className="text-xs">No interventions created for this scenario.</p>
-            )}
-          </div>
-          <div
-            className={classNames('flex items-center space-x-1', {
-              'bg-navy-50': data.isPublic,
-              'bg-gray-100': !data.isPublic,
-              'rounded-md justify-center p-3': display === 'list',
-              'p-6 -mx-6': display === 'grid',
-            })}
-          >
-            <Toggle
-              data-testid="scenario-visibility"
-              active={data.isPublic}
-              onChange={handleChangeVisibility}
-              disabled={!canEditScenario}
-            />
-            <span className="text-sm text-gray-500 peer-disabled:text-gray-300">
-              Make scenario public
-            </span>
-          </div>
-          <div
-            className={classNames({
-              'flex space-between my-6': display === 'grid',
-              'flex flex-col-reverse gap-2 ': display === 'list',
-            })}
-          >
-            <Button
-              variant="white"
-              onClick={handleDeleteClick}
-              icon={<TrashIcon />}
-              data-testid="scenario-delete-btn"
-              disabled={!canDeleteScenario}
-            >
-              Delete
-            </Button>
-            <div
-              className={classNames('flex items-center flex-1 space-x-4', {
-                'justify-between': display === 'list',
-                'justify-end': display === 'grid',
-              })}
-            >
-              <Anchor
-                href={`/data/scenarios/${data.id}/edit`}
-                variant="secondary"
-                className={classNames({
-                  grow: display === 'list',
-                })}
-                disabled={!canEditScenario}
-                data-testid="scenario-edit-btn"
-              >
-                Edit Scenario
-              </Anchor>
-              <Anchor
-                href={{ pathname: `/analysis/table`, query: { scenarioId: data.id } }}
-                variant="primary"
-                className={classNames({
-                  grow: display === 'list',
-                })}
-              >
-                Analyze
-              </Anchor>
-            </div>
-          </div>
+          <ScenarioGrowthRate display={display} />
+          <ScenarioInterventions scenarioId={data.id} display={display} />
+          <ScenarioMakePublic
+            id={data.id}
+            isPublic={data.isPublic}
+            display="grid"
+            canEditScenario={canEditScenario}
+          />
+          <ScenarioActions
+            display={display}
+            scenarioId={data.id}
+            setDeleteVisibility={() => onDelete(data.id)}
+            canDeleteScenario={canDeleteScenario}
+            canEditScenario={canEditScenario}
+          />
         </div>
       </div>
-      <DeleteDialog
-        isOpen={isDeleteVisible}
-        title="Delete Scenario"
-        onDelete={handleDeleteScenario}
-        onClose={handleCloseDialog}
-        description="All of this scenario data will be permanently removed from our servers forever. This action cannot be undone."
-      />
     </>
   );
 };

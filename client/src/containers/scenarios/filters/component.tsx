@@ -38,6 +38,7 @@ const ScenariosFilters: FC = () => {
         options={SORT_OPTIONS}
         onChange={handleSort}
         icon={<SortDescendingIcon className="w-4 h-4" />}
+        disabled
       />
     </div>
   );

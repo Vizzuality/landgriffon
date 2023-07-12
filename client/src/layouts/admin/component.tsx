@@ -17,6 +17,7 @@ import type { AdminLayoutProps } from './types';
 const AdminLayout: React.FC<AdminLayoutProps> = ({
   title = 'Admin',
   children,
+  searchSection,
   adminTabs = ADMIN_TABS,
 }) => {
   const { pathname } = useRouter();
@@ -36,40 +37,47 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
         className="flex flex-col w-full h-full overflow-auto"
       >
         <header className="sticky top-0 z-10 bg-navy-600">
-          <div className="flex items-stretch justify-between px-12 bg-white border-b border-gray-100 rounded-tl-3xl">
-            <h1 className="mt-8 text-left">{title}</h1>
+          <div className="px-12 bg-white  rounded-tl-3xl">
+            <div
+              className={classNames('flex items-stretch justify-between', {
+                'border-b border-gray-200': !!searchSection,
+              })}
+            >
+              <h1 className="mt-8 text-left">{title}</h1>
 
-            <nav className="flex mt-12 space-x-10 text-sm" data-testid="admin-menu-list">
-              {Object.values(adminTabs).map((tab) => {
-                if (tab.disabled) {
+              <nav className="flex mt-11 pb-0.5 space-x-10 text-sm" data-testid="admin-menu-list">
+                {Object.values(adminTabs).map((tab) => {
+                  if (tab.disabled) {
+                    return (
+                      <span
+                        key={tab.href}
+                        className={classNames(MENU_ITEM_STYLE, MENU_ITEM_DISABLED_STYLE)}
+                        data-testid="admin-menu-item"
+                        data-testisactive={false}
+                        data-testname={`admin-menu-item-${tab.name}`}
+                      >
+                        {tab.name}
+                      </span>
+                    );
+                  }
                   return (
-                    <span
+                    <Link
                       key={tab.href}
-                      className={classNames(MENU_ITEM_STYLE, MENU_ITEM_DISABLED_STYLE)}
+                      href={tab.href}
+                      className={classNames(MENU_ITEM_STYLE, {
+                        [MENU_ITEM_ACTIVE_STYLE]: pathname === tab.href,
+                      })}
                       data-testid="admin-menu-item"
-                      data-testisactive={false}
+                      data-testisactive={pathname === tab.href}
                       data-testname={`admin-menu-item-${tab.name}`}
                     >
                       {tab.name}
-                    </span>
+                    </Link>
                   );
-                }
-                return (
-                  <Link
-                    key={tab.href}
-                    href={tab.href}
-                    className={classNames(MENU_ITEM_STYLE, {
-                      [MENU_ITEM_ACTIVE_STYLE]: pathname === tab.href,
-                    })}
-                    data-testid="admin-menu-item"
-                    data-testisactive={pathname === tab.href}
-                    data-testname={`admin-menu-item-${tab.name}`}
-                  >
-                    {tab.name}
-                  </Link>
-                );
-              })}
-            </nav>
+                })}
+              </nav>
+            </div>
+            {!!searchSection && <div className="py-1.5">{searchSection}</div>}
           </div>
         </header>
 

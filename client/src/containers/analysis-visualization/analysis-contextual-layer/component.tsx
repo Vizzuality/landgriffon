@@ -149,6 +149,7 @@ const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onAppl
             value={searchText}
             placeholder="Search layers"
             onReset={reset}
+            disabled
           />
         </div>
         <div className="text-sm text-right text-navy-400 underline-offset-[3px]">

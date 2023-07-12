@@ -59,7 +59,7 @@ const AdminUsersPage: React.FC = () => {
           cell: ({ row }) => (
             <div className="my-6 name flex items-center gap-x-4">
               <UserAvatar user={row.original} className="w-10 h-10" />
-              <span>{row.original.displayName}</span>
+              {row.original.fname ?? ''} {row.original.lname ?? ''}
             </div>
           ),
         },
@@ -70,10 +70,22 @@ const AdminUsersPage: React.FC = () => {
           enableSorting: true,
         },
         {
-          id: 'isActive',
-          header: 'Active',
+          id: 'title',
+          header: 'Title',
+          align: 'left',
+          enableSorting: true,
+        },
+        {
+          id: 'roles',
+          header: 'Role',
           cell: ({ row }) => (
-            <div className="my-6 name">{row.original.isActive ? 'Yes' : 'No'}</div>
+            <div>
+              {row.original.roles.map((role) => (
+                <p className="capitalize" key={role.name}>
+                  {role.name}
+                </p>
+              ))}
+            </div>
           ),
           align: 'left',
           enableSorting: true,
@@ -84,7 +96,7 @@ const AdminUsersPage: React.FC = () => {
           size: 100,
           align: 'right',
           cell: ({ row }) => (
-            <div className="pr-6">
+            <div className="pr-6 py-4">
               <EditUser user={row.original} />
             </div>
           ),
@@ -110,28 +122,32 @@ const AdminUsersPage: React.FC = () => {
       <Head>
         <title>Admin users | Landgriffon</title>
       </Head>
-      <div className="flex flex-col-reverse items-center justify-between mb-5 md:flex-row">
-        <div className="flex w-full gap-2 md:w-auto">
-          <Search placeholder="Search table" defaultValue={search} onChange={handleOnSearch} />
+      <div className="h-full flex flex-col">
+        <div className="flex flex-col-reverse items-center justify-between mb-5 md:flex-row">
+          <div className="flex w-full gap-2 md:w-auto">
+            <Search placeholder="Search table" defaultValue={search} onChange={handleOnSearch} />
+          </div>
+          <div className="flex items-center">
+            <Button
+              variant="primary"
+              icon={
+                <div
+                  aria-hidden="true"
+                  className="flex items-center justify-center w-5 h-5 bg-white rounded-full"
+                >
+                  <PlusIcon className="w-4 h-4 text-navy-400" />
+                </div>
+              }
+              disabled
+            >
+              Add user
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center">
-          <Button
-            variant="primary"
-            icon={
-              <div
-                aria-hidden="true"
-                className="flex items-center justify-center w-5 h-5 bg-white rounded-full"
-              >
-                <PlusIcon className="w-4 h-4 text-navy-400" />
-              </div>
-            }
-            disabled
-          >
-            Add user
-          </Button>
+        <div className="flex-1">
+          <Table {...tableProps} isLoading={isFetchingUser || isFetchingData} />
         </div>
       </div>
-      <Table {...tableProps} isLoading={isFetchingUser || isFetchingData} />
     </ProfileLayout>
   );
 };

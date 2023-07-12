@@ -67,3 +67,35 @@ export type InterventionTypes = Readonly<
   | 'Switch to a new material'
   | 'Change production efficiency'
 >;
+
+type ScenarioDisplay = 'grid' | 'list';
+
+export type ScenarioInterventionProps = {
+  display?: ScenarioDisplay;
+  scenarioId: string;
+};
+
+export type ScenarioTableProps = {
+  data: Scenario[];
+  className?: string;
+  canEditScenario: boolean;
+  canDeleteScenario: boolean;
+  onDelete: (id: string) => void;
+};
+
+export type ScenarioActionsProps = {
+  display: ScenarioDisplay;
+  scenarioId: string;
+  setDeleteVisibility: () => void;
+  canDeleteScenario: boolean;
+  canEditScenario: boolean;
+};
+
+export type MakePublicProps = {
+  id: string;
+  isPublic: boolean;
+  display: ScenarioDisplay;
+  canEditScenario: boolean;
+};
+
+export type GrowthRateProps = { display: ScenarioDisplay };

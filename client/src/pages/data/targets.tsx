@@ -73,7 +73,7 @@ const AdminTargetsPage: React.FC = () => {
             variant="secondary"
             disabled
           >
-            Create a new target
+            Add target
           </Button>
         </div>
       </div>

@@ -150,7 +150,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
                 icon={
                   <div
                     aria-hidden="true"
-                    className="flex items-center justify-center w-5 h-5 bg-white rounded-full"
+                    className="flex items-center justify-center w-6 h-6 bg-white rounded-full"
                   >
                     <PlusIcon className="w-4 h-4 text-navy-400" />
                   </div>

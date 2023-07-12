@@ -12,7 +12,7 @@ const TargetItem: React.FC<Target> = ({ id, name, years, unit }) => {
   } = useModal();
 
   return (
-    <div className="grid items-center grid-cols-12 gap-4 p-4 text-sm bg-white rounded-md shadow-sm">
+    <div className="grid items-center grid-cols-12 gap-4 p-4 text-sm bg-white shadow-sm">
       <div className="col-span-3">{name}</div>
       <div className="col-span-2">
         <div className="flex justify-center">

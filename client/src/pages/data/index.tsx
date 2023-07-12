@@ -6,6 +6,7 @@ import AdminLayout from 'layouts/admin';
 import AdminDataUploader from 'containers/admin/data-uploader';
 import AdminDataTable from 'containers/admin/data-table';
 import Loading from 'components/loading';
+import Search from 'components/search';
 
 const AdminDataPage: React.FC = () => {
   // Getting sourcing locations to check if there are any data
@@ -21,7 +22,18 @@ const AdminDataPage: React.FC = () => {
   const thereIsData = data?.meta?.totalItems > 0;
 
   return (
-    <AdminLayout title="Manage data">
+    <AdminLayout
+      title="Manage data"
+      searchSection={
+        <Search
+          placeholder="Search by material..."
+          data-testid="search-name-scenario"
+          className="border-none"
+          searchQuery="search"
+          disabled
+        />
+      }
+    >
       <Head>
         <title>Manage data | Landgriffon</title>
       </Head>

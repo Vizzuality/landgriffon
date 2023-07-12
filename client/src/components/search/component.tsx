@@ -1,55 +1,89 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { SearchIcon, XIcon } from '@heroicons/react/solid';
-import classNames from 'classnames';
+import classnames from 'classnames';
 import { omit } from 'lodash-es';
-
-import Input from 'components/forms/input';
+import { useDebounceCallback } from '@react-hook/debounce';
+import { useRouter } from 'next/router';
 
 import type { ChangeEvent } from 'react';
 import type { SearchProps } from './types';
 
-export const Search: React.FC<SearchProps> = (props: SearchProps) => {
-  const [value, setValue] = useState<string>((props.defaultValue as string) || '');
-  const { onChange } = props;
+export const Search: React.FC<SearchProps> = ({
+  searchQuery = 'search',
+  onChange,
+  defaultValue,
+  ...props
+}: SearchProps) => {
+  const { pathname, query, replace } = useRouter();
+
+  const deafultSearchQuery = query[searchQuery];
+
+  const initialValue =
+    defaultValue || (typeof deafultSearchQuery === 'string' ? deafultSearchQuery : '');
+
+  const [value, setValue] = useState<string>(initialValue);
+
+  const handleSearchByTerm = useDebounceCallback((value, queryName) => {
+    replace(
+      {
+        pathname,
+        query: {
+          ...omit(query, queryName),
+          ...(value !== '' && { [queryName]: value }),
+        },
+      },
+      null,
+      { shallow: true },
+    );
+  }, 250);
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       setValue(e.target.value);
+      if (searchQuery) {
+        handleSearchByTerm(e.target.value, searchQuery);
+      }
       if (onChange) onChange(e.target.value);
     },
-    [onChange],
+    [handleSearchByTerm, onChange, searchQuery],
   );
 
   const handleReset = useCallback(() => {
     setValue('');
+    handleSearchByTerm('', searchQuery);
     if (onChange) onChange('');
-  }, [onChange]);
+  }, [handleSearchByTerm, onChange, searchQuery]);
 
-  // ? allows setting a default value not only in the very first render
   useEffect(() => {
-    if (props.defaultValue) setValue(props.defaultValue as string);
-  }, [props.defaultValue]);
+    if (initialValue) {
+      setValue(initialValue);
+    }
+  }, [initialValue]);
 
   return (
-    <div className={classNames('relative', props.className)}>
-      <Input
-        icon={<SearchIcon />}
-        {...omit(props, ['defaultValue', 'onChange'])}
-        unit="&nbsp;"
-        type="search"
-        className="w-full"
-        value={value}
-        onChange={handleChange}
-      />
-      {value && value !== '' && (
-        <button
-          className="absolute inset-y-0 right-0 flex items-center pr-3"
-          type="button"
-          onClick={handleReset}
-        >
-          <XIcon className="w-4 h-4 text-gray-400" />
-        </button>
-      )}
+    <div className="bg-white w-fit">
+      <div className="flex items-center justify-center w-fit">
+        <SearchIcon className="w-6 h-6 text-gray-300" />
+        <input
+          {...omit(props, ['defaultValue', 'onChange'])}
+          className={classnames(
+            'block flex-1 w-fit min-w-[250px] p-4 pt-2.5 pb-3 leading-5 text-base placeholder:text-gray-400 focus:outline-none focus:ring-0 border-none truncate',
+            props.disabled ? 'text-gray-300' : 'bg-white text-gray-900',
+          )}
+          type="search"
+          value={value}
+          onChange={handleChange}
+        />
+        {value && value !== '' && (
+          <button
+            className="inset-y-0 right-0 flex items-center pr-3"
+            type="button"
+            onClick={handleReset}
+          >
+            <XIcon className="w-4 h-4 text-gray-400" />
+          </button>
+        )}
+      </div>
     </div>
   );
 };

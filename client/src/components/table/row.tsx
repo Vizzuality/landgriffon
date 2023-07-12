@@ -37,12 +37,16 @@ const TableRow = <T,>({ row, theme, isLast, firstProjectedYear, ...props }: Tabl
                 'bg-white group-hover:border-l-gray-100': theme === 'default',
                 'group-odd:bg-white group-even:bg-gray-50': theme === 'striped',
                 'sticky z-[1]': !!cell.column.columnDef.meta?.isSticky,
-                'shadow-[4px_1px_10px_-2px] shadow-gray-100':
-                  !!cell.column.columnDef.meta?.isSticky,
-                'left-0': cell.column.columnDef.meta?.isSticky === 'left',
-                'right-0': cell.column.columnDef.meta?.isSticky === 'right',
+                'shadow-gray-100': !!cell.column.columnDef.meta?.isSticky,
+                'left-0 shadow-[4px_1px_10px_-2px]':
+                  cell.column.columnDef.meta?.isSticky === 'left',
+                'right-0 shadow-[-4px_1px_10px_-2px_rgba(21,24,31,0.08)]':
+                  cell.column.columnDef.meta?.isSticky === 'right',
                 'border-r-2 border-r-gray-200': isProjectedFirstYear,
-                'border-t-2 border-t-gray-200': row.index === 0 && row.depth === 0,
+                'border-t-4 border-t-gray-100':
+                  row.index === 0 && row.depth === 0 && theme !== 'striped',
+                'border-t-2 border-t-gray-200':
+                  row.index === 0 && row.depth === 0 && theme === 'striped',
               })}
             >
               <CellWrapper context={cell.getContext()}>
@@ -53,7 +57,7 @@ const TableRow = <T,>({ row, theme, isLast, firstProjectedYear, ...props }: Tabl
         })}
       </tr>
       {isLast && theme !== 'striped' && (
-        <tr aria-hidden className="h-0.5 bg-gray-100 last:hidden"></tr>
+        <tr aria-hidden className="h-1 bg-gray-100 last:hidden"></tr>
       )}
     </>
   );
@@ -66,11 +70,7 @@ interface TableHeaderRowProps<T> {
   headerTheme?: 'clean' | 'default';
 }
 
-export const TableHeaderRow = <T,>({
-  headerGroup,
-  firstProjectedYear,
-  headerTheme = 'default',
-}: TableHeaderRowProps<T>) => {
+export const TableHeaderRow = <T,>({ headerGroup, firstProjectedYear }: TableHeaderRowProps<T>) => {
   return (
     <tr key={headerGroup.id} className="border-b-2 border-b-gray-200">
       {headerGroup.headers.map((header) => {
@@ -83,11 +83,9 @@ export const TableHeaderRow = <T,>({
           <th
             className={classNames('sticky z-[2] top-0 bg-gray-50', {
               'left-0 z-[3] shadow-[4px_1px_10px_-2px_rgba(21,24,31,0.08)]': sticky === 'left',
-              'right-0 z-[3]': sticky === 'right',
+              'right-0 z-[3] shadow-[-4px_1px_10px_-2px_rgba(21,24,31,0.08)]': sticky === 'right',
               'rounded-tr-lg': isLastColumn,
               'rounded-tl-lg': isFirstColumn,
-              'border-r border-r-gray-200':
-                !sticky && headerTheme === 'default' && !isLastColumn && !isProjectedFirstYear,
               'border-r-2 border-dashed': isProjectedFirstYear,
             })}
             key={header.id}

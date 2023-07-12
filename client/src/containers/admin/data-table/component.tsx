@@ -19,7 +19,6 @@ import Table from 'components/table';
 import { DEFAULT_PAGE_SIZES } from 'components/table/pagination/constants';
 import { usePermissions } from 'hooks/permissions';
 import { RoleName } from 'hooks/permissions/enums';
-import getUserFullName from 'utils/user-full-name';
 
 import type { PaginationState, SortingState, VisibilityState } from '@tanstack/react-table';
 import type { TableProps } from 'components/table/component';
@@ -47,6 +46,11 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
     'page[size]': 1,
   });
 
+  const searchTerm = useMemo(
+    () => (typeof query.search === 'string' ? query.search : null),
+    [query.search],
+  );
+
   const {
     data: sourcingData,
     meta: sourcingMetadata,
@@ -59,6 +63,7 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
       }),
       'page[size]': pagination.pageSize,
       'page[number]': pagination.pageIndex,
+      ...(searchTerm && { search: searchTerm }),
     },
     {
       keepPreviousData: true,
@@ -168,10 +173,7 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
         {!isSourcingLocationsLoading && (
           <div className="flex justify-end w-full">
             <div className="text-sm text-gray-400">
-              <span className="text-navy-400 underline">Last update</span> at{' '}
-              {format(new Date(sourcingLocations.data[0].updatedAt), 'd MMM yyyy HH:mm z')}
-              {task?.user && ' by '}
-              {getUserFullName(task?.user, { replaceByEmail: true })}
+              Last update at: {format(new Date(sourcingLocations.data[0].updatedAt), 'd MMM yyyy')}
             </div>
           </div>
         )}

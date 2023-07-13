@@ -124,9 +124,12 @@ const StayUpToDate: FC = () => {
                           id="accept-terms"
                           type="checkbox"
                           {...register('terms')}
-                          className={cx('w-5 h-5 border-2 border-black', {
-                            'border-red-500': errors.terms,
-                          })}
+                          className={cx(
+                            'w-5 h-5 rounded-full border-2 border-black bg-orange-500',
+                            {
+                              'border-red-500': errors.terms,
+                            },
+                          )}
                         />
                         <label className="font-light" htmlFor="accept-terms">
                           I agree with LandGriffon&apos;s{' '}
@@ -142,9 +145,12 @@ const StayUpToDate: FC = () => {
                           id="newsletter"
                           type="checkbox"
                           {...register('newsletter')}
-                          className={cx('w-5 h-5 border-2 border-black', {
-                            'border-red-500': errors.newsletter,
-                          })}
+                          className={cx(
+                            'w-5 h-5 rounded-full border-2 border-black bg-orange-500',
+                            {
+                              'border-red-500': errors.newsletter,
+                            },
+                          )}
                         />
                         <label className="font-light" htmlFor="newsletter">
                           Send me LandGriffon&apos;s general newsletter as well.

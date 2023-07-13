@@ -231,10 +231,11 @@ export type Role = {
 export type ProfilePayload = {
   fname?: string;
   lname?: string;
-  email: string;
+  email?: string;
   password?: string;
-  roles: Role[];
-  id: string;
+  roles?: Role[];
+  id?: string;
+  companyTitle?: string;
 };
 
 // Password payload for API
@@ -364,6 +365,7 @@ export type User = {
   fname?: string;
   lname?: string;
   email: string;
+  companyTitle?: string;
   isActive: boolean;
   avatarDataUrl?: string;
   isDeleted: boolean;

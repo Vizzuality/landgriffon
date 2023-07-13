@@ -37,9 +37,10 @@ export class CreateUserDTO {
    * characters then they should welcome to do so, as long as the *effective*
    * byte count of the chosen passphrase is at most 72.
    */
+  @IsOptional()
   @MaxLength(18)
   @Validate(PasswordValidation)
-  password!: string;
+  password?: string;
 
   @ApiPropertyOptional()
   @IsOptional()

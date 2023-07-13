@@ -11,10 +11,10 @@ const BLOGPOSTS = [
     content: (
       <div className="mr-4">
         <BlogCard
-          title="Supply chain management."
-          subtitle="Measure, manage and anticipate impacts and risks from the raw materials in your companies supply chain."
-          url="https://medium.com/vizzuality-blog/seeking-early-users-for-better-supply-chain-management-with-landgriffon-53bc175a2fe6"
-          image="/images/service/blogpost/01.png"
+          title="LandGriffon case study."
+          subtitle="An example analysis of the impact of hypothetical sourcing of 1000 tonnes of palm oil in Aceh, Indonesia, with different levels of spatial sourcing precision and exploration of scenarios."
+          url="https://medium.com/vizzuality-blog/landgriffon-in-action-an-example-case-study-35b7b9b6638c"
+          image="/images/service/blogpost/01.jpg"
         />
       </div>
     ),
@@ -24,10 +24,10 @@ const BLOGPOSTS = [
     content: (
       <div className="mr-4">
         <BlogCard
-          title="Optimize use of data."
-          subtitle="Map supply chains, benchmark data, and estimate potential environmental risks into one accessible dashboard."
-          url="https://medium.com/vizzuality-blog/tmi-dont-let-too-much-data-leave-you-in-the-dark-ecb7b206c291"
-          image="/images/service/blogpost/02.png"
+          title="Evolving ESG regulations."
+          subtitle="Three key proposals will change the ESG regulatory landscape. The EU CSRD & ESRS, SEC Climate-Related Disclosures and EU Deforestation Law. We summarize each and identify areas companies can prepare."
+          url="https://medium.com/vizzuality-blog/the-three-upcoming-esg-regulations-every-company-should-pay-attention-to-f6153553552a"
+          image="/images/service/blogpost/02.jpg"
         />
       </div>
     ),
@@ -37,9 +37,9 @@ const BLOGPOSTS = [
     content: (
       <div className="mr-4">
         <BlogCard
-          title="Fashions environmental impacts."
-          subtitle="From water scarcity to deforestation, companies can now harness their supply chain information to build more sustainable businesses for the future."
-          url="https://medium.com/vizzuality-blog/lifting-the-veil-from-fashion-brands-environmental-supply-chain-impacts-842563eab978"
+          title="Complex data, simplified."
+          subtitle="LandGriffon collates data about company supply chains into one accessible dashboard. Map supply chains, benchmark data, and estimate potential environmental risks."
+          url="https://medium.com/vizzuality-blog/tmi-dont-let-too-much-data-leave-you-in-the-dark-ecb7b206c291"
           image="/images/service/blogpost/03.png"
         />
       </div>

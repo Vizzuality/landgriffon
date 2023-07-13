@@ -4,11 +4,11 @@ import ApplicationLayout from 'layouts/application';
 
 import Methodology from 'containers/methodology';
 
-import type { GetServerSideProps, NextPage } from 'next';
+import type { NextPage } from 'next';
 
 type PageProps = { domain: string | null };
 
-const MethodologyPage: NextPage<PageProps> = ({ domain }) => {
+const MethodologyPage: NextPage<PageProps> = () => {
   return (
     <ApplicationLayout>
       <>
@@ -29,22 +29,13 @@ const MethodologyPage: NextPage<PageProps> = ({ domain }) => {
           />
           <meta name="og:type" content="website" />
           <meta name="og:url" content="https://landgriffon.com/methodology" />
-          <meta name="og:image" content={`${domain}/images/og/OG-Methodology.png`} />
+          <meta name="og:image" content="https://landgriffon.com/images/og/OG-Methodology.png" />
         </Head>
 
         <Methodology />
       </>
     </ApplicationLayout>
   );
-};
-
-export const getServerSideProps: GetServerSideProps<PageProps> = async (context) => {
-  const { host } = context.req.headers;
-  const url = new URL(host);
-  const protocol = url.protocol === 'localhost:' ? 'http:' : 'https:';
-  return {
-    props: { domain: `${protocol}//${url.href}` },
-  };
 };
 
 export default MethodologyPage;

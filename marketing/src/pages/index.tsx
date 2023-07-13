@@ -4,11 +4,11 @@ import ApplicationLayout from 'layouts/application';
 
 import Home from 'containers/home';
 
-import type { GetServerSideProps, NextPage } from 'next';
+import type { NextPage } from 'next';
 
 type PageProps = { domain: string | null };
 
-const HomePage: NextPage<PageProps> = ({ domain }) => {
+const HomePage: NextPage<PageProps> = () => {
   return (
     <ApplicationLayout>
       <>
@@ -28,23 +28,13 @@ const HomePage: NextPage<PageProps> = ({ domain }) => {
           />
           <meta name="og:type" content="website" />
           <meta name="og:url" content="https://landgriffon.com" />
-          <meta name="og:image" content={`${domain}/images/og/OG-LandGriffon.png`} />
+          <meta name="og:image" content="https://landgriffon.com/images/og/OG-LandGriffon.png" />
         </Head>
 
         <Home />
       </>
     </ApplicationLayout>
   );
-};
-
-export const getServerSideProps: GetServerSideProps<PageProps> = async (context) => {
-  const { host } = context.req.headers;
-  const url = new URL(host);
-  const protocol = url.protocol === 'localhost:' ? 'http:' : 'https:';
-
-  return {
-    props: { domain: `${protocol}//${url.href}` },
-  };
 };
 
 export default HomePage;

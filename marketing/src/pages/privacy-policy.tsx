@@ -43,10 +43,11 @@ const PrivacyPolicyPage: NextPage<PageProps> = ({ domain }) => {
 };
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async (context) => {
-  const { referer } = context.req.headers;
-  const url = new URL(referer || '');
+  const { host } = context.req.headers;
+  const url = new URL(host);
+  const protocol = url.protocol === 'localhost:' ? 'http:' : 'https:';
   return {
-    props: { domain: `${url.protocol}//${url.host}` || null },
+    props: { domain: `${protocol}//${url.href}` },
   };
 };
 

@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Fixed remove badge when unselecting 'T1 supplier' filter in analysis [LANDGRIF-1442](https://vizzuality.atlassian.net/browse/LANDGRIF-1442)
 - Fixed analysis filters selectors width [LANDGRIF-1437](https://vizzuality.atlassian.net/browse/LANDGRIF-1437)
 - Fixed treeselect auto scroll [LANDGRIF-1435](https://vizzuality.atlassian.net/browse/LANDGRIF-1435)
 

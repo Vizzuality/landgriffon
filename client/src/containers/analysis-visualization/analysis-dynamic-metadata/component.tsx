@@ -127,7 +127,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
                 <Badge
                   key={supplier.value}
                   data={supplier}
-                  onClick={() => handleRemoveBadge('suppliers', t1Suppliers, supplier)}
+                  onClick={() => handleRemoveBadge('t1Suppliers', t1Suppliers, supplier)}
                   removable
                 >
                   {supplier.label}

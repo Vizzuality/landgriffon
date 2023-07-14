@@ -41,7 +41,7 @@ const SLIDES = [
       <div className="text-xl text-white">
         <p>
           Boost <span className="text-orange-500">confidence</span> in your sustainability measures
-          with the best-available geospatial dat
+          with the best-available geospatial data
         </p>
       </div>
     ),
@@ -60,6 +60,7 @@ const SLIDES = [
       <div className="text-xl text-white">
         <p>
           <span className="text-orange-500"> Strategize</span>
+          {''}
           your supply chain sustainability by assessing trade-offs between actions and forecasting
           the outcomes.
         </p>

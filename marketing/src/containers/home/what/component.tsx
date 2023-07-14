@@ -59,10 +59,8 @@ const SLIDES = [
     description: (
       <div className="text-xl text-white">
         <p>
-          <span className="text-orange-500"> Strategize</span>
-          {''}
-          your supply chain sustainability by assessing trade-offs between actions and forecasting
-          the outcomes.
+          <span className="text-orange-500"> Strategize</span> your supply chain sustainability by
+          assessing trade-offs between actions and forecasting the outcomes.
         </p>
       </div>
     ),

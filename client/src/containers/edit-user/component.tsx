@@ -4,7 +4,8 @@ import UserForm from './user-form';
 
 import { Button } from 'components/button';
 import Modal from 'components/modal';
-import DeleteUser from 'containers/delete-user/component';
+import DeleteUser from 'containers/delete-user-modal';
+import getUserFullName from 'utils/user-full-name';
 
 import type { User } from 'types';
 
@@ -14,9 +15,7 @@ type EditUserProps = {
 
 const EditUser = ({ user }: EditUserProps) => {
   const [open, setOpenModal] = useState(false);
-  const userName = user.fname
-    ? `${user.fname} ${user.lname || ''}`
-    : user.displayName ?? user.email;
+  const userName = getUserFullName(user, true);
 
   return (
     <>

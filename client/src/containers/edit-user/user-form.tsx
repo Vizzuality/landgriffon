@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { omit, pick } from 'lodash-es';
 
@@ -10,7 +10,7 @@ import { RoleName } from 'hooks/permissions/enums';
 import type { User } from 'types';
 import type { Option } from 'components/forms/select';
 
-type UserFormData = Pick<User, 'fname' | 'lname' | 'displayName' | 'email'> & {
+type UserFormData = Pick<User, 'fname' | 'lname' | 'email'> & {
   roles: RoleName[];
 };
 
@@ -22,15 +22,12 @@ type UserFormProps = {
 const UserForm = ({ user, children }: UserFormProps) => {
   const { register, control, setValue } = useForm<UserFormData>({
     defaultValues: {
-      ...pick(user, 'fname', 'lname', 'displayName', 'email'),
+      ...pick(user, 'fname', 'lname', 'email'),
       roles: user.roles.map((role) => role.name),
     },
   });
 
-  const roleOptions = useMemo(
-    () => Object.values(RoleName).map((role) => ({ label: role, value: role })),
-    [],
-  );
+  const roleOptions = Object.values(RoleName).map((role) => ({ label: role, value: role }));
 
   const [roleValue, setRoleValue] = useState<Option<string>[]>(
     user.roles.map((role) => ({ label: role.name, value: role.name })),
@@ -46,10 +43,6 @@ const UserForm = ({ user, children }: UserFormProps) => {
         <div>
           <label htmlFor="lname">Last Name</label>
           <Input {...register('lname')} />
-        </div>
-        <div>
-          <label htmlFor="displayName">Display Name</label>
-          <Input {...register('displayName')} />
         </div>
         <div>
           <label htmlFor="roles">Role</label>

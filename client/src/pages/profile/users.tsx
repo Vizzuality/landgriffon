@@ -16,6 +16,7 @@ import EditUser from 'containers/edit-user/component';
 import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type { TableProps } from 'components/table/component';
 import type { User } from 'types';
+import getUserFullName from 'utils/user-full-name';
 
 const AdminUsersPage: React.FC = () => {
   const [search, setSearch] = useState<string>('');
@@ -51,7 +52,7 @@ const AdminUsersPage: React.FC = () => {
       state: { pagination, sorting },
       columns: [
         {
-          id: 'displayName',
+          id: 'fname',
           header: 'Name',
           size: 110,
           align: 'left',
@@ -59,7 +60,7 @@ const AdminUsersPage: React.FC = () => {
           cell: ({ row }) => (
             <div className="my-6 name flex items-center gap-x-4">
               <UserAvatar user={row.original} className="w-10 h-10" />
-              {row.original.fname ?? ''} {row.original.lname ?? ''}
+              {getUserFullName(row.original)}
             </div>
           ),
         },

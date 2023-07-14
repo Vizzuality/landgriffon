@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ExclamationIcon } from '@heroicons/react/outline';
 import toast from 'react-hot-toast';
 
@@ -11,17 +11,21 @@ type DeleteUserProps = {
   id: string;
 };
 
-const DeleteUser = ({ id, userName }: DeleteUserProps) => {
+const DeleteUserModal = ({ id, userName }: DeleteUserProps) => {
   const [open, setOpen] = useState(false);
   const { mutate: deleteUser, isLoading } = useDeleteUser();
 
-  const handleDeleteUser = () => {
+  const handleDeleteUser = useCallback(() => {
     deleteUser(id, {
       onSettled: () => setOpen(false),
       onError: () => toast.error('There was an error deleting the user. Try again later.'),
       onSuccess: () => toast.success('User deleted successfully'),
     });
-  };
+  }, [deleteUser, id]);
+
+  const closeModal = useCallback(() => {
+    setOpen(false);
+  }, []);
 
   return (
     <>
@@ -32,7 +36,7 @@ const DeleteUser = ({ id, userName }: DeleteUserProps) => {
         theme="minimal"
         title={`Delete user "${userName}"`}
         open={open}
-        onDismiss={() => setOpen(false)}
+        onDismiss={closeModal}
         size="fit"
         dismissible={false}
       >
@@ -49,7 +53,7 @@ const DeleteUser = ({ id, userName }: DeleteUserProps) => {
               action cannot be undone.
             </p>
             <div className="flex justify-end gap-4">
-              <Button variant="white" onClick={() => setOpen(false)}>
+              <Button variant="white" onClick={closeModal}>
                 Cancel
               </Button>
               <Button loading={isLoading} danger onClick={handleDeleteUser} disabled={!id}>
@@ -63,4 +67,4 @@ const DeleteUser = ({ id, userName }: DeleteUserProps) => {
   );
 };
 
-export default DeleteUser;
+export default DeleteUserModal;

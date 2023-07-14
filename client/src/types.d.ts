@@ -361,7 +361,6 @@ export type Task = {
 
 // User
 export type User = {
-  displayName: string;
   fname?: string;
   lname?: string;
   email: string;

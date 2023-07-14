@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { createPortal } from 'react-dom';
 import { signOut } from 'next-auth/react';
@@ -9,6 +9,7 @@ import { shift } from '@floating-ui/core';
 import Loading from 'components/loading';
 import UserAvatar from 'containers/user-avatar';
 import { useProfile } from 'hooks/profile';
+import getUserFullName from 'utils/user-full-name';
 
 const MENU_ITEM_CLASSNAME =
   'block w-full py-2 px-4 text-sm text-left text-gray-900 h-9 hover:bg-navy-50 focus-visible:outline-navy-50';
@@ -22,6 +23,8 @@ const UserDropdown: React.FC = () => {
   const { data: user, status } = useProfile();
 
   const handleSignOut = useCallback(() => signOut({ callbackUrl: '/auth/signin' }), []);
+
+  const userName = useMemo(() => getUserFullName(user), [user]);
 
   return (
     <Menu as="div" className="flex justify-center flex-col items-center w-full mb-5">
@@ -48,7 +51,7 @@ const UserDropdown: React.FC = () => {
               <UserAvatar user={user} className="w-14 h-14" />
 
               <div className="ml-4">
-                <span className="block text-lg leading-8 text-gray-900">{user.displayName}</span>
+                <span className="block text-lg leading-8 text-gray-900">{userName}</span>
                 <span className="block text-sm leading-7 text-gray-400">{user.email}</span>
               </div>
             </div>

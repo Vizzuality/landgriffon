@@ -19,6 +19,7 @@ import Table from 'components/table';
 import { DEFAULT_PAGE_SIZES } from 'components/table/pagination/constants';
 import { usePermissions } from 'hooks/permissions';
 import { RoleName } from 'hooks/permissions/enums';
+import getUserFullName from 'utils/user-full-name';
 
 import type { PaginationState, SortingState, VisibilityState } from '@tanstack/react-table';
 import type { TableProps } from 'components/table/component';
@@ -170,7 +171,7 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
               <span className="text-navy-400 underline">Last update</span> at{' '}
               {format(new Date(sourcingLocations.data[0].updatedAt), 'd MMM yyyy HH:mm z')}
               {task?.user && ' by '}
-              {task?.user?.displayName || task?.user?.email}
+              {getUserFullName(task.user)}
             </div>
           </div>
         )}

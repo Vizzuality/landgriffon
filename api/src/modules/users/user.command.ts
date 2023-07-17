@@ -1,8 +1,9 @@
 import { Command, Positional } from 'nestjs-command';
 import { Injectable, Logger } from '@nestjs/common';
 import { AuthenticationService } from 'modules/authentication/authentication.service';
-import { SignUpDto } from 'modules/authentication/dto/sign-up.dto';
 import { validate } from 'class-validator';
+import { CreateUserDTO } from 'modules/users/dto/create.user.dto';
+import { ROLES } from 'modules/authorization/roles/roles.enum';
 
 @Injectable()
 export class UserCommand {
@@ -19,7 +20,6 @@ export class UserCommand {
       type: 'string',
     })
     email: string,
-
     @Positional({
       name: 'password',
       describe: 'the password',
@@ -27,7 +27,7 @@ export class UserCommand {
     })
     password: string,
   ): Promise<void> {
-    const newUser: SignUpDto = new SignUpDto();
+    const newUser: CreateUserDTO = new CreateUserDTO();
     newUser.email = email;
     newUser.password = password;
 
@@ -48,6 +48,7 @@ export class UserCommand {
     await this.authenticationService.createUser({
       email,
       password,
+      roles: [ROLES.ADMIN],
     });
   }
 }

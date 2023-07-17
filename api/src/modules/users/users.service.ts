@@ -188,7 +188,7 @@ export class UsersService extends AppBaseService<
 
   async updateUser(userId: string, updateUser: any): Promise<User> {
     if ('roles' in updateUser && updateUser.roles) {
-      updateUser.roles = this.authorizationService.createRolesFromEnum(
+      updateUser.roles = this.authorizationService.assignRoles(
         updateUser.roles,
       );
     }

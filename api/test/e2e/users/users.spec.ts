@@ -26,6 +26,7 @@ import {
   SourcingLocation,
 } from '../../../src/modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from '../../../src/modules/sourcing-records/sourcing-record.entity';
+import { PERMISSIONS } from 'modules/authorization/permissions/permissions.enum';
 
 /**
  * Tests for the UsersModule.
@@ -71,7 +72,11 @@ describe('UsersModule (e2e)', () => {
       displayName: `${faker.name.firstName()} ${faker.name.lastName()}`,
       lname: faker.name.firstName(),
       fname: faker.name.lastName(),
+      roles: [ROLES.USER],
     };
+    afterEach(async () => {
+      await userRepository.delete({ email: newUserDto.email });
+    });
 
     test('A user should not be able to create new users', async () => {
       await request(testApplication.getHttpServer())
@@ -81,35 +86,50 @@ describe('UsersModule (e2e)', () => {
         .expect(HttpStatus.FORBIDDEN);
     });
 
-    test('A admin should be able to create a user with default user role if none provided ', async () => {
+    test('A admin user should not be able to create a user without any role', async () => {
+      const { password, roles, ...newUserDtoWithoutPasswordAndWithoutRoles } =
+        newUserDto;
+      const res = await request(testApplication.getHttpServer())
+        .post('/api/v1/users')
+        .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
+        .send(newUserDtoWithoutPasswordAndWithoutRoles);
+
+      expect(res).toHaveErrorMessage(
+        HttpStatus.BAD_REQUEST,
+        'Bad Request Exception',
+        [
+          'each value in roles must be one of the following values: admin, user',
+          'roles must contain at least 1 elements',
+        ],
+      );
+    });
+
+    test('A admin user should be able to create a user without a password', async () => {
+      const { password, ...newUserWithoutPassword } = newUserDto;
+      await request(testApplication.getHttpServer())
+        .post('/api/v1/users')
+        .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
+        .send({ ...newUserWithoutPassword })
+        .expect(HttpStatus.CREATED);
+    });
+
+    test('When a admin creates a user this user should be active by default', async () => {
+      await request(testApplication.getHttpServer())
+        .post('/api/v1/users')
+        .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
+        .send(newUserDto)
+        .expect(HttpStatus.CREATED);
+
+      const user = await userRepository.findByEmail(newUserDto.email);
+      expect(user?.isActive).toBe(true);
+    });
+
+    test('A admin should not be able to create a user without providing any role', async () => {
       await request(testApplication.getHttpServer())
         .post('/api/v1/users')
         .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
         .send({ email: 'test@test.com', password: '12345678' })
-        .expect(HttpStatus.CREATED);
-
-      const user = await userRepository.findByEmail('test@test.com');
-
-      expect(user).toBeTruthy();
-      expect(user?.email).toEqual('test@test.com');
-      expect(user?.roles).toEqual([
-        {
-          name: ROLES.USER,
-          permissions: [
-            {
-              action: 'canCreateScenario',
-            },
-            {
-              action: 'canEditScenario',
-            },
-            {
-              action: 'canDeleteScenario',
-            },
-          ],
-        },
-      ]);
-
-      await userRepository.delete({ email: 'test@test.com' });
+        .expect(HttpStatus.BAD_REQUEST);
     });
 
     test('A admin user should be able to create a user with roles ', async () => {
@@ -132,13 +152,13 @@ describe('UsersModule (e2e)', () => {
           name: ROLES.USER,
           permissions: [
             {
-              action: 'canCreateScenario',
+              action: PERMISSIONS.CAN_CREATE_SCENARIO,
             },
             {
-              action: 'canEditScenario',
+              action: PERMISSIONS.CAN_EDIT_SCENARIO,
             },
             {
-              action: 'canDeleteScenario',
+              action: PERMISSIONS.CAN_DELETE_SCENARIO,
             },
           ],
         },
@@ -179,13 +199,13 @@ describe('UsersModule (e2e)', () => {
           name: ROLES.USER,
           permissions: [
             {
-              action: 'canCreateScenario',
+              action: PERMISSIONS.CAN_CREATE_SCENARIO,
             },
             {
-              action: 'canEditScenario',
+              action: PERMISSIONS.CAN_EDIT_SCENARIO,
             },
             {
-              action: 'canDeleteScenario',
+              action: PERMISSIONS.CAN_DELETE_SCENARIO,
             },
           ],
         },

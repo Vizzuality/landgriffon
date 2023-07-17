@@ -5,6 +5,9 @@ import { PERMISSIONS } from 'modules/authorization/permissions/permissions.enum'
 import { Permission } from 'modules/authorization/permissions/permissions.entity';
 import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { genSalt, hash } from 'bcrypt';
+import { randomBytes } from 'crypto';
+import { CreateUserDTO } from 'modules/users/dto/create.user.dto';
 
 /**
  * @TODO: In the future we will let the user to create custom roles and assign N permissions to it,
@@ -19,6 +22,7 @@ export class AuthorizationService {
     @InjectRepository(Permission)
     private readonly permissionRepository: Repository<Permission>,
   ) {}
+
   /**
    * @description: Still is not defined what actions a user can perform in the platform, what claims we want to grant by default,
    *               or even how do we want to do this through a UI. Given the unknowns, for the time being
@@ -38,8 +42,7 @@ export class AuthorizationService {
     );
   }
 
-
-  createRolesFromEnum(roles: ROLES[]): Role[] {
+  assignRoles(roles: ROLES[]): Role[] {
     return roles.map((role: ROLES) => ({ name: role } as Role));
   }
 
@@ -82,5 +85,28 @@ export class AuthorizationService {
     });
 
     return this.roleRepository.save(defaultRole);
+  }
+
+  async generatePassword(salt: string, password: string): Promise<string> {
+    return await hash(password, salt);
+  }
+
+  async generateRandomPassword(salt: string): Promise<string> {
+    const randomPassword: string = randomBytes(12).toString('hex');
+    return await hash(randomPassword, salt);
+  }
+
+  async generateSalt(): Promise<string> {
+    return genSalt();
+  }
+
+  async assignPassword(dto: CreateUserDTO, salt: string): Promise<string> {
+    let password: string;
+    if ('password' in dto && dto.password) {
+      password = await this.generatePassword(salt, dto.password);
+    } else {
+      password = await this.generateRandomPassword(salt);
+    }
+    return password;
   }
 }

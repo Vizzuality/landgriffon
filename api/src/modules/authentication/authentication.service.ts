@@ -11,9 +11,8 @@ import { JwtService } from '@nestjs/jwt';
 
 import { User } from 'modules/users/user.entity';
 import { UsersService } from 'modules/users/users.service';
-import { compare, genSalt, hash } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { IssuedAuthnToken } from 'modules/authentication/issued-authn-token';
-import { SignUpDto } from 'modules/authentication//dto/sign-up.dto';
 import { ApiEventsService } from 'modules/api-events/api-events.service';
 import { API_EVENT_KINDS } from 'modules/api-events/api-event.entity';
 import { v4 } from 'uuid';
@@ -22,11 +21,11 @@ import { UserRepository } from 'modules/users/user.repository';
 import * as config from 'config';
 import { ApiProperty } from '@nestjs/swagger';
 import { ApiEventByTopicAndKind } from 'modules/api-events/api-event.topic+kind.entity';
-import { CreateUserDTO } from 'modules/users/dto/create.user.dto';
 import ms = require('ms');
 import { AuthorizationService } from 'modules/authorization/authorization.service';
 import { ROLES } from 'modules/authorization/roles/roles.enum';
 import { Role } from 'modules/authorization/roles/role.entity';
+import { CreateUserDTO } from 'modules/users/dto/create.user.dto';
 
 /**
  * Access token for the app: key user data and access token
@@ -123,23 +122,15 @@ export class AuthenticationService {
    * @todo Allow to set all of a user's data on signup, if needed.
    * @todo Implement email verification.
    */
-  async createUser(
-    signupDto: CreateUserDTO | SignUpDto,
-  ): Promise<Partial<User>> {
+  async createUser(dto: CreateUserDTO): Promise<Partial<User>> {
     const user: User = new User();
-    user.displayName = signupDto.displayName;
-    user.salt = await genSalt();
-    user.password = await hash(signupDto.password, user.salt);
-    user.email = signupDto.email;
+    user.displayName = dto.displayName;
+    const salt: string = await this.authorizationService.generateSalt();
+    user.salt = salt;
+    user.password = await this.authorizationService.assignPassword(dto, salt);
+    user.roles = this.authorizationService.assignRoles(dto.roles);
+    user.email = dto.email;
     user.isActive = !config.get('auth.requireUserAccountActivation');
-    if ('roles' in signupDto && signupDto.roles) {
-      user.roles = this.authorizationService.createRolesFromEnum(
-        signupDto.roles,
-      );
-    } else {
-      user.roles = await this.authorizationService.assignDefaultAuthorization();
-    }
-
     await this.checkEmail(user.email);
     const newUser: Omit<User, 'password' | 'salt' | 'isActive' | 'isDeleted'> =
       /**
@@ -286,6 +277,6 @@ export class AuthenticationService {
   }
 
   updateRoles(rolesEnum: ROLES[]): Role[] {
-    return this.authorizationService.createRolesFromEnum(rolesEnum);
+    return this.authorizationService.assignRoles(rolesEnum);
   }
 }

@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsDefined,
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -9,6 +10,7 @@ import {
   Validate,
 } from 'class-validator';
 import { PasswordValidation } from 'decorators/password-validator.decorator';
+import { ROLES } from 'modules/authorization/roles/roles.enum';
 
 /**
  * @todo Allow to provide fname/lname/display name on signup (and any other
@@ -42,10 +44,20 @@ export class SignUpDto {
   @MaxLength(1e5)
   avatarDataUrl?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsDefined()
   @IsString()
   @ApiProperty()
   @Validate(PasswordValidation)
-  password!: string;
+  password?: string;
+
+  @ApiPropertyOptional({
+    enum: ROLES,
+    type: ROLES,
+    example: Object.values(ROLES),
+    isArray: true,
+  })
+  @IsOptional()
+  @IsEnum(ROLES, { each: true })
+  roles?: ROLES[];
 }

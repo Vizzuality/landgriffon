@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  ArrayMinSize,
   IsEmail,
   IsEnum,
   IsOptional,
@@ -48,13 +49,15 @@ export class CreateUserDTO {
   @MaxLength(1e5)
   avatarDataUrl?: string;
 
-  @ApiPropertyOptional({
+  // TODO: at some point we will need to async validate that the roles provided are present in the database.
+  //       for now we only have the default roles, so we can just validate against those.
+  @ApiProperty({
     enum: ROLES,
     type: ROLES,
     example: Object.values(ROLES),
     isArray: true,
   })
-  @IsOptional()
+  @ArrayMinSize(1)
   @IsEnum(ROLES, { each: true })
-  roles?: ROLES[];
+  roles!: ROLES[];
 }

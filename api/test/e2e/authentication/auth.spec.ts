@@ -17,7 +17,7 @@ import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { AppModule } from 'app.module';
 import { ROLES } from 'modules/authorization/roles/roles.enum';
 
-describe('AppController (e2e)', () => {
+describe('Auth Controller (e2e)', () => {
   let testApplication: TestApplication;
   let dataSource: DataSource;
   let userRepository: UserRepository;
@@ -65,7 +65,7 @@ describe('AppController (e2e)', () => {
       return user.save();
     });
 
-    describe('Creating new account', () => {
+    describe.skip('Creating new account', () => {
       test('Fails to sign up user with password without upper case character', async () => {
         const response = await request(testApplication.getHttpServer())
           .post('/auth/sign-up')
@@ -192,7 +192,11 @@ describe('AppController (e2e)', () => {
     });
 
     describe('Signing in', () => {
-      test('A user should not be able to log in until their account has been validated', async () => {
+      /**
+       * @note: Since auth behavior has been requested to change: only admin users can create a user, and it will be active by default
+       *        we will skip these tests but keep them as this might change anytime soon
+       */
+      test.skip('A user should not be able to log in until their account has been validated', async () => {
         const user: User | null = await userRepository.findByEmail(
           E2E_CONFIG.users.signUp.email,
         );
@@ -247,7 +251,7 @@ describe('AppController (e2e)', () => {
       let newUser: User | null;
       let validationTokenEvent: ApiEventByTopicAndKind | undefined;
 
-      test('A user should be able to validate their account (within the validity timeframe of the validationToken)', async () => {
+      test.skip('A user should be able to validate their account (within the validity timeframe of the validationToken)', async () => {
         /**
          * Here we need to dig into the actual database to retrieve both the id
          * assigned to the user when their account is created, and the one-time
@@ -275,7 +279,7 @@ describe('AppController (e2e)', () => {
           .expect(HttpStatus.OK);
       });
 
-      test('A user account validation token should not be allowed to be spent more than once', async () => {
+      test.skip('A user account validation token should not be allowed to be spent more than once', async () => {
         if (!newUser) {
           throw new Error('Cannot retrieve data for newly created user.');
         }
@@ -288,12 +292,24 @@ describe('AppController (e2e)', () => {
       });
     });
 
-    describe('Sign-in and sign-up with the same email, after account was deleted', () => {
+    describe.skip('Sign-in and sign-up with the same email, after account was deleted', () => {
       let jwtToken: string;
       let newUser: User | null;
       let validationTokenEvent: ApiEventByTopicAndKind | undefined;
 
-      beforeAll(async () => {
+      beforeEach(async () => {
+        const user: User = new User();
+        user.email = E2E_CONFIG.users.signUp.email;
+        user.fname = 'a';
+        user.lname = 'a';
+        user.displayName = 'User A A';
+        user.salt = await bcrypt.genSalt();
+        user.password = await bcrypt.hash(
+          E2E_CONFIG.users.signUp.password,
+          user.salt,
+        );
+        user.isActive = true;
+        await user.save();
         jwtToken = await request(testApplication.getHttpServer())
           .post('/auth/sign-in')
           .send({

@@ -10,7 +10,7 @@
   },
   "auth": {
     "requireUserAuth": true,
-    "requireUserAccountActivation": true,
+    "requireUserAccountActivation": false,
     "signUpIsPublic": true,
     "jwt": {
       "expiresIn": "2h",

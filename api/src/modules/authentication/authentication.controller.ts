@@ -9,11 +9,8 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import {
-  ApiBadRequestResponse,
   ApiBearerAuth,
-  ApiConflictResponse,
   ApiCreatedResponse,
-  ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -27,9 +24,7 @@ import {
   AuthenticationService,
 } from 'modules/authentication/authentication.service';
 import { LoginDto } from 'modules/authentication/dto/login.dto';
-import { SignUpDto } from 'modules/authentication/dto/sign-up.dto';
 import { UserAccountValidationDTO } from 'modules/authentication/dto/user-account.validation.dto';
-import * as config from 'config';
 
 @Controller('/auth')
 @ApiTags('Authentication')
@@ -54,20 +49,6 @@ export class AuthenticationController {
     @Body(ValidationPipe) loginDto: LoginDto,
   ): Promise<AccessToken> {
     return this.authenticationService.login(req.user);
-  }
-
-  @Public(`${config.get('auth.signUpIsPublic')}`.toLowerCase() === 'true')
-  @Post('sign-up')
-  @ApiOperation({ description: 'Sign up for an user account.' })
-  @ApiCreatedResponse({ description: 'User registered successfully' })
-  @ApiBadRequestResponse()
-  @ApiConflictResponse({ description: 'Email already exists.' })
-  @ApiForbiddenResponse()
-  async signUp(
-    @Request() _req: Request,
-    @Body(ValidationPipe) signUpDto: SignUpDto,
-  ): Promise<void> {
-    await this.authenticationService.createUser(signUpDto);
   }
 
   @Public()

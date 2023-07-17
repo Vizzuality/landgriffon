@@ -141,24 +141,20 @@ export class InterventionBuilder {
       }
     }
     if (type === SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER) {
+      newIntervention.newAdminRegion =
+        await this.adminRegionService.getAdminRegionById(
+          newSourcingLocations[0].adminRegionId!,
+        );
       if (newSourcingLocations[0].producerId) {
         newIntervention.newProducer =
           await this.suppliersService.getSupplierById(
             newSourcingLocations[0].producerId,
-          );
-        newIntervention.newAdminRegion =
-          await this.adminRegionService.getAdminRegionById(
-            newSourcingLocations[0].adminRegionId!,
           );
       }
       if (newSourcingLocations[0].t1SupplierId) {
         newIntervention.newT1Supplier =
           await this.suppliersService.getSupplierById(
             newSourcingLocations[0].t1SupplierId,
-          );
-        newIntervention.newAdminRegion =
-          await this.adminRegionService.getAdminRegionById(
-            newSourcingLocations[0].adminRegionId!,
           );
       }
     }

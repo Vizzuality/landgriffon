@@ -646,22 +646,23 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
           <Controller
             name="businessUnitIds"
             control={control}
-            render={({ field: { value, ...field } }) => (
-              <BusinessUnitsSelect
-                {...field}
-                multiple
-                placeholder="All business units"
-                checkedStrategy={isCreation ? 'CHILD' : undefined}
-                materialIds={currentMaterialIds?.map(({ value }) => value)}
-                t1SupplierIds={currentT1SupplierIds?.map(({ value }) => value)}
-                producerIds={currentProducerIds?.map(({ value }) => value)}
-                originIds={currentLocationIds?.map(({ value }) => value)}
-                withSourcingLocations
-                current={value}
-                error={!!errors?.businessUnitIds}
-                data-testid="business-units-select"
-              />
-            )}
+            render={({ field: { value, ...field } }) => {
+              return (
+                <BusinessUnitsSelect
+                  {...field}
+                  multiple
+                  placeholder="All business units"
+                  materialIds={currentMaterialIds?.map(({ value }) => value)}
+                  t1SupplierIds={currentT1SupplierIds?.map(({ value }) => value)}
+                  producerIds={currentProducerIds?.map(({ value }) => value)}
+                  originIds={currentLocationIds?.map(({ value }) => value)}
+                  withSourcingLocations
+                  current={value}
+                  error={!!errors?.businessUnitIds}
+                  data-testid="business-units-select"
+                />
+              );
+            }}
           />
         </div>
         <div>

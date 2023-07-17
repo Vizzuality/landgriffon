@@ -1871,10 +1871,10 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         );
         expect(createdScenarioIntervention1.replacedT1Suppliers[0].id).toEqual(
           childSupplier.id,
-        ),
-          expect(
-            createdScenarioIntervention1.replacedBusinessUnits[0].id,
-          ).toEqual(parentBusinessUnit.id);
+        );
+        expect(
+          createdScenarioIntervention1.replacedBusinessUnits[0].id,
+        ).toEqual(parentBusinessUnit.id);
 
         const responseBusinessUnits = await request(
           testApplication.getHttpServer(),
@@ -1937,7 +1937,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     );
 
     test(
-      'When I create a new Intervention to switch to a new Material' +
+      'When I create a new Intervention to switch to a new Material ' +
         'Then said Intervention should retrieve the new Material and the new Admin Region',
       async () => {
         // ARRANGE
@@ -2099,6 +2099,40 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         );
         expect(
           (intervention as ScenarioIntervention).newAdminRegion.id,
+        ).toEqual(newAdminRegion.id);
+
+        const responseOfChangeSupplierInterventionType = await request(
+          testApplication.getHttpServer(),
+        )
+          .post('/api/v1/scenario-interventions')
+          .set('Authorization', `Bearer ${jwtToken}`)
+          .send({
+            title: 'scenario intervention material',
+            startYear: 2020,
+            percentage: 50,
+            scenarioId: scenario.id,
+            materialIds: [parentMaterial.id],
+            t1SupplierIds: [childSupplier.id],
+            businessUnitIds: [parentBusinessUnit.id],
+            adminRegionIds: [parentAdminRegion.id],
+            type: SCENARIO_INTERVENTION_TYPE.NEW_SUPPLIER,
+            newLocationType: LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION,
+            newLocationCountryInput: parentAdminRegion.name,
+            newLocationAdminRegionInput: newAdminRegion.name,
+          });
+
+        const intervention2: ScenarioIntervention | null =
+          await scenarioInterventionRepository.findOne({
+            where: {
+              id: responseOfChangeSupplierInterventionType.body.data.id,
+            },
+          });
+
+        //ASSERT;
+        expect(intervention2).toBeTruthy();
+        expect((intervention2 as ScenarioIntervention).newMaterial).toBeFalsy();
+        expect(
+          (intervention2 as ScenarioIntervention).newAdminRegion.id,
         ).toEqual(newAdminRegion.id);
       },
     );

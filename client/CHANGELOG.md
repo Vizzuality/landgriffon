@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Fixed edit intervention admin region [LANDGRIF-1445](https://vizzuality.atlassian.net/browse/LANDGRIF-1445)
 - Fixed remove badge when unselecting 'T1 supplier' filter in analysis [LANDGRIF-1442](https://vizzuality.atlassian.net/browse/LANDGRIF-1442)
 - Fixed intervention creation: business units check strategy [LANDGRIF-1444](https://vizzuality.atlassian.net/browse/LANDGRIF-1444)
 - Fixed analysis filters selectors width [LANDGRIF-1437](https://vizzuality.atlassian.net/browse/LANDGRIF-1437)

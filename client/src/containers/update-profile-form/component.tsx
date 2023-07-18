@@ -84,7 +84,7 @@ const UserDataForm: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="companyTitle">Company title</Label>
+                  <Label htmlFor="companyTitle">Title</Label>
                   <Input
                     {...register('companyTitle')}
                     defaultValue={user.data.companyTitle}

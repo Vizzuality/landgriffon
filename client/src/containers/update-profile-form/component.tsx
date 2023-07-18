@@ -13,7 +13,6 @@ import type { ProfilePayload, ErrorResponse } from 'types';
 const schemaValidation = yup.object({
   fname: yup.string(),
   lname: yup.string(),
-  // email: yup.string().email().optional().nullable(), API DOES NOT SUPPORT EMAIL
   companyTitle: yup.string().optional().nullable(),
 });
 
@@ -78,8 +77,7 @@ const UserDataForm: React.FC = () => {
                 <div>
                   <Label htmlFor="email">Email</Label>
                   <Input
-                    // error={errors.email?.message as string}
-                    // {...register('email')} API DOES NOT SUPPORT EMAIL
+                    // {...register('email')} API DOES NOT SUPPORT EDIT EMAIL
                     defaultValue={user.data.email}
                     type="email"
                     disabled
@@ -91,7 +89,7 @@ const UserDataForm: React.FC = () => {
                     {...register('companyTitle')}
                     defaultValue={user.data.companyTitle}
                     error={errors.companyTitle?.message as string}
-                    disabled
+                    disabled // DISABLED UNTIL API SUPPORTS IT
                   />
                 </div>
               </div>

@@ -10,7 +10,7 @@ const getUserFullName = (user: User, options?: { replaceByEmail?: boolean }) => 
   if (lname) {
     name = name ? `${name} ${lname}` : lname;
   }
-  if (!name && options.replaceByEmail) return email;
+  if (!name && options?.replaceByEmail) return email;
   return name;
 };
 

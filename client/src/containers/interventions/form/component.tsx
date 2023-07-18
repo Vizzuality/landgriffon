@@ -373,7 +373,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
           newLocationAdminRegionInput: intervention.newAdminRegion
             ? {
                 label: intervention.newAdminRegion.name,
-                value: intervention.newAdminRegion.id,
+                value: intervention.newAdminRegion.name,
               }
             : null,
 

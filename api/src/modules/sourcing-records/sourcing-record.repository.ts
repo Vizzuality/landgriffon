@@ -100,8 +100,6 @@ export class SourcingRecordRepository extends Repository<SourcingRecord> {
 
     this.addGroupAndOrderByToQuery(impactDataQueryBuilder, getImpactTaleDto);
 
-    console.log(impactDataQueryBuilder.getQueryAndParameters());
-
     const dataForImpactTable: ImpactTableData[] =
       await impactDataQueryBuilder.getRawMany();
 

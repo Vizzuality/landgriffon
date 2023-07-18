@@ -1402,7 +1402,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
       ]).toEqual(expect.arrayContaining(groupByMaterialResponseData.rows));
 
       expect(response.body.data.impactTable[0].yearSum[0].value).toEqual(
-        groupByMaterialResponseData.rows[0].values[0].value,
+        groupByMaterialResponseData.yearSum[0].value,
       );
     });
   });

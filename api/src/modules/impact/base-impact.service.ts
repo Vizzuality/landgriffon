@@ -318,9 +318,21 @@ export class BaseImpactService {
     // Make a shallow copy of the data to avoid mutating the original
     const paginatedData: any = { ...data };
 
-    const totalItems: number = paginatedData.impactTable[0].rows.length;
+    const totalItems: number = paginatedData.impactTable[0]?.rows?.length;
     const totalPages: number = Math.ceil(totalItems / pageSize);
 
+    // If there are no rows or the number of rows is less than the page size, return the data as is
+    if (totalItems === 0 || totalItems < pageSize) {
+      return {
+        data: paginatedData,
+        metadata: new PaginationMeta({
+          totalPages,
+          totalItems,
+          size: pageSize,
+          page,
+        }),
+      };
+    }
     // For each indicator, paginate its rows array
     for (let i: number = 0; i < paginatedData.impactTable.length; i++) {
       paginatedData.impactTable[i].rows = paginatedData.impactTable[

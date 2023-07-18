@@ -24,7 +24,7 @@ const UserDropdown: React.FC = () => {
 
   const handleSignOut = useCallback(() => signOut({ callbackUrl: '/auth/signin' }), []);
 
-  const userName = useMemo(() => getUserFullName(user), [user]);
+  const userName = getUserFullName(user);
 
   return (
     <Menu as="div" className="flex justify-center flex-col items-center w-full mb-5">

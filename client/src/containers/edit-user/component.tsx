@@ -15,7 +15,7 @@ type EditUserProps = {
 
 const EditUser = ({ user }: EditUserProps) => {
   const [open, setOpenModal] = useState(false);
-  const userName = getUserFullName(user, true);
+  const userName = getUserFullName(user, { replaceByEmail: true });
 
   return (
     <>

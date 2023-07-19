@@ -164,6 +164,11 @@ Cypress.Commands.add('interceptAllRequests', (): void => {
     fixture: 'intervention/intervention-creation-dto',
   }).as('successfulInterventionEdition');
 
+  cy.intercept('GET', '/api/v1/scenario-interventions/random-intervention-id?*', {
+    statusCode: 200,
+    fixture: 'intervention/intervention',
+  }).as('ntervention');
+
   // Layer requests
   cy.intercept('GET', '/api/v1/h3/map/impact*', {
     fixture: 'layers/impact-layer.json',
@@ -238,6 +243,20 @@ Cypress.Commands.add('interceptAllRequests', (): void => {
       fixture: 'suppliers/types-producer',
     },
   ).as('producers');
+
+  cy.intercept(
+    {
+      method: 'GET',
+      pathname: '/api/v1/suppliers',
+      query: {
+        'filter[name]': 'Unknown',
+      },
+    },
+    {
+      statusCode: 200,
+      fixture: 'suppliers/unknown-supplier',
+    },
+  ).as('unknownSupplier');
 
   // Profile
   cy.intercept('api/v1/users/me', { fixture: 'profiles/all-permissions' }).as('profile');

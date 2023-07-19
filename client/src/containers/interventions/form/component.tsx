@@ -14,7 +14,7 @@ import { InterventionTypes, LocationTypes, InfoTooltip } from '../enums';
 import InterventionTypeIcon from './intervention-type-icon';
 
 import { useIndicators } from 'hooks/indicators';
-import { useSuppliersTypes } from 'hooks/suppliers';
+import { useSuppliersTypes, useUnknowSupplier } from 'hooks/suppliers';
 import { useLocationTypes } from 'hooks/location-types';
 import { useAdminRegionsTrees, useAdminRegionsByCountry } from 'hooks/admin-regions';
 import { useSourcingRecordsYears } from 'hooks/sourcing-records';
@@ -97,8 +97,8 @@ const schemaValidation = yup.object({
   adminRegionIds: yup.array().label('Admin region IDs').of(optionSchema),
 
   // Supplier
-  newT1SupplierId: optionSchema.label('New T1 Supplier ID').nullable(),
-  newProducerId: optionSchema.label('New producer ID').nullable(),
+  newT1SupplierId: optionSchema.label('New T1 Supplier ID').required(),
+  newProducerId: optionSchema.label('New producer ID').required(),
 
   // Location
   newLocationType: locationTypeSchema.label('New location type').when('interventionType', {
@@ -298,6 +298,12 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
     [years],
   );
 
+  const { data: unknowSupplier } = useUnknowSupplier();
+  const unknowSupplierOption: Option<string> = useMemo(
+    () => ({ label: unknowSupplier?.name, value: unknowSupplier?.id }),
+    [unknowSupplier],
+  );
+
   const {
     register,
     control,
@@ -383,13 +389,13 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                 label: intervention.newT1Supplier.name,
                 value: intervention.newT1Supplier.id,
               }
-            : null,
+            : unknowSupplierOption,
           newProducerId: intervention?.newProducer
             ? {
                 label: intervention.newProducer.name,
                 value: intervention.newProducer.id,
               }
-            : null,
+            : unknowSupplierOption,
           // coefficients
           coefficients: {
             ...(Object.keys(intervention?.newIndicatorCoefficients || {}).length &&
@@ -574,6 +580,11 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   useEffect(() => {
     if (Object.keys(errors).length > 0) toast.error('Please fill all required fields.');
   }, [errors]);
+
+  useEffect(() => {
+    if (!currentNewT1SupplierId?.value) setValue('newT1SupplierId', unknowSupplierOption);
+    if (!currentNewProducerId?.value) setValue('newProducerId', unknowSupplierOption);
+  }, [currentNewT1SupplierId, currentNewProducerId, setValue, unknowSupplierOption]);
 
   return (
     <form
@@ -1110,7 +1121,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                             <Controller
                               name="newT1SupplierId"
                               control={control}
-                              defaultValue={null}
                               render={({ field }) => (
                                 <div data-testid="new-t1-supplier-select">
                                   <AutoCompleteSelect
@@ -1121,6 +1131,12 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                                     placeholder="Select"
                                     onChange={(value) => setValue('newT1SupplierId', value)}
                                     error={errors?.newT1SupplierId?.message?.toString()}
+                                    clearable={
+                                      currentNewT1SupplierId?.value !== unknowSupplierOption.value
+                                    }
+                                    onClearSelection={() =>
+                                      setValue('newT1SupplierId', unknowSupplierOption)
+                                    }
                                   />
                                 </div>
                               )}
@@ -1131,7 +1147,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                             <Controller
                               name="newProducerId"
                               control={control}
-                              defaultValue={null}
                               render={({ field }) => (
                                 <div data-testid="new-producer-select">
                                   <AutoCompleteSelect
@@ -1142,6 +1157,12 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                                     placeholder="Select"
                                     onChange={(value) => setValue('newProducerId', value)}
                                     error={errors?.newProducerId?.message?.toString()}
+                                    clearable={
+                                      currentNewProducerId?.value !== unknowSupplierOption.value
+                                    }
+                                    onClearSelection={() =>
+                                      setValue('newProducerId', unknowSupplierOption)
+                                    }
                                   />
                                 </div>
                               )}

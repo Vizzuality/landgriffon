@@ -1,0 +1,131 @@
+{
+  "data": {
+    "type": "scenarioInterventions",
+    "id": "6d881784-f6fc-48dd-9ec1-609fe31a4211",
+    "attributes": {
+      "title": "change material",
+      "description": null,
+      "status": "active",
+      "startYear": 2022,
+      "type": "Source from new supplier or location",
+      "createdAt": "2023-07-20T13:56:00.025Z",
+      "updatedAt": "2023-07-20T13:56:00.159Z",
+      "newLocationType": "administrative-region-of-production",
+      "newIndicatorCoefficients": null,
+      "newLocationCountryInput": "Spain",
+      "newLocationAddressInput": null,
+      "newLocationLatitudeInput": "0",
+      "newLocationLongitudeInput": "0",
+      "replacedMaterials": [
+        {
+          "createdAt": "2023-06-23T05:51:38.232Z",
+          "updatedAt": "2023-07-11T15:44:17.198Z",
+          "id": "2cf5e53b-6030-403a-8849-e961474fead7",
+          "parentId": "ed626334-1a6a-43c2-b52f-a61e94e756b4",
+          "name": "Rice",
+          "description": "Rice",
+          "hsCodeId": "1006",
+          "earthstatId": null,
+          "mapspamId": null,
+          "status": "active",
+          "metadata": {
+            "name": "Global rice distribution in 2010",
+            "source": "International Food Policy Research Institute, 2019, “Global Spatially-Disaggregated Crop Production Statistics Data for 2010 Version 2.0”, https://doi.org/10.7910/DVN/PRFF8V, Harvard Dataverse, V4",
+            "license": "CC0 1.0",
+            "cautions": "Global distributions of rice in 2010 expressed in tonnes (T).",
+            "citation": "International Food Policy Research Institute, 2019, “Global Spatially-Disaggregated Crop Production Statistics Data for 2010 Version 2.0”, https://doi.org/10.7910/DVN/PRFF8V, Harvard Dataverse, V4",
+            "datasets": ["SPAM 2010 v2.0 Global Data (Updated 2020-07-15)"],
+            "overview": "'All crops' represent all of the crops that are included in the tool as displayed in the menu. Pixel colors are shaded by level of production. The crop layers displayed on the map reflect 2010 data regardless of the timeframe selected.",
+            "resolution": "10km x 10km",
+            "date of content": "2010",
+            "geographic coverage": "Global coverage",
+            "frequency of updates": ""
+          },
+          "datasetId": "spam_rice"
+        }
+      ],
+      "replacedBusinessUnits": [
+        {
+          "id": "b5f643b1-8118-4967-b4f8-123f37651b79",
+          "name": "Entire company",
+          "description": null,
+          "status": "inactive",
+          "metadata": null
+        }
+      ],
+      "replacedAdminRegions": [
+        {
+          "id": "3e12591b-c441-456a-9a0c-7a098e70cfa9",
+          "parentId": null,
+          "gadmId": "IND",
+          "level": 0,
+          "name": "India",
+          "description": null,
+          "status": "inactive",
+          "isoA2": "IN",
+          "isoA3": "IND",
+          "geoRegionId": "fe9705a7-77b8-4766-bed6-c4d9def54af8"
+        }
+      ],
+      "replacedT1Suppliers": [
+        {
+          "createdAt": "2023-07-11T15:44:17.858Z",
+          "updatedAt": "2023-07-11T15:44:17.858Z",
+          "id": "e18aab38-3996-46f1-b57c-c014d95bd4dd",
+          "parentId": null,
+          "name": "Unknown",
+          "description": "Supplier or producer is unknown",
+          "status": "active",
+          "metadata": null
+        }
+      ],
+      "replacedProducers": [
+        {
+          "createdAt": "2023-07-11T15:44:24.437Z",
+          "updatedAt": "2023-07-11T15:44:24.437Z",
+          "id": "4a5ec1f9-cf94-44d0-b0eb-39461795c7c5",
+          "parentId": null,
+          "name": "ABINASH RICE MILL",
+          "description": null,
+          "status": "active",
+          "metadata": null
+        }
+      ],
+      "newMaterial": null,
+      "newBusinessUnit": null,
+      "newAdminRegion": {
+        "id": "8a3919d0-c1a1-4cea-81e3-f74d0d834b8f",
+        "parentId": "f218c39c-9ece-4f49-9772-5b71402b610a",
+        "gadmId": "ESP.10.3_1",
+        "level": 2,
+        "name": "Valencia",
+        "description": null,
+        "status": "inactive",
+        "isoA2": null,
+        "isoA3": null,
+        "geoRegionId": "266a38a2-66f5-48aa-b2e2-1621b0adece5"
+      },
+      "newT1Supplier": {
+        "createdAt": "2023-07-11T15:44:17.858Z",
+        "updatedAt": "2023-07-11T15:44:17.858Z",
+        "id": "e18aab38-3996-46f1-b57c-c014d95bd4dd",
+        "parentId": null,
+        "name": "Unknown",
+        "description": "Supplier or producer is unknown",
+        "status": "active",
+        "metadata": null
+      },
+      "newProducer": {
+        "createdAt": "2023-07-11T15:44:17.858Z",
+        "updatedAt": "2023-07-11T15:44:17.858Z",
+        "id": "e18aab38-3996-46f1-b57c-c014d95bd4dd",
+        "parentId": null,
+        "name": "Unknown",
+        "description": "Supplier or producer is unknown",
+        "status": "active",
+        "metadata": null
+      },
+      "percentage": 100
+    }
+  }
+}

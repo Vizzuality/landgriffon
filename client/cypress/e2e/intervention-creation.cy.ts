@@ -54,9 +54,10 @@ describe('Intervention creation', () => {
     cy.get('[data-testid="select-newLocationType"]').should('have.length', 1);
     cy.get('[data-testid="select-newLocationCountryInput"]').should('have.length', 1);
 
-    // supplier options should not be visible by default
-    cy.get('[data-testid="new-t1-supplier-select"]').should('have.length', 0);
-    cy.get('[data-testid="new-producer-select"]').should('have.length', 0);
+    // supplier options should have a default value of Unknown
+    cy.wait('@unknownSupplier');
+    cy.get('[data-testid="new-t1-supplier-select"] input').should('have.value', 'Unknown');
+    cy.get('[data-testid="new-producer-select"] input').should('have.value', 'Unknown');
 
     // coefficients should not be visible by default
     cy.get('[data-testid="GHG_LUC_T-input"]').should('have.length', 0);
@@ -133,9 +134,10 @@ describe('Intervention creation', () => {
     cy.get('[data-testid="select-newLocationType"]').should('have.length', 1);
     cy.get('[data-testid="select-newLocationCountryInput"]').should('have.length', 1);
 
-    // supplier options should not be visible by default
-    cy.get('[data-testid="new-t1-supplier-select"]').should('have.length', 0);
-    cy.get('[data-testid="new-producer-select"]').should('have.length', 0);
+    // supplier options should have a default value of Unknown
+    cy.wait('@unknownSupplier');
+    cy.get('[data-testid="new-t1-supplier-select"] input').should('have.value', 'Unknown');
+    cy.get('[data-testid="new-producer-select"] input').should('have.value', 'Unknown');
 
     // coefficients should not be visible by default
     cy.get('[data-testid="GHG_LUC_T-input"]').should('have.length', 0);

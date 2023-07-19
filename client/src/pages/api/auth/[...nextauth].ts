@@ -2,6 +2,7 @@ import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
 import { authService } from 'services/authentication';
+import getUserFullName from 'utils/user-full-name';
 
 import type { NextAuthOptions } from 'next-auth';
 
@@ -53,9 +54,7 @@ export const options: NextAuthOptions = {
         if (data && status === 201) {
           return {
             ...data.user,
-            name:
-              data.displayName ||
-              (data.user.fname && data.user.lname ? `${data.user.fname} ${data.user.lname}` : null),
+            name: getUserFullName(data.user),
             image: data.user.avatarDataUrl,
             accessToken: data.accessToken,
           };

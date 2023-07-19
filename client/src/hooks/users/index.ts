@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiService } from 'services/api';
 
 import type { UseQueryOptions } from '@tanstack/react-query';
-import type { UserPayload } from 'types';
+import type { ProfilePayload, UserPayload } from 'types';
 
 export const useUsers = (
   params: Record<string, unknown> = {},
@@ -54,4 +54,38 @@ export const useDeleteUser = () => {
     mutationKey: ['delete-user'],
     onSuccess: () => queryClient.invalidateQueries(['users']),
   });
+};
+
+export const useCreateUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    (data: Omit<ProfilePayload, 'id'>) =>
+      apiService.request({
+        method: 'POST',
+        url: '/users/',
+        data,
+      }),
+    {
+      mutationKey: ['create-user'],
+      onSuccess: () => queryClient.invalidateQueries(['users']),
+    },
+  );
+};
+
+export const useEditUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    ({ id, ...data }: Omit<ProfilePayload, 'email'>) =>
+      apiService.request({
+        method: 'PATCH',
+        url: `/users/${id}`,
+        data,
+      }),
+    {
+      mutationKey: ['edit-user'],
+      onSuccess: () => queryClient.invalidateQueries(['users']),
+    },
+  );
 };

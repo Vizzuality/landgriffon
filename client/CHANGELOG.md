@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - From update user form: removed 'display name' adn added 'company title' [LANDGRIF-1343](https://vizzuality.atlassian.net/browse/LANDGRIF-1343)
 - Changed the intervention form to send 'Unknown' newT1SupplierId and newProducerId when there is no value. [LANDGRIF-1448](https://vizzuality.atlassian.net/browse/LANDGRIF-1448)
+- Changed create and update user form [LANDGRIF-1345](https://vizzuality.atlassian.net/browse/LANDGRIF-1345)
 - Changed analysis/table 'group by' filter value 'Supplier' to 'T1 Supplier' and 'Producer' [LANDGRIF-1441](https://vizzuality.atlassian.net/browse/LANDGRIF-1441)
 - Add avatar to user list [LANDGRIF-1344](https://vizzuality.atlassian.net/browse/LANDGRIF-1344)
 - Change users list to don't show the current user [LANDGRIF-1346](https://vizzuality.atlassian.net/browse/LANDGRIF-1346)

@@ -13,7 +13,7 @@ import type { ProfilePayload, ErrorResponse } from 'types';
 const schemaValidation = yup.object({
   fname: yup.string(),
   lname: yup.string(),
-  companyTitle: yup.string().optional().nullable(),
+  title: yup.string().optional().nullable(),
 });
 
 const UserDataForm: React.FC = () => {
@@ -84,12 +84,11 @@ const UserDataForm: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="companyTitle">Title</Label>
+                  <Label htmlFor="title">Title</Label>
                   <Input
-                    {...register('companyTitle')}
-                    defaultValue={user.data.companyTitle}
-                    error={errors.companyTitle?.message as string}
-                    disabled // DISABLED UNTIL API SUPPORTS IT
+                    {...register('title')}
+                    defaultValue={user.data.title}
+                    error={errors.title?.message as string}
                   />
                 </div>
               </div>

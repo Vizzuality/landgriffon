@@ -30,7 +30,6 @@ const schemaValidation = yup.object({
 
 // ? https://api.dev.landgriffon.com/swagger/#/Authentication/AuthenticationController_signUp
 export type SignUpPayload = {
-  displayName?: string;
   email: ProfilePayload['email'];
   fname: ProfilePayload['fname'];
   lname: ProfilePayload['lname'];

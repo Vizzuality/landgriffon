@@ -9,14 +9,18 @@ import Button from 'components/button';
 import Search from 'components/search';
 import Table from 'components/table';
 import { DEFAULT_PAGE_SIZES } from 'components/table/pagination/constants';
-import UserAvatar from 'containers/user-avatar/component';
+import UserAvatar from 'containers/user-avatar';
 import { useProfile } from 'hooks/profile';
-import EditUser from 'containers/edit-user/component';
+import EditUser from 'containers/edit-user';
+import getUserFullName from 'utils/user-full-name';
+import UserForm from 'containers/edit-user/user-form';
+import Modal from 'components/modal';
+import { usePermissions } from 'hooks/permissions';
+import { RoleName } from 'hooks/permissions/enums';
 
 import type { PaginationState, SortingState } from '@tanstack/react-table';
 import type { TableProps } from 'components/table/component';
 import type { User } from 'types';
-import getUserFullName from 'utils/user-full-name';
 
 const AdminUsersPage: React.FC = () => {
   const [search, setSearch] = useState<string>('');
@@ -25,6 +29,8 @@ const AdminUsersPage: React.FC = () => {
     pageIndex: 1,
     pageSize: DEFAULT_PAGE_SIZES[0],
   });
+  const [openModal, setOpenModal] = useState(false);
+  const closeModal = () => setOpenModal(false);
 
   const sortStr = useMemo(() => {
     return sorting.map((sort) => (sort.desc ? `-${sort.id}` : sort.id)).join(',') || null;
@@ -37,6 +43,9 @@ const AdminUsersPage: React.FC = () => {
     'page[number]': pagination.pageIndex,
     sort: sortStr,
   });
+
+  const { hasRole } = usePermissions();
+  const isAdmin = hasRole(RoleName.ADMIN);
 
   const handleOnSearch = useDebounceCallback((searchTerm: string) => setSearch(searchTerm), 250);
 
@@ -54,15 +63,20 @@ const AdminUsersPage: React.FC = () => {
         {
           id: 'fname',
           header: 'Name',
-          size: 110,
           align: 'left',
           enableSorting: true,
-          cell: ({ row }) => (
-            <div className="my-6 name flex items-center gap-x-4">
-              <UserAvatar user={row.original} className="w-10 h-10" />
-              {getUserFullName(row.original)}
-            </div>
-          ),
+          cell: ({ row }) => {
+            return (
+              <div className="my-6 name flex items-center gap-x-4">
+                <UserAvatar
+                  userFullName={getUserFullName(row.original, { replaceByEmail: true })}
+                  user={row.original}
+                  className="w-10 h-10 shrink-0"
+                />
+                {getUserFullName(row.original)}
+              </div>
+            );
+          },
         },
         {
           id: 'email',
@@ -139,10 +153,20 @@ const AdminUsersPage: React.FC = () => {
                   <PlusIcon className="w-4 h-4 text-navy-400" />
                 </div>
               }
-              disabled
+              onClick={() => setOpenModal(true)}
+              disabled={!isAdmin}
             >
               Add user
             </Button>
+            <Modal size="narrow" open={openModal} title="Add user" onDismiss={closeModal}>
+              <UserForm onSubmit={closeModal}>
+                <div className="w-full flex justify-end mr-2.5">
+                  <Button size="base" variant="white" onClick={closeModal}>
+                    Cancel
+                  </Button>
+                </div>
+              </UserForm>
+            </Modal>
           </div>
         </div>
         <div className="flex-1">

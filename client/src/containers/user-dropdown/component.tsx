@@ -24,7 +24,9 @@ const UserDropdown: React.FC = () => {
 
   const handleSignOut = useCallback(() => signOut({ callbackUrl: '/auth/signin' }), []);
 
-  const userName = getUserFullName(user);
+  const userName = getUserFullName(user, {
+    replaceByEmail: true,
+  });
 
   return (
     <Menu as="div" className="flex justify-center flex-col items-center w-full mb-5">
@@ -33,7 +35,11 @@ const UserDropdown: React.FC = () => {
         className="focus-visible:shadow-button-focused focus-visible:outline-none rounded-lg shadow-menu hover:shadow-button-hovered"
         ref={reference}
       >
-        <UserAvatar user={user} className="bg-black/20 h-[50px] w-[50px] " />
+        <UserAvatar
+          userFullName={userName}
+          user={user}
+          className="bg-black/20 h-[50px] w-[50px] "
+        />
       </Menu.Button>
       <span className="text-white text-xs mt-3">Account</span>
       {!!user &&
@@ -48,7 +54,7 @@ const UserDropdown: React.FC = () => {
             className="z-40 p-6 bg-white rounded-md shadow-lg focus:outline-none"
           >
             <div className="flex mb-3 items-center">
-              <UserAvatar user={user} className="w-14 h-14" />
+              <UserAvatar userFullName={userName} user={user} className="w-14 h-14" />
 
               <div className="ml-4">
                 <span className="block text-lg leading-8 text-gray-900">{userName}</span>

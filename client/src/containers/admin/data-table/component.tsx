@@ -171,7 +171,7 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
               <span className="text-navy-400 underline">Last update</span> at{' '}
               {format(new Date(sourcingLocations.data[0].updatedAt), 'd MMM yyyy HH:mm z')}
               {task?.user && ' by '}
-              {getUserFullName(task?.user)}
+              {getUserFullName(task?.user, { replaceByEmail: true })}
             </div>
           </div>
         )}

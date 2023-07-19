@@ -11,8 +11,7 @@ def main(filename: str, out_file: str, radius: int = 50):
         transform = src.transform
         arr = src.read(1)
         orig_crs = src.crs
-    # km per degree near the equator. At high lats this will bite us in the ass
-    # The issue here is that the kernel size should vary depending on the raster latitude and proj
+    # TODO: the kernel size should vary depending on the focus latitude
     # for now we will assume that the error for high lat rasters is ok, but we should explore a fix.
     if orig_crs.is_geographic:
         y_size_km = -transform[4] * 111  # 1 degree ~~ 111 km at ecuator
@@ -21,12 +20,13 @@ def main(filename: str, out_file: str, radius: int = 50):
     radius_in_pixels = int(radius // y_size_km)
     # ksize takes the diameter so multiply radius by 2
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, ksize=(radius_in_pixels * 2, radius_in_pixels * 2))
+    kernel /= np.sum(kernel)  # normalize kernel to get the average of the pixels
 
     # apply the buffer using opencv filter function.
     # It calculates the cross-correlation instead of the convolution, but
     # since we are using a symmetric kernel, it does not matter.
     # Also, it is 100x faster than scipy's convolve ¯\_(ツ)_/¯
-    res_buff = cv2.filter2D(arr, ddepth=-1, kernel=kernel) / np.sum(kernel)
+    res_buff = cv2.filter2D(arr, ddepth=-1, kernel=kernel)
 
     meta.update({"compress": "deflate"})
     with rio.open(out_file, "w", **meta) as dest:

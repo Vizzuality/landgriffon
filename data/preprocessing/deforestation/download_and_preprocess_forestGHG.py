@@ -116,7 +116,6 @@ def process_ghg(ghg_file: Path, hansen_file: Path, outfile: Path) -> Path:
         with rio.open(outfile, "w", **dest_profile) as dest:
             # log.info(f"Filtering {ghg_file} and writing to {outfile}...")
             for ij, win in ref.block_windows(1):
-                # sanity check that window transform is the same
                 ghg = ref.read(1, window=win)
                 hansen = hansen_src.read(1, window=win)
                 result = ghg * hansen
@@ -168,20 +167,20 @@ def main(remove_intermediates: bool, out_folder: str, hansen_folder: str, tile_n
     multiprocessing pool
     """
     tile_name, url = tile_name_url  # bypass the use of starmap to map by giving a tuple
-    filename = download_ghg(url, tile_name, out_folder)
-    if not filename:
+    ghg_file = download_ghg(url, tile_name, out_folder)
+    if not ghg_file:
         return  # early return to avoid exceptions since the download failed.
     hansen_file = Path(hansen_folder) / "tiles" / f"{tile_name}.tif"
     if not hansen_file.exists():
         # log.error(f"Couldn't find hansen tile {hansen_file} to use as mask.")
         raise FileNotFoundError(f"Hansen tile {tile_name} not found")
-    out_file = filename.with_name(filename.stem + "_2020" + filename.suffix)
-    ghg_file = process_ghg(filename, hansen_file, out_file)
+    out_file = ghg_file.with_name(ghg_file.stem + "_2020" + ghg_file.suffix)
+    ghg_file = process_ghg(ghg_file, hansen_file, out_file)
     resampled_out_file = Path(out_folder) / "resampled" / (out_file.stem + "_10km" + out_file.suffix)
     resample_ghg(ghg_file, resampled_out_file, (0.0833333333333286, 0.0833333333333286))
     # log.info(f"Done with {tile_name}")
     if remove_intermediates:
-        os.remove(filename)
+        os.remove(ghg_file)
         os.remove(hansen_file)
         os.remove(ghg_file)
 

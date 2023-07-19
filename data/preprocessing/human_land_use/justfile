@@ -1,0 +1,2 @@
+download-non-natural-forest:
+    aws s3 sync s3://$(S3_BUCKET)/$(S3_PREFIX)/non-natural-forest/non-natural-forest/

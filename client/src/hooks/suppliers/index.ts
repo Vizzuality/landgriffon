@@ -92,19 +92,3 @@ export const useSuppliersTypes = <T = Supplier[]>(
 
   return query;
 };
-
-export const useUnknowSupplier = () => {
-  const query = useQuery(
-    ['unknown-supplier'],
-    () =>
-      apiService
-        .request<{ data: Supplier }>({
-          method: 'GET',
-          url: 'suppliers',
-          params: { 'filter[name]': 'Unknown' },
-        })
-        .then(({ data: responseData }) => responseData.data?.[0]),
-    { ...DEFAULT_QUERY_OPTIONS, staleTime: Infinity },
-  );
-  return query;
-};

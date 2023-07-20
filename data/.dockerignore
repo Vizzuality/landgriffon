@@ -1,9 +1,0 @@
-.gitignore
-.github
-.editorconfig
-.env.example
-.pre-commit-config.yaml
-data
-tests
-notebooks
-docs

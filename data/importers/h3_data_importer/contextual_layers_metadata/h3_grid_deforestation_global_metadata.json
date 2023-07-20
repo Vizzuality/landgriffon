@@ -1,0 +1,27 @@
+{
+    "$schema": "./contextual_metadata_schema.json",
+    "name": "Density of tree cover loss",
+    "description": "The Density of Tree Cover Loss layer measures the concentration of areas where there has been significant loss of tree cover. The term 'tree cover' encompasses all vegetation taller than 5 meters, including natural forests and plantations with varying canopy densities. 'Loss' refers to the removal or mortality of tree cover, which can result from various factors such as mechanical harvesting, fire, disease, or storm damage. It is important to note that 'loss' does not necessarily indicate deforestation, as it encompasses a broader range of tree cover changes.",
+    "aggType": "mode",
+    "legend": {
+        "name": "Density of tree cover loss",
+        "id": "",
+        "unit": null,
+        "min": 0,
+        "type": "category",
+        "items": [
+            {
+                "value": 0,
+                "label": "No deforestation",
+                "color": "#FFFFFF"
+            },
+            {
+                "value": 1,
+                "label": "Deforestation",
+                "color": "#D4428E"
+            }
+        ]
+    },
+    "source": "Hansen/UMD/Google/USGS/NASA",
+    "license": "CC BY 4.0"
+}

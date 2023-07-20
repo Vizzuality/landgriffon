@@ -21,7 +21,7 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2
 
 RUN pip install -q --upgrade --no-cache-dir pip
 
-COPY ./requirements.txt requirements.txt
+COPY requirements.txt requirements.txt
 RUN pip install -q --no-cache-dir -r requirements.txt
 
 WORKDIR /
@@ -30,7 +30,7 @@ RUN mkdir -p data/
 COPY ./base_data_importer/ /base_data_importer
 COPY ./data_download/ /data_download
 COPY h3_data_importer /h3_data_importer
-COPY indicator_coefficient_importer/ /indicator_coefficient_importer
-COPY ./Makefile ./Makefile
+COPY indicator_coefficient_importer /indicator_coefficient_importer
+COPY Makefile ./Makefile
 
 ENTRYPOINT ["/usr/bin/make"]

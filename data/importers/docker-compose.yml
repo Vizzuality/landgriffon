@@ -2,9 +2,9 @@ version: "3.8"
 services:
   landgriffon-seed-data:
     build:
-        context: ./
+        context: ..
         dockerfile: Dockerfile
     command: seed-data
     env_file:
-        - '../.env'
+        - '../../.env'
     network_mode: "host"

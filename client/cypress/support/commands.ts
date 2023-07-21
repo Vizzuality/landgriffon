@@ -204,6 +204,11 @@ Cypress.Commands.add('interceptAllRequests', (): void => {
   });
 
   // Sourcing locations data requests
+  cy.intercept('GET', '/api/v1/sourcing-locations/materials*', {
+    statusCode: 200,
+    fixture: 'sourcing-locations/materials',
+  }).as('sourcingLocationsMaterials');
+
   cy.intercept('GET', '/api/v1/sourcing-locations*', {
     statusCode: 200,
     fixture: 'sourcing-locations/index',

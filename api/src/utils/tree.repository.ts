@@ -21,7 +21,7 @@ export class ExtendedTreeRepository<
    * @description: Returns a flat array of given elements Ids ancestry up to the root
    *
    */
-  async getEntityAncestry<Entity extends ObjectLiteral>(
+  async getEntityAncestryFlatArray<Entity extends ObjectLiteral>(
     queryBuilder: SelectQueryBuilder<Entity>,
     entityName: string,
   ): Promise<Entity[]> {
@@ -49,7 +49,7 @@ export class ExtendedTreeRepository<
         `Recursive query failed for subquery: ${subQuery}, with params: ${subQueryParams}: ${err}`,
       );
       throw new ServiceUnavailableException(
-        `Could not retrieve Materials tree, contact your administrator`,
+        `Could not retrieve ${entityName} tree, contact your administrator`,
       );
     });
   }

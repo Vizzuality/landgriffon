@@ -119,7 +119,7 @@ export class SuppliersService extends AppBaseService<
             supplierTreeOptions.materialIds,
           );
       }
-      return this.getSuppliersWithSourcingLocations(supplierTreeOptions);
+      return this.getSuppliersTreeWithSourcingLocations(supplierTreeOptions);
     }
 
     return this.findTreesWithOptions(supplierTreeOptions.depth);
@@ -151,13 +151,13 @@ export class SuppliersService extends AppBaseService<
    *  @description Get a tree of Suppliers that are associated with sourcing locations
    */
 
-  async getSuppliersWithSourcingLocations(
-    supplierTreeOptions: GetSupplierTreeWithOptions,
+  async getSuppliersTreeWithSourcingLocations(
+    options: GetSupplierByType,
     withAncestry: boolean = true,
   ): Promise<any> {
     const supplierLineage: Supplier[] =
       await this.supplierRepository.getSuppliersFromSourcingLocations(
-        supplierTreeOptions,
+        options,
         withAncestry,
       );
     if (!withAncestry) {
@@ -185,7 +185,7 @@ export class SuppliersService extends AppBaseService<
       );
     }
 
-    return this.supplierRepository.getSuppliersFromSourcingLocationsV2(options);
+    return this.supplierRepository.getSuppliersFromSourcingLocations(options);
   }
 
   async getSuppliersDescendants(supplierIds: string[]): Promise<string[]> {

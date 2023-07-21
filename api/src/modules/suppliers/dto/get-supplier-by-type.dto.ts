@@ -20,7 +20,7 @@ export class GetSupplierByType extends CommonFiltersDto {
       ', ',
     )}`,
   })
-  type!: SUPPLIER_TYPES;
+  type?: SUPPLIER_TYPES;
 
   @ApiProperty({
     description: `The sort order by Name for the resulting entities. Can be 'ASC' (Ascendant) or 'DESC' (Descendent). Defaults to ASC`,

@@ -46,6 +46,9 @@ export class MaterialRepository extends ExtendedTreeRepository<
     queryBuilder.select('m.id');
 
     // Recursively find elements and their ancestry given Ids of the subquery above
-    return this.getEntityAncestry<Material>(queryBuilder, Material.name);
+    return this.getEntityAncestryFlatArray<Material>(
+      queryBuilder,
+      Material.name,
+    );
   }
 }

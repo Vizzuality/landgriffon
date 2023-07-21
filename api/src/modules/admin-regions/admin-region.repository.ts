@@ -179,6 +179,9 @@ export class AdminRegionRepository extends ExtendedTreeRepository<
     }
     queryBuilder.select('ar.id');
 
-    return this.getEntityAncestry<AdminRegion>(queryBuilder, AdminRegion.name);
+    return this.getEntityAncestryFlatArray<AdminRegion>(
+      queryBuilder,
+      AdminRegion.name,
+    );
   }
 }

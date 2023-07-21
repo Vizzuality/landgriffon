@@ -45,7 +45,7 @@ export class BusinessUnitRepository extends ExtendedTreeRepository<
     queryBuilder.select('bu.id');
 
     // Recursively find elements and their ancestry given Ids of the subquery above
-    return this.getEntityAncestry<BusinessUnit>(
+    return this.getEntityAncestryFlatArray<BusinessUnit>(
       queryBuilder,
       BusinessUnit.name,
     );

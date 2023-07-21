@@ -112,13 +112,13 @@ export class BaseImpactService {
         );
       }
       case GROUP_BY_VALUES.T1_SUPPLIER: {
-        return this.suppliersService.getSupplierByType({
+        return this.suppliersService.getSuppliersTreeWithSourcingLocations({
           ...treeOptions,
           type: SUPPLIER_TYPES.T1SUPPLIER,
         });
       }
       case GROUP_BY_VALUES.PRODUCER: {
-        return this.suppliersService.getSupplierByType({
+        return this.suppliersService.getSuppliersTreeWithSourcingLocations({
           ...treeOptions,
           type: SUPPLIER_TYPES.PRODUCER,
         });

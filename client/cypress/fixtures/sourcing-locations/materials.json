@@ -1,0 +1,68 @@
+{
+  "data": [
+    {
+      "type": "sourcingLocations",
+      "attributes": {
+        "material": "Barley",
+        "materialId": "24bcd3aa-0a9a-495b-958b-8a7fb712890f",
+        "t1Supplier": "Europe",
+        "producer": "Luxembourg",
+        "businessUnit": "Entire company",
+        "country": "Luxembourg",
+        "locationType": "country-of-production",
+        "purchases": [
+          {
+            "year": 2022,
+            "tonnage": "4"
+          },
+          {
+            "year": 2021,
+            "tonnage": "7"
+          },
+          {
+            "year": 2020,
+            "tonnage": "3"
+          },
+          {
+            "year": 2019,
+            "tonnage": "6"
+          },
+          {
+            "year": 2012,
+            "tonnage": "3"
+          },
+          {
+            "year": 2018,
+            "tonnage": "1"
+          },
+          {
+            "year": 2017,
+            "tonnage": "1"
+          },
+          {
+            "year": 2016,
+            "tonnage": "9"
+          },
+          {
+            "year": 2015,
+            "tonnage": "2"
+          },
+          {
+            "year": 2014,
+            "tonnage": "8"
+          },
+          {
+            "year": 2013,
+            "tonnage": "9"
+          }
+        ]
+      }
+    }
+  ],
+  "meta": {
+    "totalItems": 1314,
+    "totalPages": 27,
+    "size": 50,
+    "page": 1
+  }
+}

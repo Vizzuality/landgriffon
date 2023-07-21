@@ -112,16 +112,22 @@ export class BaseImpactService {
         );
       }
       case GROUP_BY_VALUES.T1_SUPPLIER: {
-        return this.suppliersService.getSuppliersTreeWithSourcingLocations({
-          ...treeOptions,
-          type: SUPPLIER_TYPES.T1SUPPLIER,
-        });
+        return this.suppliersService.getSuppliersTreeWithSourcingLocations(
+          {
+            ...treeOptions,
+            type: SUPPLIER_TYPES.T1SUPPLIER,
+          },
+          false,
+        );
       }
       case GROUP_BY_VALUES.PRODUCER: {
-        return this.suppliersService.getSuppliersTreeWithSourcingLocations({
-          ...treeOptions,
-          type: SUPPLIER_TYPES.PRODUCER,
-        });
+        return this.suppliersService.getSuppliersTreeWithSourcingLocations(
+          {
+            ...treeOptions,
+            type: SUPPLIER_TYPES.PRODUCER,
+          },
+          false,
+        );
       }
       case GROUP_BY_VALUES.BUSINESS_UNIT:
         return this.businessUnitsService.getBusinessUnitWithSourcingLocations(

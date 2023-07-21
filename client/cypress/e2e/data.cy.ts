@@ -6,9 +6,10 @@ const disabledLinks = Object.values(ADMIN_TABS).filter(
   (value: TabType) => value.disabled,
 ) as TabType[];
 
-describe('Data page', () => {
+describe('Data page - admin', () => {
   beforeEach(() => {
     cy.interceptAllRequests();
+    cy.intercept('/api/v1/users/me', { fixture: 'profiles/admin' });
     cy.login();
     cy.visit('/data');
     cy.wait('@sourcingLocations');
@@ -35,8 +36,20 @@ describe('Data page', () => {
   // });
 
   it('admin should be able to upload data source', () => {
-    cy.intercept('/api/v1/users/me', { fixture: 'profiles/admin' });
     cy.get('[data-testid="upload-data-source-btn"]').should('not.be.disabled');
+  });
+});
+
+describe('Data page - user', () => {
+  beforeEach(() => {
+    cy.interceptAllRequests();
+    cy.login();
+    cy.visit('/data');
+    cy.wait('@sourcingLocations');
+  });
+
+  afterEach(() => {
+    cy.logout();
   });
 
   it('not admin user should not be able to upload data source', () => {

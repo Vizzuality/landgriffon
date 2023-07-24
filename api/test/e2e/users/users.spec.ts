@@ -94,7 +94,7 @@ describe('UsersModule (e2e)', () => {
     const newUserDto: SignUpDto = {
       email: `${v4()}@example.com`,
       password: 'Example123!',
-      displayName: `${faker.name.firstName()} ${faker.name.lastName()}`,
+      title: `${faker.name.firstName()} ${faker.name.lastName()}`,
       lname: faker.name.firstName(),
       fname: faker.name.lastName(),
       roles: [ROLES.USER],

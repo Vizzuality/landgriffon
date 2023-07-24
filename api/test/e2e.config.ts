@@ -32,7 +32,7 @@ export const E2E_CONFIG: {
       bb: () => ({
         fname: faker.name.firstName(),
         lname: faker.name.lastName(),
-        displayName: `${faker.name.prefix()} ${faker.name.firstName()} ${faker.name.firstName()}`,
+        title: `${faker.name.prefix()} ${faker.name.firstName()} ${faker.name.firstName()}`,
       }),
     },
   },

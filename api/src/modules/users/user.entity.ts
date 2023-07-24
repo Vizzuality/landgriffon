@@ -25,7 +25,7 @@ export const userResource: BaseServiceResource = {
     plural: 'users',
   },
   entitiesAllowedAsIncludes: ['projects'],
-  columnsAllowedAsFilter: ['email', 'displayName', 'fname', 'lname'],
+  columnsAllowedAsFilter: ['email', 'title', 'fname', 'lname'],
 };
 
 @Entity('users')
@@ -41,7 +41,7 @@ export class User extends BaseEntity {
 
   @ApiPropertyOptional()
   @Column('character varying', { name: 'display_name', nullable: true })
-  displayName?: string | null;
+  title?: string | null;
 
   @ApiPropertyOptional()
   @Column('character varying', {

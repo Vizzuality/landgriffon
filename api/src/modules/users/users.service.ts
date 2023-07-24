@@ -3,7 +3,6 @@ import {
   forwardRef,
   Inject,
   Injectable,
-  NotImplementedException,
 } from '@nestjs/common';
 import { User, userResource } from 'modules/users/user.entity';
 
@@ -168,12 +167,6 @@ export class UsersService extends AppBaseService<
     if (updateModel.password) {
       throw new ForbiddenException(
         "The user's password cannot be updated alongside other user data: please use the API endpoint for password updates.",
-      );
-    }
-
-    if (updateModel.email) {
-      throw new NotImplementedException(
-        "Updating a user's email address is not supported yet. This will be allowed once email address verification is implemented.",
       );
     }
   }

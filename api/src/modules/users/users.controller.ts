@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -41,13 +42,17 @@ import { RolesGuard } from 'guards/roles.guard';
 import { ROLES } from 'modules/authorization/roles/roles.enum';
 import { RequiredRoles } from 'decorators/roles.decorator';
 import { DeleteResult } from 'typeorm';
+import { AccessControl } from 'modules/authorization/access-control.service';
 
 @ApiTags(userResource.className)
 @Controller(`/api/v1/users`)
 @ApiBearerAuth()
 @UseGuards(RolesGuard)
 export class UsersController {
-  constructor(public readonly service: UsersService) {}
+  constructor(
+    public readonly service: UsersService,
+    private readonly accessControl: AccessControl,
+  ) {}
 
   @ApiOperation({
     description: 'Find all users',
@@ -117,6 +122,11 @@ export class UsersController {
     dto: UpdateOwnUserDTO,
     @Request() req: RequestWithAuthenticatedUser,
   ): Promise<UserResult> {
+    if (!this.accessControl.isUserAdmin() && dto.email) {
+      throw new BadRequestException(
+        'Only Admin users can update email address',
+      );
+    }
     return this.service.serialize(
       await this.service.update(req.user.id, dto, {
         authenticatedUser: req.user,

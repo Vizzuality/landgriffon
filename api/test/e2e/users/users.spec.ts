@@ -272,12 +272,47 @@ describe('UsersModule (e2e)', () => {
       expect(results);
     });
 
-    test('A user should be able to update their own metadata', async () => {
+    test('A admin user should be able to update their own metadata', async () => {
       await request(testApplication.getHttpServer())
         .patch('/api/v1/users/me')
         .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
         .send(E2E_CONFIG.users.updated.bb())
         .expect(HttpStatus.OK);
+    });
+
+    test('A user should not be able to update their own email', async () => {
+      const res = await request(testApplication.getHttpServer())
+        .patch('/api/v1/users/me')
+        .set('Authorization', `Bearer ${userTestUser.jwtToken}`)
+        .send({
+          ...E2E_CONFIG.users.updated.bb(),
+          email: 'new@mail.com',
+        });
+
+      expect(res).toHaveErrorMessage(
+        HttpStatus.BAD_REQUEST,
+        'Only Admin users can update email address',
+        'Only Admin users can update email address',
+      );
+    });
+    test('A Admin user should be able to update their own email', async () => {
+      const { jwtToken: newAdminToken } = await setupTestUser(
+        testApplication,
+        ROLES.ADMIN,
+        {
+          email: 'newadmin@mail.com',
+        },
+      );
+      const res = await request(testApplication.getHttpServer())
+        .patch('/api/v1/users/me')
+        .set('Authorization', `Bearer ${newAdminToken}`)
+        .send({
+          ...E2E_CONFIG.users.updated.bb(),
+          email: 'new@mail.com',
+        })
+        .expect(HttpStatus.OK);
+
+      expect(res.body.data.attributes.email).toEqual('new@mail.com');
     });
   });
 

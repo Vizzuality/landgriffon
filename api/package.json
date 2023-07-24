@@ -40,6 +40,7 @@
     "@nestjs/swagger": "^7.1.1",
     "@nestjs/terminus": "^10.0.1",
     "@nestjs/typeorm": "^10.0.0",
+    "@sendgrid/mail": "^7.7.0",
     "@types/object-hash": "~3.0.1",
     "bcrypt": "~5.1.0",
     "bull": "~4.10.2",

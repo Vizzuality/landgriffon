@@ -1,121 +1,36 @@
 set dotenv-load
 
-PROCESSES := "1"
+data_dir := "data"
+resampling_resolution := "0.083333"  # 10km
 
-WORKDIR_DEFORESTATION := "data/hansen_loss"
-WORKDIR_DEFORESTATION_RESULTS := WORKDIR_DEFORESTATION / "results"
-WORKDIR_NON_NATURAL_FOREST := WORKDIR_DEFORESTATION / "non_natural_forest"
-WORKDIR_GHG := "data/forest_ghg"
-WORKDIR_GHG_RESULTS := WORKDIR_GHG / "results"
-HANSEN_LOSSYEAR_URL := "https://storage.googleapis.com/earthenginepartners-hansen/GFC-2021-v1.9/lossyear.txt"
-AWS_S3_BUCKET_URL := '${AWS_S3_BUCKET_URL}'
-# Year to fiter the deforestation data from. format: YY, i.e. 16 and 21 for using only 2016 - 20XX deforestation data
-# END_YEAR also depends on the dataset version used (check url above) it will be caped to the hansen dataset version.
-HANSEN_START_YEAR := "16"
-HANSEN_END_YEAR := "21"
+default: download-deforestation-and-carbon resample_deforestation resample_carbon upload_results
 
-default: preprocess-forestGHG
-    @echo "Done"
+download-deforestation-and-carbon:
+    gsutil -m cp \
+        "gs://landgriffon-gee-bucket/deforestation/carbon_by_human_lu_2020_1000m.tif" \
+        "gs://landgriffon-gee-bucket/deforestation/cropland_deforest_2020_1000m.tif" \
+        "gs://landgriffon-gee-bucket/deforestation/cropland_deforest_carbon_2020_1000m.tif" \
+        "gs://landgriffon-gee-bucket/deforestation/deforest_by_human_lu_2020_1000m.tif" \
+        "gs://landgriffon-gee-bucket/deforestation/non_nat_deforest_2020_1000m.tif" \
+        "gs://landgriffon-gee-bucket/deforestation/non_nat_deforest_carbon_2020_1000m.tif" \
+        {{data_dir}}
 
-download-deforestation-list:
-    @echo "Downloading deforestation file list... "
-    mkdir -p {{WORKDIR_DEFORESTATION}}
-    wget -q -O {{WORKDIR_DEFORESTATION}}/Hansen_GFC_lossyear.txt {{HANSEN_LOSSYEAR_URL}}
-
-# non natural forest obtained from SBTN natural lands dataset
-# Check ../human-land-use/non-natural-forest/README.md for more info
-@download-managed-forests:
-    echo "Downloading non natural forest file... "
-    mkdir -p {{WORKDIR_DEFORESTATION}}
-    aws s3 cp {{AWS_S3_BUCKET_URL}}/raw/non_natural_forest_cog.tif {{WORKDIR_DEFORESTATION}}
-
-download-filter-deforestation: download-deforestation-list
-    #!/usr/bin/env bash
-    set -euxo pipefail
-    echo "Iterating deforestation files... "
-    mkdir -p {{WORKDIR_DEFORESTATION}}/Hansen_GFC_lossyear
-    # head {{WORKDIR_DEFORESTATION}}/Hansen_GFC_lossyear.txt | xargs -P {{PROCESSES}} -I {} /bin/bash -c 'just --justfile {{justfile()}} transform-deforestation-file {}'
-    for file in `head {{WORKDIR_DEFORESTATION}}/Hansen_GFC_lossyear.txt`; do
-        echo "Transforming deforestation file ${file}... "
-        table_name=`basename -s .tif $file | tr -d ' \t\n\r' | grep -oP "\d{2}[A-Z]_\d{3}[A-Z]"`
-
-        mkdir -p "{{WORKDIR_DEFORESTATION}}/tiles"
-
-        tile_path="{{WORKDIR_DEFORESTATION}}/tiles/${table_name}.tif"
-        filtered_tile_path="{{WORKDIR_DEFORESTATION}}/tiles/${table_name}_filtered.tif"
-
-        wget -q -O $tile_path $file
-        python filter_deforestation.py --input_tile $tile_path --output_tile $filtered_tile_path -m s3://landgriffon-raw-data/raw/non_natural_forest_cog.tif
-        #        gdalwarp -q -s_srs EPSG:4326 -t_srs EPSG:4326 -r sum -tr 0.0833333333333286 0.0833333333333286 -multi -of GTiff  -ot UInt32 -wo NUM_THREADS=ALL_CPUS \
-        #            $filtered_tile_path \
-        #            "{{WORKDIR_DEFORESTATION}}/Hansen_GFC_lossyear/Loss_${table_name}_10km.tif"
-
-        echo "Done transforming deforestation file $file"
-     done
-
-transform-deforestation-file-old FILE:
-    #!/usr/bin/env bash
-    set -euxo pipefail
-    echo "Transforming deforestation file {{FILE}} ... "
-    table_name=`basename -s .tif {{FILE}} | tr -d ' \t\n\r' | grep -oP "\d{2}[A-Z]_\d{3}[A-Z]"`
-
-    mkdir -p "{{WORKDIR_DEFORESTATION}}/tiles"
-    wget -q -O "{{WORKDIR_DEFORESTATION}}/tiles/$table_name.tif" {{FILE}}
-
-    # remove the final files if they exists
-    rm -f "{{WORKDIR_DEFORESTATION}}/Hansen_GFC_lossyear/Loss_$table_name_10km.tif"
-    rm -f "{{WORKDIR_DEFORESTATION}}/$mask_table_name.tif"
-
-    #rio warp --resampling "nearest" "$mask_path" \
-    #    -o "{{WORKDIR_DEFORESTATION}}/$mask_table_name.tif" \
-    #    --like "{{WORKDIR_DEFORESTATION}}/tiles/$table_name.tif"
-
-    gdal_calc.py --quiet --calc "((A>={{HANSEN_START_YEAR}}) & (A<={{HANSEN_END_YEAR}}))*(B<12)" \
-        --format GTiff --co compress=DEFLATE --co tiled=YES --co BLOCKXSIZE=512 --co BLOCKYSIZE=512  --NoDataValue 0 --overwrite --extent=intersect \
-        -A "{{WORKDIR_DEFORESTATION}}/tiles/$table_name.tif" \
-        -B "{{WORKDIR_DEFORESTATION}}/$mask_table_name.tif" \
-        --outfile  "{{WORKDIR_DEFORESTATION}}/tiles/$table_name.tif"
-
-    gdalwarp -q -s_srs EPSG:4326 -t_srs EPSG:4326 -r sum -tr 0.0833333333333286 0.0833333333333286 -multi -of GTiff  -ot UInt32 -wo NUM_THREADS=ALL_CPUS \
-        "{{WORKDIR_DEFORESTATION}}/tiles/$table_name.tif" \
-        "{{WORKDIR_DEFORESTATION}}/Hansen_GFC_lossyear/Loss_$table_name_10km.tif"
-    # Calculate the % of area affected by deforestation (111111.11111109848 original pixels in a 0.0833333333333286 degrees pixel) \
-
-    gdal_calc.py --quiet --calc "A/111111.11111109848" --format GTiff --type Float32 --NoDataValue 0.0 --overwrite \
-        -A "{{WORKDIR_DEFORESTATION}}/Hansen_GFC_lossyear/Loss_$table_name_10km.tif" \
-        --outfile  "{{WORKDIR_DEFORESTATION}}/Hansen_GFC_lossyear/Loss_$table_name_10km.tif"
-
-    rm -f "{{WORKDIR_DEFORESTATION}}/$mask_table_name_clip.tif"
-    rm -f "{{WORKDIR_DEFORESTATION}}/$mask_table_name.tif"
-
-    echo "Done transforming deforestation file {{FILE}}"
-
-preprocess-deforestation: download-filter-deforestation
-    @echo "Preprocessing deforestation data... "
-    mkdir -p {{WORKDIR_DEFORESTATION_RESULTS}}
-    gdalbuildvrt {{WORKDIR_DEFORESTATION_RESULTS}}/hansen_loss.vrt {{WORKDIR_DEFORESTATION}}/Hansen_GFC_lossyear/*.tif
-    gdal_translate -q -of GTiff -co NUM_THREADS=ALL_CPUS -co BIGTIFF=YES -co COMPRESS=DEFLATE -co PREDICTOR=2 -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 \
-        {{WORKDIR_DEFORESTATION_RESULTS}}/hansen_loss.vrt \
-        {{WORKDIR_DEFORESTATION_RESULTS}}/hansen_loss_20{{HANSEN_END_YEAR}}.tif
-    python rolling_average.py {{WORKDIR_DEFORESTATION_RESULTS}}/hansen_loss_20{{HANSEN_END_YEAR}}.tif {{WORKDIR_DEFORESTATION_RESULTS}}/hansen_loss_buffered_20{{HANSEN_END_YEAR}}.tif
-    cd {{WORKDIR_DEFORESTATION_RESULTS}} && sha256sum *.tif > checksums
+resample_deforestation:
+    rio warp \
+        {{data_dir}}/deforest_by_human_lu_2020_1000m.tif \
+        {{data_dir}}/deforest_by_human_lu_2020_10km.tif \
+        --resampling average \
+        --res {{resampling_resolution}} \
+        --overwrite
 
 
+resample_carbon:
+    rio warp \
+        {{data_dir}}/carbon_by_human_lu_2020_1000m.tif \
+        {{data_dir}}/carbon_by_human_lu_2020_10km.tif \
+        --resampling average \
+        --res {{resampling_resolution}} \
+        --overwrite
 
-download-process-forestGHG-list: preprocess-deforestation
-    @echo "Downloading Forest Greenhouse Gas emission tiles list..."
-    mkdir -p {{WORKDIR_GHG}}
-    mkdir -p {{WORKDIR_GHG}}/resampled
-    wget -q -O {{WORKDIR_GHG}}/forest_ghg_sources_list.json https://services2.arcgis.com/g8WusZB13b9OegfU/arcgis/rest/services/Forest_greenhouse_gas_emissions/FeatureServer/0/query\?where\=1%3D1\&outFields\=\*\&outSR\=4326\&f\=json
-    python download_and_preprocess_forestGHG.py --processes {{PROCESSES}} {{WORKDIR_GHG}}/forest_ghg_sources_list.json {{WORKDIR_GHG}} {{WORKDIR_DEFORESTATION}}
-
-preprocess-forestGHG: download-process-forestGHG-list
-    mkdir -p {{WORKDIR_GHG}}/resampled/merged_tiles
-    gdalbuildvrt {{WORKDIR_GHG_RESULTS}}/forest_GHG.vrt {{WORKDIR_GHG}}/resampled/*.tif
-    gdal_translate -q -of GTiff -co COMPRESS=DEFLATE -co PREDICTOR=3 -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 \
-        {{WORKDIR_GHG_RESULTS}}/forest_GHG.vrt \
-        {{WORKDIR_GHG_RESULTS}}/forest_GHG_20{{HANSEN_END_YEAR}}.tif
-    python rolling_average.py {{WORKDIR_GHG_RESULTS}}/forest_GHG_20{{HANSEN_END_YEAR}}.tif {{WORKDIR_GHG_RESULTS}}/forest_GHG_buffered_20{{HANSEN_END_YEAR}}.tif
-    cd {{WORKDIR_GHG_RESULTS}} && sha256sum *.tif > checksums
-
-
+#TODO: Implement upload results
+upload_results:

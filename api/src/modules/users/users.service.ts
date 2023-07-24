@@ -46,7 +46,7 @@ export class UsersService extends AppBaseService<
         'fname',
         'lname',
         'email',
-        'displayName',
+        'title',
         'avatarDataUrl',
         'isActive',
         'isDeleted',

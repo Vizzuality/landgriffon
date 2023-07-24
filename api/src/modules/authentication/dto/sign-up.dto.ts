@@ -15,14 +15,14 @@ import { ROLES } from 'modules/authorization/roles/roles.enum';
 /**
  * @todo Allow to provide fname/lname/display name on signup (and any other
  * relevant user data), if needed. Probably We could just start with
- * displayName, email and password, following the designs, and once the user has
+ * title, email and password, following the designs, and once the user has
  * validated their email address we can let them log in and set any other info.
  */
 export class SignUpDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  displayName?: string | null;
+  title?: string | null;
 
   @IsEmail()
   @IsNotEmpty()

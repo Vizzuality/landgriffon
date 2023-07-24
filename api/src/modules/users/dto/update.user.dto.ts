@@ -17,7 +17,7 @@ export class UpdateOwnUserDTO {
 
   @ApiPropertyOptional()
   @IsOptional()
-  displayName?: string | null;
+  title?: string | null;
 
   @ApiPropertyOptional()
   @IsOptional()

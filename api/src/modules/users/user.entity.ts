@@ -39,17 +39,17 @@ export class User extends BaseEntity {
   })
   email!: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: String })
   @Column('character varying', { name: 'display_name', nullable: true })
   title?: string | null;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: String })
   @Column('character varying', {
     nullable: true,
   })
   fname?: string | null;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: String })
   @Column('character varying', {
     nullable: true,
   })

@@ -20,7 +20,7 @@ import { Permission } from 'modules/authorization/permissions/permissions.entity
 
 @Entity('roles')
 export class Role extends BaseEntity {
-  @ApiProperty({ type: 'varchar' })
+  @ApiProperty({ type: String, enum: ROLES })
   @PrimaryColumn({ type: 'varchar', unique: true })
   name!: ROLES;
 

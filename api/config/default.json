@@ -68,5 +68,10 @@
   },
   "map": {
     "distributed": true
+  },
+  "notifications": {
+    "email": {
+      "sendGridApiKey": null
+    }
   }
 }

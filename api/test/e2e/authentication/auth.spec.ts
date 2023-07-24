@@ -302,7 +302,7 @@ describe('Auth Controller (e2e)', () => {
         user.email = E2E_CONFIG.users.signUp.email;
         user.fname = 'a';
         user.lname = 'a';
-        user.displayName = 'User A A';
+        user.title = 'User A A';
         user.salt = await bcrypt.genSalt();
         user.password = await bcrypt.hash(
           E2E_CONFIG.users.signUp.password,

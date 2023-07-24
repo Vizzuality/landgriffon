@@ -27,6 +27,7 @@ import {
 } from '../../../src/modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from '../../../src/modules/sourcing-records/sourcing-record.entity';
 import { PERMISSIONS } from 'modules/authorization/permissions/permissions.enum';
+import { JSONAPIUserData } from '../../../src/modules/users/user.entity';
 
 /**
  * Tests for the UsersModule.
@@ -63,6 +64,30 @@ describe('UsersModule (e2e)', () => {
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
     await testApplication.close();
+  });
+
+  describe('Users - Listing users', () => {
+    test('A admin user should be able to list all users', async () => {
+      const res = await request(testApplication.getHttpServer())
+        .get('/api/v1/users')
+        .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
+        .expect(HttpStatus.OK);
+
+      const userEmails = [adminTestUser.user.email, userTestUser.user.email];
+      userEmails.forEach((email: string) => {
+        const user = res.body.data.filter(
+          (user: JSONAPIUserData) => user.attributes.email === email,
+        );
+        expect(user).toHaveLength(1);
+        expect(user[0].attributes.email).toEqual(email);
+      });
+    });
+    test('A user should not be able to list all users', async () => {
+      await request(testApplication.getHttpServer())
+        .get('/api/v1/users')
+        .set('Authorization', `Bearer ${userTestUser.jwtToken}`)
+        .expect(HttpStatus.FORBIDDEN);
+    });
   });
 
   describe('Users - User creation', () => {

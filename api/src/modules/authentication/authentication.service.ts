@@ -27,6 +27,8 @@ import { ROLES } from 'modules/authorization/roles/roles.enum';
 import { Role } from 'modules/authorization/roles/role.entity';
 import { CreateUserDTO } from 'modules/users/dto/create.user.dto';
 
+const DEFAULT_USER_NAME: string = 'User';
+
 /**
  * Access token for the app: key user data and access token
  */
@@ -124,7 +126,9 @@ export class AuthenticationService {
    */
   async createUser(dto: CreateUserDTO): Promise<Partial<User>> {
     const user: User = new User();
-    user.displayName = dto.displayName;
+    user.fname = dto.fname ?? DEFAULT_USER_NAME;
+    user.lname = dto.lname;
+    user.title = dto.title;
     const salt: string = await this.authorizationService.generateSalt();
     user.salt = salt;
     user.password = await this.authorizationService.assignPassword(dto, salt);
@@ -133,9 +137,6 @@ export class AuthenticationService {
     user.isActive = !config.get('auth.requireUserAccountActivation');
     await this.checkEmail(user.email);
     const newUser: Omit<User, 'password' | 'salt' | 'isActive' | 'isDeleted'> =
-      /**
-       * @note: TypeORM does not seem to handle updating nested N to N relations, so we
-       */
       UsersService.getSanitizedUserMetadata(
         await this.userRepository.save(user),
       );

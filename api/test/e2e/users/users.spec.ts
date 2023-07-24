@@ -138,6 +138,19 @@ describe('UsersModule (e2e)', () => {
         .expect(HttpStatus.CREATED);
     });
 
+    test('A admin user should be able to create a user with a role and a password', async () => {
+      const res = await request(testApplication.getHttpServer())
+        .post('/api/v1/users')
+        .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
+        .send(newUserDto)
+        .expect(HttpStatus.CREATED);
+
+      expect(res.body.data.attributes.email).toEqual(newUserDto.email);
+      expect(res.body.data.attributes.fname).toEqual(newUserDto.fname);
+      expect(res.body.data.attributes.lname).toEqual(newUserDto.lname);
+      expect(res.body.data.attributes.title).toEqual(newUserDto.title);
+    });
+
     test('When a admin creates a user this user should be active by default', async () => {
       await request(testApplication.getHttpServer())
         .post('/api/v1/users')
@@ -149,12 +162,15 @@ describe('UsersModule (e2e)', () => {
       expect(user?.isActive).toBe(true);
     });
 
-    test('A admin should not be able to create a user without providing any role', async () => {
-      await request(testApplication.getHttpServer())
+    test('When a user is created but no fname is provided, it should have "User" as fname by default', async () => {
+      const { fname, ...newUserWithoutFname } = newUserDto;
+      const res = await request(testApplication.getHttpServer())
         .post('/api/v1/users')
         .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
-        .send({ email: 'test@test.com', password: '12345678' })
-        .expect(HttpStatus.BAD_REQUEST);
+        .send({ ...newUserWithoutFname })
+        .expect(HttpStatus.CREATED);
+
+      expect(res.body.data.attributes.fname).toEqual('User');
     });
 
     test('A admin user should be able to create a user with roles ', async () => {

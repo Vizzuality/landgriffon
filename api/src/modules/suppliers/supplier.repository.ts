@@ -41,7 +41,7 @@ export class SupplierRepository extends ExtendedTreeRepository<
       BaseQueryBuilder.addFilters(jointQueryBuilder, options);
 
     if (!withAncestry) {
-      return queryBuilder.getMany();
+      return queryBuilder.orderBy('s.name', options.sort ?? 'ASC').getMany();
     }
     queryBuilder.select('s.id');
 

@@ -15,7 +15,6 @@ import { H3DataMapService } from 'modules/h3-data/h3-data-map.service';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
-import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { AuthorizationModule } from 'modules/authorization/authorization.module';
 
 @Module({
@@ -38,7 +37,6 @@ import { AuthorizationModule } from 'modules/authorization/authorization.module'
     H3DataYearsService,
     H3DataRepository,
     MaterialsService,
-    IndicatorsService,
   ],
   exports: [H3DataService, H3DataYearsService],
 })

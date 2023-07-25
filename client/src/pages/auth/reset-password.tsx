@@ -5,13 +5,13 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import toast from 'react-hot-toast';
+import { useCallback, type ReactElement, useState } from 'react';
 
 import AuthenticationLayout from 'layouts/authentication';
 import { Label, Input } from 'components/forms';
 import { Button } from 'components/button';
 import { useResetPassword } from 'hooks/profile';
 
-import type { ReactElement } from 'react';
 import type { NextPageWithLayout } from 'pages/_app';
 
 const schemaValidation = yup.object({
@@ -23,7 +23,7 @@ const schemaValidation = yup.object({
 });
 
 const SignIn: NextPageWithLayout = () => {
-  const router = useRouter();
+  const { push, query } = useRouter();
 
   const {
     register,
@@ -35,40 +35,53 @@ const SignIn: NextPageWithLayout = () => {
   });
 
   const { mutate: resetPassword, isLoading } = useResetPassword();
+  const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
 
-  const handleResetPassord = (data: yup.InferType<typeof schemaValidation>) => {
-    resetPassword(data.password, {
-      onSuccess: async (result) => {
-        const { ok } = await signIn('credentials', {
-          email: result.email,
-          username: result.email,
-          password: data.password,
-          redirect: false,
-        });
-        if (ok) {
-          router.push((router.query?.callbackUrl as string) || '/analysis/map', undefined, {
-            shallow: true,
-          });
-        }
-      },
-      onError: (error) => {
-        toast.error(error.message);
-      },
-    });
-  };
+  const handleResetPassord = useCallback(
+    (data: yup.InferType<typeof schemaValidation>) => {
+      const token = query?.token as string;
+      if (!token) {
+        toast.error('Invalid token');
+        return;
+      }
+      resetPassword(
+        { data, token },
+        {
+          onSuccess: async (result) => {
+            const { ok, error } = await signIn('credentials', {
+              email: result.email,
+              username: result.email,
+              password: data.password,
+              redirect: false,
+            });
+            if (ok) {
+              setIsRedirecting(true);
+              push((query?.callbackUrl as string) || '/analysis/map', undefined, {
+                shallow: true,
+              });
+            }
+            if (error) {
+              toast.error(error);
+            }
+          },
+          onError: (error) => {
+            toast.error(error.message);
+          },
+        },
+      );
+    },
+    [push, query?.callbackUrl, query?.token, resetPassword],
+  );
 
   return (
     <>
       <Head>
-        <title>Sign in - Landgriffon</title>
+        <title>Reset password - Landgriffon</title>
       </Head>
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="px-4 py-8 bg-white shadow sm:rounded-lg sm:px-10">
           <div className="mb-10 text-center">
             <h2 className="my-4 font-bold">Reset your password</h2>
-            {/* <p className="text-sm font-medium text-gray-500">
-              To continue please enter your details below.
-            </p> */}
           </div>
           <form
             noValidate
@@ -95,7 +108,12 @@ const SignIn: NextPageWithLayout = () => {
               />
             </div>
             <div className="pt-8">
-              <Button type="submit" variant="primary" className="w-full" loading={isLoading}>
+              <Button
+                type="submit"
+                variant="primary"
+                className="w-full"
+                loading={isLoading || isRedirecting}
+              >
                 Reset password
               </Button>
             </div>

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
-// import Link from 'next/link';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
@@ -116,9 +116,12 @@ const SignIn: NextPageWithLayout = () => {
               </Checkbox>
 
               <div className="text-sm">
-                <a href="#" className="font-medium text-navy-400 hover:text-navy-800">
+                <Link
+                  href="/auth/forgot-password"
+                  className="font-medium text-navy-400 hover:text-navy-800"
+                >
                   Forgot your password?
-                </a>
+                </Link>
               </div>
             </div>
 

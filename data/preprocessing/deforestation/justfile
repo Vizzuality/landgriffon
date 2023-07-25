@@ -1,18 +1,15 @@
 set dotenv-load
 
 data_dir := "data"
-resampling_resolution := "0.083333"  # 10km
+resampling_resolution := "0.083333"  # ~ 10km at equator in degrees (extracted from mapspam raster)
+checksums_dir := "../../../h3_data_importer/data_checksums"
 
-default: download-deforestation-and-carbon resample_deforestation resample_carbon upload_results
+default: download-deforestation-and-carbon resample_deforestation resample_carbon upload_results write_checksum
 
 download-deforestation-and-carbon:
     gsutil -m cp \
         "gs://landgriffon-gee-bucket/deforestation/carbon_by_human_lu_2020_1000m.tif" \
-        "gs://landgriffon-gee-bucket/deforestation/cropland_deforest_2020_1000m.tif" \
-        "gs://landgriffon-gee-bucket/deforestation/cropland_deforest_carbon_2020_1000m.tif" \
         "gs://landgriffon-gee-bucket/deforestation/deforest_by_human_lu_2020_1000m.tif" \
-        "gs://landgriffon-gee-bucket/deforestation/non_nat_deforest_2020_1000m.tif" \
-        "gs://landgriffon-gee-bucket/deforestation/non_nat_deforest_carbon_2020_1000m.tif" \
         {{data_dir}}
 
 resample_deforestation:
@@ -23,7 +20,6 @@ resample_deforestation:
         --res {{resampling_resolution}} \
         --overwrite
 
-
 resample_carbon:
     rio warp \
         {{data_dir}}/carbon_by_human_lu_2020_1000m.tif \
@@ -32,5 +28,10 @@ resample_carbon:
         --res {{resampling_resolution}} \
         --overwrite
 
-#TODO: Implement upload results
 upload_results:
+    aws s3 cp {{data_dir}}/deforest_by_human_lu_2020_10km.tif ${AWS_S3_BUCKET_URL}/processed/deforestation/
+    aws s3 cp {{data_dir}}/carbon_by_human_lu_2020_10km.tif ${AWS_S3_BUCKET_URL}/processed/forestGHG/
+
+write_checksum:
+    cd {{data_dir}} && sha256sum deforest_by_human_lu_2020_10km.tif > {{checksums_dir}}/deforestation
+    cd {{data_dir}} && sha256sum carbon_by_human_lu_2020_10km.tif > {{checksums_dir}}/forestGHG

@@ -1,6 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
-// import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
@@ -98,7 +96,7 @@ const SignIn: NextPageWithLayout = () => {
             </div>
             <div className="pt-8">
               <Button type="submit" variant="primary" className="w-full" loading={isLoading}>
-                Send
+                Reset password
               </Button>
             </div>
           </form>

@@ -11,7 +11,6 @@ import { ActualVsScenarioImpactService } from 'modules/impact/comparison/actual-
 import { ScenarioVsScenarioImpactService } from 'modules/impact/comparison/scenario-vs-scenario.service';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
-import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { AuthorizationModule } from 'modules/authorization/authorization.module';
 
 @Module({
@@ -29,7 +28,6 @@ import { AuthorizationModule } from 'modules/authorization/authorization.module'
     ImpactService,
     ActualVsScenarioImpactService,
     ScenarioVsScenarioImpactService,
-    IndicatorsService,
     MaterialsService,
   ],
   controllers: [ImpactController],

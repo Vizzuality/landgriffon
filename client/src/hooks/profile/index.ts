@@ -2,11 +2,11 @@ import { useMemo } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 
 import { apiService } from 'services/api';
+import { RoleName } from 'hooks/permissions/enums';
 
 import type { User, PasswordPayload, ErrorResponse, ProfilePayload } from 'types';
 import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
 import type { AxiosPromise } from 'axios';
-import { RoleName } from 'hooks/permissions/enums';
 
 type ResponseData = UseQueryResult<User>;
 
@@ -74,44 +74,63 @@ export function useUpdatePassword() {
   });
 }
 
+type RecoverPasswordPayload = {
+  email: string;
+};
+
 export const useSendResetPasswordEmail = () => {
-  const sendResetPasswordEmail = (email: string) =>
+  // const sendResetPasswordEmail = (data: RecoverPasswordPayload): Promise<User> =>
+  //   apiService
+  //     .request({
+  //       method: 'POST',
+  //       url: '/users/me/recover-password',
+  //       data,
+  //     })
+  //     .then((response) => response.data?.data);
+  const sendResetPasswordEmail = (data: RecoverPasswordPayload) =>
     Promise.resolve(
       setTimeout(() => {
-        console.log({ email });
         return {
           status: 200,
-          email,
         };
       }, 1000),
     );
 
-  return useMutation<unknown, ErrorResponse, unknown>(sendResetPasswordEmail, {
+  return useMutation<unknown, ErrorResponse, RecoverPasswordPayload>(sendResetPasswordEmail, {
     mutationKey: ['send-reset-password-email'],
   });
 };
 
-export const useResetPassword = () => {
-  const resetPassword = async (password: string): Promise<User> =>
-    await new Promise((resolve, reject) => {
-      resolve({
-        id: '1da9b20f-1172-4838-9e96-78d5febdfb1c',
-        fname: 'Bárbara',
-        lname: 'Chaves',
-        email: 'barbara.chaves@vizzuality.com',
-        avatarDataUrl: null,
-        isActive: true,
-        isDeleted: false,
-        roles: [
-          {
-            name: RoleName.ADMIN,
-            permissions: [],
-          },
-        ],
-      });
-    });
+type ResetPasswordPayload = {
+  data: { password: string };
+  token: string;
+};
 
-  return useMutation<User, ErrorResponse, string, unknown>(resetPassword, {
+export const useResetPassword = () => {
+  // const resetPassword = ({ data, token }: ResetPasswordPayload): Promise<User> =>
+  //   apiService
+  //     .request({
+  //       method: 'POST',
+  //       url: '/users/me/reset-password',
+  //       data,
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     })
+  //     .then((response) => response.data?.data);
+  const resetPassword = ({ data, token }: ResetPasswordPayload): Promise<User> => {
+    return Promise.resolve({
+      email: 'barbara.chaves@vizzuality.com',
+      id: '1',
+      fname: 'User',
+      lname: null,
+      roles: [{ name: RoleName.USER, permissions: [] }],
+      isActive: true,
+      isDeleted: false,
+    });
+  };
+
+  return useMutation<User, ErrorResponse, ResetPasswordPayload, unknown>(resetPassword, {
     mutationKey: ['reset-password'],
   });
 };

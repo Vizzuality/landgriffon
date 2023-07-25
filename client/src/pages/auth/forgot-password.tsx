@@ -36,11 +36,14 @@ const SignIn: NextPageWithLayout = () => {
   const { isLoading, isSuccess, mutate: sendResetPasswordEmail } = useSendResetPasswordEmail();
 
   const handleSend = (data: yup.InferType<typeof schemaValidation>) => {
-    sendResetPasswordEmail(data.email, {
-      onError: (error) => {
-        toast.error(error.message);
+    sendResetPasswordEmail(
+      { email: data.email },
+      {
+        onError: (error) => {
+          toast.error(error.message);
+        },
       },
-    });
+    );
   };
 
   return (

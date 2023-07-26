@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   Param,
   Patch,
   Post,
@@ -43,6 +44,9 @@ import { ROLES } from 'modules/authorization/roles/roles.enum';
 import { RequiredRoles } from 'decorators/roles.decorator';
 import { DeleteResult } from 'typeorm';
 import { AccessControl } from 'modules/authorization/access-control.service';
+import { RecoverPasswordDto } from 'modules/authentication/dto/recover-password.dto';
+import { Public } from 'decorators/public.decorator';
+import { ResetPasswordDto } from 'modules/authentication/dto/reset-password.dto';
 
 @ApiTags(userResource.className)
 @Controller(`/api/v1/users`)
@@ -131,6 +135,33 @@ export class UsersController {
       await this.service.update(req.user.id, dto, {
         authenticatedUser: req.user,
       }),
+    );
+  }
+
+  @ApiOperation({
+    description: 'Recover password presenting a valid user email',
+  })
+  @ApiOkResponse()
+  @Public()
+  @Post('/me/password/recover')
+  async recoverPassword(
+    @Body(ValidationPipe) recoverPasswordDto: RecoverPasswordDto,
+  ): Promise<{ message: string }> {
+    await this.service.recoverPassword(recoverPasswordDto.email);
+
+    return { message: 'Recovery email sent' };
+  }
+
+  @Post('/me/password/reset')
+  async resetPassword(
+    @Headers('authorization') token: string,
+    @Body() resetPasswordDto: ResetPasswordDto,
+  ): Promise<UserResult> {
+    if (!token) {
+      throw new UnauthorizedException();
+    }
+    return this.service.serialize(
+      await this.service.resetPassword(token, resetPasswordDto.password),
     );
   }
 

@@ -3,6 +3,7 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { User, userResource } from 'modules/users/user.entity';
 
@@ -190,5 +191,29 @@ export class UsersService extends AppBaseService<
     return this.update(userId, updateUser as UpdateUserDTO).then(() =>
       this.repository.findOneOrFail({ where: { id: userId } }),
     );
+  }
+
+  async recoverPassword(email: string): Promise<void> {
+    const user: User | null = await this.repository.findByEmail(email);
+    if (!user || !user.isActive) {
+      throw new NotFoundException(`No user found with email address ${email}`);
+    }
+    return this.authenticationService.sendPasswordRecoveryEmail(user);
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<User> {
+    const { sub } = this.authenticationService.verifyToken(token);
+
+    const user: User | null = await this.repository.findByEmail(sub);
+    if (!user) {
+      throw new NotFoundException(`No user found with email address ${sub}`);
+    }
+    const salt: string = await this.authorizationService.generateSalt();
+    const hashedNewPassword: string =
+      await this.authorizationService.generatePassword(salt, newPassword);
+    user.salt = salt;
+    user.password = hashedNewPassword;
+
+    return this.repository.save(user);
   }
 }

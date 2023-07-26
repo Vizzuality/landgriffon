@@ -26,6 +26,7 @@ import { AuthorizationService } from 'modules/authorization/authorization.servic
 import { ROLES } from 'modules/authorization/roles/roles.enum';
 import { Role } from 'modules/authorization/roles/role.entity';
 import { CreateUserDTO } from 'modules/users/dto/create.user.dto';
+import { IEmailService } from 'modules/notifications/email/email.service.interface';
 
 const DEFAULT_USER_NAME: string = 'User';
 
@@ -79,6 +80,7 @@ export class AuthenticationService {
 
   constructor(
     private readonly apiEventsService: ApiEventsService,
+    @Inject('IEmailService') private emailService: IEmailService,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
@@ -131,7 +133,10 @@ export class AuthenticationService {
     user.title = dto.title;
     const salt: string = await this.authorizationService.generateSalt();
     user.salt = salt;
-    user.password = await this.authorizationService.assignPassword(dto, salt);
+    user.password = await this.authorizationService.assignPassword(
+      salt,
+      dto.password,
+    );
     user.roles = this.authorizationService.assignRoles(dto.roles);
     user.email = dto.email;
     user.isActive = !config.get('auth.requireUserAccountActivation');
@@ -279,5 +284,34 @@ export class AuthenticationService {
 
   updateRoles(rolesEnum: ROLES[]): Role[] {
     return this.authorizationService.assignRoles(rolesEnum);
+  }
+
+  async sendPasswordRecoveryEmail(user: User): Promise<void> {
+    // TODO: Add instance's client URL
+    const url: string = 'localhost:3000/auth/reset-password';
+    const payload: any = {
+      email: user.email,
+      sub: user.id,
+    };
+    const token: string = this.jwtService.sign(payload);
+    await this.emailService.sendMail({
+      to: user.email,
+      subject: 'Reset password',
+      text: 'Reset password',
+      html: `<a href="${url}/${token}">Reset password</a>`,
+    });
+  }
+
+  verifyToken(token: string): JwtDataPayload {
+    try {
+      return this.jwtService.verify(token);
+    } catch (e) {
+      this.logger.error(e);
+      throw new BadRequestException('Invalid token');
+    }
+  }
+
+  signToken(payload: JwtDataPayload): string {
+    return this.jwtService.sign(payload);
   }
 }

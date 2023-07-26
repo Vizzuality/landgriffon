@@ -24,3 +24,5 @@ gcp_zone         = "europe-west1-b"
 gcp_project_id   = "landgriffon"
 gmaps_api_key    = ""
 mapbox_api_token = ""
+sendgrid_api_key = ""
+

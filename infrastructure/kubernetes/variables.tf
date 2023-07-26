@@ -51,6 +51,12 @@ variable "gmaps_api_key" {
   description = "The Google Maps API key used for access to the geocoding API"
 }
 
+variable "sendgrid_api_key" {
+  type        = string
+  sensitive   = true
+  description = "The Sendgrid API key used for sending emails"
+}
+
 variable "repo_name" {
   type        = string
   description = "Name of the github repo where the project is hosted"

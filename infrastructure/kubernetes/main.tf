@@ -75,6 +75,7 @@ module "aws_environment" {
   tf_state_bucket                    = var.tf_state_bucket
   allowed_account_id                 = var.allowed_account_id
   gmaps_api_key                      = var.gmaps_api_key
+  sendgrid_api_key                   = var.sendgrid_api_key
   load_fresh_data                    = lookup(each.value, "load_fresh_data", false)
   data_import_arguments              = lookup(each.value, "data_import_arguments", ["seed-data"])
   image_tag                          = lookup(each.value, "image_tag", each.key)

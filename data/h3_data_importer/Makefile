@@ -21,6 +21,7 @@ WORKDIR_DEFORESTATION=data/hansen_loss
 WORKDIR_GHG=data/forest_ghg
 WORKDIR_WOODPULP=data/woodpulp
 WORKING_NATURAL_CROP_CONVERSION=data/natural_crop_conversion
+WORKDIR_MAPSPAM_GHG=data/mapspam_ghg
 
 CHECKSUMS_PATH=data_checksums
 
@@ -343,7 +344,7 @@ clean:
 
 download-mapspam-ghg:
 	mkdir -p $(WORKDIR_MAPSPAM_GHG)
-	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/mapspam_ghg $(WORKDIR_MAPSPAM_GHG)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/ghg_emissions $(WORKDIR_MAPSPAM_GHG)
 	cd $(WORKDIR_MAPSPAM_GHG) && sha256sum --check ../../$(CHECKSUMS_PATH)/mapspam_ghg
 
 convert-mapspam-ghg: download-mapspam-ghg

@@ -59,3 +59,8 @@ make all
 
 Read more about this pipeline in the [natural_crop_conversion/README.md](natural_crop_conversion/README.md) file.
 
+
+### Farm GHG emissions
+Aka Greenhouse gas emissions from farm production.
+
+The preprocessing can be found in `farm_ghg/`. It is an R script made by Mike Harfoot.

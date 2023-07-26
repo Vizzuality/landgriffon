@@ -8,7 +8,6 @@ import {
   Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-
 import { User } from 'modules/users/user.entity';
 import { UsersService } from 'modules/users/users.service';
 import { compare, hash } from 'bcrypt';
@@ -18,7 +17,6 @@ import { API_EVENT_KINDS } from 'modules/api-events/api-event.entity';
 import { v4 } from 'uuid';
 import * as ApiEventsUserData from 'modules/api-events/dto/apiEvents.user.data.dto';
 import { UserRepository } from 'modules/users/user.repository';
-import * as config from 'config';
 import { ApiProperty } from '@nestjs/swagger';
 import { ApiEventByTopicAndKind } from 'modules/api-events/api-event.topic+kind.entity';
 import ms = require('ms');
@@ -27,6 +25,7 @@ import { ROLES } from 'modules/authorization/roles/roles.enum';
 import { Role } from 'modules/authorization/roles/role.entity';
 import { CreateUserDTO } from 'modules/users/dto/create.user.dto';
 import { IEmailService } from 'modules/notifications/email/email.service.interface';
+import { AppConfig } from 'utils/app.config';
 
 const DEFAULT_USER_NAME: string = 'User';
 
@@ -139,7 +138,7 @@ export class AuthenticationService {
     );
     user.roles = this.authorizationService.assignRoles(dto.roles);
     user.email = dto.email;
-    user.isActive = !config.get('auth.requireUserAccountActivation');
+    user.isActive = !AppConfig.getBoolean('auth.requireUserAccountActivation');
     await this.checkEmail(user.email);
     const newUser: Omit<User, 'password' | 'salt' | 'isActive' | 'isDeleted'> =
       UsersService.getSanitizedUserMetadata(
@@ -233,7 +232,7 @@ export class AuthenticationService {
      * validity interval configured), and -below- the id assigned to the log
      * entry of the token being issued.
      */
-    const tokenExpiresIn: string = config.get('auth.jwt.expiresIn');
+    const tokenExpiresIn: string = AppConfig.get('auth.jwt.expiresIn');
     // This should always be set (either via config or falling back to the
     // default provided to `AppConfig.get()`), but I don't know how to express
     // this without multiple dispatch, so we add this check to please the type
@@ -269,7 +268,7 @@ export class AuthenticationService {
       accessToken: this.jwtService.sign(
         { ...payload },
         {
-          expiresIn: config.get('auth.jwt.expiresIn'),
+          expiresIn: AppConfig.get('auth.jwt.expiresIn'),
         },
       ),
     };
@@ -287,8 +286,8 @@ export class AuthenticationService {
   }
 
   async sendPasswordRecoveryEmail(user: User): Promise<void> {
-    // TODO: Add instance's client URL
-    const url: string = 'localhost:3000/auth/reset-password';
+    const clientUrl: string = AppConfig.get('client.url');
+    const passwordResetUrl: string = AppConfig.get('auth.password.resetUrl');
     const payload: any = {
       email: user.email,
       sub: user.id,
@@ -298,7 +297,7 @@ export class AuthenticationService {
       to: user.email,
       subject: 'Reset password',
       text: 'Reset password',
-      html: `<a href="${url}/${token}">Reset password</a>`,
+      html: `<a href="${clientUrl}${passwordResetUrl}/${token}">Reset password</a>`,
     });
   }
 

@@ -76,6 +76,14 @@ module "k8s_api" {
       value = 3000
     },
     {
+      name  = "CLIENT_URL"
+      value = module.k8s_ingress.client_url
+    },
+    {
+      name  = "CLIENT_PORT"
+      value = 80
+    },
+    {
       name  = "JWT_EXPIRES_IN"
       value = "2h"
     },

@@ -8,6 +8,9 @@
       "debug"
     ]
   },
+  "client": {
+    "url": null
+  },
   "auth": {
     "requireUserAuth": true,
     "requireUserAccountActivation": false,
@@ -20,7 +23,8 @@
       "minLength": 6,
       "includeNumerics": false,
       "includeUpperCase": false,
-      "includeSpecialCharacters": false
+      "includeSpecialCharacters": false,
+      "resetUrl": "/auth/reset-password"
     }
   },
   "import": {

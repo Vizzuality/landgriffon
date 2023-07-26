@@ -2,6 +2,9 @@
   "server": {
     "port": "SERVER_PORT"
   },
+  "client": {
+    "url": "CLIENT_URL"
+  },
   "auth": {
     "requireUserAuth": "REQUIRE_USER_AUTH",
     "requireUserAccountActivation": "REQUIRE_USER_ACCOUNT_ACTIVATION",
@@ -14,7 +17,8 @@
       "minLength": "PASSWORD_MIN_LENGTH",
       "includeNumerics": "PASSWORD_INCLUDE_NUMERICS",
       "includeUpperCase": "PASSWORD_INCLUDE_UPPER_CASE",
-      "includeSpecialCharacters": "PASSWORD_INCLUDE_SPECIAL_CHARACTERS"
+      "includeSpecialCharacters": "PASSWORD_INCLUDE_SPECIAL_CHARACTERS",
+      "resetUrl": "PASSWORD_RESET_URL"
     }
   },
   "import": {

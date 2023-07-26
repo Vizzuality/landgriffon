@@ -7,7 +7,6 @@ import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { genSalt, hash } from 'bcrypt';
 import { randomBytes } from 'crypto';
-import { CreateUserDTO } from 'modules/users/dto/create.user.dto';
 
 /**
  * @TODO: In the future we will let the user to create custom roles and assign N permissions to it,

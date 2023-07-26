@@ -100,13 +100,13 @@ export class AuthorizationService {
     return genSalt();
   }
 
-  async assignPassword(dto: CreateUserDTO, salt: string): Promise<string> {
-    let password: string;
-    if ('password' in dto && dto.password) {
-      password = await this.generatePassword(salt, dto.password);
+  async assignPassword(salt: string, password?: string): Promise<string> {
+    let hashedPassword: string;
+    if (password) {
+      hashedPassword = await this.generatePassword(salt, password);
     } else {
-      password = await this.generateRandomPassword(salt);
+      hashedPassword = await this.generateRandomPassword(salt);
     }
-    return password;
+    return hashedPassword;
   }
 }

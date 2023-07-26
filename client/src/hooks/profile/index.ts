@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 
-import { apiService } from 'services/api';
-import { RoleName } from 'hooks/permissions/enums';
+import { apiRawServiceWithoutAuth, apiService } from 'services/api';
 
 import type { User, PasswordPayload, ErrorResponse, ProfilePayload } from 'types';
 import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
@@ -79,22 +78,14 @@ type RecoverPasswordPayload = {
 };
 
 export const useSendResetPasswordEmail = () => {
-  // const sendResetPasswordEmail = (data: RecoverPasswordPayload): Promise<User> =>
-  //   apiService
-  //     .request({
-  //       method: 'POST',
-  //       url: '/users/me/recover-password',
-  //       data,
-  //     })
-  //     .then((response) => response.data?.data);
-  const sendResetPasswordEmail = (data: RecoverPasswordPayload) =>
-    Promise.resolve(
-      setTimeout(() => {
-        return {
-          status: 200,
-        };
-      }, 1000),
-    );
+  const sendResetPasswordEmail = (data: RecoverPasswordPayload): Promise<User> =>
+    apiService
+      .request({
+        method: 'POST',
+        url: '/users/me/password/recover',
+        data,
+      })
+      .then((response) => response.data?.data);
 
   return useMutation<unknown, ErrorResponse, RecoverPasswordPayload>(sendResetPasswordEmail, {
     mutationKey: ['send-reset-password-email'],
@@ -102,35 +93,24 @@ export const useSendResetPasswordEmail = () => {
 };
 
 type ResetPasswordPayload = {
-  data: { password: string };
+  password: string;
   token: string;
 };
 
 export const useResetPassword = () => {
-  // const resetPassword = ({ data, token }: ResetPasswordPayload): Promise<User> =>
-  //   apiService
-  //     .request({
-  //       method: 'POST',
-  //       url: '/users/me/reset-password',
-  //       data,
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     })
-  //     .then((response) => response.data?.data);
-  const resetPassword = ({ data, token }: ResetPasswordPayload): Promise<User> => {
-    return Promise.resolve({
-      email: 'barbara.chaves@vizzuality.com',
-      id: '1',
-      fname: 'User',
-      lname: null,
-      roles: [{ name: RoleName.USER, permissions: [] }],
-      isActive: true,
-      isDeleted: false,
-    });
-  };
-
-  return useMutation<User, ErrorResponse, ResetPasswordPayload, unknown>(resetPassword, {
-    mutationKey: ['reset-password'],
-  });
+  return useMutation<User, ErrorResponse, ResetPasswordPayload, unknown>(
+    async ({ password, token }: ResetPasswordPayload): Promise<User> => {
+      return await apiRawServiceWithoutAuth
+        .request({
+          method: 'POST',
+          url: '/users/me/password/reset',
+          data: { password },
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => response.data?.data);
+    },
+    {
+      mutationKey: ['reset-password'],
+    },
+  );
 };

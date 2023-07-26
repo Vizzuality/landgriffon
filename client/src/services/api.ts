@@ -4,7 +4,7 @@ import { getSession, signOut } from 'next-auth/react';
 import toast from 'react-hot-toast';
 
 import type { ApiError, ErrorResponse } from 'types';
-import type { AxiosRequestConfig } from 'axios';
+import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 /**
  * API service require to be authenticated.
@@ -39,16 +39,15 @@ const onResponseError = async (error: unknown) => {
 // This endpoint by default will deserialize the data
 export const apiService = axios.create(defaultConfig);
 
-apiService.interceptors.response.use(
-  (response) => ({
-    ...response,
-    data: {
-      ...response.data,
-      data: !!response.data && dataFormatter.deserialize(response.data), // JSON API deserialize
-    },
-  }),
-  onResponseError,
-);
+const responseDeserializer = (response: AxiosResponse) => ({
+  ...response,
+  data: {
+    ...response.data,
+    data: !!response.data && dataFormatter.deserialize(response.data), // JSON API deserialize
+  },
+});
+
+apiService.interceptors.response.use(responseDeserializer, onResponseError);
 
 apiService.interceptors.request.use(authorizedRequest, onResponseError);
 
@@ -58,6 +57,9 @@ export const apiRawService = axios.create(defaultConfig);
 
 apiRawService.interceptors.response.use((response) => response, onResponseError);
 apiRawService.interceptors.request.use(authorizedRequest, (error) => Promise.reject(error));
+
+export const apiRawServiceWithoutAuth = axios.create(defaultConfig);
+apiRawServiceWithoutAuth.interceptors.response.use(responseDeserializer, onResponseError);
 
 export const handleResponseError = (error: ErrorResponse) => {
   const { errors } = error.response?.data || {};

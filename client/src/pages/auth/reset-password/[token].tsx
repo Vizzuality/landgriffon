@@ -23,7 +23,7 @@ const schemaValidation = yup.object({
 });
 
 const SignIn: NextPageWithLayout = () => {
-  const { push, query } = useRouter();
+  const { replace, query } = useRouter();
 
   const {
     register,
@@ -38,25 +38,27 @@ const SignIn: NextPageWithLayout = () => {
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
 
   const handleResetPassord = useCallback(
-    (data: yup.InferType<typeof schemaValidation>) => {
+    ({ password }: yup.InferType<typeof schemaValidation>) => {
       const token = query?.token as string;
       if (!token) {
         toast.error('Invalid token');
         return;
       }
       resetPassword(
-        { data, token },
+        { password, token },
         {
-          onSuccess: async (result) => {
+          onSuccess: async ({ email }) => {
+            // Automatically sign in after reset password
             const { ok, error } = await signIn('credentials', {
-              email: result.email,
-              username: result.email,
-              password: data.password,
+              email: email,
+              username: email,
+              password,
               redirect: false,
             });
+            // Redirect to the callback url if it exists or to the analysis page
             if (ok) {
               setIsRedirecting(true);
-              push((query?.callbackUrl as string) || '/analysis/map', undefined, {
+              replace((query?.callbackUrl as string) || '/analysis/map', undefined, {
                 shallow: true,
               });
             }
@@ -70,7 +72,7 @@ const SignIn: NextPageWithLayout = () => {
         },
       );
     },
-    [push, query?.callbackUrl, query?.token, resetPassword],
+    [replace, query?.callbackUrl, query?.token, resetPassword],
   );
 
   return (

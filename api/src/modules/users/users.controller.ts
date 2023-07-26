@@ -47,6 +47,7 @@ import { AccessControl } from 'modules/authorization/access-control.service';
 import { RecoverPasswordDto } from 'modules/authentication/dto/recover-password.dto';
 import { Public } from 'decorators/public.decorator';
 import { ResetPasswordDto } from 'modules/authentication/dto/reset-password.dto';
+import { GetUser } from 'decorators/get-user.decorator';
 
 @ApiTags(userResource.className)
 @Controller(`/api/v1/users`)
@@ -149,19 +150,26 @@ export class UsersController {
   ): Promise<{ message: string }> {
     await this.service.recoverPassword(recoverPasswordDto.email);
 
-    return { message: 'Recovery email sent' };
+    return {
+      message: `Recovery email sent to user with email: ${recoverPasswordDto.email}`,
+    };
   }
 
+  @ApiOperation({
+    description: 'Reset a user password presenting a valid token',
+  })
+  @ApiOkResponse()
   @Post('/me/password/reset')
   async resetPassword(
     @Headers('authorization') token: string,
-    @Body() resetPasswordDto: ResetPasswordDto,
+    @Body(ValidationPipe) resetPasswordDto: ResetPasswordDto,
+    @GetUser() user: User,
   ): Promise<UserResult> {
-    if (!token) {
-      throw new UnauthorizedException();
-    }
+    /**
+     * @note: Token validation (expiration, user bound to it) is handled by Jwt Guard
+     */
     return this.service.serialize(
-      await this.service.resetPassword(token, resetPasswordDto.password),
+      await this.service.resetPassword(user, resetPasswordDto.password),
     );
   }
 

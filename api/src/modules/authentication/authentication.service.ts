@@ -80,6 +80,7 @@ export class AuthenticationService {
   constructor(
     private readonly apiEventsService: ApiEventsService,
     @Inject('IEmailService') private emailService: IEmailService,
+    @Inject('PASSWORD_RESET_URL') private passwordResetUrl: string,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
@@ -286,18 +287,16 @@ export class AuthenticationService {
   }
 
   async sendPasswordRecoveryEmail(user: User): Promise<void> {
-    const clientUrl: string = AppConfig.get('client.url');
-    const passwordResetUrl: string = AppConfig.get('auth.password.resetUrl');
-    const payload: any = {
-      email: user.email,
-      sub: user.id,
+    const payload: Partial<JwtDataPayload> = {
+      sub: user.email,
     };
+
     const token: string = this.jwtService.sign(payload);
     await this.emailService.sendMail({
       to: user.email,
       subject: 'Reset password',
       text: 'Reset password',
-      html: `<a href="${clientUrl}${passwordResetUrl}/${token}">Reset password</a>`,
+      html: `<a href="${this.passwordResetUrl}/${token}">Reset password</a>`,
     });
   }
 
@@ -310,7 +309,12 @@ export class AuthenticationService {
     }
   }
 
-  signToken(payload: JwtDataPayload): string {
-    return this.jwtService.sign(payload);
+  signToken(email: string, options?: { expiresIn: string }): string {
+    return this.jwtService.sign(
+      { sub: email, tokenId: v4() },
+      {
+        expiresIn: options?.expiresIn ?? AppConfig.get('auth.jwt.expiresIn'),
+      },
+    );
   }
 }

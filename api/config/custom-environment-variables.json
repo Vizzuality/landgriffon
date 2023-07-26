@@ -3,7 +3,8 @@
     "port": "SERVER_PORT"
   },
   "client": {
-    "url": "CLIENT_URL"
+    "url": "CLIENT_URL",
+    "port": "CLIENT_PORT"
   },
   "auth": {
     "requireUserAuth": "REQUIRE_USER_AUTH",

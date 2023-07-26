@@ -1,5 +1,4 @@
 import { Logger } from '@nestjs/common';
-
 import * as config from 'config';
 import { isNil } from 'lodash';
 
@@ -46,6 +45,10 @@ export class AppConfig {
     if (parsedValue === 'true') return true;
     if (parsedValue === 'false') return false;
     throw new Error(`Expected boolean value, but ${parsedValue} was provided`);
+  }
+
+  static getInt(property: string, defaultValue?: number): number {
+    return this.get<number>(property, defaultValue);
   }
 
   /**

@@ -23,7 +23,7 @@ WORKDIR_WOODPULP=data/woodpulp
 WORKDIR_NATURAL_CROP_CONVERSION=data/natural_crop_conversion
 WORKDIR_NUTRIENT_LOAD_REDUCTION=data/nutrient_load_reduction
 WORKDIR_BIODIVERSITY=data/biodiversity
-
+WORKDIR_MAPSPAM_GHG=data/mapspam_ghg
 
 CHECKSUMS_PATH=data_checksums
 
@@ -397,14 +397,14 @@ clean:
 	rm -rf data/*
 
 
-#############
-# Mapspam GHG
-#############
+#######################
+# GHG FARM (GHG_FARM) #
+#######################
 
 download-mapspam-ghg:
 	mkdir -p $(WORKDIR_MAPSPAM_GHG)
-	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/mapspam_ghg $(WORKDIR_MAPSPAM_GHG)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/ghg_emissions $(WORKDIR_MAPSPAM_GHG)
 	cd $(WORKDIR_MAPSPAM_GHG) && sha256sum --check ../../$(CHECKSUMS_PATH)/mapspam_ghg
 
 convert-mapspam-ghg: download-mapspam-ghg
-	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM_GHG) h3_grid_mapspam_ghg_global indicator GHG_LUC_T 2017 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM_GHG) h3_grid_mapspam_ghg_global indicator GHG_FARM 2017 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)

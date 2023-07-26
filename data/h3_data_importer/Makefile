@@ -395,3 +395,16 @@ convert-blue-water-contextual:
 	python cog_to_contextual_layer_linker.py --cog bluewater.tif --name bluewater_footprint --category "Environmental datasets" --tiler_param colormap_name=viridis --tp rescale=-18,832
 clean:
 	rm -rf data/*
+
+
+#############
+# Mapspam GHG
+#############
+
+download-mapspam-ghg:
+	mkdir -p $(WORKDIR_MAPSPAM_GHG)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/mapspam_ghg $(WORKDIR_MAPSPAM_GHG)
+	cd $(WORKDIR_MAPSPAM_GHG) && sha256sum --check ../../$(CHECKSUMS_PATH)/mapspam_ghg
+
+convert-mapspam-ghg: download-mapspam-ghg
+	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM_GHG) h3_grid_mapspam_ghg_global indicator GHG_LUC_T 2017 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)

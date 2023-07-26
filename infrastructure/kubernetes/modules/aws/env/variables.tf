@@ -61,6 +61,12 @@ variable "gmaps_api_key" {
   description = "The Google Maps API key used for access to the geocoding API"
 }
 
+variable "sendgrid_api_key" {
+  type        = string
+  sensitive   = true
+  description = "The Sendgrid API key used for sending emails"
+}
+
 variable "load_fresh_data" {
   type        = bool
   default     = false
@@ -117,7 +123,6 @@ variable "api_secrets" {
   description = "List of secrets to make available to the api container"
   default     = []
 }
-
 
 
 variable "tiler_env_vars" {

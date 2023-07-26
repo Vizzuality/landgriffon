@@ -67,7 +67,13 @@ module "k8s_api" {
       name        = "GMAPS_API_KEY"
       secret_name = "api"
       secret_key  = "GMAPS_API_KEY"
+    },
+    {
+      name        = "SENDGRID_API_KEY"
+      secret_name = "api"
+      secret_key  = "SENDGRID_API_KEY"
     }
+
   ])
 
   env_vars = concat(var.api_env_vars, [
@@ -234,6 +240,7 @@ module "k8s_secrets" {
   allowed_account_id = var.allowed_account_id
   namespace          = var.environment
   gmaps_api_key      = var.gmaps_api_key
+  sendgrid_api_key   = var.sendgrid_api_key
 
   depends_on = [
     module.k8s_namespace

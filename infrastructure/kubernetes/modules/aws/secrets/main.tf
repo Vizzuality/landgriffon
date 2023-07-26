@@ -6,8 +6,9 @@ locals {
   }
 
   api_secret_json = {
-    jwt_secret    = random_password.jwt_secret_generator.result
-    gmaps_api_key = var.gmaps_api_key
+    jwt_secret       = random_password.jwt_secret_generator.result
+    gmaps_api_key    = var.gmaps_api_key
+    sendgrid_api_key = var.sendgrid_api_key
   }
 }
 
@@ -35,8 +36,9 @@ resource "kubernetes_secret" "api_secret" {
   }
 
   data = {
-    JWT_SECRET    = local.api_secret_json.jwt_secret
-    GMAPS_API_KEY = local.api_secret_json.gmaps_api_key
+    JWT_SECRET       = local.api_secret_json.jwt_secret
+    GMAPS_API_KEY    = local.api_secret_json.gmaps_api_key
+    SENDGRID_API_KEY = local.api_secret_json.sendgrid_api_key
   }
 }
 

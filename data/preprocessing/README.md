@@ -70,3 +70,8 @@ make all
 ```
 
 Read more about this pipeline in the [biodiversity/README.md](biodiversity/README.md) file.
+
+### Farm GHG emissions
+Aka Greenhouse gas emissions from farm production.
+
+The preprocessing can be found in `farm_ghg/`. It is an R script made by Mike Harfoot.

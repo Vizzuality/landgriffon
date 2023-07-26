@@ -1,4 +1,8 @@
 {
+  "client": {
+    "url": "fake",
+    "port": 3001
+  },
   "db": {
     "type": "postgres",
     "host": "localhost",
@@ -9,7 +13,6 @@
     "logging": false,
     "cacheEnabled": false
   },
-
   "tiler": {
     "host": "localhost",
     "port": 4000
@@ -36,5 +39,10 @@
   },
   "queue": {
     "enabled": false
+  },
+  "notifications": {
+    "email": {
+      "sendGridApiKey": "SG.forSomeReasonSendGridApiKeysNeedToStartWithSG."
+    }
   }
 }

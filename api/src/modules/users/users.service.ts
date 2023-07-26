@@ -201,13 +201,7 @@ export class UsersService extends AppBaseService<
     return this.authenticationService.sendPasswordRecoveryEmail(user);
   }
 
-  async resetPassword(token: string, newPassword: string): Promise<User> {
-    const { sub } = this.authenticationService.verifyToken(token);
-
-    const user: User | null = await this.repository.findByEmail(sub);
-    if (!user) {
-      throw new NotFoundException(`No user found with email address ${sub}`);
-    }
+  async resetPassword(user: User, newPassword: string): Promise<User> {
     const salt: string = await this.authorizationService.generateSalt();
     const hashedNewPassword: string =
       await this.authorizationService.generatePassword(salt, newPassword);

@@ -10,7 +10,7 @@
   },
   "client": {
     "url": null,
-    "port": 3001
+    "port": 8080
   },
   "auth": {
     "requireUserAuth": true,

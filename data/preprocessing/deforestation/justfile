@@ -13,6 +13,9 @@ download-deforestation-and-carbon:
         {{data_dir}}
 
 resample_deforestation:
+    rio calc "(/ (read 1) 20)" --overwrite --not-masked \
+        {{data_dir}}/deforest_by_human_lu_2020_1000m.tif \
+        {{data_dir}}/deforest_by_human_lu_2020_1000m.tif
     rio warp \
         {{data_dir}}/deforest_by_human_lu_2020_1000m.tif \
         {{data_dir}}/deforest_by_human_lu_2020_10km.tif \
@@ -21,6 +24,9 @@ resample_deforestation:
         --overwrite
 
 resample_carbon:
+    rio calc "(/ (read 1) 20)" --overwrite \
+        {{data_dir}}/carbon_by_human_lu_2020_1000m.tif \
+        {{data_dir}}/carbon_by_human_lu_2020_1000m.tif
     rio warp \
         {{data_dir}}/carbon_by_human_lu_2020_1000m.tif \
         {{data_dir}}/carbon_by_human_lu_2020_10km.tif \

@@ -1,8 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
-// import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -33,7 +29,12 @@ const SignIn: NextPageWithLayout = () => {
 
   const email = watch('email');
 
-  const { isLoading, isSuccess, mutate: sendResetPasswordEmail } = useSendResetPasswordEmail();
+  const {
+    isLoading,
+    isSuccess,
+    mutate: sendResetPasswordEmail,
+    reset,
+  } = useSendResetPasswordEmail();
 
   const handleSend = (data: yup.InferType<typeof schemaValidation>) => {
     sendResetPasswordEmail(
@@ -54,7 +55,7 @@ const SignIn: NextPageWithLayout = () => {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="px-4 py-8 bg-white shadow sm:rounded-lg sm:px-10">
           {isSuccess ? (
-            <div className="min-h-[50vh] flex flex-col justify-between">
+            <div className="min-h-[30vh] flex flex-col justify-between">
               <div>
                 <div className="bg-blue-400 h-[34px] w-[62px]">
                   <div className="w-0 h-0 border-t-blue-200 border-t-[26px] border-r-[31px] border-r-transparent border-l-[31px] border-l-transparent"></div>
@@ -74,7 +75,7 @@ const SignIn: NextPageWithLayout = () => {
                   Didn&apos;t recieve an email? Check your spam folder!
                 </p>
                 <Button
-                  onClick={() => handleSend({ email })}
+                  onClick={reset}
                   variant="transparent"
                   className="font-medium text-navy-400 hover:text-navy-900 pl-0 pr-0"
                   loading={isLoading}
@@ -84,15 +85,15 @@ const SignIn: NextPageWithLayout = () => {
               </div>
             </div>
           ) : (
-            <div className="mb-10 text-center">
+            <div className="text-center">
               <h2 className="my-4 font-bold">Forgot Password?</h2>
-              <p className="text-sm font-medium text-gray-600">
+              <p className="text-sm font-sm text-gray-400">
                 Enter your email address and we&apos;ll send you a link to reset your password.
               </p>
 
               <form
                 noValidate
-                className="space-y-6"
+                className="space-y-6 text-left mt-6"
                 id="signInForm"
                 onSubmit={handleSubmit(handleSend)}
               >

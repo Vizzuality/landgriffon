@@ -9,6 +9,7 @@ import { TestingModuleBuilder } from '@nestjs/testing/testing-module.builder';
 import { Type } from '@nestjs/common/interfaces';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { isUndefined } from 'lodash';
+import { MockEmailService } from './service-mocks';
 
 export default class ApplicationManager {
   static readonly regenerateResourcesOnEachTest: boolean = false;
@@ -41,7 +42,9 @@ export default class ApplicationManager {
       initTestingModuleBuilder ||
       (await Test.createTestingModule({
         imports: [AppModule],
-      }));
+      })
+        .overrideProvider('IEmailService')
+        .useClass(MockEmailService));
 
     ApplicationManager.testApplication.moduleFixture =
       await testingModuleBuilder.compile();

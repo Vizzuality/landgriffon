@@ -2,27 +2,14 @@ import ApplicationManager, {
   TestApplication,
 } from '../../utils/application-manager';
 import { DataSource } from 'typeorm';
-import { Test } from '@nestjs/testing';
-import { AppModule } from '../../../src/app.module';
-import {
-  IEmailService,
-  SendMailDTO,
-} from 'modules/notifications/email/email.service.interface';
+
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
-import { HttpStatus, Logger } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import { createUser } from '../../entity-mocks';
 import { User } from 'modules/users/user.entity';
 import * as request from 'supertest';
 
 import { AuthenticationService } from 'modules/authentication/authentication.service';
-
-class MockEmailService implements IEmailService {
-  logger: Logger = new Logger(MockEmailService.name);
-
-  async sendMail(mail: SendMailDTO): Promise<void> {
-    return Promise.resolve();
-  }
-}
 
 describe('Password recovery tests (e2e)', () => {
   let testApplication: TestApplication;
@@ -30,13 +17,7 @@ describe('Password recovery tests (e2e)', () => {
   let authenticationService: AuthenticationService;
 
   beforeAll(async () => {
-    testApplication = await ApplicationManager.init(
-      Test.createTestingModule({
-        imports: [AppModule],
-      })
-        .overrideProvider('IEmailService')
-        .useClass(MockEmailService),
-    );
+    testApplication = await ApplicationManager.init();
 
     dataSource = testApplication.get<DataSource>(DataSource);
 

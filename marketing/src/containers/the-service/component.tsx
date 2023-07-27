@@ -8,7 +8,6 @@ import Step01 from 'containers/the-service/steps/01';
 import Step02 from 'containers/the-service/steps/02';
 import Step03 from 'containers/the-service/steps/03';
 import Step04 from 'containers/the-service/steps/04';
-import Step05 from 'containers/the-service/steps/05';
 import AppScreens from 'containers/the-service/app-screens';
 
 import Separator from 'containers/separator';
@@ -34,10 +33,6 @@ const TheService: React.FC = () => {
       </Steps>
       <AppScreens />
       {/* <Example /> */}
-      <Separator image="/images/service/images7_service.jpg" />
-      <Steps theme="blue">
-        <Step05 />
-      </Steps>
 
       <Testimonials />
       <BlogPosts />

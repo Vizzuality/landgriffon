@@ -15,7 +15,7 @@ const Hero: React.FC = () => {
           <h1 className="text-5xl font-black text-black uppercase font-display md:text-7xl">
             We help you transform your supply chain for the better, using{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-green-500 to-blue-600">
-              five key steps.
+              four key steps.
             </span>
           </h1>
         </motion.div>

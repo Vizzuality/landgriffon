@@ -24,8 +24,8 @@ import { AuthorizationService } from 'modules/authorization/authorization.servic
 import { ROLES } from 'modules/authorization/roles/roles.enum';
 import { Role } from 'modules/authorization/roles/role.entity';
 import { CreateUserDTO } from 'modules/users/dto/create.user.dto';
-import { IEmailService } from 'modules/notifications/email/email.service.interface';
 import { AppConfig } from 'utils/app.config';
+import { PasswordMailService } from 'modules/authentication/password-mail.service';
 
 const DEFAULT_USER_NAME: string = 'User';
 
@@ -79,12 +79,11 @@ export class AuthenticationService {
 
   constructor(
     private readonly apiEventsService: ApiEventsService,
-    @Inject('IEmailService') private emailService: IEmailService,
-    @Inject('PASSWORD_RESET_URL') private passwordResetUrl: string,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly authorizationService: AuthorizationService,
+    private readonly passwordMail: PasswordMailService,
     private userRepository: UserRepository,
   ) {}
 
@@ -166,6 +165,8 @@ export class AuthenticationService {
         sub: newUser.email,
       },
     });
+
+    await this.sendUserActivationEmail(newUser.email);
     /**
      * This is a small aid to help with manual QA :).
      */
@@ -188,6 +189,7 @@ export class AuthenticationService {
       ApiEventsUserData.ActivationTokenGeneratedV1Alpha1,
       'validationToken' | 'sub'
     >,
+    password: string,
   ): Promise<true | never> {
     const invalidOrExpiredActivationTokenMessage: string =
       'Invalid or expired activation token.';
@@ -209,7 +211,14 @@ export class AuthenticationService {
         topic: event.topic,
         kind: API_EVENT_KINDS.user__accountActivationSucceeded__v1alpha1,
       });
-      await this.userRepository.update({ id: event.topic }, { isActive: true });
+
+      const salt: string = await this.authorizationService.generateSalt();
+      const hashedPassword: string =
+        await this.authorizationService.assignPassword(salt, password);
+      await this.userRepository.update(
+        { id: event.topic },
+        { isActive: true, salt, password: hashedPassword },
+      );
       await this.apiEventsService.purgeAll({
         topic: event.topic,
         kind: API_EVENT_KINDS.user__accountActivationTokenGenerated__v1alpha1,
@@ -286,20 +295,6 @@ export class AuthenticationService {
     return this.authorizationService.assignRoles(rolesEnum);
   }
 
-  async sendPasswordRecoveryEmail(user: User): Promise<void> {
-    const payload: Partial<JwtDataPayload> = {
-      sub: user.email,
-    };
-
-    const token: string = this.jwtService.sign(payload);
-    await this.emailService.sendMail({
-      to: user.email,
-      subject: 'Reset password',
-      text: 'Reset password',
-      html: `<a href="${this.passwordResetUrl}/${token}">Reset password</a>`,
-    });
-  }
-
   verifyToken(token: string): JwtDataPayload {
     try {
       return this.jwtService.verify(token);
@@ -316,5 +311,15 @@ export class AuthenticationService {
         expiresIn: options?.expiresIn ?? AppConfig.get('auth.jwt.expiresIn'),
       },
     );
+  }
+
+  async sendPasswordRecoverEmail(email: string): Promise<void> {
+    const token: string = this.signToken(email);
+    return this.passwordMail.sendPasswordRecoveryEmail(email, token);
+  }
+
+  async sendUserActivationEmail(email: string): Promise<void> {
+    const token: string = this.signToken(email);
+    return this.passwordMail.sendUserActivationEmail(email, token);
   }
 }

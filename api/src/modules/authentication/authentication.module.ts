@@ -1,4 +1,4 @@
-import { forwardRef, Logger, Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -14,19 +14,8 @@ import { PasswordValidation } from 'decorators/password-validator.decorator';
 import { AuthorizationModule } from 'modules/authorization/authorization.module';
 import { NotificationsModule } from 'modules/notifications/notifications.module';
 import { AppConfig } from 'utils/app.config';
-
-export const logger: Logger = new Logger('Authentication');
-const getPasswordResetUrl = (): string => {
-  const clientUrl: string = AppConfig.get('client.url');
-  const clientPort: string = AppConfig.get('client.port');
-  const passwordResetUrl: string = AppConfig.get('auth.password.resetUrl');
-  const protocol: string =
-    process.env.NODE_ENV === 'production' ? 'https' : 'http';
-  if (!clientUrl || !clientPort || !passwordResetUrl) {
-    logger.error('Missing client url, port or password reset url');
-  }
-  return `${protocol}://${clientUrl}:${clientPort}${passwordResetUrl}`;
-};
+import { PasswordMailService } from 'modules/authentication/password-mail.service';
+import { getPasswordSettingUrl } from 'modules/authentication/utils/authentication.utils';
 
 @Module({
   imports: [
@@ -46,9 +35,14 @@ const getPasswordResetUrl = (): string => {
     LocalStrategy,
     JwtStrategy,
     PasswordValidation,
+    PasswordMailService,
+    {
+      provide: 'PASSWORD_ACTIVATION_URL',
+      useValue: getPasswordSettingUrl('activation'),
+    },
     {
       provide: 'PASSWORD_RESET_URL',
-      useValue: getPasswordResetUrl(),
+      useValue: getPasswordSettingUrl('reset'),
     },
 
     {

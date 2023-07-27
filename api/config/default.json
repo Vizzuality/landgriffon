@@ -14,7 +14,7 @@
   },
   "auth": {
     "requireUserAuth": true,
-    "requireUserAccountActivation": false,
+    "requireUserAccountActivation": true,
     "signUpIsPublic": true,
     "jwt": {
       "expiresIn": "2h",
@@ -25,6 +25,7 @@
       "includeNumerics": false,
       "includeUpperCase": false,
       "includeSpecialCharacters": false,
+      "activationUrl": "/auth/activate-account",
       "resetUrl": "/auth/reset-password"
     }
   },

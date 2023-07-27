@@ -198,7 +198,7 @@ export class UsersService extends AppBaseService<
     if (!user || !user.isActive) {
       throw new NotFoundException(`No user found with email address ${email}`);
     }
-    return this.authenticationService.sendPasswordRecoveryEmail(user);
+    return this.authenticationService.sendPasswordRecoverEmail(user.email);
   }
 
   async resetPassword(user: User, newPassword: string): Promise<User> {

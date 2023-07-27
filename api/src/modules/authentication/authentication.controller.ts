@@ -25,6 +25,7 @@ import {
 } from 'modules/authentication/authentication.service';
 import { LoginDto } from 'modules/authentication/dto/login.dto';
 import { UserAccountValidationDTO } from 'modules/authentication/dto/user-account.validation.dto';
+import { ResetPasswordDto } from 'modules/authentication/dto/reset-password.dto';
 
 @Controller('/auth')
 @ApiTags('Authentication')
@@ -57,8 +58,12 @@ export class AuthenticationController {
   @ApiOkResponse()
   async confirm(
     @Param() activationToken: UserAccountValidationDTO,
+    @Body(ValidationPipe) resetPasswordDto: ResetPasswordDto,
   ): Promise<void> {
-    await this.authenticationService.validateActivationToken(activationToken);
+    await this.authenticationService.validateActivationToken(
+      activationToken,
+      resetPasswordDto.password,
+    );
   }
 
   /**

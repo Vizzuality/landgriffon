@@ -53,24 +53,21 @@ const SignIn: NextPageWithLayout = () => {
         <title>Forgot Password - Landgriffon</title>
       </Head>
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="px-4 py-8 bg-white shadow sm:rounded-lg sm:px-10">
+        <div className="px-4 text-center min-h-[362px] flex justify-between flex-col py-8 bg-white shadow sm:rounded-lg sm:px-10">
           {isSuccess ? (
-            <div className="min-h-[30vh] flex flex-col justify-between">
-              <div>
+            <>
+              <div className="text-start mb-20">
                 <div className="bg-blue-400 h-[34px] w-[62px]">
                   <div className="w-0 h-0 border-t-blue-200 border-t-[26px] border-r-[31px] border-r-transparent border-l-[31px] border-l-transparent"></div>
                 </div>
                 <h2 className="my-6 font-bold text-xl text-gray-900">Check your email</h2>
                 <p className="text-sm font-medium text-gray-600">
-                  We&apos;ve sent a confirmation email to:
+                  We&apos;ve sent a email to:
                   <span className="text-gray-300 block">{email}</span>
                 </p>
               </div>
 
-              <div>
-                {/* <Button variant="primary" className="mb-6 max-w-full w-44">
-                  Open email
-                </Button> */}
+              <div className="text-start mt-2">
                 <p className="text-sm font-medium text-gray-600">
                   Didn&apos;t recieve an email? Check your spam folder!
                 </p>
@@ -83,13 +80,15 @@ const SignIn: NextPageWithLayout = () => {
                   Click to resend
                 </Button>
               </div>
-            </div>
+            </>
           ) : (
-            <div className="text-center">
-              <h2 className="my-4 font-bold">Forgot Password?</h2>
-              <p className="text-sm font-sm text-gray-400">
-                Enter your email address and we&apos;ll send you a link to reset your password.
-              </p>
+            <>
+              <div className="flex-1">
+                <h2 className="my-4 font-bold">Forgot Password?</h2>
+                <p className="text-sm font-sm text-gray-400">
+                  Enter your email address and we&apos;ll send you a link to reset your password.
+                </p>
+              </div>
 
               <form
                 noValidate
@@ -113,7 +112,7 @@ const SignIn: NextPageWithLayout = () => {
                   </Button>
                 </div>
               </form>
-            </div>
+            </>
           )}
         </div>
       </div>

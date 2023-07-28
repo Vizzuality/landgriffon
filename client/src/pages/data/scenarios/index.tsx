@@ -125,8 +125,6 @@ const ScenariosAdminPage: React.FC = () => {
           placeholder="Search by scenario name..."
           data-testid="search-name-scenario"
           className="border-none"
-          searchQuery="search"
-          disabled
         />
       }
     >

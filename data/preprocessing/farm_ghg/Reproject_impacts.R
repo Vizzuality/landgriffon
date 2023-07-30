@@ -66,6 +66,8 @@ b_prod<-rast(paste0(prodn.path,"crop_bana_production.tif"))
 
 #Define equal area projection system and templates for hi_res equal area and WGS84 grids 
 gall_peters <- "+proj=cea +lon_0=0 +x_0=0 +y_0=0 +lat_ts=45 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
+template_hi_res_gall_peters<-disagg(b_ghg,fact=2)
+
 #raster template 
 template_wgs84 <- b_prod
 #ext(template_wgs84)
@@ -77,42 +79,48 @@ wgs84_pixel_areas = cellSize(template_wgs84, mask = F, unit = "km")
 
 #### Reversing the transformations made by Halpern et al to convert from wgs84 (mapspam grid) to equal area grid ####
 
+#### Splitting the impacts from crop supers to individual MAPSPAM crops
+
+if(!dir.exists(paths = "crop/ghg_per_t_product_food_wgs84/")) dir.create("crop/ghg_per_t_product_food_wgs84/")
+if(!dir.exists(paths = "crop/nutrient_per_t_product_food_wgs84/")) dir.create("crop/nutrient_per_t_product_food_wgs84/")
+if(!dir.exists(paths = "crop/water_per_t_product_food_wgs84/")) dir.create("crop/water_per_t_product_food_wgs84/")
+
+
 #Transform impacts for crops
 for(c in crop_supers){
   print(c)
   #Read the production raster
   prodn<-rast(paste0(prodn.path,"crop_",c,"_production.tif")) #metric tonnes
+  prodn_gall_peters<-terra::aggregate(
+                        project(disagg(prodn/wgs84_pixel_areas, fact = 2, method = 'near'),
+                             template_hi_res_gall_peters,method='near'),
+                        fact = 2,fun = 'mean')*36
   
   for(impact in impacts){
     print(impact)
     #Read the equal area impact raster
     r_impact<- rast(paste0(crop.impact.path,"gall_peter_farm_land_",c,"_crop_produce_",impact,"_per_cell.tif"))
     
-    # Scale impact to impact/km2 by dividing by 36 (6x6)
+    r_impact_per_t_prodn<-r_impact/prodn_gall_peters
+    r_impact_per_t_prodn[is.infinite(r_impact_per_t_prodn)]<-NA
+    
+    
+    # No need to scale by cell size as this is normalised by production already
     # Disaggregate the impact raster to 3km resolution
     # Project this to the hi-res wgs84 grid using nearest neighbour resampling
     # Aggregate the hi-res wgs84 layer up by factor of 2
-    # Scale to impact per wgs84 cell
-    impact_per_cell_wgs84<-(terra::aggregate(
-                            project(
-                              disagg(r_impact/36.0,fact = 2, method = "near"),
-                              template_hi_res_wgs84,method='near'),
-                            fact = 2, fun=mean,na.rm=T)
-                            * wgs84_pixel_areas)
-    
-    writeRaster(x = impact_per_cell_wgs84,
-                filename = paste0('crops_food_raw_wgs84/farm_land_',c,"_crop_produce_",impact,"_per_cell.tif"),
-                overwrite = TRUE)
+    # 
+    r_impact_per_t_prodn_wgs84<-terra::aggregate(
+                                  project(
+                                    disagg(r_impact_per_t_prodn, fact = 2, method = 'near'),
+                                    template_hi_res_wgs84,method='near'),
+                                  fact = 2, fun=mean,na.rm=T)
+                                
     
     
-    impact_per_t_production<-impact_per_cell_wgs84/prodn
-    
-    impact_per_t_production[is.infinite(impact_per_t_production)]<-NA
-    
-    # Divide by total production of this commodity to give impact per t commodity
     # write to file
-    writeRaster(x = impact_per_t_production,
-                filename = paste0(impact,"_per_t_product_food_wgs84/",c,"_per_t_production.tif"), overwrite=TRUE)
+    writeRaster(x = r_impact_per_t_prodn_wgs84,
+                filename = paste0("crop/",impact,"_per_t_product_food_wgs84/",c,"_per_t_production.tif"), overwrite=TRUE)
 
   }
   print("-------")
@@ -121,9 +129,9 @@ for(c in crop_supers){
 
 #### Splitting the impacts from crop supers to individual MAPSPAM crops
 
-if(!dir.exists(paths = "ghg_per_t_product_food_wgs84_ind_mapspam/")) dir.create("ghg_per_t_product_food_wgs84_ind_mapspam/")
-if(!dir.exists(paths = "nutrient_per_t_product_food_wgs84_ind_mapspam/")) dir.create("nutrient_per_t_product_food_wgs84_ind_mapspam/")
-if(!dir.exists(paths = "water_per_t_product_food_wgs84_ind_mapspam/")) dir.create("water_per_t_product_food_wgs84_ind_mapspam/")
+if(!dir.exists(paths = "crop/ghg_per_t_product_food_wgs84_ind_mapspam/")) dir.create("crop/ghg_per_t_product_food_wgs84_ind_mapspam/")
+if(!dir.exists(paths = "crop/nutrient_per_t_product_food_wgs84_ind_mapspam/")) dir.create("crop/nutrient_per_t_product_food_wgs84_ind_mapspam/")
+if(!dir.exists(paths = "crop/water_per_t_product_food_wgs84_ind_mapspam/")) dir.create("crop/water_per_t_product_food_wgs84_ind_mapspam/")
 
 
 for(c in crop_supers){
@@ -144,7 +152,7 @@ for(c in crop_supers){
     for(impact in impacts){
       print(impact)
       
-      super_impact<-rast(paste0(impact,"_per_t_product_food_wgs84/",c,"_per_t_production.tif"))
+      super_impact<-rast(paste0("crop/",impact,"_per_t_product_food_wgs84/",c,"_per_t_production.tif"))
       
       individual_crop_impact<-super_impact*proportion_mapspam_prodn
       
@@ -153,7 +161,7 @@ for(c in crop_supers){
         # write to file
         print(crop_super_ind_crops[[c]][ic])
         writeRaster(x = subset(individual_crop_impact,ic),
-                    filename = paste0(impact,"_per_t_product_food_wgs84_ind_mapspam/",toupper(crop_super_ind_crops[[c]])[ic],"_per_t_production.tif"), overwrite=TRUE)
+                    filename = paste0("crop/",impact,"_per_t_product_food_wgs84_ind_mapspam/",toupper(crop_super_ind_crops[[c]])[ic],"_per_t_production.tif"), overwrite=TRUE)
       }
       
       print("--------")
@@ -162,8 +170,8 @@ for(c in crop_supers){
   else {
     for(impact in impacts){
       print(impact)
-      file.copy(from = paste0(impact,"_per_t_product_food_wgs84/",c,"_per_t_production.tif"),
-                to = paste0(impact,"_per_t_product_food_wgs84_ind_mapspam/",toupper(c),"_per_t_production.tif"),
+      file.copy(from = paste0("crop/",impact,"_per_t_product_food_wgs84/",c,"_per_t_production.tif"),
+                to = paste0("crop/",impact,"_per_t_product_food_wgs84_ind_mapspam/",toupper(c),"_per_t_production.tif"),
                 overwrite = T)
       
       print("--------")
@@ -193,7 +201,7 @@ LG_livestock_groupings = list(
 
 # First rescale the livestock impacts
 # From Halpern
-# "Rescaled data are calculated by dividing each pixel’s pressure value by the total global pressure
+# "Rescaled data are calculated by dividing each pixels pressure value by the total global pressure
 # generated by all foods and across all raster cells (raster cell values are multiplied by 1000000 to
 # avoid small numbers and rounding errors)"
 
@@ -216,14 +224,36 @@ for(impact in impacts){
   }
 }
 
+#Create directories if not already existing
+for(impact in impacts){
+  if(!dir.exists(paths = paste0("livestock/", impact,"_per_head_wgs84/"))) dir.create(paste0("livestock/", impact,"_per_head_wgs84/"))
+}
+
+
 # Aggregate impacts for highest-level livestock categories
 
 #for a given impact type and livestock category, sum across rasters to yield total impact
 
-for(impact in impacts){
-  print(impact)
-  for(j in names(LG_livestock_groupings)){
-    print(j)
+for(j in names(LG_livestock_groupings)){
+  print(j)
+  
+  # scale by aggregated livestock heads
+  l.head.fs<-unlist(lapply(LG_livestock_groupings[[j]], function(l) {
+    list.files(path = heads.path,pattern = l, full.names = T)
+  }))
+  
+  agg.l.head<-sum(rast(l.head.fs), na.rm=T)
+  
+  #Reproject heads to Gall Peters, to match impacts
+  agg_heads_gall_peters<-terra::aggregate(
+                      project(disagg(agg.l.head/wgs84_pixel_areas, fact = 2, method = 'near'),
+                              template_hi_res_gall_peters,method='near'),
+                      fact = 2,fun = 'mean')*36
+                    
+  
+  for(impact in impacts){
+    print(impact)
+  
     l.impact.fs<-unlist(lapply(LG_livestock_groupings[[j]], function(l) {
       grep(x = list.files(path = livestock.raw.path,pattern = paste0("farm_land_",l), full.names = T),pattern = impact, value = T)
     }))
@@ -231,44 +261,20 @@ for(impact in impacts){
     agg.l.impacts<-sum(rast(l.impact.fs), na.rm=T)
     
     
+    #Calculate impact rate per head
+    impact_per_head_gp<-agg.l.impacts/agg_heads_gall_peters
+    impact_per_head_gp[is.infinite(impact_per_head_gp)]<-NA
     
-    # scale by aggregated livestock heads
-    l.head.fs<-unlist(lapply(LG_livestock_groupings[[j]], function(l) {
-      list.files(path = heads.path,pattern = l, full.names = T)
-    }))
+    #Then project back to GLW wgs84 grid
+    impact_per_head_wgs84<-terra::aggregate(
+                              project(
+                                disagg(impact_per_head_gp,fact = 2, method = "near"),
+                                template_hi_res_wgs84,method='near'),
+                              fact = 2, fun=mean,na.rm=T)
+                            
     
-    agg.l.head<-sum(rast(l.head.fs), na.rm=T)
-    
-    # Divide by total production of this commodity to give impact per t commodity
     # write to file
-    writeRaster(x = impact_per_head,
-                filename = paste0("livestock/head_wgs84/",j,"_head.tif"), overwrite=TRUE)
-    
-    
-    
-    #reproject impacts from Gall Peters projection to WGS84
-    # Scale impact to impact/km2 by dividing by 36 (6x6)
-    # Disaggregate the impact raster to 3km resolution
-    # Project this to the hi-res wgs84 grid using nearest neighbour resampling
-    # Aggregate the hi-res wgs84 layer up by factor of 2
-    # Scale to impact per wgs84 cell
-    impact_per_cell_wgs84<-(terra::aggregate(
-      project(
-        disagg(agg.l.impacts/36.0,fact = 2, method = "near"),
-        template_hi_res_wgs84,method='near'),
-      fact = 2, fun=mean,na.rm=T)
-      * wgs84_pixel_areas)
-    
-    writeRaster(x = impact_per_cell_wgs84,
-                filename = paste0('livestock/livestock_raw_unscaled_wgs84/',j,'_',impact,'.tif'),
-                overwrite = TRUE)
-    
-    impact_per_head<-impact_per_cell_wgs84/agg.l.head
-    impact_per_head[is.infinite(impact_per_head)]<-NA
-    
-    # Divide by total production of this commodity to give impact per t commodity
-    # write to file
-    writeRaster(x = impact_per_head,
+    writeRaster(x = impact_per_head_wgs84,
                 filename = paste0("livestock/",impact,"_per_head_wgs84/",j,"_per_head.tif"), overwrite=TRUE)
     
 

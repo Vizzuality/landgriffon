@@ -31,8 +31,13 @@ const ScenariosFilters: FC = () => {
   const currentSort = useMemo(() => SORT_OPTIONS.find(({ value }) => value === sort), [sort]);
 
   return (
-    <div className="flex items-center justify-between space-x-4">
-      <Search placeholder="Search" defaultValue={searchTerm} onChange={handleSearchByTerm} />
+    <div className="flex items-center justify-between space-x-4 ">
+      <Search
+        placeholder="Search"
+        defaultValue={searchTerm}
+        onChange={handleSearchByTerm}
+        size="sm"
+      />
       <Select
         value={currentSort}
         options={SORT_OPTIONS}

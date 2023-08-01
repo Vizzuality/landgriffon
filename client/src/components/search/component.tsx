@@ -12,6 +12,7 @@ export const Search: React.FC<SearchProps> = ({
   searchQuery = 'search',
   onChange,
   defaultValue,
+  size = 'base',
   ...props
 }: SearchProps) => {
   const { pathname, query, replace } = useRouter();
@@ -61,13 +62,18 @@ export const Search: React.FC<SearchProps> = ({
   }, [initialValue]);
 
   return (
-    <div className="bg-white w-fit">
-      <div className="flex items-center justify-center w-fit">
+    <div
+      className={classnames('bg-white', {
+        'w-fit min-w-[260px]': size === 'base',
+        'w-44': size === 'sm',
+      })}
+    >
+      <div className="flex items-center justify-center w-full">
         <SearchIcon className="w-6 h-6 text-gray-300" />
         <input
           {...omit(props, ['defaultValue', 'onChange'])}
           className={classnames(
-            'block flex-1 w-fit min-w-[250px] p-4 pt-2.5 pb-3 leading-5 text-base placeholder:text-gray-400 focus:outline-none focus:ring-0 border-none truncate',
+            'flex-1 p-4 pt-2.5 pb-3 leading-5 text-base placeholder:text-gray-400 focus:outline-none focus:ring-0 border-none truncate',
             props.disabled ? 'text-gray-300' : 'bg-white text-gray-900',
           )}
           type="search"

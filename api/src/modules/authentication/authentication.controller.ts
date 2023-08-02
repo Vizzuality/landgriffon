@@ -10,7 +10,6 @@ import {
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
-  ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -25,13 +24,17 @@ import {
 import { LoginDto } from 'modules/authentication/dto/login.dto';
 import { ResetPasswordDto } from 'modules/authentication/dto/reset-password.dto';
 import { GetUser } from 'decorators/get-user.decorator';
-import { User } from 'modules/users/user.entity';
+import { JSONAPIUserData, User } from 'modules/users/user.entity';
+import { UsersService } from 'modules/users/users.service';
 
 @Controller('/auth')
 @ApiTags('Authentication')
 @ApiBearerAuth()
 export class AuthenticationController {
-  constructor(private readonly authenticationService: AuthenticationService) {}
+  constructor(
+    private readonly authenticationService: AuthenticationService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Public()
   @UseGuards(LocalAuthGuard)
@@ -54,14 +57,16 @@ export class AuthenticationController {
 
   @Post('validate-account')
   @ApiOperation({ description: 'Confirm an activation for a new user.' })
-  @ApiOkResponse()
+  @ApiCreatedResponse({ type: JSONAPIUserData })
   async validateAccount(
     @Body(ValidationPipe) resetPasswordDto: ResetPasswordDto,
     @GetUser() user: User,
-  ): Promise<User> {
-    return await this.authenticationService.validateAccount(
-      resetPasswordDto.password,
-      user,
+  ): Promise<JSONAPIUserData> {
+    return this.usersService.serialize(
+      await this.authenticationService.validateAccount(
+        resetPasswordDto.password,
+        user,
+      ),
     );
   }
 

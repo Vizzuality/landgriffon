@@ -29,6 +29,7 @@ import { getPasswordSettingUrl } from 'modules/authentication/utils/authenticati
     TypeOrmModule.forFeature([User]),
     AuthorizationModule,
     NotificationsModule,
+    UsersModule,
   ],
   providers: [
     AuthenticationService,

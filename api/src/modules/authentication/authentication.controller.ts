@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  Param,
   Post,
   Request,
   UseGuards,
@@ -24,8 +23,9 @@ import {
   AuthenticationService,
 } from 'modules/authentication/authentication.service';
 import { LoginDto } from 'modules/authentication/dto/login.dto';
-import { UserAccountValidationDTO } from 'modules/authentication/dto/user-account.validation.dto';
 import { ResetPasswordDto } from 'modules/authentication/dto/reset-password.dto';
+import { GetUser } from 'decorators/get-user.decorator';
+import { User } from 'modules/users/user.entity';
 
 @Controller('/auth')
 @ApiTags('Authentication')
@@ -52,17 +52,16 @@ export class AuthenticationController {
     return this.authenticationService.login(req.user);
   }
 
-  @Public()
-  @Get('validate-account/:sub/:validationToken')
-  @ApiOperation({ description: 'Confirm an activation token for a new user.' })
+  @Post('validate-account')
+  @ApiOperation({ description: 'Confirm an activation for a new user.' })
   @ApiOkResponse()
-  async confirm(
-    @Param() activationToken: UserAccountValidationDTO,
+  async validateAccount(
     @Body(ValidationPipe) resetPasswordDto: ResetPasswordDto,
-  ): Promise<void> {
-    await this.authenticationService.validateActivationToken(
-      activationToken,
+    @GetUser() user: User,
+  ): Promise<User> {
+    return await this.authenticationService.validateAccount(
       resetPasswordDto.password,
+      user,
     );
   }
 

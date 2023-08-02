@@ -232,6 +232,20 @@ export class AuthenticationService {
     throw new BadRequestException(invalidOrExpiredActivationTokenMessage);
   }
 
+  async validateAccount(password: string, user: User): Promise<any> {
+    const salt: string = await this.authorizationService.generateSalt();
+    const hashedPassword: string =
+      await this.authorizationService.assignPassword(salt, password);
+    await this.userRepository.update(
+      { id: user.id },
+      { isActive: true, salt, password: hashedPassword },
+    );
+    const updatedUser: User = await this.userRepository.findOneOrFail({
+      where: { id: user.id },
+    });
+    return UsersService.getSanitizedUserMetadata(updatedUser);
+  }
+
   /**
    * Issue a signed JTW token, logging its issuance.
    */

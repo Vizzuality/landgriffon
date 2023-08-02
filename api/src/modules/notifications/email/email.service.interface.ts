@@ -4,7 +4,6 @@ export class SendMailDTO {
   to: string;
   subject: string;
   text: string;
-  html: string;
 }
 
 export interface IEmailService {

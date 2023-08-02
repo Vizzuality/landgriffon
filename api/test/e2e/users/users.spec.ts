@@ -151,7 +151,7 @@ describe('UsersModule (e2e)', () => {
       expect(res.body.data.attributes.title).toEqual(newUserDto.title);
     });
 
-    test('When a admin creates a user this user should be active by default', async () => {
+    test('When a admin creates a user this user should be inactive by default', async () => {
       await request(testApplication.getHttpServer())
         .post('/api/v1/users')
         .set('Authorization', `Bearer ${adminTestUser.jwtToken}`)
@@ -159,7 +159,7 @@ describe('UsersModule (e2e)', () => {
         .expect(HttpStatus.CREATED);
 
       const user = await userRepository.findByEmail(newUserDto.email);
-      expect(user?.isActive).toBe(true);
+      expect(user?.isActive).toBe(false);
     });
 
     test('When a user is created but no fname is provided, it should have "User" as fname by default', async () => {

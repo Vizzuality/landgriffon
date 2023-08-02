@@ -10,14 +10,30 @@ import { User } from 'modules/users/user.entity';
 import * as request from 'supertest';
 
 import { AuthenticationService } from 'modules/authentication/authentication.service';
+import { Test } from '@nestjs/testing';
+import { AppModule } from '../../../src/app.module';
+import { setupTestUser } from '../../utils/userAuth';
+import { ROLES } from 'modules/authorization/roles/roles.enum';
+
+const mockEmailService = {
+  sendMail: jest.fn(),
+};
 
 describe('Password recovery tests (e2e)', () => {
   let testApplication: TestApplication;
   let dataSource: DataSource;
   let authenticationService: AuthenticationService;
+  let jwtToken: string;
 
   beforeAll(async () => {
-    testApplication = await ApplicationManager.init();
+    testApplication = await ApplicationManager.init(
+      await Test.createTestingModule({
+        imports: [AppModule],
+      })
+        .overrideProvider('IEmailService')
+        .useValue(mockEmailService),
+    );
+    ({ jwtToken } = await setupTestUser(testApplication));
 
     dataSource = testApplication.get<DataSource>(DataSource);
 
@@ -29,6 +45,35 @@ describe('Password recovery tests (e2e)', () => {
   afterAll(async () => {
     await clearTestDataFromDatabase(dataSource);
     await testApplication.close();
+  });
+
+  describe('User account activation (e2e)', () => {
+    test('When a admin user creates a new user, a email should be sent, and the user should be able to create a first password with the token received', async () => {
+      const email = 'activation@mail.com';
+      const firstPassword = 'password';
+      await request(testApplication.getHttpServer())
+        .post('/api/v1/users')
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .send({ email, roles: [ROLES.ADMIN] })
+        .expect(HttpStatus.CREATED);
+
+      expect(mockEmailService.sendMail).toHaveBeenCalledTimes(1);
+
+      const receivedToken = authenticationService.signToken(email);
+
+      await request(testApplication.getHttpServer())
+        .post(`/auth/validate-account`)
+        .set('Authorization', `Bearer ${receivedToken}`)
+        .send({ password: firstPassword })
+        .expect(HttpStatus.CREATED);
+
+      const newLoginUser = await request(testApplication.getHttpServer())
+        .post('/auth/sign-in')
+        .send({ username: email, password: firstPassword })
+        .expect(HttpStatus.CREATED);
+
+      expect(newLoginUser.body.accessToken).toBeDefined();
+    });
   });
 
   describe('Password recovery request (e2e)', () => {

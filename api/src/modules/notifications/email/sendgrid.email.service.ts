@@ -30,13 +30,12 @@ export class SendgridEmailService implements IEmailService {
   async sendMail(mail: SendMailDTO): Promise<any> {
     const msg: MailDataRequired = { ...mail, from: SENDER_MAIL_ADDRESS };
     try {
-      await sgMail.send(msg);
+      return sgMail.send(msg);
     } catch (e) {
       this.logger.error(e);
       throw new ServiceUnavailableException(
         'Could not sent confirmation email',
       );
     }
-    return sgMail.send(msg);
   }
 }

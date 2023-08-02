@@ -8,7 +8,7 @@ export class MockEmailService implements IEmailService {
   logger: Logger = new Logger(MockEmailService.name);
 
   async sendMail(mail: SendMailDTO): Promise<void> {
-    this.logger.error(`Email Service mock called... `);
+    this.logger.warn(`Email Service mock called... `);
     return Promise.resolve();
   }
 }

@@ -22,7 +22,7 @@ const schemaValidation = yup.object({
     .oneOf([yup.ref('password'), null], 'passwords must match'),
 });
 
-const ResetPassword: NextPageWithLayout = () => {
+const ActivateAccount: NextPageWithLayout = () => {
   const { replace, query } = useRouter();
 
   const {
@@ -78,12 +78,12 @@ const ResetPassword: NextPageWithLayout = () => {
   return (
     <>
       <Head>
-        <title>Reset password - Landgriffon</title>
+        <title>Activate account - Landgriffon</title>
       </Head>
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="px-4 py-8 bg-white shadow sm:rounded-lg sm:px-10">
           <div className="mb-10 text-center">
-            <h2 className="my-4 font-bold">Reset your password</h2>
+            <h2 className="my-4 font-bold">Activate your account</h2>
           </div>
           <form
             noValidate
@@ -92,7 +92,7 @@ const ResetPassword: NextPageWithLayout = () => {
             onSubmit={handleSubmit(handleResetPassord)}
           >
             <div>
-              <Label htmlFor="password">New Password</Label>
+              <Label htmlFor="password">Password</Label>
               <Input
                 {...register('password')}
                 type="password"
@@ -101,7 +101,7 @@ const ResetPassword: NextPageWithLayout = () => {
               />
             </div>
             <div>
-              <Label htmlFor="passwordConfirmation">Confirm new password</Label>
+              <Label htmlFor="passwordConfirmation">Confirm password</Label>
               <Input
                 {...register('passwordConfirmation')}
                 type="password"
@@ -116,7 +116,7 @@ const ResetPassword: NextPageWithLayout = () => {
                 className="w-full"
                 loading={isLoading || isRedirecting}
               >
-                Reset password
+                Send
               </Button>
             </div>
           </form>
@@ -126,8 +126,8 @@ const ResetPassword: NextPageWithLayout = () => {
   );
 };
 
-ResetPassword.Layout = function getLayout(page: ReactElement) {
+ActivateAccount.Layout = function getLayout(page: ReactElement) {
   return <AuthenticationLayout>{page}</AuthenticationLayout>;
 };
 
-export default ResetPassword;
+export default ActivateAccount;

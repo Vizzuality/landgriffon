@@ -10,7 +10,7 @@ import { useCallback, type ReactElement, useState } from 'react';
 import AuthenticationLayout from 'layouts/authentication';
 import { Label, Input } from 'components/forms';
 import { Button } from 'components/button';
-import { useResetPassword } from 'hooks/profile';
+import { useActivateAccount } from 'hooks/profile';
 
 import type { NextPageWithLayout } from 'pages/_app';
 
@@ -34,17 +34,17 @@ const ActivateAccount: NextPageWithLayout = () => {
     shouldUseNativeValidation: false,
   });
 
-  const { mutate: resetPassword, isLoading } = useResetPassword();
+  const { mutate: activateAccount, isLoading } = useActivateAccount();
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
 
-  const handleResetPassord = useCallback(
+  const handleActivateAccount = useCallback(
     ({ password }: yup.InferType<typeof schemaValidation>) => {
       const token = query?.token as string;
       if (!token) {
         toast.error('Invalid token');
         return;
       }
-      resetPassword(
+      activateAccount(
         { password, token },
         {
           onSuccess: async ({ email }) => {
@@ -72,7 +72,7 @@ const ActivateAccount: NextPageWithLayout = () => {
         },
       );
     },
-    [replace, query?.callbackUrl, query?.token, resetPassword],
+    [replace, query?.callbackUrl, query?.token, activateAccount],
   );
 
   return (
@@ -89,7 +89,7 @@ const ActivateAccount: NextPageWithLayout = () => {
             noValidate
             className="space-y-6"
             id="signInForm"
-            onSubmit={handleSubmit(handleResetPassord)}
+            onSubmit={handleSubmit(handleActivateAccount)}
           >
             <div>
               <Label htmlFor="password">Password</Label>

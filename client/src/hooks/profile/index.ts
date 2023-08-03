@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 
 import { apiRawServiceWithoutAuth, apiService } from 'services/api';
+import { authService } from 'services/authentication';
 
 import type { User, PasswordPayload, ErrorResponse, ProfilePayload } from 'types';
 import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
@@ -113,4 +114,20 @@ export const useResetPassword = () => {
       mutationKey: ['reset-password'],
     },
   );
+};
+
+export const useActivateAccount = () => {
+  const activateAccount = ({ password, token }: ResetPasswordPayload): Promise<User> =>
+    authService
+      .request({
+        method: 'POST',
+        url: '/validate-account',
+        headers: { Authorization: `Bearer ${token}` },
+        data: { password },
+      })
+      .then((response) => response.data?.data?.attributes);
+
+  return useMutation<unknown, ErrorResponse, ResetPasswordPayload>(activateAccount, {
+    mutationKey: ['activate-account'],
+  });
 };

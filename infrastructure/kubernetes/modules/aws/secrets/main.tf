@@ -6,9 +6,11 @@ locals {
   }
 
   api_secret_json = {
-    jwt_secret       = random_password.jwt_secret_generator.result
-    gmaps_api_key    = var.gmaps_api_key
-    sendgrid_api_key = var.sendgrid_api_key
+    jwt_secret                    = random_password.jwt_secret_generator.result
+    jwt_account_activation_secret = random_password.jwt_account_activation_secret_generator.result
+    jwt_password_reset_secret     = random_password.jwt_password_reset_secret_generator.result
+    gmaps_api_key                 = var.gmaps_api_key
+    sendgrid_api_key              = var.sendgrid_api_key
   }
 }
 
@@ -17,6 +19,15 @@ resource "random_password" "jwt_secret_generator" {
   length  = 64
   special = true
 }
+resource "random_password" "jwt_account_activation_secret_generator" {
+  length  = 64
+  special = true
+}
+resource "random_password" "jwt_password_reset_secret_generator" {
+  length  = 64
+  special = true
+}
+
 
 resource "aws_secretsmanager_secret" "api_secret" {
   name        = "api-secret-${var.namespace}"
@@ -36,9 +47,11 @@ resource "kubernetes_secret" "api_secret" {
   }
 
   data = {
-    JWT_SECRET       = local.api_secret_json.jwt_secret
-    GMAPS_API_KEY    = local.api_secret_json.gmaps_api_key
-    SENDGRID_API_KEY = local.api_secret_json.sendgrid_api_key
+    JWT_SECRET                    = local.api_secret_json.jwt_secret
+    JWT_ACCOUNT_ACTIVATION_SECRET = local.api_secret_json.jwt_account_activation_secret
+    JWT_PASSWORD_RESET_SECRET     = local.api_secret_json.jwt_password_reset_secret
+    GMAPS_API_KEY                 = local.api_secret_json.gmaps_api_key
+    SENDGRID_API_KEY              = local.api_secret_json.sendgrid_api_key
   }
 }
 

@@ -13,8 +13,8 @@
     "jwt": {
       "expiresIn": "JWT_EXPIRES_IN",
       "secret": "JWT_SECRET",
-      "accountActivationSecret": "JWT_ACTIVATION_SECRET",
-      "passwordRecoverySecret": "JWT_RESET_SECRET"
+      "accountActivationSecret": "JWT_ACCOUNT_ACTIVATION_SECRET",
+      "passwordRecoverySecret": "JWT_PASSWORD_RESET_SECRET"
     },
     "password": {
       "minLength": "PASSWORD_MIN_LENGTH",

@@ -6,7 +6,6 @@ import { UsersModule } from 'modules/users/users.module';
 import * as config from 'config';
 import { AuthenticationController } from 'modules/authentication/authentication.controller';
 import { AuthenticationService } from 'modules/authentication/authentication.service';
-import { JwtStrategy } from 'modules/authentication/strategies/jwt.strategy';
 import { LocalStrategy } from 'modules/authentication/strategies/local.strategy';
 import { ApiEventsModule } from 'modules/api-events/api-events.module';
 import { User } from 'modules/users/user.entity';
@@ -16,6 +15,7 @@ import { NotificationsModule } from 'modules/notifications/notifications.module'
 import { AppConfig } from 'utils/app.config';
 import { PasswordMailService } from 'modules/authentication/password-mail.service';
 import { getPasswordSettingUrl } from 'modules/authentication/utils/authentication.utils';
+import { JwtStrategy } from 'modules/authentication/strategies/jwt.strategy';
 
 @Module({
   imports: [

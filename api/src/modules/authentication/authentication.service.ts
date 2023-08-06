@@ -26,8 +26,15 @@ import { Role } from 'modules/authorization/roles/role.entity';
 import { CreateUserDTO } from 'modules/users/dto/create.user.dto';
 import { AppConfig } from 'utils/app.config';
 import { PasswordMailService } from 'modules/authentication/password-mail.service';
+import { getSecretByTokenType } from 'modules/authentication/utils/authentication.utils';
 
 const DEFAULT_USER_NAME: string = 'User';
+
+export enum TOKEN_TYPE {
+  GENERAL = 'general',
+  ACCOUNT_ACTIVATION = 'account-activation',
+  PASSWORD_RESET = 'password-reset',
+}
 
 /**
  * Access token for the app: key user data and access token
@@ -61,6 +68,12 @@ export interface JwtDataPayload {
    * This is used to check tokens presented to the API against revoked tokens.
    */
   tokenId: string;
+
+  /**
+   * Type of issues token to determine the secret used to sign the token
+   */
+
+  tokenType: TOKEN_TYPE;
 
   /**
    * Issued At: epoch timestamp in seconds, UTC.
@@ -282,19 +295,13 @@ export class AuthenticationService {
      * used in the JwtStrategy to check that the token being presented by an API
      * client was not revoked.
      */
-    const payload: Partial<JwtDataPayload> = {
-      sub: user.email,
-      tokenId: v4(),
-    };
 
     return {
       user: UsersService.getSanitizedUserMetadata(user),
-      accessToken: this.jwtService.sign(
-        { ...payload },
-        {
-          expiresIn: AppConfig.get('auth.jwt.expiresIn'),
-        },
-      ),
+      accessToken: this.signToken(user.email, {
+        expiresIn: AppConfig.get('auth.jwt.expiresIn'),
+        tokenType: TOKEN_TYPE.GENERAL,
+      }),
     };
   }
 
@@ -318,11 +325,16 @@ export class AuthenticationService {
     }
   }
 
-  signToken(email: string, options?: { expiresIn: string }): string {
+  signToken(
+    email: string,
+    options?: { expiresIn?: string; tokenType?: TOKEN_TYPE },
+  ): string {
+    const secret: string = getSecretByTokenType(options?.tokenType);
     return this.jwtService.sign(
-      { sub: email, tokenId: v4() },
+      { sub: email, tokenId: v4(), tokenType: options?.tokenType },
       {
         expiresIn: options?.expiresIn ?? AppConfig.get('auth.jwt.expiresIn'),
+        secret,
       },
     );
   }

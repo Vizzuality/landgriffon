@@ -9,7 +9,10 @@ import { createUser } from '../../entity-mocks';
 import { User } from 'modules/users/user.entity';
 import * as request from 'supertest';
 
-import { AuthenticationService } from 'modules/authentication/authentication.service';
+import {
+  AuthenticationService,
+  TOKEN_TYPE,
+} from 'modules/authentication/authentication.service';
 import { Test } from '@nestjs/testing';
 import { AppModule } from '../../../src/app.module';
 import { setupTestUser } from '../../utils/userAuth';
@@ -140,6 +143,7 @@ describe('Password recovery tests (e2e)', () => {
       });
       const token: string = authenticationService.signToken(user.email, {
         expiresIn: '1ms',
+        tokenType: TOKEN_TYPE.PASSWORD_RESET,
       });
       await request(testApplication.getHttpServer())
         .post('/api/v1/users/me/password/reset')

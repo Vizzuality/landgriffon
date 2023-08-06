@@ -63,7 +63,18 @@ module "k8s_api" {
       name        = "JWT_SECRET"
       secret_name = "api"
       secret_key  = "JWT_SECRET"
-    }, {
+    },
+    {
+      name        = "JWT_ACCOUNT_ACTIVATION_SECRET"
+      secret_name = "api"
+      secret_key  = "JWT_ACCOUNT_ACTIVATION_SECRET"
+    },
+    {
+      name        = "JWT_PASSWORD_RESET_SECRET"
+      secret_name = "api"
+      secret_key  = "JWT_PASSWORD_RESET_SECRET"
+    },
+    {
       name        = "GMAPS_API_KEY"
       secret_name = "api"
       secret_key  = "GMAPS_API_KEY"

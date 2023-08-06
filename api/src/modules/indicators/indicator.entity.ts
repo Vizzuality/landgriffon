@@ -12,6 +12,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseServiceResource } from 'types/resource.interface';
 import { Unit } from 'modules/units/unit.entity';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { MaterialIndicatorToH3 } from 'modules/materials/material-indicator-to-h3.entity';
 
 export enum INDICATOR_STATUS {
   ACTIVE = 'active',
@@ -90,6 +91,13 @@ export class Indicator extends BaseEntity {
   })
   @JoinColumn()
   h3Grid: H3Data;
+
+  @OneToMany(
+    () => MaterialIndicatorToH3,
+    (miToH3: MaterialIndicatorToH3) => miToH3.indicator,
+    {},
+  )
+  materialIndicatorToH3: MaterialIndicatorToH3[];
 
   /**
    * Defines the calculation dependencies for each indicator. These will be static, and very unlikely to change

@@ -10,17 +10,27 @@ import { BusinessUnitsModule } from 'modules/business-units/business-units.modul
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { MaterialRepository } from 'modules/materials/material.repository';
+import { MaterialIndicatorToH3Service } from 'modules/materials/material-indicator-to-h3.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Material, MaterialToH3]),
+    TypeOrmModule.forFeature([
+      Material,
+      MaterialToH3,
+      MaterialIndicatorToH3Service,
+    ]),
     forwardRef(() => AdminRegionsModule),
     forwardRef(() => BusinessUnitsModule),
     forwardRef(() => SuppliersModule),
     forwardRef(() => SourcingLocationsModule),
   ],
   controllers: [MaterialsController],
-  providers: [MaterialsService, MaterialsToH3sService, MaterialRepository],
+  providers: [
+    MaterialsService,
+    MaterialsToH3sService,
+    MaterialIndicatorToH3Service,
+    MaterialRepository,
+  ],
   exports: [MaterialsService, MaterialsToH3sService, MaterialRepository],
 })
 export class MaterialsModule {}

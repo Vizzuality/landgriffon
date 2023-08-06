@@ -18,7 +18,9 @@
     "signUpIsPublic": true,
     "jwt": {
       "expiresIn": "2h",
-      "secret": null
+      "secret": null,
+      "accountActivationSecret": "mySecretForAccountActivation",
+      "passwordRecoverySecret": "mySecretForPasswordReset"
     },
     "password": {
       "minLength": 6,

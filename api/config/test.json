@@ -27,7 +27,9 @@
     "requireUserAccountActivation": true,
     "jwt": {
       "expiresIn": "1d",
-      "secret": "myVeryBadJWTSecretForTests"
+      "secret": "myVeryBadJWTSecretForTests",
+      "accountActivationSecret": "mySecretForAccountActivation",
+      "passwordRecoverySecret": "mySecretForPasswordReset"
     }
   },
   "geolocation": {

@@ -71,6 +71,23 @@ export class ScenariosService extends AppBaseService<
     return this.scenarioInterventionService.serialize(interventions);
   }
 
+  async updatePublicScenarioOwnership(
+    oldUserId: string,
+    newUserId: string,
+  ): Promise<void> {
+    const publicScenariosOfUser: Scenario[] =
+      await this.scenarioRepository.find({
+        where: { isPublic: true, userId: oldUserId },
+      });
+    if (!publicScenariosOfUser.length) return;
+    const publicScenariosOfUserIds: string[] = publicScenariosOfUser.map(
+      (s: Scenario) => s.id,
+    );
+    await this.scenarioRepository.update(publicScenariosOfUserIds, {
+      userId: newUserId,
+    });
+  }
+
   async clearTable(): Promise<void> {
     await this.scenarioRepository.delete({});
   }
@@ -98,8 +115,8 @@ export class ScenariosService extends AppBaseService<
       query.andWhere(`${this.alias}.userId = :userId`, {
         userId: this.scenarioAccessControl.getUserId(),
       });
-      query.orWhere(`${this.alias}.isPublic = :isPublicValue`, {
-        isPublicValue: true,
+      query.orWhere(`${this.alias}.isPublic = :isPublic`, {
+        isPublic: true,
       });
     }
     return Promise.resolve(query);

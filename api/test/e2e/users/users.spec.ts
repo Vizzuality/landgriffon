@@ -388,7 +388,7 @@ describe('UsersModule (e2e)', () => {
         .expect(HttpStatus.FORBIDDEN);
     });
 
-    test('A user with admin role should be able to delete a user, and all scenarios and interventions of the user should be gone as well', async () => {
+    test('A user with admin role should be able to delete a user, and all private scenarios and interventions of the user should be gone as well', async () => {
       const randomUser = await createUser({ email: 'test1@mail.com' });
       const newAdminUser = await setupTestUser(testApplication, ROLES.ADMIN, {
         email: 'newadmin@test.com',
@@ -396,6 +396,7 @@ describe('UsersModule (e2e)', () => {
       for (const number of [1, 2, 3, 4, 5]) {
         const scenario: Scenario = await createScenario({
           userId: randomUser.id,
+          isPublic: false,
         });
         const scenarioIntervention: ScenarioIntervention =
           await createScenarioIntervention({ scenario });
@@ -409,6 +410,7 @@ describe('UsersModule (e2e)', () => {
 
         await createSourcingRecord({ sourcingLocationId: sourcingLocation.id });
       }
+
       await request(testApplication.getHttpServer())
         .delete(`/api/v1/users/${randomUser.id}`)
         .set('Authorization', `Bearer ${newAdminUser.jwtToken}`);
@@ -427,6 +429,43 @@ describe('UsersModule (e2e)', () => {
       [scenarios, interventions, sourcingLocations, sourcingRecords].forEach(
         (entityArray: any[]) => expect(entityArray).toHaveLength(0),
       );
+    });
+    test('A admin user should be able to delete a user, and all public scenarios should be assigned to the deleting user, and the private scenarios should be gone', async () => {
+      const randomUser = await createUser({ email: 'test2@mail.com' });
+      const newAdminUser = await setupTestUser(testApplication, ROLES.ADMIN, {
+        email: 'newadmin2@test.com',
+      });
+      for (const number of [1, 2, 3, 4, 5]) {
+        const scenario: Scenario = await createScenario({
+          userId: randomUser.id,
+          isPublic: number % 2 === 0,
+        });
+        const scenarioIntervention: ScenarioIntervention =
+          await createScenarioIntervention({ scenario });
+
+        const sourcingLocation: SourcingLocation = await createSourcingLocation(
+          {
+            scenarioInterventionId: scenarioIntervention.id,
+            interventionType: SOURCING_LOCATION_TYPE_BY_INTERVENTION.REPLACING,
+          },
+        );
+
+        await createSourcingRecord({ sourcingLocationId: sourcingLocation.id });
+      }
+
+      await request(testApplication.getHttpServer())
+        .delete(`/api/v1/users/${randomUser.id}`)
+        .set('Authorization', `Bearer ${newAdminUser.jwtToken}`);
+
+      const scenariosOfNewUser = await dataSource
+        .getRepository(Scenario)
+        .find({ where: { userId: newAdminUser.user.id } });
+      const scenariosOfDeletedUser = await dataSource
+        .getRepository(Scenario)
+        .find({ where: { userId: randomUser.id } });
+
+      expect(scenariosOfNewUser).toHaveLength(2);
+      expect(scenariosOfDeletedUser).toHaveLength(0);
     });
   });
 });

@@ -2,7 +2,6 @@ import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { CreateScenarioDto } from 'modules/scenarios/dto/create.scenario.dto';
 import {
   IsBoolean,
-  IsNotEmpty,
   IsOptional,
   IsString,
   IsUUID,
@@ -21,13 +20,13 @@ export class UpdateScenarioDto extends PartialType(CreateScenarioDto) {
   @IsBoolean()
   @IsOptional()
   @ApiPropertyOptional()
-  isPublic: boolean;
+  isPublic?: boolean;
 
   @IsOptional()
   @IsUUID()
   userId?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsUUID()
-  updatedById: string;
+  updatedById?: string;
 }

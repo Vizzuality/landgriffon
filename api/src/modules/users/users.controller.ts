@@ -48,6 +48,7 @@ import { RecoverPasswordDto } from 'modules/authentication/dto/recover-password.
 import { Public } from 'decorators/public.decorator';
 import { ResetPasswordDto } from 'modules/authentication/dto/reset-password.dto';
 import { GetUser } from 'decorators/get-user.decorator';
+import { ScenariosService } from 'modules/scenarios/scenarios.service';
 
 @ApiTags(userResource.className)
 @Controller(`/api/v1/users`)
@@ -56,6 +57,7 @@ import { GetUser } from 'decorators/get-user.decorator';
 export class UsersController {
   constructor(
     public readonly service: UsersService,
+    private readonly scenarioService: ScenariosService,
     private readonly accessControl: AccessControl,
   ) {}
 
@@ -241,7 +243,14 @@ export class UsersController {
   @ApiForbiddenResponse()
   @RequiredRoles(ROLES.ADMIN)
   @Delete(':userId')
-  async deleteUser(@Param('userId') userId: string): Promise<DeleteResult> {
-    return this.service.deleteUser(userId);
+  async deleteUser(
+    @Param('userId') userIdToDelete: string,
+  ): Promise<DeleteResult> {
+    const requestingUserId: string = this.accessControl.getUserId();
+    await this.scenarioService.updatePublicScenarioOwnership(
+      userIdToDelete,
+      requestingUserId,
+    );
+    return this.service.deleteUser(userIdToDelete);
   }
 }

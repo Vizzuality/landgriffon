@@ -366,6 +366,7 @@ async function createSourcingLocation(
   additionalData: Partial<SourcingLocation> = {},
 ): Promise<SourcingLocation> {
   const material: Material = await createMaterial();
+
   const defaultData: DeepPartial<SourcingLocation> = {
     title: 'test sourcing location',
     locationAddressInput: 'pqrst',

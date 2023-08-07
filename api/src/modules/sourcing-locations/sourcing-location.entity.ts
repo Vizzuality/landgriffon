@@ -170,7 +170,7 @@ export class SourcingLocation extends TimestampedBaseEntity {
   t1Supplier: Supplier;
 
   @Index()
-  @Column({ nullable: true })
+  @Column()
   t1SupplierId?: string;
 
   @ManyToOne(
@@ -185,7 +185,7 @@ export class SourcingLocation extends TimestampedBaseEntity {
   producer: Supplier;
 
   @Index()
-  @Column({ nullable: true })
+  @Column()
   producerId?: string;
 
   @ManyToOne(

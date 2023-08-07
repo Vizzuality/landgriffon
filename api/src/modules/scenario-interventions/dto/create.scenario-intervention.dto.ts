@@ -430,22 +430,22 @@ export class CreateScenarioInterventionDtoV2 {
   newIndicatorCoefficients?: IndicatorCoefficientsDtoV2;
 
   @IsUUID()
-  @IsOptional()
-  @ApiPropertyOptional({
+  @IsNotEmpty()
+  @ApiProperty({
     description: `Id of the New Supplier`,
     type: String,
     example: 'bc5e4933-cd9a-4afc-bd53-56941b8adc111',
   })
-  newT1SupplierId?: string;
+  newT1SupplierId!: string;
 
   @IsUUID()
-  @IsOptional()
-  @ApiPropertyOptional({
+  @IsNotEmpty()
+  @ApiProperty({
     description: `Id of the New Producer`,
     type: String,
     example: 'bc5e4933-cd9a-4afc-bd53-56941b8adc222',
   })
-  newProducerId?: string;
+  newProducerId!: string;
 
   @ValidateIf(
     (dto: CreateScenarioInterventionDto) =>

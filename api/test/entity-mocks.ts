@@ -366,24 +366,13 @@ async function createSourcingLocation(
   additionalData: Partial<SourcingLocation> = {},
 ): Promise<SourcingLocation> {
   const material: Material = await createMaterial();
-  const supplier: Supplier = await createSupplier({ name: 'Unknown' });
+
   const defaultData: DeepPartial<SourcingLocation> = {
     title: 'test sourcing location',
     locationAddressInput: 'pqrst',
     locationCountryInput: 'uvwxy',
     materialId: material.id,
-    t1SupplierId: supplier.id,
-    producerId: supplier.id,
   };
-
-  // If t1Supplier or producer objects are provided in additionalData, add their Ids
-  // to the Id properties to override the default ones object
-  if (additionalData.t1Supplier && additionalData.t1Supplier.id) {
-    additionalData.t1SupplierId = additionalData.t1Supplier.id;
-  }
-  if (additionalData.producer && additionalData.producer.id) {
-    additionalData.producerId = additionalData.producer.id;
-  }
 
   const sourcingLocation = SourcingLocation.merge(
     new SourcingLocation(),

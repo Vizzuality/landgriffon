@@ -324,9 +324,9 @@ describe('Sourcing Data import', () => {
     expect(businessUnitsRoots).toHaveLength(1);
 
     const suppliers: Supplier[] = await supplierRepository.find();
-    expect(suppliers).toHaveLength(5);
+    expect(suppliers).toHaveLength(6);
     const suppliersRoots: Supplier[] = await supplierRepository.findRoots();
-    expect(suppliersRoots).toHaveLength(4);
+    expect(suppliersRoots).toHaveLength(5);
 
     const sourcingRecords: SourcingRecord[] =
       await sourcingRecordRepository.find();

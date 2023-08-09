@@ -1,7 +1,7 @@
 # Preprocess datasets for h3_data_importer
 
-This module is the house of all the preprocessing pipelines. Here you can find all what is needed to create the datasets that will be 
-ingested by h3_data_importer. The idea is to divorce the data ingestion from the data preprocessing. This way we can have a more quick and 
+This module is the house of all the preprocessing pipelines. Here you can find all what is needed to create the datasets that will be
+ingested by h3_data_importer. The idea is to divorce the data ingestion from the data preprocessing. This way we can have a more quick and
 efficient data ingestion process. The processed results should be stored in S3 bucked.
 
 ## Usage
@@ -46,3 +46,16 @@ It contains the computation of the mapspam datasets. Just `cd mapspam` and
 ```bash
 make all
 ```
+
+### Natural Crop Conversion
+
+It contains the computation of natural land conversion from the ESRI dataset and the SBTN natural lands .
+
+To run the pipeline, `cd natural_crop_conversion` and
+
+```bash
+make all
+```
+
+Read more about this pipeline in the [natural_crop_conversion/README.md](natural_crop_conversion/README.md) file.
+

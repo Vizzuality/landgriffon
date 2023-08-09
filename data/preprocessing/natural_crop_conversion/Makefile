@@ -1,5 +1,5 @@
 # Variables
-data_dir=data
+data_dir=./data/
 resampling_resolution="0.083333"
 checksums_dir=../../../h3_data_importer/data_checksums
 
@@ -9,6 +9,7 @@ checksums_dir=../../../h3_data_importer/data_checksums
 all: download-natural-crop-conversion resample_natural_crop_conversion upload_results write_checksum
 
 download-natural-crop-conversion:
+	mkdir -p $(data_dir)
 	gsutil -m cp \
 		"gs://landgriffon-gee-bucket/deforestation/natural_crop_conversion_by_human_lu_2022_1000m.tif" \
 		$(data_dir)

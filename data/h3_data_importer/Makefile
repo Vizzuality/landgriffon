@@ -20,6 +20,7 @@ WORKDIR_HDI=data/contextual/hdi
 WORKDIR_DEFORESTATION=data/hansen_loss
 WORKDIR_GHG=data/forest_ghg
 WORKDIR_WOODPULP=data/woodpulp
+WORKING_NATURAL_CROP_CONVERSION=data/natural_crop_conversion
 
 CHECKSUMS_PATH=data_checksums
 
@@ -50,6 +51,7 @@ indicators:
 	make convert-deforestation
 	make convert-forestGHG
 	make convert-satDeforestation
+	make convert-naturalCropConversion
 contextual-layers: convert-hdi-contextual convert-blue-water-contextual
 
 
@@ -220,6 +222,18 @@ download-forestGHG:
 convert-forestGHG: download-forestGHG
 	@echo "Converting forest GHG data..."
 	python raster_folder_to_h3_table.py $(WORKDIR_GHG) h3_grid_ghg_global indicator GHG_LUC_T 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+
+download-naturalCropConversion:
+	mkdir -p $(WORKING_NATURAL_CROP_CONVERSION)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/natural_crop_conversion $(WORKING_NATURAL_CROP_CONVERSION)
+	cd $(WORKING_NATURAL_CROP_CONVERSION) && sha256sum --check ../../$(CHECKSUMS_PATH)/natural_crop_conversion
+
+
+convert-naturalCropConversion: download-naturalCropConversion
+	@echo "Converting natural crop conversion data... "
+	python raster_folder_to_h3_table.py $(WORKING_NATURAL_CROP_CONVERSION) h3_grid_natural_crop_conversion_global indicator NECR 2022 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+
+
 
 ##################################
 #        Satelligence data       #

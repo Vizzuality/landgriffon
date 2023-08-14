@@ -223,11 +223,11 @@ const ScenariosAdminPage: React.FC = () => {
                   data?.map((scenarioData) => {
                     const canDeleteScenario = hasPermission(
                       Permission.CAN_DELETE_SCENARIO,
-                      scenarioData.user.id,
+                      scenarioData.user?.id,
                     );
                     const canEditScenario = hasPermission(
                       Permission.CAN_EDIT_SCENARIO,
-                      scenarioData.user.id,
+                      scenarioData.user?.id,
                     );
                     return (
                       <ScenarioCard

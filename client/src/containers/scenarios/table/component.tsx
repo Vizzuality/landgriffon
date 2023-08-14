@@ -48,7 +48,7 @@ export const ScenarioTable = ({ data, className, onDelete }: ScenarioTableProps)
             cell: ({ row }) => {
               const canEditScenario = hasPermission(
                 Permission.CAN_EDIT_SCENARIO,
-                row.original.user.id,
+                row.original?.user.id,
               );
               return (
                 <ScenarioMakePublic
@@ -69,11 +69,11 @@ export const ScenarioTable = ({ data, className, onDelete }: ScenarioTableProps)
             cell: ({ row }) => {
               const canDeleteScenario = hasPermission(
                 Permission.CAN_DELETE_SCENARIO,
-                row.original.user.id,
+                row.original?.user.id,
               );
               const canEditScenario = hasPermission(
                 Permission.CAN_EDIT_SCENARIO,
-                row.original.user.id,
+                row.original?.user.id,
               );
               return (
                 <ScenarioActions

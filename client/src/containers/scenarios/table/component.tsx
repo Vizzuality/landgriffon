@@ -6,16 +6,14 @@ import ScenarioMakePublic from '../scenario-items/make-public';
 import ScenarioActions from '../scenario-items/actions';
 
 import Table from 'components/table';
+import { usePermissions } from 'hooks/permissions';
+import { Permission } from 'hooks/permissions/enums';
 
 import type { ScenarioTableProps } from '../types';
 
-export const ScenarioTable = ({
-  data,
-  className,
-  canDeleteScenario,
-  canEditScenario,
-  onDelete,
-}: ScenarioTableProps) => {
+export const ScenarioTable = ({ data, className, onDelete }: ScenarioTableProps) => {
+  const { hasPermission } = usePermissions();
+
   return (
     <div className={classNames('w-full h-full', className)}>
       <Table
@@ -42,19 +40,25 @@ export const ScenarioTable = ({
           {
             id: 'ss',
             header: 'Growth Rates',
-            cell: ({ row }) => <ScenarioGrowthRate display="list" />,
+            cell: () => <ScenarioGrowthRate display="list" />,
           },
           {
             id: 'ssss',
             header: 'Access',
-            cell: ({ row }) => (
-              <ScenarioMakePublic
-                id={row.original.id}
-                display="list"
-                isPublic={row.original.isPublic}
-                canEditScenario={canEditScenario}
-              />
-            ),
+            cell: ({ row }) => {
+              const canEditScenario = hasPermission(
+                Permission.CAN_EDIT_SCENARIO,
+                row.original.user.id,
+              );
+              return (
+                <ScenarioMakePublic
+                  id={row.original.id}
+                  display="list"
+                  isPublic={row.original.isPublic}
+                  canEditScenario={canEditScenario}
+                />
+              );
+            },
           },
           {
             id: 'actions',
@@ -62,15 +66,25 @@ export const ScenarioTable = ({
             align: 'right',
             size: 260,
             isSticky: 'right',
-            cell: ({ row }) => (
-              <ScenarioActions
-                canDeleteScenario={canDeleteScenario}
-                canEditScenario={canEditScenario}
-                scenarioId={row.original.id}
-                display="list"
-                setDeleteVisibility={() => onDelete(row.original.id)}
-              />
-            ),
+            cell: ({ row }) => {
+              const canDeleteScenario = hasPermission(
+                Permission.CAN_DELETE_SCENARIO,
+                row.original.user.id,
+              );
+              const canEditScenario = hasPermission(
+                Permission.CAN_EDIT_SCENARIO,
+                row.original.user.id,
+              );
+              return (
+                <ScenarioActions
+                  canDeleteScenario={canDeleteScenario}
+                  canEditScenario={canEditScenario}
+                  scenarioId={row.original.id}
+                  display="list"
+                  setDeleteVisibility={() => onDelete(row.original.id)}
+                />
+              );
+            },
           },
         ]}
       />

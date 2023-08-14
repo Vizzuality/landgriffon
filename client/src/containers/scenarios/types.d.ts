@@ -78,8 +78,6 @@ export type ScenarioInterventionProps = {
 export type ScenarioTableProps = {
   data: Scenario[];
   className?: string;
-  canEditScenario: boolean;
-  canDeleteScenario: boolean;
   onDelete: (id: string) => void;
 };
 

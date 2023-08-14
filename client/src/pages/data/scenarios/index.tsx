@@ -70,9 +70,7 @@ const ScenariosAdminPage: React.FC = () => {
   }, [deleteScenario, scenatioToDelete]);
 
   const { hasPermission } = usePermissions();
-  const canCreateScenario = hasPermission(Permission.CAN_CREATE_SCENARIO, false);
-  const canDeleteScenario = hasPermission(Permission.CAN_DELETE_SCENARIO);
-  const canEditScenario = hasPermission(Permission.CAN_EDIT_SCENARIO);
+  const canCreateScenario = hasPermission(Permission.CAN_CREATE_SCENARIO);
   const handleSort = useCallback(
     ({ value }: Option<string>) => {
       router.replace(
@@ -222,23 +220,28 @@ const ScenariosAdminPage: React.FC = () => {
             (currentDisplay === 'grid' ? (
               <div className={displayClasses[currentDisplay]}>
                 {!isLoading &&
-                  data?.map((scenarioData) => (
-                    <ScenarioCard
-                      key={`scenario-card-${scenarioData.id}`}
-                      data={scenarioData}
-                      canEditScenario={canEditScenario}
-                      canDeleteScenario={canDeleteScenario}
-                      onDelete={onDeleteScenario}
-                    />
-                  ))}
+                  data?.map((scenarioData) => {
+                    const canDeleteScenario = hasPermission(
+                      Permission.CAN_DELETE_SCENARIO,
+                      scenarioData.user.id,
+                    );
+                    const canEditScenario = hasPermission(
+                      Permission.CAN_EDIT_SCENARIO,
+                      scenarioData.user.id,
+                    );
+                    return (
+                      <ScenarioCard
+                        key={`scenario-card-${scenarioData.id}`}
+                        data={scenarioData}
+                        onDelete={onDeleteScenario}
+                        canDeleteScenario={canDeleteScenario}
+                        canEditScenario={canEditScenario}
+                      />
+                    );
+                  })}
               </div>
             ) : (
-              <ScenarioTable
-                data={data}
-                canEditScenario={canEditScenario}
-                canDeleteScenario={canDeleteScenario}
-                onDelete={onDeleteScenario}
-              />
+              <ScenarioTable data={data} onDelete={onDeleteScenario} />
             ))}
         </div>
         <DeleteDialog

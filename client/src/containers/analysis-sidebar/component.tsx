@@ -38,7 +38,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
   const { scenarioId = ACTUAL_DATA.id } = query;
   const { hasPermission } = usePermissions();
 
-  const canCreateScenario = hasPermission(Permission.CAN_CREATE_SCENARIO, false);
+  const canCreateScenario = hasPermission(Permission.CAN_CREATE_SCENARIO);
 
   const { sort, searchTerm } = useAppSelector(scenarios);
   const dispatch = useAppDispatch();

@@ -46,8 +46,8 @@ const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
     [updatedAt],
   );
 
-  const { hasPermission } = usePermissions(scenario?.user?.id);
-  const canEdit = hasPermission(Permission.CAN_EDIT_SCENARIO);
+  const { hasPermission } = usePermissions();
+  const canEdit = hasPermission(Permission.CAN_EDIT_SCENARIO, scenario.user.id);
 
   return (
     <div data-testid={`scenario-item-${scenario.id || 'null'}`}>

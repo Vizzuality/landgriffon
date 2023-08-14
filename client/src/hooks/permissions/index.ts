@@ -4,7 +4,7 @@ import { useProfile } from 'hooks/profile';
 
 import type { Permission } from './enums';
 
-export function usePermissions(creatorId?: string) {
+export function usePermissions() {
   const { data, isLoading } = useProfile();
 
   const roles: RoleName[] = [];
@@ -27,11 +27,11 @@ export function usePermissions(creatorId?: string) {
    * Function to determine if a user is allowed to perform an action.
    * For CREATE actions add param needsCreatorPermission=false, so it will not check the 'creatorId'
    */
-  const hasPermission = (permissionName: Permission, needsCreatorPermission = true) => {
+  const hasPermission = (permissionName: Permission, creatorId?: string) => {
     // The user has permission
     let permission = permissions?.includes(permissionName);
     // The user is creator of the entity and has permission (for delete and update actions)
-    if (needsCreatorPermission) {
+    if (!!creatorId) {
       permission = permission && creatorId === data?.id;
     }
     // Admin always has permission

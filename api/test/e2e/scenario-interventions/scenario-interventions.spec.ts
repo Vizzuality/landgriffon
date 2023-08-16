@@ -73,6 +73,7 @@ import ApplicationManager, {
 } from '../../utils/application-manager';
 import { Test } from '@nestjs/testing';
 import { AppModule } from 'app.module';
+import { ImpactService } from '../../../src/modules/impact/impact.service';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -162,7 +163,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   let sourcingRecordRepository: SourcingRecordRepository;
   let adminRegionRepository: AdminRegionRepository;
   let indicatorRecordRepository: IndicatorRecordRepository;
-  let indicatorRecordsService: IndicatorRecordsService;
+  let impactService: ImpactService;
   let indicatorRepository: IndicatorRepository;
   let geoRegionRepository: GeoRegionRepository;
   let impactCalculatorService: ImpactCalculator;
@@ -201,18 +202,14 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     indicatorRecordRepository = testApplication.get<IndicatorRecordRepository>(
       IndicatorRecordRepository,
     );
+    impactService = testApplication.get<ImpactService>(ImpactService);
 
     indicatorRepository =
       testApplication.get<IndicatorRepository>(IndicatorRepository);
     impactCalculatorService =
       testApplication.get<ImpactCalculator>(ImpactCalculator);
-    indicatorRecordsService = testApplication.get<IndicatorRecordsService>(
-      IndicatorRecordsService,
-    );
 
-    jest
-      .spyOn(indicatorRecordsService, 'updateImpactView')
-      .mockResolvedValue('' as any);
+    jest.spyOn(impactService, 'updateImpactView').mockResolvedValue('' as any);
 
     dataSource = testApplication.get<DataSource>(DataSource);
 

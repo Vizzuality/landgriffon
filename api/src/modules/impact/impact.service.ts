@@ -30,6 +30,8 @@ import {
   ImpactDataTableAuxMap,
 } from 'modules/impact/base-impact.service';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
+import { IMPACT_VIEW_NAME } from 'modules/impact/views/impact.materialized-view.entity';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class ImpactService extends BaseImpactService {
@@ -43,6 +45,7 @@ export class ImpactService extends BaseImpactService {
     protected readonly materialsService: MaterialsService,
     protected readonly sourcingRecordService: SourcingRecordsService,
     protected readonly sourcingLocationsService: SourcingLocationsService,
+    private readonly dataSource: DataSource,
   ) {
     super(
       indicatorService,
@@ -211,6 +214,22 @@ export class ImpactService extends BaseImpactService {
     }
 
     return impactTable;
+  }
+
+  async updateImpactView(): Promise<void> {
+    const result: any = await this.dataSource.query(
+      `SELECT * FROM pg_matviews WHERE matviewname = '${IMPACT_VIEW_NAME}'`,
+    );
+    if (!result[0].ispopulated) {
+      this.logger.warn('Populating Impact View for the first time...');
+      return this.dataSource.query(
+        `REFRESH MATERIALIZED VIEW ${IMPACT_VIEW_NAME} WITH DATA`,
+      );
+    }
+    this.logger.warn('Refreshing Impact View...');
+    return this.dataSource.query(
+      `REFRESH MATERIALIZED VIEW CONCURRENTLY ${IMPACT_VIEW_NAME} WITH DATA`,
+    );
   }
 
   private buildImpactTable(

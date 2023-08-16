@@ -24,6 +24,7 @@ import { IndicatorsModule } from 'modules/indicators/indicators.module';
 import { MulterModule } from '@nestjs/platform-express';
 import * as config from 'config';
 import MulterConfigService from 'modules/import-data/multer-config.service';
+import { ImpactModule } from 'modules/impact/impact.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import MulterConfigService from 'modules/import-data/multer-config.service';
     TasksModule,
     ScenariosModule,
     IndicatorsModule,
+    ImpactModule,
   ],
   providers: [
     MulterConfigService,

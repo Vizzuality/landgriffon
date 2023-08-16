@@ -29,6 +29,7 @@ import { TasksService } from 'modules/tasks/tasks.service';
 import { ScenariosService } from 'modules/scenarios/scenarios.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { Indicator } from 'modules/indicators/indicator.entity';
+import { ImpactService } from 'modules/impact/impact.service';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -77,6 +78,7 @@ export class SourcingDataImportService {
     protected readonly tasksService: TasksService,
     protected readonly scenarioService: ScenariosService,
     protected readonly indicatorService: IndicatorsService,
+    protected readonly impactService: ImpactService,
   ) {}
 
   async importSourcingData(filePath: string, taskId: string): Promise<any> {
@@ -187,7 +189,7 @@ export class SourcingDataImportService {
         );
 
         this.logger.log('Indicator Records generated');
-        await this.indicatorRecordsService.updateImpactView();
+        await this.impactService.updateImpactView();
       } catch (err: any) {
         throw new ServiceUnavailableException(
           'Could not calculate Impact for current data. Please contact with the administrator',

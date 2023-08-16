@@ -30,7 +30,6 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 import { InsertResult } from 'typeorm';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
-import { AccessControl } from 'modules/authorization/access-control.service';
 
 @Injectable()
 export class ScenarioInterventionsService extends AppBaseService<
@@ -51,7 +50,6 @@ export class ScenarioInterventionsService extends AppBaseService<
     protected readonly interventionBuilder: InterventionBuilder,
     protected readonly geoCodingService: GeoCodingAbstractClass,
     protected readonly sourcingLocationsService: SourcingLocationsService,
-    protected readonly accessControl: AccessControl,
   ) {
     super(
       scenarioInterventionRepository,

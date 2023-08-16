@@ -25,13 +25,13 @@ import {
 import { chunk } from 'lodash';
 import * as config from 'config';
 import { IMPACT_VIEW_NAME } from 'modules/impact/views/impact.materialized-view.entity';
-import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
+import { ImpactService } from 'modules/impact/impact.service';
 
 @Injectable()
 export class ScenarioInterventionRepository extends Repository<ScenarioIntervention> {
   constructor(
     private dataSource: DataSource,
-    private indicatorRecordService: IndicatorRecordsService,
+    private impactService: ImpactService,
   ) {
     super(ScenarioIntervention, dataSource.createEntityManager());
   }
@@ -267,7 +267,7 @@ export class ScenarioInterventionRepository extends Repository<ScenarioIntervent
       this.logger.log('Committing transaction...');
       await queryRunner.commitTransaction();
       this.logger.warn(`REFRESHING ${IMPACT_VIEW_NAME} ON THE BACKGROUND...`);
-      this.indicatorRecordService.updateImpactView();
+      this.impactService.updateImpactView();
       this.logger.log('New Intervention Saving Finished');
 
       return intervention;

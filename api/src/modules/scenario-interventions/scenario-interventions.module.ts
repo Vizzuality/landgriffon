@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GeoCodingModule } from 'modules/geo-coding/geo-coding.module';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
-import { ScenarioInterventionsController } from 'modules/scenario-interventions/scenario-interventions.controller';
 import { ScenarioInterventionsService } from 'modules/scenario-interventions/scenario-interventions.service';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-records.module';
@@ -19,10 +18,12 @@ import { ActiveIndicatorValidator } from 'modules/indicators/validators/active-i
 import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
 import { AuthorizationModule } from 'modules/authorization/authorization.module';
 import { MaterialsService } from 'modules/materials/materials.service';
+import { ImpactModule } from 'modules/impact/impact.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ScenarioIntervention]),
+    ImpactModule,
     IndicatorRecordsModule,
     GeoCodingModule,
     SourcingLocationsModule,

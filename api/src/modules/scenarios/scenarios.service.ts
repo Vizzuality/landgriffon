@@ -85,6 +85,7 @@ export class ScenariosService extends AppBaseService<
     );
     await this.scenarioRepository.update(publicScenariosOfUserIds, {
       userId: newUserId,
+      updatedById: newUserId,
     });
   }
 

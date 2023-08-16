@@ -20,6 +20,8 @@ export class PasswordMailService {
     <p><a href="${this.passwordActivationUrl}/${token}">Secure Password Setup Link</a></p>
     <br/>
     <p>This link will take you to our app where you can create your new password. For security reasons, this link will expire after 24 hours.</p>
+    <p>Please remember that a strong password includes a mix of letters, numbers, and special characters. Never share your password with anyone, even if they claim to be from Landgriffon.</p>
+    <p>Our team will never ask you for your password in an email, over the phone, or on any social media platform.</p>
     <p>Thank you for choosing Landgriffon. We are committed to providing you with a secure and seamless experience.</p>
     <br/>
     <p>If you have any questions or need further assistance, please don't hesitate to contact us.</p>

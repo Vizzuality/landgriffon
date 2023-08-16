@@ -53,7 +53,8 @@ describe('Data page - user', () => {
   });
 
   it('not admin user should not be able to upload data source', () => {
-    cy.intercept('/api/v1/users/me', { fixture: 'profiles/no-permissions' });
+    cy.intercept('/api/v1/users/me', { fixture: 'profiles/no-permissions' }).as('user-profile');
+    cy.wait('@user-profile');
     cy.get('[data-testid="upload-data-source-btn"]').should('be.disabled');
   });
 });

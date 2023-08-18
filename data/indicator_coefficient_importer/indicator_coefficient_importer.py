@@ -1,9 +1,9 @@
-import argparse
 import logging
 import os
 from io import StringIO
 from pathlib import Path
 
+import click
 import pandas as pd
 from psycopg2.extensions import connection
 from psycopg2.pool import ThreadedConnectionPool
@@ -21,9 +21,10 @@ postgres_thread_pool = ThreadedConnectionPool(
 )
 
 
-def load_data(filename: Path) -> pd.DataFrame:
-    dtype_mapping = {'hs_2017_code': str}
+def load_data(filename: Path, year: int) -> pd.DataFrame:
+    dtype_mapping = {"hs_2017_code": str}
     df = pd.read_csv(filename, dtype=dtype_mapping)
+    df["year"] = year
     return df
 
 
@@ -49,21 +50,22 @@ def get_material_ids_from_hs_codes(conn, hs_codes: list) -> pd.DataFrame:
         )
 
 
-def copy_from_stringio(conn: connection, df: pd.DataFrame):
+def copy_data_to_table(conn: connection, df: pd.DataFrame, indicator_id: str):
     """
-    Save the dataframe in memory
-    and use copy_from() to copy it to the table
+    Copy data from a string buffer to a database table.
+    It deletes all existing rows for the given indicatorId before inserting the new ones.
     """
     # save dataframe to an in memory buffer
-
 
     buffer = StringIO()
     df.to_csv(buffer, index=False, header=False, na_rep="NULL")
     buffer.seek(0)
     with conn:
         with conn.cursor() as cursor:
-            log.info(f"Deleting records in table indicator_coefficient before importing new data...")
-            cursor.execute(f"delete from indicator_coefficient;")
+            cursor.execute(
+                'delete from indicator_coefficient where "indicatorId" = %s',
+                (indicator_id,),
+            )
             log.info(f"Copying {len(df)} records into indicator_coefficient...")
             cursor.copy_from(
                 buffer,
@@ -75,22 +77,28 @@ def copy_from_stringio(conn: connection, df: pd.DataFrame):
     log.info("Done!")
 
 
-def main(conn: connection, data: pd.DataFrame, indicator_code: str):
-    with conn:  # get all the IDs in their own transaction separated from the insert
+@click.command()
+@click.argument("file", type=click.Path(exists=True, path_type=Path))
+@click.argument("indicator_code", type=str)
+@click.argument("year", type=int)
+def main(file: Path, indicator_code: str, year: int):
+    """Process and ingest csv data with per country data into indicator_coefficient table."""
+    data = load_data(file, year)
+
+    conn = postgres_thread_pool.getconn()
+
+    with conn:
         with conn.cursor() as cursor:
-            # get Unsustainable water use indicator id
             cursor.execute(
                 """select id from indicator where indicator."nameCode" = %s;""",
                 (indicator_code,),
             )
-            # should be UWU_T for unsustainable water
             indicator_id = cursor.fetchone()[0]
         # add admin region ID to dataframe so we can insert all rows at once
         # without having to query for the IDs every time
         admin_region_ids = get_admin_region_ids_from_countries(
             conn, list(data.country.unique())
         )
-
         # same with material ID
         material_ids = get_material_ids_from_hs_codes(
             conn, data.hs_2017_code.astype(str).to_list()
@@ -102,22 +110,9 @@ def main(conn: connection, data: pd.DataFrame, indicator_code: str):
     data_to_insert = data[
         ["value", "year", "adminRegionId", "indicatorId", "materialId"]
     ]
-    # insert all the data!
-    copy_from_stringio(conn, data_to_insert)
+    copy_data_to_table(conn, data_to_insert, indicator_id)
+    postgres_thread_pool.putconn(conn, close=True)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Process and ingest csv data with per country data into indicator_coefficient table."
-    )
-    parser.add_argument("file", help="file path to the csv")
-    parser.add_argument("indicator_code", help="Name code of the indicator")
-    args = parser.parse_args()
-
-    data = load_data(Path(args.file))
-    data["year"] = 2005  # NOTE: year is hardcoded for UWU indicator coefficients!
-    conn = postgres_thread_pool.getconn()
-
-    main(conn, data, args.indicator_code)
-
-    postgres_thread_pool.putconn(conn, close=True)
+    main()

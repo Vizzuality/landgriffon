@@ -28,7 +28,7 @@ WORKDIR /
 RUN mkdir -p data/
 
 COPY ./base_data_importer/ /base_data_importer
-COPY ./data_download/ /data_download
+COPY gadm_importer/ /gadm_importer
 COPY h3_data_importer /h3_data_importer
 COPY indicator_coefficient_importer/ /indicator_coefficient_importer
 COPY ./Makefile ./Makefile

@@ -17,18 +17,18 @@ NC :=\033[0m # No Color
 
 # Starts the API application
 start-api:
-	docker-compose --project-name ${COMPOSE_PROJECT_NAME} up --build api
+	docker compose --project-name ${COMPOSE_PROJECT_NAME} up --build api
 
 # Starts the CLIENT application
 start-client:
-	docker-compose --project-name ${COMPOSE_PROJECT_NAME} up --build client
+	docker compose --project-name ${COMPOSE_PROJECT_NAME} up --build client
 
 # Start all the services.
 start:
-	docker-compose --project-name ${COMPOSE_PROJECT_NAME} up --build
+	docker compose --project-name ${COMPOSE_PROJECT_NAME} up --build
 
 stop:
-	docker-compose $(DOCKER_COMPOSE_FILE) stop
+	docker compose $(DOCKER_COMPOSE_FILE) stop
 
 # Stop all containers and remove the postgresql-api container and the named
 # Docker volume used to persists PostgreSQL data
@@ -41,8 +41,8 @@ stop:
 # any changes here or in `docker-compose.yml` will not get things out of sync.
 # Or add a CI test that could catch this.
 clean-slate: stop
-	docker-compose $(DOCKER_COMPOSE_FILE) down --volumes --remove-orphans
-	docker-compose $(DOCKER_COMPOSE_FILE) rm -f -v
+	docker compose $(DOCKER_COMPOSE_FILE) down --volumes --remove-orphans
+	docker compose $(DOCKER_COMPOSE_FILE) rm -f -v
 	docker system prune --volumes -f
 
 # Runs the test suite of the API application

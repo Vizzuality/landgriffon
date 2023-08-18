@@ -4,7 +4,6 @@
 WORKDIR=gadm
 
 seed-data: import
-	make clean
 
 import: combine-gadm-file
 	@echo "Importing GADM data to database..."
@@ -16,9 +15,8 @@ import: combine-gadm-file
 		$(WORKDIR)/gadm36_levels0-2_simp.shp
 
 # create or update `admin region` and `geo region` entities
-	PGPASSWORD=$$API_POSTGRES_PASSWORD \
-	psql -d $$API_POSTGRES_DATABASE -h $$API_POSTGRES_HOST -p $$API_POSTGRES_PORT -U $$API_POSTGRES_USERNAME \
-		-f populate_admin_regions.sql
+	#PGPASSWORD=$$API_POSTGRES_PASSWORD && \
+#	psql -d $$API_POSTGRES_DATABASE -h $$API_POSTGRES_HOST -p $$API_POSTGRES_PORT -U $$API_POSTGRES_USERNAME -f populate_admin_regions.sql
 
 
 combine-gadm-file: gadm36_0_simp.shp gadm36_1_simp.shp gadm36_2_simp.shp

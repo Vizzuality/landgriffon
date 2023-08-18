@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := seed-data
 .PHONY: import
 
-WORKDIR=gadm
+WORKDIR=data
 
 seed-data: import
 

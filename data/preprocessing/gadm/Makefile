@@ -1,22 +1,23 @@
-.DEFAULT_GOAL := seed-data
-.PHONY: import
+.PHONY: geo_region_table combine-gadm-file
 
-WORKDIR=data
+DATADIR=data  # results of data processing
+WORKDIR=data/tmp  # intermediate files
 
-seed-data: import
+all: geo_region_table
+	make clean-workdir
 
-import: combine-gadm-file
+geo_region_table: combine-gadm-file
 	@echo "Importing GADM data to database..."
-	# load shapefile into new `gadm_levels0_2 table
+	# load shapefile into `gadm_levels0_2 table
 	ogr2ogr -makevalid -update -append \
 		-nln gadm_levels0_2 -nlt PROMOTE_TO_MULTI -geomfield the_geom \
 		-t_srs EPSG:4326 -a_srs EPSG:4326 --config OGR_TRUNCATE YES \
 		-f PostgreSQL PG:"dbname=$$API_POSTGRES_DATABASE host=$$API_POSTGRES_HOST port=$$API_POSTGRES_PORT user=$$API_POSTGRES_USERNAME password=$$API_POSTGRES_PASSWORD" \
-		$(WORKDIR)/gadm36_levels0-2_simp.shp
+		$(DATADIR)/gadm36_levels0-2_simp.shp
 
-# create or update `admin region` and `geo region` entities
-	#PGPASSWORD=$$API_POSTGRES_PASSWORD && \
-#	psql -d $$API_POSTGRES_DATABASE -h $$API_POSTGRES_HOST -p $$API_POSTGRES_PORT -U $$API_POSTGRES_USERNAME -f populate_admin_regions.sql
+	# create or update `geo region` entity table
+	PGPASSWORD=$$API_POSTGRES_PASSWORD && \
+	psql -d $$API_POSTGRES_DATABASE -h $$API_POSTGRES_HOST -p $$API_POSTGRES_PORT -U $$API_POSTGRES_USERNAME -f make_geo_region_table.sql -v file=$(DATADIR)/geo_region.csv
 
 
 combine-gadm-file: gadm36_0_simp.shp gadm36_1_simp.shp gadm36_2_simp.shp
@@ -36,7 +37,7 @@ combine-gadm-file: gadm36_0_simp.shp gadm36_1_simp.shp gadm36_2_simp.shp
 				: null' \
 		-each 'gid_0 = GID_0' \
 		-filter-fields mpath,name,level,gid_0 \
-		-merge-layers force -o $(WORKDIR)/gadm36_levels0-2_simp.shp
+		-merge-layers force -o $(DATADIR)/gadm36_levels0-2_simp.shp
 
 gadm36_%_simp.shp: decompress-gadm
 	@echo "Simplifying $@ ..."
@@ -52,5 +53,5 @@ download-gadm:
 	mkdir -p $(WORKDIR)
 	cd $(WORKDIR) && curl -O https://data.biogeo.ucdavis.edu/data/gadm3.6/gadm36_levels_shp.zip
 
-clean:
+clean-workdir:
 	rm -rf $(WORKDIR)

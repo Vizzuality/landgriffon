@@ -26,7 +26,7 @@ resample_deforestation:
 		--overwrite
 
 resample_carbon:
-	rio calc "(/ (read 1) 20)" --overwrite --not-masked \
+	rio calc "(* (/ (read 1) 20) 3.66)" --overwrite --not-masked \
 		$(data_dir)/carbon_by_human_lu_2020_1000m.tif \
 		$(data_dir)/carbon_by_human_lu_2020_1000m.tif
 	rio warp \

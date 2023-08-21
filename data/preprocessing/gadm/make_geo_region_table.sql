@@ -1,4 +1,3 @@
---
 CREATE EXTENSION IF NOT EXISTS ltree;
 
 -- 1. Upsert from gadm to geo_region converting geometry to H3
@@ -25,3 +24,6 @@ ON CONFLICT (name) DO UPDATE SET
 "theGeom" = EXCLUDED."theGeom";
 
 UPDATE geo_region set "h3FlatLength" = cardinality("h3Flat");
+
+-- write table to file
+COPY geo_region TO :'file' DELIMITER ',' CSV HEADER;

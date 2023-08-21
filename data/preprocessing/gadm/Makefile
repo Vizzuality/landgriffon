@@ -5,8 +5,17 @@ DATADIR=data
 # intermediate files
 WORKDIR=data/tmp
 
-all: geo_region_table
+all: checksum
 	make clean-workdir
+
+checksum: compress-geo_region
+	@echo "Generating checksums..."
+	cd $(DATADIR) && sha256sum geo_region.zip > geo_region.zip.sha256
+	cd $(DATADIR) && sha256sum gadm36_levels0-2_simp.* > gadm36_levels0-2_simp.sha256
+
+compress-geo_region: geo_region_table
+	@echo "Compressing geo_region.csv..."
+	zip -j $(DATADIR)/geo_region.zip $(DATADIR)/geo_region.csv
 
 geo_region_table: combine-gadm-file
 	@echo "Importing GADM data to database..."
@@ -19,8 +28,7 @@ geo_region_table: combine-gadm-file
 
 	# create or update `geo region` entity table
 	PGPASSWORD=$$API_POSTGRES_PASSWORD && \
-	psql -d $$API_POSTGRES_DATABASE -h $$API_POSTGRES_HOST -p $$API_POSTGRES_PORT -U $$API_POSTGRES_USERNAME -f make_geo_region_table.sql -v file=$(DATADIR)/geo_region.csv
-
+	psql -d $$API_POSTGRES_DATABASE -h $$API_POSTGRES_HOST -p $$API_POSTGRES_PORT -U $$API_POSTGRES_USERNAME -f make_geo_region_table.sql
 
 combine-gadm-file: gadm36_0_simp.shp gadm36_1_simp.shp gadm36_2_simp.shp
 	@echo "Combining GADM files..."

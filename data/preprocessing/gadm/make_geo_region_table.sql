@@ -26,4 +26,4 @@ ON CONFLICT (name) DO UPDATE SET
 UPDATE geo_region set "h3FlatLength" = cardinality("h3Flat");
 
 -- write table to file
-COPY geo_region TO :'file' DELIMITER ',' CSV HEADER;
+\copy geo_region TO 'data/geo_region.csv' DELIMITER ',' CSV HEADER;

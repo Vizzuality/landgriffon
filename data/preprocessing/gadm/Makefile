@@ -1,7 +1,9 @@
 .PHONY: geo_region_table combine-gadm-file
 
-DATADIR=data  # results of data processing
-WORKDIR=data/tmp  # intermediate files
+# results of data processing
+DATADIR=data
+# intermediate files
+WORKDIR=data/tmp
 
 all: geo_region_table
 	make clean-workdir

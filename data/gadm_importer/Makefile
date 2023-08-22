@@ -5,7 +5,7 @@ seed-gadm-data: import_gadm import_geo_and_admin_region
 	make clean
 
 geo_region.zip:
-	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/geo_region .
+	aws s3 sync s3://$(S3_BUCKET_NAME)/processed/geo_region .
 	sha256sum --check data_checksums/geo_region.zip.sha256
 
 geo_region.csv: geo_region.zip
@@ -25,7 +25,7 @@ import_gadm: gadm36_levels0-2_simp.shp
 		gadm36_levels0-2_simp.shp
 
 gadm36_levels0-2_simp.shp:
-	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/gadm .
+	aws s3 sync s3://$(S3_BUCKET_NAME)/processed/gadm .
 	sha256sum --check data_checksums/gadm36_levels0-2_simp.sha256
 
 clean:

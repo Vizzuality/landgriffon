@@ -17,7 +17,6 @@ import {
 import {
   Indicator,
   INDICATOR_TYPES,
-  INDICATOR_TYPES_NEW,
 } from 'modules/indicators/indicator.entity';
 
 import {
@@ -25,7 +24,7 @@ import {
   IndicatorRecord,
 } from 'modules/indicator-records/indicator-record.entity';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
-import { IndicatorCoefficientsDtoV2 } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
+import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { Material } from 'modules/materials/material.entity';
@@ -69,7 +68,7 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 import { DataSource } from 'typeorm';
 
-describe('Indicator Records Service', () => {
+describe('Impact Calculator Tests', () => {
   let dataSource: DataSource;
   let indicatorRecordRepository: IndicatorRecordRepository;
   let indicatorRepository: IndicatorRepository;
@@ -153,7 +152,7 @@ describe('Indicator Records Service', () => {
     return clearTestDataFromDatabase(dataSource);
   });
 
-  describe('createIndicatorRecordsBySourcingRecords', () => {
+  describe('Impact createIndicatorRecordsBySourcingRecords', () => {
     // This test doesn't make sense for new methodology, since all the Indicators in DTO are optional
     test.skip('When creating Indicator Records providing indicator coefficients, and one of the indicator coefficients is missing on the DTO, it should throw error', async () => {
       // ARRANGE
@@ -182,10 +181,10 @@ describe('Indicator Records Service', () => {
         sourcingRecord: indicatorPreconditions.sourcingRecord1,
       };
 
-      const providedCoefficients: IndicatorCoefficientsDtoV2 = {
-        [INDICATOR_TYPES_NEW.WATER_USE]: 0.1,
-        [INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE]: 0.4,
-        [INDICATOR_TYPES.DEFORESTATION]: 0.35,
+      const providedCoefficients: IndicatorCoefficientsDto = {
+        [INDICATOR_TYPES.WATER_USE]: 0.1,
+        [INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE]: 0.4,
+        [INDICATOR_TYPES.DEFORESTATION_RISK]: 0.35,
         ...({} as any),
       };
 
@@ -237,14 +236,14 @@ describe('Indicator Records Service', () => {
         sourcingRecord: indicatorPreconditions.sourcingRecord1,
       };
 
-      const providedCoefficients: IndicatorCoefficientsDtoV2 = {
-        [INDICATOR_TYPES_NEW.CLIMATE_RISK]: 0.1,
-        [INDICATOR_TYPES_NEW.DEFORESTATION_RISK]: 0.4,
-        [INDICATOR_TYPES_NEW.LAND_USE]: 0.35,
-        [INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE]: 0.2,
-        [INDICATOR_TYPES_NEW.WATER_USE]: 0.6,
-        [INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION]: 0.3,
-        [INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION_RISK]: 0.5,
+      const providedCoefficients: IndicatorCoefficientsDto = {
+        [INDICATOR_TYPES.CLIMATE_RISK]: 0.1,
+        [INDICATOR_TYPES.DEFORESTATION_RISK]: 0.4,
+        [INDICATOR_TYPES.LAND_USE]: 0.35,
+        [INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE]: 0.2,
+        [INDICATOR_TYPES.WATER_USE]: 0.6,
+        [INDICATOR_TYPES.SATELLIGENCE_DEFORESTATION]: 0.3,
+        [INDICATOR_TYPES.SATELLIGENCE_DEFORESTATION_RISK]: 0.5,
       };
 
       //ACT
@@ -422,7 +421,7 @@ describe('Indicator Records Service', () => {
       //ASSERT
       await expect(testStatement).rejects.toThrow(NotFoundException);
       await expect(testStatement).rejects.toThrow(
-        `H3 Data of required Indicator of type ${INDICATOR_TYPES.DEFORESTATION} missing for ${INDICATOR_TYPES.DEFORESTATION} Indicator Record value calculations`,
+        `H3 Data of required Indicator of type ${INDICATOR_TYPES.DEFORESTATION_RISK} missing for ${INDICATOR_TYPES.DEFORESTATION_RISK} Indicator Record value calculations`,
       );
     });
 
@@ -657,11 +656,11 @@ describe('Indicator Records Service', () => {
       //Prepare Cache Data
       const bioMap: Map<INDICATOR_TYPES, H3Data> = new Map();
       bioMap.set(
-        INDICATOR_TYPES.BIODIVERSITY_LOSS,
+        INDICATOR_TYPES.LAND_USE,
         indicatorPreconditions.biodiversityLoss,
       );
       bioMap.set(
-        INDICATOR_TYPES.DEFORESTATION,
+        INDICATOR_TYPES.DEFORESTATION_RISK,
         indicatorPreconditions.deforestation,
       );
       const materialsMap: Map<MATERIAL_TO_H3_TYPE, H3Data> = new Map();
@@ -670,7 +669,7 @@ describe('Indicator Records Service', () => {
 
       const bioCacheKey: any = generateIndicatorCacheKey(
         indicatorPreconditions.sourcingLocation2.geoRegionId,
-        INDICATOR_TYPES.BIODIVERSITY_LOSS,
+        INDICATOR_TYPES.LAND_USE,
         bioMap,
         materialsMap,
       );
@@ -721,152 +720,152 @@ describe('Indicator Records Service', () => {
 
     test.skip('When creating indicators without provided coefficients and the raws values are not cached, the raw values for the calculations should be cached after the execution', async () => {
       //ARRANGE
-      const indicatorPreconditions = await createPreconditions();
-
-      const sourcingData = {
-        sourcingRecordId: indicatorPreconditions.sourcingRecord2.id,
-        tonnage: indicatorPreconditions.sourcingRecord2.tonnage,
-        geoRegionId: indicatorPreconditions.sourcingLocation2.geoRegionId,
-        adminRegionId: indicatorPreconditions.sourcingLocation2.adminRegionId,
-        materialId: indicatorPreconditions.sourcingLocation2.materialId,
-        year: indicatorPreconditions.sourcingRecord2.year,
-        sourcingRecord: indicatorPreconditions.sourcingRecord2,
-      };
-
-      const h3MaterialHarvest = await h3DataMock(dataSource, {
-        h3TableName: 'fakeMaterialTableHarvest2002',
-        h3ColumnName: 'fakeMaterialColumn2002',
-        additionalH3Data: h3MaterialExampleDataFixture,
-        year: 2002,
-      });
-      const h3MaterialProducer = await h3DataMock(dataSource, {
-        h3TableName: 'fakeMaterialTableProducer2002',
-        h3ColumnName: 'fakeMaterialColumn2002',
-        additionalH3Data: h3MaterialExampleDataFixture,
-        year: 2002,
-      });
-      await createMaterialToH3(
-        indicatorPreconditions.material2.id,
-        h3MaterialProducer.id,
-        MATERIAL_TO_H3_TYPE.PRODUCER,
-      );
-      await createMaterialToH3(
-        indicatorPreconditions.material2.id,
-        h3MaterialHarvest.id,
-        MATERIAL_TO_H3_TYPE.HARVEST,
-      );
-
-      // Prepare cached data
-      const bioMap: Map<INDICATOR_TYPES, H3Data> = new Map();
-      bioMap.set(
-        INDICATOR_TYPES.BIODIVERSITY_LOSS,
-        indicatorPreconditions.biodiversityLoss,
-      );
-      bioMap.set(
-        INDICATOR_TYPES.DEFORESTATION,
-        indicatorPreconditions.deforestation,
-      );
-      const defMap: Map<INDICATOR_TYPES, H3Data> = new Map();
-      defMap.set(
-        INDICATOR_TYPES.DEFORESTATION,
-        indicatorPreconditions.deforestation,
-      );
-      const carbonMap: Map<INDICATOR_TYPES, H3Data> = new Map();
-      carbonMap.set(
-        INDICATOR_TYPES.CARBON_EMISSIONS,
-        indicatorPreconditions.carbonEmissions,
-      );
-      carbonMap.set(
-        INDICATOR_TYPES.DEFORESTATION,
-        indicatorPreconditions.deforestation,
-      );
-      const waterMap: Map<INDICATOR_TYPES, H3Data> = new Map();
-      waterMap.set(
-        INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
-        indicatorPreconditions.waterRisk,
-      );
-
-      const materialsMap: Map<MATERIAL_TO_H3_TYPE, H3Data> = new Map();
-      materialsMap.set(MATERIAL_TO_H3_TYPE.HARVEST, h3MaterialHarvest);
-      materialsMap.set(MATERIAL_TO_H3_TYPE.PRODUCER, h3MaterialProducer);
-
-      //Small "hack" to access the method to simplify part of the cache key
-      const indicatorRecordServiceAny: any = impactCalculator;
-      const generateIndicatorCacheKey: any =
-        indicatorRecordServiceAny.generateIndicatorCalculationCacheKey;
-      const generateMaterialCacheKey: any =
-        indicatorRecordServiceAny.generateMaterialCalculationCacheKey;
-
-      const bioCacheKey: any = generateIndicatorCacheKey(
-        indicatorPreconditions.sourcingLocation2.geoRegionId,
-        INDICATOR_TYPES.BIODIVERSITY_LOSS,
-        bioMap,
-        materialsMap,
-      );
-      const carbonCacheKey: any = generateIndicatorCacheKey(
-        indicatorPreconditions.sourcingLocation2.geoRegionId,
-        INDICATOR_TYPES.CARBON_EMISSIONS,
-        carbonMap,
-        materialsMap,
-      );
-      const defCacheKey: any = generateIndicatorCacheKey(
-        indicatorPreconditions.sourcingLocation2.geoRegionId,
-        INDICATOR_TYPES.DEFORESTATION,
-        defMap,
-        materialsMap,
-      );
-      const waterCacheKey: any = generateIndicatorCacheKey(
-        indicatorPreconditions.sourcingLocation2.geoRegionId,
-        INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
-        waterMap,
-        materialsMap,
-      );
-      const materialHarvestKey: any = generateMaterialCacheKey(
-        indicatorPreconditions.sourcingLocation2.geoRegionId,
-        h3MaterialHarvest,
-      );
-      const materialProdKey: any = generateMaterialCacheKey(
-        indicatorPreconditions.sourcingLocation2.geoRegionId,
-        h3MaterialProducer,
-      );
-
-      //ACT
-      await impactCalculator.createIndicatorRecordsBySourcingRecords(
-        sourcingData,
-      );
-
-      //ASSERT
-
-      await checkCachedData(
-        bioCacheKey,
-        479600.00187158585,
-        CACHED_DATA_TYPE.RAW_INDICATOR_VALUE_GEOREGION,
-      );
-      await checkCachedData(
-        carbonCacheKey,
-        47.96,
-        CACHED_DATA_TYPE.RAW_INDICATOR_VALUE_GEOREGION,
-      );
-      await checkCachedData(
-        defCacheKey,
-        260,
-        CACHED_DATA_TYPE.RAW_INDICATOR_VALUE_GEOREGION,
-      );
-      await checkCachedData(
-        waterCacheKey,
-        0.00015400000363588332,
-        CACHED_DATA_TYPE.RAW_INDICATOR_VALUE_GEOREGION,
-      );
-      await checkCachedData(
-        materialProdKey,
-        1610,
-        CACHED_DATA_TYPE.RAW_MATERIAL_VALUE_GEOREGION,
-      );
-      await checkCachedData(
-        materialHarvestKey,
-        1610,
-        CACHED_DATA_TYPE.RAW_MATERIAL_VALUE_GEOREGION,
-      );
+      // const indicatorPreconditions = await createPreconditions();
+      //
+      // const sourcingData = {
+      //   sourcingRecordId: indicatorPreconditions.sourcingRecord2.id,
+      //   tonnage: indicatorPreconditions.sourcingRecord2.tonnage,
+      //   geoRegionId: indicatorPreconditions.sourcingLocation2.geoRegionId,
+      //   adminRegionId: indicatorPreconditions.sourcingLocation2.adminRegionId,
+      //   materialId: indicatorPreconditions.sourcingLocation2.materialId,
+      //   year: indicatorPreconditions.sourcingRecord2.year,
+      //   sourcingRecord: indicatorPreconditions.sourcingRecord2,
+      // };
+      //
+      // const h3MaterialHarvest = await h3DataMock(dataSource, {
+      //   h3TableName: 'fakeMaterialTableHarvest2002',
+      //   h3ColumnName: 'fakeMaterialColumn2002',
+      //   additionalH3Data: h3MaterialExampleDataFixture,
+      //   year: 2002,
+      // });
+      // const h3MaterialProducer = await h3DataMock(dataSource, {
+      //   h3TableName: 'fakeMaterialTableProducer2002',
+      //   h3ColumnName: 'fakeMaterialColumn2002',
+      //   additionalH3Data: h3MaterialExampleDataFixture,
+      //   year: 2002,
+      // });
+      // await createMaterialToH3(
+      //   indicatorPreconditions.material2.id,
+      //   h3MaterialProducer.id,
+      //   MATERIAL_TO_H3_TYPE.PRODUCER,
+      // );
+      // await createMaterialToH3(
+      //   indicatorPreconditions.material2.id,
+      //   h3MaterialHarvest.id,
+      //   MATERIAL_TO_H3_TYPE.HARVEST,
+      // );
+      //
+      // // Prepare cached data
+      // const bioMap: Map<INDICATOR_TYPES, H3Data> = new Map();
+      // bioMap.set(
+      //   INDICATOR_TYPES.BIODIVERSITY_LOSS,
+      //   indicatorPreconditions.biodiversityLoss,
+      // );
+      // bioMap.set(
+      //   INDICATOR_TYPES.DEFORESTATION,
+      //   indicatorPreconditions.deforestation,
+      // );
+      // const defMap: Map<INDICATOR_TYPES, H3Data> = new Map();
+      // defMap.set(
+      //   INDICATOR_TYPES.DEFORESTATION,
+      //   indicatorPreconditions.deforestation,
+      // );
+      // const carbonMap: Map<INDICATOR_TYPES, H3Data> = new Map();
+      // carbonMap.set(
+      //   INDICATOR_TYPES.CARBON_EMISSIONS,
+      //   indicatorPreconditions.carbonEmissions,
+      // );
+      // carbonMap.set(
+      //   INDICATOR_TYPES.DEFORESTATION,
+      //   indicatorPreconditions.deforestation,
+      // );
+      // const waterMap: Map<INDICATOR_TYPES, H3Data> = new Map();
+      // waterMap.set(
+      //   INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+      //   indicatorPreconditions.waterRisk,
+      // );
+      //
+      // const materialsMap: Map<MATERIAL_TO_H3_TYPE, H3Data> = new Map();
+      // materialsMap.set(MATERIAL_TO_H3_TYPE.HARVEST, h3MaterialHarvest);
+      // materialsMap.set(MATERIAL_TO_H3_TYPE.PRODUCER, h3MaterialProducer);
+      //
+      // //Small "hack" to access the method to simplify part of the cache key
+      // const indicatorRecordServiceAny: any = impactCalculator;
+      // const generateIndicatorCacheKey: any =
+      //   indicatorRecordServiceAny.generateIndicatorCalculationCacheKey;
+      // const generateMaterialCacheKey: any =
+      //   indicatorRecordServiceAny.generateMaterialCalculationCacheKey;
+      //
+      // const bioCacheKey: any = generateIndicatorCacheKey(
+      //   indicatorPreconditions.sourcingLocation2.geoRegionId,
+      //   INDICATOR_TYPES.BIODIVERSITY_LOSS,
+      //   bioMap,
+      //   materialsMap,
+      // );
+      // const carbonCacheKey: any = generateIndicatorCacheKey(
+      //   indicatorPreconditions.sourcingLocation2.geoRegionId,
+      //   INDICATOR_TYPES.CARBON_EMISSIONS,
+      //   carbonMap,
+      //   materialsMap,
+      // );
+      // const defCacheKey: any = generateIndicatorCacheKey(
+      //   indicatorPreconditions.sourcingLocation2.geoRegionId,
+      //   INDICATOR_TYPES.DEFORESTATION,
+      //   defMap,
+      //   materialsMap,
+      // );
+      // const waterCacheKey: any = generateIndicatorCacheKey(
+      //   indicatorPreconditions.sourcingLocation2.geoRegionId,
+      //   INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+      //   waterMap,
+      //   materialsMap,
+      // );
+      // const materialHarvestKey: any = generateMaterialCacheKey(
+      //   indicatorPreconditions.sourcingLocation2.geoRegionId,
+      //   h3MaterialHarvest,
+      // );
+      // const materialProdKey: any = generateMaterialCacheKey(
+      //   indicatorPreconditions.sourcingLocation2.geoRegionId,
+      //   h3MaterialProducer,
+      // );
+      //
+      // //ACT
+      // await impactCalculator.createIndicatorRecordsBySourcingRecords(
+      //   sourcingData,
+      // );
+      //
+      // //ASSERT
+      //
+      // await checkCachedData(
+      //   bioCacheKey,
+      //   479600.00187158585,
+      //   CACHED_DATA_TYPE.RAW_INDICATOR_VALUE_GEOREGION,
+      // );
+      // await checkCachedData(
+      //   carbonCacheKey,
+      //   47.96,
+      //   CACHED_DATA_TYPE.RAW_INDICATOR_VALUE_GEOREGION,
+      // );
+      // await checkCachedData(
+      //   defCacheKey,
+      //   260,
+      //   CACHED_DATA_TYPE.RAW_INDICATOR_VALUE_GEOREGION,
+      // );
+      // await checkCachedData(
+      //   waterCacheKey,
+      //   0.00015400000363588332,
+      //   CACHED_DATA_TYPE.RAW_INDICATOR_VALUE_GEOREGION,
+      // );
+      // await checkCachedData(
+      //   materialProdKey,
+      //   1610,
+      //   CACHED_DATA_TYPE.RAW_MATERIAL_VALUE_GEOREGION,
+      // );
+      // await checkCachedData(
+      //   materialHarvestKey,
+      //   1610,
+      //   CACHED_DATA_TYPE.RAW_MATERIAL_VALUE_GEOREGION,
+      // );
     });
   });
 
@@ -1041,30 +1040,30 @@ describe('Indicator Records Service', () => {
     const h3Data = await createWorldToCalculateIndicatorRecords(dataSource);
 
     const climateRiskIndicator = h3Data.indicators.find(
-      (el: Indicator) => el.nameCode === INDICATOR_TYPES_NEW.CLIMATE_RISK,
+      (el: Indicator) => el.nameCode === INDICATOR_TYPES.CLIMATE_RISK,
     );
     const landUseIndicator = h3Data.indicators.find(
-      (el: Indicator) => el.nameCode === INDICATOR_TYPES_NEW.LAND_USE,
+      (el: Indicator) => el.nameCode === INDICATOR_TYPES.LAND_USE,
     );
 
     const deforestationIndicator = h3Data.indicators.find(
-      (el: Indicator) => el.nameCode === INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
+      (el: Indicator) => el.nameCode === INDICATOR_TYPES.DEFORESTATION_RISK,
     );
 
     const waterUseIndicator = h3Data.indicators.find(
-      (el: Indicator) => el.nameCode === INDICATOR_TYPES_NEW.WATER_USE,
+      (el: Indicator) => el.nameCode === INDICATOR_TYPES.WATER_USE,
     );
     const unsustWaterUseIndicator = h3Data.indicators.find(
       (el: Indicator) =>
-        el.nameCode === INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE,
+        el.nameCode === INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
     );
     const satelligenceDeforestation = h3Data.indicators.find(
       (el: Indicator) =>
-        el.nameCode === INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION,
+        el.nameCode === INDICATOR_TYPES.SATELLIGENCE_DEFORESTATION,
     );
     const satelligenceDeforestationRisk = h3Data.indicators.find(
       (el: Indicator) =>
-        el.nameCode === INDICATOR_TYPES_NEW.SATELLIGENCE_DEFORESTATION_RISK,
+        el.nameCode === INDICATOR_TYPES.SATELLIGENCE_DEFORESTATION_RISK,
     );
     return {
       material1,

@@ -65,8 +65,6 @@ import { dropH3DataMock, h3DataMock } from '../h3-data/mocks/h3-data.mock';
 import { h3MaterialExampleDataFixture } from '../h3-data/mocks/h3-fixtures';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
-
-import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 import { setupTestUser } from '../../utils/userAuth';
 import ApplicationManager, {
   TestApplication,
@@ -1509,15 +1507,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   describe('Scenario Interventions - Only replacing / replaced elements as part of a Intervention', () => {
     let preconditions: ScenarioInterventionPreconditions;
 
-    beforeAll(async () => {
-      jest
-        .spyOn(indicatorRecordRepository, 'getH3SumOverGeoRegionSQL')
-        .mockResolvedValue(1000);
-      jest
-        .spyOn(indicatorRecordRepository, 'getIndicatorRecordRawValue')
-        .mockResolvedValue(1000);
-    });
-
     beforeEach(async () => {
       preconditions = await createInterventionPreconditions(dataSource);
     });
@@ -2369,12 +2358,6 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       'And I GET the new Intervention once its created' +
       'Then the created information should have this information',
     async () => {
-      jest
-        .spyOn(indicatorRecordRepository, 'getH3SumOverGeoRegionSQL')
-        .mockResolvedValue(1000);
-      jest
-        .spyOn(indicatorRecordRepository, 'getIndicatorRecordRawValue')
-        .mockResolvedValue(1000);
       const preconditions = await createInterventionPreconditions(dataSource);
       const geoRegion: GeoRegion = await createGeoRegion();
       await createAdminRegion({

@@ -14,10 +14,7 @@ import {
 } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { AppInfoDTO } from 'dto/info.dto';
 import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
-import {
-  CreateScenarioInterventionDto,
-  CreateScenarioInterventionDtoV2,
-} from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
+import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
 import { UpdateScenarioInterventionDto } from 'modules/scenario-interventions/dto/update.scenario-intervention.dto';
 import {
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
@@ -29,7 +26,6 @@ import { InterventionBuilder } from 'modules/scenario-interventions/services/int
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { InsertResult } from 'typeorm';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
-import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
 
 @Injectable()
 export class ScenarioInterventionsService extends AppBaseService<
@@ -113,16 +109,14 @@ export class ScenarioInterventionsService extends AppBaseService<
   }
 
   async createScenarioIntervention(
-    dto: CreateScenarioInterventionDto | CreateScenarioInterventionDtoV2,
+    dto: CreateScenarioInterventionDto,
   ): Promise<Partial<ScenarioIntervention>> {
     // Validate new location. If it's validated, get the geolocated info. If not, throw an exception
 
     this.logger.log('Creating new Intervention...');
 
     const { adminRegionId, geoRegionId, locationWarning } =
-      await this.validateNewLocation(
-        dto as CreateScenarioInterventionDto & CreateScenarioInterventionDtoV2,
-      );
+      await this.validateNewLocation(dto as CreateScenarioInterventionDto);
     /**
      *  Getting descendants of adminRegions, materials, suppliers adn businessUnits received as filters, if exists
      */
@@ -195,7 +189,7 @@ export class ScenarioInterventionsService extends AppBaseService<
     this.logger.log(`Calculating new Impact for Intervention...`);
     await this.interventionBuilder.calculateNewImpactForNewLocations(
       newLocations,
-      dto.newIndicatorCoefficients as IndicatorCoefficientsDto,
+      dto.newIndicatorCoefficients,
       newIntervention,
     );
 
@@ -359,7 +353,7 @@ export class ScenarioInterventionsService extends AppBaseService<
    */
 
   private async validateNewLocation(
-    dto: CreateScenarioInterventionDto & CreateScenarioInterventionDtoV2,
+    dto: CreateScenarioInterventionDto,
   ): Promise<
     | SourcingLocation
     | {

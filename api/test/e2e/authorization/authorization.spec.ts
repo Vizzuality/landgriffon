@@ -12,7 +12,7 @@ import {
 } from '../../entity-mocks';
 import {
   Indicator,
-  INDICATOR_TYPES,
+  INDICATOR_NAME_CODES,
 } from 'modules/indicators/indicator.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import ApplicationManager, {
@@ -83,7 +83,7 @@ describe('Authorization Test (E2E)', () => {
           .expect(HttpStatus.OK);
 
         const indicator = await createIndicator({
-          nameCode: INDICATOR_TYPES.DEFORESTATION_RISK,
+          nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
         });
 
         await request(testApplication.getHttpServer())
@@ -101,7 +101,7 @@ describe('Authorization Test (E2E)', () => {
           .expect(HttpStatus.FORBIDDEN);
 
         const indicator = await createIndicator({
-          nameCode: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+          nameCode: INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
         });
 
         await request(testApplication.getHttpServer())

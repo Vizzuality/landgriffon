@@ -1,6 +1,7 @@
 import { DataSource } from 'typeorm';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { snakeCase, camelCase } from 'typeorm/util/StringUtils';
+import { INDICATOR_NAME_CODES } from '../../../../src/modules/indicators/indicator.entity';
 
 export const h3DataMock = async (
   dataSource: DataSource,
@@ -58,5 +59,5 @@ export const dropH3DataMock = async (
 export const createRandomNamesForH3TableAndColumns = (): string =>
   (Math.random() + 1).toString(36).substring(2);
 
-export const createRandomIndicatorNameCode = (): string =>
-  `${Math.random() + 1}_${Math.random() + 1}`;
+export const createRandomIndicatorNameCode = (): INDICATOR_NAME_CODES =>
+  `${Math.random() + 1}_${Math.random() + 1}` as INDICATOR_NAME_CODES;

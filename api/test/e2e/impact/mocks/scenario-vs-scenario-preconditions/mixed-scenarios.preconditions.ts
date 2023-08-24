@@ -27,7 +27,7 @@ import {
   createSupplier,
   createUnit,
 } from '../../../../entity-mocks';
-import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
+import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
 
 export async function createMixedScenariosPreconditions(): Promise<{
   indicator: Indicator;
@@ -41,7 +41,7 @@ export async function createMixedScenariosPreconditions(): Promise<{
   const indicator: Indicator = await createIndicator({
     name: 'Deforestation',
     unit,
-    nameCode: INDICATOR_TYPES.DEFORESTATION,
+    nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
   });
 
   const textile: Material = await createMaterial({ name: 'Textile' });

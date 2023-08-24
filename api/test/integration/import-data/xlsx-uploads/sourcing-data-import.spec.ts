@@ -50,7 +50,7 @@ import { createWorldToCalculateIndicatorRecords } from '../../../utils/indicator
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { Material, MATERIALS_STATUS } from 'modules/materials/material.entity';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
-import { SourcingRecordsWithIndicatorRawDataDtoV2 } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
+import { SourcingRecordsWithIndicatorRawData } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 import { DataSource } from 'typeorm';
 import { TasksRepository } from 'modules/tasks/tasks.repository';
@@ -443,8 +443,8 @@ describe('Sourcing Data import', () => {
       tonnage: 500,
     });
 
-    const indicatorRawDataForImport: SourcingRecordsWithIndicatorRawDataDtoV2[] =
-      await impactCalculatorService.getIndicatorRawDataForAllSourcingRecordsV2(
+    const indicatorRawDataForImport: SourcingRecordsWithIndicatorRawData[] =
+      await impactCalculatorService.getImpactRawDataForAllSourcingRecords(
         indicatorPreconditions.indicators,
       );
 

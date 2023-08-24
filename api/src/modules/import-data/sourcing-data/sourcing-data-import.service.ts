@@ -185,11 +185,11 @@ export class SourcingDataImportService {
       // TODO: Current approach calculates Impact for all Sourcing Records present in the DB
       //       Getting H3 data for calculations is done within DB so we need to improve the error handling
       //       TBD: What to do when there is no H3 for a Material
+
       try {
         await this.impactCalculator.calculateImpactForAllSourcingRecords(
           activeIndicators,
         );
-
         this.logger.log('Indicator Records generated');
         await this.impactService.updateImpactView();
       } catch (err: any) {

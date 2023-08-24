@@ -8,7 +8,7 @@ import { createH3Data, createIndicator } from '../entity-mocks';
 import { h3IndicatorExampleDataFixture } from '../e2e/h3-data/mocks/h3-fixtures';
 import {
   Indicator,
-  INDICATOR_TYPES_NEW,
+  INDICATOR_TYPES,
 } from 'modules/indicators/indicator.entity';
 import { DataSource } from 'typeorm';
 
@@ -18,24 +18,24 @@ export const createWorldToCalculateIndicatorRecords = async (
   // Creating Indicators:
   const climateRisk: Indicator = await createIndicator({
     name: 'climate risk',
-    nameCode: INDICATOR_TYPES_NEW.CLIMATE_RISK,
+    nameCode: INDICATOR_TYPES.CLIMATE_RISK,
   });
   const waterUse: Indicator = await createIndicator({
     name: 'water use',
-    nameCode: INDICATOR_TYPES_NEW.WATER_USE,
+    nameCode: INDICATOR_TYPES.WATER_USE,
   });
   const unsustainableWaterUse: Indicator = await createIndicator({
     name: 'unsust water use',
-    nameCode: INDICATOR_TYPES_NEW.UNSUSTAINABLE_WATER_USE,
+    nameCode: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
   });
   const deforestation: Indicator = await createIndicator({
     name: 'def risk',
-    nameCode: INDICATOR_TYPES_NEW.DEFORESTATION_RISK,
+    nameCode: INDICATOR_TYPES.DEFORESTATION_RISK,
   });
 
   const landUse: Indicator = await createIndicator({
     name: 'land use',
-    nameCode: INDICATOR_TYPES_NEW.LAND_USE,
+    nameCode: INDICATOR_TYPES.LAND_USE,
   });
 
   // Creating tables with h3Data for the new indicators

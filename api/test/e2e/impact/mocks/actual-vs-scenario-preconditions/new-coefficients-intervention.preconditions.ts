@@ -47,7 +47,7 @@ export async function createNewCoefficientsInterventionPreconditions(
   const indicator: Indicator = await createIndicator({
     name: 'Deforestation',
     unit,
-    nameCode: INDICATOR_TYPES.DEFORESTATION,
+    nameCode: INDICATOR_TYPES.DEFORESTATION_RISK,
   });
 
   // Creating Materials

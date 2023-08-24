@@ -13,11 +13,7 @@ import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.se
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { NewMaterialIntervention } from 'modules/scenario-interventions/strategies/new-material.intervention.strategy';
-import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
-import {
-  IndicatorCoefficientsDto,
-  IndicatorCoefficientsDtoV2,
-} from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
+import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
 import { NewSupplierLocationIntervention } from 'modules/scenario-interventions/strategies/new-supplier-location.intervention.strategy';
 import { ChangeProductionEfficiencyIntervention } from 'modules/scenario-interventions/strategies/change-production-efficiency.intervention.strategy';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
@@ -35,7 +31,6 @@ export class InterventionBuilder {
     protected readonly adminRegionService: AdminRegionsService,
     protected readonly suppliersService: SuppliersService,
     protected readonly newMaterialIntervention: NewMaterialIntervention,
-    protected readonly indicatorRecordService: IndicatorRecordsService,
     protected readonly newSupplierLocationIntervention: NewSupplierLocationIntervention,
     protected readonly changeProductionEfficiencyIntervention: ChangeProductionEfficiencyIntervention,
     protected readonly impactCalculator: ImpactCalculator,
@@ -207,7 +202,7 @@ export class InterventionBuilder {
         sourcingRecord.indicatorRecords =
           await this.impactCalculator.createIndicatorRecordsBySourcingRecords(
             sourcingData,
-            newIndicatorCoefficients as unknown as IndicatorCoefficientsDtoV2,
+            newIndicatorCoefficients as unknown as IndicatorCoefficientsDto,
           );
       }
     }

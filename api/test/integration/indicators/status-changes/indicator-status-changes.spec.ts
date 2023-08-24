@@ -2,7 +2,7 @@ import { clearTestDataFromDatabase } from '../../../utils/database-test-helper';
 import {
   Indicator,
   INDICATOR_STATUS,
-  INDICATOR_TYPES_NEW,
+  INDICATOR_TYPES,
 } from 'modules/indicators/indicator.entity';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { createIndicator } from '../../../entity-mocks';
@@ -36,7 +36,7 @@ describe('Indicators - Status (Integration Tests', () => {
   afterAll(() => testApplication.close());
 
   test('When I provide some NameCodes to activate Indicators, Indicators matching these nameCode should be activated', async () => {
-    const nameCodeArray: string[] = Object.values(INDICATOR_TYPES_NEW);
+    const nameCodeArray: string[] = Object.values(INDICATOR_TYPES);
     for (const nameCode of nameCodeArray) {
       await createIndicator({
         nameCode,
@@ -83,7 +83,7 @@ describe('Indicators - Status (Integration Tests', () => {
 
     try {
       await indicatorService.activateIndicators(
-        Object.values(INDICATOR_TYPES_NEW).map(
+        Object.values(INDICATOR_TYPES).map(
           (n: string) => ({ nameCode: n } as CreateIndicatorDto),
         ),
       );
@@ -94,7 +94,7 @@ describe('Indicators - Status (Integration Tests', () => {
     }
   });
   test('When there are some Indicators with status active in the DB, Then I should be able to set them Inactive ', async () => {
-    const nameCodeArray: string[] = Object.values(INDICATOR_TYPES_NEW);
+    const nameCodeArray: string[] = Object.values(INDICATOR_TYPES);
     for (const nameCode of nameCodeArray) {
       await createIndicator({
         nameCode,

@@ -9,10 +9,10 @@ import ApplicationManager, {
 } from '../../utils/application-manager';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 import { DataSource } from 'typeorm';
-import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { RELATIVE_UNIT_MAP_RESPONSE } from 'modules/h3-data/h3-data-map.service';
 import { H3IndexValueData } from '../../../src/modules/h3-data/h3-data.entity';
+import { ImpactService } from '../../../src/modules/impact/impact.service';
 
 /**
  * Tests for the h3 impact map.
@@ -28,13 +28,12 @@ describe('H3 Data Module (e2e) - Impact map', () => {
     testApplication = await ApplicationManager.init();
 
     dataSource = testApplication.get<DataSource>(DataSource);
-    const indicatorRecordsService =
-      testApplication.get<IndicatorRecordsService>(IndicatorRecordsService);
+    const impactService = testApplication.get<ImpactService>(ImpactService);
 
     ({ jwtToken } = await setupTestUser(testApplication));
 
     impactMapMockData = await createImpactMapMockData(dataSource);
-    await indicatorRecordsService.updateImpactView();
+    await impactService.updateImpactView();
   });
 
   afterAll(async () => {

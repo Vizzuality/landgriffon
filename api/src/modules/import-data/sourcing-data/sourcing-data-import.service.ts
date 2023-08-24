@@ -30,6 +30,7 @@ import { ScenariosService } from 'modules/scenarios/scenarios.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { ImpactService } from 'modules/impact/impact.service';
+import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -74,11 +75,12 @@ export class SourcingDataImportService {
     protected readonly fileService: FileService<SourcingRecordsSheets>,
     protected readonly dtoProcessor: SourcingRecordsDtoProcessorService,
     protected readonly geoCodingService: GeoCodingAbstractClass,
-    protected readonly indicatorRecordsService: IndicatorRecordsService,
     protected readonly tasksService: TasksService,
     protected readonly scenarioService: ScenariosService,
     protected readonly indicatorService: IndicatorsService,
+    protected readonly indicatorRecordService: IndicatorRecordsService,
     protected readonly impactService: ImpactService,
+    protected readonly impactCalculator: ImpactCalculator,
   ) {}
 
   async importSourcingData(filePath: string, taskId: string): Promise<any> {
@@ -184,7 +186,7 @@ export class SourcingDataImportService {
       //       Getting H3 data for calculations is done within DB so we need to improve the error handling
       //       TBD: What to do when there is no H3 for a Material
       try {
-        await this.indicatorRecordsService.calculateImpactWithNewMethodology(
+        await this.impactCalculator.calculateImpactForAllSourcingRecords(
           activeIndicators,
         );
 
@@ -245,7 +247,7 @@ export class SourcingDataImportService {
       await this.indicatorService.deactivateAllIndicators();
       await this.materialService.deactivateAllMaterials();
       await this.scenarioService.clearTable();
-      await this.indicatorRecordsService.clearTable();
+      await this.indicatorRecordService.clearTable();
       await this.businessUnitService.clearTable();
       await this.supplierService.clearTable();
       await this.sourcingLocationService.clearTable();

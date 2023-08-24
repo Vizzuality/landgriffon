@@ -16,17 +16,14 @@ import {
 } from 'class-validator';
 import { SCENARIO_INTERVENTION_TYPE } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
-import {
-  IndicatorCoefficientsDto,
-  IndicatorCoefficientsDtoV2,
-} from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
+import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
 import { Type } from 'class-transformer';
 import { InterventionLocationAddressInputValidator } from 'modules/scenario-interventions/dto/custom-validators/address-input.custom.validator';
 import { InterventionLocationLatitudeInputValidator } from 'modules/scenario-interventions/dto/custom-validators/latitude-input.custom.validator';
 import { InterventionLocationLongitudeInputValidator } from 'modules/scenario-interventions/dto/custom-validators/longitude-input.custom.validator';
 import { ActiveIndicatorValidator } from 'modules/indicators/validators/active-indicator.validator';
 
-export class CreateScenarioInterventionDto {
+export class CreateScenarioInterventionDto_OLD {
   @IsString()
   @IsOptional()
   @MinLength(2)
@@ -300,7 +297,7 @@ export class CreateScenarioInterventionDto {
  * @description V2 DTO with updated IndicatorCoefficient DTO. Delete Old one as soon as this is validated
  */
 
-export class CreateScenarioInterventionDtoV2 {
+export class CreateScenarioInterventionDto {
   @IsString()
   @IsOptional()
   @MinLength(2)
@@ -418,7 +415,7 @@ export class CreateScenarioInterventionDtoV2 {
 
   @IsOptional()
   @ApiPropertyOptional({
-    type: () => IndicatorCoefficientsDtoV2,
+    type: () => IndicatorCoefficientsDto,
   })
   @ValidateIf(
     (dto: CreateScenarioInterventionDto) =>
@@ -426,8 +423,8 @@ export class CreateScenarioInterventionDtoV2 {
   )
   @Validate(ActiveIndicatorValidator)
   @ValidateNested()
-  @Type(() => IndicatorCoefficientsDtoV2)
-  newIndicatorCoefficients?: IndicatorCoefficientsDtoV2;
+  @Type(() => IndicatorCoefficientsDto)
+  newIndicatorCoefficients?: IndicatorCoefficientsDto;
 
   @IsUUID()
   @IsOptional()
@@ -492,7 +489,7 @@ export class CreateScenarioInterventionDtoV2 {
     example: 'Murcia',
   })
   @ValidateIf(
-    (dto: CreateScenarioInterventionDtoV2) =>
+    (dto: CreateScenarioInterventionDto) =>
       dto.type !== SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY &&
       dto.newLocationType ===
         LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION,

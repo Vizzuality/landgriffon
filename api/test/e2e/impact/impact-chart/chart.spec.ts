@@ -15,7 +15,7 @@ import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { Material } from 'modules/materials/material.entity';
 import {
   Indicator,
-  INDICATOR_TYPES,
+  INDICATOR_NAME_CODES,
 } from 'modules/indicators/indicator.entity';
 import { Unit } from 'modules/units/unit.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
@@ -152,13 +152,13 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
     const indicator: Indicator = await createIndicator({
       name: 'Fake Indicator',
       unit,
-      nameCode: INDICATOR_TYPES.DEFORESTATION_RISK,
+      nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
     });
 
     const indicator2: Indicator = await createIndicator({
       name: 'Fake Indicator 2',
       unit,
-      nameCode: INDICATOR_TYPES.CLIMATE_RISK,
+      nameCode: INDICATOR_NAME_CODES.CLIMATE_RISK,
     });
 
     const businessUnit: BusinessUnit = await createBusinessUnit({
@@ -359,7 +359,7 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
     const indicator: Indicator = await createIndicator({
       name: 'Fake Indicator',
       unit,
-      nameCode: INDICATOR_TYPES.DEFORESTATION_RISK,
+      nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
     });
 
     const businessUnit: BusinessUnit = await createBusinessUnit({

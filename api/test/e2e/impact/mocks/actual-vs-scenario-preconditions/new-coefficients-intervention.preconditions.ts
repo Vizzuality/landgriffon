@@ -25,7 +25,7 @@ import {
   createSupplier,
   createUnit,
 } from '../../../../entity-mocks';
-import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
+import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 
 export async function createNewCoefficientsInterventionPreconditions(
@@ -47,7 +47,7 @@ export async function createNewCoefficientsInterventionPreconditions(
   const indicator: Indicator = await createIndicator({
     name: 'Deforestation',
     unit,
-    nameCode: INDICATOR_TYPES.DEFORESTATION_RISK,
+    nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
   });
 
   // Creating Materials

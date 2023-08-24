@@ -8,7 +8,10 @@ import { Material, MATERIALS_STATUS } from 'modules/materials/material.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
-import { Indicator } from 'modules/indicators/indicator.entity';
+import {
+  Indicator,
+  INDICATOR_NAME_CODES,
+} from 'modules/indicators/indicator.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { Unit } from 'modules/units/unit.entity';
@@ -426,7 +429,9 @@ async function createTarget(
 ): Promise<Target> {
   const indicator: Indicator = await createIndicator({
     name: (Math.random() + 1).toString(30).substring(6),
-    nameCode: (Math.random() + 1).toString(30).substring(6),
+    nameCode: (Math.random() + 1)
+      .toString(30)
+      .substring(6) as INDICATOR_NAME_CODES,
   });
   const defaultData: DeepPartial<Target> = {
     baseLineYear: 2020,

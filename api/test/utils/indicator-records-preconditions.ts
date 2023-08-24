@@ -8,7 +8,7 @@ import { createH3Data, createIndicator } from '../entity-mocks';
 import { h3IndicatorExampleDataFixture } from '../e2e/h3-data/mocks/h3-fixtures';
 import {
   Indicator,
-  INDICATOR_TYPES,
+  INDICATOR_NAME_CODES,
 } from 'modules/indicators/indicator.entity';
 import { DataSource } from 'typeorm';
 
@@ -18,24 +18,24 @@ export const createWorldToCalculateIndicatorRecords = async (
   // Creating Indicators:
   const climateRisk: Indicator = await createIndicator({
     name: 'climate risk',
-    nameCode: INDICATOR_TYPES.CLIMATE_RISK,
+    nameCode: INDICATOR_NAME_CODES.CLIMATE_RISK,
   });
   const waterUse: Indicator = await createIndicator({
     name: 'water use',
-    nameCode: INDICATOR_TYPES.WATER_USE,
+    nameCode: INDICATOR_NAME_CODES.WATER_USE,
   });
   const unsustainableWaterUse: Indicator = await createIndicator({
     name: 'unsust water use',
-    nameCode: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+    nameCode: INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
   });
   const deforestation: Indicator = await createIndicator({
     name: 'def risk',
-    nameCode: INDICATOR_TYPES.DEFORESTATION_RISK,
+    nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
   });
 
   const landUse: Indicator = await createIndicator({
     name: 'land use',
-    nameCode: INDICATOR_TYPES.LAND_USE,
+    nameCode: INDICATOR_NAME_CODES.LAND_USE,
   });
 
   // Creating tables with h3Data for the new indicators
@@ -43,18 +43,22 @@ export const createWorldToCalculateIndicatorRecords = async (
   const croplandAreaH3Data = await createH3Data({
     h3columnName: 'spam2010V2R0GlobalHAllA',
     h3tableName: 'h3_grid_spam2010v2r0_global_ha',
+    indicatorId: climateRisk.id,
   });
   const weightedCarbonH3Data = await createH3Data({
     h3columnName: 'forestGhgBuffered2021',
     h3tableName: 'h3_grid_ghg_global',
+    indicatorId: climateRisk.id,
   });
   const weightedDeforestationH3Data = await createH3Data({
     h3columnName: 'hansenLossBuffered2021',
     h3tableName: 'h3_grid_deforestation_global',
+    indicatorId: deforestation.id,
   });
   const waterStressH3Data = await createH3Data({
     h3columnName: 'bwsCat',
     h3tableName: 'h3_grid_aqueduct_global',
+    indicatorId: unsustainableWaterUse.id,
   });
 
   for await (const H3Data of [

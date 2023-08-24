@@ -19,12 +19,14 @@ export enum INDICATOR_STATUS {
   DELETED = 'deleted',
 }
 
-export enum INDICATOR_TYPES {
+export enum INDICATOR_NAME_CODES {
   LAND_USE = 'LI',
   DEFORESTATION_RISK = 'DF_LUC_T',
   CLIMATE_RISK = 'GHG_LUC_T',
   WATER_USE = 'UWU_T',
   UNSUSTAINABLE_WATER_USE = 'UWUSR_T',
+  NATURAL_ECOSYSTEM_CONVERSION_RISK = 'NECR',
+  WATER_QUALITY = 'WQ',
   SATELLIGENCE_DEFORESTATION = 'SAT_DF',
   SATELLIGENCE_DEFORESTATION_RISK = 'SAT_DF_R',
 }
@@ -53,7 +55,7 @@ export class Indicator extends BaseEntity {
   shortName?: string;
 
   @Column({ type: 'text', nullable: false, unique: true })
-  nameCode: string;
+  nameCode: INDICATOR_NAME_CODES;
 
   @Column({ type: 'text', nullable: true })
   @ApiPropertyOptional()

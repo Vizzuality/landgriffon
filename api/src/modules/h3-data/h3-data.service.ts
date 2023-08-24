@@ -4,7 +4,7 @@ import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { UnitConversionsService } from 'modules/unit-conversions/unit-conversions.service';
-import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
+import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import { H3DataYearsService } from 'modules/h3-data/services/h3-data-years.service';
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
@@ -107,20 +107,20 @@ export class H3DataService {
   }
 
   getIndicatorH3sByTypeAndClosestYear(
-    indicatorTypes: INDICATOR_TYPES[],
+    indicatorTypes: INDICATOR_NAME_CODES[],
     year: number,
-  ): Promise<Map<INDICATOR_TYPES, H3Data>> {
+  ): Promise<Map<INDICATOR_NAME_CODES, H3Data>> {
     return indicatorTypes.reduce(
       async (
-        previousValue: Promise<Map<INDICATOR_TYPES, H3Data>>,
-        currentValue: INDICATOR_TYPES,
+        previousValue: Promise<Map<INDICATOR_NAME_CODES, H3Data>>,
+        currentValue: INDICATOR_NAME_CODES,
       ) => {
         const h3data: H3Data | undefined =
           await this.h3DataRepository.getIndicatorH3ByTypeAndClosestYear(
             currentValue,
             year,
           );
-        const map: Map<INDICATOR_TYPES, H3Data> = await previousValue;
+        const map: Map<INDICATOR_NAME_CODES, H3Data> = await previousValue;
 
         if (h3data) {
           map.set(currentValue, h3data);

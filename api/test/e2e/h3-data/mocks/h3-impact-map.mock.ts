@@ -2,6 +2,7 @@ import { Unit } from 'modules/units/unit.entity';
 import { UnitConversion } from 'modules/unit-conversions/unit-conversion.entity';
 import {
   Indicator,
+  INDICATOR_NAME_CODES,
   INDICATOR_STATUS,
 } from 'modules/indicators/indicator.entity';
 import { h3DataMock } from './h3-data.mock';
@@ -81,14 +82,14 @@ export const createImpactMapMockData = async (
   const indicator: Indicator = new Indicator();
   indicator.name = 'test indicator';
   indicator.unit = unit;
-  indicator.nameCode = 'UWU_T';
+  indicator.nameCode = 'UWU_T' as INDICATOR_NAME_CODES;
   await indicator.save();
 
   const inactiveIndicator: Indicator = new Indicator();
   inactiveIndicator.name = 'Inactive Indicator';
   inactiveIndicator.unit = unit;
   inactiveIndicator.status = INDICATOR_STATUS.INACTIVE;
-  inactiveIndicator.nameCode = 'INA_IN';
+  inactiveIndicator.nameCode = 'INA_IN' as INDICATOR_NAME_CODES;
   await inactiveIndicator.save();
 
   const harvestH3Data = await h3DataMock(dataSource, {

@@ -15,7 +15,7 @@ import {
 import { Unit } from 'modules/units/unit.entity';
 import {
   Indicator,
-  INDICATOR_TYPES,
+  INDICATOR_NAME_CODES,
 } from 'modules/indicators/indicator.entity';
 import { Material } from 'modules/materials/material.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
@@ -41,7 +41,7 @@ export async function createImpactTableSortingPreconditions(
   const indicator: Indicator = await createIndicator({
     name: 'Fake Indicator',
     unit,
-    nameCode: INDICATOR_TYPES.DEFORESTATION_RISK,
+    nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
   });
 
   const parentMaterial1 = await createMaterial({

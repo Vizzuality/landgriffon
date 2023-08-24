@@ -9,7 +9,7 @@ import { createNewSupplierInterventionPreconditions } from './new-supplier-inter
 import { createNewMaterialInterventionPreconditions } from './new-material-intervention.preconditions';
 import {
   Indicator,
-  INDICATOR_TYPES,
+  INDICATOR_NAME_CODES,
 } from 'modules/indicators/indicator.entity';
 import { Unit } from 'modules/units/unit.entity';
 import { Material } from 'modules/materials/material.entity';
@@ -30,7 +30,7 @@ export async function createTwoScenariosPreconditions(): Promise<{
     name: 'Deforestation',
     shortName: 'Deforestation',
     unit,
-    nameCode: INDICATOR_TYPES.DEFORESTATION,
+    nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
   });
 
   const textile: Material = await createMaterial({ name: 'Textile' });

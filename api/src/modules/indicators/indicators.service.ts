@@ -83,7 +83,7 @@ export class IndicatorsService extends AppBaseService<
 
     const deforestationIndicator: Indicator | null =
       await this.indicatorRepository.findOne({
-        where: { nameCode: INDICATOR_TYPES.DEFORESTATION },
+        where: { nameCode: INDICATOR_TYPES.DEFORESTATION_RISK },
       });
     if (!deforestationIndicator)
       throw new NotFoundException(

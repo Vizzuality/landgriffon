@@ -152,13 +152,13 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
     const indicator: Indicator = await createIndicator({
       name: 'Fake Indicator',
       unit,
-      nameCode: INDICATOR_TYPES.DEFORESTATION,
+      nameCode: INDICATOR_TYPES.DEFORESTATION_RISK,
     });
 
     const indicator2: Indicator = await createIndicator({
       name: 'Fake Indicator 2',
       unit,
-      nameCode: INDICATOR_TYPES.CARBON_EMISSIONS,
+      nameCode: INDICATOR_TYPES.CLIMATE_RISK,
     });
 
     const businessUnit: BusinessUnit = await createBusinessUnit({
@@ -359,7 +359,7 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
     const indicator: Indicator = await createIndicator({
       name: 'Fake Indicator',
       unit,
-      nameCode: INDICATOR_TYPES.DEFORESTATION,
+      nameCode: INDICATOR_TYPES.DEFORESTATION_RISK,
     });
 
     const businessUnit: BusinessUnit = await createBusinessUnit({

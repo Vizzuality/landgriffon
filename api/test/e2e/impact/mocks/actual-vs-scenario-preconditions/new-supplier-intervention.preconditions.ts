@@ -48,7 +48,7 @@ export async function createNewSupplierInterventionPreconditions(
     : await createIndicator({
         name: 'Deforestation',
         unit,
-        nameCode: INDICATOR_TYPES.DEFORESTATION,
+        nameCode: INDICATOR_TYPES.DEFORESTATION_RISK,
       });
 
   const textile: Material = customMaterials

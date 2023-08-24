@@ -42,7 +42,7 @@ export async function createSameMaterialScenariosPreconditions(): Promise<{
   const indicator: Indicator = await createIndicator({
     name: 'Deforestation',
     unit,
-    nameCode: INDICATOR_TYPES.DEFORESTATION,
+    nameCode: INDICATOR_TYPES.DEFORESTATION_RISK,
   });
 
   const textile: Material = await createMaterial({ name: 'Textile' });

@@ -3,7 +3,7 @@ import * as request from 'supertest';
 import {
   Indicator,
   INDICATOR_STATUS,
-  INDICATOR_TYPES,
+  INDICATOR_NAME_CODES,
 } from 'modules/indicators/indicator.entity';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { setupTestUser } from '../../utils/userAuth';
@@ -51,7 +51,7 @@ describe('IndicatorsModule (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           name: 'test indicator',
-          nameCode: INDICATOR_TYPES.DEFORESTATION_RISK,
+          nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
         })
         .expect(HttpStatus.CREATED);
 
@@ -93,7 +93,7 @@ describe('IndicatorsModule (e2e)', () => {
     test('Update a indicator should be successful (happy case)', async () => {
       const indicator: Indicator = new Indicator();
       indicator.name = 'test indicator';
-      indicator.nameCode = 'Midiclorian';
+      indicator.nameCode = 'Midiclorian' as INDICATOR_NAME_CODES;
       await indicator.save();
 
       const response = await request(testApplication.getHttpServer())
@@ -114,7 +114,7 @@ describe('IndicatorsModule (e2e)', () => {
     test('Delete a indicator should be successful (happy case)', async () => {
       const indicator: Indicator = new Indicator();
       indicator.name = 'test indicator';
-      indicator.nameCode = 'Midiclorian';
+      indicator.nameCode = 'Midiclorian' as INDICATOR_NAME_CODES;
       await indicator.save();
 
       await request(testApplication.getHttpServer())
@@ -134,7 +134,7 @@ describe('IndicatorsModule (e2e)', () => {
     test('Get all indicators should be successful (happy case)', async () => {
       const indicator: Indicator = new Indicator();
       indicator.name = 'test indicator';
-      indicator.nameCode = 'Midiclorian';
+      indicator.nameCode = 'Midiclorian' as INDICATOR_NAME_CODES;
       await indicator.save();
 
       const response = await request(testApplication.getHttpServer())
@@ -149,17 +149,17 @@ describe('IndicatorsModule (e2e)', () => {
     test('When requesting all indicators then indicators with inactive status should be included in results', async () => {
       await createIndicator({
         name: 'Indicator 1',
-        nameCode: 'IND_1',
+        nameCode: 'IND_1' as INDICATOR_NAME_CODES,
         status: INDICATOR_STATUS.ACTIVE,
       });
       await createIndicator({
         name: 'Indicator 2',
-        nameCode: 'IND_2',
+        nameCode: 'IND_2' as INDICATOR_NAME_CODES,
         status: INDICATOR_STATUS.INACTIVE,
       });
       const inactiveIndicator: Indicator = await createIndicator({
         name: 'Indicator 3',
-        nameCode: 'IND_3',
+        nameCode: 'IND_3' as INDICATOR_NAME_CODES,
         status: INDICATOR_STATUS.INACTIVE,
       });
 
@@ -185,7 +185,7 @@ describe('IndicatorsModule (e2e)', () => {
     test('Get a indicator by id should be successful (happy case)', async () => {
       const indicator: Indicator = new Indicator();
       indicator.name = 'test indicator';
-      indicator.nameCode = 'Midiclorian';
+      indicator.nameCode = 'Midiclorian' as INDICATOR_NAME_CODES;
       await indicator.save();
 
       const response = await request(testApplication.getHttpServer())
@@ -200,7 +200,7 @@ describe('IndicatorsModule (e2e)', () => {
     test('Get an inactive indicator by id should be successful (happy case)', async () => {
       const indicator: Indicator = new Indicator();
       indicator.name = 'inactive indicator';
-      indicator.nameCode = 'IND_INACT';
+      indicator.nameCode = 'IND_INACT' as INDICATOR_NAME_CODES;
       indicator.status = INDICATOR_STATUS.INACTIVE;
       await indicator.save();
 

@@ -12,6 +12,7 @@ import { ScenarioVsScenarioImpactService } from 'modules/impact/comparison/scena
 import { MaterialsService } from 'modules/materials/materials.service';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { AuthorizationModule } from 'modules/authorization/authorization.module';
+import { ImpactViewUpdater } from 'modules/impact/views/impact-view.updater';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { AuthorizationModule } from 'modules/authorization/authorization.module'
     ActualVsScenarioImpactService,
     ScenarioVsScenarioImpactService,
     MaterialsService,
+    ImpactViewUpdater,
   ],
   controllers: [ImpactController],
   exports: [

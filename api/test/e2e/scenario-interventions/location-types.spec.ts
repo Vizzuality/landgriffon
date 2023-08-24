@@ -1,7 +1,7 @@
 import {
   Indicator,
   INDICATOR_STATUS,
-  INDICATOR_TYPES,
+  INDICATOR_NAME_CODES,
 } from 'modules/indicators/indicator.entity';
 
 import * as request from 'supertest';
@@ -66,8 +66,8 @@ describe('Interventions E2E Tests (Location Types)', () => {
         'Then I should get an error',
       async () => {
         await createIndicator({
-          name: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
-          nameCode: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+          name: INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
+          nameCode: INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
           status: INDICATOR_STATUS.ACTIVE,
         });
         const response = await request(testApplication.getHttpServer())
@@ -86,7 +86,7 @@ describe('Interventions E2E Tests (Location Types)', () => {
             newLocationType: LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION,
             type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
             newIndicatorCoefficients: {
-              [INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE]: 1,
+              [INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE]: 1,
             },
           });
 

@@ -2,7 +2,7 @@ import { clearTestDataFromDatabase } from '../../../utils/database-test-helper';
 import {
   Indicator,
   INDICATOR_STATUS,
-  INDICATOR_TYPES,
+  INDICATOR_NAME_CODES,
 } from 'modules/indicators/indicator.entity';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { createIndicator } from '../../../entity-mocks';
@@ -36,10 +36,10 @@ describe('Indicators - Status (Integration Tests', () => {
   afterAll(() => testApplication.close());
 
   test('When I provide some NameCodes to activate Indicators, Indicators matching these nameCode should be activated', async () => {
-    const nameCodeArray: string[] = Object.values(INDICATOR_TYPES);
+    const nameCodeArray: string[] = Object.values(INDICATOR_NAME_CODES);
     for (const nameCode of nameCodeArray) {
       await createIndicator({
-        nameCode,
+        nameCode: nameCode as INDICATOR_NAME_CODES,
         status: INDICATOR_STATUS.INACTIVE,
         name: nameCode,
       });
@@ -73,7 +73,7 @@ describe('Indicators - Status (Integration Tests', () => {
   test('When I provide some NameCodes to activate Indicators, but there is any match against the ones that are in the DB, Then I should get a error', async () => {
     for (const n of [1, 2, 3, 4]) {
       await createIndicator({
-        nameCode: `${n}`,
+        nameCode: `${n}` as INDICATOR_NAME_CODES,
         status: INDICATOR_STATUS.INACTIVE,
         name: `${n}`,
       });
@@ -83,7 +83,7 @@ describe('Indicators - Status (Integration Tests', () => {
 
     try {
       await indicatorService.activateIndicators(
-        Object.values(INDICATOR_TYPES).map(
+        Object.values(INDICATOR_NAME_CODES).map(
           (n: string) => ({ nameCode: n } as CreateIndicatorDto),
         ),
       );
@@ -94,10 +94,10 @@ describe('Indicators - Status (Integration Tests', () => {
     }
   });
   test('When there are some Indicators with status active in the DB, Then I should be able to set them Inactive ', async () => {
-    const nameCodeArray: string[] = Object.values(INDICATOR_TYPES);
+    const nameCodeArray: string[] = Object.values(INDICATOR_NAME_CODES);
     for (const nameCode of nameCodeArray) {
       await createIndicator({
-        nameCode,
+        nameCode: nameCode as INDICATOR_NAME_CODES,
         status: INDICATOR_STATUS.ACTIVE,
         name: nameCode,
       });

@@ -17,7 +17,7 @@ import {
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { INDICATOR_TYPES } from 'modules/indicators/indicator.entity';
+import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import {
   GetActualVsScenarioImpactMapDto,
@@ -237,7 +237,7 @@ export class H3DataRepository extends Repository<H3Data> {
    * @param year
    */
   async getIndicatorH3ByTypeAndClosestYear(
-    type: INDICATOR_TYPES,
+    type: INDICATOR_NAME_CODES,
     year: number,
   ): Promise<H3Data | undefined> {
     const queryBuilder: SelectQueryBuilder<H3Data> = this.dataSource

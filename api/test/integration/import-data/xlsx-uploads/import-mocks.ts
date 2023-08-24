@@ -7,7 +7,7 @@ import {
 import { Material } from 'modules/materials/material.entity';
 import {
   Indicator,
-  INDICATOR_TYPES,
+  INDICATOR_NAME_CODES,
 } from 'modules/indicators/indicator.entity';
 import { snakeCase } from 'typeorm/util/StringUtils';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
@@ -21,19 +21,19 @@ async function createIndicatorsForXLSXImport(
   const indicatorSpec = [
     {
       name: 'Deforestation loss due to land use change',
-      nameCode: INDICATOR_TYPES.DEFORESTATION_RISK,
+      nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
     },
     {
       name: 'Carbon emissions due to land use change',
-      nameCode: INDICATOR_TYPES.CLIMATE_RISK,
+      nameCode: INDICATOR_NAME_CODES.CLIMATE_RISK,
     },
     {
       name: 'Biodiversity loss due to land use change',
-      nameCode: INDICATOR_TYPES.LAND_USE,
+      nameCode: INDICATOR_NAME_CODES.LAND_USE,
     },
     {
       name: 'Unsustainable water use',
-      nameCode: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+      nameCode: INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
     },
   ];
 

@@ -11,7 +11,7 @@ import {
 import {
   Indicator,
   INDICATOR_STATUS,
-  INDICATOR_TYPES,
+  INDICATOR_NAME_CODES,
   indicatorResource,
 } from 'modules/indicators/indicator.entity';
 import { AppInfoDTO } from 'dto/info.dto';
@@ -83,7 +83,7 @@ export class IndicatorsService extends AppBaseService<
 
     const deforestationIndicator: Indicator | null =
       await this.indicatorRepository.findOne({
-        where: { nameCode: INDICATOR_TYPES.DEFORESTATION_RISK },
+        where: { nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK },
       });
     if (!deforestationIndicator)
       throw new NotFoundException(

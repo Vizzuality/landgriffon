@@ -16,7 +16,7 @@ import {
 } from '../../../entity-mocks';
 import {
   Indicator,
-  INDICATOR_TYPES,
+  INDICATOR_NAME_CODES,
 } from 'modules/indicators/indicator.entity';
 
 import {
@@ -182,9 +182,9 @@ describe('Impact Calculator Tests', () => {
       };
 
       const providedCoefficients: IndicatorCoefficientsDto = {
-        [INDICATOR_TYPES.WATER_USE]: 0.1,
-        [INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE]: 0.4,
-        [INDICATOR_TYPES.DEFORESTATION_RISK]: 0.35,
+        [INDICATOR_NAME_CODES.WATER_USE]: 0.1,
+        [INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE]: 0.4,
+        [INDICATOR_NAME_CODES.DEFORESTATION_RISK]: 0.35,
         ...({} as any),
       };
 
@@ -199,7 +199,7 @@ describe('Impact Calculator Tests', () => {
       //ASSERT
       //await expect(testStatement).rejects.toThrow(NotFoundException);
       await expect(testStatement).rejects.toThrow(
-        `Required coefficient for indicator ${INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE} was not provided`,
+        `Required coefficient for indicator ${INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE} was not provided`,
       );
     });
 
@@ -237,13 +237,15 @@ describe('Impact Calculator Tests', () => {
       };
 
       const providedCoefficients: IndicatorCoefficientsDto = {
-        [INDICATOR_TYPES.CLIMATE_RISK]: 0.1,
-        [INDICATOR_TYPES.DEFORESTATION_RISK]: 0.4,
-        [INDICATOR_TYPES.LAND_USE]: 0.35,
-        [INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE]: 0.2,
-        [INDICATOR_TYPES.WATER_USE]: 0.6,
-        [INDICATOR_TYPES.SATELLIGENCE_DEFORESTATION]: 0.3,
-        [INDICATOR_TYPES.SATELLIGENCE_DEFORESTATION_RISK]: 0.5,
+        [INDICATOR_NAME_CODES.CLIMATE_RISK]: 0.1,
+        [INDICATOR_NAME_CODES.DEFORESTATION_RISK]: 0.4,
+        [INDICATOR_NAME_CODES.LAND_USE]: 0.35,
+        [INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE]: 0.2,
+        [INDICATOR_NAME_CODES.WATER_USE]: 0.6,
+        [INDICATOR_NAME_CODES.SATELLIGENCE_DEFORESTATION]: 0.3,
+        [INDICATOR_NAME_CODES.SATELLIGENCE_DEFORESTATION_RISK]: 0.5,
+        [INDICATOR_NAME_CODES.NATURAL_ECOSYSTEM_CONVERSION_RISK]: 0.7,
+        [INDICATOR_NAME_CODES.WATER_QUALITY]: 0.8,
       };
 
       //ACT
@@ -421,7 +423,7 @@ describe('Impact Calculator Tests', () => {
       //ASSERT
       await expect(testStatement).rejects.toThrow(NotFoundException);
       await expect(testStatement).rejects.toThrow(
-        `H3 Data of required Indicator of type ${INDICATOR_TYPES.DEFORESTATION_RISK} missing for ${INDICATOR_TYPES.DEFORESTATION_RISK} Indicator Record value calculations`,
+        `H3 Data of required Indicator of type ${INDICATOR_NAME_CODES.DEFORESTATION_RISK} missing for ${INDICATOR_NAME_CODES.DEFORESTATION_RISK} Indicator Record value calculations`,
       );
     });
 
@@ -469,7 +471,7 @@ describe('Impact Calculator Tests', () => {
         indicatorPreconditions.deforestationIndicator,
         materialH3DataProducer,
         sourcingData.sourcingRecordId,
-        805000,
+        80.74534161490683,
         1610,
         calculatedRecords,
       );
@@ -477,7 +479,7 @@ describe('Impact Calculator Tests', () => {
         indicatorPreconditions.climateRiskIndicator,
         materialH3DataProducer,
         sourcingData.sourcingRecordId,
-        805000,
+        80.74534161490683,
         1610,
         calculatedRecords,
       );
@@ -554,7 +556,7 @@ describe('Impact Calculator Tests', () => {
         indicatorPreconditions.deforestationIndicator,
         materialH3DataProducer1,
         indicatorPreconditions.sourcingRecord1.id,
-        1610000,
+        161.49068322981367,
         1610,
       );
       await checkCreatedIndicatorRecord(
@@ -568,7 +570,7 @@ describe('Impact Calculator Tests', () => {
         indicatorPreconditions.climateRiskIndicator,
         materialH3DataProducer1,
         indicatorPreconditions.sourcingRecord1.id,
-        1610000,
+        161.49068322981367,
         1610,
       );
       await checkCreatedIndicatorRecord(
@@ -583,7 +585,7 @@ describe('Impact Calculator Tests', () => {
         indicatorPreconditions.deforestationIndicator,
         materialH3DataProducer2,
         indicatorPreconditions.sourcingRecord2.id,
-        805000,
+        80.74534161490683,
         1610,
       );
       await checkCreatedIndicatorRecord(
@@ -597,7 +599,7 @@ describe('Impact Calculator Tests', () => {
         indicatorPreconditions.climateRiskIndicator,
         materialH3DataProducer2,
         indicatorPreconditions.sourcingRecord2.id,
-        805000,
+        80.74534161490683,
         1610,
       );
       await checkCreatedIndicatorRecord(
@@ -654,13 +656,13 @@ describe('Impact Calculator Tests', () => {
         indicatorRecordServiceAny.generateMaterialCalculationCacheKey;
 
       //Prepare Cache Data
-      const bioMap: Map<INDICATOR_TYPES, H3Data> = new Map();
+      const bioMap: Map<INDICATOR_NAME_CODES, H3Data> = new Map();
       bioMap.set(
-        INDICATOR_TYPES.LAND_USE,
+        INDICATOR_NAME_CODES.LAND_USE,
         indicatorPreconditions.biodiversityLoss,
       );
       bioMap.set(
-        INDICATOR_TYPES.DEFORESTATION_RISK,
+        INDICATOR_NAME_CODES.DEFORESTATION_RISK,
         indicatorPreconditions.deforestation,
       );
       const materialsMap: Map<MATERIAL_TO_H3_TYPE, H3Data> = new Map();
@@ -669,7 +671,7 @@ describe('Impact Calculator Tests', () => {
 
       const bioCacheKey: any = generateIndicatorCacheKey(
         indicatorPreconditions.sourcingLocation2.geoRegionId,
-        INDICATOR_TYPES.LAND_USE,
+        INDICATOR_NAME_CODES.LAND_USE,
         bioMap,
         materialsMap,
       );
@@ -1040,30 +1042,31 @@ describe('Impact Calculator Tests', () => {
     const h3Data = await createWorldToCalculateIndicatorRecords(dataSource);
 
     const climateRiskIndicator = h3Data.indicators.find(
-      (el: Indicator) => el.nameCode === INDICATOR_TYPES.CLIMATE_RISK,
+      (el: Indicator) => el.nameCode === INDICATOR_NAME_CODES.CLIMATE_RISK,
     );
     const landUseIndicator = h3Data.indicators.find(
-      (el: Indicator) => el.nameCode === INDICATOR_TYPES.LAND_USE,
+      (el: Indicator) => el.nameCode === INDICATOR_NAME_CODES.LAND_USE,
     );
 
     const deforestationIndicator = h3Data.indicators.find(
-      (el: Indicator) => el.nameCode === INDICATOR_TYPES.DEFORESTATION_RISK,
+      (el: Indicator) =>
+        el.nameCode === INDICATOR_NAME_CODES.DEFORESTATION_RISK,
     );
 
     const waterUseIndicator = h3Data.indicators.find(
-      (el: Indicator) => el.nameCode === INDICATOR_TYPES.WATER_USE,
+      (el: Indicator) => el.nameCode === INDICATOR_NAME_CODES.WATER_USE,
     );
     const unsustWaterUseIndicator = h3Data.indicators.find(
       (el: Indicator) =>
-        el.nameCode === INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+        el.nameCode === INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
     );
     const satelligenceDeforestation = h3Data.indicators.find(
       (el: Indicator) =>
-        el.nameCode === INDICATOR_TYPES.SATELLIGENCE_DEFORESTATION,
+        el.nameCode === INDICATOR_NAME_CODES.SATELLIGENCE_DEFORESTATION,
     );
     const satelligenceDeforestationRisk = h3Data.indicators.find(
       (el: Indicator) =>
-        el.nameCode === INDICATOR_TYPES.SATELLIGENCE_DEFORESTATION_RISK,
+        el.nameCode === INDICATOR_NAME_CODES.SATELLIGENCE_DEFORESTATION_RISK,
     );
     return {
       material1,

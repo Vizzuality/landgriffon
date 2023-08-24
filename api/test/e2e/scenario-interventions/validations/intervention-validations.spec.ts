@@ -1,7 +1,7 @@
 import {
   Indicator,
   INDICATOR_STATUS,
-  INDICATOR_TYPES,
+  INDICATOR_NAME_CODES,
 } from 'modules/indicators/indicator.entity';
 import {
   createIndicator,
@@ -69,7 +69,9 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
       'But these differs from the ones that are active in the DB' +
       'Then I should get and error message',
     async () => {
-      for (const [index, data] of Object.entries(INDICATOR_TYPES).entries()) {
+      for (const [index, data] of Object.entries(
+        INDICATOR_NAME_CODES,
+      ).entries()) {
         if (index % 2 === 0) {
           await createIndicator({
             name: `indicator n ${index}`,
@@ -118,7 +120,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
           newLocationCountryInput: 'TestCountry',
           type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           newIndicatorCoefficients: {
-            [INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE]: 1,
+            [INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE]: 1,
           },
         });
 
@@ -137,12 +139,12 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
       'Then the validation should pass',
     async () => {
       await createIndicator({
-        nameCode: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
-        name: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+        nameCode: INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
+        name: INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
       });
       await createIndicator({
-        nameCode: INDICATOR_TYPES.DEFORESTATION_RISK,
-        name: INDICATOR_TYPES.DEFORESTATION_RISK,
+        nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
+        name: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
       });
 
       const response = await request(testApplication.getHttpServer())
@@ -160,8 +162,8 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
           newLocationCountryInput: 'TestCountry',
           type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           newIndicatorCoefficients: {
-            [INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE]: 1,
-            [INDICATOR_TYPES.DEFORESTATION_RISK]: 2,
+            [INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE]: 1,
+            [INDICATOR_NAME_CODES.DEFORESTATION_RISK]: 2,
           },
         });
 
@@ -176,12 +178,12 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
     async () => {
       const intervention = await createScenarioIntervention();
       await createIndicator({
-        nameCode: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
-        name: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+        nameCode: INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
+        name: INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
       });
       await createIndicator({
-        nameCode: INDICATOR_TYPES.DEFORESTATION_RISK,
-        name: INDICATOR_TYPES.DEFORESTATION_RISK,
+        nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
+        name: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
       });
 
       const response = await request(testApplication.getHttpServer())
@@ -199,8 +201,8 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
           newLocationCountryInput: 'TestCountry',
           type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           newIndicatorCoefficients: {
-            [INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE]: 1,
-            [INDICATOR_TYPES.DEFORESTATION_RISK]: 2,
+            [INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE]: 1,
+            [INDICATOR_NAME_CODES.DEFORESTATION_RISK]: 2,
           },
         });
 
@@ -214,12 +216,12 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
     async () => {
       const intervention = await createScenarioIntervention();
       await createIndicator({
-        nameCode: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
-        name: INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE,
+        nameCode: INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
+        name: INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
       });
       await createIndicator({
-        nameCode: INDICATOR_TYPES.DEFORESTATION_RISK,
-        name: INDICATOR_TYPES.DEFORESTATION_RISK,
+        nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
+        name: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
       });
 
       const response = await request(testApplication.getHttpServer())
@@ -237,8 +239,8 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
           newLocationCountryInput: 'TestCountry',
           type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           newIndicatorCoefficients: {
-            [INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE]: 1,
-            [INDICATOR_TYPES.DEFORESTATION_RISK]: 2,
+            [INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE]: 1,
+            [INDICATOR_NAME_CODES.DEFORESTATION_RISK]: 2,
           },
         });
 
@@ -253,7 +255,9 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
     async () => {
       const intervention = await createScenarioIntervention();
 
-      for (const [index, data] of Object.entries(INDICATOR_TYPES).entries()) {
+      for (const [index, data] of Object.entries(
+        INDICATOR_NAME_CODES,
+      ).entries()) {
         if (index % 2 === 0) {
           await createIndicator({
             name: `indicator n ${index}`,
@@ -302,7 +306,7 @@ describe('Interventions E2E Tests (Controller Validations)', () => {
           newLocationCountryInput: 'TestCountry',
           type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           newIndicatorCoefficients: {
-            [INDICATOR_TYPES.UNSUSTAINABLE_WATER_USE]: 1,
+            [INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE]: 1,
           },
         });
 

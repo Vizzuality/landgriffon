@@ -34,8 +34,12 @@ import psycopg2
 from h3ronpy import vector
 from psycopg2 import sql
 from psycopg2.pool import ThreadedConnectionPool
-
-from utils import insert_to_h3_data_and_contextual_layer_tables, link_to_indicator_table, slugify, h3_table_schema
+from utils import (
+    h3_table_schema,
+    insert_to_h3_data_and_contextual_layer_tables,
+    link_to_indicator_table,
+    slugify,
+)
 
 DTYPES_TO_PG = {
     "object": "text",
@@ -65,8 +69,8 @@ postgres_thread_pool = ThreadedConnectionPool(
 )
 
 
-def records(filename, usecols, **kwargs):
-    """Generator to subset of columns from vector files"""
+def records(filename: str, usecols: list[str], **kwargs):
+    """Generator to yield subset of columns from vector file"""
     with fiona.open(filename, **kwargs) as source:
         for feature in source:
             f = {k: feature[k] for k in ["id", "geometry"]}
@@ -78,10 +82,11 @@ def vector_file_to_h3dataframe(
     filename: Path,
     column: str,
     h3_res: int = 6,
+    layer: str | None = None,
 ) -> gpd.GeoDataFrame:
     """Converts a vector file to a GeoDataFrame"""
     log.info(f"Reading {str(filename)} and converting geometry to H3...")
-    gdf = gpd.GeoDataFrame.from_features(records(filename, [column])).set_crs("EPSG:4326")
+    gdf = gpd.GeoDataFrame.from_features(records(filename, [column], layer=layer)).set_crs("EPSG:4326")
     h3df = vector.geodataframe_to_h3(gdf, h3_res).set_index("h3index")
     # check for duplicated h3 indices since the aqueduct data set generates duplicated h3 indices
     # we currently don't know why this happens and further investigation is needed
@@ -154,10 +159,11 @@ def main(
     dataset: str,
     category: str,
     year: int,
-    h3_res: str,
+    h3_res: int,
     indicator_code: str,
+    layer: str,
 ):
-    vec_extensions = "gpkg shp json geojson".split()
+    vec_extensions = "gdb gpkg shp json geojson".split()
     path = Path(folder)
     vectors = []
     for ext in vec_extensions:
@@ -168,7 +174,7 @@ def main(
 
     conn = postgres_thread_pool.getconn()
     if len(vectors) == 1:  # folder just contains one vector file
-        df = vector_file_to_h3dataframe(vectors[0], column, h3_res)
+        df = vector_file_to_h3dataframe(vectors[0], column, h3_res, layer)
         create_h3_grid_table(table, df, conn)
         insert_to_h3_grid_table(table, df, conn)
         # slugify the column name to follow the convention of db column naming
@@ -202,6 +208,7 @@ if __name__ == "__main__":
     parser.add_argument("year", type=int, help="Year of the imported dataset")
     parser.add_argument("--indicator", help="Indicator nameCode", default=None)
     parser.add_argument("--h3-res", help="h3 resolution to use", dest="h3res", default=6, type=int)
+    parser.add_argument("--layer", help="Layer name. Only if file has multiple layers (ie, a GDB)", default=None)
     args = parser.parse_args()
 
     main(
@@ -213,4 +220,5 @@ if __name__ == "__main__":
         args.year,
         args.h3res,
         args.indicator,
+        args.layer
     )

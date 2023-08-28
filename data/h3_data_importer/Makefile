@@ -45,7 +45,7 @@ crop:
 # once the new indicators have been defined and ingested we will need to update the indicator code in for each on the indicator commented below and allow the ingestion.
 # convert-speciesRichness convert-aboveGroundBiomass convert-satDeforestation
 indicators:
-	make convert-aqueduct-contextual
+	make convert-aqueduct
 	# Processing deforestation data is quite intensive, so we do it separately, so we can allocate all threads to it
 	# There is probably a better way to do this, that future me will learn about - in the future.
 	make convert-deforestation
@@ -312,16 +312,15 @@ convert-woodpulp: download-woodpulp
 ###################
 
 # Aqueduct Global water risk contextual data
-download-aqueduct-contextual:
+download-aqueduct:
 	mkdir -p $(WORKDIR_AQUEDUCT)
-	wget -q -O $(WORKDIR_AQUEDUCT)/Y2019M07D12_Aqueduct30_V01.zip https://wri-projects.s3.amazonaws.com/Aqueduct30/finalData/Y2019M07D12_Aqueduct30_V01.zip
+	wget -q -O $(WORKDIR_AQUEDUCT)/aqueduct-4-0-water-risk-data.zip https://files.wri.org/aqueduct/aqueduct-4-0-water-risk-data.zip
 
-extract-aqueduct-contextual: download-aqueduct-contextual
-	mkdir -p $(WORKDIR_AQUEDUCT)/Y2019M07D12_Aqueduct30_V01
-	unzip -q -u $(WORKDIR_AQUEDUCT)/Y2019M07D12_Aqueduct30_V01.zip  -d $(WORKDIR_AQUEDUCT)/
+extract-aqueduct: download-aqueduct
+	unzip -q -u $(WORKDIR_AQUEDUCT)/aqueduct-4-0-water-risk-data.zip  -d $(WORKDIR_AQUEDUCT)/
 
-convert-aqueduct-contextual: extract-aqueduct-contextual
-	python vector_folder_to_h3_table.py $(WORKDIR_AQUEDUCT)/Y2019M07D12_Aqueduct30_V01/baseline/annual h3_grid_aqueduct_global bws_cat aqueduct "Environmental datasets" 2019 --indicator=UWUSR_T --h3-res=6
+convert-aqueduct: extract-aqueduct
+	python vector_folder_to_h3_table.py $(WORKDIR_AQUEDUCT)/Aqueduct40_waterrisk_download_Y2023M07D05/GDB h3_grid_aqueduct_global bws_cat aqueduct "Environmental datasets" 2022 --indicator=UWUSR_T --h3-res=6 --layer=baseline_annual
 
 
 download-hdi-contextual:

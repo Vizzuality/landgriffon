@@ -26,13 +26,15 @@ import logging
 import os
 from io import StringIO
 from pathlib import Path
+from typing import Union
 
 import fiona
 import geopandas as gpd
 import pandas as pd
 import psycopg2
 from h3ronpy import vector
-from psycopg2 import sql
+from psycopg2 import sql,
+from psycopg2.extensions import connection
 from psycopg2.pool import ThreadedConnectionPool
 from utils import (
     h3_table_schema,
@@ -82,12 +84,12 @@ def vector_file_to_h3dataframe(
     filename: Path,
     column: str,
     h3_res: int = 6,
-    layer: str | None = None,
-) -> gpd.GeoDataFrame:
+    layer: Union[str, None] = None,
+) -> Union[pd.DataFrame, None]:
     """Converts a vector file to a GeoDataFrame"""
     log.info(f"Reading {str(filename)} and converting geometry to H3...")
-    gdf = gpd.GeoDataFrame.from_features(records(filename, [column], layer=layer)).set_crs("EPSG:4326")
-    h3df = vector.geodataframe_to_h3(gdf, h3_res).set_index("h3index")
+    gdf = gpd.GeoDataFrame.from_features(records(filename.as_posix(), [column], layer=layer)).set_crs("EPSG:4326")
+    h3df = vector.geodataframe_to_h3(gdf, h3_res).set_index("h3index") # type: ignore
     # check for duplicated h3 indices since the aqueduct data set generates duplicated h3 indices
     # we currently don't know why this happens and further investigation is needed
     # but for now we just drop the duplicates if it is safe to do so (i.e. the dupes have the same value)
@@ -119,27 +121,27 @@ def vector_file_to_h3dataframe(
 def create_h3_grid_table(
     table_name: str,
     df: pd.DataFrame,
-    connection: psycopg2.extensions.connection,
+    conn: connection,
     drop_if_exists=True,
 ):
     """Creates the h3 data table (like `h3_grid_nio_global`) with the correct data types"""
     dtypes = df.dtypes.to_dict()
-    cursor = connection.cursor()
+    cursor = conn.cursor()
     if drop_if_exists:
         cursor.execute(sql.SQL("DROP TABLE IF EXISTS {};").format(sql.Identifier(table_name)))
         log.info(f"Dropped table {table_name}")
     cursor.execute(sql.SQL("CREATE TABLE {} ({})").format(sql.Identifier(table_name), h3_table_schema(df)))
     log.info(f"Created table {table_name} with columns {', '.join(dtypes.keys())}")
-    connection.commit()
+    conn.commit()
     cursor.close()
 
 
 def insert_to_h3_grid_table(
     table_name: str,
     df: pd.DataFrame,
-    connection: psycopg2.extensions.connection,
+    conn: connection,
 ):
-    cursor = connection.cursor()
+    cursor = conn.cursor()
     log.info(f"Preparing {len(df)} rows buffer...")
 
     with StringIO() as buffer:  # why are we using this?
@@ -147,7 +149,7 @@ def insert_to_h3_grid_table(
         buffer.seek(0)
         cursor.copy_from(buffer, table_name, sep="\t", null="NULL")
 
-    connection.commit()
+    conn.commit()
     cursor.close()
     log.info(f"{len(df)} values written to database.")
 

@@ -1,4 +1,4 @@
-
+{
     "$schema": "./contextual_metadata_schema.json",
     "name": "Baseline water stress",
     "description": "Baseline water stress is a measure that compares total water withdrawals to available renewable surface and groundwater supplies. It indicates the level of competition among water users. Risk scores are assigned based on predefined thresholds, ranging from low to extremely high water stress. The measure includes various water uses, such as domestic, industrial, irrigation, and livestock, while also considering upstream consumptive water use and large dams' impact on downstream water availability. The data is available at a detailed sub-basin level, enabling a more precise assessment of water stress conditions and supporting informed water resource management decisions.",

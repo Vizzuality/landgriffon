@@ -7,9 +7,14 @@
         "name": "Baseline water stress",
         "id": "",
         "unit": null,
-        "min": -1,
+        "min": -9999,
         "type": "category",
         "items": [
+            {
+                "value": -9999,
+                "label": "No Data",
+                "color": "#4e4e4e"
+            },
             {
                 "value": -1,
                 "label": "Arid and Low Water Use",

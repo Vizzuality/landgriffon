@@ -26,7 +26,7 @@ import logging
 import os
 from io import StringIO
 from pathlib import Path
-from typing import Union
+from typing import Union, List
 
 import fiona
 import geopandas as gpd
@@ -70,7 +70,7 @@ postgres_thread_pool = ThreadedConnectionPool(
 )
 
 
-def records(filename: str, usecols: list[str], **kwargs):
+def records(filename: str, usecols: List[str], **kwargs):
     """Generator to yield subset of columns from vector file"""
     with fiona.open(filename, **kwargs) as source:
         for feature in source:

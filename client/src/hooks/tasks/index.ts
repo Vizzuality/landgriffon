@@ -4,13 +4,14 @@ import { apiRawService, apiService } from 'services/api';
 
 import type { UseQueryResult, UseQueryOptions, UseMutationResult } from '@tanstack/react-query';
 import type { APIMetadataPagination, ErrorResponse, Task } from 'types';
+import type { AxiosResponse } from 'axios';
 
 type TaskAPIResponse = Task;
 
-type TasksAPIResponse = {
+type TasksAPIResponse = AxiosResponse<{
   data: Task[];
   meta: APIMetadataPagination;
-};
+}>;
 
 const DEFAULT_QUERY_OPTIONS = {
   retry: false,
@@ -22,9 +23,9 @@ const DEFAULT_QUERY_OPTIONS = {
 
 export const useTasks = (
   params: Record<string, string | number | boolean> = {},
-  options: UseQueryOptions<TasksAPIResponse['data']> = {},
+  options: UseQueryOptions<TasksAPIResponse> = {},
 ) => {
-  const query = useQuery<TasksAPIResponse['data'], ErrorResponse>(
+  const query = useQuery<TasksAPIResponse, ErrorResponse>(
     ['tasks', params],
     () =>
       apiService
@@ -33,7 +34,7 @@ export const useTasks = (
           url: '/tasks',
           params,
         })
-        .then(({ data: responseData }) => responseData.data),
+        .then((response) => response.data),
     {
       ...DEFAULT_QUERY_OPTIONS,
       ...options,
@@ -57,7 +58,7 @@ export const useLasTask = () => {
     },
   );
 
-  return { ...tasks, data: tasks.data?.[0] };
+  return { ...tasks, data: tasks?.data?.data?.[0] };
 };
 
 export function useTask(

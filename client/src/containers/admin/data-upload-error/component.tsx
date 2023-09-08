@@ -77,6 +77,18 @@ const DataUploadError: React.FC<DataUploadErrorProps> = ({ task }) => {
             </>
           )}
 
+          {task?.status === 'failed' && task?.errors.length === 0 && (
+            <>
+              <h3>Upload failed</h3>
+              <p className="text-gray-500">
+                Sorry, we couldn&apos;t upload your latest changes made on{' '}
+                {format(new Date(task.createdAt), 'MMM 4, yyyy HH:mm z')}. We have{' '}
+                <strong className="text-gray-900">reverted to the previous version</strong> to avoid
+                data loss. Please try uploading again.
+              </p>
+            </>
+          )}
+
           {task?.status === 'failed' && task?.errors.length > 0 && (
             <>
               <h3>Upload failed</h3>

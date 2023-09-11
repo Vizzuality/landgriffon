@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import {
   GeocodeArgs,
@@ -11,6 +11,8 @@ import { GoogleMapsGeocoder } from 'modules/geo-coding/geocoders/google-maps.geo
 export const GEOCODING_CACHE_ENABLED: unique symbol = Symbol();
 
 export class CacheGeocoder implements GeocoderInterface {
+  private logger: Logger = new Logger(CacheGeocoder.name);
+
   constructor(
     @Inject(GEOCODING_CACHE_ENABLED) private geocacheEnabled: boolean,
     @Inject(GoogleMapsGeocoder) private backendGeocoder: GeocoderInterface,
@@ -27,8 +29,15 @@ export class CacheGeocoder implements GeocoderInterface {
       cacheKey,
     );
 
-    if (cachedData) return cachedData;
+    if (cachedData) {
+      this.logger.debug(
+        `Cache hit for location ${args.address} ${args.latlng}  `,
+      );
+      return cachedData;
+    }
+
     const data: GeocodeResponse = await this.backendGeocoder.geocode(args);
+    this.logger.debug('Set cache for location ' + args.address + args.latlng);
     await this.cacheManager.set(cacheKey, data);
     return data;
   }

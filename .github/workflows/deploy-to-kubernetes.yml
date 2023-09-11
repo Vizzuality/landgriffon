@@ -6,7 +6,7 @@ on:
       - 'main'
       - 'staging'
       - 'test'
-      - 'vcf'
+      - 'benjerry'
       - 'tetrapack'
       - 'dev'
       - 'demo'

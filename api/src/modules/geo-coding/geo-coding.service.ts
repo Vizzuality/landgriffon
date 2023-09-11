@@ -44,6 +44,9 @@ export class GeoCodingService extends GeoCodingAbstractClass {
     const errors: any[] = [];
     for (let i: number = 0; i < sourcingData.length; i++) {
       const location: SourcingData = sourcingData[i];
+      this.logger.debug(
+        `Geocoding location: Country: ${location.locationCountryInput}, Address: ${location.locationAddressInput}, LAT: ${location.locationLatitude}, LONG: ${location.locationLongitude}`,
+      );
       try {
         if (location.locationType === LOCATION_TYPES.UNKNOWN) {
           geoCodedSourcingData.push(

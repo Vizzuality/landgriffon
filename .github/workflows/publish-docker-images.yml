@@ -10,7 +10,7 @@ on:
       - 'main'
       - 'staging'
       - 'test'
-      - 'vcf'
+      - 'benjerry'
       - 'gcp'
       - 'tetrapack'
       - 'dev'

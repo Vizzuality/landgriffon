@@ -10,7 +10,8 @@ aws_environments = {
   dev : {},
   test : {},
   tetrapack : {},
-  demo : {}
+  demo : {},
+  benjerry : {},
 }
 
 gcp_environments = {

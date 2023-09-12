@@ -14,7 +14,6 @@ on:
       - 'gcp'
       - 'tetrapack'
       - 'dev'
-      - 'demo'
     paths:
       - 'api/**'
       - 'client/**'

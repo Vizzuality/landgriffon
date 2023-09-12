@@ -10,7 +10,6 @@ aws_environments = {
   dev : {},
   test : {},
   tetrapack : {},
-  demo : {},
   benjerry : {},
 }
 

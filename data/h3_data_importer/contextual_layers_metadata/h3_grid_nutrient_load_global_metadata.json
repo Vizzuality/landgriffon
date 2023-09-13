@@ -1,10 +1,10 @@
 {
     "$schema": "./contextual_metadata_schema.json",
-    "name": "Nutrient Assimilation Capacity",
+    "name": "Nutrient Load Reduction",
     "description": "Modeled limiting nutrients from McDowell et al. (2020).",
     "aggType": "mode",
     "legend": {
-        "name": "Nutrient Assimilation Capacity",
+        "name": "Nutrient Load Reduction",
         "id": "",
         "unit": "",
         "min": 0,

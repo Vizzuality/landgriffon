@@ -1,0 +1,42 @@
+{
+    "$schema": "./contextual_metadata_schema.json",
+    "name": "Modeled limiting nutrients",
+    "description": "Modeled limiting nutrients from McDowell et al. (2020)",
+    "aggType": "mode",
+    "legend": {
+        "name": "Modeled limiting nutrients",
+        "id": "",
+        "unit": null,
+        "min": 0,
+        "type": "category",
+        "items": [
+            {
+                "value": 0,
+                "label": "No Data",
+                "color": "#9c9c9c"
+            },
+            {
+                "value": 1,
+                "label": "N-limited growth acceptable",
+                "color": "#d2ff73"
+            },
+            {
+                "value": 2,
+                "label": "N-limited growth undesirable",
+                "color": "#3aa809"
+            },
+            {
+                "value": 3,
+                "label": "P-limited growth acceptable",
+                "color": "#fea87c"
+            },
+            {
+                "value": 4,
+                "label": "P-limited growth undersiable",
+                "color": "#a73800"
+            }
+        ]
+    },
+    "source": "McDowell et al. (2020)",
+    "license": "CC BY 4.0"
+}

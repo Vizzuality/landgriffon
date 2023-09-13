@@ -15,10 +15,15 @@ unzip-limiting-nutrient:
 
 # Preprocess the data before ingesting instead of performing these calculations on the database
 process-limiting-nutrients:
-	python process_data.py $(DATA_DIR)/hybas_l03_v1c_Cases
+	mkdir -p $(DATA_DIR)/nutrient_assimilation_capacity
+	python process_data.py $(DATA_DIR)/hybas_l03_v1c_Cases $(DATA_DIR)/nutrient_assimilation_capacity
+
+# Create a zip archive of the shapefile and related files
+zip-shapefile:
+	cd $(DATA_DIR)/nutrient_assimilation_capacity && zip -r nutrient_assimilation_capacity.zip nutrient_assimilation_capacity.*
 
 upload_results:
-	aws s3 cp $(DATA_DIR)/hybas_l03_v1c_Cases/nutrient_assimilation_capacity.shp ${AWS_S3_BUCKET_URL}/processed/nutrients_assimilation_capacity/
+	aws s3 cp $(DATA_DIR)/nutrient_assimilation_capacity/nutrient_assimilation_capacity.zip ${AWS_S3_BUCKET_URL}/processed/nutrients_assimilation_capacity/
 
 write_checksum:
 	cd $(DATA_DIR)/hybas_l03_v1c_Cases && sha256sum nutrient_assimilation_capacity.shp > $(checksums_dir)/nutrient_assimilation_capacity

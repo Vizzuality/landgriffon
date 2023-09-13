@@ -1,12 +1,12 @@
 """ Reads the limiting nutrients equal area vector file, reporjects the file to EPSG4326 and estimates the percentage of reduction needed to meet a good water quality conditions.
 
 Usage:
-process_data.py <input_folder> <output_folder>
+process_data.py <folder>
 
 Arguments:
-    <input_folder>     Input folder containing the limiting nutrients shapefile
-    <output_folder>    Output folder to export the required percentage reduction
+    <folder>     Folder containing the limiting nutrients shapefile
 """
+import os
 import logging
 from pathlib import Path
 import argparse
@@ -39,15 +39,8 @@ def check_and_reproject_to_4326(gdf):
 
     return gdf
 
+# Define the function to calculate perc_reduction
 def calculate_perc_reduction(row):
-    """
-    Calculation of the required Load Reduction.
-
-    This equation is applied to only the basin-specific limiting nutrient as identified by McDowell et al. (2020)
-    The global concentration thresholds values for Total N (0.70 mg-N/L) and Total P (0.046 mg-P/L) represent acceptable levels of algal growth.
-
-    More information can be found on the LandGriffon v2.0 methodology
-    """
     if row['Cases_v2_1'] == 4 and row['TP_con_V2_']:
         return ((row['TP_con_V2_'] - 0.046) / row['TP_con_V2_']) * 100
     elif row['Cases_v2_1'] == 2 and row['TN_con_V2_']:

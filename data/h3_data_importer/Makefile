@@ -21,7 +21,7 @@ WORKDIR_DEFORESTATION=data/hansen_loss
 WORKDIR_GHG=data/forest_ghg
 WORKDIR_WOODPULP=data/woodpulp
 WORKDIR_NATURAL_CROP_CONVERSION=data/natural_crop_conversion
-WORKDIR_NUTRIENT_ASSIMILATION_CAPACITY=data/nutrient_assimilation_capacity
+WORKDIR_NUTRIENT_LOAD_REDUCTION=data/nutrient_load_reduction
 
 CHECKSUMS_PATH=data_checksums
 
@@ -53,7 +53,7 @@ indicators:
 	make convert-forestGHG
 	make convert-satDeforestation
 	make convert-naturalCropConversion
-	make convert-nutrientAssimilationCapacity
+	make convert-nutrientLoadReduction
 contextual-layers: convert-hdi-contextual convert-blue-water-contextual
 
 
@@ -341,22 +341,22 @@ convert-aqueduct: extract-aqueduct
 
 
 #########################################
-# Nutrient assimilation capacity data   #
+# Nutrient load reduction data   #
 #########################################
 
-download-nutrient-assimilation-capacity:
-	mkdir -p $(WORKDIR_NUTRIENT_ASSIMILATION_CAPACITY)
-	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/nutrients_assimilation_capacity/ $(WORKDIR_NUTRIENT_ASSIMILATION_CAPACITY)
+download-nutrient-load-reduction:
+	mkdir -p $(WORKDIR_NUTRIENT_LOAD_REDUCTION)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/nutrients_load_reduction/ $(WORKDIR_NUTRIENT_LOAD_REDUCTION)
 
-extract-nutrient-assimilation-capacity:download-nutrient-assimilation-capacity
-	unzip -q -u $(WORKDIR_NUTRIENT_ASSIMILATION_CAPACITY)/nutrient_assimilation_capacity.zip  -d $(WORKDIR_NUTRIENT_ASSIMILATION_CAPACITY)/
-	cd $(WORKDIR_NUTRIENT_ASSIMILATION_CAPACITY) && sha256sum --check ../../$(CHECKSUMS_PATH)/nutrient_assimilation_capacity
+extract-nutrient-load-reduction:download-nutrient-load-reduction
+	unzip -q -u $(WORKDIR_NUTRIENT_LOAD_REDUCTION)/nutrient_load_reduction.zip  -d $(WORKDIR_NUTRIENT_LOAD_REDUCTION)/
+	cd $(WORKDIR_NUTRIENT_LOAD_REDUCTION) && sha256sum --check ../../$(CHECKSUMS_PATH)/nutrient_load_reduction
 
-convert-nutrientAssimilationCapacity: extract-nutrient-assimilation-capacity
-	@echo "Converting nutrient assimilation capacity data... "
-	python vector_folder_to_h3_table.py $(WORKDIR_NUTRIENT_ASSIMILATION_CAPACITY) h3_grid_nutrient_assimilation_global perc_reduc nutrient_assimilation_capacity "Environmental datasets" 2023 --indicator=NAC --h3-res=6
+convert-nutrientLoadReduction: extract-nutrient-load-reduction
+	@echo "Converting nutrient load reduction data... "
+	python vector_folder_to_h3_table.py $(WORKDIR_NUTRIENT_LOAD_REDUCTION) h3_grid_nutrient_load_global perc_reduc nutrient_load_reduction "Environmental datasets" 2023 --indicator=NLR --h3-res=6
 	@echo "Including contextual layer... "
-	python vector_folder_to_h3_table.py $(WORKDIR_NUTRIENT_ASSIMILATION_CAPACITY) h3_grid_limiting_nutrients_global Cases_v2_1 limiting_nutrient "Environmental datasets" 2023
+	python vector_folder_to_h3_table.py $(WORKDIR_NUTRIENT_LOAD_REDUCTION) h3_grid_limiting_nutrients_global Cases_v2_1 limiting_nutrient "Environmental datasets" 2023
 
 ###################
 # Contextual data #

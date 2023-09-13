@@ -48,14 +48,15 @@ def calculate_perc_reduction(row):
     else:
         return 0
 
-def process_folder(folder):
+def process_folder(input_folder, output_folder):
     vec_extensions = "gdb gpkg shp json geojson".split()
-    path = Path(folder)
+    input_path = Path(input_folder)
+    output_path = Path(output_folder)
     vectors = []
     for ext in vec_extensions:
-        vectors.extend(path.glob(f"*.{ext}"))
+        vectors.extend(input_path.glob(f"*.{ext}"))
     if not vectors:
-        log.error(f"No vectors with extension {vec_extensions} found in {folder}")
+        log.error(f"No vectors with extension {vec_extensions} found in {input_folder}")
         return
     if len(vectors) == 1: #folder just contains one vector file
         # Read the shapefile
@@ -66,12 +67,12 @@ def process_folder(folder):
         gdf['perc_reduc'] = gdf.apply(calculate_perc_reduction, axis=1)
         # Save the processed data to a new shapefile
         gdf = gdf[['Cases_v2_1', 'perc_reduc', 'geometry']]
-        output_file = os.path.join(folder, 'nutrient_assimilation_capacity.shp')
+        output_file = output_path / 'nutrient_assimilation_capacity.shp'
         log.info(f"Saving preprocessed file to {output_file}")
         gdf.to_file(output_file)
     else:
         mssg = (
-            f"Found more than one vector file in {folder}."
+            f"Found more than one vector file in {input_folder}."
             f" For now we only support folders with just one vector file."
         )
         logging.error(mssg)
@@ -80,11 +81,12 @@ def process_folder(folder):
 def main():
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Process limiting nutrients vector files.")
-    parser.add_argument("folder", type=str, help="Path to the folder containing vector files")
+    parser.add_argument("input_folder", type=str, help="Path to the input folder containing vector files")
+    parser.add_argument("output_folder", type=str, help="Path to the output folder to save processed data")
     args = parser.parse_args()
 
     # Process the specified folder
-    process_folder(args.folder)
+    process_folder(args.input_folder, args.output_folder)
 
 if __name__ == "__main__":
     main()

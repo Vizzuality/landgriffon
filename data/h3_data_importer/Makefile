@@ -21,7 +21,7 @@ WORKDIR_DEFORESTATION=data/hansen_loss
 WORKDIR_GHG=data/forest_ghg
 WORKDIR_WOODPULP=data/woodpulp
 WORKDIR_NATURAL_CROP_CONVERSION=data/natural_crop_conversion
-WORKDIR_NUTRIENT_LOAD_REDUCTION=data/nutrient_load_reduction
+WORKDIR_NUTRIENT_ASSIMILATION_CAPACITY=data/nutrient_assimilation_capacity
 
 CHECKSUMS_PATH=data_checksums
 
@@ -53,7 +53,7 @@ indicators:
 	make convert-forestGHG
 	make convert-satDeforestation
 	make convert-naturalCropConversion
-	make convert-nutrientLoadReduction
+	make convert-nutrientAssimilationCapacity
 contextual-layers: convert-hdi-contextual convert-blue-water-contextual
 
 
@@ -236,6 +236,16 @@ convert-naturalCropConversion: download-naturalCropConversion
 	python raster_folder_to_h3_table.py $(WORKDIR_NATURAL_CROP_CONVERSION) h3_grid_natural_crop_conversion_global indicator NECR 2022 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 
+download-biodiversity:
+	# download and check
+	mkdir -p $(WORKDIR_BIODIVERSITY)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/biodiversity $(WORKDIR_BIODIVERSITY)
+	cd $(WORKDIR_BIODIVERSITY) && sha256sum --check ../../$(CHECKSUMS_PATH)/biodiversity
+
+convert-biodiversity: download-biodiversity
+	@echo "Converting biodiversity data... "
+	python raster_folder_to_h3_table.py $(WORKDIR_BIODIVERSITY) h3_grid_biodiversity_global indicator BL_LUC_S 2022 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+
 
 ##################################
 #        Satelligence data       #
@@ -316,35 +326,42 @@ convert-woodpulp: download-woodpulp
 # Aqueduct Global water risk contextual data
 download-aqueduct:
 	mkdir -p $(WORKDIR_AQUEDUCT)
-	wget -q -O $(WORKDIR_AQUEDUCT)/aqueduct-4-0-water-risk-data.zip https://files.wri.org/aqueduct/aqueduct-4-0-water-risk-data.zip
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/unsustainable_water_use/ $(WORKDIR_AQUEDUCT)
 
 extract-aqueduct: download-aqueduct
-	unzip -q -u $(WORKDIR_AQUEDUCT)/aqueduct-4-0-water-risk-data.zip  -d $(WORKDIR_AQUEDUCT)/
+	unzip -q -u $(WORKDIR_AQUEDUCT)/excess_withdrawals.zip  -d $(WORKDIR_AQUEDUCT)/
+	cd $(WORKDIR_AQUEDUCT) && sha256sum --check ../../../$(CHECKSUMS_PATH)/excess_withdrawals
+
 
 convert-aqueduct: extract-aqueduct
-	python vector_folder_to_h3_table.py $(WORKDIR_AQUEDUCT)/Aqueduct40_waterrisk_download_Y2023M07D05/GDB h3_grid_aqueduct_global bws_cat aqueduct "Environmental datasets" 2022 --indicator=UWUSR_T --h3-res=6 --layer=baseline_annual
-
-#########################################
-# Nutrient load reduction data   #
-#########################################
-
-download-nutrient-load-reduction:
-	mkdir -p $(WORKDIR_NUTRIENT_LOAD_REDUCTION)
-	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/nutrients_load_reduction/ $(WORKDIR_NUTRIENT_LOAD_REDUCTION)
-
-extract-nutrient-load-reduction:download-nutrient-load-reduction
-	unzip -q -u $(WORKDIR_NUTRIENT_LOAD_REDUCTION)/nutrient_load_reduction.zip  -d $(WORKDIR_NUTRIENT_LOAD_REDUCTION)/
-	cd $(WORKDIR_NUTRIENT_LOAD_REDUCTION) && sha256sum --check ../../$(CHECKSUMS_PATH)/nutrient_load_reduction
-
-convert-nutrientLoadReduction: extract-nutrient-load-reduction
-	@echo "Converting nutrient load reduction data... "
-	python vector_folder_to_h3_table.py $(WORKDIR_NUTRIENT_LOAD_REDUCTION) h3_grid_nutrient_load_global perc_reduc nutrient_load_reduction "Environmental datasets" 2023 --indicator=NLR --h3-res=6
+	@echo "Converting excess withdrawals data... "
+	python vector_folder_to_h3_table.py $(WORKDIR_AQUEDUCT) h3_grid_excess_withdrawals_global perc_reduc excess_withdrawals "Environmental datasets" 2023 --indicator=UWUSR_T --h3-res=6
 	@echo "Including contextual layer... "
-	python vector_folder_to_h3_table.py $(WORKDIR_NUTRIENT_LOAD_REDUCTION) h3_grid_limiting_nutrients_global Cases_v2_1 limiting_nutrient "Environmental datasets" 2023
+	python vector_folder_to_h3_table.py $(WORKDIR_AQUEDUCT) h3_grid_aqueduct_global bws_cat aqueduct "Environmental datasets" 2023
+
+
+#########################################
+# Nutrient assimilation capacity data   #
+#########################################
+
+download-nutrient-assimilation-capacity:
+	mkdir -p $(WORKDIR_NUTRIENT_ASSIMILATION_CAPACITY)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/nutrients_assimilation_capacity/ $(WORKDIR_NUTRIENT_ASSIMILATION_CAPACITY)
+
+extract-nutrient-assimilation-capacity:download-nutrient-assimilation-capacity
+	unzip -q -u $(WORKDIR_NUTRIENT_ASSIMILATION_CAPACITY)/nutrient_assimilation_capacity.zip  -d $(WORKDIR_NUTRIENT_ASSIMILATION_CAPACITY)/
+	cd $(WORKDIR_NUTRIENT_ASSIMILATION_CAPACITY) && sha256sum --check ../../$(CHECKSUMS_PATH)/nutrient_assimilation_capacity
+
+convert-nutrientAssimilationCapacity: extract-nutrient-assimilation-capacity
+	@echo "Converting nutrient assimilation capacity data... "
+	python vector_folder_to_h3_table.py $(WORKDIR_NUTRIENT_ASSIMILATION_CAPACITY) h3_grid_nutrient_assimilation_global perc_reduc nutrient_assimilation_capacity "Environmental datasets" 2023 --indicator=NAC --h3-res=6
+	@echo "Including contextual layer... "
+	python vector_folder_to_h3_table.py $(WORKDIR_NUTRIENT_ASSIMILATION_CAPACITY) h3_grid_limiting_nutrients_global Cases_v2_1 limiting_nutrient "Environmental datasets" 2023
 
 ###################
 # Contextual data #
 ###################
+
 
 download-hdi-contextual:
 	mkdir -p $(WORKDIR_HDI)

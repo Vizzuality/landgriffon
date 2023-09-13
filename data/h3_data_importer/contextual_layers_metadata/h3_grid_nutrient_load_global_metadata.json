@@ -1,7 +1,7 @@
 {
     "$schema": "./contextual_metadata_schema.json",
     "name": "Nutrient Load Reduction",
-    "description": "Geospatial representation indicating the extent to which basin-wide nutrient loads need to be reduced to achieve the desired state of nature in various regions. This layer illustrateS the required proportional nutrient load reduction for each specific watershed or basin to no longer be considered polluted and to attain the desired instream nutrient concentration.",
+    "description": "Modeled limiting nutrients from McDowell et al. (2020).",
     "aggType": "mode",
     "legend": {
         "name": "Nutrient Load Reduction",

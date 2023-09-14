@@ -1,7 +1,7 @@
 {
     "$schema": "./contextual_metadata_schema.json",
     "name": "Modeled limiting nutrients",
-    "description": "Modeled limiting nutrients from McDowell et al. (2020)",
+    "description": "Geographical distribution and estimated area occupied by four different types of catchments across the globe based on predicted median nutrient concentrations. These catchments are classified as either 'acceptable periphyton growth and N-limitation' (catchment type 1),  'undesirable periphyton growth and N-limitation' (catchment type 2), 'acceptable periphyton growth and P-limitation' (catchment type 3) or 'undesirable periphyton growth and P-limitation' (catchment type 4) ",
     "aggType": "mode",
     "legend": {
         "name": "Modeled limiting nutrients",

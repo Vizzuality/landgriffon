@@ -314,14 +314,19 @@ convert-woodpulp: download-woodpulp
 # Aqueduct Global water risk contextual data
 download-aqueduct:
 	mkdir -p $(WORKDIR_AQUEDUCT)
-	wget -q -O $(WORKDIR_AQUEDUCT)/aqueduct-4-0-water-risk-data.zip https://files.wri.org/aqueduct/aqueduct-4-0-water-risk-data.zip
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/unsustainable_water_use/ $(WORKDIR_AQUEDUCT)
+
+#cd $(WORKDIR_AQUEDUCT) && sha256sum --check $(CHECKSUMS_PATH)/excess_withdrawals
 
 extract-aqueduct: download-aqueduct
-	unzip -q -u $(WORKDIR_AQUEDUCT)/aqueduct-4-0-water-risk-data.zip  -d $(WORKDIR_AQUEDUCT)/
+	unzip -q -u $(WORKDIR_AQUEDUCT)/excess_withdrawals.zip  -d $(WORKDIR_AQUEDUCT)/
+	cd $(WORKDIR_AQUEDUCT) && sha256sum --check ../../../$(CHECKSUMS_PATH)/excess_withdrawals
 
 convert-aqueduct: extract-aqueduct
-	python vector_folder_to_h3_table.py $(WORKDIR_AQUEDUCT)/Aqueduct40_waterrisk_download_Y2023M07D05/GDB h3_grid_aqueduct_global bws_cat aqueduct "Environmental datasets" 2022 --indicator=UWUSR_T --h3-res=6 --layer=baseline_annual
-
+	@echo "Converting excess withdrawals data... "
+	python vector_folder_to_h3_table.py $(WORKDIR_AQUEDUCT) h3_grid_excess_withdrawals_global perc_reduc excess_withdrawals "Environmental datasets" 2023 --indicator=UWUSR_T --h3-res=6
+	@echo "Including contextual layer... "
+	python vector_folder_to_h3_table.py $(WORKDIR_AQUEDUCT) h3_grid_aqueduct_global bws_cat aqueduct "Environmental datasets" 2023
 
 download-hdi-contextual:
 	mkdir -p $(WORKDIR_HDI)

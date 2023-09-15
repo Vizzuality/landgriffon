@@ -1,0 +1,42 @@
+{
+    "$schema": "./contextual_metadata_schema.json",
+    "name": "Excess water withdrawals",
+    "description": "The Excess Water Withdrawals Basins layer utilizes Aqueduct v4.0 data to identify basins where baseline water stress exceeds the threshold of 0.4, indicating excessive water withdrawals relative to available freshwater resources. This layer serves as a valuable tool for water resource management, corporate sustainability assessments, and research by highlighting regions with potential water stress concerns and the need for targeted conservation efforts.",
+    "aggType": "mode",
+    "legend": {
+        "name": "Excess water withdrawals",
+        "id": "",
+        "unit": "%",
+        "min": 0,
+        "type": "range",
+        "items": [
+            {
+                "value":  10,
+                "label": "10%",
+                "color": "#ffc84d"
+            },
+            {
+                "value": 40,
+                "label": "40%",
+                "color": "#e65a37"
+            },
+            {
+                "value": 60,
+                "label": "60%",
+                "color": "#c1033e"
+            },
+            {
+                "value": 80,
+                "label": "80%",
+                "color": "#8b0741"
+            },
+            {
+                "value": 100,
+                "label": "100%",
+                "color": "#ce1240"
+            }
+        ]
+    },
+    "source": "Aqueduct 4.0. World Resources Institute",
+    "license": "CC BY 4.0"
+}

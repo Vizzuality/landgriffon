@@ -5,9 +5,9 @@ checksums_dir=../../../../h3_data_importer/data_checksums
 AWS_S3_BUCKET_URL=s3://landgriffon-raw-data
 
 # Targets
-.PHONY: unzip-limiting-nutrient
+.PHONY: unzip-limiting-nutrient process-limiting-nutrients zip-shapefile upload_results write_checksum:
 
-all: unzip-limiting-nutrient
+all: unzip-limiting-nutrient process-limiting-nutrients zip-shapefile upload_results write_checksum:
 
 # First you need to download the data manually from https://figshare.com/articles/figure/DRP_NO3_TN_TP_rasters/14527638/1?file=31154728 and save it in nutrient_load_reduction/data
 unzip-limiting-nutrient:

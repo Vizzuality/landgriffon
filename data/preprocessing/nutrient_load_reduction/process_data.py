@@ -1,12 +1,12 @@
 """ Reads the limiting nutrients equal area vector file, reporjects the file to EPSG4326 and estimates the percentage of reduction needed to meet a good water quality conditions.
 
 Usage:
-process_data.py <folder>
+process_data.py <input_folder> <output_folder>
 
 Arguments:
-    <folder>     Folder containing the limiting nutrients shapefile
+    <input_folder>     Input folder containing the limiting nutrients shapefile
+    <output_folder>    Output folder to export the required percentage reduction
 """
-import os
 import logging
 from pathlib import Path
 import argparse

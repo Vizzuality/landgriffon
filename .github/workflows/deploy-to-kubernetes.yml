@@ -6,9 +6,9 @@ on:
       - 'main'
       - 'staging'
       - 'test'
-      - 'benjerry'
-      - 'tetrapack'
       - 'dev'
+      - 'demo1'
+      - 'demo2'
     paths:
       - 'api/**'
       - 'client/**'

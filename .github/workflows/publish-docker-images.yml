@@ -10,10 +10,10 @@ on:
       - 'main'
       - 'staging'
       - 'test'
-      - 'benjerry'
       - 'gcp'
-      - 'tetrapack'
-      - 'dev'
+      - 'demo1'
+      - 'demo2'
+
     paths:
       - 'api/**'
       - 'client/**'
@@ -99,6 +99,12 @@ jobs:
           echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
           echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
         id: extract_branch
+
+      - name: Get environment name from secrets
+        shell: bash
+        run: |
+          echo "##[set-output name=env;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+        id: extract_env
 
       - name: Build API Docker image
         env:

@@ -316,8 +316,6 @@ download-aqueduct:
 	mkdir -p $(WORKDIR_AQUEDUCT)
 	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/unsustainable_water_use/ $(WORKDIR_AQUEDUCT)
 
-#cd $(WORKDIR_AQUEDUCT) && sha256sum --check $(CHECKSUMS_PATH)/excess_withdrawals
-
 extract-aqueduct: download-aqueduct
 	unzip -q -u $(WORKDIR_AQUEDUCT)/excess_withdrawals.zip  -d $(WORKDIR_AQUEDUCT)/
 	cd $(WORKDIR_AQUEDUCT) && sha256sum --check ../../../$(CHECKSUMS_PATH)/excess_withdrawals

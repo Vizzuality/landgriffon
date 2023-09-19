@@ -39,11 +39,15 @@ def check_and_reproject_to_4326(gdf):
 
     return gdf
 
-# Calculation of the required Load Reduction.
-# This equation is applied to only the basin-specific limiting nutrient as identified by McDowell et al. (2020)
-# The global concentration thresholds values for Total N (0.70 mg-N/L) and Total P (0.046 mg-P/L) represent acceptable levels of algal growth.
-# More information can be found on the LandGriffon v2.0 methodology
 def calculate_perc_reduction(row):
+    """
+    Calculation of the required Load Reduction.
+
+    This equation is applied to only the basin-specific limiting nutrient as identified by McDowell et al. (2020)
+    The global concentration thresholds values for Total N (0.70 mg-N/L) and Total P (0.046 mg-P/L) represent acceptable levels of algal growth.
+
+    More information can be found on the LandGriffon v2.0 methodology
+    """
     if row['Cases_v2_1'] == 4 and row['TP_con_V2_']:
         return ((row['TP_con_V2_'] - 0.046) / row['TP_con_V2_']) * 100
     elif row['Cases_v2_1'] == 2 and row['TN_con_V2_']:

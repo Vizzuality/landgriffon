@@ -9,7 +9,6 @@ export default defineConfig({
     baseUrl: 'http://localhost:3000',
     screenshotOnRunFailure: true,
     video: false,
-    videoUploadOnPasses: false,
     viewportWidth: 1280,
     viewportHeight: 920,
   },

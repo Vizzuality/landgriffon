@@ -7,8 +7,8 @@ import { UnitConversionsService } from 'modules/unit-conversions/unit-conversion
 import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import { H3DataYearsService } from 'modules/h3-data/services/h3-data-years.service';
-import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
-import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
+import { MaterialsToH3sService } from 'modules/h3-data/materials-to-h3s.service';
+import { MATERIAL_TYPE } from 'modules/h3-data/entity-to-h3.entity';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
 
@@ -96,7 +96,7 @@ export class H3DataService {
 
   getMaterialH3ByClosestYear(
     materialId: string,
-    type: MATERIAL_TO_H3_TYPE,
+    type: MATERIAL_TYPE,
     year: number,
   ): Promise<H3Data | undefined> {
     return this.h3DataRepository.getMaterialH3ByTypeAndClosestYear(
@@ -135,11 +135,11 @@ export class H3DataService {
   getAllMaterialH3sByClosestYear(
     materialId: string,
     year: number,
-  ): Promise<Map<MATERIAL_TO_H3_TYPE, H3Data>> {
-    return Object.values(MATERIAL_TO_H3_TYPE).reduce(
+  ): Promise<Map<MATERIAL_TYPE, H3Data>> {
+    return Object.values(MATERIAL_TYPE).reduce(
       async (
-        previousValue: Promise<Map<MATERIAL_TO_H3_TYPE, H3Data>>,
-        currentValue: MATERIAL_TO_H3_TYPE,
+        previousValue: Promise<Map<MATERIAL_TYPE, H3Data>>,
+        currentValue: MATERIAL_TYPE,
       ) => {
         const h3data: H3Data | undefined =
           await this.h3DataRepository.getMaterialH3ByTypeAndClosestYear(
@@ -147,7 +147,7 @@ export class H3DataService {
             currentValue,
             year,
           );
-        const map: Map<MATERIAL_TO_H3_TYPE, H3Data> = await previousValue;
+        const map: Map<MATERIAL_TYPE, H3Data> = await previousValue;
 
         if (h3data) {
           map.set(currentValue, h3data);

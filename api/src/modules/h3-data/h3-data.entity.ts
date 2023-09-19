@@ -9,7 +9,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Indicator } from 'modules/indicators/indicator.entity';
-import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
+import { EntityToH3 } from 'modules/h3-data/entity-to-h3.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { ContextualLayer } from 'modules/contextual-layers/contextual-layer.entity';
 
@@ -71,10 +71,10 @@ export class H3Data extends BaseEntity {
   metadata?: JSON;
 
   @OneToMany(
-    () => MaterialToH3,
-    (materialToH3: MaterialToH3) => materialToH3.h3Data,
+    () => EntityToH3,
+    (materialToH3: EntityToH3) => materialToH3.h3Data,
   )
-  materialToH3s: MaterialToH3[];
+  materialToH3s: EntityToH3[];
 
   @OneToMany(() => IndicatorRecord, (ir: IndicatorRecord) => ir.materialH3Data)
   indicatorRecords: IndicatorRecord[];

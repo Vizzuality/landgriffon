@@ -10,7 +10,7 @@ import {
   INDICATOR_NAME_CODES,
 } from 'modules/indicators/indicator.entity';
 import { snakeCase } from 'typeorm/util/StringUtils';
-import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
+import { MATERIAL_TYPE } from 'modules/h3-data/entity-to-h3.entity';
 import { range } from 'lodash';
 import { h3BasicFixture } from '../../../e2e/h3-data/mocks/h3-fixtures';
 import { DataSource } from 'typeorm';
@@ -219,13 +219,13 @@ async function createMaterialTreeForXLSXImport(
       await createMaterialToH3(
         material.id,
         materialProductionH3Table.id,
-        MATERIAL_TO_H3_TYPE.PRODUCER,
+        MATERIAL_TYPE.PRODUCER,
       );
 
       await createMaterialToH3(
         material.id,
         materialHarvestH3Table.id,
-        MATERIAL_TO_H3_TYPE.HARVEST,
+        MATERIAL_TYPE.HARVEST,
       );
 
       materialMap[spec.hsCodeId] = material;

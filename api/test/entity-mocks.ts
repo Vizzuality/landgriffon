@@ -22,10 +22,7 @@ import {
 import { UnitConversion } from 'modules/unit-conversions/unit-conversion.entity';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
-import {
-  MATERIAL_TO_H3_TYPE,
-  MaterialToH3,
-} from 'modules/materials/material-to-h3.entity';
+import { MATERIAL_TYPE, EntityToH3 } from 'modules/h3-data/entity-to-h3.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { Task, TASK_STATUS, TASK_TYPE } from 'modules/tasks/task.entity';
 import { Target } from 'modules/targets/target.entity';
@@ -155,10 +152,10 @@ async function createIndicatorRecord(
   const sourcingRecord: SourcingRecord = await createSourcingRecord();
   const basicMaterial: Material = await createMaterial();
   const basicH3: H3Data = await createH3Data();
-  const basicMaterialToH3: MaterialToH3 = await createMaterialToH3(
+  const basicMaterialToH3: EntityToH3 = await createMaterialToH3(
     basicMaterial.id,
     basicH3.id,
-    MATERIAL_TO_H3_TYPE.HARVEST,
+    MATERIAL_TYPE.HARVEST,
   );
   const defaultData: DeepPartial<IndicatorRecord> = {
     value: 2000,
@@ -183,10 +180,10 @@ async function createIndicatorRecordV2(
 ): Promise<IndicatorRecord> {
   const basicMaterial: Material = await createMaterial();
   const basicH3: H3Data = await createH3Data();
-  const basicMaterialToH3: MaterialToH3 = await createMaterialToH3(
+  const basicMaterialToH3: EntityToH3 = await createMaterialToH3(
     basicMaterial.id,
     basicH3.id,
-    MATERIAL_TO_H3_TYPE.HARVEST,
+    MATERIAL_TYPE.HARVEST,
   );
   const defaultData: DeepPartial<IndicatorRecord> = {
     value: 2000,
@@ -210,10 +207,10 @@ async function createIndicatorRecordForIntervention(
 ): Promise<IndicatorRecord> {
   const basicMaterial: Material = await createMaterial();
   const basicH3: H3Data = await createH3Data();
-  const basicMaterialToH3: MaterialToH3 = await createMaterialToH3(
+  const basicMaterialToH3: EntityToH3 = await createMaterialToH3(
     basicMaterial.id,
     basicH3.id,
-    MATERIAL_TO_H3_TYPE.HARVEST,
+    MATERIAL_TYPE.HARVEST,
   );
   const defaultData: DeepPartial<IndicatorRecord> = {
     value: 2000,
@@ -251,9 +248,9 @@ async function createSupplier(
 async function createMaterialToH3(
   materialId: string,
   h3DataId: string,
-  type: MATERIAL_TO_H3_TYPE,
-): Promise<MaterialToH3> {
-  const materialToH3 = MaterialToH3.merge(new MaterialToH3(), {
+  type: MATERIAL_TYPE,
+): Promise<EntityToH3> {
+  const materialToH3 = EntityToH3.merge(new EntityToH3(), {
     materialId,
     h3DataId,
     type,

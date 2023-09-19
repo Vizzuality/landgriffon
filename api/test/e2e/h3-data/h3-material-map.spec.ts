@@ -3,8 +3,8 @@ import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { dropH3DataMock, h3DataMock } from './mocks/h3-data.mock';
 import { createMaterial, createMaterialToH3 } from '../../entity-mocks';
 import { MaterialRepository } from 'modules/materials/material.repository';
-import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
-import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
+import { MATERIAL_TYPE } from 'modules/h3-data/entity-to-h3.entity';
+import { MaterialsToH3sService } from 'modules/h3-data/materials-to-h3s.service';
 import { h3MaterialExampleDataFixture } from './mocks/h3-fixtures';
 import { setupTestUser } from '../../utils/userAuth';
 import ApplicationManager, {
@@ -144,11 +144,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
       year: 2020,
     });
     const material = await createMaterial();
-    await createMaterialToH3(
-      material.id,
-      h3Data.id,
-      MATERIAL_TO_H3_TYPE.PRODUCER,
-    );
+    await createMaterialToH3(material.id, h3Data.id, MATERIAL_TYPE.PRODUCER);
     const responseRes1 = await request(testApplication.getHttpServer())
       .get(`/api/v1/h3/map/material`)
       .set('Authorization', `Bearer ${jwtToken}`)

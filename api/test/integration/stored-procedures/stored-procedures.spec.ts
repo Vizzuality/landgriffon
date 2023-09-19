@@ -15,8 +15,8 @@ import {
 import { createWorldToCalculateIndicatorRecords } from '../../utils/indicator-records-preconditions';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { Material } from 'modules/materials/material.entity';
-import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
-import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
+import { MATERIAL_TYPE } from 'modules/h3-data/entity-to-h3.entity';
+import { MaterialsToH3sService } from 'modules/h3-data/materials-to-h3s.service';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { snakeCase } from 'typeorm/util/StringUtils';
 import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
@@ -78,11 +78,11 @@ describe.skip('Stored Procedures Tests', () => {
     await createMaterialToH3(
       materialMock.id,
       materialMockH3.id,
-      MATERIAL_TO_H3_TYPE.PRODUCER,
+      MATERIAL_TYPE.PRODUCER,
     );
 
     const h3TableResult = await dataSource.query(
-      `select get_h3_table_column_for_material('${materialMock.id}', '${MATERIAL_TO_H3_TYPE.PRODUCER}') as "h3TableResult"`,
+      `select get_h3_table_column_for_material('${materialMock.id}', '${MATERIAL_TYPE.PRODUCER}') as "h3TableResult"`,
     );
     expect(h3TableResult[0]).toEqual({
       h3TableResult: `(${snakeCase(materialMockH3.h3tableName)},${
@@ -189,11 +189,11 @@ describe.skip('Stored Procedures Tests', () => {
     await createMaterialToH3(
       materialMock.id,
       materialMockH3.id,
-      MATERIAL_TO_H3_TYPE.HARVEST,
+      MATERIAL_TYPE.HARVEST,
     );
 
     const sumOfWeightedCarbon = await dataSource.query(
-      `select sum_weighted_carbon_over_georegion('${geoRegion.id}', '${materialMock.id}', '${MATERIAL_TO_H3_TYPE.HARVEST}') as sum `,
+      `select sum_weighted_carbon_over_georegion('${geoRegion.id}', '${materialMock.id}', '${MATERIAL_TYPE.HARVEST}') as sum `,
     );
 
     expect(sumOfWeightedCarbon[0].sum).toEqual(
@@ -222,11 +222,11 @@ describe.skip('Stored Procedures Tests', () => {
     await createMaterialToH3(
       materialMock.id,
       materialMockH3.id,
-      MATERIAL_TO_H3_TYPE.HARVEST,
+      MATERIAL_TYPE.HARVEST,
     );
 
     const sumOfWeightedBiodiversituy = await dataSource.query(
-      `select sum_weighted_biodiversity_over_georegion('${geoRegion.id}', '${materialMock.id}', '${MATERIAL_TO_H3_TYPE.HARVEST}') as sum `,
+      `select sum_weighted_biodiversity_over_georegion('${geoRegion.id}', '${materialMock.id}', '${MATERIAL_TYPE.HARVEST}') as sum `,
     );
     expect(sumOfWeightedBiodiversituy[0].sum).toEqual(
       expectedResultsMultiplyingByMaterial2IndicatorsAndCalculusFacotr,

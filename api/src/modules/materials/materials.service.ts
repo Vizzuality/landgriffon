@@ -85,7 +85,7 @@ export class MaterialsService extends AppBaseService<
    */
   static filterMaterialTree(root: Material): Material[] {
     let result: Material[] = [];
-    if (!root.materialToH3s || root.materialToH3s.length === 0) {
+    if (!root.entityH3s || root.entityH3s.length === 0) {
       if (root.children) {
         root.children.forEach((child: Material) => {
           result = result.concat(this.filterMaterialTree(child));

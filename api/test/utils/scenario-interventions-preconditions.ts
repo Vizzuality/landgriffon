@@ -22,7 +22,7 @@ import {
   createSourcingRecord,
   createSupplier,
 } from '../entity-mocks';
-import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
+import { MATERIAL_TYPE } from 'modules/h3-data/entity-to-h3.entity';
 import { h3DataMock } from '../e2e/h3-data/mocks/h3-data.mock';
 import {
   h3IndicatorExampleDataFixture,
@@ -166,26 +166,18 @@ export async function createInterventionPreconditions(
   await createMaterialToH3(
     material1Descendant.id,
     h3Material.id,
-    MATERIAL_TO_H3_TYPE.HARVEST,
+    MATERIAL_TYPE.HARVEST,
   );
 
   await createMaterialToH3(
     material1Descendant.id,
     h3Material.id,
-    MATERIAL_TO_H3_TYPE.PRODUCER,
+    MATERIAL_TYPE.PRODUCER,
   );
 
-  await createMaterialToH3(
-    material2.id,
-    h3Material.id,
-    MATERIAL_TO_H3_TYPE.HARVEST,
-  );
+  await createMaterialToH3(material2.id, h3Material.id, MATERIAL_TYPE.HARVEST);
 
-  await createMaterialToH3(
-    material2.id,
-    h3Material.id,
-    MATERIAL_TO_H3_TYPE.PRODUCER,
-  );
+  await createMaterialToH3(material2.id, h3Material.id, MATERIAL_TYPE.PRODUCER);
 
   const sourcingRecord1: SourcingRecord = await createSourcingRecord({
     sourcingLocationId: sourcingLocation1.id,

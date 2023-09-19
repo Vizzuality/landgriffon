@@ -10,11 +10,8 @@ import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
-import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
-import {
-  MaterialToH3,
-  MATERIAL_TO_H3_TYPE,
-} from 'modules/materials/material-to-h3.entity';
+import { MaterialsToH3sService } from 'modules/h3-data/materials-to-h3s.service';
+import { EntityToH3, MATERIAL_TYPE } from 'modules/h3-data/entity-to-h3.entity';
 
 @Injectable()
 export class H3DataYearsService {
@@ -62,15 +59,14 @@ export class H3DataYearsService {
 
     let h3DataIds: string[] | undefined = undefined;
     if (materialIds?.length) {
-      const materialsToH3s: MaterialToH3[] =
-        await this.materialToH3Service.find({
-          where: {
-            materialId: materialIds[0],
-          },
-        });
+      const materialsToH3s: EntityToH3[] = await this.materialToH3Service.find({
+        where: {
+          materialId: materialIds[0],
+        },
+      });
 
       h3DataIds = materialsToH3s.map(
-        (materialToH3: MaterialToH3) => materialToH3.h3DataId,
+        (materialToH3: EntityToH3) => materialToH3.h3DataId,
       );
     }
 
@@ -102,7 +98,7 @@ export class H3DataYearsService {
 
   async getClosestAvailableYearForMaterialH3(
     materialId: string,
-    materialType: MATERIAL_TO_H3_TYPE,
+    materialType: MATERIAL_TYPE,
     year: number,
   ): Promise<number | undefined> {
     let materialDataYear: number | undefined;

@@ -45,7 +45,7 @@ import {
   impactTableWithScenario,
 } from '../mocks/response-mocks.impact';
 import { PaginationMeta } from 'utils/app-base.service';
-import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
+import { EntityToH3 } from 'modules/h3-data/entity-to-h3.entity';
 import {
   clearEntityTables,
   clearTestDataFromDatabase,
@@ -77,7 +77,7 @@ describe('Impact Table and Charts test suite (e2e)', () => {
   afterEach(async () => {
     await clearEntityTables(dataSource, [
       IndicatorRecord,
-      MaterialToH3,
+      EntityToH3,
       H3Data,
       Material,
       Indicator,

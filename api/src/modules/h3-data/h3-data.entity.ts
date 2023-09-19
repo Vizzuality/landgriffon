@@ -8,7 +8,6 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Indicator } from 'modules/indicators/indicator.entity';
 import { EntityToH3 } from 'modules/h3-data/entity-to-h3.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { ContextualLayer } from 'modules/contextual-layers/contextual-layer.entity';
@@ -57,27 +56,18 @@ export class H3Data extends BaseEntity {
   @Column({ type: 'int' })
   h3resolution: number;
 
-  @ManyToOne(() => Indicator, (indicator: Indicator) => indicator.id, {
-    cascade: true,
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'indicatorId' })
-  indicators: Indicator[];
-
-  @Column({ nullable: true })
-  indicatorId: string;
-
   @Column({ type: 'json', nullable: true })
   metadata?: JSON;
 
-  @OneToMany(
-    () => EntityToH3,
-    (materialToH3: EntityToH3) => materialToH3.h3Data,
-  )
-  materialToH3s: EntityToH3[];
+  @OneToMany(() => EntityToH3, (entityToH3: EntityToH3) => entityToH3.h3Data)
+  entityToH3s: EntityToH3[];
+
+  // TODO: consider removing this relation. double check implications
 
   @OneToMany(() => IndicatorRecord, (ir: IndicatorRecord) => ir.materialH3Data)
   indicatorRecords: IndicatorRecord[];
+
+  // TODO: should we also move this to entityToH3?
 
   @ManyToOne(() => ContextualLayer, (cl: ContextualLayer) => cl.h3Data)
   @JoinColumn({ name: 'contextualLayerId' })

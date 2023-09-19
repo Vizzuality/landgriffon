@@ -16,10 +16,11 @@ import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { AuthorizationModule } from 'modules/authorization/authorization.module';
+import { EntityToH3 } from 'modules/h3-data/entity-to-h3.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([H3Data]),
+    TypeOrmModule.forFeature([H3Data, EntityToH3]),
     MaterialsModule,
     IndicatorsModule,
     UnitConversionsModule,

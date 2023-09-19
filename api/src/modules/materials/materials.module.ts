@@ -3,7 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Material } from 'modules/materials/material.entity';
 import { MaterialsController } from 'modules/materials/materials.controller';
 import { MaterialsService } from 'modules/materials/materials.service';
-import { EntityToH3 } from 'modules/h3-data/entity-to-h3.entity';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
@@ -13,7 +12,7 @@ import { MaterialRepository } from 'modules/materials/material.repository';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Material, EntityToH3]),
+    TypeOrmModule.forFeature([Material]),
     forwardRef(() => AdminRegionsModule),
     forwardRef(() => BusinessUnitsModule),
     forwardRef(() => SuppliersModule),

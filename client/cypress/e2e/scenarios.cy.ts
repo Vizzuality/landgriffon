@@ -24,7 +24,7 @@ beforeEach(() => {
   //   statusCode: 200,
   // }).as('deleteScenario');
 
-  cy.login();
+  cy.loginWithFixtures();
   cy.visit('/data/scenarios');
 });
 

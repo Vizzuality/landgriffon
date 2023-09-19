@@ -43,7 +43,7 @@ describe('Data page - admin', () => {
 describe('Data page - user', () => {
   beforeEach(() => {
     cy.interceptAllRequests();
-    cy.login();
+    cy.loginWithFixtures();
     cy.visit('/data');
     cy.wait('@sourcingLocations');
   });

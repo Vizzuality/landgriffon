@@ -1,7 +1,7 @@
 describe('Analysis comparison', () => {
   beforeEach(() => {
     cy.interceptAllRequests();
-    cy.login();
+    cy.loginWithFixtures();
   });
 
   afterEach(() => {

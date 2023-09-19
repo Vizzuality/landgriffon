@@ -1,7 +1,7 @@
 describe('Analysis charts', () => {
   beforeEach(() => {
     cy.interceptAllRequests();
-    cy.login();
+    cy.loginWithFixtures();
     cy.visit('/analysis/chart');
   });
 

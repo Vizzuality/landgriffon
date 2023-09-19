@@ -18,6 +18,26 @@ Cypress.Commands.add(
   } = {}): Cypress.Chainable => {
     cy.log('🔐 Sign in with Next Auth');
 
+    return cy.session(['login', username, password], () => {
+      cy.wrap(
+        signIn('credentials', {
+          redirect: false,
+          username,
+          password,
+        }),
+      );
+    });
+  },
+);
+
+Cypress.Commands.add(
+  'loginWithFixtures',
+  ({
+    username = Cypress.env('USERNAME'),
+    password = Cypress.env('PASSWORD'),
+  } = {}): Cypress.Chainable => {
+    cy.log('🔐 Sign in with Next Auth');
+
     cy.intercept('GET', '/api/auth/session', {
       fixture: 'auth/session.json',
     }).as('session');

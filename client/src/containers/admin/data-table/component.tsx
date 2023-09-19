@@ -168,7 +168,7 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
           </Button>
         </div>
 
-        {task?.user?.email === session.user?.email && <DataUploadError task={task} />}
+        {task?.user?.email === session?.user?.email && <DataUploadError task={task} />}
 
         {!isSourcingLocationsLoading && (
           <div className="flex justify-end w-full">
@@ -214,7 +214,7 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
         onDismiss={closeUploadDataSourceModal}
         theme="default"
       >
-        <div>
+        <div data-testid="modal-upload-data-source">
           <div>
             <p className="text-sm text-gray-500">
               Uploading a new file will replace all the current data.
@@ -233,6 +233,7 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
                 rel="noopener noreferrer"
                 icon={<DownloadIcon aria-hidden="true" />}
                 variant="white"
+                data-testid="download-template-btn"
               >
                 Download template
               </Anchor>

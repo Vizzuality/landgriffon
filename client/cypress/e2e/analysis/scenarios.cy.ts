@@ -1,7 +1,7 @@
 describe('Analysis scenarios', () => {
   beforeEach(() => {
     cy.interceptAllRequests();
-    cy.login();
+    cy.loginWithFixtures();
   });
 
   afterEach(() => {

@@ -1,7 +1,7 @@
 beforeEach(() => {
   cy.interceptAllRequests();
 
-  cy.login();
+  cy.loginWithFixtures();
   cy.visit('/data/scenarios/some-random-id/interventions/random-intervention-id/edit');
 });
 

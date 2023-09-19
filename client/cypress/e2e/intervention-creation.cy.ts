@@ -11,7 +11,7 @@ beforeEach(() => {
     fixture: 'scenario/scenario-materials',
   }).as('materialsTrees');
 
-  cy.login();
+  cy.loginWithFixtures();
   cy.createScenario();
   cy.visit('/data/scenarios/some-random-id/interventions/new');
 });

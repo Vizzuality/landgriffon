@@ -4,6 +4,9 @@ import { MATERIAL_TYPE, EntityToH3 } from 'modules/h3-data/entity-to-h3.entity';
 import { DataSource, SelectQueryBuilder } from 'typeorm';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 
+/**
+ * @debt: This needs to be refactored to be entityToH3Service
+ */
 @Injectable()
 export class MaterialsToH3sService extends Repository<EntityToH3> {
   constructor(private dataSource: DataSource) {

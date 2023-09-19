@@ -64,14 +64,6 @@ export class H3DataService {
     return await this.h3DataRepository.findOneBy({ id });
   }
 
-  async findH3ByIndicatorId(indicatorId: string): Promise<H3Data | null> {
-    return await this.h3DataRepository.findOne({ where: { indicatorId } });
-  }
-
-  findH3ByContextualLayerId(contextualLayerId: string): Promise<H3Data | null> {
-    return this.h3DataRepository.findOne({ where: { contextualLayerId } });
-  }
-
   getContextualLayerH3DataByClosestYear(
     contextualLayerId: string,
     year?: number,

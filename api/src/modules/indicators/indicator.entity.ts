@@ -11,8 +11,7 @@ import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-c
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseServiceResource } from 'types/resource.interface';
 import { Unit } from 'modules/units/unit.entity';
-import { H3Data } from 'modules/h3-data/h3-data.entity';
-import { EntityToH3 } from '../h3-data/entity-to-h3.entity';
+import { EntityToH3 } from 'modules/h3-data/entity-to-h3.entity';
 
 export enum INDICATOR_STATUS {
   ACTIVE = 'active',

@@ -16,10 +16,10 @@ import {
   IndicatorRecord,
 } from 'modules/indicator-records/indicator-record.entity';
 import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
-import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
+import { EntityToH3 } from 'modules/h3-data/entity-to-h3.entity';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 import { IndicatorRecordCalculatedValuesDto } from 'modules/indicator-records/dto/indicator-record-calculated-values.dto';
-import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
+import { MaterialsToH3sService } from 'modules/h3-data/materials-to-h3s.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { H3DataService } from 'modules/h3-data/h3-data.service';
@@ -105,7 +105,7 @@ export class ImpactCalculator {
 
     let calculatedIndicatorRecordValues: IndicatorRecordCalculatedValuesDto;
     const indicatorRecords: IndicatorRecord[] = [];
-    const materialH3s: MaterialToH3 | null = await this.materialToH3.findOne({
+    const materialH3s: EntityToH3 | null = await this.materialToH3.findOne({
       where: { materialId },
     });
     if (!materialH3s) {

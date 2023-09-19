@@ -23,7 +23,7 @@ import {
   INDICATOR_RECORD_STATUS,
   IndicatorRecord,
 } from 'modules/indicator-records/indicator-record.entity';
-import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
+import { MaterialsToH3sService } from 'modules/h3-data/materials-to-h3s.service';
 import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/indicator-coefficients.dto';
 import { MissingH3DataError } from 'modules/indicator-records/errors/missing-h3-data.error';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
@@ -41,10 +41,7 @@ import {
   clearTestDataFromDatabase,
   dropH3GridTables,
 } from '../../../utils/database-test-helper';
-import {
-  MATERIAL_TO_H3_TYPE,
-  MaterialToH3,
-} from 'modules/materials/material-to-h3.entity';
+import { MATERIAL_TYPE, EntityToH3 } from 'modules/h3-data/entity-to-h3.entity';
 import { h3MaterialExampleDataFixture } from '../../../e2e/h3-data/mocks/h3-fixtures';
 import {
   dropH3DataMock,
@@ -161,7 +158,7 @@ describe('Impact Calculator Tests', () => {
       await createMaterialToH3(
         indicatorPreconditions.material1.id,
         fakeH3Data.id,
-        MATERIAL_TO_H3_TYPE.HARVEST,
+        MATERIAL_TYPE.HARVEST,
       );
 
       const fakeIndicatorRecordForScaler: IndicatorRecord =
@@ -217,13 +214,13 @@ describe('Impact Calculator Tests', () => {
       const materialH3Data = await createMaterialToH3(
         indicatorPreconditions.material1.id,
         h3Material.id,
-        MATERIAL_TO_H3_TYPE.HARVEST,
+        MATERIAL_TYPE.HARVEST,
       );
 
       await createMaterialToH3(
         indicatorPreconditions.material1.id,
         h3Material.id,
-        MATERIAL_TO_H3_TYPE.PRODUCER,
+        MATERIAL_TYPE.PRODUCER,
       );
 
       const sourcingData = {
@@ -355,7 +352,7 @@ describe('Impact Calculator Tests', () => {
       await createMaterialToH3(
         indicatorPreconditions.material2.id,
         h3Material.id,
-        MATERIAL_TO_H3_TYPE.HARVEST,
+        MATERIAL_TYPE.HARVEST,
       );
 
       //ACT
@@ -402,12 +399,12 @@ describe('Impact Calculator Tests', () => {
       await createMaterialToH3(
         indicatorPreconditions.material2.id,
         h3Material.id,
-        MATERIAL_TO_H3_TYPE.HARVEST,
+        MATERIAL_TYPE.HARVEST,
       );
       await createMaterialToH3(
         indicatorPreconditions.material2.id,
         h3Material.id,
-        MATERIAL_TO_H3_TYPE.PRODUCER,
+        MATERIAL_TYPE.PRODUCER,
       );
       await h3DataRepository.delete({
         id: indicatorPreconditions.deforestation.id,
@@ -450,12 +447,12 @@ describe('Impact Calculator Tests', () => {
       const materialH3DataProducer = await createMaterialToH3(
         indicatorPreconditions.material2.id,
         h3Material.id,
-        MATERIAL_TO_H3_TYPE.PRODUCER,
+        MATERIAL_TYPE.PRODUCER,
       );
       await createMaterialToH3(
         indicatorPreconditions.material2.id,
         h3Material.id,
-        MATERIAL_TO_H3_TYPE.HARVEST,
+        MATERIAL_TYPE.HARVEST,
       );
 
       const calculatedRecords =
@@ -520,22 +517,22 @@ describe('Impact Calculator Tests', () => {
       const materialH3DataProducer1 = await createMaterialToH3(
         indicatorPreconditions.material1.id,
         h3Material1.id,
-        MATERIAL_TO_H3_TYPE.PRODUCER,
+        MATERIAL_TYPE.PRODUCER,
       );
       await createMaterialToH3(
         indicatorPreconditions.material1.id,
         h3Material1.id,
-        MATERIAL_TO_H3_TYPE.HARVEST,
+        MATERIAL_TYPE.HARVEST,
       );
       const materialH3DataProducer2 = await createMaterialToH3(
         indicatorPreconditions.material2.id,
         h3Material2.id,
-        MATERIAL_TO_H3_TYPE.PRODUCER,
+        MATERIAL_TYPE.PRODUCER,
       );
       await createMaterialToH3(
         indicatorPreconditions.material2.id,
         h3Material2.id,
-        MATERIAL_TO_H3_TYPE.HARVEST,
+        MATERIAL_TYPE.HARVEST,
       );
 
       //ACT
@@ -640,12 +637,12 @@ describe('Impact Calculator Tests', () => {
       await createMaterialToH3(
         indicatorPreconditions.material2.id,
         h3MaterialProducer.id,
-        MATERIAL_TO_H3_TYPE.PRODUCER,
+        MATERIAL_TYPE.PRODUCER,
       );
       await createMaterialToH3(
         indicatorPreconditions.material2.id,
         h3MaterialHarvest.id,
-        MATERIAL_TO_H3_TYPE.HARVEST,
+        MATERIAL_TYPE.HARVEST,
       );
 
       //Small "hack" to access the method to simplify part of the cache key
@@ -665,9 +662,9 @@ describe('Impact Calculator Tests', () => {
         INDICATOR_NAME_CODES.DEFORESTATION_RISK,
         indicatorPreconditions.deforestation,
       );
-      const materialsMap: Map<MATERIAL_TO_H3_TYPE, H3Data> = new Map();
-      materialsMap.set(MATERIAL_TO_H3_TYPE.HARVEST, h3MaterialHarvest);
-      materialsMap.set(MATERIAL_TO_H3_TYPE.PRODUCER, h3MaterialProducer);
+      const materialsMap: Map<MATERIAL_TYPE, H3Data> = new Map();
+      materialsMap.set(MATERIAL_TYPE.HARVEST, h3MaterialHarvest);
+      materialsMap.set(MATERIAL_TYPE.PRODUCER, h3MaterialProducer);
 
       const bioCacheKey: any = generateIndicatorCacheKey(
         indicatorPreconditions.sourcingLocation2.geoRegionId,
@@ -876,7 +873,7 @@ describe('Impact Calculator Tests', () => {
    */
   async function checkCreatedIndicatorRecord(
     indicator: Indicator,
-    materialH3Data: MaterialToH3,
+    materialH3Data: EntityToH3,
     sourcingRecordId: string,
     recordValue: number,
     scalerValue: number | null,

@@ -12,7 +12,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
-import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
+import { EntityToH3 } from 'modules/h3-data/entity-to-h3.entity';
 
 export enum MATERIALS_STATUS {
   ACTIVE = 'active',
@@ -104,8 +104,8 @@ export class Material extends TimestampedBaseEntity {
   datasetId: string;
 
   @OneToMany(
-    () => MaterialToH3,
-    (materialToH3: MaterialToH3) => materialToH3.material,
+    () => EntityToH3,
+    (materialToH3: EntityToH3) => materialToH3.material,
   )
-  materialToH3s: MaterialToH3[];
+  entityH3s: EntityToH3[];
 }

@@ -12,6 +12,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseServiceResource } from 'types/resource.interface';
 import { Unit } from 'modules/units/unit.entity';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { EntityToH3 } from '../h3-data/entity-to-h3.entity';
 
 export enum INDICATOR_STATUS {
   ACTIVE = 'active',
@@ -85,12 +86,14 @@ export class Indicator extends BaseEntity {
   @ApiPropertyOptional()
   indicatorCoefficients: IndicatorCoefficient[];
 
-  @OneToMany(() => H3Data, (h3grid: H3Data) => h3grid.indicators, {
-    nullable: true,
-  })
-  @JoinColumn()
-  h3Grid: H3Data;
-
+  @OneToMany(
+    () => EntityToH3,
+    (entityToH3: EntityToH3) => entityToH3.indicator,
+    {
+      nullable: true,
+    },
+  )
+  entityH3s?: EntityToH3[];
   /**
    * Defines the calculation dependencies for each indicator. These will be static, and very unlikely to change
    * includeItself is a convenience parameter, that makes the passed indicatorType as part of the dependency list; it's

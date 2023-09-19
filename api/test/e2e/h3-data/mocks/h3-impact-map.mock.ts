@@ -29,10 +29,7 @@ import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity'
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
-import {
-  MATERIAL_TO_H3_TYPE,
-  MaterialToH3,
-} from 'modules/materials/material-to-h3.entity';
+import { MATERIAL_TYPE, EntityToH3 } from 'modules/h3-data/entity-to-h3.entity';
 import { h3BasicFixtureForScaler } from './h3-fixtures';
 import {
   SCENARIO_INTERVENTION_STATUS,
@@ -123,12 +120,12 @@ export const createImpactMapMockData = async (
   await createMaterialToH3(
     materialOne.id,
     productionH3Data.id,
-    MATERIAL_TO_H3_TYPE.PRODUCER,
+    MATERIAL_TYPE.PRODUCER,
   );
   await createMaterialToH3(
     materialOne.id,
     harvestH3Data.id,
-    MATERIAL_TO_H3_TYPE.HARVEST,
+    MATERIAL_TYPE.HARVEST,
   );
 
   const geoRegionOne: GeoRegion = await createGeoRegion({
@@ -176,12 +173,12 @@ export const createImpactMapMockData = async (
   await createMaterialToH3(
     materialTwo.id,
     productionH3Data.id,
-    MATERIAL_TO_H3_TYPE.PRODUCER,
+    MATERIAL_TYPE.PRODUCER,
   );
   await createMaterialToH3(
     materialTwo.id,
     harvestH3Data.id,
-    MATERIAL_TO_H3_TYPE.HARVEST,
+    MATERIAL_TYPE.HARVEST,
   );
 
   const geoRegionTwo: GeoRegion = await createGeoRegion({
@@ -494,7 +491,7 @@ export const createImpactMapMockData = async (
 export const deleteImpactMapMockData = async (
   dataSource: DataSource,
 ): Promise<void> => {
-  await dataSource.getRepository(MaterialToH3).delete({});
+  await dataSource.getRepository(EntityToH3).delete({});
   await dataSource.getRepository(Material).delete({});
   await dataSource.getRepository(H3Data).delete({});
   await dataSource.getRepository(Indicator).delete({});

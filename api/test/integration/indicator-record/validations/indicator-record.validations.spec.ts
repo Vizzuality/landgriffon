@@ -6,7 +6,7 @@ import {
   clearEntityTables,
   clearTestDataFromDatabase,
 } from '../../../utils/database-test-helper';
-import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
+import { EntityToH3 } from 'modules/h3-data/entity-to-h3.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { DataSource } from 'typeorm';
 import ApplicationManager, {
@@ -27,7 +27,7 @@ describe('Indicator Records Service', () => {
     await clearEntityTables(dataSource, [
       IndicatorRecord,
       SourcingRecord,
-      MaterialToH3,
+      EntityToH3,
       Material,
       H3Data,
     ]);

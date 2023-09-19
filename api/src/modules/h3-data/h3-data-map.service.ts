@@ -13,8 +13,8 @@ import {
   GetImpactMapDto,
   GetScenarioVsScenarioImpactMapDto,
 } from 'modules/h3-data/dto/get-impact-map.dto';
-import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
-import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
+import { MaterialsToH3sService } from 'modules/h3-data/materials-to-h3s.service';
+import { MATERIAL_TYPE } from 'modules/h3-data/entity-to-h3.entity';
 import { Material } from 'modules/materials/material.entity';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
@@ -66,7 +66,7 @@ export class H3DataMapService {
       await this.materialToH3Service.findH3DataForMaterial({
         materialId,
         year,
-        type: MATERIAL_TO_H3_TYPE.PRODUCER,
+        type: MATERIAL_TYPE.PRODUCER,
       });
 
     if (!materialH3Data)
@@ -191,25 +191,25 @@ export class H3DataMapService {
         const materialHarvestH3DataYear: number | undefined =
           await this.h3DataYearsService.getClosestAvailableYearForMaterialH3(
             material.id,
-            MATERIAL_TO_H3_TYPE.HARVEST,
+            MATERIAL_TYPE.HARVEST,
             year,
           );
         const materialProducerH3DataYear: number | undefined =
           await this.h3DataYearsService.getClosestAvailableYearForMaterialH3(
             material.id,
-            MATERIAL_TO_H3_TYPE.PRODUCER,
+            MATERIAL_TYPE.PRODUCER,
             year,
           );
         materialsH3DataYears.push(
           {
             materialName: material.name,
             materialDataYear: materialHarvestH3DataYear,
-            materialDataType: MATERIAL_TO_H3_TYPE.HARVEST,
+            materialDataType: MATERIAL_TYPE.HARVEST,
           },
           {
             materialName: material.name,
             materialDataYear: materialProducerH3DataYear,
-            materialDataType: MATERIAL_TO_H3_TYPE.PRODUCER,
+            materialDataType: MATERIAL_TYPE.PRODUCER,
           },
         );
       }

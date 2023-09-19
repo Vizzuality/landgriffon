@@ -1,4 +1,5 @@
 import {
+  BaseEntity,
   Column,
   Entity,
   JoinColumn,
@@ -10,8 +11,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { Material } from 'modules/materials/material.entity';
+import { Indicator } from 'modules/indicators/indicator.entity';
 
-export enum MATERIAL_TO_H3_TYPE {
+export enum MATERIAL_TYPE {
   PRODUCER = 'producer',
   HARVEST = 'harvest',
 }
@@ -26,17 +28,26 @@ export const materialResource: BaseServiceResource = {
   columnsAllowedAsFilter: ['type'],
 };
 
-@Entity()
-export class MaterialToH3 extends TimestampedBaseEntity {
-  @ApiProperty()
+@Entity({ name: 'entity_to_h3' })
+export class EntityToH3 extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @ManyToOne(() => Material, (material: Material) => material.materialToH3s)
+  @ManyToOne(() => Material, (material: Material) => material.entityH3s, {
+    nullable: true,
+  })
   @JoinColumn({ name: 'materialId' })
   material!: Material;
   @Column()
   materialId!: string;
+
+  @ManyToOne(() => Indicator, (indicator: Indicator) => indicator.entityH3s, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'indicatorId' })
+  indicator!: Indicator;
+  @Column()
+  indicatorId!: string;
 
   @ManyToOne(() => H3Data, (h3data: H3Data) => h3data.materialToH3s)
   @JoinColumn({ name: 'h3DataId' })
@@ -44,10 +55,9 @@ export class MaterialToH3 extends TimestampedBaseEntity {
   @Column()
   h3DataId!: string;
 
-  @ApiProperty()
   @Column({
     type: 'enum',
-    enum: MATERIAL_TO_H3_TYPE,
+    enum: MATERIAL_TYPE,
   })
-  type!: MATERIAL_TO_H3_TYPE;
+  materialType!: MATERIAL_TYPE;
 }

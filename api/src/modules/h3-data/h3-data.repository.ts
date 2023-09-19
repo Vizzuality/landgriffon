@@ -18,7 +18,7 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
-import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
+import { MATERIAL_TYPE } from 'modules/h3-data/entity-to-h3.entity';
 import {
   GetActualVsScenarioImpactMapDto,
   GetImpactMapDto,
@@ -175,7 +175,7 @@ export class H3DataRepository extends Repository<H3Data> {
 
   async getAvailableYearsForH3MaterialData(
     materialId: string,
-    materialType: MATERIAL_TO_H3_TYPE,
+    materialType: MATERIAL_TYPE,
   ): Promise<number[]> {
     const years: { year: number }[] = await this.createQueryBuilder('h3data')
       .select('year')
@@ -208,7 +208,7 @@ export class H3DataRepository extends Repository<H3Data> {
    */
   async getMaterialH3ByTypeAndClosestYear(
     materialId: string,
-    type: MATERIAL_TO_H3_TYPE,
+    type: MATERIAL_TYPE,
     year: number,
   ): Promise<H3Data | undefined> {
     const queryBuilder: SelectQueryBuilder<H3Data> = this.dataSource

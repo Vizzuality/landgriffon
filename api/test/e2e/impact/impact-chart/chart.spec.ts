@@ -10,7 +10,7 @@ import {
   clearTestDataFromDatabase,
 } from '../../../utils/database-test-helper';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
-import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
+import { EntityToH3 } from 'modules/h3-data/entity-to-h3.entity';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { Material } from 'modules/materials/material.entity';
 import {
@@ -66,7 +66,7 @@ describe('Impact Chart (Ranking) Test Suite (e2e)', () => {
   afterEach(async () => {
     await clearEntityTables(dataSource, [
       IndicatorRecord,
-      MaterialToH3,
+      EntityToH3,
       H3Data,
       Material,
       Indicator,

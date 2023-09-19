@@ -21,8 +21,8 @@ import {
   Indicator,
   INDICATOR_NAME_CODES,
 } from 'modules/indicators/indicator.entity';
-import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
-import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
+import { MATERIAL_TYPE } from 'modules/h3-data/entity-to-h3.entity';
+import { MaterialsToH3sService } from 'modules/h3-data/materials-to-h3s.service';
 import { h3BasicFixture } from './mocks/h3-fixtures';
 import { setupTestUser } from '../../utils/userAuth';
 import ApplicationManager, {
@@ -126,16 +126,8 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
     const materialOne = await createMaterial();
     const materialTwo = await createMaterial();
 
-    await createMaterialToH3(
-      materialOne.id,
-      fakeH3.id,
-      MATERIAL_TO_H3_TYPE.PRODUCER,
-    );
-    await createMaterialToH3(
-      materialTwo.id,
-      fakeH3.id,
-      MATERIAL_TO_H3_TYPE.PRODUCER,
-    );
+    await createMaterialToH3(materialOne.id, fakeH3.id, MATERIAL_TYPE.PRODUCER);
+    await createMaterialToH3(materialTwo.id, fakeH3.id, MATERIAL_TYPE.PRODUCER);
     const sourcingLocation = await createSourcingLocation({
       materialId: materialOne.id,
     });
@@ -171,16 +163,8 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
     const materialOne = await createMaterial();
     const materialTwo = await createMaterial();
 
-    await createMaterialToH3(
-      materialOne.id,
-      fakeH3.id,
-      MATERIAL_TO_H3_TYPE.PRODUCER,
-    );
-    await createMaterialToH3(
-      materialTwo.id,
-      fakeH3.id,
-      MATERIAL_TO_H3_TYPE.PRODUCER,
-    );
+    await createMaterialToH3(materialOne.id, fakeH3.id, MATERIAL_TYPE.PRODUCER);
+    await createMaterialToH3(materialTwo.id, fakeH3.id, MATERIAL_TYPE.PRODUCER);
 
     const sourcingLocation = await createSourcingLocation({
       materialId: materialOne.id,
@@ -265,7 +249,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
       await createMaterialToH3(
         materialOne.id,
         h3Data.id,
-        MATERIAL_TO_H3_TYPE.HARVEST,
+        MATERIAL_TYPE.HARVEST,
       );
     }
 
@@ -280,7 +264,7 @@ describe('H3-Data Module (e2e) - Get H3 data', () => {
       await createMaterialToH3(
         materialTwo.id,
         h3Data.id,
-        MATERIAL_TO_H3_TYPE.HARVEST,
+        MATERIAL_TYPE.HARVEST,
       );
     }
 

@@ -42,7 +42,7 @@ import { IndicatorRecord } from 'modules/indicator-records/indicator-record.enti
 import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
-import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
+import { MaterialsToH3sService } from 'modules/h3-data/materials-to-h3s.service';
 import { h3BasicFixture } from '../../../e2e/h3-data/mocks/h3-fixtures';
 import { SourcingDataImportService } from 'modules/import-data/sourcing-data/sourcing-data-import.service';
 import { FileService } from 'modules/import-data/file.service';

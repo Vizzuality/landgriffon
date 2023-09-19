@@ -1,22 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm/repository/Repository';
-import {
-  MATERIAL_TO_H3_TYPE,
-  MaterialToH3,
-} from 'modules/materials/material-to-h3.entity';
+import { MATERIAL_TYPE, EntityToH3 } from 'modules/h3-data/entity-to-h3.entity';
 import { DataSource, SelectQueryBuilder } from 'typeorm';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 
 @Injectable()
-export class MaterialsToH3sService extends Repository<MaterialToH3> {
+export class MaterialsToH3sService extends Repository<EntityToH3> {
   constructor(private dataSource: DataSource) {
-    super(MaterialToH3, dataSource.createEntityManager());
+    super(EntityToH3, dataSource.createEntityManager());
   }
 
   async findH3DataForMaterial(args: {
     materialId: string;
     year?: number;
-    type: MATERIAL_TO_H3_TYPE;
+    type: MATERIAL_TYPE;
   }): Promise<H3Data | undefined> {
     const queryBuilder: SelectQueryBuilder<H3Data> = this.dataSource
       .createQueryBuilder()

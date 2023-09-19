@@ -53,10 +53,7 @@ import {
   clearTestDataFromDatabase,
 } from '../../utils/database-test-helper';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
-import {
-  MATERIAL_TO_H3_TYPE,
-  MaterialToH3,
-} from 'modules/materials/material-to-h3.entity';
+import { MATERIAL_TYPE, EntityToH3 } from 'modules/h3-data/entity-to-h3.entity';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { Unit } from 'modules/units/unit.entity';
@@ -220,7 +217,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
     await clearEntityTables(dataSource, [
       ScenarioIntervention,
       IndicatorRecord,
-      MaterialToH3,
+      EntityToH3,
       H3Data,
       Material,
       Indicator,
@@ -698,13 +695,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       await createMaterialToH3(
         replacingMaterial.id,
         h3ReplacingMaterial.id,
-        MATERIAL_TO_H3_TYPE.HARVEST,
+        MATERIAL_TYPE.HARVEST,
       );
 
       await createMaterialToH3(
         replacingMaterial.id,
         h3ReplacingMaterial.id,
-        MATERIAL_TO_H3_TYPE.PRODUCER,
+        MATERIAL_TYPE.PRODUCER,
       );
 
       const response = await request(testApplication.getHttpServer())
@@ -812,13 +809,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         await createMaterialToH3(
           replacingMaterial.id,
           h3ReplacingMaterial.id,
-          MATERIAL_TO_H3_TYPE.HARVEST,
+          MATERIAL_TYPE.HARVEST,
         );
 
         await createMaterialToH3(
           replacingMaterial.id,
           h3ReplacingMaterial.id,
-          MATERIAL_TO_H3_TYPE.PRODUCER,
+          MATERIAL_TYPE.PRODUCER,
         );
 
         const response = await request(testApplication.getHttpServer())
@@ -910,13 +907,13 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         await createMaterialToH3(
           replacingMaterial.id,
           h3ReplacingMaterial.id,
-          MATERIAL_TO_H3_TYPE.HARVEST,
+          MATERIAL_TYPE.HARVEST,
         );
 
         await createMaterialToH3(
           replacingMaterial.id,
           h3ReplacingMaterial.id,
-          MATERIAL_TO_H3_TYPE.PRODUCER,
+          MATERIAL_TYPE.PRODUCER,
         );
 
         const response = await request(testApplication.getHttpServer())
@@ -1548,12 +1545,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         await createMaterialToH3(
           childMaterial.id,
           h3DataChild.id,
-          MATERIAL_TO_H3_TYPE.PRODUCER,
+          MATERIAL_TYPE.PRODUCER,
         );
         await createMaterialToH3(
           childMaterial.id,
           h3DataChild.id,
-          MATERIAL_TO_H3_TYPE.HARVEST,
+          MATERIAL_TYPE.HARVEST,
         );
         // Included in Sourcing Locations
         const grandChildMaterial: Material = await createMaterial({
@@ -1565,12 +1562,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         await createMaterialToH3(
           grandChildMaterial.id,
           h3DataChild.id,
-          MATERIAL_TO_H3_TYPE.PRODUCER,
+          MATERIAL_TYPE.PRODUCER,
         );
         await createMaterialToH3(
           grandChildMaterial.id,
           h3DataChild.id,
-          MATERIAL_TO_H3_TYPE.HARVEST,
+          MATERIAL_TYPE.HARVEST,
         );
 
         // Not included in Sourcing Locations
@@ -1708,12 +1705,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         await createMaterialToH3(
           childMaterial.id,
           h3DataChild.id,
-          MATERIAL_TO_H3_TYPE.PRODUCER,
+          MATERIAL_TYPE.PRODUCER,
         );
         await createMaterialToH3(
           childMaterial.id,
           h3DataChild.id,
-          MATERIAL_TO_H3_TYPE.HARVEST,
+          MATERIAL_TYPE.HARVEST,
         );
         // Included in Sourcing Locations
         const grandChildMaterial: Material = await createMaterial({
@@ -1725,12 +1722,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         await createMaterialToH3(
           grandChildMaterial.id,
           h3DataChild.id,
-          MATERIAL_TO_H3_TYPE.PRODUCER,
+          MATERIAL_TYPE.PRODUCER,
         );
         await createMaterialToH3(
           grandChildMaterial.id,
           h3DataChild.id,
-          MATERIAL_TO_H3_TYPE.HARVEST,
+          MATERIAL_TYPE.HARVEST,
         );
         // Not included in Sourcing Locations
         const parentBusinessUnit: BusinessUnit = await createBusinessUnit({
@@ -1970,12 +1967,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         await createMaterialToH3(
           childMaterial.id,
           h3DataChild.id,
-          MATERIAL_TO_H3_TYPE.PRODUCER,
+          MATERIAL_TYPE.PRODUCER,
         );
         await createMaterialToH3(
           childMaterial.id,
           h3DataChild.id,
-          MATERIAL_TO_H3_TYPE.HARVEST,
+          MATERIAL_TYPE.HARVEST,
         );
         // Included in Sourcing Locations
         const grandChildMaterial: Material = await createMaterial({
@@ -1987,12 +1984,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         await createMaterialToH3(
           grandChildMaterial.id,
           h3DataChild.id,
-          MATERIAL_TO_H3_TYPE.PRODUCER,
+          MATERIAL_TYPE.PRODUCER,
         );
         await createMaterialToH3(
           grandChildMaterial.id,
           h3DataChild.id,
-          MATERIAL_TO_H3_TYPE.HARVEST,
+          MATERIAL_TYPE.HARVEST,
         );
 
         // New Material that should be included in the intervention
@@ -2003,12 +2000,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         await createMaterialToH3(
           newMaterial.id,
           h3DataChild.id,
-          MATERIAL_TO_H3_TYPE.PRODUCER,
+          MATERIAL_TYPE.PRODUCER,
         );
         await createMaterialToH3(
           newMaterial.id,
           h3DataChild.id,
-          MATERIAL_TO_H3_TYPE.HARVEST,
+          MATERIAL_TYPE.HARVEST,
         );
 
         // Not included in Sourcing Locations
@@ -2169,12 +2166,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         await createMaterialToH3(
           childMaterial.id,
           h3DataChild.id,
-          MATERIAL_TO_H3_TYPE.PRODUCER,
+          MATERIAL_TYPE.PRODUCER,
         );
         await createMaterialToH3(
           childMaterial.id,
           h3DataChild.id,
-          MATERIAL_TO_H3_TYPE.HARVEST,
+          MATERIAL_TYPE.HARVEST,
         );
         // Included in Sourcing Locations
         const grandChildMaterial: Material = await createMaterial({
@@ -2186,12 +2183,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         await createMaterialToH3(
           grandChildMaterial.id,
           h3DataChild.id,
-          MATERIAL_TO_H3_TYPE.PRODUCER,
+          MATERIAL_TYPE.PRODUCER,
         );
         await createMaterialToH3(
           grandChildMaterial.id,
           h3DataChild.id,
-          MATERIAL_TO_H3_TYPE.HARVEST,
+          MATERIAL_TYPE.HARVEST,
         );
 
         // New Material that should be included in the intervention
@@ -2202,12 +2199,12 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         await createMaterialToH3(
           newMaterial.id,
           h3DataChild.id,
-          MATERIAL_TO_H3_TYPE.PRODUCER,
+          MATERIAL_TYPE.PRODUCER,
         );
         await createMaterialToH3(
           newMaterial.id,
           h3DataChild.id,
-          MATERIAL_TO_H3_TYPE.HARVEST,
+          MATERIAL_TYPE.HARVEST,
         );
         // Not included in Sourcing Locations
         const parentBusinessUnit: BusinessUnit = await createBusinessUnit({

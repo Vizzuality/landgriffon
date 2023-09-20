@@ -59,6 +59,7 @@ const YearsFilter: React.FC = () => {
       options={yearOptions}
       placeholder="Select a year"
       onChange={handleChange}
+      data-testid="year-filter"
     />
   );
 };

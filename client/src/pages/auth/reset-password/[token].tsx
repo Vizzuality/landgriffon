@@ -37,7 +37,7 @@ const ResetPassword: NextPageWithLayout = () => {
   const { mutate: resetPassword, isLoading } = useResetPassword();
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
 
-  const handleResetPassord = useCallback(
+  const handleResetPassword = useCallback(
     ({ password }: yup.InferType<typeof schemaValidation>) => {
       const token = query?.token as string;
       if (!token) {
@@ -89,7 +89,7 @@ const ResetPassword: NextPageWithLayout = () => {
             noValidate
             className="space-y-6"
             id="signInForm"
-            onSubmit={handleSubmit(handleResetPassord)}
+            onSubmit={handleSubmit(handleResetPassword)}
           >
             <div>
               <Label htmlFor="password">New Password</Label>

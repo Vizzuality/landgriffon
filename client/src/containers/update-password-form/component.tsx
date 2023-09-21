@@ -32,15 +32,22 @@ const UserPasswordForm: React.FC = () => {
 
   const handleEditPassword = useCallback(
     (data: PasswordPayload) => {
-      updatePassword.mutate(data, {
-        onSuccess: () => {
-          toast.success('Your changes were successfully saved.');
+      updatePassword.mutate(
+        {
+          // avoid passing passwordConfirmation to the API
+          currentPassword: data.currentPassword,
+          newPassword: data.newPassword,
         },
-        onError: (error: ErrorResponse) => {
-          const { errors } = error.response?.data;
-          errors.forEach(({ title }) => toast.error(title));
+        {
+          onSuccess: () => {
+            toast.success('Your changes were successfully saved.');
+          },
+          onError: (error: ErrorResponse) => {
+            const { errors } = error.response?.data;
+            errors.forEach(({ title }) => toast.error(title));
+          },
         },
-      });
+      );
     },
     [updatePassword],
   );
@@ -83,7 +90,12 @@ const UserPasswordForm: React.FC = () => {
               </div>
             </div>
             <div className="flex justify-end h-16 py-3 pr-6 rounded-md bg-gray-50">
-              <Button type="submit" variant="primary" loading={updatePassword.isLoading}>
+              <Button
+                type="submit"
+                variant="primary"
+                loading={updatePassword.isLoading}
+                data-testid="submit-update-password"
+              >
                 Save
               </Button>
             </div>

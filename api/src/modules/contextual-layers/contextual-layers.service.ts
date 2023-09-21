@@ -7,7 +7,10 @@ import {
 import { ContextualLayerRepository } from 'modules/contextual-layers/contextual-layer.repository';
 import { ContextualLayer } from 'modules/contextual-layers/contextual-layer.entity';
 import { groupBy } from 'lodash';
-import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
+import {
+  H3Data,
+  H3IndexValueData,
+} from 'modules/h3-data/entities/h3-data.entity';
 import { H3DataService } from 'modules/h3-data/h3-data.service';
 
 @Injectable()

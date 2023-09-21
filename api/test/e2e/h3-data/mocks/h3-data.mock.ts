@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { H3Data } from 'modules/h3-data/entities/h3-data.entity';
 import { snakeCase, camelCase } from 'typeorm/util/StringUtils';
 import { INDICATOR_NAME_CODES } from '../../../../src/modules/indicators/indicator.entity';
 

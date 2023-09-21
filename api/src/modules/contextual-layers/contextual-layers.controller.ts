@@ -12,7 +12,7 @@ import {
   ContextualLayerByCategory,
 } from 'modules/contextual-layers/contextual-layer.entity';
 import { ContextualLayersService } from 'modules/contextual-layers/contextual-layers.service';
-import { H3IndexValueData } from 'modules/h3-data/h3-data.entity';
+import { H3IndexValueData } from 'modules/h3-data/entities/h3-data.entity';
 import { GetContextualLayerH3Dto } from 'modules/contextual-layers//dto/get-contextual-layer-h3.dto';
 import { GetContextualLayerH3ResponseDto } from 'modules/contextual-layers//dto/get-contextual-layer-h3-response.dto';
 
@@ -23,6 +23,7 @@ export class ContextualLayersController {
   constructor(
     private readonly contextualLayerService: ContextualLayersService,
   ) {}
+
   @ApiOperation({
     description: 'Get all Contextual Layer info grouped by Category',
   })

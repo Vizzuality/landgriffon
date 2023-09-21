@@ -11,7 +11,7 @@ import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.ent
 import { DataSource } from 'typeorm';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { RELATIVE_UNIT_MAP_RESPONSE } from 'modules/h3-data/h3-data-map.service';
-import { H3IndexValueData } from '../../../src/modules/h3-data/h3-data.entity';
+import { H3IndexValueData } from '../../../src/modules/h3-data/entities/h3-data.entity';
 import { ImpactService } from '../../../src/modules/impact/impact.service';
 
 /**

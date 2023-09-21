@@ -3,7 +3,7 @@ import {
   CONTEXTUAL_LAYER_AGG_TYPE,
   ContextualLayer,
 } from 'modules/contextual-layers/contextual-layer.entity';
-import { H3IndexValueData } from 'modules/h3-data/h3-data.entity';
+import { H3IndexValueData } from 'modules/h3-data/entities/h3-data.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
@@ -11,6 +11,7 @@ export class ContextualLayerRepository extends Repository<ContextualLayer> {
   constructor(private dataSource: DataSource) {
     super(ContextualLayer, dataSource.createEntityManager());
   }
+
   /**
    * Retrieves data from dynamically generated H3 data aggregating by H3 index for the given resolution,
    * and by the type of aggregation determined by aggregationType

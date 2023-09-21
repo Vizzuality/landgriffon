@@ -50,7 +50,7 @@ import {
   clearEntityTables,
   clearTestDataFromDatabase,
 } from '../../../utils/database-test-helper';
-import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { H3Data } from 'modules/h3-data/entities/h3-data.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';

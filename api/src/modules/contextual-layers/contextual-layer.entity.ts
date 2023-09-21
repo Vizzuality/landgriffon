@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty } from '@nestjs/swagger';
-import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { H3Data } from 'modules/h3-data/entities/h3-data.entity';
 
 export enum CONTEXTUAL_LAYER_CATEGORY {
   ENVIRONMENTAL_DATASETS = 'Environmental datasets',
@@ -16,6 +16,7 @@ export enum CONTEXTUAL_LAYER_CATEGORY {
   SOCIAL = 'Social',
   DEFAULT = 'Default',
 }
+
 export enum CONTEXTUAL_LAYER_AGG_TYPE {
   SUM = 'sum',
   MEAN = 'mean',

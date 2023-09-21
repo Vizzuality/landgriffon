@@ -1,7 +1,7 @@
 import { createIndicatorRecord } from '../../../entity-mocks';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { Material } from 'modules/materials/material.entity';
-import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { H3Data } from 'modules/h3-data/entities/h3-data.entity';
 import {
   clearEntityTables,
   clearTestDataFromDatabase,

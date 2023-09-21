@@ -20,7 +20,7 @@ import {
   AdminRegion,
 } from 'modules/admin-regions/admin-region.entity';
 import { UnitConversion } from 'modules/unit-conversions/unit-conversion.entity';
-import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { H3Data } from 'modules/h3-data/entities/h3-data.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import {
   MATERIAL_TO_H3_TYPE,

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { H3IndexValueData } from 'modules/h3-data/h3-data.entity';
+import { H3IndexValueData } from 'modules/h3-data/entities/h3-data.entity';
 
 export class GetContextualLayerH3ResponseDto {
   @ApiProperty({

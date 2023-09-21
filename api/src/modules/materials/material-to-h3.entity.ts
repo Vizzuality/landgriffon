@@ -8,7 +8,7 @@ import {
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty } from '@nestjs/swagger';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
-import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { H3Data } from 'modules/h3-data/entities/h3-data.entity';
 import { Material } from 'modules/materials/material.entity';
 
 export enum MATERIAL_TO_H3_TYPE {

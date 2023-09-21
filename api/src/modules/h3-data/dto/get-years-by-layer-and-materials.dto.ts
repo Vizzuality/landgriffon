@@ -2,7 +2,7 @@
 
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
-import { LAYER_TYPES } from 'modules/h3-data/h3-data.entity';
+import { LAYER_TYPES } from 'modules/h3-data/entities/h3-data.entity';
 import { Type } from 'class-transformer';
 
 export class GetYearsByLayerAndMaterialsDto {

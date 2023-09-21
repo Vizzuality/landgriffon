@@ -14,7 +14,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
-import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { H3Data } from 'modules/h3-data/entities/h3-data.entity';
 
 export const indicatorRecordResource: BaseServiceResource = {
   className: 'IndicatorRecord',
@@ -30,6 +30,7 @@ export const indicatorRecordResource: BaseServiceResource = {
     'indicatorId',
   ],
 };
+
 export enum INDICATOR_RECORD_STATUS {
   UNSTARTED = 'unstarted',
   STARTED = 'started',

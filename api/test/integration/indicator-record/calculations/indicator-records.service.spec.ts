@@ -36,7 +36,7 @@ import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-records.module';
 import { createWorldToCalculateIndicatorRecords } from '../../../utils/indicator-records-preconditions';
 import { v4 as UUIDv4 } from 'uuid';
-import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { H3Data } from 'modules/h3-data/entities/h3-data.entity';
 import {
   clearTestDataFromDatabase,
   dropH3GridTables,

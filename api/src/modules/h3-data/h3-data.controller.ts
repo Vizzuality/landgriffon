@@ -8,7 +8,10 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { H3DataService } from 'modules/h3-data/h3-data.service';
-import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
+import {
+  H3Data,
+  H3IndexValueData,
+} from 'modules/h3-data/entities/h3-data.entity';
 import { GetMaterialH3ByResolutionDto } from 'modules/h3-data/dto/get-material-h3-by-resolution.dto';
 import {
   H3MapResponse,
@@ -52,6 +55,7 @@ export class H3DataController {
     );
     return { data: h3Data };
   }
+
   @ApiOperation({
     description: 'Retrieve years for which there is data, by layer',
   })

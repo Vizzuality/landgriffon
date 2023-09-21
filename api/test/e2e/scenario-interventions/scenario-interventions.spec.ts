@@ -57,7 +57,7 @@ import {
   MATERIAL_TO_H3_TYPE,
   MaterialToH3,
 } from 'modules/materials/material-to-h3.entity';
-import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { H3Data } from 'modules/h3-data/entities/h3-data.entity';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { Unit } from 'modules/units/unit.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';

@@ -1,7 +1,7 @@
 /**
  * DTO for RiskMap Response
  */
-import { H3IndexValueData } from 'modules/h3-data/h3-data.entity';
+import { H3IndexValueData } from 'modules/h3-data/entities/h3-data.entity';
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 

@@ -10,7 +10,7 @@ import {
   H3Data,
   H3IndexValueData,
   LAYER_TYPES,
-} from 'modules/h3-data/h3-data.entity';
+} from 'modules/h3-data/entities/h3-data.entity';
 import {
   Injectable,
   Logger,

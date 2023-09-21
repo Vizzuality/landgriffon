@@ -12,6 +12,7 @@ import { Indicator } from 'modules/indicators/indicator.entity';
 import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { ContextualLayer } from 'modules/contextual-layers/contextual-layer.entity';
+import { IndicatorMaterialToH3 } from 'modules/h3-data/entities/indicator-material-to-h3.entity';
 
 /**
  * @note: Interface props are marked as 'h' and 'v' because that is what the DB returns when querying a h3 maps
@@ -70,12 +71,6 @@ export class H3Data extends BaseEntity {
   @Column({ type: 'json', nullable: true })
   metadata?: JSON;
 
-  @OneToMany(
-    () => MaterialToH3,
-    (materialToH3: MaterialToH3) => materialToH3.h3Data,
-  )
-  materialToH3s: MaterialToH3[];
-
   @OneToMany(() => IndicatorRecord, (ir: IndicatorRecord) => ir.materialH3Data)
   indicatorRecords: IndicatorRecord[];
 
@@ -85,4 +80,17 @@ export class H3Data extends BaseEntity {
 
   @Column({ nullable: true })
   contextualLayerId: string;
+
+  @OneToMany(
+    () => MaterialToH3,
+    (materialToH3: MaterialToH3) => materialToH3.h3Data,
+  )
+  materialToH3s: MaterialToH3[];
+
+  @OneToMany(
+    () => IndicatorMaterialToH3,
+    (indicatorMaterialToH3: IndicatorMaterialToH3) =>
+      indicatorMaterialToH3.h3Data,
+  )
+  indicatorToMaterialToH3: IndicatorMaterialToH3[];
 }

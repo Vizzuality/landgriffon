@@ -5,7 +5,7 @@ import {
   MaterialToH3,
 } from 'modules/materials/material-to-h3.entity';
 import { DataSource, SelectQueryBuilder } from 'typeorm';
-import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { H3Data } from 'modules/h3-data/entities/h3-data.entity';
 
 @Injectable()
 export class MaterialsToH3sService extends Repository<MaterialToH3> {

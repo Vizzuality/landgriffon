@@ -15,7 +15,7 @@ import {
   ContextualLayerByCategory,
 } from 'modules/contextual-layers/contextual-layer.entity';
 import { createContextualLayer } from '../../entity-mocks';
-import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { H3Data } from 'modules/h3-data/entities/h3-data.entity';
 import { dropH3DataMock, h3DataMock } from '../h3-data/mocks/h3-data.mock';
 import { h3ContextualLayerExampleDataFixture } from '../h3-data/mocks/h3-fixtures';
 import { DataSource } from 'typeorm';

@@ -16,7 +16,7 @@ import {
   createSourcingLocation,
   createSourcingRecord,
 } from '../../entity-mocks';
-import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { H3Data } from 'modules/h3-data/entities/h3-data.entity';
 import {
   Indicator,
   INDICATOR_NAME_CODES,

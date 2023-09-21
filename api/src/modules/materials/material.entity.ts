@@ -13,6 +13,7 @@ import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-c
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
+import { IndicatorMaterialToH3 } from 'modules/h3-data/entities/indicator-material-to-h3.entity';
 
 export enum MATERIALS_STATUS {
   ACTIVE = 'active',
@@ -108,4 +109,11 @@ export class Material extends TimestampedBaseEntity {
     (materialToH3: MaterialToH3) => materialToH3.material,
   )
   materialToH3s: MaterialToH3[];
+
+  @OneToMany(
+    () => IndicatorMaterialToH3,
+    (indicatorMaterialToH3: IndicatorMaterialToH3) =>
+      indicatorMaterialToH3.material,
+  )
+  indicatorToMaterialToH3: MaterialToH3[];
 }

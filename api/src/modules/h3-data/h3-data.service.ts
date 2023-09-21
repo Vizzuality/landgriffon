@@ -1,6 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
-import { H3Data, H3IndexValueData } from 'modules/h3-data/h3-data.entity';
+import {
+  H3Data,
+  H3IndexValueData,
+} from 'modules/h3-data/entities/h3-data.entity';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { UnitConversionsService } from 'modules/unit-conversions/unit-conversions.service';

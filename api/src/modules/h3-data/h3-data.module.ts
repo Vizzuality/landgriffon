@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { H3DataController } from 'modules/h3-data/h3-data.controller';
 import { H3DataService } from 'modules/h3-data/h3-data.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { H3Data } from 'modules/h3-data/h3-data.entity';
+import { H3Data } from 'modules/h3-data/entities/h3-data.entity';
 import { MaterialsModule } from 'modules/materials/materials.module';
 import { IndicatorsModule } from 'modules/indicators/indicators.module';
 import { UnitConversionsModule } from 'modules/unit-conversions/unit-conversions.module';
@@ -16,10 +16,11 @@ import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { AuthorizationModule } from 'modules/authorization/authorization.module';
+import { IndicatorMaterialToH3 } from 'modules/h3-data/entities/indicator-material-to-h3.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([H3Data]),
+    TypeOrmModule.forFeature([H3Data, IndicatorMaterialToH3]),
     MaterialsModule,
     IndicatorsModule,
     UnitConversionsModule,

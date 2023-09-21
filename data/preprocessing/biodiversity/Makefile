@@ -15,6 +15,7 @@ download_forest_landscape_integrity_loss:
 		"gs://landgriffon-gee-bucket/landscape_indicators_20230821/natural_crop_flii_loss_by_human_lu_50km_1000m.tif" \
 		$(data_dir)
 
+# TODO- Review resampling method. We can use max resampling method to be conservative as the most intact areas are the most important to avoid.
 resample_forest_landscape_integrity_loss:
 	rio warp \
 		$(data_dir)/natural_crop_flii_loss_by_human_lu_50km_1000m.tif \

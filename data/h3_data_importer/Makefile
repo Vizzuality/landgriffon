@@ -21,6 +21,7 @@ WORKDIR_DEFORESTATION=data/hansen_loss
 WORKDIR_GHG=data/forest_ghg
 WORKDIR_WOODPULP=data/woodpulp
 WORKING_NATURAL_CROP_CONVERSION=data/natural_crop_conversion
+WORKDIR_BIODIVERSITY=data/biodiversity
 
 CHECKSUMS_PATH=data_checksums
 
@@ -52,6 +53,7 @@ indicators:
 	make convert-forestGHG
 	make convert-satDeforestation
 	make convert-naturalCropConversion
+	make convert-biodiversity
 contextual-layers: convert-hdi-contextual convert-blue-water-contextual
 
 
@@ -233,6 +235,16 @@ convert-naturalCropConversion: download-naturalCropConversion
 	@echo "Converting natural crop conversion data... "
 	python raster_folder_to_h3_table.py $(WORKING_NATURAL_CROP_CONVERSION) h3_grid_natural_crop_conversion_global indicator NECR 2022 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
+
+download-biodiversity:
+	# download and check
+	mkdir -p $(WORKDIR_BIODIVERSITY)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/biodiversity $(WORKDIR_BIODIVERSITY)
+	cd $(WORKDIR_BIODIVERSITY) && sha256sum --check ../../$(CHECKSUMS_PATH)/biodiversity
+
+convert-biodiversity: download-biodiversity
+	@echo "Converting biodiversity data... "
+	python raster_folder_to_h3_table.py $(WORKDIR_BIODIVERSITY) h3_grid_biodiversity_global indicator BL_LUC_S 2022 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 
 ##################################

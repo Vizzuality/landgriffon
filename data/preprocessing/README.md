@@ -59,3 +59,14 @@ make all
 
 Read more about this pipeline in the [natural_crop_conversion/README.md](natural_crop_conversion/README.md) file.
 
+### Biodiversity
+
+It contains the computation of the biodiversity - forest landscape integrity loss dataset .
+
+To run the pipeline, `cd biodiversity` and
+
+```bash
+make all
+```
+
+Read more about this pipeline in the [biodiversity/README.md](biodiversity/README.md) file.

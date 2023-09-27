@@ -17,7 +17,7 @@ export class MaterialIndicatorToH3 {
 
   // TODO: double check how relations should be
 
-  @ManyToOne(() => Material, (material: Material) => material.materialToH3s)
+  @OneToOne(() => Material)
   @JoinColumn({ name: 'materialId' })
   material!: Material;
   @Column()
@@ -32,7 +32,11 @@ export class MaterialIndicatorToH3 {
   @Column()
   indicatorId!: string;
 
-  @OneToOne(() => H3Data)
+  @ManyToOne(
+    () => H3Data,
+    (h3Data: H3Data) => h3Data.materialIndicatorToH3,
+  )
+
   @JoinColumn({ name: 'h3DataId' })
   h3Data!: H3Data;
   @Column()

@@ -119,7 +119,7 @@ def insert_to_h3_master_table(
                 try:
                     update_for_material_indicator(cur, dataset, column_name)
                 except ValueError:
-                    log.error(f"Failed to update material_indicator for {column_name}")
+                    log.warning(f"Failed to update material_indicator for {column_name}")
                     continue
             elif data_type in ["production", "harvest_area"]:
                 update_for_material(cur, dataset, column_name, data_type)
@@ -129,31 +129,33 @@ def update_for_material_indicator(cursor: psycopg.Cursor, dataset: str, column_n
     cursor.execute('select id from "indicator" where "nameCode" = %s', (dataset,))
     indicator_id = cursor.fetchone()
     if not indicator_id:
-        log.error(f"Indicator with 'nameCode' {dataset} does not exists")
+        log.warning(f"Indicator with 'nameCode' {dataset} does not exists")
         raise ValueError(f"Indicator with 'nameCode' {dataset} does not exists")
-
+    # todo: convert to script parameter
     spam_id = f"spam_{column_name.split('PerTProduction')[0].lower()}"  # something like 'spam_ocerwhea'
-    cursor.execute('select id from material where "datasetId" = %s and "parentId" is null', (spam_id,))
-    material_id = cursor.fetchone()
-    if not material_id:
-        log.error(f"Material with 'datasetId' {spam_id} does not exists")
+    cursor.execute('select id from material where "datasetId" = %s', (spam_id,))
+    material_ids = cursor.fetchall()
+    if not material_ids:
+        log.warning(f"Material with 'datasetId' {spam_id} does not exists")
         raise ValueError(f"Material with 'datasetId' {spam_id} does not exists")
 
     cursor.execute('select id from h3_data where "h3columnName" = %s', (column_name,))
     h3_data_id = cursor.fetchone()
     if not h3_data_id:
-        log.error(f"h3_data with 'h3columnName' {column_name} does not exists")
+        log.warning(f"h3_data with 'h3columnName' {column_name} does not exists")
         raise ValueError(f"h3_data with 'h3columnName' {column_name} does not exists")
 
-    cursor.execute('delete from material_indicator_to_h3 where "materialId" = %s', (material_id[0],))
-    cursor.execute(
-        """
-        insert into material_indicator_to_h3 ("materialId", "indicatorId", "h3DataId")
-        values (%s, %s, %s);
-        """,
-        (material_id[0], indicator_id[0], h3_data_id[0]),
-    )
-    log.info(f"Updated indicatorId '{indicator_id[0]}' in h3_data for {column_name}")
+    # one spam dataset can have multiple materials, so we need to update all of them
+    for material_id in material_ids:
+        cursor.execute('delete from material_indicator_to_h3 where "materialId" = %s', (material_id[0],))
+        cursor.execute(
+            """
+            insert into material_indicator_to_h3 ("materialId", "indicatorId", "h3DataId")
+            values (%s, %s, %s);
+            """,
+            (material_id[0], indicator_id[0], h3_data_id[0]),
+        )
+        log.info(f"Added material_indicator_to_h3 record for {column_name} of {dataset}")
 
 
 def update_for_indicator(cursor: psycopg.Cursor, dataset: str, column_name: str):

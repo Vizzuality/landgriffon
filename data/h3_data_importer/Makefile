@@ -23,7 +23,8 @@ WORKDIR_WOODPULP=data/woodpulp
 WORKDIR_NATURAL_CROP_CONVERSION=data/natural_crop_conversion
 WORKDIR_NUTRIENT_LOAD_REDUCTION=data/nutrient_load_reduction
 WORKDIR_BIODIVERSITY=data/biodiversity
-WORKDIR_MAPSPAM_GHG=data/mapspam_ghg
+WORKDIR_GHG_FARM=data/ghg_farm
+
 
 CHECKSUMS_PATH=data_checksums
 
@@ -39,7 +40,7 @@ all:
 	fi
 	@echo "AWS S3 bucket access confirmed, proceeding with import..."
 	make clean
-	make -j 2 crop indicators
+	make indicators
 
 crop:
 	make -j 2 convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock convert-woodpulp
@@ -56,6 +57,7 @@ indicators:
 	make convert-naturalCropConversion
 	make convert-nutrientLoadReduction
 	make convert-biodiversity
+	make convert-ghg-farm
 contextual-layers: convert-hdi-contextual convert-blue-water-contextual
 
 
@@ -73,8 +75,8 @@ convert-mapspam-crop-production: download-mapspam-crop-production
 
 download-mapspam-crop-harvest:
 	mkdir -p $(WORKDIR_MAPSPAM_HA)
-	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/mapspam/spam2010v2r0_global_ha $(WORKDIR_MAPSPAM_HA)
-	cd $(WORKDIR_MAPSPAM_HA) && sha256sum --check ../../$(CHECKSUMS_PATH)/mapspam_ha
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/mapspam/spam2010v2r0_global_ha $(WORKDIR_)
+	cd $(WORKDIR_MAPSPAM_HA) && sha256sum --check ../../$(CHECKSUMS_PATH)/ghg_from_farm_emissions
 
 convert-mapspam-crop-harvest: download-mapspam-crop-harvest
 	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM_HA) h3_grid_spam2010v2r0_global_ha harvest_area spam 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
@@ -393,18 +395,18 @@ convert-hdi-contextual: download-hdi-contextual
 
 convert-blue-water-contextual:
 	python cog_to_contextual_layer_linker.py --cog bluewater.tif --name bluewater_footprint --category "Environmental datasets" --tiler_param colormap_name=viridis --tp rescale=-18,832
-clean:
-	rm -rf data/*
-
 
 #######################
 # GHG FARM (GHG_FARM) #
 #######################
 
-download-mapspam-ghg:
-	mkdir -p $(WORKDIR_MAPSPAM_GHG)
-	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/ghg_emissions $(WORKDIR_MAPSPAM_GHG)
-	cd $(WORKDIR_MAPSPAM_GHG) && sha256sum --check ../../$(CHECKSUMS_PATH)/mapspam_ghg
+download-ghg-farm:
+	mkdir -p $(WORKDIR_GHG_FARM)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/ghg_emissions $(WORKDIR_GHG_FARM)
+	cd $(WORKDIR_GHG_FARM) && sha256sum --check ../../$(CHECKSUMS_PATH)/ghg_from_farm_emissions
 
-convert-mapspam-ghg: download-mapspam-ghg
-	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM_GHG) h3_grid_mapspam_ghg_global indicator GHG_FARM 2017 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+convert-ghg-farm: download-ghg-farm
+	python raster_folder_to_h3_table.py $(WORKDIR_GHG_FARM) h3_grid_ghg_global material_indicator GHG_FARM 2017 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+
+clean:
+	rm -rf data/*

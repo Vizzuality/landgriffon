@@ -114,21 +114,56 @@ def insert_to_h3_master_table(
             )
             if data_type == "indicator":
                 update_for_indicator(cur, dataset, column_name)
-            else:
+            elif data_type == "material_indicator":
+                update_for_indicator(cur, dataset, column_name)
+                try:
+                    update_for_material_indicator(cur, dataset, column_name)
+                except ValueError:
+                    log.error(f"Failed to update material_indicator for {column_name}")
+                    continue
+            elif data_type in ["production", "harvest_area"]:
                 update_for_material(cur, dataset, column_name, data_type)
 
 
-def update_for_indicator(cursor: psycopg.Cursor, dataset: str, column_name: str):
-    query = sql.SQL('select id from "indicator" where "nameCode" = {}').format(sql.Literal(dataset))
-    cursor.execute(query)
+def update_for_material_indicator(cursor: psycopg.Cursor, dataset: str, column_name: str):
+    cursor.execute('select id from "indicator" where "nameCode" = %s', (dataset,))
     indicator_id = cursor.fetchone()
     if not indicator_id:
-        log.error(f"Query result of {query.as_string(cursor)} returned nothing.")
+        log.error(f"Indicator with 'nameCode' {dataset} does not exists")
         raise ValueError(f"Indicator with 'nameCode' {dataset} does not exists")
 
+    spam_id = f"spam_{column_name.split('PerTProduction')[0].lower()}"  # something like 'spam_ocerwhea'
+    cursor.execute('select id from material where "datasetId" = %s and "parentId" is null', (spam_id,))
+    material_id = cursor.fetchone()
+    if not material_id:
+        log.error(f"Material with 'datasetId' {spam_id} does not exists")
+        raise ValueError(f"Material with 'datasetId' {spam_id} does not exists")
+
+    cursor.execute('select id from h3_data where "h3columnName" = %s', (column_name,))
+    h3_data_id = cursor.fetchone()
+    if not h3_data_id:
+        log.error(f"h3_data with 'h3columnName' {column_name} does not exists")
+        raise ValueError(f"h3_data with 'h3columnName' {column_name} does not exists")
+
+    cursor.execute('delete from material_indicator_to_h3 where "materialId" = %s', (material_id[0],))
     cursor.execute(
-        'update "h3_data"  set "indicatorId" = %s where  "h3columnName" = %s', (indicator_id[0], column_name)
+        """
+        insert into material_indicator_to_h3 ("materialId", "indicatorId", "h3DataId")
+        values (%s, %s, %s);
+        """,
+        (material_id[0], indicator_id[0], h3_data_id[0]),
     )
+    log.info(f"Updated indicatorId '{indicator_id[0]}' in h3_data for {column_name}")
+
+
+def update_for_indicator(cursor: psycopg.Cursor, dataset: str, column_name: str):
+    cursor.execute('select id from "indicator" where "nameCode" = %s', (dataset,))
+    indicator_id = cursor.fetchone()
+    if not indicator_id:
+        log.error(f"Indicator with 'nameCode' {dataset} does not exists")
+        raise ValueError(f"Indicator with 'nameCode' {dataset} does not exists")
+
+    cursor.execute('update h3_data  set "indicatorId" = %s where  "h3columnName" = %s', (indicator_id[0], column_name))
     log.info(f"Updated indicatorId '{indicator_id[0]}' in h3_data for {column_name}")
 
 
@@ -170,7 +205,7 @@ def to_the_db(df: pd.DataFrame, table: str, data_type: str, dataset: str, year: 
 
     This way if we need to separate db stuff from actual data processing it can be done easily
     """
-    with psycopg.connect(get_connection_info(), autocommit=True) as conn:
+    with psycopg.connect(get_connection_info()) as conn:
         create_h3_grid_table(conn, table, df)
         write_data_to_h3_grid_table(conn, table, df)
         clean_before_insert(conn, table)
@@ -180,7 +215,10 @@ def to_the_db(df: pd.DataFrame, table: str, data_type: str, dataset: str, year: 
 @click.command()
 @click.argument("folder", type=click.Path(exists=True, path_type=Path))
 @click.argument("table", type=str)
-@click.argument("data_type", type=str)
+@click.argument(
+    "data_type",
+    type=click.Choice(["production", "harvest_area", "indicator", "material_indicator"], case_sensitive=False),
+)
 @click.argument("dataset", type=str)
 @click.argument("year", type=int)
 @click.option("--h3-res", "h3_res", type=int, default=6, help="h3 resolution to use [default=6]")
@@ -191,7 +229,7 @@ def main(folder: Path, table: str, data_type: str, dataset: str, year: int, h3_r
     \b
     FOLDER is the path to the folder containing the raster files to be ingested.
     TABLE is the h3_grid_* style DB table name that will contain the actual H3 index and data.
-    DATA_TYPE can be "production" "harvest_area" or "indicator".
+    DATA_TYPE type of data being ingested.
     DATASET is the name of the reference in the indicator "nameCode" or material "datasetID".
         For the latter case it will be constructed dynamically using DATASET + filename.split("_")[-2]
     YEAR is the last year of the dataset.
@@ -202,7 +240,11 @@ def main(folder: Path, table: str, data_type: str, dataset: str, year: int, h3_r
     with multiprocessing.Pool(thread_count) as pool:
         h3s = pool.map(partial_raster_to_h3, raster_files)
     log.info(f"Joining H3 data of each raster into single dataframe for table {table}")
-    df = h3s[0].join(h3s[1:]) if len(raster_files) > 1 else h3s[0]
+    df = h3s[0]
+    with click.progressbar(h3s[1:], label="Joining H3 dataframes") as pbar:
+        for h3df in pbar:
+            df = df.join(h3df)
+            del h3df
 
     # Part 2: Ingest h3 index into the database
     to_the_db(df, table, data_type, dataset, year, h3_res)

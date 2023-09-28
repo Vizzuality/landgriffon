@@ -10,8 +10,8 @@ import {
 } from 'utils/app-base.service';
 import {
   Indicator,
-  INDICATOR_STATUS,
   INDICATOR_NAME_CODES,
+  INDICATOR_STATUS,
   indicatorResource,
 } from 'modules/indicators/indicator.entity';
 import { AppInfoDTO } from 'dto/info.dto';
@@ -83,7 +83,7 @@ export class IndicatorsService extends AppBaseService<
 
     const deforestationIndicator: Indicator | null =
       await this.indicatorRepository.findOne({
-        where: { nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK },
+        where: { nameCode: INDICATOR_NAME_CODES.DF_SLUC },
       });
     if (!deforestationIndicator)
       throw new NotFoundException(
@@ -194,7 +194,14 @@ export class IndicatorsService extends AppBaseService<
             status: INDICATOR_STATUS.ACTIVE,
           } as Indicator),
       );
-    return this.indicatorRepository.save(activatedIndicators);
+    await this.indicatorRepository.update(
+      { nameCode: In([INDICATOR_NAME_CODES.ENL, INDICATOR_NAME_CODES.FLIL]) },
+      { status: INDICATOR_STATUS.ACTIVE },
+    );
+    await this.indicatorRepository.save(activatedIndicators);
+    return this.indicatorRepository.find({
+      where: { status: INDICATOR_STATUS.ACTIVE },
+    });
   }
 
   /**

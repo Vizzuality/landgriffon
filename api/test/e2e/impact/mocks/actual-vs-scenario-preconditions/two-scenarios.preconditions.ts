@@ -30,7 +30,7 @@ export async function createTwoScenariosPreconditions(): Promise<{
     name: 'Deforestation',
     shortName: 'Deforestation',
     unit,
-    nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
+    nameCode: INDICATOR_NAME_CODES.DF_SLUC,
   });
 
   const textile: Material = await createMaterial({ name: 'Textile' });

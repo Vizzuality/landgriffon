@@ -8,7 +8,7 @@ export class IndicatorCoefficientsDto {
   @Max(1000000)
   @Min(0)
   @IsNumber()
-  [INDICATOR_NAME_CODES.WATER_USE]: number;
+  [INDICATOR_NAME_CODES.LF]: number;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -16,7 +16,7 @@ export class IndicatorCoefficientsDto {
   @Min(0)
   @IsNotEmpty()
   @IsNumber()
-  [INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE]: number;
+  [INDICATOR_NAME_CODES.DF_SLUC]: number;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -24,7 +24,7 @@ export class IndicatorCoefficientsDto {
   @Min(0)
   @IsNotEmpty()
   @IsNumber()
-  [INDICATOR_NAME_CODES.CLIMATE_RISK]: number;
+  [INDICATOR_NAME_CODES.GHG_DEF_SLUC]: number;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -32,7 +32,7 @@ export class IndicatorCoefficientsDto {
   @Min(0)
   @IsNotEmpty()
   @IsNumber()
-  [INDICATOR_NAME_CODES.DEFORESTATION_RISK]: number;
+  [INDICATOR_NAME_CODES.UWU]: number;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -40,7 +40,7 @@ export class IndicatorCoefficientsDto {
   @Min(0)
   @IsNotEmpty()
   @IsNumber()
-  [INDICATOR_NAME_CODES.LAND_USE]: number;
+  [INDICATOR_NAME_CODES.WU]: number;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -48,7 +48,7 @@ export class IndicatorCoefficientsDto {
   @Min(0)
   @IsNotEmpty()
   @IsNumber()
-  [INDICATOR_NAME_CODES.SATELLIGENCE_DEFORESTATION]: number;
+  [INDICATOR_NAME_CODES.NL]: number;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -56,7 +56,7 @@ export class IndicatorCoefficientsDto {
   @Min(0)
   @IsNotEmpty()
   @IsNumber()
-  [INDICATOR_NAME_CODES.SATELLIGENCE_DEFORESTATION_RISK]: number;
+  [INDICATOR_NAME_CODES.NCE]: number;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -64,7 +64,7 @@ export class IndicatorCoefficientsDto {
   @Min(0)
   @IsNotEmpty()
   @IsNumber()
-  [INDICATOR_NAME_CODES.NATURAL_ECOSYSTEM_CONVERSION_RISK]: number;
+  [INDICATOR_NAME_CODES.FLIL]: number;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -72,5 +72,13 @@ export class IndicatorCoefficientsDto {
   @Min(0)
   @IsNotEmpty()
   @IsNumber()
-  [INDICATOR_NAME_CODES.WATER_QUALITY]: number;
+  [INDICATOR_NAME_CODES.ENL]: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Max(1000000)
+  @Min(0)
+  @IsNotEmpty()
+  @IsNumber()
+  [INDICATOR_NAME_CODES.GHG_FARM]: number;
 }

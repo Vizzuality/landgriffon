@@ -9,8 +9,5 @@ export class IndicatorRecordCalculatedValuesDto {
   sourcingRecordId: string;
   production: number;
   materialH3DataId: string;
-
-  landPerTon: number;
-  landUse: number;
   values: Map<INDICATOR_NAME_CODES, number>;
 }

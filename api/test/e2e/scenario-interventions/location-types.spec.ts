@@ -66,8 +66,8 @@ describe('Interventions E2E Tests (Location Types)', () => {
         'Then I should get an error',
       async () => {
         await createIndicator({
-          name: INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
-          nameCode: INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
+          name: INDICATOR_NAME_CODES.UWU,
+          nameCode: INDICATOR_NAME_CODES.UWU,
           status: INDICATOR_STATUS.ACTIVE,
         });
         const response = await request(testApplication.getHttpServer())
@@ -86,7 +86,7 @@ describe('Interventions E2E Tests (Location Types)', () => {
             newLocationType: LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION,
             type: SCENARIO_INTERVENTION_TYPE.NEW_MATERIAL,
             newIndicatorCoefficients: {
-              [INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE]: 1,
+              [INDICATOR_NAME_CODES.UWU]: 1,
             },
           });
 
@@ -128,11 +128,11 @@ describe('Interventions E2E Tests (Location Types)', () => {
             type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
             // TODO generate from enum
             newIndicatorCoefficients: {
-              UWU_T: 5,
-              UWUSR_T: 5,
-              GHG_LUC_T: 1,
-              DF_LUC_T: 10,
-              LI: 3,
+              [INDICATOR_NAME_CODES.UWU]: 5,
+              [INDICATOR_NAME_CODES.WU]: 5,
+              [INDICATOR_NAME_CODES.GHG_DEF_SLUC]: 1,
+              [INDICATOR_NAME_CODES.DF_SLUC]: 10,
+              [INDICATOR_NAME_CODES.LF]: 3,
             },
           });
 

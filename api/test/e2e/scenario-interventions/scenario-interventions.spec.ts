@@ -58,7 +58,10 @@ import {
   MaterialToH3,
 } from 'modules/materials/material-to-h3.entity';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
-import { Indicator } from 'modules/indicators/indicator.entity';
+import {
+  Indicator,
+  INDICATOR_NAME_CODES,
+} from 'modules/indicators/indicator.entity';
 import { Unit } from 'modules/units/unit.entity';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import { dropH3DataMock, h3DataMock } from '../h3-data/mocks/h3-data.mock';
@@ -271,11 +274,11 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           // TODO generate from enum
           newIndicatorCoefficients: {
-            UWU_T: 5,
-            UWUSR_T: 5,
-            GHG_LUC_T: 1,
-            DF_LUC_T: 10,
-            LI: 3,
+            [INDICATOR_NAME_CODES.UWU]: 5,
+            [INDICATOR_NAME_CODES.WU]: 5,
+            [INDICATOR_NAME_CODES.GHG_DEF_SLUC]: 1,
+            [INDICATOR_NAME_CODES.DF_SLUC]: 10,
+            [INDICATOR_NAME_CODES.LF]: 3,
           },
         });
 
@@ -533,11 +536,11 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             newLocationType: LOCATION_TYPES.COUNTRY_OF_PRODUCTION,
             newLocationCountryInput: 'Spain',
             newIndicatorCoefficients: {
-              UWU_T: 5,
-              UWUSR_T: 5,
-              GHG_LUC_T: 1,
-              DF_LUC_T: 10,
-              LI: 3,
+              [INDICATOR_NAME_CODES.UWU]: 5,
+              [INDICATOR_NAME_CODES.WU]: 5,
+              [INDICATOR_NAME_CODES.GHG_DEF_SLUC]: 1,
+              [INDICATOR_NAME_CODES.DF_SLUC]: 10,
+              [INDICATOR_NAME_CODES.LF]: 3,
             },
           });
 
@@ -1354,11 +1357,11 @@ describe('ScenarioInterventionsModule (e2e)', () => {
           newLocationCountryInput: 'TestCountry',
           type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
           newIndicatorCoefficients: {
-            UWU_T: 5,
-            UWUSR_T: 5,
-            GHG_LUC_T: 1,
-            DF_LUC_T: 10,
-            LI: 3,
+            [INDICATOR_NAME_CODES.UWU]: 5,
+            [INDICATOR_NAME_CODES.WU]: 5,
+            [INDICATOR_NAME_CODES.GHG_DEF_SLUC]: 1,
+            [INDICATOR_NAME_CODES.DF_SLUC]: 10,
+            [INDICATOR_NAME_CODES.LF]: 3,
           },
         });
 
@@ -1649,11 +1652,11 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             adminRegionIds: [parentAdminRegion.id],
             type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
             newIndicatorCoefficients: {
-              UWU_T: 5,
-              UWUSR_T: 5,
-              GHG_LUC_T: 1,
-              DF_LUC_T: 10,
-              LI: 3,
+              [INDICATOR_NAME_CODES.UWU]: 5,
+              [INDICATOR_NAME_CODES.WU]: 5,
+              [INDICATOR_NAME_CODES.GHG_DEF_SLUC]: 1,
+              [INDICATOR_NAME_CODES.DF_SLUC]: 10,
+              [INDICATOR_NAME_CODES.LF]: 3,
             },
           });
 
@@ -1836,11 +1839,11 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             businessUnitIds: [parentBusinessUnit.id],
             type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
             newIndicatorCoefficients: {
-              UWU_T: 5,
-              UWUSR_T: 5,
-              GHG_LUC_T: 1,
-              DF_LUC_T: 10,
-              LI: 3,
+              [INDICATOR_NAME_CODES.UWU]: 5,
+              [INDICATOR_NAME_CODES.WU]: 5,
+              [INDICATOR_NAME_CODES.GHG_DEF_SLUC]: 1,
+              [INDICATOR_NAME_CODES.DF_SLUC]: 10,
+              [INDICATOR_NAME_CODES.LF]: 3,
             },
           });
 
@@ -1876,11 +1879,11 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             t1SupplierIds: [childSupplier.id],
             type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
             newIndicatorCoefficients: {
-              UWU_T: 5,
-              UWUSR_T: 5,
-              GHG_LUC_T: 1,
-              DF_LUC_T: 10,
-              LI: 3,
+              [INDICATOR_NAME_CODES.UWU]: 5,
+              [INDICATOR_NAME_CODES.WU]: 5,
+              [INDICATOR_NAME_CODES.GHG_DEF_SLUC]: 1,
+              [INDICATOR_NAME_CODES.DF_SLUC]: 10,
+              [INDICATOR_NAME_CODES.LF]: 3,
             },
           });
 
@@ -1904,11 +1907,11 @@ describe('ScenarioInterventionsModule (e2e)', () => {
             materialIds: [parentMaterial.id],
             type: SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY,
             newIndicatorCoefficients: {
-              UWU_T: 5,
-              UWUSR_T: 5,
-              GHG_LUC_T: 1,
-              DF_LUC_T: 10,
-              LI: 3,
+              [INDICATOR_NAME_CODES.UWU]: 5,
+              [INDICATOR_NAME_CODES.WU]: 5,
+              [INDICATOR_NAME_CODES.GHG_DEF_SLUC]: 1,
+              [INDICATOR_NAME_CODES.DF_SLUC]: 10,
+              [INDICATOR_NAME_CODES.LF]: 3,
             },
           });
 

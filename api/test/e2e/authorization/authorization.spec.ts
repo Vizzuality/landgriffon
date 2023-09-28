@@ -83,7 +83,7 @@ describe('Authorization Test (E2E)', () => {
           .expect(HttpStatus.OK);
 
         const indicator = await createIndicator({
-          nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
+          nameCode: INDICATOR_NAME_CODES.DF_SLUC,
         });
 
         await request(testApplication.getHttpServer())
@@ -101,7 +101,7 @@ describe('Authorization Test (E2E)', () => {
           .expect(HttpStatus.FORBIDDEN);
 
         const indicator = await createIndicator({
-          nameCode: INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
+          nameCode: INDICATOR_NAME_CODES.UWU,
         });
 
         await request(testApplication.getHttpServer())

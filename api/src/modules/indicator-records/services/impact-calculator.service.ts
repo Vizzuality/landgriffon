@@ -160,9 +160,7 @@ export class ImpactCalculator {
     indicatorsToCalculateImpactFor.forEach((indicator: Indicator) => {
       indicatorRecords.push(
         IndicatorRecord.merge(new IndicatorRecord(), {
-          value: calculatedIndicatorRecordValues.values.get(
-            indicator.nameCode as INDICATOR_NAME_CODES,
-          ),
+          value: calculatedIndicatorRecordValues.values.get(indicator.nameCode),
           indicatorId: indicator.id,
           status: INDICATOR_RECORD_STATUS.SUCCESS,
           sourcingRecordId: sourcingData.sourcingRecordId,
@@ -270,41 +268,13 @@ export class ImpactCalculator {
     calculatedIndicatorValues.sourcingRecordId = sourcingData.sourcingRecordId;
     calculatedIndicatorValues.materialH3DataId = materialH3DataId;
     calculatedIndicatorValues.values = new Map<INDICATOR_NAME_CODES, number>();
-    calculatedIndicatorValues.values.set(
-      INDICATOR_NAME_CODES.LAND_USE,
-      newIndicatorCoefficients[INDICATOR_NAME_CODES.LAND_USE] *
-        sourcingData.tonnage || 0,
-    );
-    calculatedIndicatorValues.values.set(
-      INDICATOR_NAME_CODES.DEFORESTATION_RISK,
-      newIndicatorCoefficients[INDICATOR_NAME_CODES.DEFORESTATION_RISK] *
-        sourcingData.tonnage || 0,
-    );
-    calculatedIndicatorValues.values.set(
-      INDICATOR_NAME_CODES.CLIMATE_RISK,
-      newIndicatorCoefficients[INDICATOR_NAME_CODES.CLIMATE_RISK] *
-        sourcingData.tonnage || 0,
-    );
-    calculatedIndicatorValues.values.set(
-      INDICATOR_NAME_CODES.WATER_USE,
-      newIndicatorCoefficients[INDICATOR_NAME_CODES.WATER_USE] *
-        sourcingData.tonnage || 0,
-    );
-
-    // TODO: We need to ignore satelligence indicators from being affected by a coefficient that a user can send
-    //       updating the model will be required for this, as by default any indicator that is active will be shown
-    //       in the UI, also for sending coefficients in intervention calculation
-
-    // Depends on water use indicator's final value
-    const waterUseValue: number = calculatedIndicatorValues.values.get(
-      INDICATOR_NAME_CODES.WATER_USE,
-    )!;
-    calculatedIndicatorValues.values.set(
-      INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
-      waterUseValue *
-        newIndicatorCoefficients[INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE] *
-        sourcingData.tonnage,
-    );
+    Object.keys(INDICATOR_NAME_CODES).forEach((nameCode: string) => {
+      calculatedIndicatorValues.values.set(
+        nameCode as INDICATOR_NAME_CODES,
+        newIndicatorCoefficients[nameCode as INDICATOR_NAME_CODES] *
+          sourcingData.tonnage || 0,
+      );
+    });
 
     return calculatedIndicatorValues;
   }
@@ -317,61 +287,76 @@ export class ImpactCalculator {
     rawData: SourcingRecordsWithIndicatorRawData,
     tonnage: number,
   ): Map<INDICATOR_NAME_CODES, number> {
+    const map: Map<INDICATOR_NAME_CODES, number> = new Map();
     const landPerTon: number = Number.isFinite(
       rawData.harvest / rawData.production,
     )
       ? rawData.harvest / rawData.production
       : 0;
-    const landUse: number = landPerTon * tonnage;
-    const deforestationPreProcessed: number = Number.isFinite(
-      rawData.rawDeforestation / rawData.production,
-    )
-      ? rawData.rawDeforestation / rawData.production
-      : 0;
-    const deforestation: number =
-      deforestationPreProcessed > 0 ? deforestationPreProcessed * landUse : 0;
-    const climateRiskPreProcessed: number = Number.isFinite(
-      rawData.rawClimateRisk / rawData.production,
-    )
-      ? rawData.rawClimateRisk / rawData.production
-      : 0;
-    const climateRisk: number =
-      climateRiskPreProcessed > 0 ? climateRiskPreProcessed * landUse : 0;
-    const naturalRiskPreprocessed: number = Number.isFinite(
-      rawData.rawNaturalConversion / rawData.production,
-    )
-      ? rawData.rawNaturalConversion / rawData.production
-      : 0;
-    const naturalRisk: number =
-      naturalRiskPreprocessed > 0 ? naturalRiskPreprocessed * landUse : 0;
-    const waterUse: number = rawData.rawWaterUse * tonnage;
-    const unsustainableWaterUse: number =
-      waterUse * rawData.rawUnsustainableWaterUse;
-    const waterQuality: number = rawData.rawWaterQuality * tonnage;
+    map.set(INDICATOR_NAME_CODES.LF, landPerTon * tonnage);
+    const getLF = (): number => map.get(INDICATOR_NAME_CODES.LF) ?? 0;
+    const getPreprocessed = (indicator: INDICATOR_NAME_CODES): number => {
+      return Number.isFinite(rawData[indicator] / rawData.production)
+        ? rawData[indicator] / rawData.production
+        : 0;
+    };
 
-    const map: Map<INDICATOR_NAME_CODES, number> = new Map();
-    map.set(INDICATOR_NAME_CODES.DEFORESTATION_RISK, deforestation);
-    map.set(INDICATOR_NAME_CODES.CLIMATE_RISK, climateRisk);
-    map.set(
-      INDICATOR_NAME_CODES.NATURAL_ECOSYSTEM_CONVERSION_RISK,
-      naturalRisk,
-    );
-    map.set(
-      INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
-      unsustainableWaterUse,
-    );
-    map.set(INDICATOR_NAME_CODES.WATER_USE, waterUse);
-    map.set(INDICATOR_NAME_CODES.WATER_QUALITY, waterQuality);
-    map.set(INDICATOR_NAME_CODES.LAND_USE, landUse);
-    map.set(
-      INDICATOR_NAME_CODES.SATELLIGENCE_DEFORESTATION,
-      rawData.satDeforestation,
-    );
-    map.set(
-      INDICATOR_NAME_CODES.SATELLIGENCE_DEFORESTATION_RISK,
-      rawData.satDeforestationRisk,
-    );
+    map.set(INDICATOR_NAME_CODES.LF, landPerTon * tonnage);
+    const calculations: Record<INDICATOR_NAME_CODES, () => number> = {
+      [INDICATOR_NAME_CODES.LF]: getLF,
+      [INDICATOR_NAME_CODES.DF_SLUC]: () => {
+        const preProcessed: number = getPreprocessed(
+          INDICATOR_NAME_CODES.DF_SLUC,
+        );
+        return preProcessed * getLF();
+      },
+      [INDICATOR_NAME_CODES.GHG_DEF_SLUC]: () => {
+        const preProcessed: number = getPreprocessed(
+          INDICATOR_NAME_CODES.GHG_DEF_SLUC,
+        );
+        return preProcessed * getLF();
+      },
+      [INDICATOR_NAME_CODES.NCE]: () => {
+        const preProcessed: number = getPreprocessed(INDICATOR_NAME_CODES.NCE);
+        return preProcessed * getLF();
+      },
+      [INDICATOR_NAME_CODES.FLIL]: () => {
+        const preProcessed: number = getPreprocessed(INDICATOR_NAME_CODES.FLIL);
+        return preProcessed * getLF();
+      },
+      [INDICATOR_NAME_CODES.GHG_FARM]: () => {
+        const preProcessed: number = getPreprocessed(
+          INDICATOR_NAME_CODES.GHG_FARM,
+        );
+        return preProcessed * rawData.tonnage || 0;
+      },
+      [INDICATOR_NAME_CODES.WU]: () => {
+        return rawData[INDICATOR_NAME_CODES.WU] * tonnage || 0;
+      },
+      [INDICATOR_NAME_CODES.UWU]: () => {
+        const waterUseValue: number =
+          rawData[INDICATOR_NAME_CODES.WU] * tonnage;
+        return (
+          (rawData[INDICATOR_NAME_CODES.UWU] * waterUseValue) /
+            (100 * rawData.production) || 0
+        );
+      },
+      [INDICATOR_NAME_CODES.NL]: () => {
+        return rawData[INDICATOR_NAME_CODES.NL] * tonnage || 0;
+      },
+      [INDICATOR_NAME_CODES.ENL]: () => {
+        const nutrientLoad: number =
+          rawData[INDICATOR_NAME_CODES.NL] * tonnage || 0;
+        return (
+          (rawData[INDICATOR_NAME_CODES.ENL] * nutrientLoad) /
+            (100 * rawData.production) || 0
+        );
+      },
+    };
 
+    for (const [key, value] of Object.entries(calculations)) {
+      map.set(key as INDICATOR_NAME_CODES, value());
+    }
     return map;
   }
 

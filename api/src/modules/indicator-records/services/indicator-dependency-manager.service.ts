@@ -22,7 +22,7 @@ export class IndicatorQueryDependencyManager {
     for (const nameCode of nameCodes) {
       const queryObject: IndicatorNameCodeToQuery = this.queryMap[nameCode];
       for (const queryFunction of Object.values(queryObject)) {
-        const querySegment: ImpactQueryExpression = queryFunction(nameCode);
+        const querySegment: ImpactQueryExpression = queryFunction();
         queries.push(querySegment);
       }
     }
@@ -46,7 +46,7 @@ export class IndicatorQueryDependencyManager {
       for (const nameCode of nameCodes) {
         const queryObject: IndicatorNameCodeToQuery = this.queryMap[nameCode];
         for (const queryFunction of Object.values(queryObject)) {
-          const querySegment: ImpactQueryExpression = queryFunction(nameCode);
+          const querySegment: ImpactQueryExpression = queryFunction();
           queries.push(querySegment);
         }
       }

@@ -21,19 +21,19 @@ async function createIndicatorsForXLSXImport(
   const indicatorSpec = [
     {
       name: 'Deforestation loss due to land use change',
-      nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
+      nameCode: INDICATOR_NAME_CODES.DF_SLUC,
     },
     {
       name: 'Carbon emissions due to land use change',
-      nameCode: INDICATOR_NAME_CODES.CLIMATE_RISK,
+      nameCode: INDICATOR_NAME_CODES.GHG_DEF_SLUC,
     },
     {
       name: 'Biodiversity loss due to land use change',
-      nameCode: INDICATOR_NAME_CODES.LAND_USE,
+      nameCode: INDICATOR_NAME_CODES.LF,
     },
     {
       name: 'Unsustainable water use',
-      nameCode: INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
+      nameCode: INDICATOR_NAME_CODES.UWU,
     },
   ];
 

@@ -51,7 +51,7 @@ describe('IndicatorsModule (e2e)', () => {
         .set('Authorization', `Bearer ${jwtToken}`)
         .send({
           name: 'test indicator',
-          nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
+          nameCode: INDICATOR_NAME_CODES.DF_SLUC,
         })
         .expect(HttpStatus.CREATED);
 

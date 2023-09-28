@@ -271,38 +271,32 @@ export class ImpactCalculator {
     calculatedIndicatorValues.materialH3DataId = materialH3DataId;
     calculatedIndicatorValues.values = new Map<INDICATOR_NAME_CODES, number>();
     calculatedIndicatorValues.values.set(
-      INDICATOR_NAME_CODES.LAND_USE,
-      newIndicatorCoefficients[INDICATOR_NAME_CODES.LAND_USE] *
+      INDICATOR_NAME_CODES.LF,
+      newIndicatorCoefficients[INDICATOR_NAME_CODES.LF] *
         sourcingData.tonnage || 0,
     );
     calculatedIndicatorValues.values.set(
-      INDICATOR_NAME_CODES.DEFORESTATION_RISK,
-      newIndicatorCoefficients[INDICATOR_NAME_CODES.DEFORESTATION_RISK] *
+      INDICATOR_NAME_CODES.DF_SLUC,
+      newIndicatorCoefficients[INDICATOR_NAME_CODES.DF_SLUC] *
         sourcingData.tonnage || 0,
     );
     calculatedIndicatorValues.values.set(
-      INDICATOR_NAME_CODES.CLIMATE_RISK,
-      newIndicatorCoefficients[INDICATOR_NAME_CODES.CLIMATE_RISK] *
+      INDICATOR_NAME_CODES.GHG_DEF_SLUC,
+      newIndicatorCoefficients[INDICATOR_NAME_CODES.GHG_DEF_SLUC] *
         sourcingData.tonnage || 0,
     );
     calculatedIndicatorValues.values.set(
-      INDICATOR_NAME_CODES.WATER_USE,
-      newIndicatorCoefficients[INDICATOR_NAME_CODES.WATER_USE] *
+      INDICATOR_NAME_CODES.WU,
+      newIndicatorCoefficients[INDICATOR_NAME_CODES.WU] *
         sourcingData.tonnage || 0,
     );
-
-    // TODO: We need to ignore satelligence indicators from being affected by a coefficient that a user can send
-    //       updating the model will be required for this, as by default any indicator that is active will be shown
-    //       in the UI, also for sending coefficients in intervention calculation
-
-    // Depends on water use indicator's final value
     const waterUseValue: number = calculatedIndicatorValues.values.get(
-      INDICATOR_NAME_CODES.WATER_USE,
+      INDICATOR_NAME_CODES.WU,
     )!;
     calculatedIndicatorValues.values.set(
-      INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
+      INDICATOR_NAME_CODES.UWU,
       waterUseValue *
-        newIndicatorCoefficients[INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE] *
+        newIndicatorCoefficients[INDICATOR_NAME_CODES.UWU] *
         sourcingData.tonnage,
     );
 
@@ -350,27 +344,16 @@ export class ImpactCalculator {
     const waterQuality: number = rawData.rawWaterQuality * tonnage;
 
     const map: Map<INDICATOR_NAME_CODES, number> = new Map();
-    map.set(INDICATOR_NAME_CODES.DEFORESTATION_RISK, deforestation);
-    map.set(INDICATOR_NAME_CODES.CLIMATE_RISK, climateRisk);
-    map.set(
-      INDICATOR_NAME_CODES.NATURAL_ECOSYSTEM_CONVERSION_RISK,
-      naturalRisk,
-    );
-    map.set(
-      INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
-      unsustainableWaterUse,
-    );
-    map.set(INDICATOR_NAME_CODES.WATER_USE, waterUse);
-    map.set(INDICATOR_NAME_CODES.WATER_QUALITY, waterQuality);
-    map.set(INDICATOR_NAME_CODES.LAND_USE, landUse);
-    map.set(
-      INDICATOR_NAME_CODES.SATELLIGENCE_DEFORESTATION,
-      rawData.satDeforestation,
-    );
-    map.set(
-      INDICATOR_NAME_CODES.SATELLIGENCE_DEFORESTATION_RISK,
-      rawData.satDeforestationRisk,
-    );
+    map.set(INDICATOR_NAME_CODES.LF, landUse);
+    map.set(INDICATOR_NAME_CODES.DF_SLUC, deforestation);
+    map.set(INDICATOR_NAME_CODES.GHG_DEF_SLUC, climateRisk);
+    map.set(INDICATOR_NAME_CODES.GHG_FARM, naturalRisk);
+    map.set(INDICATOR_NAME_CODES.UWU, unsustainableWaterUse);
+    map.set(INDICATOR_NAME_CODES.WU, waterUse);
+    map.set(INDICATOR_NAME_CODES.WU, waterQuality);
+    map.set(INDICATOR_NAME_CODES.NL, naturalRisk);
+    map.set(INDICATOR_NAME_CODES.ENL, naturalRisk);
+    map.set(INDICATOR_NAME_CODES.NCE, naturalRisk);
 
     return map;
   }

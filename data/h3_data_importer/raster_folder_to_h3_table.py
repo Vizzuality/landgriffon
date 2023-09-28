@@ -131,7 +131,7 @@ def update_for_material_indicator(cursor: psycopg.Cursor, dataset: str, column_n
     if not indicator_id:
         log.warning(f"Indicator with 'nameCode' {dataset} does not exists")
         raise ValueError(f"Indicator with 'nameCode' {dataset} does not exists")
-    # todo: convert to script parameter
+    # todo: convert to script parameter or something that is not hardcoded for a specific case.
     spam_id = f"spam_{column_name.split('PerTProduction')[0].lower()}"  # something like 'spam_ocerwhea'
     cursor.execute('select id from material where "datasetId" = %s', (spam_id,))
     material_ids = cursor.fetchall()
@@ -219,7 +219,7 @@ def to_the_db(df: pd.DataFrame, table: str, data_type: str, dataset: str, year: 
 @click.argument("table", type=str)
 @click.argument(
     "data_type",
-    type=click.Choice(["production", "harvest_area", "indicator", "material_indicator"], case_sensitive=False),
+    type=click.Choice(["production", "harvest_area", "indicator", "material_indicator"], case_sensitive=True),
 )
 @click.argument("dataset", type=str)
 @click.argument("year", type=int)

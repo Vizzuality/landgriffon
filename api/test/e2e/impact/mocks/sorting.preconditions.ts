@@ -41,7 +41,7 @@ export async function createImpactTableSortingPreconditions(
   const indicator: Indicator = await createIndicator({
     name: 'Fake Indicator',
     unit,
-    nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
+    nameCode: INDICATOR_NAME_CODES.DF_SLUC,
   });
 
   const parentMaterial1 = await createMaterial({

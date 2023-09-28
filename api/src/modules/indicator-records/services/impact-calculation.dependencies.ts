@@ -60,48 +60,45 @@ export const INDICATOR_NAME_CODE_TO_QUERY_MAP: {
     [key in ImpactQueryPropertyName]?: ImpactPropertyToQueryFunction;
   };
 } = {
-  [INDICATOR_NAME_CODES.LAND_USE]: {
+  [INDICATOR_NAME_CODES.LF]: {
     harvest: () =>
       `sum_material_over_georegion($1, $2, 'harvest') as "${QueryPropertyNames.harvest}"`,
     production: () =>
       `sum_material_over_georegion($1, $2, 'producer') as "${QueryPropertyNames.production}"`,
   },
-  [INDICATOR_NAME_CODES.DEFORESTATION_RISK]: {
+  [INDICATOR_NAME_CODES.DF_SLUC]: {
     production: () =>
       `sum_material_over_georegion($1, $2, 'producer') as "${QueryPropertyNames.production}"`,
     rawDeforestation: (nameCode: INDICATOR_NAME_CODES) =>
       `get_annual_landscape_impact_over_georegion($1, '${nameCode}', $2, 'producer') as "${QueryPropertyNames.rawDeforestation}"`,
   },
-  [INDICATOR_NAME_CODES.CLIMATE_RISK]: {
+  [INDICATOR_NAME_CODES.GHG_DEF_SLUC]: {
     production: () =>
       `sum_material_over_georegion($1, $2, 'producer') as "${QueryPropertyNames.production}"`,
     rawClimateRisk: (nameCode: INDICATOR_NAME_CODES) =>
       `get_annual_landscape_impact_over_georegion($1,'${nameCode}', $2, 'producer') as "${QueryPropertyNames.rawClimateRisk}"`,
   },
-  [INDICATOR_NAME_CODES.WATER_QUALITY]: {
+  [INDICATOR_NAME_CODES.GHG_FARM]: {
     rawWaterQuality: (nameCode: INDICATOR_NAME_CODES) =>
       `get_indicator_coefficient_impact('${nameCode}', $3, $2) as "${QueryPropertyNames.rawWaterQuality}"`,
   },
-  [INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE]: {
+  [INDICATOR_NAME_CODES.UWU]: {
     rawUnsustainableWaterUse: (nameCode: INDICATOR_NAME_CODES) =>
       `get_percentage_water_stress_area($1, '${nameCode}') as "${QueryPropertyNames.rawUnsustainableWaterUse}"`,
   },
-  [INDICATOR_NAME_CODES.NATURAL_ECOSYSTEM_CONVERSION_RISK]: {
-    production: () =>
-      `sum_material_over_georegion($1, $2, 'producer') as "${QueryPropertyNames.production}"`,
+  [INDICATOR_NAME_CODES.WU]: {
+    rawWaterUse: (nameCode: INDICATOR_NAME_CODES) => 'to be implemented',
+  },
+  [INDICATOR_NAME_CODES.NL]: {
     rawNaturalConversion: (nameCode: INDICATOR_NAME_CODES) =>
-      `get_annual_landscape_impact_over_georegion($1, '${nameCode}', $2, 'producer') as "${QueryPropertyNames.rawNaturalConversion}"`,
+      'to be implemented',
   },
-  [INDICATOR_NAME_CODES.SATELLIGENCE_DEFORESTATION]: {
-    satDeforestation: () =>
-      ` sum_satelligence_deforestation_over_georegion($1) as "${QueryPropertyNames.satDeforestation}"`,
+  [INDICATOR_NAME_CODES.ENL]: {
+    rawNaturalConversion: (nameCode: INDICATOR_NAME_CODES) =>
+      'to be implemented',
   },
-  [INDICATOR_NAME_CODES.SATELLIGENCE_DEFORESTATION_RISK]: {
-    satDeforestationRisk: () =>
-      `sum_satelligence_deforestation_risk_over_georegion($1) as "${QueryPropertyNames.satDeforestationRisk}"`,
-  },
-  [INDICATOR_NAME_CODES.WATER_USE]: {
-    rawWaterUse: (nameCode: INDICATOR_NAME_CODES) =>
-      `get_indicator_coefficient_impact('${nameCode}', $3, $2) as "${QueryPropertyNames.rawWaterUse}"`,
+  [INDICATOR_NAME_CODES.NCE]: {
+    rawNaturalConversion: (nameCode: INDICATOR_NAME_CODES) =>
+      'to be implemented',
   },
 };

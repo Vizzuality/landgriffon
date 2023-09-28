@@ -18,24 +18,24 @@ export const createWorldToCalculateIndicatorRecords = async (
   // Creating Indicators:
   const climateRisk: Indicator = await createIndicator({
     name: 'climate risk',
-    nameCode: INDICATOR_NAME_CODES.CLIMATE_RISK,
+    nameCode: INDICATOR_NAME_CODES.GHG_DEF_SLUC,
   });
   const waterUse: Indicator = await createIndicator({
     name: 'water use',
-    nameCode: INDICATOR_NAME_CODES.WATER_USE,
+    nameCode: INDICATOR_NAME_CODES.WU,
   });
   const unsustainableWaterUse: Indicator = await createIndicator({
     name: 'unsust water use',
-    nameCode: INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
+    nameCode: INDICATOR_NAME_CODES.UWU,
   });
   const deforestation: Indicator = await createIndicator({
     name: 'def risk',
-    nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
+    nameCode: INDICATOR_NAME_CODES.DF_SLUC,
   });
 
   const landUse: Indicator = await createIndicator({
     name: 'land use',
-    nameCode: INDICATOR_NAME_CODES.LAND_USE,
+    nameCode: INDICATOR_NAME_CODES.LF,
   });
 
   // Creating tables with h3Data for the new indicators

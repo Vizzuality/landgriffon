@@ -94,24 +94,24 @@ export async function createInterventionPreconditions(
 
   const indicator1: Indicator = await createIndicator({
     name: 'climate risk',
-    nameCode: INDICATOR_NAME_CODES.CLIMATE_RISK,
+    nameCode: INDICATOR_NAME_CODES.GHG_DEF_SLUC,
   });
   const indicator2: Indicator = await createIndicator({
     name: 'water use',
-    nameCode: INDICATOR_NAME_CODES.WATER_USE,
+    nameCode: INDICATOR_NAME_CODES.WU,
   });
   const indicator3: Indicator = await createIndicator({
     name: 'unsust water use',
-    nameCode: INDICATOR_NAME_CODES.UNSUSTAINABLE_WATER_USE,
+    nameCode: INDICATOR_NAME_CODES.UWU,
   });
   const indicator4: Indicator = await createIndicator({
     name: 'def risk',
-    nameCode: INDICATOR_NAME_CODES.DEFORESTATION_RISK,
+    nameCode: INDICATOR_NAME_CODES.DF_SLUC,
   });
 
   await createIndicator({
     name: 'land use',
-    nameCode: INDICATOR_NAME_CODES.LAND_USE,
+    nameCode: INDICATOR_NAME_CODES.LF,
   });
 
   // Creating tables with h3Data for the new indicators

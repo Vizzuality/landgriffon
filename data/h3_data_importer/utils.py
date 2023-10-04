@@ -127,7 +127,7 @@ def get_metadata(table: str) -> dict:
         return metadata
 
 
-def link_to_indicator_table(connection: connection, indicator_code: str, h3_column_name: str):
+def link_to_indicator_table(connection: connection, indicator_code: str, h3_table_name: str, h3_column_name: str):
     """Gets indicatorID and links it to the h3table corresponding entry"""
     with connection:
         with connection.cursor() as cursor:
@@ -136,9 +136,9 @@ def link_to_indicator_table(connection: connection, indicator_code: str, h3_colu
             if indicator_id:
                 cursor.execute(
                     f"""update "h3_data"  set "indicatorId" = '{indicator_id}'
-                    where  "h3columnName" = '{h3_column_name}'"""
+                    where "h3tableName" = '{h3_table_name}' and "h3columnName" = '{h3_column_name}'"""
                 )
-                log.info(f"Updated indicatorId '{indicator_id}' in h3_data for {h3_column_name}")
+                log.info(f"Updated indicatorId '{indicator_id}' in h3_data for {h3_table_name}.{h3_column_name}")
             else:
                 log.error(f"Indicator with name code {indicator_code} does not exist")
 

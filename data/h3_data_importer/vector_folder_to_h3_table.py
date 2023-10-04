@@ -190,7 +190,7 @@ def main(
         return  # gracefully exit without exception
 
     if indicator_code:  # if given, consider layer as indicator update h3_table
-        link_to_indicator_table(conn, indicator_code, column)
+        link_to_indicator_table(conn, indicator_code, table, column)
 
     postgres_thread_pool.putconn(conn, close=True)
 

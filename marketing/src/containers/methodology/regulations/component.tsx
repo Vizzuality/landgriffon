@@ -20,9 +20,8 @@ const Regulations: React.FC = () => {
               <FadeIn>
                 <div className="space-y-6">
                   <p className="text-2xl font-light leading-relaxed">
-                    Regulators and sustainability leaders agree that location is essential. We are
-                    participating in the SBTN & TNFD process to ensure our data analysis meets their
-                    regulations and guidance.
+                    We are participating in the SBTN & TNFD process to ensure our data analysis
+                    meets their regulations and guidance.
                   </p>
 
                   <div className="grid grid-cols-2 gap-12 border-b border-gray-300 p-4 pb-10">

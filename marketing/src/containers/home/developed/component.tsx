@@ -14,23 +14,27 @@ const Developed: React.FC = () => {
           <FadeIn>
             <div className="space-y-10">
               <h2 className="text-6xl font-black uppercase font-display">Powered by Vizzuality</h2>
-              <h3 className="text-2xl font-light">
+              <p className="text-2xl font-light">
                 Sustainable transformation requires whole systems thinking. That&apos;s why
                 LandGriffon is made up of experts combining the disciplines of design, science,
                 technology, sustainability, and business.
-              </h3>
+              </p>
 
-              <h3 className="text-2xl font-light">
-                <strong className="font-bold">For over a decade, Vizzuality </strong>
+              <p className="text-2xl font-light">
+                <strong className="font-bold">
+                  For over a decade,{' '}
+                  <a
+                    href="https://vizzuality.com"
+                    className="underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Vizzuality
+                  </a>{' '}
+                </strong>
                 has helped companies access, understand, and easily use the data and recommendations
                 of the sustainability community.
-              </h3>
-
-              <h3 className="text-2xl font-light">
-                LandGriffon facilitates access, transparency, and global collaboration by embracing
-                open source and open science. We encourage you to review it and welcome input and
-                feedback.
-              </h3>
+              </p>
 
               <Link href="/methodology">
                 <a className="text-base font-semibold inline-flex justify-center items-center space-x-7 underline underline-offset-4">

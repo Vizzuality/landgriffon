@@ -90,7 +90,7 @@ const Features: React.FC = () => {
             transition={{ duration: 0.75, delay: 0.1 }}
             width="853"
             height="480"
-            src="https://www.youtube.com/embed/rUl8jQkyJuw"
+            src="https://www.youtube.com/embed/rUl8jQkyJuw?color=white"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen

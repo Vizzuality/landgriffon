@@ -6,7 +6,7 @@ const FAQS = [
     answer: (
       <div className="space-y-5">
         <p>
-          LandGriffon is led by{' '}
+          LandGriffon is
           <a
             className="underline"
             href="https://www.vizzuality.com/"
@@ -15,7 +15,9 @@ const FAQS = [
           >
             Vizzuality
           </a>{' '}
-          and{' '}
+          powered service. We received funding from the European Union&apos;s Horizon 2020 research
+          and innovation program under grant agreement No 101004174. During this time, we were
+          supported by{' '}
           <a
             className="underline"
             href="https://satelligence.com/"
@@ -24,7 +26,7 @@ const FAQS = [
           >
             Satelligence
           </a>
-          , advised by the{' '}
+          ,{' '}
           <a
             className="underline"
             href="https://www.sei.org/"
@@ -32,8 +34,8 @@ const FAQS = [
             rel="noopener noreferrer"
           >
             Stockholm Environment Institute
-          </a>{' '}
-          and their{' '}
+          </a>
+          , and{' '}
           <a
             className="underline"
             href="https://www.trase.earth/"
@@ -41,9 +43,9 @@ const FAQS = [
             rel="noopener noreferrer"
           >
             Trase
-          </a>{' '}
-          initiative. Together, we bring expertise in user-centric design, satellite monitoring, and
-          environmental science to help companies reach a more sustainable future.
+          </a>
+          , to bring expertise in user-centric design, satellite monitoring, and environmental
+          sciences into the early development of LandGriffon.
         </p>
         <p>
           This project has received funding from the European Union&apos;s Horizon 2020 research and

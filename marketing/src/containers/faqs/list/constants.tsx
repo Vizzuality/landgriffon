@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 const FAQS = [
   {
     id: 1,
@@ -68,6 +70,24 @@ const FAQS = [
           We work closely with clients to understand sustainability priorities, gather supply chain
           data, build custom indicators and metrics, integrate with your existing systems, and
           interpret results.
+        </p>
+      </div>
+    ),
+  },
+  {
+    id: 9,
+    group: 'landgriffon-service',
+    question: <>Do you offer a pilot service?</>,
+    answer: (
+      <div className="space-y-5">
+        <p>
+          We want to ensure that we provide the best possible service for your business. That’s why
+          we offer a pilot version of LandGriffon so you can get a sense of its capabilities and fit
+          your needs.{' '}
+          <Link href="/contact">
+            <a className="underline">Get in touch</a>
+          </Link>{' '}
+          to discuss what possibilities there are.
         </p>
       </div>
     ),

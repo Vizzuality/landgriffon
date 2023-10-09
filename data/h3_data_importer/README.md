@@ -34,33 +34,26 @@ The main file for loading data is the `Makefile`. Within the makefile you will f
 
 To add additional raster data sources copy the makefile patterns to download, extract, and import additional datasets.
 
-The hard work is done by `tiff_folder_to_h3_table.py`.
+The hard work is done by `raster_folder_to_h3_table.py`.
 
 ```
-Reads a folder of .tif, converts to h3 and loads into a PG table
+Usage: raster_folder_to_h3_table.py [OPTIONS] FOLDER TABLE {production|harvest
+                                    _area|indicator|material_indicator}
+                                    DATASET YEAR
 
-All GeoTiffs in the folder must have identical projection, transform, etc.
-The resulting table will contain a column for each GeoTiff.
-Postgres connection params read from environment:
- - API_POSTGRES_HOST
- - API_POSTGRES_USER
- - API_POSTGRES_PASSWORD
- - API_POSTGRES_DATABASE
+  Reads a folder of .tif, converts to h3 and loads into a PG table
 
-Usage:
-    tiff_folder_to_h3_table.py <folder> <table> <dataType> <dataset> <year> [--contextual] [--h3-res=6] [--thread-count=4]
+  FOLDER is the path to the folder containing the raster files to be ingested.
+  TABLE is the h3_grid_* style DB table name that will contain the actual H3 index and data.
+  DATA_TYPE type of data being ingested.
+  DATASET is the name of the reference in the indicator "nameCode" or material "datasetID".
+      For the latter case it will be constructed dynamically using DATASET + filename.split("_")[-2]
+  YEAR is the last year of the dataset.
 
-Arguments:
-    <folder>          Folder containing GeoTiffs.
-    <table>           Postgresql table to overwrite.
-    <dataType>        Type of the data imported
-    <dataset>         Dataset information for mapping commodities and indicators
-    <year>            Year of the imported dataset
 Options:
-    -h                Show help
-    --contextual      If the data has to be referenced in contextual_layers table.
-    --h3-res=<res>    h3 resolution to use [default: 6].
-    --thread-count=<thread_count>    Number of threads to use [default: 4].
+  --h3-res INTEGER        h3 resolution to use [default=6]
+  --thread-count INTEGER  Number of threads to use [default=4]
+  --help                  Show this message and exit.
 ```
 
 ## H3 Vector Importer

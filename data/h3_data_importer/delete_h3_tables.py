@@ -1,7 +1,11 @@
+import logging
+
 import click
 import psycopg
 
 from utils import get_connection_info
+
+log = logging.getLogger(__name__)
 
 
 @click.command()
@@ -17,9 +21,16 @@ def main():
             h3_data."h3tableName" is null;
             """
             )
-            # todo filter by the ones that are here and not int h3_data
-            tables = cursor.fetchall()
-            print(tables)
+            tables_to_drop = cursor.fetchall()
+            if tables_to_drop:
+                for table in tables_to_drop:
+                    cursor.execute(f"DROP TABLE {table[0]}")
+                log.info(
+                    f"Tables {[table[0] for table in tables_to_drop]} don't have "
+                    f"a corresponding entry in h3_data and were deleted"
+                )
+            else:
+                log.info("No tables to delete")
 
 
 if __name__ == "__main__":

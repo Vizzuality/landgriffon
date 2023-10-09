@@ -362,6 +362,27 @@ convert-nutrientLoadReduction: extract-nutrient-load-reduction
 # Contextual data #
 ###################
 
+#########################################
+# Nutrient load reduction data   #
+#########################################
+
+download-nutrient-load-reduction:
+	mkdir -p $(WORKDIR_NUTRIENT_LOAD_REDUCTION)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/nutrients_load_reduction/ $(WORKDIR_NUTRIENT_LOAD_REDUCTION)
+
+extract-nutrient-load-reduction:download-nutrient-load-reduction
+	unzip -q -u $(WORKDIR_NUTRIENT_LOAD_REDUCTION)/nutrient_load_reduction.zip  -d $(WORKDIR_NUTRIENT_LOAD_REDUCTION)/
+	cd $(WORKDIR_NUTRIENT_LOAD_REDUCTION) && sha256sum --check ../../$(CHECKSUMS_PATH)/nutrient_load_reduction
+
+convert-nutrientLoadReduction: extract-nutrient-load-reduction
+	@echo "Converting nutrient load reduction data... "
+	python vector_folder_to_h3_table.py $(WORKDIR_NUTRIENT_LOAD_REDUCTION) h3_grid_nutrient_load_global perc_reduc nutrient_load_reduction "Environmental datasets" 2023 --indicator=NLR --h3-res=6
+	@echo "Including contextual layer... "
+	python vector_folder_to_h3_table.py $(WORKDIR_NUTRIENT_LOAD_REDUCTION) h3_grid_limiting_nutrients_global Cases_v2_1 limiting_nutrient "Environmental datasets" 2023
+
+###################
+# Contextual data #
+###################
 
 download-hdi-contextual:
 	mkdir -p $(WORKDIR_HDI)

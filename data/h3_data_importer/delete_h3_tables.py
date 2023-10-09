@@ -6,10 +6,12 @@ import psycopg
 from utils import get_connection_info
 
 log = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 
 @click.command()
-def main():
+@click.option("--dry-run", is_flag=True)
+def main(dry_run: bool):
     with psycopg.connect(get_connection_info()) as conn:
         with conn.cursor() as cursor:
             # find all the tables that start with h3_grid*
@@ -24,14 +26,22 @@ def main():
             tables_to_drop = cursor.fetchall()
             if tables_to_drop:
                 for table in tables_to_drop:
-                    cursor.execute(f"DROP TABLE {table[0]}")
-                log.info(
-                    f"Tables {[table[0] for table in tables_to_drop]} don't have "
-                    f"a corresponding entry in h3_data and were deleted"
+                    if not dry_run:
+                        cursor.execute(f"DROP TABLE {table[0]}")
+                log.info(f"Tables {[table[0] for table in tables_to_drop]} were deleted")
+                cursor.execute(
+                    """
+                SELECT "contextualLayerId" FROM h3_data
+                WHERE "h3tableName" in (%s)
+                """,
+                    (tables_to_drop,),
                 )
+                tables_deleted_with_contextuals = cursor.fetchall()
+                print(tables_deleted_with_contextuals)
             else:
                 log.info("No tables to delete")
 
 
 if __name__ == "__main__":
+    log.info("Starting delete_h3_tables.py")
     main()

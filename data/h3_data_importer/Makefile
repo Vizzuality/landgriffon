@@ -40,6 +40,7 @@ all:
 	@echo "AWS S3 bucket access confirmed, proceeding with import..."
 	make clean
 	make crop indicators
+	make delete-h3-tables
 
 crop: convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock convert-livestock-processed convert-default-commodity
 
@@ -321,3 +322,4 @@ clean:
 	rm -rf data/*
 
 delete-h3-tables:
+	python delete_h3_tables.py

@@ -319,3 +319,5 @@ convert-default-commodity: download-default-commodity
 
 clean:
 	rm -rf data/*
+
+delete-h3-tables:

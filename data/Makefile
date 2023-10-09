@@ -34,3 +34,7 @@ seed-contextual-layers:
 seed-indicator-coefficients:
 	@echo "Starting seeding indicator coeficients... "
 	cd ./indicator_coefficient_importer && make
+
+delete-h3-tables:
+	@echo "Cleaning h3 tables... "
+	cd ./h3_data_importer && make delete-h3-tables

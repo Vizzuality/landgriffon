@@ -46,7 +46,6 @@ crop:
 
 # NOTE: The ingestion below is commented in order to avoid ingesting data, we don't have indicator for in the database yet
 # once the new indicators have been defined and ingested we will need to update the indicator code in for each on the indicator commented below and allow the ingestion.
-# convert-speciesRichness convert-aboveGroundBiomass convert-satDeforestation
 indicators:
 	make convert-aqueduct
 	# Processing deforestation data is quite intensive, so we do it separately, so we can allocate all threads to it
@@ -224,7 +223,7 @@ download-deforestation:
 
 convert-deforestation: download-deforestation
 	@echo "Converting deforestation data... "
-	python raster_folder_to_h3_table.py $(WORKDIR_DEFORESTATION) h3_grid_deforestation_global indicator DF_LUC_T 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_DEFORESTATION) h3_grid_deforestation_global indicator DF_SLUC 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 ######################################
 #  GHG Deforestation (GHG_DEF_SLUC)  #
@@ -237,7 +236,7 @@ download-forestGHG:
 
 convert-forestGHG: download-forestGHG
 	@echo "Converting forest GHG data..."
-	python raster_folder_to_h3_table.py $(WORKDIR_GHG) h3_grid_ghg_global indicator GHG_LUC_T 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_GHG) h3_grid_ghg_global indicator GHG_DEF_SLUC 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 ################################
 # Net cropland expansion (NCE) #
@@ -251,7 +250,7 @@ download-naturalCropConversion:
 
 convert-naturalCropConversion: download-naturalCropConversion
 	@echo "Converting natural crop conversion data... "
-	python raster_folder_to_h3_table.py $(WORKDIR_NATURAL_CROP_CONVERSION) h3_grid_natural_crop_conversion_global indicator NECR 2022 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_NATURAL_CROP_CONVERSION) h3_grid_natural_crop_conversion_global indicator NCE 2022 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 ############################################
 #  Forest landscape integrity loss (FLIL)  #
@@ -265,7 +264,7 @@ download-biodiversity:
 
 convert-biodiversity: download-biodiversity
 	@echo "Converting biodiversity data... "
-	python raster_folder_to_h3_table.py $(WORKDIR_BIODIVERSITY) h3_grid_biodiversity_global indicator BL_LUC_S 2022 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_BIODIVERSITY) h3_grid_biodiversity_global indicator FLIL 2022 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 
 ##################################
@@ -357,7 +356,7 @@ extract-aqueduct: download-aqueduct
 
 convert-aqueduct: extract-aqueduct
 	@echo "Converting excess withdrawals data... "
-	python vector_folder_to_h3_table.py $(WORKDIR_AQUEDUCT) h3_grid_excess_withdrawals_global perc_reduc excess_withdrawals "Environmental datasets" 2023 --indicator=UWUSR_T --h3-res=6
+	python vector_folder_to_h3_table.py $(WORKDIR_AQUEDUCT) h3_grid_excess_withdrawals_global perc_reduc excess_withdrawals "Environmental datasets" 2023 --indicator=UWU --h3-res=6
 	@echo "Including contextual layer... "
 	python vector_folder_to_h3_table.py $(WORKDIR_AQUEDUCT) h3_grid_aqueduct_global bws_cat aqueduct "Environmental datasets" 2023
 
@@ -376,7 +375,7 @@ extract-nutrient-load-reduction:download-nutrient-load-reduction
 
 convert-nutrientLoadReduction: extract-nutrient-load-reduction
 	@echo "Converting nutrient load reduction data... "
-	python vector_folder_to_h3_table.py $(WORKDIR_NUTRIENT_LOAD_REDUCTION) h3_grid_nutrient_load_global perc_reduc nutrient_load_reduction "Environmental datasets" 2023 --indicator=NLR --h3-res=6
+	python vector_folder_to_h3_table.py $(WORKDIR_NUTRIENT_LOAD_REDUCTION) h3_grid_nutrient_load_global perc_reduc nutrient_load_reduction "Environmental datasets" 2023 --indicator=ENL --h3-res=6
 	@echo "Including contextual layer... "
 	python vector_folder_to_h3_table.py $(WORKDIR_NUTRIENT_LOAD_REDUCTION) h3_grid_limiting_nutrients_global Cases_v2_1 limiting_nutrient "Environmental datasets" 2023
 

@@ -55,7 +55,7 @@ const DataUploadError: React.FC<DataUploadErrorProps> = ({ task }) => {
               <h3>Upload completed</h3>
               <p className="text-gray-500">
                 Great news! Your latest changes made on{' '}
-                {format(new Date(task.createdAt), 'MMM 4, yyyy HH:mm z')} have been successfully
+                {format(new Date(task.createdAt), 'MMM d, yyyy HH:mm z')} have been successfully
                 uploaded.
               </p>
             </>
@@ -82,7 +82,7 @@ const DataUploadError: React.FC<DataUploadErrorProps> = ({ task }) => {
               <h3>Upload failed</h3>
               <p className="text-gray-500">
                 Sorry, we couldn&apos;t upload your latest changes made on{' '}
-                {format(new Date(task.createdAt), 'MMM 4, yyyy HH:mm z')}. We have{' '}
+                {format(new Date(task.createdAt), 'MMM d, yyyy HH:mm z')}. We have{' '}
                 <strong className="text-gray-900">reverted to the previous version</strong> to avoid
                 data loss. Please try uploading again.
               </p>
@@ -94,7 +94,7 @@ const DataUploadError: React.FC<DataUploadErrorProps> = ({ task }) => {
               <h3>Upload failed</h3>
               <p className="text-gray-500">
                 Sorry, we couldn&apos;t upload your latest changes made on{' '}
-                {format(new Date(task.createdAt), 'MMM 4, yyyy HH:mm z')}. We have{' '}
+                {format(new Date(task.createdAt), 'MMM d, yyyy HH:mm z')}. We have{' '}
                 <strong className="text-gray-900">reverted to the previous version</strong> to avoid
                 data loss. There had been{' '}
                 <strong className="text-gray-900">

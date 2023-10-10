@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Fixed
 
 - Enable map popup for h3 contextual layers [LANDGRIF-1484](https://vizzuality.atlassian.net/browse/LANDGRIF-1484)
+- Add units to analysis table individual indicators [LANDGRIF-1486](https://vizzuality.atlassian.net/browse/LANDGRIF-1486)
+- Fixed error message date for faled data upload [LANDGRIF-1493](https://vizzuality.atlassian.net/browse/LANDGRIF-1493)
 - Update password in profile form was not working as expected [LANDGRIF-1479](https://vizzuality.atlassian.net/browse/LANDGRIF-1479)
 
 ## [v1.0.0]

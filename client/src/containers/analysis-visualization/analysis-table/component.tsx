@@ -275,6 +275,11 @@ const AnalysisTable = () => {
     [isComparison, isScenarioComparison],
   );
 
+  const expanded = useMemo(
+    () => (indicatorId === 'all' ? null : indicators.find((i) => i.id === indicatorId)),
+    [indicatorId, indicators],
+  );
+
   const comparisonColumn = useCallback(
     <Mode extends ComparisonMode>(year: number): ColumnDefinition<ImpactRowType<Mode>> => {
       const valueIsComparison = (
@@ -297,7 +302,7 @@ const AnalysisTable = () => {
             true
           >;
 
-          const unit: string = parentRowData.metadata?.unit;
+          const unit: string = parentRowData.metadata?.unit || expanded?.metadata?.units;
 
           const value = data.values?.find((value) => value.year === year);
           const isComparison = valueIsComparison(value);
@@ -334,12 +339,7 @@ const AnalysisTable = () => {
         },
       };
     },
-    [isComparison, isScenarioComparison, valueIsScenarioComparison],
-  );
-
-  const expandedName = useMemo(
-    () => (indicatorId === 'all' ? null : indicators.find((i) => i.id === indicatorId)?.name),
-    [indicatorId, indicators],
+    [expanded, isComparison, isScenarioComparison, valueIsScenarioComparison],
   );
 
   const baseColumns = useMemo(
@@ -348,7 +348,7 @@ const AnalysisTable = () => {
         id: 'name',
         header: () => (
           <div>
-            {!!expandedName ? (
+            {!!expanded?.name ? (
               <Button
                 className="pt-1 pb-1 pr-0 pl-0 border-0 bg-transparent"
                 variant="transparent"
@@ -356,7 +356,7 @@ const AnalysisTable = () => {
               >
                 <div className="flex text-gray-900 text-sm text-start font-semibold max-w-[200px] whitespace-normal">
                   <ArrowLeftIcon className="mr-3.5 w-4 h-4" />
-                  {expandedName}
+                  {expanded.name}
                 </div>
               </Button>
             ) : (
@@ -377,11 +377,11 @@ const AnalysisTable = () => {
 
           return (
             <div className="py-5 flex gap-4">
-              {!expandedName && (
+              {!expanded?.name && (
                 <InformationCircleIcon className="w-4 h-4 text-gray-900 shrink-0" />
               )}
               <div>
-                {expandedName ? (
+                {expanded?.name ? (
                   original.name
                 ) : (
                   <div className="block font-semibold">
@@ -390,7 +390,7 @@ const AnalysisTable = () => {
                   </div>
                 )}
 
-                {!expandedName && isParentRow(original) && (
+                {!expanded?.name && isParentRow(original) && (
                   <Button
                     variant="white"
                     className="mt-4"
@@ -429,7 +429,7 @@ const AnalysisTable = () => {
       },
       ...years.map((year) => comparisonColumn<Mode>(year as number)),
     ],
-    [years, expandedName, handleExitExpanded, indicators, handleExpandRow, comparisonColumn],
+    [years, expanded?.name, handleExitExpanded, indicators, handleExpandRow, comparisonColumn],
   );
 
   const tableProps = useMemo(

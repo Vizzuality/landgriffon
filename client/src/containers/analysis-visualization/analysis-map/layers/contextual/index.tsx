@@ -38,7 +38,7 @@ const ContextualLayer = ({ id, beforeId, zIndex, settings }: LayerProps<LayerSet
     );
   }
 
-  return <ContextualDeckLayer id={id} beforeId={beforeId} zIndex={zIndex} {...settings} />;
+  return <ContextualDeckLayer id={id} beforeId={beforeId} zIndex={zIndex} />;
 
   // // ? data is only needed for H3 layers
 

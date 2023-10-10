@@ -60,6 +60,9 @@ indicators:
 contextual-layers: convert-hdi-contextual convert-blue-water-contextual
 
 
+###################################
+#  Mapspam - commodity production #
+###################################
 
 download-mapspam-crop-production:
 	mkdir -p $(WORKDIR_MAPSPAM_PROD)
@@ -94,9 +97,10 @@ extract-pasture: download-pasture
 
 	rm -f $(WORKDIR_GLW3)/pasture/harvestArea/es_pasture_global.tif
 
-##########################################
-#  Gridded Livestock of the World (GLW3) #
-##########################################
+###############################################################
+#  Gridded Livestock of the World (GLW3) - pasture production #
+###############################################################
+
 # data sourced from: https://www.livestockdata.org/contributor/gridded-livestock-world-glw3
 
 # download livestock data
@@ -159,9 +163,9 @@ convert-glw3-livestock: rasterize-glw3-livestock-pasture
 	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/pasture/harvestArea h3_grid_pasture_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 
-#######################################
-# CONTEXTUAL DATASETS FOR INDICATORS  #
-#######################################
+#####################
+# Water footprint  #
+####################
 
 # WATER FOOTPRINT
 # Download generic blue water footprint dataset: https://data.4tu.nl/articles/dataset/The_green_blue_grey_and_total_water_footprint_related_to_production/12675440
@@ -208,6 +212,9 @@ get-bwf_irrigated_prod: extract-water-footprint
 convert-water-footprint: get-bwf_irrigated_prod
 	python raster_folder_to_h3_table.py $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint h3_grid_wf_global indicator UWU_T 2005 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
+#####################################
+# Deforestation footprint (DF_SLUC) #
+#####################################
 
 download-deforestation:
 	# download and check
@@ -219,6 +226,10 @@ convert-deforestation: download-deforestation
 	@echo "Converting deforestation data... "
 	python raster_folder_to_h3_table.py $(WORKDIR_DEFORESTATION) h3_grid_deforestation_global indicator DF_LUC_T 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
+######################################
+#  GHG Deforestation (GHG_DEF_SLUC)  #
+######################################
+
 download-forestGHG:
 	mkdir -p $(WORKDIR_GHG)
 	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/forestGHG $(WORKDIR_GHG)
@@ -227,6 +238,10 @@ download-forestGHG:
 convert-forestGHG: download-forestGHG
 	@echo "Converting forest GHG data..."
 	python raster_folder_to_h3_table.py $(WORKDIR_GHG) h3_grid_ghg_global indicator GHG_LUC_T 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+
+################################
+# Net cropland expansion (NCE) #
+###############################
 
 download-naturalCropConversion:
 	mkdir -p $(WORKDIR_NATURAL_CROP_CONVERSION)
@@ -238,6 +253,9 @@ convert-naturalCropConversion: download-naturalCropConversion
 	@echo "Converting natural crop conversion data... "
 	python raster_folder_to_h3_table.py $(WORKDIR_NATURAL_CROP_CONVERSION) h3_grid_natural_crop_conversion_global indicator NECR 2022 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
+############################################
+#  Forest landscape integrity loss (FLIL)  #
+############################################
 
 download-biodiversity:
 	# download and check
@@ -309,6 +327,7 @@ convert-satDeforestation: download-satDeforestation
 ####################
 # Woodpulp dataset #
 ####################
+
 download-woodpulp:
 	mkdir -p $(WORKDIR_WOODPULP)
 	mkdir -p $(WORKDIR_WOODPULP)/ha
@@ -322,11 +341,12 @@ download-woodpulp:
 convert-woodpulp: download-woodpulp
 	python	raster_folder_to_h3_table.py	$(WORKDIR_WOODPULP)/ha		h3_grid_woodpulp_ha		harvest_area	gfw_plantations		2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR)
 	python	raster_folder_to_h3_table.py	$(WORKDIR_WOODPULP)/prod	h3_grid_woodpulp_prod	production		gfw_plantations		2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR)
-###################
-# Aqueduct data   #
-###################
 
-# Aqueduct Global water risk contextual data
+###################################
+# Unsustainable water use (UWU)   #
+###################################
+
+# Donwload preprocessed excess of water withdrawals
 download-aqueduct:
 	mkdir -p $(WORKDIR_AQUEDUCT)
 	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/unsustainable_water_use/ $(WORKDIR_AQUEDUCT)
@@ -335,7 +355,6 @@ extract-aqueduct: download-aqueduct
 	unzip -q -u $(WORKDIR_AQUEDUCT)/excess_withdrawals.zip  -d $(WORKDIR_AQUEDUCT)/
 	cd $(WORKDIR_AQUEDUCT) && sha256sum --check ../../../$(CHECKSUMS_PATH)/excess_withdrawals
 
-
 convert-aqueduct: extract-aqueduct
 	@echo "Converting excess withdrawals data... "
 	python vector_folder_to_h3_table.py $(WORKDIR_AQUEDUCT) h3_grid_excess_withdrawals_global perc_reduc excess_withdrawals "Environmental datasets" 2023 --indicator=UWUSR_T --h3-res=6
@@ -343,9 +362,9 @@ convert-aqueduct: extract-aqueduct
 	python vector_folder_to_h3_table.py $(WORKDIR_AQUEDUCT) h3_grid_aqueduct_global bws_cat aqueduct "Environmental datasets" 2023
 
 
-#########################################
-# Nutrient load reduction data   #
-#########################################
+###############################
+# Excess nutrient load  (ENL) #
+###############################
 
 download-nutrient-load-reduction:
 	mkdir -p $(WORKDIR_NUTRIENT_LOAD_REDUCTION)
@@ -361,27 +380,6 @@ convert-nutrientLoadReduction: extract-nutrient-load-reduction
 	@echo "Including contextual layer... "
 	python vector_folder_to_h3_table.py $(WORKDIR_NUTRIENT_LOAD_REDUCTION) h3_grid_limiting_nutrients_global Cases_v2_1 limiting_nutrient "Environmental datasets" 2023
 
-###################
-# Contextual data #
-###################
-
-#########################################
-# Nutrient load reduction data   #
-#########################################
-
-download-nutrient-load-reduction:
-	mkdir -p $(WORKDIR_NUTRIENT_LOAD_REDUCTION)
-	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/nutrients_load_reduction/ $(WORKDIR_NUTRIENT_LOAD_REDUCTION)
-
-extract-nutrient-load-reduction:download-nutrient-load-reduction
-	unzip -q -u $(WORKDIR_NUTRIENT_LOAD_REDUCTION)/nutrient_load_reduction.zip  -d $(WORKDIR_NUTRIENT_LOAD_REDUCTION)/
-	cd $(WORKDIR_NUTRIENT_LOAD_REDUCTION) && sha256sum --check ../../$(CHECKSUMS_PATH)/nutrient_load_reduction
-
-convert-nutrientLoadReduction: extract-nutrient-load-reduction
-	@echo "Converting nutrient load reduction data... "
-	python vector_folder_to_h3_table.py $(WORKDIR_NUTRIENT_LOAD_REDUCTION) h3_grid_nutrient_load_global perc_reduc nutrient_load_reduction "Environmental datasets" 2023 --indicator=NLR --h3-res=6
-	@echo "Including contextual layer... "
-	python vector_folder_to_h3_table.py $(WORKDIR_NUTRIENT_LOAD_REDUCTION) h3_grid_limiting_nutrients_global Cases_v2_1 limiting_nutrient "Environmental datasets" 2023
 
 ###################
 # Contextual data #

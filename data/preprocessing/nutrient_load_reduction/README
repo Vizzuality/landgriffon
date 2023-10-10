@@ -1,6 +1,6 @@
 # Data Processing Pipeline README
 
-This repository contains a data processing pipeline implemented using a Makefile and Python script to download, preprocess, upload, and generate checksums for data files. The pipeline is designed to work with geospatial data related to nutrient assimilation capacity.
+This repository contains a data processing pipeline implemented using a Makefile and Python script to download, preprocess, upload, and generate checksums for data files. The pipeline is designed to work with geospatial data related to nutrient load reduction.
 
 ## Prerequisites
 

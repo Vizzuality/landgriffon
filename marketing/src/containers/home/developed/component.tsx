@@ -35,13 +35,6 @@ const Developed: React.FC = () => {
                 has helped companies access, understand, and easily use the data and recommendations
                 of the sustainability community.
               </p>
-
-              <Link href="/methodology">
-                <a className="text-base font-semibold inline-flex justify-center items-center space-x-7 underline underline-offset-4">
-                  <span>Discover the Methodology behind</span>
-                  <Icon icon={ARROW_RIGHT_SVG} className="w-12 h-10" />
-                </a>
-              </Link>
             </div>
           </FadeIn>
 

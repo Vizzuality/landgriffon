@@ -96,7 +96,7 @@ const What: React.FC = () => {
                     <div className="w-5 h-px bg-gray-300 opacity-30" />
                     <div className="text-xl font-black text-gray-300 opacity-30">{`03`}</div>
                   </div>
-                  <div className="max-w-[275px]">{DESCRIPTION}</div>
+                  <div className="max-w-[275px] min-h-[150px]">{DESCRIPTION}</div>
                 </div>
 
                 <div className="hidden mt-10 space-x-1 md:flex">

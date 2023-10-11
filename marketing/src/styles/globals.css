@@ -59,3 +59,16 @@
     }
   }
 }
+
+/* Overriding styles */
+@layer components {
+  div[data-testid="blog-card-item"] p > em {
+    @apply not-italic;
+  }
+  div[data-testid="blog-card-item"] p > strong {
+    @apply font-bold text-white;
+  }
+  div[data-testid="blog-card-item"] p > a {
+    @apply underline text-white;
+  }
+}

@@ -49,10 +49,6 @@ const FAQS = [
           , to bring expertise in user-centric design, satellite monitoring, and environmental
           sciences into the early development of LandGriffon.
         </p>
-        <p>
-          This project has received funding from the European Union&apos;s Horizon 2020 research and
-          innovation programme under grant agreement No 101004174.
-        </p>
       </div>
     ),
   },

@@ -76,7 +76,7 @@ convert-mapspam-crop-production: download-mapspam-crop-production
 download-mapspam-crop-harvest:
 	mkdir -p $(WORKDIR_MAPSPAM_HA)
 	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/mapspam/spam2010v2r0_global_ha $(WORKDIR_MAPSPAM_HA)
-	cd $(WORKDIR_MAPSPAM_HA) && sha256sum --check ../../$(CHECKSUMS_PATH)/ghg_from_farm_emissions
+	cd $(WORKDIR_MAPSPAM_HA) && sha256sum --check ../../$(CHECKSUMS_PATH)/mapspam_ha
 
 convert-mapspam-crop-harvest: download-mapspam-crop-harvest
 	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM_HA) h3_grid_spam2010v2r0_global_ha harvest_area spam 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)

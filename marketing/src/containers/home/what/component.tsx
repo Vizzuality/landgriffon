@@ -1,4 +1,5 @@
 import cx from 'classnames';
+import Image from 'next/image';
 
 import Wrapper from 'containers/wrapper';
 import FadeIn from 'components/fade';
@@ -11,11 +12,8 @@ const SLIDES = [
   {
     id: '1',
     content: (
-      <div className="w-full">
-        <div
-          className="w-full border-4 border-white pb-[45%] bg-cover"
-          style={{ backgroundImage: `url('/images/home/what/screen_1.png')` }}
-        />
+      <div className="w-full w-[944px] h-[446px] border-4 border-white overflow-hidden">
+        <Image src="/images/home/what/screen_1.png" width="936" height="442" alt="Traceability" />
       </div>
     ),
     description: (
@@ -30,11 +28,8 @@ const SLIDES = [
   {
     id: '2',
     content: (
-      <div className="w-full">
-        <div
-          className="w-full border-4 border-white pb-[45%] bg-cover"
-          style={{ backgroundImage: `url('/images/home/what/screen_2.png')` }}
-        />
+      <div className="w-full w-[944px] h-[446px] border-4 border-white overflow-hidden">
+        <Image src="/images/home/what/screen_2.png" width="936" height="442" alt="Confidence" />
       </div>
     ),
     description: (
@@ -49,11 +44,8 @@ const SLIDES = [
   {
     id: '3',
     content: (
-      <div className="w-full">
-        <div
-          className="w-full border-4 border-white pb-[45%] bg-cover"
-          style={{ backgroundImage: `url('/images/home/what/screen_3.png')` }}
-        />
+      <div className="w-full w-[944px] h-[446px] border-4 border-white overflow-hidden">
+        <Image src="/images/home/what/screen_2.png" width="936" height="442" alt="Strategize" />
       </div>
     ),
     description: (
@@ -154,14 +146,7 @@ const What: React.FC = () => {
               })}
             </div>
 
-            <Carousel
-              slide={slide}
-              slides={SLIDES}
-              onChange={(i) => {
-                setSlide(i);
-              }}
-              autoplay
-            />
+            <Carousel slide={slide} slides={SLIDES} onChange={setSlide} autoplay={false} />
           </FadeIn>
         </Wrapper>
       </div>

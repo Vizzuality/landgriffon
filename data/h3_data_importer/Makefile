@@ -40,7 +40,7 @@ all:
 	fi
 	@echo "AWS S3 bucket access confirmed, proceeding with import..."
 	make clean
-	make indicators
+	make -j 2 crop indicators
 
 crop:
 	make -j 2 convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock convert-woodpulp
@@ -75,7 +75,7 @@ convert-mapspam-crop-production: download-mapspam-crop-production
 
 download-mapspam-crop-harvest:
 	mkdir -p $(WORKDIR_MAPSPAM_HA)
-	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/mapspam/spam2010v2r0_global_ha $(WORKDIR_)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/mapspam/spam2010v2r0_global_ha $(WORKDIR_MAPSPAM_HA)
 	cd $(WORKDIR_MAPSPAM_HA) && sha256sum --check ../../$(CHECKSUMS_PATH)/ghg_from_farm_emissions
 
 convert-mapspam-crop-harvest: download-mapspam-crop-harvest

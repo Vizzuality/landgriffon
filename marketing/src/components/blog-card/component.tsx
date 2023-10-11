@@ -10,7 +10,10 @@ export interface BlogProps {
 
 const BlogCard: FC<BlogProps> = ({ title, description, url, image }: BlogProps) => {
   return (
-    <div className="bg-blue-900 h-96 w-96 border-1 border-solid border-blue-900">
+    <div
+      data-testid="blog-card-item"
+      className="bg-blue-900 h-96 w-96 border-1 border-solid border-blue-900"
+    >
       <a href={url} target="_blank" rel="noreferrer noopener">
         <div className="w-full overflow-hidden">
           <img src={image} alt={title} className="w-full h-[178px] object-cover" />

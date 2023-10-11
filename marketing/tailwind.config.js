@@ -2,7 +2,6 @@
 const forms = require('@tailwindcss/forms');
 const typography = require('@tailwindcss/typography');
 const colors = require('tailwindcss/colors');
-const lineClamp = require('@tailwindcss/line-clamp');
 const defaultTheme = require('tailwindcss/defaultTheme');
 
 module.exports = {
@@ -62,5 +61,5 @@ module.exports = {
       },
     },
   },
-  plugins: [forms, typography, lineClamp],
+  plugins: [forms, typography],
 };

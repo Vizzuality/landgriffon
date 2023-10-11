@@ -12,14 +12,10 @@ WORKDIR_MAPSPAM_PROD=data/mapspam_prod
 WORKDIR_MAPSPAM_HA=data/mapspam_ha
 WORKDIR_GLW3=data/glw3
 WORKDIR_WATER_FOOTPRINT=data/waterFootprint
-WORKDIR_SPECIESRICHNESS=data/satelligence/species_richness
-WORKDIR_ABOVEGROUNDBIOMASS=data/satelligence/above_ground_biomass
-WORKDIR_SATDEFORESTATION=data/satelligence/deforestation
 WORKDIR_AQUEDUCT=data/contextual/aqueduct
 WORKDIR_HDI=data/contextual/hdi
 WORKDIR_DEFORESTATION=data/hansen_loss
 WORKDIR_GHG=data/forest_ghg
-WORKDIR_WOODPULP=data/woodpulp
 WORKDIR_NATURAL_CROP_CONVERSION=data/natural_crop_conversion
 WORKDIR_NUTRIENT_LOAD_REDUCTION=data/nutrient_load_reduction
 WORKDIR_BIODIVERSITY=data/biodiversity
@@ -40,26 +36,13 @@ all:
 	fi
 	@echo "AWS S3 bucket access confirmed, proceeding with import..."
 	make clean
-	make -j 2 crop indicators
+	make crop indicators
 
-crop:
-	make -j 2 convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock convert-woodpulp
+crop: convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock
 
-# NOTE: The ingestion below is commented in order to avoid ingesting data, we don't have indicator for in the database yet
-# once the new indicators have been defined and ingested we will need to update the indicator code in for each on the indicator commented below and allow the ingestion.
-indicators:
-	make convert-aqueduct
-	# Processing deforestation data is quite intensive, so we do it separately, so we can allocate all threads to it
-	# There is probably a better way to do this, that future me will learn about - in the future.
-	make convert-deforestation
-	make convert-forestGHG
-	make convert-satDeforestation
-	make convert-naturalCropConversion
-	make convert-nutrientLoadReduction
-	make convert-biodiversity
-	make convert-ghg-farm
+indicators: convert-aqueduct convert-deforestation convert-forestGHG convert-naturalCropConversion convert-nutrientLoadReduction convert-biodiversity convert-ghg-farm
+
 contextual-layers: convert-hdi-contextual convert-blue-water-contextual
-
 
 ###################################
 #  Mapspam - commodity production #
@@ -81,6 +64,11 @@ download-mapspam-crop-harvest:
 convert-mapspam-crop-harvest: download-mapspam-crop-harvest
 	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM_HA) h3_grid_spam2010v2r0_global_ha harvest_area spam 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
+
+###############################################################
+#  Gridded Livestock of the World (GLW3) - pasture production #
+###############################################################
+
 # DOWNLOAD PASTURE AND CROPLAND DATASET
  #https://s3.us-east-2.amazonaws.com/earthstatdata/CroplandPastureArea2000_Geotiff.zip
 download-pasture:
@@ -98,12 +86,7 @@ extract-pasture: download-pasture
 
 	rm -f $(WORKDIR_GLW3)/pasture/harvestArea/es_pasture_global.tif
 
-###############################################################
-#  Gridded Livestock of the World (GLW3) - pasture production #
-###############################################################
-
 # data sourced from: https://www.livestockdata.org/contributor/gridded-livestock-world-glw3
-
 # download livestock data
 # download the area-weighted (AW) data as are free of any influence of spatial predictor variables. MOre information here: https://dataverse.harvard.edu/file.xhtml?persistentId=doi:10.7910/DVN/GIVQ75/3QWTTI&version=3.0
 # download area pixel to obtain total number of animals per pixel
@@ -164,55 +147,6 @@ convert-glw3-livestock: rasterize-glw3-livestock-pasture
 	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/pasture/harvestArea h3_grid_pasture_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 
-#####################
-# Water footprint  #
-####################
-
-# WATER FOOTPRINT
-# Download generic blue water footprint dataset: https://data.4tu.nl/articles/dataset/The_green_blue_grey_and_total_water_footprint_related_to_production/12675440
-download-water-footprint:
-	mkdir -p $(WORKDIR_WATER_FOOTPRINT)
-	mkdir -p $(WORKDIR_WATER_FOOTPRINT)/spam2010v2r0_global_prod_irr
-	wget -q -O $(WORKDIR_WATER_FOOTPRINT)/Report50-WF-of-production-RasterFiles.zip https://data.4tu.nl/ndownloader/files/23992634
-	wget -q -O $(WORKDIR_WATER_FOOTPRINT)/spam2010v2r0_global_prod.geotiff.zip https://s3.amazonaws.com/mapspam/2010/v2.0/geotiff/spam2010v2r0_global_prod.geotiff.zip
-
-# # Download crop specific water footprint
-# $(WORKDIR_WATER_FOOTPRINT)/Report47-App-IV-CropWaterFootprints-RasterMaps.zip:
-# 	mkdir -p $(WORKDIR_WATER_FOOTPRINT)
-# 	wget -q -O $@ https://waterfootprint.org/media/downloads/Report47-App-IV-CropWaterFootprints-RasterMaps.zip
-
-#extract generic wf data
-#sum all irrigated mapspam production
-# devide bwf by the sum of irrigated mapspam production
-extract-water-footprint: download-water-footprint
-	mkdir -p $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint
-	unzip -q -jn -o -u $(WORKDIR_WATER_FOOTPRINT)/Report50-WF-of-production-RasterFiles.zip -d $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint
-	unzip -q -j -o -u $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/Report50-WF-of-production-RasterFiles.zip */wf_bltot_mmyr/* -d $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint
-	unzip -q -u $(WORKDIR_WATER_FOOTPRINT)/spam2010v2r0_global_prod.geotiff.zip *_I.tif -d $(WORKDIR_WATER_FOOTPRINT)/spam2010v2r0_global_prod_irr
-	gdal_translate -of GTiff $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/hdr.adf $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr_m2.tif
-	gdal_calc.py --quiet --calc "A*10000*10000" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr_m2.tif \
-	 --A_band 1 --outfile $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr.tif;
-	rm -f $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr_m2.tif
-
-get-bwf_irrigated_prod: extract-water-footprint
-	gdal_calc.py --quiet --calc "(A>0)*0" --format GTiff --type Float32 --NoDataValue -9999 -A $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr.tif --outfile $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/total_irrigated_production.tif;
-	for tiffile in $(WORKDIR_WATER_FOOTPRINT)/spam2010v2r0_global_prod_irr/*.tif; do \
-		gdal_translate -projwin -179.99166665 83.08834447 180.00836215 -55.91166665 -of GTiff "$${tiffile}" $(WORKDIR_WATER_FOOTPRINT)/spam2010v2r0_global_prod_irr/irr_prod_new_extent.tif; \
-		gdal_calc.py --quiet --calc "A+B" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_WATER_FOOTPRINT)/spam2010v2r0_global_prod_irr/irr_prod_new_extent.tif -B $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/total_irrigated_production.tif \
-		 --outfile $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/total_irrigated_production.tif;\
-		rm -f $(WORKDIR_WATER_FOOTPRINT)/spam2010v2r0_global_prod_irr/irr_prod_new_extent.tif;\
-	done;
-	gdal_calc.py --quiet --calc "(A>0)*A" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/total_irrigated_production.tif \
-	--A_band 1 --outfile $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/total_irrigated_production_noZero.tif;
-	gdal_calc.py --quiet --calc "A/B" --format GTiff --type Float32 --NoDataValue 0.0 -A $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr.tif -B $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/total_irrigated_production_noZero.tif \
-	--outfile $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr_t.tif;
-	rm -f $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/total_irrigated_production.tif $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/total_irrigated_production_noZero.tif $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint/wf_bltot_mmyr.tif;
-
-
-# TODO: Use this layer as contextual layers (new script doesn't allow contextual layers)
-convert-water-footprint: get-bwf_irrigated_prod
-	python raster_folder_to_h3_table.py $(WORKDIR_WATER_FOOTPRINT)/generic_waterfootprint h3_grid_wf_global indicator UWU_T 2005 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
-
 #####################################
 # Deforestation footprint (DF_SLUC) #
 #####################################
@@ -269,80 +203,6 @@ convert-biodiversity: download-biodiversity
 	python raster_folder_to_h3_table.py $(WORKDIR_BIODIVERSITY) h3_grid_biodiversity_global indicator FLIL 2022 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 
-##################################
-#        Satelligence data       #
-##################################
-
-# Species richness:
-# download species richness data from satelligence bucket
-#rasterize-biodiversity
-download-speciesRichness:
-	mkdir -p $(WORKDIR_SPECIESRICHNESS)
-	wget -q -O $(WORKDIR_SPECIESRICHNESS)/SpeciesRichness_IDN_2021-01-01-2022-01-01.tif https://storage.googleapis.com/s11-landgriffon-data/v0/SpeciesRichness/SpeciesRichness_IDN_2021-01-01-2022-01-01.tif
-
-# upsampling data from 30m resolution to 10km resolution using gdal warp
-#¶esampling method used based on data number of species per area - sum: compute the weighted sum of all non-NODATA contributing pixels (since GDAL 3.1)
-# for more information regarding resampling methods please visit: https://gdal.org/programs/gdalwarp.html
-preprocess-speciesRichness: download-speciesRichness
-	gdal_calc.py --quiet --calc "(A>=264)" --format GTiff --type Float32 --NoDataValue 0.0 -A "$(WORKDIR_SPECIESRICHNESS)/SpeciesRichness_IDN_2021-01-01-2022-01-01.tif" --A_band 1 --outfile "$(WORKDIR_SPECIESRICHNESS)/high_density_of_species_mask.tif"
-	gdalwarp -s_srs EPSG:4326 -t_srs EPSG:4326 -dstnodata 0.0 -tr 0.0833333333333286 0.0833333333333286 -r max -te 94.918029685 2.146125243 98.479926218 5.963450309 -te_srs EPSG:4326 -multi -of GTiff \
-	"$(WORKDIR_SPECIESRICHNESS)/high_density_of_species_mask.tif" "$(WORKDIR_SPECIESRICHNESS)/SpeciesRichness_IDN_10km_mask.tif";\
-	rm -f "$(WORKDIR_SPECIESRICHNESS)/SpeciesRichness_IDN_2021-01-01-2022-01-01.tif"
-	rm -f "$(WORKDIR_SPECIESRICHNESS)/high_density_of_species_mask.tif"
-
-#TODO update with the reference of a new satelligence indicator
-convert-speciesRichness: preprocess-speciesRichness
-	python raster_folder_to_h3_table.py $(WORKDIR_SPECIESRICHNESS)/ h3_grid_speciesrichness_idn_mask indicator BL_LUC_T 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
-
-# Above ground biomass
-download-aboveGroundBiomass:
-	mkdir -p $(WORKDIR_ABOVEGROUNDBIOMASS)
-	wget -q -O $(WORKDIR_ABOVEGROUNDBIOMASS)/AboveGroundBiomass_GLO_2001-01-01-2002-01-01.tif https://storage.googleapis.com/s11-landgriffon-data/v0/AboveGroundBiomass/AboveGroundBiomass_GLO_2001-01-01-2002-01-01.tif
-
-preprocess-aboveGroundBiomass: download-aboveGroundBiomass
-	gdalwarp -s_srs EPSG:4326 -t_srs EPSG:4326 -dstnodata 0.0 -tr 0.0833333333333286 0.0833333333333286 -r sum -te 94.918029685 2.146125243 98.479926218 5.963450309 -te_srs EPSG:4326 -multi -of GTiff \
-	"$(WORKDIR_ABOVEGROUNDBIOMASS)/AboveGroundBiomass_GLO_2001-01-01-2002-01-01.tif" "$(WORKDIR_ABOVEGROUNDBIOMASS)/AboveGroundBiomass_GLO_2001_2002_10km.tif";\
-	rm -f "$(WORKDIR_ABOVEGROUNDBIOMASS)/AboveGroundBiomass_GLO_2001-01-01-2002-01-01.tif"
-
-#TODO update with the reference of a new satelligence indicator
-convert-aboveGroundBiomass: preprocess-aboveGroundBiomass
-	python raster_folder_to_h3_table.py $(WORKDIR_ABOVEGROUNDBIOMASS)/ h3_grid_abovegroundbiomass_glo_tha indicator GHG_LUC_T 2001 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
-
-# Satelligence deforestation
-#Download satelligence deforestation
-download-satDeforestation:
-	mkdir -p $(WORKDIR_SATDEFORESTATION)
-
-	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/satelligence $(WORKDIR_SATDEFORESTATION)
-
-	mkdir -p $(WORKDIR_SATDEFORESTATION)/mask
-	mkdir -p $(WORKDIR_SATDEFORESTATION)/risk
-	mv $(WORKDIR_SATDEFORESTATION)/Deforestation_2021_ha.tif $(WORKDIR_SATDEFORESTATION)/mask
-	mv $(WORKDIR_SATDEFORESTATION)/Deforestation_risk.tif $(WORKDIR_SATDEFORESTATION)/risk
-
-convert-satDeforestation: download-satDeforestation
-	python	raster_folder_to_h3_table.py	$(WORKDIR_SATDEFORESTATION)/mask	h3_grid_sat_deforestation		indicator	SAT_DF		2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR)
-	python	raster_folder_to_h3_table.py	$(WORKDIR_SATDEFORESTATION)/risk	h3_grid_sat_deforestation_risk	indicator	SAT_DF_R	2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR)
-
-
-####################
-# Woodpulp dataset #
-####################
-
-download-woodpulp:
-	mkdir -p $(WORKDIR_WOODPULP)
-	mkdir -p $(WORKDIR_WOODPULP)/ha
-	mkdir -p $(WORKDIR_WOODPULP)/prod
-
-	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/woodpulp/ $(WORKDIR_WOODPULP)
-
-	mv	$(WORKDIR_WOODPULP)/gfw_plantations_woodpulp_harvest_ha_res.tif	$(WORKDIR_WOODPULP)/ha/gfw_plantations_woodpulp_ha.tif
-	mv	$(WORKDIR_WOODPULP)/gfw_plantations_woodpulp_prod_t_nd_res.tif	$(WORKDIR_WOODPULP)/prod/gfw_plantations_woodpulp_prod.tif
-
-convert-woodpulp: download-woodpulp
-	python	raster_folder_to_h3_table.py	$(WORKDIR_WOODPULP)/ha		h3_grid_woodpulp_ha		harvest_area	gfw_plantations		2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR)
-	python	raster_folder_to_h3_table.py	$(WORKDIR_WOODPULP)/prod	h3_grid_woodpulp_prod	production		gfw_plantations		2021	--h3-res=6	--thread-count=$(PARALLELIZATION_FACTOR)
-
 ###################################
 # Unsustainable water use (UWU)   #
 ###################################
@@ -381,6 +241,17 @@ convert-nutrientLoadReduction: extract-nutrient-load-reduction
 	@echo "Including contextual layer... "
 	python vector_folder_to_h3_table.py $(WORKDIR_NUTRIENT_LOAD_REDUCTION) h3_grid_limiting_nutrients_global Cases_v2_1 limiting_nutrient "Environmental datasets" 2023
 
+#######################
+# GHG FARM (GHG_FARM) #
+#######################
+
+download-ghg-farm:
+	mkdir -p $(WORKDIR_GHG_FARM)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/ghg_emissions $(WORKDIR_GHG_FARM)
+	cd $(WORKDIR_GHG_FARM) && sha256sum --check ../../$(CHECKSUMS_PATH)/ghg_from_farm_emissions
+
+convert-ghg-farm: download-ghg-farm
+	python raster_folder_to_h3_table.py $(WORKDIR_GHG_FARM) h3_grid_ghg_global material_indicator GHG_FARM 2017 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 ###################
 # Contextual data #
@@ -396,17 +267,9 @@ convert-hdi-contextual: download-hdi-contextual
 convert-blue-water-contextual:
 	python cog_to_contextual_layer_linker.py --cog bluewater.tif --name bluewater_footprint --category "Environmental datasets" --tiler_param colormap_name=viridis --tp rescale=-18,832
 
-#######################
-# GHG FARM (GHG_FARM) #
-#######################
-
-download-ghg-farm:
-	mkdir -p $(WORKDIR_GHG_FARM)
-	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/ghg_emissions $(WORKDIR_GHG_FARM)
-	cd $(WORKDIR_GHG_FARM) && sha256sum --check ../../$(CHECKSUMS_PATH)/ghg_from_farm_emissions
-
-convert-ghg-farm: download-ghg-farm
-	python raster_folder_to_h3_table.py $(WORKDIR_GHG_FARM) h3_grid_ghg_global material_indicator GHG_FARM 2017 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+#########
+# Utils #
+#########
 
 clean:
 	rm -rf data/*

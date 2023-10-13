@@ -65,9 +65,11 @@ const Rason: React.FC = () => {
             </h2>
           </FadeIn>
           <FadeIn>
-            <p className="inline-block text-2xl font-bold leading-relaxed text-black bg-blue-500 px-2.5 -mx-2.5 mb-5">
-              With over 13 years of experience, we combine design, science, technology,
-              sustainability, and business.
+            <p className="inline-block text-2xl font-bold leading-relaxed text-black px-2.5 -mx-2.5 mb-5">
+              <span className="bg-blue-500">
+                With over 13 years of experience, we combine design, science, technology,
+                sustainability, and business.
+              </span>
             </p>
             <div className="space-y-10">
               <p className="text-2xl font-light leading-relaxed">
@@ -81,27 +83,8 @@ const Rason: React.FC = () => {
                 planet and society. We have over 13 years of experience working with world-changing
                 organizations building platforms like Global Forest Watch, Aqueduct and Trase.
               </p>
-            </div>
-          </FadeIn>
-        </div>
-      </Wrapper>
 
-      <Wrapper>
-        <div className="space-y-20 text-white md:space-y-32">
-          <FadeIn>
-            <div className="space-y-10">
-              <h3 className="text-2xl font-bold text-white">Vizzuality</h3>
-              <p className="text-xl font-light">
-                Vizzuality is a change-driven design and technology agency creating bespoke,
-                science-based data visualizations and digital tools that inspire learning, catalyze
-                decisions and improve our world.
-              </p>
-              <p className="text-xl font-light">
-                We work together with proactive organizations to create a better future for our
-                planet and society. We have over 10 years of experience working with world-changing
-                organizations building platforms like Global Forest Watch, Aqueduct and Trase.
-              </p>
-              <p>
+              <div>
                 <a
                   href="https://www.vizzuality.com/"
                   target="_blank"
@@ -111,7 +94,7 @@ const Rason: React.FC = () => {
                   <span>Discover Vizzuality</span>
                   <Icon icon={ARROW_TOP_RIGHT_SVG} className="w-3 h-3" />
                 </a>
-              </p>
+              </div>
               <ul className="grid grid-cols-2 gap-10 xs:grid-cols-3 md:grid-cols-5">
                 <li>
                   <a href="https://www.un.org/" target="_blank" rel="noreferrer noopener">

@@ -172,7 +172,7 @@ download-forestGHG:
 
 convert-forestGHG: download-forestGHG
 	@echo "Converting forest GHG data..."
-	python raster_folder_to_h3_table.py $(WORKDIR_GHG) h3_grid_ghg_global indicator GHG_DEF_SLUC 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_GHG) h3_grid_ghg_def_global indicator GHG_DEF_SLUC 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 ################################
 # Net cropland expansion (NCE) #
@@ -251,7 +251,7 @@ download-ghg-farm:
 	cd $(WORKDIR_GHG_FARM) && sha256sum --check ../../$(CHECKSUMS_PATH)/ghg_from_farm_emissions
 
 convert-ghg-farm: download-ghg-farm
-	python raster_folder_to_h3_table.py $(WORKDIR_GHG_FARM) h3_grid_ghg_global material_indicator GHG_FARM 2017 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_GHG_FARM) h3_grid_ghg_farm_global material_indicator GHG_FARM 2017 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 ###################
 # Contextual data #

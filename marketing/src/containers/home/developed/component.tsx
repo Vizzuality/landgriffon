@@ -1,10 +1,6 @@
-import Link from 'next/link';
 import Wrapper from 'containers/wrapper';
 import FadeIn from 'components/fade';
 import Image from 'next/image';
-
-import ARROW_RIGHT_SVG from 'svgs/ui/arrow-right.svg?sprite';
-import Icon from 'components/icon/component';
 
 const Developed: React.FC = () => {
   return (

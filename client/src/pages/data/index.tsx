@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import Head from 'next/head';
 
 import { useSourcingLocations } from 'hooks/sourcing-locations';
@@ -19,7 +20,7 @@ const AdminDataPage: React.FC = () => {
   // Getting last task to check if there is a processing task
   const { data: lastTask } = useLasTask();
 
-  const thereIsData = data?.meta?.totalItems > 0;
+  const thereIsData = useMemo(() => data?.meta?.totalItems > 0, [data?.meta?.totalItems]);
 
   return (
     <AdminLayout
@@ -45,9 +46,7 @@ const AdminDataPage: React.FC = () => {
       )}
 
       {/* Content when empty, or upload is processing or failed */}
-      {isFetched && (lastTask?.status === 'processing' || !thereIsData) && (
-        <AdminDataUploader task={lastTask} />
-      )}
+      {isFetched && !thereIsData && <AdminDataUploader task={lastTask} />}
 
       {/* Content when data and upload is completed */}
       {isFetched && thereIsData && <AdminDataTable task={lastTask} />}

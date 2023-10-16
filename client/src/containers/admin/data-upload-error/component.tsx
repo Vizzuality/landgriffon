@@ -50,6 +50,16 @@ const DataUploadError: React.FC<DataUploadErrorProps> = ({ task }) => {
     >
       <div className="flex w-full space-x-6 items-center">
         <div className="space-y-1.5 flex-1">
+          {task?.status === 'processing' && (
+            <>
+              <h3>Upload in progress</h3>
+              <p className="text-gray-500">
+                There is a uploading task in progress created at{' '}
+                {format(new Date(task.createdAt), 'MMM d, yyyy HH:mm z')}.
+              </p>
+            </>
+          )}
+
           {task?.status === 'completed' && task?.errors.length === 0 && (
             <>
               <h3>Upload completed</h3>

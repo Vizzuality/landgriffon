@@ -58,7 +58,7 @@ export const useLasTask = () => {
     },
   );
 
-  return { ...tasks, data: tasks?.data?.data?.[0] };
+  return { ...tasks, data: tasks?.data?.data?.[0] } as UseQueryResult<TaskAPIResponse>;
 };
 
 export function useTask(

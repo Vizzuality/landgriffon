@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import Head from 'next/head';
 import router, { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
+import omitBy from 'lodash-es/omitBy';
 
 import { useCreateNewIntervention } from 'hooks/interventions';
 import CleanLayout from 'layouts/clean';
@@ -10,7 +11,7 @@ import { parseInterventionFormDataToDto } from 'containers/interventions/utils';
 import BackLink from 'components/back-link';
 import { handleResponseError } from 'services/api';
 
-import type { InterventionFormData } from 'containers/interventions/types';
+import type { InterventionDto, InterventionFormData } from 'containers/interventions/types';
 
 const CreateInterventionPage: React.FC = () => {
   const { query } = useRouter();
@@ -28,7 +29,12 @@ const CreateInterventionPage: React.FC = () => {
   const handleSubmit = useCallback(
     (interventionFormData: InterventionFormData) => {
       const interventionDto = parseInterventionFormDataToDto(interventionFormData);
-      createIntervention.mutate(interventionDto);
+      // for the creation remove null or undefined values
+      const interventionDtoCleaned = omitBy(
+        interventionDto,
+        (value) => value === null || value === undefined,
+      );
+      createIntervention.mutate(interventionDtoCleaned as InterventionDto);
     },
     [createIntervention],
   );

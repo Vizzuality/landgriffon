@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { merge } from 'lodash-es';
+import { v4 as uuidv4 } from 'uuid';
 
 import apiService from 'services/api';
 
@@ -91,7 +92,7 @@ export function useSourcingLocationsMaterials(
           // duplicate rows when updating the table data. A workaround is to generate uuids.
           // We won't be loading many rows at once so it shouldn't be a huge performance hit.
           ((response as SourcingLocationsMaterialsAPIResponse).data || []).map((data) => ({
-            // id: uuidv4(),
+            id: uuidv4(),
             ...data,
           })) || [],
         meta: (response as SourcingLocationsMaterialsAPIResponse).meta || {},

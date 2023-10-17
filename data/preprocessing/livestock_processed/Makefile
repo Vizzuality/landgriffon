@@ -5,9 +5,9 @@ AWS_S3_BUCKET_URL=s3://landgriffon-raw-data
 export AWS_ACCESS_KEY_ID = $(DATA_S3_ACCESS_KEY)
 export AWS_SECRET_ACCESS_KEY = $(DATA_S3_SECRET_KEY)
 
-.PHONY: download_pasture_data upload_livestock_processed write_checksums
+.PHONY: download_pasture_data download_faostats_data preprocess_faostats_data calculate_aggregation rasterize_and_calculate_commodities rasterize_and_calculate_total_milk upload_livestock_processed write_checksums
 
-all: download_pasture_data upload_livestock_processed write_checksums
+all: download_pasture_data download_faostats_data preprocess_faostats_data calculate_aggregation rasterize_and_calculate_commodities rasterize_and_calculate_total_milk upload_livestock_processed write_checksums
 
 download_pasture_data:
 	mkdir -p $(data_dir)/pasture

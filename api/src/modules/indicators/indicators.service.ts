@@ -186,19 +186,11 @@ export class IndicatorsService extends AppBaseService<
       );
       this.logger.warn(`Activating found Indicators...`);
     }
-    const activatedIndicators: Indicator[] =
-      indicatorsFoundByProvidedNameCodes.map(
-        (i: Indicator) =>
-          ({
-            ...i,
-            status: INDICATOR_STATUS.ACTIVE,
-          } as Indicator),
-      );
+
     await this.indicatorRepository.update(
-      { nameCode: In([INDICATOR_NAME_CODES.ENL, INDICATOR_NAME_CODES.FLIL]) },
+      { nameCode: In(nameCodesToActivateIndicatorsBy) },
       { status: INDICATOR_STATUS.ACTIVE },
     );
-    await this.indicatorRepository.save(activatedIndicators);
     return this.indicatorRepository.find({
       where: { status: INDICATOR_STATUS.ACTIVE },
     });

@@ -1,0 +1,55 @@
+# Livestock data preprocessing
+
+This repository contains code for processing and aggregating livestock-related data, including hens eggs, cattle, buffalo, camel, goat, sheep, and total milk data. The processed data is stored in raster format and uploaded to an AWS S3 bucket. Checksums of the processed data are also generated and saved for verification purposes.
+
+### Prerequisites
+
+Before running the code, ensure you have the following prerequisites installed:
+
+- Python
+- GDAL
+- AWS CLI
+
+### Directory Structure
+
+- **data/:** Directory to store raw and processed data.
+- ** Makefile:** Makefile containing targets for downloading, processing, and uploading data.
+- **preprocess_faostats.py:** Python script for preprocessing FAO livestock data.
+- R**EADME.md:** This file, providing an overview of the codebase and instructions.
+
+### Usage:
+
+1. **Download Raw Data**:
+
+    - Run `make download_pasture_data `to download pasture data.
+    - Run `make download_faostats_data` to download FAO livestock data from the specified S3 bucket.
+
+
+2. **Preprocess FAO Livestock Data:**
+
+    - Run `make preprocess_faostats_data` to preprocess FAO livestock data.
+    - This step involves converting raw CSV data to shapefiles.
+
+3. **Calculate Aggregated Pasture Data:**
+
+    - Run `make calculate_aggregation `to aggregate pasture data.
+    - Aggregated data is stored in raster format.
+
+4. **Rasterize and Calculate Processed Commodities:**
+
+    - Run `make rasterize_and_calculate_commodities` to rasterize FAO livestock data and calculate tonnes of material.
+    - Processed data for hens eggs, cattle, goat, and sheep raw milk is stored in raster format.
+
+5. **Rasterize and Calculate Total Milk Data:**
+
+    - Run `make rasterize_and_calculate_total_milk` to rasterize total milk data and calculate aggregated values.
+    - Processed total milk data is stored in raster format.
+
+6. **Upload Processed Data to S3:**
+
+    - Run `make upload_livestock_processed` to upload processed data to the specified AWS S3 bucket.
+
+7. **Generate Checksums:**
+
+    - Run `make write_checksums` to generate checksums of the processed data files
+    - Checksums are saved in the data_checksums directory.

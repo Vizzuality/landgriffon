@@ -20,6 +20,7 @@ WORKDIR_NATURAL_CROP_CONVERSION=data/natural_crop_conversion
 WORKDIR_NUTRIENT_LOAD_REDUCTION=data/nutrient_load_reduction
 WORKDIR_BIODIVERSITY=data/biodiversity
 WORKDIR_GHG_FARM=data/ghg_farm
+WORKDIR_LIVESTOCK_PROCESSED=data/livestock_processed
 
 
 CHECKSUMS_PATH=data_checksums
@@ -38,7 +39,7 @@ all:
 	make clean
 	make crop indicators
 
-crop: convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock
+crop: convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock convert-livestock-processed
 
 indicators: convert-aqueduct convert-deforestation convert-forestGHG convert-naturalCropConversion convert-nutrientLoadReduction convert-biodiversity convert-ghg-farm
 
@@ -146,6 +147,21 @@ convert-glw3-livestock: rasterize-glw3-livestock-pasture
 	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/pigs/harvestArea h3_grid_pigs_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 	python raster_folder_to_h3_table.py $(WORKDIR_GLW3)/pasture/harvestArea h3_grid_pasture_glo_ha harvest_area glw3 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
+###########################
+#  Livestock preprocessed #
+############################
+
+download-livestock-processed:
+	mkdir -p $(WORKDIR_LIVESTOCK_PROCESSED)/production
+	mkdir -p $(WORKDIR_LIVESTOCK_PROCESSED)/harvest
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/livestock_processed/production $(WORKDIR_LIVESTOCK_PROCESSED)/production
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/livestock_processed/harvest $(WORKDIR_LIVESTOCK_PROCESSED)/harvest
+	cd $(WORKDIR_LIVESTOCK_PROCESSED)/production && sha256sum --check ../../../$(CHECKSUMS_PATH)/livestock_processed_prod
+	cd $(WORKDIR_LIVESTOCK_PROCESSED)/harvest && sha256sum --check ../../../$(CHECKSUMS_PATH)/livestock_processed_ha
+
+convert-livestock-processed: download-livestock-processed
+	python raster_folder_to_h3_table.py $(WORKDIR_LIVESTOCK_PROCESSED)/production h3_grid_livestock_processed_global_prod production faostats 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_LIVESTOCK_PROCESSED)/harvest h3_grid_livestock_processed_global_ha harvest_area faostats 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 #####################################
 # Deforestation footprint (DF_SLUC) #

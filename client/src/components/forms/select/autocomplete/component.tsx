@@ -4,7 +4,7 @@ import { Transition, Combobox } from '@headlessui/react';
 import { ChevronUpIcon, ChevronDownIcon, XIcon } from '@heroicons/react/solid';
 import { flip, useFloating, size, autoUpdate, offset } from '@floating-ui/react-dom';
 import { FloatingPortal } from '@floating-ui/react';
-import { List as VirtualizedList } from 'react-virtualized';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
 import Hint from 'components/forms/hint';
 import Loading from 'components/loading';
@@ -88,42 +88,6 @@ const AutoCompleteSelect = <T,>({
     [options, query],
   );
 
-  const renderOption = useCallback(
-    ({ index, key, style }) => {
-      return (
-        <Combobox.Option
-          key={key}
-          style={style}
-          className={({ active, disabled }) =>
-            classnames(
-              'relative cursor-default text-sm select-none py-2 pl-3 pr-9 hover:cursor-pointer',
-              {
-                'bg-navy-50': active,
-                'pointer-events-none cursor-default': disabled,
-              },
-            )
-          }
-          value={filteredOptions[index]}
-          disabled={filteredOptions[index].disabled}
-          data-testid={`${props.id || props.name || props['data-testid']}-option`}
-        >
-          {({ selected, disabled }) => (
-            <div
-              className={classnames('block truncate', {
-                'text-navy-400': selected,
-                'text-gray-300': disabled,
-                'text-gray-900': !selected && !disabled,
-              })}
-            >
-              {filteredOptions[index].label}
-            </div>
-          )}
-        </Combobox.Option>
-      );
-    },
-    [filteredOptions, props],
-  );
-
   const clearSelection = useCallback(() => {
     setSelected(null);
     setQuery('');
@@ -140,6 +104,12 @@ const AutoCompleteSelect = <T,>({
     () => selected === null || selected?.value === null || selected?.value === '',
     [selected],
   );
+
+  const virtualizedList = useVirtualizer({
+    count: filteredOptions.length,
+    getScrollElement: useCallback(() => refs.floating.current, [refs.floating]),
+    estimateSize: useCallback(() => rowHeight, [rowHeight]),
+  });
 
   // ? in case the value is not set in the hook initialization, it will be set here after first render.
   useEffect(() => {
@@ -250,28 +220,51 @@ const AutoCompleteSelect = <T,>({
                 leaveFrom="opacity-100 translate-y-0"
                 leaveTo="opacity-0 translate-y-1"
                 afterLeave={handleAfterTransitionLeave}
-                className="z-50"
+                className="z-50 overflow-auto text-base bg-white rounded-md shadow-sm max-h-60 ring-1 ring-gray-200 focus:outline-none"
                 style={{
                   position: strategy,
                   top: y ?? 0,
                   left: x ?? 0,
+                  width: `${virtualizedListWidth}px`,
                 }}
                 ref={refs.setFloating}
               >
-                <Combobox.Options>
-                  <VirtualizedList
-                    className="w-full overflow-auto text-base bg-white rounded-md shadow-sm max-h-60 ring-1 ring-gray-200 focus:outline-none"
-                    width={virtualizedListWidth}
-                    height={virtualizedListHeight}
-                    rowCount={filteredOptions.length}
-                    rowHeight={rowHeight}
-                    rowRenderer={renderOption}
-                    noRowsRenderer={() => (
-                      <div className="relative px-4 py-2 text-sm text-gray-300 cursor-default select-none">
-                        No results
-                      </div>
-                    )}
-                  />
+                <Combobox.Options
+                  className="relative w-full"
+                  style={{
+                    height: `${virtualizedListHeight}px`,
+                  }}
+                >
+                  {virtualizedList.getVirtualItems().map((virtualItem) => (
+                    <Combobox.Option
+                      key={virtualItem.key}
+                      style={{ height: `${virtualItem.size}px` }}
+                      className={({ active, disabled }) =>
+                        classnames(
+                          'relative cursor-default text-sm select-none py-2 pl-3 pr-9 hover:cursor-pointer',
+                          {
+                            'bg-navy-50': active,
+                            'pointer-events-none cursor-default': disabled,
+                          },
+                        )
+                      }
+                      value={filteredOptions[virtualItem.index]}
+                      disabled={filteredOptions[virtualItem.index].disabled}
+                      data-testid={`${props.id || props.name || props['data-testid']}-option`}
+                    >
+                      {({ selected, disabled }) => (
+                        <div
+                          className={classnames('block truncate', {
+                            'text-navy-400': selected,
+                            'text-gray-300': disabled,
+                            'text-gray-900': !selected && !disabled,
+                          })}
+                        >
+                          {filteredOptions[virtualItem.index].label}
+                        </div>
+                      )}
+                    </Combobox.Option>
+                  ))}
                 </Combobox.Options>
               </Transition>
             </FloatingPortal>

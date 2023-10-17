@@ -55,8 +55,7 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
   const {
     x,
     y,
-    reference,
-    floating,
+    refs,
     strategy,
     middlewareData: { arrow: { x: arrowX, y: arrowY } = {} },
     placement: floatingPlacement,
@@ -78,7 +77,7 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
   const { getReferenceProps, getFloatingProps } = useInteractions([
     useHover(context, {
       enabled: hoverTrigger && enabled,
-      handleClose: safePolygon({ restMs: 50 }),
+      handleClose: safePolygon({ buffer: 50 }),
     }),
     useClick(context, { enabled: !hoverTrigger && enabled, toggle: true }),
     useDismiss(context),
@@ -89,7 +88,7 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
       <button
         type="button"
         {...getReferenceProps({
-          ref: reference,
+          ref: refs.setReference,
           className: 'relative',
           onClick: (e) => e.stopPropagation(),
         })}
@@ -101,7 +100,7 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
           <div
             {...getFloatingProps({
               className: classNames(className, 'drop-shadow-md w-fit z-50'),
-              ref: floating,
+              ref: refs.setFloating,
               style: {
                 position: strategy,
                 top: y ?? '',

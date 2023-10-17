@@ -1,10 +1,10 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import Link from 'next/link';
-import { createPortal } from 'react-dom';
 import { signOut } from 'next-auth/react';
 import { Menu } from '@headlessui/react';
 import { offset, useFloating } from '@floating-ui/react-dom';
 import { shift } from '@floating-ui/core';
+import { FloatingPortal } from '@floating-ui/react';
 
 import Loading from 'components/loading';
 import UserAvatar from 'containers/user-avatar';
@@ -15,7 +15,7 @@ const MENU_ITEM_CLASSNAME =
   'block w-full py-2 px-4 text-sm text-left text-gray-900 h-9 hover:bg-navy-50 focus-visible:outline-navy-50';
 
 const UserDropdown: React.FC = () => {
-  const { x, y, reference, floating, strategy } = useFloating({
+  const { x, y, refs, strategy } = useFloating({
     placement: 'top-start',
     middleware: [offset({ crossAxis: 20, mainAxis: 10 }), shift()],
   });
@@ -31,21 +31,25 @@ const UserDropdown: React.FC = () => {
   return (
     <Menu as="div" className="flex justify-center flex-col items-center w-full mb-5">
       {(!user || status === 'loading') && <Loading className="w-5 h-5 text-white" />}
-      <Menu.Button
-        className="focus-visible:shadow-button-focused focus-visible:outline-none rounded-lg shadow-menu hover:shadow-button-hovered"
-        ref={reference}
-      >
-        <UserAvatar
-          userFullName={userName}
-          user={user}
-          className="bg-black/20 h-[50px] w-[50px] "
-        />
-      </Menu.Button>
-      <span className="text-white text-xs mt-3">Account</span>
-      {!!user &&
-        createPortal(
+      {user && status === 'success' && (
+        <>
+          <Menu.Button
+            className="focus-visible:shadow-button-focused focus-visible:outline-none rounded-lg shadow-menu hover:shadow-button-hovered"
+            ref={refs.setReference}
+          >
+            <UserAvatar
+              userFullName={userName}
+              user={user}
+              className="bg-black/20 h-[50px] w-[50px] "
+            />
+          </Menu.Button>
+          <span className="text-white text-xs mt-3">Account</span>
+        </>
+      )}
+      {!!user && (
+        <FloatingPortal>
           <Menu.Items
-            ref={floating}
+            ref={refs.setFloating}
             style={{
               position: strategy,
               top: y ?? '',
@@ -73,9 +77,9 @@ const UserDropdown: React.FC = () => {
                 Logout
               </button>
             </Menu.Item>
-          </Menu.Items>,
-          document.body,
-        )}
+          </Menu.Items>
+        </FloatingPortal>
+      )}
     </Menu>
   );
 };

@@ -33,7 +33,7 @@ const Select = <T,>({
   const [selected, setSelected] = useState<Option<T> | Option<string> | Option<T>[]>(
     multiple ? [] : { label: '', value: '' },
   );
-  const { x, y, reference, floating, strategy } = useFloating<HTMLButtonElement>({
+  const { x, y, refs, strategy } = useFloating<HTMLButtonElement>({
     middleware: [
       flip(),
       size({
@@ -151,7 +151,7 @@ const Select = <T,>({
                   'border-navy-400': theme === 'dark' && !error,
                 },
               )}
-              ref={reference}
+              ref={refs.setReference}
             >
               {icon && <div className="mr-2">{cloneElement(icon)}</div>}
               <span className="min-h-full block text-sm truncate">{labelSelect}</span>
@@ -201,7 +201,7 @@ const Select = <T,>({
                 top: y ?? 0,
                 left: x ?? 0,
               }}
-              ref={floating}
+              ref={refs.setFloating}
             >
               <div className="mt-2 overflow-y-auto text-base bg-white rounded-md shadow-sm max-h-60 ring-1 ring-gray-200 focus:outline-none max-w-sm">
                 <Listbox.Options

@@ -1,4 +1,4 @@
-import { cloneElement, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { cloneElement, useCallback, useEffect, useMemo, useState } from 'react';
 import classnames from 'classnames';
 import { Transition, Combobox } from '@headlessui/react';
 import { ChevronUpIcon, ChevronDownIcon, XIcon } from '@heroicons/react/solid';
@@ -38,7 +38,7 @@ const AutoCompleteSelect = <T,>({
     defaultValue || value || { label: '', value: '' },
   );
   const [query, setQuery] = useState('');
-  const { x, y, reference, floating, strategy } = useFloating<HTMLButtonElement>({
+  const { x, y, refs, strategy } = useFloating<HTMLButtonElement>({
     middleware: [
       offset(5),
       flip(),
@@ -162,7 +162,7 @@ const AutoCompleteSelect = <T,>({
               </Combobox.Label>
             )}
             <div className="relative w-full overflow-hidden">
-              <Combobox.Input<'input', Option<T>>
+              <Combobox.Input
                 className={classnames(
                   'w-full inline-flex items-center py-2.5 pl-3 text-left leading-5',
                   'border rounded-md shadow-sm cursor-default hover:cursor-pointer focus:border-navy-400 focus:outline-none focus:ring-0',
@@ -180,10 +180,13 @@ const AutoCompleteSelect = <T,>({
                 )}
                 onChange={handleInputChange}
                 placeholder={placeholder}
-                displayValue={(option) => option?.label}
-                ref={reference}
+                displayValue={(option: Option<T>) => option?.label}
               />
-              <Combobox.Button className="absolute inset-0 flex items-center w-full pr-10" as="div">
+              <Combobox.Button
+                className="absolute inset-0 flex items-center w-full pr-10"
+                as="div"
+                ref={refs.setReference}
+              >
                 {icon && <div className="mr-2">{cloneElement(icon)}</div>}
                 <div className="absolute right-4">
                   {open && !loading && (
@@ -253,7 +256,7 @@ const AutoCompleteSelect = <T,>({
                   top: y ?? 0,
                   left: x ?? 0,
                 }}
-                ref={floating}
+                ref={refs.setFloating}
               >
                 <Combobox.Options>
                   <VirtualizedList

@@ -33,6 +33,7 @@ export const csvDownload = ({
     const csv = parser.parse(data);
     triggerCsvDownload(csv, formattedFilename);
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.error(err);
   }
 };

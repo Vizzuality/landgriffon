@@ -66,7 +66,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
     setIsLoaded(true);
   }, [endYear, isLoaded, startYear, years, yearsGap, lastYearWithData]);
 
-  const { reference, floating, x, y, context, strategy } = useFloating({
+  const { refs, x, y, context, strategy } = useFloating({
     open: isOpen,
     onOpenChange: setIsOpen,
     placement: 'bottom-start',
@@ -88,7 +88,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
         type="button"
         className="relative w-full py-2.5 leading-5 text-sm pl-3 pr-10 text-left bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer focus:outline-none focus:border-navy-400 focus:ring-0"
         {...getReferenceProps({
-          ref: reference,
+          ref: refs.setReference,
         })}
         data-testid="years-range-btn"
       >
@@ -119,7 +119,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
           leaveTo="opacity-0 translate-y-1"
           className="z-10"
           {...getFloatingProps({
-            ref: floating,
+            ref: refs.setFloating,
             style: {
               top: y ?? '',
               left: x ?? '',

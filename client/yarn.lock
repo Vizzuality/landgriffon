@@ -6533,7 +6533,7 @@ __metadata:
     istanbul-reports: 3.0.0
     jsona: 1.9.2
     lodash-es: 4.17.21
-    lottie-react: 2.2.1
+    lottie-react: 2.4.0
     mapbox-gl: 2.13.0
     next: 13.5.5
     next-auth: 4.19.2
@@ -6552,9 +6552,9 @@ __metadata:
     react-map-gl: 7.0.23
     react-range: 1.8.14
     react-redux: 8.0.2
-    react-virtualized: 9.22.3
+    react-virtualized: 9.22.5
     recharts: 2.9.0
-    rooks: 5.10.0
+    rooks: 7.14.1
     sharp: 0.32.6
     start-server-and-test: 1.14.0
     tailwindcss: 3.3.1
@@ -6768,22 +6768,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lottie-react@npm:2.2.1":
-  version: 2.2.1
-  resolution: "lottie-react@npm:2.2.1"
+"lottie-react@npm:2.4.0":
+  version: 2.4.0
+  resolution: "lottie-react@npm:2.4.0"
   dependencies:
-    lottie-web: ^5.8.1
+    lottie-web: ^5.10.2
   peerDependencies:
-    react: ^16.8.0 || ^17.0.0
-    react-dom: ^16.8.0 || ^17.0.0
-  checksum: 37ca04e2baf0ae18def7e82b1746175a742410e8adcadd2d8c0f4206eee4dac65a4ba1d14709134fac2d8251d514b866af1d62e6d87fea345eb7af383e569efa
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: e9ea4a89be90a29bde4a83956f76a80d1f8031882f18ea38ef5271d2aafd8e68348ae6297f185ed85b149ca4896fe33aee7faf9780b88a1b289b8e146f477448
   languageName: node
   linkType: hard
 
-"lottie-web@npm:^5.8.1":
-  version: 5.9.6
-  resolution: "lottie-web@npm:5.9.6"
-  checksum: aed6a1d0c24eefb6c42a42aae18f29737746551cfdc86319f1b9675f5bc276ba26971e8d2b0e1498df880571fe4bfe2fc87885a1d4f8a318d5e4e5b939b7a474
+"lottie-web@npm:^5.10.2":
+  version: 5.12.2
+  resolution: "lottie-web@npm:5.12.2"
+  checksum: af5bc3bc405fd760de8b17a36158d5a8c3e8c586c711d0c63681ddf056b65bc6b54ea36b1fcad782fb02dbe12e696a40e0ba72daf41b8f10ab5b5d1113793636
   languageName: node
   linkType: hard
 
@@ -8484,9 +8484,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-virtualized@npm:9.22.3":
-  version: 9.22.3
-  resolution: "react-virtualized@npm:9.22.3"
+"react-virtualized@npm:9.22.5":
+  version: 9.22.5
+  resolution: "react-virtualized@npm:9.22.5"
   dependencies:
     "@babel/runtime": ^7.7.2
     clsx: ^1.0.4
@@ -8495,9 +8495,9 @@ __metadata:
     prop-types: ^15.7.2
     react-lifecycles-compat: ^3.0.4
   peerDependencies:
-    react: ^15.3.0 || ^16.0.0-alpha
-    react-dom: ^15.3.0 || ^16.0.0-alpha
-  checksum: 5e3b566592293bc0057bc6be4f6ee29c58c8931421d2882a3ef45ca9b24c6f3ea78bbc5a182c2916af6520845e5a90f569b3a63c9b5e89428720913e6d6239cc
+    react: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0
+    react-dom: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0
+  checksum: 01f5ed8d8db7c831d592172946c2b61fcb409bf6cbc84500468f12d6cf9b7e60453e332fac02dd608480d23cb14421f7f17716393e623e83bb10a7763fad9e2c
   languageName: node
   linkType: hard
 
@@ -8881,16 +8881,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rooks@npm:5.10.0":
-  version: 5.10.0
-  resolution: "rooks@npm:5.10.0"
+"rooks@npm:7.14.1":
+  version: 7.14.1
+  resolution: "rooks@npm:7.14.1"
   dependencies:
+    fast-deep-equal: ^3.1.3
     lodash.debounce: ^4.0.8
     raf: ^3.4.1
+    use-sync-external-store: ^1.2.0
   peerDependencies:
-    react: ^16.8.0  || ^17.0.0
-    react-dom: ^16.8.0  || ^17.0.0
-  checksum: 67ef3402f0e2f318e02d6426b8c93500fc60d094f9fe0649b048e40c3271e5cdb2ed71806bf38df0f6378314fd8a5fe2760ad234c82a8451017e8b98b34d5d3c
+    react: ^16.8.0  || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0  || ^17.0.0 || ^18.0.0
+  checksum: b88dc3d7451b017503b11be995fba2ccc260ac18a386922e490ef3d328a796cfd677c4425454efd2de4e2c936eb879febe2f9f8a939be4f22aa2a66329567895
   languageName: node
   linkType: hard
 

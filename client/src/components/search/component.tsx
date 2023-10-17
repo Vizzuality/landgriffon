@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { SearchIcon, XIcon } from '@heroicons/react/solid';
 import classnames from 'classnames';
 import { omit } from 'lodash-es';
-import { useDebounceCallback } from '@react-hook/debounce';
+import { useDebounce } from 'rooks';
 import { useRouter } from 'next/router';
 
 import type { ChangeEvent } from 'react';
@@ -24,7 +24,7 @@ export const Search: React.FC<SearchProps> = ({
 
   const [value, setValue] = useState<string>(initialValue);
 
-  const handleSearchByTerm = useDebounceCallback((value, queryName) => {
+  const handleSearchByTerm = useDebounce((value, queryName) => {
     replace(
       {
         pathname,

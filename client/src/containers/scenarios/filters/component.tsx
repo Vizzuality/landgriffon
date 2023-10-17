@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { useDebounceCallback } from '@react-hook/debounce';
+import { useDebounce } from 'rooks';
 import { SortDescendingIcon } from '@heroicons/react/solid';
 
 import { useAppSelector } from 'store/hooks';
@@ -26,7 +26,7 @@ const ScenariosFilters: FC = () => {
   const { searchTerm, sort } = useAppSelector(scenarios);
 
   const handleSort = useCallback((selected) => dispatch(setSort(selected.value)), [dispatch]);
-  const handleSearchByTerm = useDebounceCallback((value) => dispatch(setSearchTerm(value)), 250);
+  const handleSearchByTerm = useDebounce((value) => dispatch(setSearchTerm(value)), 250);
 
   const currentSort = useMemo(() => SORT_OPTIONS.find(({ value }) => value === sort), [sort]);
 

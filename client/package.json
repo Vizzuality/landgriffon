@@ -67,7 +67,6 @@
     "react-map-gl": "7.0.23",
     "react-range": "1.8.14",
     "react-redux": "8.0.2",
-    "react-virtualized": "9.22.5",
     "recharts": "2.9.0",
     "rooks": "7.14.1",
     "sharp": "0.32.6",

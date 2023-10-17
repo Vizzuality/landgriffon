@@ -105,16 +105,16 @@ LANGUAGE plpgsql;
     `);
 
     await queryRunner.query(`
-    CREATE OR REPLACE FUNCTION get_h3_table_column_for_material_indicators(nameCode text,
-materialId uuid)
-RETURNS TABLE (h3_table_name varchar, h3_column_name varchar, h3_resolution int) AS
-$$
+    CREATE OR REPLACE FUNCTION get_h3_table_column_for_material_indicators(name_code text,
+      material_id uuid)
+    RETURNS TABLE (h3_table_name varchar, h3_column_name varchar, h3_resolution int) AS
+    $$
     SELECT h3_data."h3tableName", h3_data."h3columnName", h3_data."h3resolution"
     FROM h3_data
         INNER JOIN "material_indicator_to_h3" mith ON mith."h3DataId" = h3_data."id"
         INNER JOIN "indicator" i ON i."id" = mith."indicatorId"
-    WHERE i."nameCode" = nameCode
-    AND mith."materialId" = materialId
+    WHERE i."nameCode" = name_code
+    AND mith."materialId" = material_id
     LIMIT 1;
 $$
 LANGUAGE SQL;
@@ -122,13 +122,13 @@ LANGUAGE SQL;
 
     await queryRunner.query(`
     CREATE OR REPLACE FUNCTION get_annual_commodity_weighted_material_impact_over_georegion(
-    geo_region_id uuid,
-    nameCode text,
-    material_id uuid,
-    h3_data_type material_to_h3_type_enum
-)
-RETURNS float AS
-$$
+      geo_region_id uuid,
+      name_code text,
+      material_id uuid,
+      h3_data_type material_to_h3_type_enum
+    )
+    RETURNS float AS
+    $$
     DECLARE
         h3_resolution integer;
         indicator_h3_table_name varchar;
@@ -141,7 +141,12 @@ $$
 
         -- Get h3data table name, column for material indicator
         SELECT * INTO indicator_h3_table_name, indicator_h3_column_name, h3_indicator_resolution
-        FROM get_h3_table_column_for_material_indicators(nameCode, material_id);
+        FROM get_h3_table_column_for_material_indicators(name_code, material_id);
+
+        -- If no h3 data is found for the material and indicator, return 0
+        IF indicator_h3_table_name IS NULL OR indicator_h3_column_name IS NULL OR h3_indicator_resolution IS NULL THEN
+          RETURN 0;
+        END IF;
 
         -- Get h3data table name, column and resolution for the material production
         SELECT * INTO material_h3_table_name, material_h3_column_name, h3_resolution
@@ -163,9 +168,7 @@ $$
         RETURN sum;
     END;
 $$
-LANGUAGE plpgsql
-
-
+LANGUAGE plpgsql;
     `);
   }
 

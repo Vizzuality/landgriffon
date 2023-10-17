@@ -75,3 +75,46 @@ Read more about this pipeline in the [biodiversity/README.md](biodiversity/READM
 Aka Greenhouse gas emissions from farm production.
 
 The preprocessing can be found in `farm_ghg/`. It is an R script made by Mike Harfoot.
+
+### Livestock processed
+
+This folder contains the preprocessing for the livestock preprocessed products (e.g. eggs, cattle, goat, sheep and total milk)
+
+The preprocessing can be found in `livestock_processed`. All the process is expleined in the README file.
+
+To run the pipeline, `cd livestock_processed` and
+
+```bash
+make all
+```
+
+
+### Natural crop conversion
+
+This folder contains the computation of the natural crop conversion dataset.
+
+To run the pipeline, `cd natural_crop_conversion` and
+
+```bash
+make all
+```
+
+### Nutrient load reduction
+
+This folder contains the computation of the nutrient load reduction dataset. All the information can be found on the README file.
+
+To run the pipeline, `cd nutrient_load_reduction` and
+
+```bash
+make all
+```
+
+### Unsustainable water use
+
+This folder contains the computation of the unsustainable water use dataset. All the information can be found on the README file.
+
+To run the pipeline, `cd unsustainable_water_use` and
+
+```bash
+make all
+```

@@ -289,7 +289,7 @@ describe('Impact Calculator Tests', () => {
         indicatorPreconditions.unsustWaterUseIndicator,
         materialH3Data,
         sourcingData.sourcingRecordId,
-        120000,
+        200,
         1610,
         calculatedIndicators,
       );

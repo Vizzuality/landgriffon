@@ -134,7 +134,7 @@ const MoreFilters = () => {
     setSelectedFilters(moreFilters);
   }, [moreFilters]);
 
-  const { reference, floating, strategy, x, y, context } = useFloating({
+  const { refs, strategy, x, y, context } = useFloating({
     // open: isOpen,
     // onOpenChange: handleOpen,
     placement: 'bottom-start',
@@ -309,7 +309,7 @@ const MoreFilters = () => {
             className="flex items-center space-x-2 px-2 py-2.5 border border-gray-200 rounded-md bg-white shadow-sm hover:cursor-pointer focus:border-navy-400 focus:outline-none focus:ring-0"
             type="button"
             {...getReferenceProps({
-              ref: reference,
+              ref: refs.setReference,
             })}
             data-testid="more-filters-button"
           >
@@ -332,7 +332,7 @@ const MoreFilters = () => {
               leaveFrom="opacity-100 translate-y-0"
               leaveTo="opacity-0 translate-y-1"
               {...getFloatingProps({
-                ref: floating,
+                ref: refs.setFloating,
                 style: {
                   position: strategy,
                   top: y ?? '',

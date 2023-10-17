@@ -99,8 +99,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
   const {
     x,
     y,
-    reference,
-    floating,
+    refs,
     strategy,
     refs: { reference: referenceElement },
     context,
@@ -159,9 +158,9 @@ const InnerTreeSelect = <IsMulti extends boolean>(
       setExpandedKeys((prevKeys) => {
         const uniqueKeys = new Set(prevKeys);
         if (!expanded) {
-          uniqueKeys.delete(node.key);
+          uniqueKeys.delete(node.key as Key);
         } else {
-          uniqueKeys.add(node.key);
+          uniqueKeys.add(node.key as Key);
         }
         return Array.from(uniqueKeys);
       });
@@ -384,7 +383,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
       <div
         {...(!disabled && {
           ...getReferenceProps({
-            ref: reference,
+            ref: refs.setReference,
             disabled,
           }),
         })}
@@ -535,13 +534,13 @@ const InnerTreeSelect = <IsMulti extends boolean>(
               left: x ?? '',
               minWidth: multiple ? 150 : 100,
               width:
-                fitContent && reference
+                fitContent && refs.setReference
                   ? (referenceElement.current as HTMLElement)?.offsetWidth
                   : 'inherit',
             },
             className:
               'relative z-20 rounded-md overflow-hidden shadow-lg ring-1 ring-black ring-opacity-5',
-            ref: floating,
+            ref: refs.setFloating,
           })}
         >
           <div

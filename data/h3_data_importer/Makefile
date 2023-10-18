@@ -21,6 +21,7 @@ WORKDIR_NUTRIENT_LOAD_REDUCTION=data/nutrient_load_reduction
 WORKDIR_BIODIVERSITY=data/biodiversity
 WORKDIR_GHG_FARM=data/ghg_farm
 WORKDIR_LIVESTOCK_PROCESSED=data/livestock_processed
+WORKDIR_LIVESTOCK_GHG=data/livestock_ghg
 
 
 CHECKSUMS_PATH=data_checksums
@@ -257,9 +258,9 @@ convert-nutrientLoadReduction: extract-nutrient-load-reduction
 	@echo "Including contextual layer... "
 	python vector_folder_to_h3_table.py $(WORKDIR_NUTRIENT_LOAD_REDUCTION) h3_grid_limiting_nutrients_global Cases_v2_1 limiting_nutrient "Environmental datasets" 2023
 
-#######################
-# GHG FARM (GHG_FARM) #
-#######################
+#################################################
+# GHG FARM (GHG_FARM) - agriculture commodities #
+#################################################
 
 download-ghg-farm:
 	mkdir -p $(WORKDIR_GHG_FARM)
@@ -268,6 +269,19 @@ download-ghg-farm:
 
 convert-ghg-farm: download-ghg-farm
 	python raster_folder_to_h3_table.py $(WORKDIR_GHG_FARM) h3_grid_ghg_farm_global material_indicator GHG_FARM 2017 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+
+###############################################
+# GHG FARM (GHG_FARM) - livestock commodities #
+###############################################
+
+download-ghg-farm-livestock:
+	mkdir -p $(WORKDIR_GHG_FARM)/livestock
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/ghg_emissions_livestock/ $(WORKDIR_GHG_FARM)/livestock
+	cd $(WORKDIR_GHG_FARM)/livestock && sha256sum --check ../../../$(CHECKSUMS_PATH)/ghg_from_farm_emissions_livesock
+
+convert-ghg-farm-livestock: download-ghg-farm-livestock
+	python raster_folder_to_h3_table.py $(WORKDIR_GHG_FARM)/livestock h3_grid_ghg_farm_livestock_global material_indicator GHG_FARM 2017 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+
 
 ###################
 # Contextual data #

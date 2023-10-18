@@ -15,7 +15,7 @@ extract-countries:
 
 rasterize-geometries: extract-countries
 	mkdir -p $(data_dir)/default_commodity
-	gdal_rasterize  -a_nodata 0 -ot Int16 -tr 0.083333 0.083333 -te -180.0 -90 180 90.0 \
+	gdal_rasterize -ot Byte -tr 0.083333 0.083333 -te -180.0 -90 180 90.0 \
     -l gadm_level1 -burn 1 -of GTiff $(data_dir)/countries/gadm_level1.shp $(data_dir)/default_commodity/DEFAULT_commodity.tif
 
 upload-data: rasterize-geometries

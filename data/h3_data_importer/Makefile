@@ -160,8 +160,8 @@ download-livestock-processed:
 	cd $(WORKDIR_LIVESTOCK_PROCESSED)/harvest && sha256sum --check ../../../$(CHECKSUMS_PATH)/livestock_processed_ha
 
 convert-livestock-processed: download-livestock-processed
-	python raster_folder_to_h3_table.py $(WORKDIR_LIVESTOCK_PROCESSED)/production h3_grid_livestock_processed_global_prod production faostats 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
-	python raster_folder_to_h3_table.py $(WORKDIR_LIVESTOCK_PROCESSED)/harvest h3_grid_livestock_processed_global_ha harvest_area faostats 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_LIVESTOCK_PROCESSED)/production h3_grid_livestock_processed_global_prod production spam 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_LIVESTOCK_PROCESSED)/harvest h3_grid_livestock_processed_global_ha harvest_area spam 2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 #####################################
 # Deforestation footprint (DF_SLUC) #

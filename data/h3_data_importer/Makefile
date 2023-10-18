@@ -22,6 +22,7 @@ WORKDIR_BIODIVERSITY=data/biodiversity
 WORKDIR_GHG_FARM=data/ghg_farm
 WORKDIR_LIVESTOCK_PROCESSED=data/livestock_processed
 WORKDIR_LIVESTOCK_GHG=data/livestock_ghg
+WORKDIR_DEFAULT_COMMODITY=data/default_commodity
 
 
 CHECKSUMS_PATH=data_checksums
@@ -40,7 +41,7 @@ all:
 	make clean
 	make crop indicators
 
-crop: convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock convert-livestock-processed
+crop: convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock convert-livestock-processed convert-default-commodity
 
 indicators: convert-aqueduct convert-deforestation convert-forestGHG convert-naturalCropConversion convert-nutrientLoadReduction convert-biodiversity convert-ghg-farm convert-ghg-farm-livestock
 
@@ -296,6 +297,21 @@ convert-hdi-contextual: download-hdi-contextual
 
 convert-blue-water-contextual:
 	python cog_to_contextual_layer_linker.py --cog bluewater.tif --name bluewater_footprint --category "Environmental datasets" --tiler_param colormap_name=viridis --tp rescale=-18,832
+
+#####################
+# Default commodity #
+#####################
+
+download-default-commodity:
+	mkdir -p $(WORKDIR_DEFAULT_COMMODITY)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/default_commodity/ $(WORKDIR_DEFAULT_COMMODITY)
+	cd $(WORKDIR_DEFAULT_COMMODITY) && sha256sum --check ../../$(CHECKSUMS_PATH)/default_commodity
+
+# as it's a default commodity with value one for equal distribution, we can add it as production and harvest dataset
+convert-default-commodity: download-default-commodity
+	python raster_folder_to_h3_table.py $(WORKDIR_DEFAULT_COMMODITY) h3_grid_default_commodity_global production spam  2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_DEFAULT_COMMODITY) h3_grid_default_commodity_global harvest_area spam  2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+
 
 #########
 # Utils #

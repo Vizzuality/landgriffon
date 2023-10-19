@@ -11,6 +11,7 @@ import {
 } from '@floating-ui/react';
 import { Popover, Transition } from '@headlessui/react';
 import { useRouter } from 'next/router';
+import { pickBy } from 'lodash-es';
 
 import Materials from '../materials/component';
 import OriginRegions from '../origin-regions/component';
@@ -63,7 +64,7 @@ const DEFAULT_QUERY_OPTIONS = {
 
 const MoreFilters = () => {
   const { query } = useRouter();
-  const { scenarioId, compareScenarioId } = query;
+  const { scenarioId, compareScenarioId, ...restQueries } = query;
 
   const dispatch = useAppDispatch();
   const { materials, origins, t1Suppliers, producers, locationTypes } =
@@ -272,6 +273,43 @@ const MoreFilters = () => {
     handleScenarioChange();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scenarioId]);
+
+  useEffect(() => {
+    const options = [
+      materialOptions,
+      originOptions,
+      t1SupplierOptions,
+      producerOptions,
+      locationTypeOptions,
+    ];
+    // Execute only when all options are loaded and there is no filters selected
+    if (
+      options.some((option) => !option.length) ||
+      Object.values(moreFilters).some((value) => value.length)
+    ) {
+      return;
+    }
+
+    const { materials, origins, t1Suppliers, producers, locationTypes } = restQueries;
+
+    const findOptions = (options: { label: string }[], filterQuery: string | string[]) =>
+      options.filter((o) => {
+        return (Array.isArray(filterQuery) ? filterQuery : [filterQuery]).includes(o.label);
+      });
+
+    const initialFilters = {
+      materials: findOptions(materialOptions, materials),
+      origins: findOptions(originOptions, origins),
+      t1Suppliers: findOptions(t1SupplierOptions, t1Suppliers),
+      producers: findOptions(producerOptions, producers),
+      locationTypes: findOptions(locationTypeOptions, locationTypes),
+    };
+
+    const filtersToSave = pickBy(initialFilters, (value) => value.length);
+
+    dispatch(setFilters(filtersToSave));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locationTypeOptions, materialOptions, originOptions, producerOptions, t1SupplierOptions]);
 
   return (
     <Popover className="relative">

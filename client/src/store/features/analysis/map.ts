@@ -1,8 +1,18 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+import type { ViewState } from 'react-map-gl';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from 'store';
 import type { Layer } from 'types';
+
+export const DEFAULT_MAP_STATE: Partial<ViewState> = {
+  longitude: 0,
+  latitude: 0,
+  zoom: 2,
+  pitch: 0,
+  bearing: 0,
+  padding: null,
+};
 
 const DEFAULT_LAYER_ATTRIBUTES = {
   order: 0,
@@ -54,6 +64,7 @@ export type AnalysisMapState = {
   };
   // Deck.gl layer props by layer id
   layerDeckGLProps: Record<Layer['id'], Partial<DeckGLConstructorProps>>;
+  mapState: Partial<ViewState>;
 };
 
 // Define the initial state using that type
@@ -79,12 +90,17 @@ export const initialState: AnalysisMapState = {
     y: 0,
   },
   layerDeckGLProps: {},
+  mapState: DEFAULT_MAP_STATE,
 };
 
 export const analysisMapSlice = createSlice({
   name: 'analysisMap',
   initialState,
   reducers: {
+    setMapState: (state, action: PayloadAction<AnalysisMapState['mapState']>) => ({
+      ...state,
+      mapState: action.payload,
+    }),
     setLayer: (
       state,
       action: PayloadAction<{
@@ -180,8 +196,14 @@ export const analysisMapSlice = createSlice({
   },
 });
 
-export const { setLayer, setLayerDeckGLProps, setTooltipData, setTooltipPosition, setLayerOrder } =
-  analysisMapSlice.actions;
+export const {
+  setLayer,
+  setLayerDeckGLProps,
+  setTooltipData,
+  setTooltipPosition,
+  setLayerOrder,
+  setMapState,
+} = analysisMapSlice.actions;
 
 export const analysisMap = (state: RootState): AnalysisMapState => state['analysis/map'];
 

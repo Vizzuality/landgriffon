@@ -1,10 +1,11 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { XCircleIcon } from '@heroicons/react/solid';
 
 import { scaleByLegendType } from 'hooks/h3-data/utils';
 import LayerManager from 'components/map/layer-manager';
-import { useAppSelector } from 'store/hooks';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisMap } from 'store/features/analysis';
+import { DEFAULT_MAP_STATE, setMapState } from 'store/features/analysis/map';
 import { analysisUI } from 'store/features/analysis/ui';
 import { useImpactLayer } from 'hooks/layers/impact';
 import Legend from 'containers/analysis-visualization/analysis-legend';
@@ -13,7 +14,7 @@ import ZoomControl from 'components/map/controls/zoom';
 import PopUp from 'components/map/popup';
 import BasemapControl from 'components/map/controls/basemap';
 import { NUMBER_FORMAT } from 'utils/number-format';
-import Map, { INITIAL_VIEW_STATE } from 'components/map';
+import Map from 'components/map';
 import { getLayerConfig } from 'components/map/layers/utils';
 
 import type { LayerConstructor } from 'components/map/layers/utils';
@@ -22,6 +23,7 @@ import type { ViewState } from 'react-map-gl';
 import type { MapStyle } from 'components/map/types';
 import type { BasemapValue } from 'components/map/controls/basemap/types';
 import type { Layer, Legend as LegendType } from 'types';
+import { useRouter } from 'next/router';
 
 const getLegendScale = (legendInfo: LegendType) => {
   if (legendInfo?.type === 'range' || legendInfo?.type === 'category') {
@@ -38,12 +40,17 @@ const getLegendScale = (legendInfo: LegendType) => {
 };
 
 const AnalysisMap = () => {
-  const { layers } = useAppSelector(analysisMap);
+  const { query } = useRouter();
+  const { layers, mapState } = useAppSelector(analysisMap);
   const { isSidebarCollapsed } = useAppSelector(analysisUI);
+  const dispatch = useAppDispatch();
 
   const [mapStyle, setMapStyle] = useState<MapStyle>('terrain');
-  const [viewState, setViewState] = useState<Partial<ViewState>>(INITIAL_VIEW_STATE);
-  const handleViewState = useCallback((viewState: ViewState) => setViewState(viewState), []);
+
+  const handleViewState = useCallback((viewState: ViewState) => {
+    dispatch(setMapState(viewState));
+  }, []);
+
   const [tooltipData, setTooltipData] = useState(null);
 
   // Pre-Calculating legend scales
@@ -97,13 +104,27 @@ const AnalysisMap = () => {
       .map((layer) => ({ id: layer.id, layer: getLayerConfig(layers[layer.id]), props: layer }));
   }, [layers]);
 
+  useEffect(() => {
+    const { longitude, latitude, zoom } = query;
+    if (longitude && latitude && zoom) {
+      dispatch(
+        setMapState({
+          ...DEFAULT_MAP_STATE,
+          longitude: Number(longitude),
+          latitude: Number(latitude),
+          zoom: Number(zoom),
+        }),
+      );
+    }
+  }, []);
+
   return (
     <div className="absolute top-0 left-0 w-full h-full overflow-hidden" data-testid="analysis-map">
       {isFetching && <PageLoading />}
       <Map
         className="w-screen h-full"
         mapStyle={mapStyle}
-        viewState={viewState}
+        viewState={mapState}
         onMapViewStateChange={handleViewState}
         // style={{ width}}
         sidebarCollapsed={isSidebarCollapsed}

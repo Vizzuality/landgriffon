@@ -1,6 +1,8 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import router from 'next/router';
-import { cloneDeep, isObject } from 'lodash-es';
+import { cloneDeep, isObject, mapValues, pickBy, omit } from 'lodash-es';
+
+import { formatParam, routerReplace, routerReplaceMany } from './utils';
 
 import ui from 'store/features/ui';
 import analysisUI, {
@@ -71,25 +73,15 @@ const QUERY_PARAMS_MAP: QueryParams = {
   },
 };
 
-const formatParam = (param: string): string | boolean | number => {
-  if (['true', 'false'].includes(param)) return param === 'true';
-  if (!Number.isNaN(Number(param))) return Number(param);
-  if (checkValidJSON(param)) {
-    const obj = JSON.parse(param);
-    if (typeof obj === 'string') return param;
-    return obj;
-  }
-  return param;
-};
-
-const checkValidJSON = (json: string) => {
-  try {
-    isObject(JSON.parse(json));
-    return true;
-  } catch (e) {
-    return false;
-  }
-};
+const FILTER_QUERY_PARAMS = [
+  'indicator',
+  'startYear',
+  'materials',
+  'origins',
+  't1Suppliers',
+  'producers',
+  'locationTypes',
+];
 
 const getPreloadedState = (
   query: Record<string, string>,
@@ -119,31 +111,62 @@ const querySyncMiddleware: Middleware = () => (next) => (action) => {
   const { query, isReady } = router;
   if (!isReady) return next(action);
 
+  // FILTERS
+  if (action.type.includes('analysisFilters')) {
+    if (action.type === 'analysisFilters/setFilter') {
+      const { id, value } = action.payload;
+      if (FILTER_QUERY_PARAMS.includes(id)) {
+        const { [id]: currentQueryValue, ...restQueryParams } = query;
+        const queryValue = isObject(value) ? (value as any).value : String(value);
+        if (currentQueryValue !== value) {
+          routerReplace({
+            queryName: id,
+            queryValue: queryValue,
+            restQueries: restQueryParams,
+          });
+        }
+      }
+    }
+    // ACTIONS THAT SET MULTIPLE FILTERS
+    else if (
+      action.type === 'analysisFilters/resetFilter' ||
+      action.type === 'analysisFilters/setFilters'
+    ) {
+      const otherParams = omit(query, FILTER_QUERY_PARAMS);
+      let filterParams = {};
+      if (action.type === 'analysisFilters/setFilters') {
+        const payloadQueries = pickBy(action.payload, (value, key) =>
+          FILTER_QUERY_PARAMS.includes(key) && Array.isArray(value) ? value.length : !!value,
+        );
+        filterParams = mapValues(payloadQueries, (value) =>
+          Array.isArray(value) ? value.map((v) => v.label) : value,
+        );
+      }
+      routerReplaceMany(filterParams, otherParams);
+    }
+    return next(action);
+  }
+
+  if (action.type === 'analysisMap/setMapState') {
+    const otherParams = omit(query, Object.keys(['latitude', 'longitude', 'zoom']));
+    const { latitude, longitude, zoom } = action.payload;
+    const newParams = pickBy({ latitude, longitude, zoom }, (value) => !!value);
+    routerReplaceMany(newParams, otherParams);
+  }
+
+  // OTHER PARAMS
   Object.entries(QUERY_PARAMS_MAP).forEach(async ([param, queryState]) => {
     if (action.type === queryState.action.type) {
       const { [param]: currentQueryValue, ...queryWithoutParam } = query;
-      const currentStateValue = action.payload;
 
+      const currentStateValue = action.payload;
       // Only update when URL the param value is different
       if (currentQueryValue !== currentStateValue) {
-        await router.replace(
-          {
-            query: {
-              ...queryWithoutParam,
-              ...(!!currentStateValue
-                ? {
-                    [param]: ['string', 'number'].includes(typeof currentStateValue)
-                      ? currentStateValue
-                      : checkValidJSON(JSON.stringify(currentStateValue))
-                      ? JSON.stringify(currentStateValue)
-                      : currentStateValue,
-                  }
-                : {}),
-            },
-          },
-          null,
-          { shallow: true },
-        );
+        await routerReplace({
+          queryName: param,
+          queryValue: currentStateValue,
+          restQueries: queryWithoutParam,
+        });
       }
     }
   });

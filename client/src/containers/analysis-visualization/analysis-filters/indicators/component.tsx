@@ -1,9 +1,9 @@
-import { useCallback, useMemo, useEffect } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useRouter } from 'next/router';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisUI } from 'store/features/analysis/ui';
-import { analysisFilters, setFilter } from 'store/features/analysis/filters';
+import { setFilter } from 'store/features/analysis/filters';
 import { useIndicators } from 'hooks/indicators';
 import Select from 'components/forms/select';
 
@@ -17,10 +17,9 @@ const ALL = {
 };
 
 const IndicatorsFilter = () => {
-  const { query = {}, replace } = useRouter();
+  const { query = {} } = useRouter();
   const { indicator } = query;
   const { visualizationMode } = useAppSelector(analysisUI);
-  const filters = useAppSelector(analysisFilters);
   const dispatch = useAppDispatch();
 
   const {
@@ -50,25 +49,16 @@ const IndicatorsFilter = () => {
     return selected || options?.[0];
   }, [indicator, options]);
 
-  // Update the filter when the indicator changes
-  useEffect(() => {
-    if (current && filters.indicator?.value !== current.value) {
+  const handleChange: SelectProps['onChange'] = useCallback(
+    (selected: Option<string>) => {
       dispatch(
         setFilter({
           id: 'indicator',
-          value: current,
+          value: selected.value,
         }),
       );
-    }
-  }, [current, dispatch, filters.indicator?.value]);
-
-  const handleChange: SelectProps['onChange'] = useCallback(
-    (selected: Option<string>) => {
-      replace({ query: { ...query, indicator: selected?.value } }, undefined, {
-        shallow: true,
-      });
     },
-    [query, replace],
+    [dispatch],
   );
 
   return (

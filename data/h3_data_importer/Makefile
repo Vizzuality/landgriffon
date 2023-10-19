@@ -309,8 +309,8 @@ download-default-commodity:
 
 # as it's a default commodity with value one for equal distribution, we can add it as production and harvest dataset
 convert-default-commodity: download-default-commodity
-	python raster_folder_to_h3_table.py $(WORKDIR_DEFAULT_COMMODITY) h3_grid_default_commodity_global production spam  2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
-	python raster_folder_to_h3_table.py $(WORKDIR_DEFAULT_COMMODITY) h3_grid_default_commodity_global harvest_area spam  2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_DEFAULT_COMMODITY) h3_grid_default_commodity_global_p production spam  2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_DEFAULT_COMMODITY) h3_grid_default_commodity_global_ha harvest_area spam  2021 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 
 #########

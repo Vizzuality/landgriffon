@@ -41,6 +41,7 @@ preprocess_faostats_data_harvest:
 		$(data_dir)/faostats_processed/harvest/FAOSTAT_data_total_milk_iso3_2021_ha.shp harvest;
 
 # aggregate the pasture data to get the totals that we will need to the total milk calculation
+# the -1.7e+308 is the nodata value for the pasture data. We need to set it to 0 for the calculation.
 calculate_aggregation:
 	gdal_calc.py --NoDataValue=0 --quiet --calc "(A!=-1.7e+308)*A+(B!=-1.7e+308)*B+(C!=-1.7e+308)*C" --format GTiff --type Float64 \
 		-A $(data_dir)/pasture/6_Ct_2010_Aw.tif \
@@ -69,6 +70,7 @@ rasterize_and_calculate_commodities_production:
 		-B $(data_dir)/pasture/6_Tm_2010_Aw.tif \
 		--outfile $(data_dir)/processed_commodities/production/GLO_2021_TotalRawMilk_t.tif;
 
+# 3.40282e+38 is the nodata value for the total milk data. We need to set it to 0 for the calculation.
 rasterize_and_calculate_commodities_harvest:
 	mkdir -p $(data_dir)/rasterized/harvest
 	mkdir -p $(data_dir)/processed_commodities/harvest

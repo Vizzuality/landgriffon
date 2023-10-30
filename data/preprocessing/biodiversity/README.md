@@ -1,7 +1,7 @@
 # Biodiversity Indicators
-## Forest Landscape Integrity Loss Processing
+## Biodiversity Datasets Processing
 
-This folder contains a set of Makefile targets to download, process and upload the Biodiversity - Forest Landscape Integrity Loss data. The data is downloaded from Google Cloud Storage (GCS), resampled and then uploaded to an Amazon Web Serice (AWS) S3 bucket.
+This folder contains a set of Makefile targets to download, process and upload the Biodiversity - Forest Landscape Integrity Loss and Biodivertisy Integrity data. The data is downloaded from Google Cloud Storage (GCS), resampled and then uploaded to an Amazon Web Serice (AWS) S3 bucket.
 
 
 ## Prerequisites
@@ -24,8 +24,11 @@ This target downloads the forest landscape integrity loss data from GCS and stor
 make download_forest_landscape_integrity_loss
 
 ```
+```
+make download_bii_loss
+```
 
-### 2. Resample dorest landscape integrity loss
+### 2. Resample biodiversity data
 
 This target resamples the downloaded data to a different resolution using Rasterio. It takes the input file from the data directory, performs resampling, and overwrites the file in the data directory with the resampled version
 
@@ -33,12 +36,20 @@ This target resamples the downloaded data to a different resolution using Raster
 make resample_forest_landscape_integrity_loss
 ```
 
+```
+make resample_bii_loss
+```
+
 ### 3. Upload results
 
-This target uploads the processed forest landscape integrity loss data to an AWS S3 bucket. Make sure to set the `AWS_S3_BUCKET_URL` environment variable to the destination S3 bucket URL.
+This target uploads the processed forest landscape integrity loss and biodiversity integrity data to an AWS S3 bucket. Make sure to set the `AWS_S3_BUCKET_URL` environment variable to the destination S3 bucket URL.
 
 ```
 make upload_results
+```
+
+```
+upload_bii_loss
 ```
 
 ### 4. Write checksums
@@ -47,6 +58,9 @@ This target generates a SHA256 checksum for the processed data and writes it to 
 
 ```
 make write_checksum
+```
+```
+make write_bii_loss_checksum
 ```
 
 `Note`: Make sure you have the necessary permissions and access to the data sources and AWS resources mentioned in this README before running the pipeline.

@@ -12,8 +12,8 @@ all: download-deforestation-and-carbon resample_deforestation resample_carbon up
 download-deforestation-and-carbon:
 	mkdir -p $(data_dir)
 	gsutil -m cp \
-		"gs://landgriffon-gee-bucket/landscape_indicators_20230821/deforest_carbon_by_human_lu_50km_1000m.tif" \
-		"gs://landgriffon-gee-bucket/landscape_indicators_20230821/deforest_by_human_lu_50km_1000m.tif" \
+		"gs://landgriffon-gee-bucket/landscape_indicators_20231023/deforest_by_human_lu_50km_1000m.tif" \
+		"gs://landgriffon-gee-bucket/landscape_indicators_20231023/deforest_carbon_by_human_lu_50km_1000m.tif" \
 		$(data_dir)
 
 resample_deforestation:

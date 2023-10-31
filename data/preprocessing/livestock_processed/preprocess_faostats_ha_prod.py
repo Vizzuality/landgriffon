@@ -17,6 +17,7 @@ def get_country_geometry():
     This geometry is used to spatalised the faostat data
     """
     # Connect to the database
+
     conn = psycopg2.connect(
         host=os.getenv("API_POSTGRES_HOST"),
         port=os.getenv("API_POSTGRES_PORT"),

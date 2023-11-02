@@ -11,30 +11,6 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("preprocessing_processed_livestock_stock_faostats_file")
 
 
-def clean_data(df, columns):
-    """
-    Clean the input dataframe by keeping only the specified columns.
-    """
-    df_clean = df[columns]
-    return df_clean
-
-
-def rename_columns(df, column_map):
-    """
-    Rename the columns of the input dataframe using the specified column map.
-    """
-    df_renamed = df.rename(columns=column_map)
-    return df_renamed
-
-
-def merge_data(df1, df2, on):
-    """
-    Merge two dataframes on the specified column(s).
-    """
-    df_merged = df1.merge(df2, on=on)
-    return df_merged
-
-
 def calculate_percentage(df, numerator_col, denominator_col, output_col):
     """
     Calculate the percentage of the numerator column from the total of the numerator and denominator columns.
@@ -70,14 +46,6 @@ def get_country_geometry():
     return countries_df
 
 
-def merge_with_geometry(df, geometry_df, on):
-    """
-    Merge the input dataframe with the country geometry dataframe on the specified column(s).
-    """
-    df_merged = df.merge(geometry_df, on=on)
-    return df_merged
-
-
 def main():
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Process livestock preprocessed faostats data.")
@@ -97,15 +65,17 @@ def main():
     # Open the files and clean the data
     df_main = pd.read_csv(args.input_file_main)
     df_secondary = pd.read_csv(args.input_file_secondary)
-    df_main_clean = clean_data(df_main, ["Area Code (ISO3)", "Value", "Unit"])
-    df_secondary_clean = clean_data(df_secondary, ["Area Code (ISO3)", "Value", "Unit"])
+
+    # Clean the data by just keeping the necesary columns
+    df_main_clean = df_main["Area Code (ISO3)", "Value", "Unit"]
+    df_secondary_clean = df_secondary["Area Code (ISO3)", "Value", "Unit"]
 
     # Rename the columns
-    df_main_renamed = rename_columns(df_main_clean, {"Area Code (ISO3)": "isoA3", "Value": "main_value"})
-    df_secondary_renamed = rename_columns(df_secondary_clean, {"Area Code (ISO3)": "isoA3", "Value": "secondary_value"})
+    df_main_renamed = df_main_clean.rename(columns={"Area Code (ISO3)": "isoA3", "Value": "main_value"})
+    df_secondary_renamed = df_secondary_clean.rename(columns={"Area Code (ISO3)": "isoA3", "Value": "secondary_value"})
 
     # Merge the dataframes
-    df_merged = merge_data(df_main_renamed, df_secondary_renamed, "isoA3")
+    df_merged = df_main_renamed.merge(df_secondary_renamed, on="isoA3")
 
     # Calculate the percentage
     df_merged = calculate_percentage(df_merged, "main_value", "secondary_value", "percentage")
@@ -113,8 +83,8 @@ def main():
     # Get the country geometry
     countries_df = get_country_geometry()
 
-    # Merge the dataframes
-    df_merged = merge_with_geometry(df_merged, countries_df, "isoA3")
+    # Merge the percentage dataframe with the country geometry dataframe
+    df_merged = df_merged.merge(countries_df, on="isoA3")
     # Set geoeometry and crs
     df_merged = df_merged.set_geometry("theGeom")
     df_merged = df_merged.set_crs("EPSG:4326")

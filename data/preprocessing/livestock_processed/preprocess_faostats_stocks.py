@@ -1,6 +1,6 @@
 import os
 import logging
-import argparse
+import click
 
 import pandas as pd
 import geopandas as gpd
@@ -46,29 +46,22 @@ def get_country_geometry():
     return countries_df
 
 
-def main():
-    # Parse command-line arguments
-    parser = argparse.ArgumentParser(description="Process livestock preprocessed faostats data.")
-    parser.add_argument(
-        "input_file_main",
-        type=str,
-        help="Path to the input file containing vector files of the main value to preprocess",
-    )
-    parser.add_argument(
-        "input_file_secondary",
-        type=str,
-        help="Path to the input file containing vector files of the secondary value to preproces",
-    )
-    parser.add_argument("output_file", type=str, help="Path to the output file to save processed data")
-    args = parser.parse_args()
+@click.command()
+@click.argument("input_file_main", type=click.Path(exists=True, path_type=str))
+@click.argument("input_file_secondary", type=click.Path(exists=True, path_type=str))
+@click.argument("output_file", type=click.Path(exists=True, path_type=str))
+def main(input_file_main, input_file_secondary, output_file):
+    """
+    Preprocess livestock data from faostats.
+    """
 
     # Open the files and clean the data
-    df_main = pd.read_csv(args.input_file_main)
-    df_secondary = pd.read_csv(args.input_file_secondary)
+    df_main = pd.read_csv(input_file_main)
+    df_secondary = pd.read_csv(input_file_secondary)
 
     # Clean the data by just keeping the necesary columns
-    df_main_clean = df_main["Area Code (ISO3)", "Value", "Unit"]
-    df_secondary_clean = df_secondary["Area Code (ISO3)", "Value", "Unit"]
+    df_main_clean = df_main[["Area Code (ISO3)", "Value", "Unit"]]
+    df_secondary_clean = df_secondary[["Area Code (ISO3)", "Value", "Unit"]]
 
     # Rename the columns
     df_main_renamed = df_main_clean.rename(columns={"Area Code (ISO3)": "isoA3", "Value": "main_value"})
@@ -89,7 +82,7 @@ def main():
     df_merged = df_merged.set_geometry("theGeom")
     df_merged = df_merged.set_crs("EPSG:4326")
     # Save the dataframe
-    df_merged.to_file(args.output_file)
+    df_merged.to_file(output_file)
 
 
 if __name__ == "__main__":

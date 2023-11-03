@@ -48,7 +48,7 @@ const Header: React.FC = () => {
         initial={{ y: 0 }}
         animate={{ y: directionY }}
         transition={{ duration: 0.25, bounce: 0 }}
-        className="fixed top-0 left-0 z-20 flex items-center justify-between w-full font-semibold bg-white"
+        className="fixed top-0 left-0 z-50 flex items-center justify-between w-full font-semibold bg-white"
       >
         <div className="px-4 lg:px-12 shrink-0">
           <Link href="/">

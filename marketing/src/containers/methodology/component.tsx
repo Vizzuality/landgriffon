@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 
 import Hero from 'containers/methodology/hero';
-import StayUpToDate from 'containers/methodology/stay-up-to-date';
+import Webinar from 'containers/methodology/webinar';
 import DataProviders from 'containers/methodology/data-providers';
 
 import ContactUs from 'containers/methodology/contact-us';
@@ -34,7 +34,7 @@ const Methodology: React.FC = () => {
     <>
       <ScrollDown theme="light" />
       <Hero />
-      <StayUpToDate />
+      <Webinar />
 
       <Regulations />
       <SourcingModel />

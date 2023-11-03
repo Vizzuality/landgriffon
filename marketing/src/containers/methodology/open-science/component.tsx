@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 const OpenScience: React.FC = () => {
   return (
-    <section className="relative py-12 space-y-12 bg-blue-600 bg-cover md:space-y-64 md:py-36">
+    <section className="relative py-12 space-y-12 bg-blue-600 bg-cover md:space-y-64 md:py-36 overflow-hidden">
       <Wrapper>
         <div className="grid grid-cols-2">
           <div className="space-y-6 text-white md:space-y-10">

@@ -13,7 +13,7 @@ const SLIDES = [
     id: '1',
     content: (
       <div className="w-full w-[944px] h-[446px] border-4 border-white overflow-hidden">
-        <Image src="/images/home/what/screen_1.png" width="936" height="442" alt="Traceability" />
+        <Image src="/images/home/what/screen_1.jpg" width="936" height="442" alt="Traceability" />
       </div>
     ),
     description: (
@@ -29,7 +29,7 @@ const SLIDES = [
     id: '2',
     content: (
       <div className="w-full w-[944px] h-[446px] border-4 border-white overflow-hidden">
-        <Image src="/images/home/what/screen_2.png" width="936" height="442" alt="Confidence" />
+        <Image src="/images/home/what/screen_2.jpg" width="936" height="442" alt="Confidence" />
       </div>
     ),
     description: (
@@ -45,7 +45,7 @@ const SLIDES = [
     id: '3',
     content: (
       <div className="w-full w-[944px] h-[446px] border-4 border-white overflow-hidden">
-        <Image src="/images/home/what/screen_2.png" width="936" height="442" alt="Strategize" />
+        <Image src="/images/home/what/screen_3.jpg" width="936" height="442" alt="Strategize" />
       </div>
     ),
     description: (

@@ -83,11 +83,11 @@ export const Modal: React.FC<ModalProps> = ({
                   }}
                 >
                   {dismissable && (
-                    <div className="relative flex items-center mb-4">
+                    <div className="absolute flex items-center z-50 top-0 right-0">
                       <button
                         type="button"
                         onClick={onDismiss}
-                        className="absolute flex items-center px-4 py-4 text-sm text-gray-300 rounded-md -right-4 -top-4 focus:text-black hover:text-black"
+                        className="flex items-center px-4 py-4 text-sm text-gray-300 rounded-md"
                       >
                         <XIcon className="w-6 h-6 text-gray-500" />
                       </button>

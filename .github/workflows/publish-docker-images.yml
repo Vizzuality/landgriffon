@@ -14,6 +14,7 @@ on:
       - 'gcp'
       - 'tetrapack'
       - 'dev'
+      - 'hide_env_names'
     paths:
       - 'api/**'
       - 'client/**'
@@ -56,11 +57,30 @@ jobs:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           checkName: Client Tests
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      env_name_value: ${{ steps.set_env_name.outputs.env_name_value }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: rlespinasse/github-slug-action@v3.x
+      - name: Set ENV_NAME Value
+        id: set_env_name
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          if [[ "$BRANCH_NAME" == "main" || "$BRANCH_NAME" == "dev" || "$BRANCH_NAME" == "staging" || "$BRANCH_NAME" == "test" ]]; then
+            ENV_NAME_VALUE=$BRANCH_NAME
+          else
+            ENV_NAME_VALUE="${GITHUB_REF_SLUG^^}"
+          fi
+          echo "::set-output name=env_name_value::$ENV_NAME_VALUE"
 
   push_api_to_registry:
     name: Push API Docker image to Docker Hub
     runs-on: ubuntu-20.04
-    needs: wait_for_tests
+    needs: [ wait_for_tests, setup ]
+    env:
+      ENV_NAME: ${{ needs.setup.outputs.env_name_value }}
 
     permissions:
       contents: 'read'
@@ -92,175 +112,174 @@ jobs:
 
       - name: Authorize Docker push
         run: gcloud auth configure-docker europe-west1-docker.pkg.dev
-
-      - name: Extract branch name
-        shell: bash
-        run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
-        id: extract_branch
 
       - name: Build API Docker image
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: api
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+          IMAGE_TAG: ${{ secrets[env.ENV_NAME] }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/api/main:${{ github.sha }} \
-          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/api/main:latest \
-          api
+          printenv | grep IMAGE_TAG
+      #        run: |
+      #          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+      #          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/api/main:${{ github.sha }} \
+      #          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/api/main:latest \
+      #          api
 
       - name: Push API Docker image to AWS and GCP
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: api
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+          IMAGE_TAG: ${{ secrets[env.ENV_NAME] }}
         run: |
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/api/main:${{ github.sha }}
-          docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/api/main:latest
+          printenv | grep IMAGE_TAG
+  #        run: |
+  #          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+  #          docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/api/main:${{ github.sha }}
+  #          docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/api/main:latest
 
-  push_client_to_registry:
-    name: Push Client Docker image to Docker Hub
-    runs-on: ubuntu-20.04
-    needs: wait_for_tests
-
-    permissions:
-      contents: 'read'
-      id-token: 'write'
-
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v3
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Get ECR Registry
-        id: ecr-login
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: 'Authenticate to Google Cloud'
-        uses: google-github-actions/auth@v1
-        with:
-          workload_identity_provider: 'projects/168301767246/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
-          service_account: 'github-actions@landgriffon.iam.gserviceaccount.com'
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-
-      - name: Authorize Docker push
-        run: gcloud auth configure-docker europe-west1-docker.pkg.dev
-
-      - name: Extract branch name
-        shell: bash
-        run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
-        id: extract_branch
-
-      - name: Build Client Docker image
-        env:
-          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          ECR_REPOSITORY: client
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
-        run: |
-          docker build \
-          --build-arg NEXTAUTH_URL=${{ secrets[format('NEXTAUTH_URL_{0}', steps.extract_branch.outputs.branch-upper )] }} \
-          --build-arg NEXTAUTH_SECRET=${{ secrets[format('NEXTAUTH_SECRET_{0}', steps.extract_branch.outputs.branch-upper )] }} \
-          --build-arg NEXT_PUBLIC_MAPBOX_API_TOKEN=${{ secrets.NEXT_PUBLIC_MAPBOX_API_TOKEN }} \
-          --build-arg NEXT_PUBLIC_API_URL=${{ secrets[format('NEXT_PUBLIC_API_URL_{0}', steps.extract_branch.outputs.branch-upper )] }} \
-          --build-arg CYPRESS_USERNAME=${{ secrets.CYPRESS_USERNAME }} \
-          --build-arg CYPRESS_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
-          -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG  \
-          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/client/main:${{ github.sha }} \
-          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/client/main:latest \
-          client
-
-      - name: Push Client Docker image to AWS and GCP
-        env:
-          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          ECR_REPOSITORY: client
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
-        run: |
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/client/main:${{ github.sha }}
-          docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/client/main:latest
-
-
-  push_data_import_to_registry:
-    name: Push Data Import Docker image to Docker Hub
-    runs-on: ubuntu-20.04
-    needs: wait_for_tests
-
-    permissions:
-      contents: 'read'
-      id-token: 'write'
-
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v3
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Get ECR Registry
-        id: ecr-login
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: 'Authenticate to Google Cloud'
-        uses: google-github-actions/auth@v1
-        with:
-          workload_identity_provider: 'projects/168301767246/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
-          service_account: 'github-actions@landgriffon.iam.gserviceaccount.com'
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-
-      - name: Authorize Docker push
-        run: gcloud auth configure-docker europe-west1-docker.pkg.dev
-
-      - name: Extract branch name
-        shell: bash
-        run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
-        id: extract_branch
-
-      - name: Build Data Import Docker image
-        env:
-          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          ECR_REPOSITORY: data_import
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
-        run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG  \
-          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/data-import/main:${{ github.sha }} \
-          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/data-import/main:latest \
-          data
-
-      - name: Push Data Import Docker image to AWS and GCP
-        env:
-          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          ECR_REPOSITORY: data_import
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
-        run: |
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/data-import/main:${{ github.sha }}
-          docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/data-import/main:latest
+  #  push_client_to_registry:
+  #    name: Push Client Docker image to Docker Hub
+  #    runs-on: ubuntu-20.04
+  #    needs: wait_for_tests
+  #
+  #    permissions:
+  #      contents: 'read'
+  #      id-token: 'write'
+  #
+  #    steps:
+  #      - name: Check out the repo
+  #        uses: actions/checkout@v3
+  #
+  #      - name: Configure AWS credentials
+  #        uses: aws-actions/configure-aws-credentials@v1
+  #        with:
+  #          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #          aws-region: ${{ secrets.AWS_REGION }}
+  #
+  #      - name: Get ECR Registry
+  #        id: ecr-login
+  #        uses: aws-actions/amazon-ecr-login@v1
+  #
+  #      - name: 'Authenticate to Google Cloud'
+  #        uses: google-github-actions/auth@v1
+  #        with:
+  #          workload_identity_provider: 'projects/168301767246/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
+  #          service_account: 'github-actions@landgriffon.iam.gserviceaccount.com'
+  #
+  #      - name: Set up Cloud SDK
+  #        uses: google-github-actions/setup-gcloud@v1
+  #
+  #      - name: Authorize Docker push
+  #        run: gcloud auth configure-docker europe-west1-docker.pkg.dev
+  #
+  #      - name: Extract branch name
+  #        shell: bash
+  #        run: |
+  #          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+  #          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+  #        id: extract_branch
+  #
+  #      - name: Build Client Docker image
+  #        env:
+  #          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+  #          ECR_REPOSITORY: client
+  #          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+  #        run: |
+  #          docker build \
+  #          --build-arg NEXTAUTH_URL=${{ secrets[format('NEXTAUTH_URL_{0}', steps.extract_branch.outputs.branch-upper )] }} \
+  #          --build-arg NEXTAUTH_SECRET=${{ secrets[format('NEXTAUTH_SECRET_{0}', steps.extract_branch.outputs.branch-upper )] }} \
+  #          --build-arg NEXT_PUBLIC_MAPBOX_API_TOKEN=${{ secrets.NEXT_PUBLIC_MAPBOX_API_TOKEN }} \
+  #          --build-arg NEXT_PUBLIC_API_URL=${{ secrets[format('NEXT_PUBLIC_API_URL_{0}', steps.extract_branch.outputs.branch-upper )] }} \
+  #          --build-arg CYPRESS_USERNAME=${{ secrets.CYPRESS_USERNAME }} \
+  #          --build-arg CYPRESS_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
+  #          -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG  \
+  #          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/client/main:${{ github.sha }} \
+  #          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/client/main:latest \
+  #          client
+  #
+  #      - name: Push Client Docker image to AWS and GCP
+  #        env:
+  #          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+  #          ECR_REPOSITORY: client
+  #          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+  #        run: |
+  #          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+  #          docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/client/main:${{ github.sha }}
+  #          docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/client/main:latest
+  #
+  #
+  #  push_data_import_to_registry:
+  #    name: Push Data Import Docker image to Docker Hub
+  #    runs-on: ubuntu-20.04
+  #    needs: wait_for_tests
+  #
+  #    permissions:
+  #      contents: 'read'
+  #      id-token: 'write'
+  #
+  #    steps:
+  #      - name: Check out the repo
+  #        uses: actions/checkout@v3
+  #
+  #      - name: Configure AWS credentials
+  #        uses: aws-actions/configure-aws-credentials@v1
+  #        with:
+  #          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #          aws-region: ${{ secrets.AWS_REGION }}
+  #
+  #      - name: Get ECR Registry
+  #        id: ecr-login
+  #        uses: aws-actions/amazon-ecr-login@v1
+  #
+  #      - name: 'Authenticate to Google Cloud'
+  #        uses: google-github-actions/auth@v1
+  #        with:
+  #          workload_identity_provider: 'projects/168301767246/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
+  #          service_account: 'github-actions@landgriffon.iam.gserviceaccount.com'
+  #
+  #      - name: Set up Cloud SDK
+  #        uses: google-github-actions/setup-gcloud@v1
+  #
+  #      - name: Authorize Docker push
+  #        run: gcloud auth configure-docker europe-west1-docker.pkg.dev
+  #
+  #      - name: Extract branch name
+  #        shell: bash
+  #        run: |
+  #          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+  #          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
+  #        id: extract_branch
+  #
+  #      - name: Build Data Import Docker image
+  #        env:
+  #          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+  #          ECR_REPOSITORY: data_import
+  #          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+  #        run: |
+  #          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG  \
+  #          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/data-import/main:${{ github.sha }} \
+  #          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/data-import/main:latest \
+  #          data
+  #
+  #      - name: Push Data Import Docker image to AWS and GCP
+  #        env:
+  #          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+  #          ECR_REPOSITORY: data_import
+  #          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+  #        run: |
+  #          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+  #          docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/data-import/main:${{ github.sha }}
+  #          docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/data-import/main:latest
 
   push_tiler_to_registry:
     name: Push Tiler Docker image to AWS and GCP
     runs-on: ubuntu-20.04
-    needs: wait_for_tests
+    needs: [ wait_for_tests, setup ]
+    env:
+      ENV_NAME: ${{ needs.setup.outputs.env_name_value }}
 
     permissions:
       contents: 'read'
@@ -304,19 +323,23 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: tiler
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+          IMAGE_TAG: ${{ secrets[env.ENV_NAME] }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/tiler/main:${{ github.sha }} \
-          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/tiler/main:latest \
-          tiler
+          printenv | grep IMAGE_TAG
+      #        run: |
+      #          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+      #          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/tiler/main:${{ github.sha }} \
+      #          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/tiler/main:latest \
+      #          tiler
 
       - name: Push Tiler Docker image to AWS and GCP
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: tiler
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+          IMAGE_TAG: ${{ secrets[env.ENV_NAME] }}
         run: |
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/tiler/main:${{ github.sha }}
-          docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/tiler/main:latest
+          printenv | grep IMAGE_TAG
+#        run: |
+#          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+#          docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/tiler/main:${{ github.sha }}
+#          docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/tiler/main:latest

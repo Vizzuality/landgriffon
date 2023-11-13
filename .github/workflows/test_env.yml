@@ -3,7 +3,7 @@ name: Test ENV NAME
 on:
   push:
     branches:
-      - '*'
+      - 'chore/hide_env_names'
     paths:
       - 'api/**'
       - 'client/**'
@@ -38,4 +38,6 @@ jobs:
       - name: Print ENV_NAME
         env:
           ENV_NAME: ${{ needs.setup.outputs.env_name_value }}
-        run: echo "ENV_NAME is $ENV_NAME"
+          ENV_NAME_2: ${{ secrets[env.ENV_NAME] }}
+        run: |
+          printenv | grep ENV_

@@ -1,0 +1,40 @@
+name: Test ENV NAME
+
+on:
+  push:
+    branches:
+      - '*'
+    paths:
+      - 'api/**'
+      - 'client/**'
+      - 'tiler/**'
+      - '.github/**'
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      env_name_value: ${{ steps.set_env_name.outputs.env_name_value }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: rlespinasse/github-slug-action@v3.x
+      - name: Set ENV_NAME Value
+        id: set_env_name
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          if [[ "$BRANCH_NAME" == "main" || "$BRANCH_NAME" == "dev" || "$BRANCH_NAME" == "staging" || "$BRANCH_NAME" == "test" ]]; then
+            ENV_NAME_VALUE=$BRANCH_NAME
+          else
+            ENV_NAME_VALUE="ENV_NAME_${GITHUB_REF_SLUG^^}"
+          fi
+          echo "::set-output name=env_name_value::$ENV_NAME_VALUE"
+
+  print_env_name:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print ENV_NAME
+        env:
+          ENV_NAME: ${{ needs.setup.outputs.env_name_value }}
+        run: echo "ENV_NAME is $ENV_NAME"

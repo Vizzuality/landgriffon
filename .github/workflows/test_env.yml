@@ -3,7 +3,7 @@ name: Test ENV NAME
 on:
   push:
     branches:
-      - '*'
+      - 'hide_env_names'
     paths:
       - 'api/**'
       - 'client/**'
@@ -27,15 +27,18 @@ jobs:
           if [[ "$BRANCH_NAME" == "main" || "$BRANCH_NAME" == "dev" || "$BRANCH_NAME" == "staging" || "$BRANCH_NAME" == "test" ]]; then
             ENV_NAME_VALUE=$BRANCH_NAME
           else
-            ENV_NAME_VALUE="ENV_NAME_${GITHUB_REF_SLUG^^}"
+            ENV_NAME_VALUE="${GITHUB_REF_SLUG^^}"
           fi
           echo "::set-output name=env_name_value::$ENV_NAME_VALUE"
 
   print_env_name:
     needs: setup
     runs-on: ubuntu-latest
+    env:
+      ENV_NAME: ${{ needs.setup.outputs.env_name_value }}
     steps:
       - name: Print ENV_NAME
         env:
-          ENV_NAME: ${{ needs.setup.outputs.env_name_value }}
-        run: echo "ENV_NAME is $ENV_NAME"
+          ENV_NAME_2: ${{ secrets[env.ENV_NAME] }}
+        run: |
+          printenv | grep ENV_

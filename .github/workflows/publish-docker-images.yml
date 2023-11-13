@@ -119,24 +119,22 @@ jobs:
           ECR_REPOSITORY: api
           IMAGE_TAG: ${{ secrets[env.ENV_NAME] }}
         run: |
-          printenv | grep IMAGE_TAG
-      #        run: |
-      #          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-      #          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/api/main:${{ github.sha }} \
-      #          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/api/main:latest \
-      #          api
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/api/main:${{ github.sha }} \
+          -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/api/main:latest \
+          api
 
       - name: Push API Docker image to AWS and GCP
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: api
           IMAGE_TAG: ${{ secrets[env.ENV_NAME] }}
+        #        run: |
+        #          printenv | grep IMAGE_TAG
         run: |
-          printenv | grep IMAGE_TAG
-  #        run: |
-  #          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-  #          docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/api/main:${{ github.sha }}
-  #          docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/api/main:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/api/main:${{ github.sha }}
+          docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/api/main:latest
 
   #  push_client_to_registry:
   #    name: Push Client Docker image to Docker Hub

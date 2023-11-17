@@ -5,7 +5,7 @@ import psycopg
 
 from utils import get_connection_info
 
-log = logging.getLogger(__name__)
+log = logging.getLogger("delete_h3_tables")
 logging.basicConfig(level=logging.INFO)
 
 
@@ -28,7 +28,7 @@ def main(dry_run: bool):
                 for table in tables_to_drop:
                     if not dry_run:
                         cursor.execute(f"DROP TABLE {table[0]}")
-                log.info(f"Tables {[table[0] for table in tables_to_drop]} were deleted")
+                log.info(f"Tables {', '.join(table[0] for table in tables_to_drop)} were deleted")
                 cursor.execute(
                     """
                 SELECT "contextualLayerId" FROM h3_data
@@ -43,5 +43,4 @@ def main(dry_run: bool):
 
 
 if __name__ == "__main__":
-    log.info("Starting delete_h3_tables.py")
     main()

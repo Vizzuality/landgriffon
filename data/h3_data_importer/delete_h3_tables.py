@@ -38,6 +38,7 @@ def main(dry_run: bool):
                 )
                 tables_deleted_with_contextuals = cursor.fetchall()
                 print(tables_deleted_with_contextuals)
+                # TODO: Find some logic to delete the contextual layers safely if they are not used anymore.
             else:
                 log.info("No tables to delete")
 

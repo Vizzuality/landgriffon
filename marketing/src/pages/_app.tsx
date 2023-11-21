@@ -36,7 +36,7 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => (
                   function gtag(){window.dataLayer.push(arguments);}
                   gtag('js', new Date());
 
-                  gtag('config', ${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS});
+                  gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}');
                 `}
               </Script>
             </SSRProvider>

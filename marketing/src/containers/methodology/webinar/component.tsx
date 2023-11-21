@@ -2,7 +2,7 @@ import { FC } from 'react';
 
 const Webinar: FC = () => (
   <div
-    className="relative w-full max-w-[993px] min-h-[495px] space-y-12 py-12 px-14 mx-auto text-white bg-blue-900 bg-cover bg-center bg-no-repeat"
+    className="relative w-full min-h-[495px] space-y-12 py-12 px-14 mx-auto text-white bg-blue-900 bg-cover bg-center bg-no-repeat"
     style={{
       backgroundImage: 'url(/images/methodology/webinar-bg.png)',
     }}

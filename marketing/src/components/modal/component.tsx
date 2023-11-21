@@ -87,7 +87,7 @@ export const Modal: React.FC<ModalProps> = ({
                       <button
                         type="button"
                         onClick={onDismiss}
-                        className="flex items-center px-4 py-4 text-sm text-gray-300 rounded-md"
+                        className="flex items-center px-4 py-4 text-sm text-gray-300 rounded-md focus-visible:ring-0 focus-visible:outline-0"
                       >
                         <XIcon className="w-6 h-6 text-gray-500" />
                       </button>

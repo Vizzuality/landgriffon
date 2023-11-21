@@ -2,7 +2,7 @@ import { FC } from 'react';
 
 import Wrapper from 'containers/wrapper';
 
-import WebinarContent from './component';
+import WebinarContent from './component-variant';
 
 const Webinar: FC = () => (
   <section className="bg-white" id="stay-up-to-date">

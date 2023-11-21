@@ -13,7 +13,7 @@ coredns_addon_version           = "v1.10.1-eksbuild.1"
 eks_cluster_version             = "1.27"
 
 marketing_site_tag                           = "dev"
-marketing_site_google_analytics              = "271375789"
+marketing_site_google_analytics              = "G-2C4TNVYL2H"
 marketing_site_sendgrid_api_key_subscription = ""
 marketing_site_sendgrid_api_key_contact      = ""
 

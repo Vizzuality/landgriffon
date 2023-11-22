@@ -68,9 +68,11 @@ const Hero: React.FC = () => {
 
                     <div className="space-y-2">
                       <h4 className="text-base font-bold text-black">Full methodology</h4>
-                      <p className="text-sm text-black/40">
+                      <div className="text-sm text-black/40">
                         In-depth description of every feature.
-                      </p>
+                        <br />
+                        <span className="italic">Updated Oct 2023</span>
+                      </div>
                     </div>
                   </div>
                 </a>
@@ -90,7 +92,11 @@ const Hero: React.FC = () => {
 
                     <div className="space-y-2">
                       <h4 className="text-base font-bold text-black">Executive summary</h4>
-                      <p className="text-sm text-black/40">An overview of how it functions.</p>
+                      <div className="text-sm text-black/40">
+                        An overview of how it functions.
+                        <br />
+                        <span className="italic">Updated Oct 2023</span>
+                      </div>
                     </div>
                   </div>
                 </a>

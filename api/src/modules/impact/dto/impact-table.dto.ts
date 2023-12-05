@@ -91,6 +91,13 @@ export class BaseImpactTableDto {
   @Type(() => String)
   producerIds?: string[];
 
+  // add a new property for Business-units
+  @ApiPropertyOptional({ name: 'businessUnitIds[]' })
+  @IsOptional()
+  @IsUUID(4, { each: true })
+  @Type(() => String)
+  businessUnitIds?: string[];
+
   @ApiPropertyOptional({
     description: 'Types of Sourcing Locations, written with hyphens',
     enum: Object.values(LOCATION_TYPES),
@@ -224,7 +231,6 @@ export class GetRankedImpactTableDto extends BaseImpactTableDto {
     message: `sort property must be either 'ASC' (Ascendant) or 'DES' (Descendent)`,
   })
   sort?: string;
-
   @ApiPropertyOptional({
     description:
       'Include in the response elements that are being intervened in a Scenario,',

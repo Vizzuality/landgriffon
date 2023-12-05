@@ -48,7 +48,8 @@ export class BaseImpactService {
 
   /**
    * Modifies the ImpactTabledto such that, for each entityIds that is populated,
-   * the ids of their descendants are added, in-place
+   * the ids of their descendants are added, in-place. Suppliers are not included in this
+   * because we serve them in a flat structure, so there is no need to search for descendants
    * @param impactTableDto
    * @protected
    */
@@ -64,6 +65,11 @@ export class BaseImpactService {
       impactTableDto.materialIds =
         await this.materialsService.getMaterialsDescendants(
           impactTableDto.materialIds,
+        );
+    if (impactTableDto.businessUnitIds)
+      impactTableDto.businessUnitIds =
+        await this.businessUnitsService.getBusinessUnitsDescendants(
+          impactTableDto.businessUnitIds,
         );
 
     return impactTableDto;
@@ -91,7 +97,9 @@ export class BaseImpactService {
       ...(impactTableDto.producerIds && {
         producerIds: impactTableDto.producerIds,
       }),
-
+      ...(impactTableDto.businessUnitIds && {
+        businessUnitIds: impactTableDto.businessUnitIds,
+      }),
       ...(impactTableDto.scenarioIds && {
         scenarioIds: impactTableDto.scenarioIds,
       }),
@@ -172,6 +180,14 @@ export class BaseImpactService {
           impactTableDto.originIds,
         );
         break;
+
+      case GROUP_BY_VALUES.BUSINESS_UNIT:
+        impactTableDto.businessUnitIds = BaseImpactService.getIdsFromTree(
+          entities,
+          impactTableDto.businessUnitIds,
+        );
+        break;
+
       default:
     }
   }

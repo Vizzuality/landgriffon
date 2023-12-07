@@ -61,84 +61,15 @@ export class SourcingRecordsService extends AppBaseService<
     };
   }
 
-  async getSourcingRecordById(id: string): Promise<SourcingRecord> {
-    const found: SourcingRecord | null =
-      await this.sourcingRecordRepository.findOne({ where: { id } });
-
-    if (!found) {
-      throw new NotFoundException(`Sourcing Record with ID "${id}" not found`);
-    }
-
-    return found;
-  }
-
   async clearTable(): Promise<void> {
     await this.sourcingRecordRepository.delete({});
   }
-  async findAllUnpaginated(): Promise<SourcingRecord[]> {
-    return this.sourcingRecordRepository.find();
-  }
+
   async save(entityArray: any[]): Promise<void> {
     await this.sourcingRecordRepository.save(entityArray);
   }
+
   async getYears(materialIds?: string[]): Promise<number[]> {
     return this.sourcingRecordRepository.getYears(materialIds);
-  }
-
-  /**
-   * @description Retrieve raw data from DB required to build (on the fly) a Impact Table/Chart
-   * @deprecated: Will be removed to impact repository
-   */
-
-  // TODO: Add a repository in Impact Module to get this data
-  async getDataForImpactTable(
-    getImpactTableDto: BaseImpactTableDto,
-  ): Promise<ImpactTableData[]> {
-    return this.sourcingRecordRepository.getDataForImpactTable(
-      getImpactTableDto,
-    );
-  }
-
-  async getDataForActualVsScenarioImpactTable(
-    getActualVsScenarioImpactTableDto: GetActualVsScenarioImpactTableDto,
-  ): Promise<ImpactTableData[]> {
-    return this.sourcingRecordRepository.getDataForActualVsScenarioImpactTable(
-      getActualVsScenarioImpactTableDto,
-    );
-  }
-
-  /**
-   * @description Retrieve required data to calculate Impact for each Sourcing Record
-   *
-   * - Sourcing Record Id
-   * - Sourcing Record Year
-   * - Sourcing Record Tonnage
-   * - GeoRegion Id
-   * - Material Id
-   */
-
-  async getSourcingRecordDataToCalculateImpacts(): Promise<
-    SourcingRecordDataForImpact[]
-  > {
-    return this.sourcingRecordRepository
-      .createQueryBuilder('sourcingRecords')
-      .select([
-        'sourcingRecords.id as id',
-        'sourcingRecords.year as year',
-        'sourcingRecords.tonnage as tonnage',
-        'sourcingLocations.materialId as materialId',
-        'geoRegions.id as geoRegionId',
-      ])
-      .innerJoin(
-        SourcingLocation,
-        'sourcingLocations',
-        'sourcingRecords.sourcingLocationId = sourcingLocations.id',
-      )
-      .innerJoin(
-        GeoRegion,
-        'geoRegions',
-        'sourcingLocations.geoRegionId = geoRegions.id',
-      )
-      .getRawMany();
   }
 }

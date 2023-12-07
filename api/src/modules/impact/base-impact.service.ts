@@ -6,8 +6,6 @@ import {
   GetRankedImpactTableDto,
   GROUP_BY_VALUES,
 } from 'modules/impact/dto/impact-table.dto';
-import { IndicatorsService } from 'modules/indicators/indicators.service';
-import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import {
   ActualVsScenarioImpactTableData,
   AnyImpactTableData,

@@ -4,7 +4,6 @@ import {
   ORDER_BY,
 } from 'modules/impact/dto/impact-table.dto';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
-import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import {
   ActualVsScenarioImpactTableData,
   ImpactTableData,
@@ -12,10 +11,6 @@ import {
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { range } from 'lodash';
 import { ImpactTablePurchasedTonnes } from 'modules/impact/dto/response-impact-table.dto';
-import { BusinessUnitsService } from 'modules/business-units/business-units.service';
-import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
-import { SuppliersService } from 'modules/suppliers/suppliers.service';
-import { MaterialsService } from 'modules/materials/materials.service';
 import { ImpactTableEntityType } from 'types/impact-table-entity.type';
 import { FetchSpecification } from 'nestjs-base-service';
 import {
@@ -30,36 +25,15 @@ import {
   BaseImpactService,
   ImpactDataTableAuxMap,
 } from 'modules/impact/base-impact.service';
-import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ImpactRepository } from 'modules/impact/impact.repository';
 
 @Injectable()
-export class ActualVsScenarioImpactService extends BaseImpactService {
+export class ActualVsScenarioImpactService {
   logger: Logger = new Logger(ActualVsScenarioImpactService.name);
 
   constructor(
-    @InjectRepository(ImpactRepository)
-    protected readonly impactRepository: ImpactRepository,
     protected readonly indicatorService: IndicatorsService,
-    protected readonly businessUnitsService: BusinessUnitsService,
-    protected readonly adminRegionsService: AdminRegionsService,
-    protected readonly suppliersService: SuppliersService,
-    protected readonly materialsService: MaterialsService,
-    protected readonly sourcingRecordService: SourcingRecordsService,
-    protected readonly sourcingLocationsService: SourcingLocationsService,
-  ) {
-    super(
-      impactRepository,
-      indicatorService,
-      businessUnitsService,
-      adminRegionsService,
-      suppliersService,
-      materialsService,
-      sourcingRecordService,
-      sourcingLocationsService,
-    );
-  }
+    protected readonly baseService: BaseImpactService,
+  ) {}
 
   async getActualVsScenarioImpactTable(
     dto: GetActualVsScenarioImpactTableDto,
@@ -70,19 +44,20 @@ export class ActualVsScenarioImpactService extends BaseImpactService {
     this.logger.log('Retrieving data from DB to build Impact Table...');
 
     //Getting Descendants Ids for the filters, in case Parent Ids were received
-    await this.loadDescendantEntityIds(dto);
+    await this.baseService.loadDescendantEntityIds(dto);
 
     // Get full entity tree in case ids are not passed, otherwise get trees based on
     // given ids and add children and parent ids to them to get full data for aggregations
-    const entities: ImpactTableEntityType[] = await this.getEntityTree(dto);
+    const entities: ImpactTableEntityType[] =
+      await this.baseService.getEntityTree(dto);
 
-    this.getFlatListOfEntityIdsForLaterFiltering(dto, entities);
+    this.baseService.getFlatListOfEntityIdsForLaterFiltering(dto, entities);
 
     const dataForActualVsScenarioImpactTable: ImpactTableData[] =
-      await this.getDataForImpactTable(dto, entities);
+      await this.baseService.getDataForImpactTable(dto, entities);
 
     const processedDataForComparison: ActualVsScenarioImpactTableData[] =
-      ActualVsScenarioImpactService.processDataForComparison(
+      BaseImpactService.processDataForComparison(
         dataForActualVsScenarioImpactTable,
       );
 
@@ -173,7 +148,7 @@ export class ActualVsScenarioImpactService extends BaseImpactService {
     }
 
     const purchasedTonnes: ImpactTablePurchasedTonnes[] =
-      this.getTotalPurchasedVolumeByYear(
+      this.baseService.getTotalPurchasedVolumeByYear(
         rangeOfYears,
         dataForImpactTable,
         lastYearWithData,
@@ -214,10 +189,11 @@ export class ActualVsScenarioImpactService extends BaseImpactService {
           const lastYearsScenarioValue: number =
             index > 0 ? auxYearScenarioValues[index - 1] || 0 : 0;
           const value: number =
-            lastYearsValue + (lastYearsValue * this.growthRate) / 100;
+            lastYearsValue +
+            (lastYearsValue * this.baseService.growthRate) / 100;
           const comparedScenarioValue: number =
             lastYearsScenarioValue +
-            (lastYearsScenarioValue * this.growthRate) / 100;
+            (lastYearsScenarioValue * this.baseService.growthRate) / 100;
 
           dataForYear = {
             year,

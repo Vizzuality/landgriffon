@@ -1,32 +1,10 @@
-import {
-  Brackets,
-  DataSource,
-  Repository,
-  SelectQueryBuilder,
-  WhereExpressionBuilder,
-} from 'typeorm';
+import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import {
   SourcingLocation,
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
 } from 'modules/sourcing-locations/sourcing-location.entity';
-import {
-  GetActualVsScenarioImpactTableDto,
-  BaseImpactTableDto,
-  GetImpactTableDto,
-  GROUP_BY_VALUES,
-} from 'modules/impact/dto/impact-table.dto';
-import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
-import { Indicator } from 'modules/indicators/indicator.entity';
-import { Material } from 'modules/materials/material.entity';
-import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
-import { Supplier } from 'modules/suppliers/supplier.entity';
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { BusinessUnit } from 'modules/business-units/business-unit.entity';
-import {
-  SCENARIO_INTERVENTION_STATUS,
-  ScenarioIntervention,
-} from 'modules/scenario-interventions/scenario-intervention.entity';
+import { Injectable, Logger } from '@nestjs/common';
 
 export type AnyImpactTableData =
   | ImpactTableData

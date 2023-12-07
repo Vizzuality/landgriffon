@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
@@ -8,26 +8,9 @@ import {
   sourcingRecordResource,
 } from 'modules/sourcing-records/sourcing-record.entity';
 import { AppInfoDTO } from 'dto/info.dto';
-import {
-  ImpactTableData,
-  SourcingRecordRepository,
-} from 'modules/sourcing-records/sourcing-record.repository';
+import { SourcingRecordRepository } from 'modules/sourcing-records/sourcing-record.repository';
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { UpdateSourcingRecordDto } from 'modules/sourcing-records/dto/update.sourcing-record.dto';
-import {
-  GetActualVsScenarioImpactTableDto,
-  BaseImpactTableDto,
-} from 'modules/impact/dto/impact-table.dto';
-import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
-
-export interface SourcingRecordDataForImpact {
-  id: string;
-  year: number;
-  tonnage: number;
-  materialId: string;
-  geoRegionId: string;
-}
 
 @Injectable()
 export class SourcingRecordsService extends AppBaseService<

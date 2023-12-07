@@ -31,12 +31,16 @@ import {
   ImpactDataTableAuxMap,
 } from 'modules/impact/base-impact.service';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ImpactRepository } from 'modules/impact/impact.repository';
 
 @Injectable()
 export class ActualVsScenarioImpactService extends BaseImpactService {
   logger: Logger = new Logger(ActualVsScenarioImpactService.name);
 
   constructor(
+    @InjectRepository(ImpactRepository)
+    protected readonly impactRepository: ImpactRepository,
     protected readonly indicatorService: IndicatorsService,
     protected readonly businessUnitsService: BusinessUnitsService,
     protected readonly adminRegionsService: AdminRegionsService,
@@ -46,6 +50,7 @@ export class ActualVsScenarioImpactService extends BaseImpactService {
     protected readonly sourcingLocationsService: SourcingLocationsService,
   ) {
     super(
+      impactRepository,
       indicatorService,
       businessUnitsService,
       adminRegionsService,
@@ -71,7 +76,7 @@ export class ActualVsScenarioImpactService extends BaseImpactService {
     // given ids and add children and parent ids to them to get full data for aggregations
     const entities: ImpactTableEntityType[] = await this.getEntityTree(dto);
 
-    this.updateGroupByCriteriaFromEntityTree(dto, entities);
+    this.getFlatListOfEntityIdsForLaterFiltering(dto, entities);
 
     const dataForActualVsScenarioImpactTable: ImpactTableData[] =
       await this.getDataForImpactTable(dto, entities);

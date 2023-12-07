@@ -29,14 +29,18 @@ import { PaginationMeta } from 'utils/app-base.service';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { CommonFiltersDto } from 'utils/base.query-builder';
 import { SUPPLIER_TYPES } from 'modules/suppliers/supplier.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ImpactRepository } from 'modules/impact/impact.repository';
 
 @Injectable()
 export class BaseImpactService {
   //TODO: Hack to set a expected growing rate. This needs to be stored in the DB in the future
-  protected growthRate: number = 1.5;
+  growthRate: number = 1.5;
   logger: Logger = new Logger(BaseImpactService.name);
 
   constructor(
+    @InjectRepository(ImpactRepository)
+    protected readonly impactRepository: ImpactRepository,
     protected readonly indicatorService: IndicatorsService,
     protected readonly businessUnitsService: BusinessUnitsService,
     protected readonly adminRegionsService: AdminRegionsService,
@@ -51,9 +55,8 @@ export class BaseImpactService {
    * the ids of their descendants are added, in-place. Suppliers are not included in this
    * because we serve them in a flat structure, so there is no need to search for descendants
    * @param impactTableDto
-   * @protected
    */
-  protected async loadDescendantEntityIds(
+  async loadDescendantEntityIds(
     impactTableDto: GetImpactTableDto,
   ): Promise<GetImpactTableDto> {
     if (impactTableDto.originIds)
@@ -79,9 +82,8 @@ export class BaseImpactService {
    * @description Returns an array of ImpactTable Entities, determined by the groupBy field and properties
    * of the GetImpactTableDto
    * @param impactTableDto
-   * @protected
    */
-  protected async getEntityTree(
+  async getEntityTree(
     impactTableDto: AnyImpactTableDto,
   ): Promise<ImpactTableEntityType[]> {
     const treeOptions: CommonFiltersDto = {
@@ -161,9 +163,8 @@ export class BaseImpactService {
    * corresponding entity Ids field according to the groupBy
    * @param impactTableDto
    * @param entities
-   * @protected
    */
-  protected updateGroupByCriteriaFromEntityTree(
+  getFlatListOfEntityIdsForLaterFiltering(
     impactTableDto: AnyImpactTableDto,
     entities: ImpactTableEntityType[],
   ): void {
@@ -192,7 +193,7 @@ export class BaseImpactService {
     }
   }
 
-  protected getDataForImpactTable(
+  getDataForImpactTable(
     impactTableDto: AnyImpactTableDto,
     entities: ImpactTableEntityType[],
   ): Promise<ImpactTableData[]> {
@@ -201,7 +202,7 @@ export class BaseImpactService {
         impactTableDto instanceof GetImpactTableDto ||
         impactTableDto instanceof GetRankedImpactTableDto
       ) {
-        return this.sourcingRecordService.getDataForImpactTable(impactTableDto);
+        return this.impactRepository.getDataForImpactTable(impactTableDto);
       } else if (impactTableDto instanceof GetActualVsScenarioImpactTableDto) {
         return this.sourcingRecordService.getDataForActualVsScenarioImpactTable(
           impactTableDto,
@@ -215,7 +216,7 @@ export class BaseImpactService {
     return Promise.resolve([]);
   }
 
-  protected getTotalPurchasedVolumeByYear(
+  getTotalPurchasedVolumeByYear(
     rangeOfYears: number[],
     dataForImpactTable: ImpactTableData[],
     lastYearWithData: number,
@@ -321,10 +322,7 @@ export class BaseImpactService {
     };
   }
 
-  protected static paginateTable(
-    data: any,
-    fetchSpecification: FetchSpecification,
-  ): any {
+  static paginateTable(data: any, fetchSpecification: FetchSpecification): any {
     if (fetchSpecification.disablePagination) {
       return {
         data,
@@ -410,7 +408,7 @@ export class BaseImpactService {
    * @param dataToRowsValuesFunc
    * @private
    */
-  protected static impactTableDataArrayToAuxMapV2<
+  static impactTableDataArrayToAuxMapV2<
     Data extends AnyImpactTableData,
     RowsValues extends AnyImpactTableRowsValues,
   >(
@@ -454,9 +452,8 @@ export class BaseImpactService {
   /**
    * This method preprocesses Impact Table data for comparison between actual data and an scenario
    * @param impactTableData
-   * @protected
    */
-  protected static processDataForComparison(
+  static processDataForComparison(
     impactTableData: ImpactTableData[],
   ): ActualVsScenarioImpactTableData[] {
     // Separate the data into different maps depending on whether data is from a scenario or not
@@ -510,13 +507,12 @@ export class BaseImpactService {
    * Small helper function to get the combined IndicatorId+EntityName+Year to facilitate pre processing of
    * Impact Table Data before building the impact table
    * @param data
-   * @protected
    */
-  protected static getImpactTableDataKey(data: ImpactTableData): string {
+  static getImpactTableDataKey(data: ImpactTableData): string {
     return data.indicatorId + '-' + data.name + '-' + data.year;
   }
 
-  protected static sortRowValueByYear(
+  static sortRowValueByYear(
     a: AnyImpactTableRowsValues,
     b: AnyImpactTableRowsValues,
   ): number {

@@ -5,7 +5,6 @@ import {
   ORDER_BY,
 } from 'modules/impact/dto/impact-table.dto';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
-import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import { ImpactTableData } from 'modules/sourcing-records/sourcing-record.repository';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { range } from 'lodash';
@@ -19,9 +18,6 @@ import {
   PaginatedImpactTable,
   YearSumData,
 } from 'modules/impact/dto/response-impact-table.dto';
-import { BusinessUnitsService } from 'modules/business-units/business-units.service';
-import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
-import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { ImpactTableEntityType } from 'types/impact-table-entity.type';
 import { FetchSpecification } from 'nestjs-base-service';
@@ -29,33 +25,18 @@ import {
   BaseImpactService,
   ImpactDataTableAuxMap,
 } from 'modules/impact/base-impact.service';
-import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { ImpactViewUpdater } from 'modules/impact/views/impact-view.updater';
 
 @Injectable()
-export class ImpactService extends BaseImpactService {
+export class ImpactService {
   logger: Logger = new Logger(ImpactService.name);
 
   constructor(
     protected readonly indicatorService: IndicatorsService,
-    protected readonly businessUnitsService: BusinessUnitsService,
-    protected readonly adminRegionsService: AdminRegionsService,
-    protected readonly suppliersService: SuppliersService,
+    protected readonly baseService: BaseImpactService,
     protected readonly materialsService: MaterialsService,
-    protected readonly sourcingRecordService: SourcingRecordsService,
-    protected readonly sourcingLocationsService: SourcingLocationsService,
     private readonly viewUpdater: ImpactViewUpdater,
-  ) {
-    super(
-      indicatorService,
-      businessUnitsService,
-      adminRegionsService,
-      suppliersService,
-      materialsService,
-      sourcingRecordService,
-      sourcingLocationsService,
-    );
-  }
+  ) {}
 
   async getImpactTable(
     impactTableDto: GetImpactTableDto,
@@ -68,20 +49,20 @@ export class ImpactService extends BaseImpactService {
     this.logger.log('Retrieving data from DB to build Impact Table...');
 
     //Getting Descendants Ids for the filters, in case Parent Ids were received
-    await this.loadDescendantEntityIds(impactTableDto);
+    await this.baseService.loadDescendantEntityIds(impactTableDto);
 
     // Get full entity tree in cate ids are not passed, otherwise get trees based on
     // given ids and add children and parent ids to them to get full data for aggregations
-    // TODO check if tree ids search is redundant
-    const entities: ImpactTableEntityType[] = await this.getEntityTree(
+    const entities: ImpactTableEntityType[] =
+      await this.baseService.getEntityTree(impactTableDto);
+
+    this.baseService.getFlatListOfEntityIdsForLaterFiltering(
       impactTableDto,
+      entities,
     );
 
-    // TODO: this updates the filtering Ids accortding to the resultant entities of the pagination
-    this.updateGroupByCriteriaFromEntityTree(impactTableDto, entities);
-
     let dataForImpactTable: ImpactTableData[] =
-      await this.getDataForImpactTable(impactTableDto, entities);
+      await this.baseService.getDataForImpactTable(impactTableDto, entities);
 
     if (impactTableDto.scenarioId) {
       dataForImpactTable =
@@ -100,7 +81,7 @@ export class ImpactService extends BaseImpactService {
       impactTableDto.sortingYear,
       impactTableDto.sortingOrder,
     );
-    return ImpactService.paginateTable(impactTable, fetchSpecification);
+    return BaseImpactService.paginateTable(impactTable, fetchSpecification);
   }
 
   /**
@@ -121,18 +102,23 @@ export class ImpactService extends BaseImpactService {
     this.logger.log('Retrieving data from DB to build Impact Table...');
 
     // Load Entities
-    await this.loadDescendantEntityIds(rankedImpactTableDto);
+    await this.baseService.loadDescendantEntityIds(rankedImpactTableDto);
 
     // TODO check if tree ids search is redundant
-    const entities: ImpactTableEntityType[] = await this.getEntityTree(
-      rankedImpactTableDto,
-    );
+    const entities: ImpactTableEntityType[] =
+      await this.baseService.getEntityTree(rankedImpactTableDto);
 
-    this.updateGroupByCriteriaFromEntityTree(rankedImpactTableDto, entities);
+    this.baseService.getFlatListOfEntityIdsForLaterFiltering(
+      rankedImpactTableDto,
+      entities,
+    );
 
     // Construct Impact Data Table
     let dataForImpactTable: ImpactTableData[] =
-      await this.getDataForImpactTable(rankedImpactTableDto, entities);
+      await this.baseService.getDataForImpactTable(
+        rankedImpactTableDto,
+        entities,
+      );
 
     if (rankedImpactTableDto.scenarioId) {
       dataForImpactTable =
@@ -281,7 +267,7 @@ export class ImpactService extends BaseImpactService {
     }
 
     const purchasedTonnes: ImpactTablePurchasedTonnes[] =
-      this.getTotalPurchasedVolumeByYear(
+      this.baseService.getTotalPurchasedVolumeByYear(
         rangeOfYears,
         dataForImpactTable,
         lastYearWithData,
@@ -322,7 +308,8 @@ export class ImpactService extends BaseImpactService {
           const lastYearsValue: number =
             index > 0 ? auxYearValues[index - 1] : 0;
           const value: number =
-            lastYearsValue + (lastYearsValue * this.growthRate) / 100;
+            lastYearsValue +
+            (lastYearsValue * this.baseService.growthRate) / 100;
 
           dataForYear = {
             year,

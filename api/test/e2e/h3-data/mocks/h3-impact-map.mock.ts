@@ -9,6 +9,7 @@ import { h3DataMock } from './h3-data.mock';
 import { Material, MATERIALS_STATUS } from 'modules/materials/material.entity';
 import {
   createAdminRegion,
+  createBusinessUnit,
   createGeoRegion,
   createIndicatorRecord,
   createMaterial,
@@ -41,6 +42,7 @@ import {
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { DataSource } from 'typeorm';
+import { BusinessUnit } from '../../../../src/modules/business-units/business-unit.entity';
 
 export interface ImpactMapMockData {
   indicatorId: string;
@@ -61,6 +63,8 @@ export interface ImpactMapMockData {
   harvestH3DataTwoId: string;
   scenarioId: string;
   scenarioTwoId: string;
+  businessUnitOneId: string;
+  businessUnitTwoId: string;
   tablesToDrop: string[];
 }
 
@@ -141,6 +145,10 @@ export const createImpactMapMockData = async (
     name: 'AdminRegionOne',
   });
 
+  const businessUnitOne: BusinessUnit = await createBusinessUnit({
+    name: 'BusinessUnitOne',
+  });
+
   const t1SupplierOne: Supplier = await createSupplier({
     name: 'T1SupplierOne',
   });
@@ -153,6 +161,7 @@ export const createImpactMapMockData = async (
     adminRegion: adminRegionOne,
     geoRegion: geoRegionOne,
     material: materialOne,
+    businessUnit: businessUnitOne,
     t1Supplier: t1SupplierOne,
     producer: producerSupplierOne,
     locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
@@ -191,6 +200,10 @@ export const createImpactMapMockData = async (
     name: 'DEF',
   });
 
+  const businessUnitTwo: BusinessUnit = await createBusinessUnit({
+    name: 'BusinessUnitTwo',
+  });
+
   const adminRegionTwo: AdminRegion = await createAdminRegion({
     name: 'AdminRegionTwo',
   });
@@ -206,6 +219,7 @@ export const createImpactMapMockData = async (
   const sourcingLocationTwo: SourcingLocation = await createSourcingLocation({
     adminRegion: adminRegionTwo,
     geoRegion: geoRegionTwo,
+    businessUnit: businessUnitTwo,
     material: materialTwo,
     t1Supplier: t1SupplierTwo,
     producer: producerSupplierTwo,
@@ -235,6 +249,7 @@ export const createImpactMapMockData = async (
       scenarioInterventionId: scenarioInterventionOne.id,
       adminRegionId: adminRegionOne.id,
       geoRegionId: geoRegionOne.id,
+      businessUnitId: businessUnitOne.id,
       materialId: materialOne.id,
       t1SupplierId: t1SupplierOne.id,
       producerId: producerSupplierOne.id,
@@ -262,6 +277,7 @@ export const createImpactMapMockData = async (
       scenarioInterventionId: scenarioInterventionOne.id,
       adminRegionId: adminRegionOne.id,
       geoRegionId: geoRegionOne.id,
+      businessUnitId: businessUnitOne.id,
       materialId: materialOne.id,
       t1SupplierId: t1SupplierOne.id,
       producerId: producerSupplierOne.id,
@@ -293,6 +309,7 @@ export const createImpactMapMockData = async (
     await createSourcingLocation({
       scenarioInterventionId: scenarioInterventionOneInactive.id,
       adminRegionId: adminRegionOne.id,
+      businessUnitId: businessUnitOne.id,
       geoRegionId: geoRegionOne.id,
       materialId: materialOne.id,
       t1SupplierId: t1SupplierOne.id,
@@ -320,6 +337,7 @@ export const createImpactMapMockData = async (
       scenarioInterventionId: scenarioInterventionOneInactive.id,
       adminRegionId: adminRegionOne.id,
       geoRegionId: geoRegionOne.id,
+      businessUnitId: businessUnitOne.id,
       materialId: materialOne.id,
       t1SupplierId: t1SupplierOne.id,
       producerId: producerSupplierOne.id,
@@ -350,6 +368,7 @@ export const createImpactMapMockData = async (
       scenarioInterventionId: scenarioInterventionTwo.id,
       adminRegionId: adminRegionTwo.id,
       geoRegionId: geoRegionTwo.id,
+      businessUnitId: businessUnitTwo.id,
       materialId: materialTwo.id,
       t1SupplierId: t1SupplierTwo.id,
       producerId: producerSupplierTwo.id,
@@ -377,6 +396,7 @@ export const createImpactMapMockData = async (
       scenarioInterventionId: scenarioInterventionTwo.id,
       adminRegionId: adminRegionTwo.id,
       geoRegionId: geoRegionTwo.id,
+      businessUnitId: businessUnitTwo.id,
       materialId: materialTwo.id,
       t1SupplierId: t1SupplierTwo.id,
       producerId: producerSupplierTwo.id,
@@ -411,6 +431,7 @@ export const createImpactMapMockData = async (
       adminRegionId: adminRegionOne.id,
       geoRegionId: geoRegionOne.id,
       materialId: materialOne.id,
+      businessUnitId: businessUnitOne.id,
       t1SupplierId: t1SupplierOne.id,
       producerId: producerSupplierOne.id,
       locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
@@ -448,6 +469,7 @@ export const createImpactMapMockData = async (
       adminRegionId: adminRegionThree.id,
       geoRegionId: geoRegionThree.id,
       materialId: materialOne.id,
+      businessUnitId: businessUnitOne.id,
       t1SupplierId: t1SupplierOne.id,
       producerId: producerSupplierOne.id,
       locationType: LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT,
@@ -487,6 +509,8 @@ export const createImpactMapMockData = async (
     harvestH3DataTwoId: harvestH3Data.id,
     scenarioId: scenario.id,
     scenarioTwoId: scenarioTwo.id,
+    businessUnitOneId: businessUnitOne.id,
+    businessUnitTwoId: businessUnitTwo.id,
     tablesToDrop,
   };
 };

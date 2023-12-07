@@ -199,7 +199,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
   });
 
   describe('Optional query parameters', () => {
-    test('When I get a calculated H3 Water Impact Map with the necessary input values and materials filter, then I should get the correct h3 data', async () => {
+    test('When I get a calculated H3 Impact Map with the necessary input values and materials filter, then I should get the correct h3 data', async () => {
       const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -234,7 +234,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       });
     });
 
-    test('When I get a calculated H3 Water Impact Map with the necessary input values and origins filter, then I should get the correct h3 data', async () => {
+    test('When I get a calculated H3 Impact Map with the necessary input values and origins filter, then I should get the correct h3 data', async () => {
       const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -257,7 +257,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       });
     });
 
-    test('When I get a calculated H3 Water Impact Map with the necessary input values and supplier (t1Supplier) filter, then I should get the correct h3 data', async () => {
+    test('When I get a calculated H3 Impact Map with the necessary input values and supplier (t1Supplier) filter, then I should get the correct h3 data', async () => {
       const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -280,7 +280,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       });
     });
 
-    test('When I get a calculated H3 Water Impact Map with the necessary input values and supplier (producer) filter, then I should get the correct h3 data', async () => {
+    test('When I get a calculated H3 Impact Map with the necessary input values and supplier (producer) filter, then I should get the correct h3 data', async () => {
       const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -308,8 +308,28 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         unit: 'tonnes',
       });
     });
-
-    test('When I get a calculated H3 Water Impact Map with the necessary input values and supplier (producer) filter, then I should get the correct h3 data', async () => {
+    test('When I get a calculated H3 Impact Map with the necessary input values and Business Units filter, then I should get the correct h3 data', async () => {
+      const response = await request(testApplication.getHttpServer())
+        .get(`/api/v1/h3/map/impact`)
+        .set('Authorization', `Bearer ${jwtToken}`)
+        .query({
+          indicatorId: impactMapMockData.indicatorId,
+          'businessUnitIds[]': [
+            impactMapMockData.businessUnitOneId,
+            impactMapMockData.businessUnitTwoId,
+          ],
+          year: 2020,
+          resolution: 6,
+        });
+      expect(response.body.data).toEqual(
+        expect.arrayContaining([
+          { h: '861203a6fffffff', v: '500.0000' },
+          { h: '861203a5fffffff', v: '617.0000' },
+          { h: '861203a4fffffff', v: '1117.0000' },
+        ]),
+      );
+    });
+    test('When I get a calculated H3 Impact Map with the necessary input values and supplier (producer) filter, then I should get the correct h3 data', async () => {
       const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -332,7 +352,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       });
     });
 
-    test('When I get a calculated H3 Water Impact Map with the necessary input values and Location Type filter, then I should get the correct h3 data', async () => {
+    test('When I get a calculated H3 Impact Map with the necessary input values and Location Type filter, then I should get the correct h3 data', async () => {
       const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`)
@@ -355,7 +375,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       });
     });
 
-    test('When I get a calculated H3 Water Impact Map with the necessary input values and Scenario Id property, then the response should include both actual data and Scenario data for the given id (ignoring INACTIVE interventions), and the quantiles should be calculated differently', async () => {
+    test('When I get a calculated H3 Impact Map with the necessary input values and Scenario Id property, then the response should include both actual data and Scenario data for the given id (ignoring INACTIVE interventions), and the quantiles should be calculated differently', async () => {
       const response = await request(testApplication.getHttpServer())
         .get(`/api/v1/h3/map/impact`)
         .set('Authorization', `Bearer ${jwtToken}`)

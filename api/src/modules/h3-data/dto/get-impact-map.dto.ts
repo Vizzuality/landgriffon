@@ -59,6 +59,12 @@ class BaseGetImpactMapDto {
   @Type(() => String)
   producerIds?: string[];
 
+  @ApiPropertyOptional({ name: 'businessUnitIds[]' })
+  @IsOptional()
+  @IsUUID('4', { each: true })
+  @Type(() => String)
+  businessUnitIds?: string[];
+
   @ApiPropertyOptional({
     description: 'Types of Sourcing Locations, written with hyphens',
     enum: Object.values(LOCATION_TYPES),

@@ -204,11 +204,11 @@ export class BaseImpactService {
       ) {
         return this.impactRepository.getDataForImpactTable(impactTableDto);
       } else if (impactTableDto instanceof GetActualVsScenarioImpactTableDto) {
-        return this.sourcingRecordService.getDataForActualVsScenarioImpactTable(
+        return this.impactRepository.getDataForActualVsScenarioImpactTable(
           impactTableDto,
         );
       } else {
-        return this.sourcingRecordService.getDataForActualVsScenarioImpactTable(
+        return this.impactRepository.getDataForActualVsScenarioImpactTable(
           impactTableDto,
         );
       }

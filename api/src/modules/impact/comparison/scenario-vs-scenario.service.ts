@@ -5,7 +5,6 @@ import {
   ORDER_BY,
 } from 'modules/impact/dto/impact-table.dto';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
-import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import {
   ActualVsScenarioImpactTableData,
   ImpactTableData,
@@ -13,9 +12,6 @@ import {
 } from 'modules/sourcing-records/sourcing-record.repository';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { range } from 'lodash';
-import { BusinessUnitsService } from 'modules/business-units/business-units.service';
-import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
-import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { ImpactTableEntityType } from 'types/impact-table-entity.type';
 import { FetchSpecification } from 'nestjs-base-service';
@@ -32,31 +28,16 @@ import {
   ImpactDataTableAuxMap,
 } from 'modules/impact/base-impact.service';
 import { ImpactTablePurchasedTonnes } from 'modules/impact/dto/response-impact-table.dto';
-import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 
 @Injectable()
-export class ScenarioVsScenarioImpactService extends BaseImpactService {
+export class ScenarioVsScenarioImpactService {
   logger: Logger = new Logger(ScenarioVsScenarioImpactService.name);
 
   constructor(
     protected readonly indicatorService: IndicatorsService,
-    protected readonly businessUnitsService: BusinessUnitsService,
-    protected readonly adminRegionsService: AdminRegionsService,
-    protected readonly suppliersService: SuppliersService,
+    protected readonly baseService: BaseImpactService,
     protected readonly materialsService: MaterialsService,
-    protected readonly sourcingRecordService: SourcingRecordsService,
-    protected readonly sourcingLocationsService: SourcingLocationsService,
-  ) {
-    super(
-      indicatorService,
-      businessUnitsService,
-      adminRegionsService,
-      suppliersService,
-      materialsService,
-      sourcingRecordService,
-      sourcingLocationsService,
-    );
-  }
+  ) {}
 
   async getScenarioVsScenarioImpactTable(
     dto: GetScenarioVsScenarioImpactTableDto,
@@ -67,13 +48,14 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
     this.logger.log('Retrieving data from DB to build Impact Table...');
 
     //Getting Descendants Ids for the filters, in case Parent Ids were received
-    await this.loadDescendantEntityIds(dto);
+    await this.baseService.loadDescendantEntityIds(dto);
 
     // Getting entities and processing that correspond to Scenario 1 and filtered actual data
 
-    const entities: ImpactTableEntityType[] = await this.getEntityTree(dto);
+    const entities: ImpactTableEntityType[] =
+      await this.baseService.getEntityTree(dto);
 
-    this.updateGroupByCriteriaFromEntityTree(dto, entities);
+    this.baseService.getFlatListOfEntityIdsForLaterFiltering(dto, entities);
 
     // Getting and proceesing impact data separetely for each scenario for further merge
 
@@ -90,10 +72,10 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
     };
 
     const dataForScenarioOneAndActual: ImpactTableData[] =
-      await this.getDataForImpactTable(scenarioOneDto, entities);
+      await this.baseService.getDataForImpactTable(scenarioOneDto, entities);
 
     const dataForScenarioTwoAndActual: ImpactTableData[] =
-      await this.getDataForImpactTable(scenarioTwoDto, entities);
+      await this.baseService.getDataForImpactTable(scenarioTwoDto, entities);
     const processedScenarioVsScenarioData: ScenarioVsScenarioImpactTableData[] =
       ScenarioVsScenarioImpactService.processTwoScenariosData(
         dataForScenarioOneAndActual,
@@ -185,7 +167,7 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
     }
 
     const purchasedTonnes: ImpactTablePurchasedTonnes[] =
-      this.getTotalPurchasedVolumeByYear(
+      this.baseService.getTotalPurchasedVolumeByYear(
         rangeOfYears,
         dataForImpactTable,
         lastYearWithData,
@@ -290,13 +272,9 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
     dataForScenarioTwo: ImpactTableData[],
   ): ScenarioVsScenarioImpactTableData[] {
     const processedDataForScenarioOneAndActual: ActualVsScenarioImpactTableData[] =
-      ScenarioVsScenarioImpactService.processDataForComparison(
-        dataForScenarioOne,
-      );
+      BaseImpactService.processDataForComparison(dataForScenarioOne);
     const processedDataForScenarioTwoAndActual: ActualVsScenarioImpactTableData[] =
-      ScenarioVsScenarioImpactService.processDataForComparison(
-        dataForScenarioTwo,
-      );
+      BaseImpactService.processDataForComparison(dataForScenarioTwo);
 
     const scenarioOneDataForScenarioComparison: ScenarioVsScenarioImpactTableData[] =
       processedDataForScenarioOneAndActual.map((scenarioData: any) => {
@@ -378,10 +356,11 @@ export class ScenarioVsScenarioImpactService extends BaseImpactService {
             index > 0 ? auxYearScenarioValues[index - 1] || 0 : 0;
           const baseScenarioValue: number =
             lastYearsBaseScenarioValue +
-            (lastYearsBaseScenarioValue * this.growthRate) / 100;
+            (lastYearsBaseScenarioValue * this.baseService.growthRate) / 100;
           const comparedScenarioValue: number =
             lastYearsComparedScenarioValue +
-            (lastYearsComparedScenarioValue * this.growthRate) / 100;
+            (lastYearsComparedScenarioValue * this.baseService.growthRate) /
+              100;
 
           dataForYear = {
             year: year,

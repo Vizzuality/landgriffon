@@ -1,7 +1,15 @@
-import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
+import {
+  Brackets,
+  DataSource,
+  Repository,
+  SelectQueryBuilder,
+  WhereExpressionBuilder,
+} from 'typeorm';
 import {
   BaseImpactTableDto,
   GetActualVsScenarioImpactTableDto,
+  GetImpactTableDto,
+  GROUP_BY_VALUES,
 } from 'modules/impact/dto/impact-table.dto';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
@@ -11,7 +19,15 @@ import { Material } from 'modules/materials/material.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  SCENARIO_INTERVENTION_STATUS,
+  ScenarioIntervention,
+} from 'modules/scenario-interventions/scenario-intervention.entity';
+import {
+  ActualVsScenarioImpactTableData,
+  ImpactTableData,
+} from 'modules/sourcing-records/sourcing-record.repository';
 
 /**
  * @description: Even to Impact is not a mapped entity in our codebase, we will use
@@ -19,60 +35,152 @@ import { Injectable } from '@nestjs/common';
  * It is not included in the module
  */
 
-// TODO: Refactor to use this repository for all Impact Related data retrieval (Currently using Sourcing Records repo for this purpose)
 @Injectable()
 export class ImpactRepository extends Repository<any> {
   constructor(private dataSource: DataSource) {
     super(Object, dataSource.createEntityManager());
   }
 
+  async getDataForImpactTable(
+    getImpactTaleDto: GetImpactTableDto,
+  ): Promise<ImpactTableData[]> {
+    const impactDataQueryBuilder: SelectQueryBuilder<SourcingRecord> =
+      this.createBasicSelectQuery(getImpactTaleDto);
+
+    // Decide to select just actual data or scenario with actual data
+    this.handleSourceDataSelect(impactDataQueryBuilder, getImpactTaleDto);
+
+    this.addEntityFiltersToQuery(impactDataQueryBuilder, getImpactTaleDto);
+
+    this.addGroupAndOrderByToQuery(impactDataQueryBuilder, getImpactTaleDto);
+
+    const dataForImpactTable: ImpactTableData[] =
+      await impactDataQueryBuilder.getRawMany();
+
+    if (!dataForImpactTable.length) {
+      throw new NotFoundException(
+        'Data required for building Impact Table could not been retrieved from DB',
+      );
+    }
+    return dataForImpactTable;
+  }
+
+  async getDataForActualVsScenarioImpactTable(
+    getActualVsScenarioImpactTable: GetActualVsScenarioImpactTableDto,
+  ): Promise<ImpactTableData[]> {
+    const impactDataQueryBuilder: SelectQueryBuilder<SourcingRecord> =
+      this.createBasicSelectQuery(getActualVsScenarioImpactTable);
+
+    impactDataQueryBuilder.leftJoin(
+      ScenarioIntervention,
+      'scenarioIntervention',
+      'sourcingLocation.scenarioInterventionId = scenarioIntervention.id',
+    );
+    impactDataQueryBuilder.andWhere(
+      new Brackets((qb: WhereExpressionBuilder) => {
+        qb.where('sourcingLocation.scenarioInterventionId is null').orWhere(
+          new Brackets((qbInterv: WhereExpressionBuilder) => {
+            qbInterv
+              .where('scenarioIntervention.scenarioId = :scenarioId', {
+                scenarioId: getActualVsScenarioImpactTable.comparedScenarioId,
+              })
+              .andWhere(`scenarioIntervention.status = :status`, {
+                status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+              });
+          }),
+        );
+      }),
+    );
+
+    this.addEntityFiltersToQuery(
+      impactDataQueryBuilder,
+      getActualVsScenarioImpactTable,
+    );
+
+    this.addGroupAndOrderByToQuery(
+      impactDataQueryBuilder,
+      getActualVsScenarioImpactTable,
+    );
+
+    const dataForActualVsScenarioImpactTable: ActualVsScenarioImpactTableData[] =
+      await impactDataQueryBuilder.getRawMany();
+
+    if (!dataForActualVsScenarioImpactTable.length) {
+      throw new NotFoundException(
+        'Data required for building Impact Table could not been retrieved from DB',
+      );
+    }
+    return dataForActualVsScenarioImpactTable;
+  }
+
   private createBasicSelectQuery(
     impactDataDto: GetActualVsScenarioImpactTableDto | BaseImpactTableDto,
   ): SelectQueryBuilder<SourcingRecord> {
-    return this.dataSource
-      .createQueryBuilder()
-      .select('sourcingRecords.year', 'year')
-      .addSelect('sum(sourcingRecords.tonnage)', 'tonnes')
-      .addSelect('sum(indicatorRecord.value)', 'impact')
-      .addSelect('indicator.id', 'indicatorId')
-      .addSelect('sourcingLocation.interventionType', 'typeByIntervention')
-      .from(SourcingRecord, 'sourcingRecords')
-      .leftJoin(
-        SourcingLocation,
-        'sourcingLocation',
-        'sourcingLocation.id = sourcingRecords.sourcingLocationId',
-      )
-      .leftJoin(
-        IndicatorRecord,
-        'indicatorRecord',
-        'indicatorRecord.sourcingRecordId = sourcingRecords.id',
-      )
-      .leftJoin(
-        Indicator,
-        'indicator',
-        'indicator.id = indicatorRecord.indicatorId',
-      )
-      .leftJoin(
-        Material,
-        'material',
-        'material.id = sourcingLocation.materialId',
-      )
-      .leftJoin(
-        AdminRegion,
-        'adminRegion',
-        'sourcingLocation.adminRegionId = adminRegion.id ',
-      )
-      .leftJoin(
-        Supplier,
-        'supplier',
-        'sourcingLocation.producerId = supplier.id or sourcingLocation.t1SupplierId = supplier.id',
-      )
-      .leftJoin(
-        BusinessUnit,
-        'businessUnit',
-        'sourcingLocation.businessUnitId = businessUnit.id',
-      )
+    const basicSelectQuery: SelectQueryBuilder<SourcingRecord> =
+      this.createQueryBuilder('sourcingRecords')
+        .select('sourcingRecords.year', 'year')
+        .addSelect('sum(sourcingRecords.tonnage)', 'tonnes')
+        .addSelect('sum(indicatorRecord.value)', 'impact')
+        .addSelect('indicator.id', 'indicatorId')
+        .addSelect('sourcingLocation.interventionType', 'typeByIntervention')
+        .leftJoin(
+          SourcingLocation,
+          'sourcingLocation',
+          'sourcingLocation.id = sourcingRecords.sourcingLocationId',
+        )
+        .leftJoin(
+          IndicatorRecord,
+          'indicatorRecord',
+          'indicatorRecord.sourcingRecordId = sourcingRecords.id',
+        )
+        .leftJoin(
+          Indicator,
+          'indicator',
+          'indicator.id = indicatorRecord.indicatorId',
+        );
 
+    switch (impactDataDto.groupBy) {
+      case GROUP_BY_VALUES.MATERIAL:
+        basicSelectQuery.leftJoin(
+          Material,
+          'material',
+          'material.id = sourcingLocation.materialId',
+        );
+        break;
+      case GROUP_BY_VALUES.REGION:
+        basicSelectQuery.leftJoin(
+          AdminRegion,
+          'adminRegion',
+          'sourcingLocation.adminRegionId = adminRegion.id ',
+        );
+        break;
+      case GROUP_BY_VALUES.T1_SUPPLIER:
+        basicSelectQuery.leftJoin(
+          Supplier,
+          'supplier',
+          'sourcingLocation.t1SupplierId = supplier.id',
+        );
+        break;
+      case GROUP_BY_VALUES.PRODUCER:
+        basicSelectQuery.leftJoin(
+          Supplier,
+          'supplier',
+          'sourcingLocation.producerId = supplier.id',
+        );
+        break;
+      case GROUP_BY_VALUES.BUSINESS_UNIT:
+        basicSelectQuery.leftJoin(
+          BusinessUnit,
+          'businessUnit',
+          'sourcingLocation.businessUnitId = businessUnit.id',
+        );
+        break;
+
+      default:
+        basicSelectQuery;
+    }
+
+    basicSelectQuery
       .where('sourcingRecords.year BETWEEN :startYear and :endYear', {
         startYear: impactDataDto.startYear,
         endYear: impactDataDto.endYear,
@@ -80,6 +188,144 @@ export class ImpactRepository extends Repository<any> {
       .andWhere('indicator.id IN (:...indicatorIds)', {
         indicatorIds: impactDataDto.indicatorIds,
       });
+
+    return basicSelectQuery;
   }
+
+  private addEntityFiltersToQuery(
+    selectQueryBuilder: SelectQueryBuilder<SourcingRecord>,
+    impactDataDto: GetActualVsScenarioImpactTableDto | GetImpactTableDto,
+  ): SelectQueryBuilder<SourcingRecord> {
+    if (impactDataDto.materialIds) {
+      selectQueryBuilder.andWhere(
+        'sourcingLocation.materialId IN (:...materialIds)',
+        {
+          materialIds: impactDataDto.materialIds,
+        },
+      );
+    }
+    if (impactDataDto.originIds) {
+      selectQueryBuilder.andWhere(
+        'sourcingLocation.adminRegionId IN (:...originIds)',
+        {
+          originIds: impactDataDto.originIds,
+        },
+      );
+    }
+    if (impactDataDto.t1SupplierIds) {
+      selectQueryBuilder.andWhere(
+        'sourcingLocation.t1SupplierId IN (:...t1SupplierIds)',
+        { t1SupplierIds: impactDataDto.t1SupplierIds },
+      );
+    }
+    if (impactDataDto.producerIds) {
+      selectQueryBuilder.andWhere(
+        'sourcingLocation.producerId IN (:...producerIds)',
+        { producerIds: impactDataDto.producerIds },
+      );
+    }
+
+    if (impactDataDto.locationTypes) {
+      selectQueryBuilder.andWhere(
+        'sourcingLocation.locationType IN (:...locationTypes)',
+        {
+          locationTypes: impactDataDto.locationTypes,
+        },
+      );
+    }
+
+    return selectQueryBuilder;
+  }
+
+  private addGroupAndOrderByToQuery(
+    selectQueryBuilder: SelectQueryBuilder<SourcingRecord>,
+    impactDataDto: GetActualVsScenarioImpactTableDto | BaseImpactTableDto,
+  ): SelectQueryBuilder<SourcingRecord> {
+    switch (impactDataDto.groupBy) {
+      case GROUP_BY_VALUES.MATERIAL:
+        selectQueryBuilder
+          .addSelect('material.name', 'name')
+          .groupBy('material.name');
+        break;
+      case GROUP_BY_VALUES.REGION:
+        selectQueryBuilder
+          .addSelect('adminRegion.name', 'name')
+          .groupBy('adminRegion.name');
+        break;
+      case GROUP_BY_VALUES.T1_SUPPLIER:
+        selectQueryBuilder
+          .addSelect('supplier.name', 'name')
+          .andWhere('supplier.name IS NOT NULL')
+          .groupBy('supplier.name');
+        break;
+      case GROUP_BY_VALUES.PRODUCER:
+        selectQueryBuilder
+          .addSelect('supplier.name', 'name')
+          .andWhere('supplier.name IS NOT NULL')
+          .groupBy('supplier.name');
+        break;
+      case GROUP_BY_VALUES.BUSINESS_UNIT:
+        selectQueryBuilder
+          .addSelect('businessUnit.name', 'name')
+          .groupBy('businessUnit.name');
+        break;
+      case GROUP_BY_VALUES.LOCATION_TYPE:
+        selectQueryBuilder
+          .addSelect('sourcingLocation.locationType', 'name')
+          .groupBy('sourcingLocation.locationType');
+        break;
+      default:
+        selectQueryBuilder;
+    }
+
+    selectQueryBuilder
+      .addGroupBy(
+        `sourcingRecords.year, indicator.id, sourcingLocation.interventionType`,
+      )
+      .orderBy('year', 'ASC')
+      .addOrderBy('name');
+
+    return selectQueryBuilder;
+  }
+
+  /**
+   * @description: Conditionally decide to add Scenario AND Actual Data,
+   *               or just Actual data
+   */
+
+  private handleSourceDataSelect(
+    queryBuilder: SelectQueryBuilder<SourcingRecord>,
+    dto: GetImpactTableDto,
+  ): SelectQueryBuilder<SourcingRecord> {
+    if (dto.scenarioId) {
+      queryBuilder
+        .leftJoin(
+          ScenarioIntervention,
+          'scenarioIntervention',
+          'sourcingLocation.scenarioInterventionId = scenarioIntervention.id',
+        )
+        .andWhere(
+          new Brackets((qb: WhereExpressionBuilder) => {
+            qb.where('sourcingLocation.scenarioInterventionId is null').orWhere(
+              new Brackets((qbInterv: WhereExpressionBuilder) => {
+                qbInterv
+                  .where('scenarioIntervention.scenarioId = :scenarioId', {
+                    scenarioId: dto.scenarioId,
+                  })
+                  .andWhere(`scenarioIntervention.status = :status`, {
+                    status: SCENARIO_INTERVENTION_STATUS.ACTIVE,
+                  });
+              }),
+            );
+          }),
+        );
+    } else {
+      queryBuilder.andWhere('sourcingLocation.scenarioInterventionId is null');
+      queryBuilder.andWhere('sourcingLocation.interventionType is null');
+    }
+
+    return queryBuilder;
+  }
+
   // use this.dataSource from typeorm to perform queries
 }

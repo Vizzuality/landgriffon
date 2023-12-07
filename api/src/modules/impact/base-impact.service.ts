@@ -29,7 +29,6 @@ import { PaginationMeta } from 'utils/app-base.service';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { CommonFiltersDto } from 'utils/base.query-builder';
 import { SUPPLIER_TYPES } from 'modules/suppliers/supplier.entity';
-import { InjectRepository } from '@nestjs/typeorm';
 import { ImpactRepository } from 'modules/impact/impact.repository';
 
 @Injectable()
@@ -39,14 +38,11 @@ export class BaseImpactService {
   logger: Logger = new Logger(BaseImpactService.name);
 
   constructor(
-    @InjectRepository(ImpactRepository)
     protected readonly impactRepository: ImpactRepository,
-    protected readonly indicatorService: IndicatorsService,
     protected readonly businessUnitsService: BusinessUnitsService,
     protected readonly adminRegionsService: AdminRegionsService,
     protected readonly suppliersService: SuppliersService,
     protected readonly materialsService: MaterialsService,
-    protected readonly sourcingRecordService: SourcingRecordsService,
     protected readonly sourcingLocationsService: SourcingLocationsService,
   ) {}
 

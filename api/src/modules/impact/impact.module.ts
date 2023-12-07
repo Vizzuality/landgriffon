@@ -13,6 +13,8 @@ import { MaterialsService } from 'modules/materials/materials.service';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { AuthorizationModule } from 'modules/authorization/authorization.module';
 import { ImpactViewUpdater } from 'modules/impact/views/impact-view.updater';
+import { BaseImpactService } from 'modules/impact/base-impact.service';
+import { ImpactRepository } from 'modules/impact/impact.repository';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { ImpactViewUpdater } from 'modules/impact/views/impact-view.updater';
     AuthorizationModule,
   ],
   providers: [
+    ImpactRepository,
+    BaseImpactService,
     ImpactService,
     ActualVsScenarioImpactService,
     ScenarioVsScenarioImpactService,

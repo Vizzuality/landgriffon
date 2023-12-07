@@ -17,9 +17,9 @@ import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.servic
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import { Material } from 'modules/materials/material.entity';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
-import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { H3DataRepository } from 'modules/h3-data/h3-data.repository';
 import { Unit } from 'modules/units/unit.entity';
+import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 
 /**
  * @debt: Check if we actually need extending nestjs-base-service over this module.
@@ -43,7 +43,7 @@ export class H3DataMapService {
     protected readonly materialService: MaterialsService,
     protected readonly materialToH3Service: MaterialsToH3sService,
     protected readonly adminRegionService: AdminRegionsService,
-    protected readonly supplierService: SuppliersService,
+    protected readonly businessUnitsService: BusinessUnitsService,
     private readonly indicatorService: IndicatorsService,
     private readonly h3DataYearsService: H3DataYearsService,
   ) {}
@@ -116,24 +116,21 @@ export class H3DataMapService {
       quantiles: number[];
     };
 
+    let isRelative: boolean = false;
     //Get the corresponding map data depending on the incoming DTO
     if (getImpactMapDto instanceof GetScenarioVsScenarioImpactMapDto) {
       impactMap = await this.h3DataRepository.getScenarioVsScenarioImpactMap(
         getImpactMapDto,
       );
+      isRelative = this.isRequestedComparisonRelative(getImpactMapDto);
     } else if (getImpactMapDto instanceof GetActualVsScenarioImpactMapDto) {
       impactMap = await this.h3DataRepository.getActualVsScenarioImpactMap(
         getImpactMapDto,
       );
+      isRelative = this.isRequestedComparisonRelative(getImpactMapDto);
     } else {
       impactMap = await this.h3DataRepository.getImpactMap(getImpactMapDto);
     }
-
-    /**
-     * Check if requested map's should show a relative magnitude
-     */
-    const isRelative: boolean =
-      this.requestedComparisonIsRelative(getImpactMapDto);
 
     return this.constructH3MapResponse(
       impactMap.impactMap,
@@ -174,6 +171,13 @@ export class H3DataMapService {
       mapDto.materialIds = await this.materialService.getMaterialsDescendants(
         mapDto.materialIds,
       );
+    }
+
+    if (mapDto.businessUnitIds) {
+      mapDto.businessUnitIds =
+        await this.businessUnitsService.getBusinessUnitsDescendants(
+          mapDto.businessUnitIds,
+        );
     }
     return mapDto;
   }
@@ -241,7 +245,14 @@ export class H3DataMapService {
     };
   }
 
-  private requestedComparisonIsRelative(getImpactDto: any): boolean {
+  /**
+   * Check if requested map's should show a relative magnitude
+   */
+  private isRequestedComparisonRelative(
+    getImpactDto:
+      | GetScenarioVsScenarioImpactMapDto
+      | GetActualVsScenarioImpactMapDto,
+  ): boolean {
     return getImpactDto.relative ?? false;
   }
 }

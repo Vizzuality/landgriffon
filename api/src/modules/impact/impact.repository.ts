@@ -1,7 +1,6 @@
 import {
   Brackets,
-  DataSource,
-  Repository,
+  EntityManager,
   SelectQueryBuilder,
   WhereExpressionBuilder,
 } from 'typeorm';
@@ -28,6 +27,7 @@ import {
   ActualVsScenarioImpactTableData,
   ImpactTableData,
 } from 'modules/sourcing-records/sourcing-record.repository';
+import { InjectEntityManager } from '@nestjs/typeorm';
 
 /**
  * @description: Even to Impact is not a mapped entity in our codebase, we will use
@@ -36,10 +36,10 @@ import {
  */
 
 @Injectable()
-export class ImpactRepository extends Repository<any> {
-  constructor(private dataSource: DataSource) {
-    super(Object, dataSource.createEntityManager());
-  }
+export class ImpactRepository {
+  constructor(
+    @InjectEntityManager() private readonly entityManager: EntityManager,
+  ) {}
 
   async getDataForImpactTable(
     getImpactTaleDto: GetImpactTableDto,
@@ -47,7 +47,7 @@ export class ImpactRepository extends Repository<any> {
     const impactDataQueryBuilder: SelectQueryBuilder<SourcingRecord> =
       this.createBasicSelectQuery(getImpactTaleDto);
 
-    // Decide to select just actual data or scenario with actual data
+    // Decide to select just actual data or add data from scenario
     this.handleSourceDataSelect(impactDataQueryBuilder, getImpactTaleDto);
 
     this.addEntityFiltersToQuery(impactDataQueryBuilder, getImpactTaleDto);
@@ -117,7 +117,8 @@ export class ImpactRepository extends Repository<any> {
     impactDataDto: GetActualVsScenarioImpactTableDto | BaseImpactTableDto,
   ): SelectQueryBuilder<SourcingRecord> {
     const basicSelectQuery: SelectQueryBuilder<SourcingRecord> =
-      this.createQueryBuilder('sourcingRecords')
+      this.entityManager
+        .createQueryBuilder(SourcingRecord, 'sourcingRecords')
         .select('sourcingRecords.year', 'year')
         .addSelect('sum(sourcingRecords.tonnage)', 'tonnes')
         .addSelect('sum(indicatorRecord.value)', 'impact')
@@ -230,6 +231,14 @@ export class ImpactRepository extends Repository<any> {
         'sourcingLocation.locationType IN (:...locationTypes)',
         {
           locationTypes: impactDataDto.locationTypes,
+        },
+      );
+    }
+    if (impactDataDto.businessUnitIds) {
+      selectQueryBuilder.andWhere(
+        'sourcingLocation.businessUnitId IN (:...businessUnitIds)',
+        {
+          businessUnitIds: impactDataDto.businessUnitIds,
         },
       );
     }

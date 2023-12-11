@@ -20,6 +20,7 @@ export type AnalysisFiltersState = {
   locationTypes: Option<LocationTypes>[];
   // used for the material layer
   materialId: Material['id'];
+  businessUnits: Option[];
 };
 
 // Define the initial state using that type
@@ -36,6 +37,7 @@ export const initialState: AnalysisFiltersState = {
   producers: [],
   locationTypes: [],
   materialId: null,
+  businessUnits: [],
 };
 
 export const analysisFiltersSlice = createSlice({

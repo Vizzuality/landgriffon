@@ -2,9 +2,11 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { apiService } from 'services/api';
+import { recursiveMap, recursiveSort } from 'components/tree-select/utils';
 
 import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
-import type { BusinessUnits } from 'types';
+import type { BusinessUnits, BusinessUnitsTreeItem } from 'types';
+import type { TreeSelectOption } from 'components/tree-select/types';
 
 const DEFAULT_QUERY_OPTIONS: UseQueryOptions = {
   placeholderData: [],
@@ -57,7 +59,7 @@ export function useBusinessUnitsTrees(params: BusinessUnitsTreesParams): Respons
     ['business-units-trees', params],
     () =>
       apiService
-        .request({
+        .request<{ data: BusinessUnits }>({
           method: 'GET',
           url: '/business-units/trees',
           params,
@@ -79,3 +81,41 @@ export function useBusinessUnitsTrees(params: BusinessUnitsTreesParams): Respons
     [query, isError, data],
   );
 }
+
+type BusinessUnitsOption = TreeSelectOption & {
+  disabled?: boolean;
+  children?: BusinessUnitsOption[];
+};
+
+export const useBusinessUnitsOptionsTrees = <T = BusinessUnitsOption[]>(
+  params: BusinessUnitsTreesParams = {},
+  options: UseQueryOptions<{ data: BusinessUnitsTreeItem[] }, unknown, T> = {},
+): UseQueryResult<T, unknown> => {
+  const query = useQuery<{ data: BusinessUnitsTreeItem[] }, unknown, T>(
+    ['business-units-trees-options', params],
+    () =>
+      apiService
+        .request<{ data: BusinessUnitsTreeItem[] }>({
+          method: 'GET',
+          url: '/business-units/trees',
+          params,
+        })
+        .then((responseData) => responseData.data),
+    {
+      retry: false,
+      keepPreviousData: true,
+      refetchOnWindowFocus: false,
+      ...options,
+      select: (_businessUnits) =>
+        recursiveSort(_businessUnits?.data, 'name')?.map((item) =>
+          recursiveMap(item, ({ id, name, status }) => ({
+            value: id,
+            label: name,
+            disabled: status === 'inactive',
+          })),
+        ) as T,
+    },
+  );
+
+  return query;
+};

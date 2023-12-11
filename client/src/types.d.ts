@@ -195,10 +195,18 @@ type BusinessUnitsAttributes = Readonly<{
 export type BusinessUnits = {
   id: string;
   name: string;
-  children: OriginRegion[];
+  children: BusinessUnits[];
   type: 'businessUnits';
   id: string;
   attributes: BusinessUnitsAttributes;
+  status: 'inactive' | 'active';
+};
+
+export type BusinessUnitsTreeItem = {
+  id: BusinessUnits['id'];
+  name: BusinessUnits['name'];
+  status: BusinessUnits['status'];
+  children?: BusinessUnitTreeItem[];
 };
 
 type Metadata = {

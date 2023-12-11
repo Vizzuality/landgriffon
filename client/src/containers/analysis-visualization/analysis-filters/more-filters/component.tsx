@@ -26,6 +26,7 @@ import { useMaterialsTrees } from 'hooks/materials';
 import { useAdminRegionsTrees } from 'hooks/admin-regions';
 import { useSuppliersTypes } from 'hooks/suppliers';
 import { useLocationTypes } from 'hooks/location-types';
+import { useBusinessUnitsOptionsTrees } from 'hooks/business-units';
 
 import type { Option } from 'components/forms/select';
 import type { LocationTypes as LocationTyping } from 'containers/interventions/enums';
@@ -38,6 +39,7 @@ type MoreFiltersState = {
   t1Suppliers: AnalysisFiltersState['t1Suppliers'];
   producers: AnalysisFiltersState['producers'];
   locationTypes: AnalysisFiltersState['locationTypes'];
+  businessUnits: AnalysisFiltersState['businessUnits'];
 };
 
 const INITIAL_FILTERS: MoreFiltersState = {
@@ -46,6 +48,7 @@ const INITIAL_FILTERS: MoreFiltersState = {
   t1Suppliers: [],
   producers: [],
   locationTypes: [],
+  businessUnits: [],
 };
 
 interface ApiTreeResponse {
@@ -66,12 +69,12 @@ const MoreFilters = () => {
   const { scenarioId, compareScenarioId } = query;
 
   const dispatch = useAppDispatch();
-  const { materials, origins, t1Suppliers, producers, locationTypes } =
+  const { materials, origins, t1Suppliers, producers, locationTypes, businessUnits } =
     useAppSelector(analysisFilters);
 
   const moreFilters: MoreFiltersState = useMemo(
-    () => ({ materials, origins, t1Suppliers, producers, locationTypes }),
-    [materials, origins, t1Suppliers, producers, locationTypes],
+    () => ({ materials, origins, t1Suppliers, producers, locationTypes, businessUnits }),
+    [materials, origins, t1Suppliers, producers, locationTypes, businessUnits],
   );
 
   const [selectedFilters, setSelectedFilters] = useState(moreFilters);
@@ -225,6 +228,17 @@ const MoreFilters = () => {
     },
   );
 
+  const { data: businessUnitsOptions, isLoading: businessUnitsOptionsIsLoading } =
+    useBusinessUnitsOptionsTrees({
+      depth: 1,
+      withSourcingLocations: true,
+      materialIds,
+      originIds,
+      t1SupplierIds,
+      producerIds,
+      locationTypes: locationTypesIds,
+    });
+
   const reviewFilterContent = useCallback(
     (
       name: keyof MoreFiltersState,
@@ -334,6 +348,29 @@ const MoreFilters = () => {
                       onChange={(values) => handleChangeFilter('materials', values)}
                       id="materials-filter"
                     />
+                  </div>
+                  <div>
+                    <div className="mb-1">Business units</div>
+                    <TreeSelect
+                      showSearch
+                      current={selectedFilters.businessUnits}
+                      loading={businessUnitsOptionsIsLoading}
+                      options={businessUnitsOptions}
+                      placeholder="Business Units"
+                      multiple
+                      fitContent
+                      // onChange={(values) => handleChangeFilter('businessUnits', values)}
+                      id="business-units-filter"
+                    />
+                    {/* <BusinessUnitsFilter
+                      options={businessUnitsOptions}
+                      multiple
+                      current={selectedFilters.businessUnits}
+                      fitContent
+                      loading={businessUnitsOptionsIsLoading}
+                      onChange={(values) => handleChangeFilter('businessUnits', values)}
+                      id="business-units-filter"
+                    /> */}
                   </div>
                   <div>
                     <div className="mb-1">Origins</div>

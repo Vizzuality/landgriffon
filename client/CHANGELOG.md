@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Added a new filter for business units in the analysis page
+
+## [v1.1.0]
+
 ### Fixed
 
 - Enable map popup for h3 contextual layers [LANDGRIF-1484](https://vizzuality.atlassian.net/browse/LANDGRIF-1484)

@@ -83,6 +83,7 @@ export type ImpactTabularAPIParams = {
   producerIds?: Supplier['id'][];
   locationTypes?: string[];
   scenarioId?: string;
+  businessUnitIds?: BusinessUnits['id'][];
 };
 
 type Unit = {

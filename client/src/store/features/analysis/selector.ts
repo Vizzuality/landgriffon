@@ -14,6 +14,7 @@ export const filtersForTabularAPI = createSelector(
     by,
     indicator,
     materials,
+    businessUnits,
     t1Suppliers,
     producers,
     origins,
@@ -30,6 +31,7 @@ export const filtersForTabularAPI = createSelector(
         producerIds: producers?.map(({ value }) => value),
         originIds: origins?.map(({ value }) => value),
         locationTypes: locationTypes?.map(({ value }) => value),
+        businessUnitIds: businessUnits?.map(({ value }) => value),
       };
     }
 

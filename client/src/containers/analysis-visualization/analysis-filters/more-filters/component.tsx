@@ -104,6 +104,11 @@ const MoreFilters = () => {
     [selectedFilters.locationTypes],
   );
 
+  const businessUnitIds = useMemo(
+    () => selectedFilters.businessUnits.map(({ value }) => value),
+    [selectedFilters.businessUnits],
+  );
+
   const [counter, setCounter] = useState(0);
 
   // Only the changes are applied when the user clicks on Apply
@@ -156,6 +161,7 @@ const MoreFilters = () => {
       t1SupplierIds,
       producerIds,
       locationTypes: locationTypesIds,
+      businessUnitIds,
     },
     {
       ...DEFAULT_QUERY_OPTIONS,
@@ -178,6 +184,7 @@ const MoreFilters = () => {
       producerIds,
       locationTypes: locationTypesIds,
       scenarioIds,
+      businessUnitIds,
     },
     DEFAULT_QUERY_OPTIONS,
   );
@@ -190,6 +197,7 @@ const MoreFilters = () => {
       originIds,
       locationTypes: locationTypesIds,
       scenarioIds,
+      businessUnitIds,
     },
     DEFAULT_QUERY_OPTIONS,
   );
@@ -202,6 +210,7 @@ const MoreFilters = () => {
       originIds,
       locationTypes: locationTypesIds,
       scenarioIds,
+      businessUnitIds,
     },
     DEFAULT_QUERY_OPTIONS,
   );
@@ -213,6 +222,7 @@ const MoreFilters = () => {
       t1SupplierIds,
       producerIds,
       scenarioIds,
+      businessUnitIds,
     },
     {
       onSuccess: (_locationTypeOptions) => {
@@ -237,6 +247,7 @@ const MoreFilters = () => {
       t1SupplierIds,
       producerIds,
       locationTypes: locationTypesIds,
+      scenarioIds,
     });
 
   const reviewFilterContent = useCallback(
@@ -264,7 +275,10 @@ const MoreFilters = () => {
     reviewFilterContent('origins', origins, origins);
     reviewFilterContent('t1Suppliers', t1Suppliers, t1SupplierOptions);
     reviewFilterContent('producers', producers, producerOptions);
+    reviewFilterContent('businessUnits', businessUnits, businessUnitsOptions);
   }, [
+    businessUnits,
+    businessUnitsOptions,
     locationTypes,
     materialOptions,
     materials,
@@ -359,18 +373,9 @@ const MoreFilters = () => {
                       placeholder="Business Units"
                       multiple
                       fitContent
-                      // onChange={(values) => handleChangeFilter('businessUnits', values)}
-                      id="business-units-filter"
-                    />
-                    {/* <BusinessUnitsFilter
-                      options={businessUnitsOptions}
-                      multiple
-                      current={selectedFilters.businessUnits}
-                      fitContent
-                      loading={businessUnitsOptionsIsLoading}
                       onChange={(values) => handleChangeFilter('businessUnits', values)}
                       id="business-units-filter"
-                    /> */}
+                    />
                   </div>
                   <div>
                     <div className="mb-1">Origins</div>

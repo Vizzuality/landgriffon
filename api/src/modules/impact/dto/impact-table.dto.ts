@@ -91,7 +91,6 @@ export class BaseImpactTableDto {
   @Type(() => String)
   producerIds?: string[];
 
-  // add a new property for Business-units
   @ApiPropertyOptional({ name: 'businessUnitIds[]' })
   @IsOptional()
   @IsUUID(4, { each: true })

@@ -335,6 +335,4 @@ export class ImpactRepository {
 
     return queryBuilder;
   }
-
-  // use this.dataSource from typeorm to perform queries
 }

@@ -67,6 +67,7 @@ export type ImpactH3APIParams = CommonH3APIParams & {
   producerIds?: Supplier['id'][];
   scenarioId?: Scenario['id'];
   locationTypes?: string[];
+  businessUnitIds?: BusinessUnits['id'][];
 };
 
 export type ContextualH3APIParams = CommonH3APIParams;

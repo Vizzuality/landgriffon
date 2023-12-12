@@ -33,6 +33,7 @@ export type ImpactComparisonParams = {
   startYear: number;
   endYear: number;
   materialIds?: string[];
+  businessUnitIds?: string[];
   originIds?: string[];
   supplierIds?: string[];
   locationTypes?: string[];

@@ -25,6 +25,7 @@ export type BusinessUnitsTreesParams = {
   producerIds?: string[];
   originIds?: string[];
   locationTypes?: string[];
+  scenarioIds?: string[];
 };
 
 export function useBusinessUnits(): ResponseData {
@@ -105,6 +106,7 @@ export const useBusinessUnitsOptionsTrees = <T = BusinessUnitsOption[]>(
       retry: false,
       keepPreviousData: true,
       refetchOnWindowFocus: false,
+      placeholderData: { data: [] },
       ...options,
       select: (_businessUnits) =>
         recursiveSort(_businessUnits?.data, 'name')?.map((item) =>

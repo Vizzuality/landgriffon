@@ -20,6 +20,7 @@ export const storeToQueryParams = ({
   startYear,
   indicator,
   materials,
+  businessUnits,
   t1Suppliers,
   producers,
   origins,
@@ -34,6 +35,7 @@ export const storeToQueryParams = ({
     ...(producers?.length ? { producerIds: producers?.map(({ value }) => value) } : {}),
     ...(origins?.length ? { originIds: origins?.map(({ value }) => value) } : {}),
     ...(locationTypes?.length ? { locationTypes: locationTypes?.map(({ value }) => value) } : {}),
+    ...(businessUnits?.length ? { businessUnitIds: businessUnits?.map(({ value }) => value) } : {}),
     scenarioId: currentScenario,
     resolution: origins?.length ? 6 : 4,
   };

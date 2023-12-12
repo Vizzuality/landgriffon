@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 - Added a new filter for business units in the analysis page
 
+### Fixed
+- Renew token when it is expired
+
 ## [v1.1.0]
 
 ### Fixed

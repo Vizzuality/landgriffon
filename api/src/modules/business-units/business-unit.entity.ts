@@ -53,7 +53,7 @@ export class BusinessUnit extends BaseEntity {
     type: 'enum',
     enum: BUSINESS_UNIT_STATUS,
     enumName: 'entity_status',
-    default: BUSINESS_UNIT_STATUS.INACTIVE,
+    default: BUSINESS_UNIT_STATUS.ACTIVE,
   })
   @ApiProperty()
   status!: BUSINESS_UNIT_STATUS;

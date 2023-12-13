@@ -35,6 +35,8 @@ import {
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { ImpactMaterializedView } from 'modules/impact/views/impact.materialized-view.entity';
+import { BaseImpactMap } from './types/base-impact-map.type';
+import { BaseImpactMapFiltersType } from './types/base-impact-map.filters.type';
 
 export enum IMPACT_MAP_TYPE {
   IMPACT_MAP = 'impact-map',
@@ -394,21 +396,20 @@ export class H3DataRepository extends Repository<H3Data> {
       baseQuery.addSelect('sum(ir.value/ir.scaler)', 'scaled_value');
     };
 
-    return await this.baseGetImpactMap(
-      dto.indicatorId,
-      dto.resolution,
-      dto.year,
-      IMPACT_MAP_TYPE.IMPACT_MAP,
-      false,
-      dto.materialIds,
-      dto.originIds,
-      dto.t1SupplierIds,
-      dto.producerIds,
-      dto.businessUnitIds,
-      dto.locationTypes,
+    return this.baseGetImpactMap({
+      indicatorId: dto.indicatorId,
+      resolution: dto.resolution,
+      year: dto.year,
+      mapType: IMPACT_MAP_TYPE.IMPACT_MAP,
+      isRelative: false,
+      materialIds: dto.materialIds,
+      originIds: dto.originIds,
+      t1SupplierIds: dto.t1SupplierIds,
+      producerIds: dto.producerIds,
+      businessUnitIds: dto.businessUnitIds,
+      locationTypes: dto.locationTypes,
       baseQueryExtend,
-      false,
-    );
+    });
   }
 
   async getActualVsScenarioImpactMap(
@@ -450,21 +451,21 @@ export class H3DataRepository extends Repository<H3Data> {
       baseQuery.addSelect(sumOnlyActualData, 'sum_actual_data');
     };
 
-    return await this.baseGetImpactMap(
-      dto.indicatorId,
-      dto.resolution,
-      dto.year,
-      IMPACT_MAP_TYPE.ACTUAL_VS_SCENARIO,
-      dto.relative,
-      dto.materialIds,
-      dto.originIds,
-      dto.t1SupplierIds,
-      dto.producerIds,
-      dto.businessUnitIds,
-      dto.locationTypes,
+    return this.baseGetImpactMap({
+      indicatorId: dto.indicatorId,
+      resolution: dto.resolution,
+      year: dto.year,
+      mapType: IMPACT_MAP_TYPE.ACTUAL_VS_SCENARIO,
+      isRelative: dto.relative,
+      materialIds: dto.materialIds,
+      originIds: dto.originIds,
+      t1SupplierIds: dto.t1SupplierIds,
+      producerIds: dto.producerIds,
+      businessUnitIds: dto.businessUnitIds,
+      locationTypes: dto.locationTypes,
       baseQueryExtend,
-      true,
-    );
+      scenarioComparisonQuantiles: true,
+    });
   }
 
   async getScenarioVsScenarioImpactMap(
@@ -505,69 +506,59 @@ export class H3DataRepository extends Repository<H3Data> {
       baseQuery.addSelect(sumDataWitComparedScenario, 'sum_compared_scenario');
     };
 
-    return await this.baseGetImpactMap(
-      dto.indicatorId,
-      dto.resolution,
-      dto.year,
-      IMPACT_MAP_TYPE.SCENARIO_VS_SCENARIO,
-      dto.relative,
-      dto.materialIds,
-      dto.originIds,
-      dto.t1SupplierIds,
-      dto.producerIds,
-      dto.businessUnitIds,
-      dto.locationTypes,
+    return this.baseGetImpactMap({
+      indicatorId: dto.indicatorId,
+      resolution: dto.resolution,
+      year: dto.year,
+      mapType: IMPACT_MAP_TYPE.SCENARIO_VS_SCENARIO,
+      isRelative: dto.relative,
+      materialIds: dto.materialIds,
+      originIds: dto.originIds,
+      t1SupplierIds: dto.t1SupplierIds,
+      producerIds: dto.producerIds,
+      businessUnitIds: dto.businessUnitIds,
+      locationTypes: dto.locationTypes,
       baseQueryExtend,
-      true,
-    );
+      scenarioComparisonQuantiles: true,
+    });
   }
 
   //TODO Pending refactoring of Quantiles temp table, and aggregation formulas
   private async baseGetImpactMap(
-    indicatorId: string,
-    resolution: number,
-    year: number,
-    mapType: IMPACT_MAP_TYPE,
-    isRelative?: boolean,
-    materialIds?: string[],
-    originIds?: string[],
-    t1SupplierIds?: string[],
-    producerIds?: string[],
-    businessUnitIds?: string[],
-    locationTypes?: LOCATION_TYPES[],
-    baseQueryExtend?: (baseQuery: SelectQueryBuilder<any>) => void,
-    scenarioComparisonQuantiles?: boolean,
+    baseImpactMap: BaseImpactMap,
   ): Promise<{ impactMap: H3IndexValueData[]; quantiles: number[] }> {
     let baseMapQuery: SelectQueryBuilder<any> = this.baseMapQuery(
-      indicatorId,
-      year,
+      baseImpactMap.indicatorId,
+      baseImpactMap.year,
     );
 
-    baseMapQuery = this.addFiltering(
-      baseMapQuery,
-      materialIds,
-      t1SupplierIds,
-      producerIds,
-      originIds,
-      businessUnitIds,
-      locationTypes,
+    baseMapQuery = this.addOrganisationalEntityFilters(
+      {
+        materialIds: baseImpactMap.materialIds,
+        originIds: baseImpactMap.originIds,
+        t1SupplierIds: baseImpactMap.t1SupplierIds,
+        producerIds: baseImpactMap.producerIds,
+        businessUnitIds: baseImpactMap.businessUnitIds,
+        locationTypes: baseImpactMap.locationTypes,
+      },
+      { subQueryBuilder: baseMapQuery },
     );
 
-    if (baseQueryExtend) {
-      baseQueryExtend(baseMapQuery);
+    if (baseImpactMap.baseQueryExtend) {
+      baseImpactMap.baseQueryExtend(baseMapQuery);
     }
 
     const aggregatedResultQuery: SelectQueryBuilder<any> =
       this.getAggregatedValuedByH3IndexAndResolution(
         baseMapQuery,
-        resolution,
-        mapType,
+        baseImpactMap.resolution,
+        baseImpactMap.mapType,
       );
     const finalQueryBuiler: SelectQueryBuilder<any> =
       this.dataSource.createQueryBuilder();
-    if (mapType !== IMPACT_MAP_TYPE.IMPACT_MAP) {
-      if (mapType === IMPACT_MAP_TYPE.ACTUAL_VS_SCENARIO) {
-        if (isRelative) {
+    if (baseImpactMap.mapType !== IMPACT_MAP_TYPE.IMPACT_MAP) {
+      if (baseImpactMap.mapType === IMPACT_MAP_TYPE.ACTUAL_VS_SCENARIO) {
+        if (baseImpactMap.isRelative) {
           finalQueryBuiler.select(
             '100 * (ABS(q.aggregated_scenario_data) - ABS(q.aggregated_actual_data)) / NULLIF(((ABS(q.aggregated_scenario_data) + ABS(q.aggregated_actual_data)) / 2), 0)',
             'v',
@@ -579,8 +570,8 @@ export class H3DataRepository extends Repository<H3Data> {
           );
         }
       }
-      if (mapType === IMPACT_MAP_TYPE.SCENARIO_VS_SCENARIO) {
-        if (isRelative) {
+      if (baseImpactMap.mapType === IMPACT_MAP_TYPE.SCENARIO_VS_SCENARIO) {
+        if (baseImpactMap.isRelative) {
           finalQueryBuiler.select(
             '100 * (ABS(q.aggregated_compared) - ABS(q.aggregated_base)) / NULLIF(((ABS(q.aggregated_compared) + ABS(q.aggregated_base)) / 2), 0)',
             'v',
@@ -599,11 +590,11 @@ export class H3DataRepository extends Repository<H3Data> {
     const [queryString, params] = baseMapQuery.getQueryAndParameters();
 
     return this.executeQueryAndQuantiles(
-      mapType === IMPACT_MAP_TYPE.IMPACT_MAP
+      baseImpactMap.mapType === IMPACT_MAP_TYPE.IMPACT_MAP
         ? aggregatedResultQuery
         : finalQueryBuiler,
       params,
-      scenarioComparisonQuantiles,
+      baseImpactMap.scenarioComparisonQuantiles,
     );
   }
 
@@ -668,46 +659,50 @@ export class H3DataRepository extends Repository<H3Data> {
     );
   }
 
-  private addFiltering(
-    subqueryBuilder: SelectQueryBuilder<any>,
-    materialIds?: string[],
-    t1SupplierIds?: string[],
-    producerIds?: string[],
-    originIds?: string[],
-    businessUnitIds?: string[],
-    locationTypes?: string[],
+  private addOrganisationalEntityFilters(
+    baseImpactMapFilters: BaseImpactMapFiltersType,
+    queryBuilder: { subQueryBuilder: SelectQueryBuilder<any> },
   ): SelectQueryBuilder<any> {
+    const {
+      materialIds,
+      originIds,
+      businessUnitIds,
+      producerIds,
+      t1SupplierIds,
+      locationTypes,
+    } = baseImpactMapFilters;
+    const { subQueryBuilder } = queryBuilder;
     if (materialIds) {
-      subqueryBuilder.andWhere('sl.material IN (:...materialIds)', {
+      subQueryBuilder.andWhere('sl.material IN (:...materialIds)', {
         materialIds,
       });
     }
     if (t1SupplierIds) {
-      subqueryBuilder.andWhere('sl.t1SupplierId IN (:...t1SupplierIds)', {
+      subQueryBuilder.andWhere('sl.t1SupplierId IN (:...t1SupplierIds)', {
         t1SupplierIds,
       });
     }
     if (producerIds) {
-      subqueryBuilder.andWhere('sl.producerId IN (:...producerIds)', {
+      subQueryBuilder.andWhere('sl.producerId IN (:...producerIds)', {
         producerIds,
       });
     }
     if (originIds) {
-      subqueryBuilder.andWhere('sl.adminRegionId IN (:...originIds)', {
+      subQueryBuilder.andWhere('sl.adminRegionId IN (:...originIds)', {
         originIds,
       });
     }
     if (businessUnitIds) {
-      subqueryBuilder.andWhere('sl.businessUnitId IN (:...businessUnitIds)', {
+      subQueryBuilder.andWhere('sl.businessUnitId IN (:...businessUnitIds)', {
         businessUnitIds,
       });
     }
     if (locationTypes) {
-      subqueryBuilder.andWhere('sl.locationType IN (:...locationTypes)', {
+      subQueryBuilder.andWhere('sl.locationType IN (:...locationTypes)', {
         locationTypes,
       });
     }
-    return subqueryBuilder;
+    return subQueryBuilder;
   }
 
   /**

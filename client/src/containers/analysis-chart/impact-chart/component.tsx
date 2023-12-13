@@ -140,10 +140,21 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
 
       const LEGEND_ROW = rows?.find((row) => row.name === legendKey);
 
+      if (legendKey === 'Others' && numberOfAggregatedEntities && numberOfAggregatedEntities > 0) {
+        result.push({
+          date: year,
+          Others: aggregatedValues?.find((aggregatedValue) => aggregatedValue?.year === year)
+            ?.value,
+          ...(aggregatedValues?.isProjected && {
+            [`projected-${LEGEND_ROW.name}`]: aggregatedValues?.value,
+          }),
+        });
+      }
       if (!LEGEND_ROW) return [];
 
       if (!LEGEND_ROW?.children.length) {
         const yearValues = LEGEND_ROW?.values.find((rowValues) => rowValues?.year === year);
+
         result.push({
           date: year,
           [LEGEND_ROW.name]: yearValues?.value,

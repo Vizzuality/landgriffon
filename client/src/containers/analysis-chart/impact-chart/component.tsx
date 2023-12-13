@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import omit from 'lodash-es/omit';
 import chroma from 'chroma-js';
 import {
@@ -32,10 +32,10 @@ type StackedAreaChartProps = {
 const COLOR_SCALE = chroma.scale(['#2E34B0', '#5462D8', '#828EF5', '#B9C0FF', '#E3EEFF']);
 
 const defaultOpacity = 0.9;
-const alternativeOpacity = 0.1;
 
 const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
-  const [itemOpacity, setItemOpacity] = useState<Record<string, number>>({});
+  const [legendKey, setLegendKey] = useState<string | null>(null);
+
   const filters = useAppSelector(filtersForTabularAPI);
   const { currentScenario: scenarioId } = useAppSelector(scenarios);
 
@@ -72,6 +72,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
       metadata,
       others = {},
     } = data?.impactTable?.[0] || {};
+
     const { numberOfAggregatedEntities, aggregatedValues } = others;
     const result = [];
     const keys = [];
@@ -79,6 +80,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
 
     yearSum?.forEach(({ year }) => {
       const items = {};
+
       rows?.forEach((row) => {
         const yearValues = row?.values.find((rowValues) => rowValues?.year === year);
         items[row.name] = yearValues?.value;
@@ -87,6 +89,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
           items[`projected-${row.name}`] = yearValues?.value;
         }
       });
+
       if (numberOfAggregatedEntities && numberOfAggregatedEntities > 0) {
         items['Others'] = aggregatedValues?.find(
           (aggregatedValue) => aggregatedValue?.year === year,
@@ -101,9 +104,6 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
     }
 
     const colorScale = COLOR_SCALE.colors(keys.length);
-
-    // Setting default item opacity
-    setItemOpacity(opacities);
 
     return {
       values: result,
@@ -121,30 +121,107 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
     };
   }, [data]);
 
+  const subchartData = useMemo(() => {
+    const {
+      indicatorShortName,
+      rows,
+      yearSum,
+      metadata,
+      others = {},
+    } = data?.impactTable?.[0] || {};
+
+    const { numberOfAggregatedEntities, aggregatedValues } = others;
+    const result = [];
+    const keys = [];
+    let opacities = {};
+
+    yearSum?.forEach(({ year }) => {
+      const items = {};
+
+      const LEGEND_ROW = rows?.find((row) => row.name === legendKey);
+
+      if (!LEGEND_ROW) return [];
+
+      if (!LEGEND_ROW?.children.length) {
+        const yearValues = LEGEND_ROW?.values.find((rowValues) => rowValues?.year === year);
+        result.push({
+          date: year,
+          [LEGEND_ROW.name]: yearValues?.value,
+          ...(yearValues?.isProjected && {
+            [`projected-${LEGEND_ROW.name}`]: yearValues?.value,
+          }),
+        });
+      }
+
+      if (LEGEND_ROW?.children.length) {
+        LEGEND_ROW.children?.forEach((row) => {
+          const yearValues = row?.values.find((rowValues) => rowValues?.year === year);
+          items[row.name] = yearValues?.value;
+          opacities = { ...opacities, [row.name]: 0.9 };
+          if (yearValues.isProjected) {
+            items[`projected-${row.name}`] = yearValues?.value;
+          }
+        });
+
+        if (numberOfAggregatedEntities && numberOfAggregatedEntities > 0) {
+          items['Others'] = aggregatedValues?.find(
+            (aggregatedValue) => aggregatedValue?.year === year,
+          )?.value;
+          opacities = { ...opacities, Others: 0.9 };
+        }
+        result.push({ date: year, ...items });
+      }
+    });
+
+    if (result.length > 0) {
+      Object.keys(result[0]).forEach((key) => key !== 'date' && keys.push(key));
+    }
+
+    const colorScale = COLOR_SCALE.colors(keys.length);
+
+    return {
+      values: result,
+      keys: keys.filter((key) => key !== 'date' && !key.startsWith('projected-')),
+      name: indicatorShortName,
+      unit: metadata?.unit,
+      colors: keys.reduce(
+        (acc, k, i) => ({
+          ...acc,
+          [k]: k === 'Other' || k === 'Others' ? '#E4E4E4' : colorScale[i],
+        }),
+        {},
+      ),
+      opacities,
+    };
+  }, [data, legendKey]);
+
+  const CHART_DATA = legendKey ? subchartData : chartData;
+
   /**
    * Toggle legend opacity
    */
   const handleLegendClick = useCallback(
     (obj) => {
-      const { dataKey } = obj;
-      const newOpacities = {
-        ...itemOpacity,
-        [dataKey]: defaultOpacity,
-      };
-      Object.keys(newOpacities).forEach((key) => {
-        if (key !== dataKey && itemOpacity[dataKey] === alternativeOpacity) {
-          newOpacities[key] = alternativeOpacity;
-        } else if (key !== dataKey) {
-          newOpacities[key] =
-            newOpacities[key] === defaultOpacity ? alternativeOpacity : defaultOpacity;
-        }
-      });
-      setItemOpacity(newOpacities);
+      const { id } = obj;
+
+      if (legendKey === id) {
+        setLegendKey(null);
+        return;
+      }
+
+      setLegendKey(id);
     },
-    [itemOpacity],
+    [legendKey],
   );
 
-  const renderLegend = useCallback((props: ExtendedLegendProps) => <CustomLegend {...props} />, []);
+  useEffect(() => {
+    setLegendKey(null);
+  }, [filters]);
+
+  const renderLegend = useCallback(
+    (props: ExtendedLegendProps) => <CustomLegend {...props} legendKey={legendKey} />,
+    [legendKey],
+  );
 
   const renderTooltip = useCallback((props) => {
     if (props && props.active && props.payload && props.payload.length) {
@@ -167,7 +244,8 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
             <div className="h-[370px] text-xs">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
-                  data={chartData.values}
+                  key={legendKey}
+                  data={CHART_DATA.values}
                   margin={{
                     top: 0,
                     right: 20,
@@ -192,12 +270,20 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                       ></rect>
                     </pattern>
                   </defs>
+
                   <Legend
                     verticalAlign="top"
                     content={renderLegend}
                     height={90}
+                    payload={chartData.keys.map((key) => ({
+                      id: key,
+                      value: key,
+                      color: chartData.colors[key],
+                      fillOpacity: chartData.opacities[key],
+                    }))}
                     onClick={handleLegendClick}
                   />
+
                   <CartesianGrid
                     vertical={false}
                     stroke="#15181F"
@@ -221,33 +307,34 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                   <Tooltip<number, string>
                     animationDuration={500}
                     contentStyle={{ borderRadius: '8px', borderColor: '#D1D5DB' }}
+                    wrapperStyle={{ zIndex: 1000 }}
                     content={renderTooltip}
                   />
-                  {chartData.keys.map((key) => (
+                  {CHART_DATA.keys.map((key) => (
                     <Area
                       key={key}
                       type="monotone"
                       dataKey={key}
                       stackId="all"
-                      stroke={chartData.colors[key]}
+                      stroke={CHART_DATA.colors[key]}
                       strokeWidth={0}
-                      fill={chartData.colors[key]}
-                      fillOpacity={itemOpacity[key] || defaultOpacity}
+                      fill={CHART_DATA.colors[key]}
+                      fillOpacity={defaultOpacity}
                       animationEasing="ease"
                       animationDuration={500}
-                      opacity={itemOpacity[key] || defaultOpacity}
+                      opacity={defaultOpacity}
                     />
                   ))}
-                  {chartData.keys.map((key) => (
+                  {CHART_DATA.keys.map((key) => (
                     <Area
                       key={`projected-${key}`}
                       type="monotone"
                       dataKey={`projected-${key}`}
                       stackId="projected"
-                      stroke={chartData.colors[key]}
+                      stroke={CHART_DATA.colors[key]}
                       strokeWidth={0}
                       fill="url(#patternStripe)"
-                      fillOpacity={itemOpacity[key] || defaultOpacity}
+                      fillOpacity={defaultOpacity}
                       animationEasing="ease"
                       animationDuration={500}
                       tooltipType="none"

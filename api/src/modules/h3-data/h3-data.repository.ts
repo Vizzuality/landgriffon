@@ -404,6 +404,7 @@ export class H3DataRepository extends Repository<H3Data> {
       dto.originIds,
       dto.t1SupplierIds,
       dto.producerIds,
+      dto.businessUnitIds,
       dto.locationTypes,
       baseQueryExtend,
       false,
@@ -459,6 +460,7 @@ export class H3DataRepository extends Repository<H3Data> {
       dto.originIds,
       dto.t1SupplierIds,
       dto.producerIds,
+      dto.businessUnitIds,
       dto.locationTypes,
       baseQueryExtend,
       true,
@@ -513,6 +515,7 @@ export class H3DataRepository extends Repository<H3Data> {
       dto.originIds,
       dto.t1SupplierIds,
       dto.producerIds,
+      dto.businessUnitIds,
       dto.locationTypes,
       baseQueryExtend,
       true,
@@ -530,6 +533,7 @@ export class H3DataRepository extends Repository<H3Data> {
     originIds?: string[],
     t1SupplierIds?: string[],
     producerIds?: string[],
+    businessUnitIds?: string[],
     locationTypes?: LOCATION_TYPES[],
     baseQueryExtend?: (baseQuery: SelectQueryBuilder<any>) => void,
     scenarioComparisonQuantiles?: boolean,
@@ -545,6 +549,7 @@ export class H3DataRepository extends Repository<H3Data> {
       t1SupplierIds,
       producerIds,
       originIds,
+      businessUnitIds,
       locationTypes,
     );
 
@@ -669,6 +674,7 @@ export class H3DataRepository extends Repository<H3Data> {
     t1SupplierIds?: string[],
     producerIds?: string[],
     originIds?: string[],
+    businessUnitIds?: string[],
     locationTypes?: string[],
   ): SelectQueryBuilder<any> {
     if (materialIds) {
@@ -689,6 +695,11 @@ export class H3DataRepository extends Repository<H3Data> {
     if (originIds) {
       subqueryBuilder.andWhere('sl.adminRegionId IN (:...originIds)', {
         originIds,
+      });
+    }
+    if (businessUnitIds) {
+      subqueryBuilder.andWhere('sl.businessUnitId IN (:...businessUnitIds)', {
+        businessUnitIds,
       });
     }
     if (locationTypes) {

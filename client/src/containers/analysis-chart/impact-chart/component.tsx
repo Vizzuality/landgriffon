@@ -29,9 +29,10 @@ type StackedAreaChartProps = {
   indicator: Indicator;
 };
 
-const COLOR_SCALE = chroma.scale(['#2E34B0', '#5462D8', '#828EF5', '#B9C0FF', '#E3EEFF']);
+const COLORS = ['#1C44C3', '#5DBCC5', '#ED8F23', '#3D8CE7', '#E2564F'];
+const COLOR_SCALE = chroma.scale(COLORS);
 
-const defaultOpacity = 0.9;
+const defaultOpacity = 1;
 
 const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
   const [legendKey, setLegendKey] = useState<string | null>(null);
@@ -103,7 +104,10 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
       Object.keys(result[0]).forEach((key) => key !== 'date' && keys.push(key));
     }
 
-    const colorScale = COLOR_SCALE.colors(keys.length);
+    const colorScale =
+      keys.filter((k) => k !== 'Others').length > COLORS.length
+        ? COLOR_SCALE.colors(keys.length)
+        : COLORS;
 
     return {
       values: result,
@@ -134,6 +138,8 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
     const result = [];
     const keys = [];
     let opacities = {};
+
+    const LEGEND_INDEX = rows?.findIndex((row) => row.name === legendKey);
 
     yearSum?.forEach(({ year }) => {
       const items = {};
@@ -188,7 +194,10 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
       Object.keys(result[0]).forEach((key) => key !== 'date' && keys.push(key));
     }
 
-    const colorScale = COLOR_SCALE.colors(keys.length);
+    const c = COLORS[LEGEND_INDEX] || '#1C44C3';
+    const SUB_COLOR_SCALE = chroma.scale([c, chroma(c).brighten(3)]);
+
+    const colorScale = SUB_COLOR_SCALE.colors(keys.length);
 
     return {
       values: result,
@@ -315,12 +324,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                     tickLine={false}
                     tickFormatter={NUMBER_FORMAT}
                   />
-                  <Tooltip<number, string>
-                    animationDuration={500}
-                    contentStyle={{ borderRadius: '8px', borderColor: '#D1D5DB' }}
-                    wrapperStyle={{ zIndex: 1000 }}
-                    content={renderTooltip}
-                  />
+
                   {CHART_DATA.keys.map((key) => (
                     <Area
                       key={key}
@@ -352,6 +356,12 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                       legendType="none"
                     />
                   ))}
+                  <Tooltip<number, string>
+                    animationDuration={500}
+                    contentStyle={{ borderRadius: '8px', borderColor: '#D1D5DB' }}
+                    wrapperStyle={{ zIndex: 1000 }}
+                    content={renderTooltip}
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             </div>

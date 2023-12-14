@@ -20,6 +20,7 @@ import { GetBusinessUnitTreeWithOptionsDto } from 'modules/business-units/dto/ge
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { MaterialsService } from 'modules/materials/materials.service';
+import { In } from 'typeorm';
 
 @Injectable()
 export class BusinessUnitsService extends AppBaseService<
@@ -63,7 +64,7 @@ export class BusinessUnitsService extends AppBaseService<
   }
 
   async getBusinessUnitsById(ids: string[]): Promise<BusinessUnit[]> {
-    return this.businessUnitRepository.findByIds(ids);
+    return this.businessUnitRepository.findBy({ id: In(ids) });
   }
 
   async save(
@@ -83,7 +84,6 @@ export class BusinessUnitsService extends AppBaseService<
     await this.businessUnitRepository.delete({});
   }
 
-  // TODO: Implement Tree response similar to other entities as Admin-Regions
   async getTrees(
     businessUnitTreeOptions: GetBusinessUnitTreeWithOptionsDto,
   ): Promise<BusinessUnit[]> {

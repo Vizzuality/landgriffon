@@ -41,7 +41,7 @@ const SignIn: NextPageWithLayout = () => {
       { email: data.email },
       {
         onError: (error) => {
-          toast.error(error.message);
+          toast.error(error.response?.data?.errors?.[0].title || error.message);
         },
       },
     );

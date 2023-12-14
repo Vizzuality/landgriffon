@@ -19,7 +19,7 @@ const AnalysisLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
       <TitleTemplate title="Analysis" />
 
       <aside className="relative flex-shrink-0 h-full bg-white rounded-tl-3xl">
-        <div className="absolute right-0 z-10 transform translate-x-1/2 top-6">
+        <div className="absolute right-0 z-40 transform translate-x-1/2 top-6">
           <CollapseButton />
         </div>
         <Transition

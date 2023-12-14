@@ -38,6 +38,7 @@ import { AuthorizationModule } from 'modules/authorization/authorization.module'
 import { AuthorizationService } from 'modules/authorization/authorization.service';
 import { TasksService } from 'modules/tasks/tasks.service';
 import { NotificationsModule } from 'modules/notifications/notifications.module';
+import { ReportsModule } from 'modules/reports/reports.module';
 
 const queueConfig: any = config.get('queue');
 
@@ -82,6 +83,7 @@ const queueConfig: any = config.get('queue');
     UsersModule,
     AuthorizationModule,
     NotificationsModule,
+    ReportsModule,
   ],
   providers: [
     {

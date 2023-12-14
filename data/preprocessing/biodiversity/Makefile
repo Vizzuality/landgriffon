@@ -13,7 +13,7 @@ all: download_forest_landscape_integrity_loss resample_forest_landscape_integrit
 download_forest_landscape_integrity_loss:
 	mkdir -p $(data_dir)
 	gsutil -m cp \
-		"gs://landgriffon-gee-bucket/landscape_indicators_20230821/natural_crop_flii_loss_by_human_lu_50km_1000m.tif" \
+		"gs://landgriffon-gee-bucket/landscape_indicators_20231023/natural_crop_flii_loss_by_human_lu_50km_1000m.tif" \
 		$(data_dir)
 
 # download the biodiversity integrity data

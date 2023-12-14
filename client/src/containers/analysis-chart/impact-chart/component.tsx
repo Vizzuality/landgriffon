@@ -180,12 +180,6 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
           }
         });
 
-        if (numberOfAggregatedEntities && numberOfAggregatedEntities > 0) {
-          items['Others'] = aggregatedValues?.find(
-            (aggregatedValue) => aggregatedValue?.year === year,
-          )?.value;
-          opacities = { ...opacities, Others: 0.9 };
-        }
         result.push({ date: year, ...items });
       }
     });

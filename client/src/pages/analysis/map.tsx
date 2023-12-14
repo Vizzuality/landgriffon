@@ -39,18 +39,25 @@ MapPage.Layout = function getLayout(page: ReactElement) {
 };
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
-  const tasks = await tasksSSR({ req, res });
-
-  if (tasks && tasks[0]?.attributes.status === 'processing') {
+  try {
+    const tasks = await tasksSSR({ req, res });
+    if (tasks && tasks[0]?.attributes.status === 'processing') {
+      return {
+        redirect: {
+          permanent: false,
+          destination: '/data',
+        },
+      };
+    }
+    return { props: { query } };
+  } catch (error) {
     return {
       redirect: {
         permanent: false,
-        destination: '/data',
+        destination: '/auth/signin',
       },
     };
   }
-
-  return { props: { query } };
 };
 
 export default MapPage;

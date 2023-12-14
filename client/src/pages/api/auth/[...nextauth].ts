@@ -67,29 +67,31 @@ export const options: NextAuthOptions = {
 
   callbacks: {
     // Assigning encoded token from API to token created in the session
-    async jwt({ token, user }) {
+    jwt({ token, user }) {
       const newToken = { ...token };
 
       if (user) {
         const { accessToken } = user;
         newToken.accessToken = accessToken as string;
+
+        // If it's not expired, return the token,
+        // if (Date.now() / 1000 + TIME_TO_REFRESH_TOKEN < (newToken?.exp as number)) {
+        //   return newToken;
+        // }
+
+        // otherwise, refresh token
+        // const refreshTokenRequest = await authService.request({
+        //   url: '/refresh-token',
+        //   method: 'POST',
+        //   data: {},
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //     Authorization: `Bearer ${newToken.accessToken}`,
+        //   },
+        // });
+
+        // newToken.accessToken = refreshTokenRequest.data.accessToken;
       }
-
-      // Checking if token is expired
-      if (Date.now() / 1000 > (newToken?.exp as number)) return newToken;
-
-      // refresh token if it's expired
-      const refreshTokenRequest = await authService.request({
-        url: '/refresh-token',
-        method: 'POST',
-        data: {},
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${newToken.accessToken}`,
-        },
-      });
-
-      newToken.accessToken = refreshTokenRequest.data.accessToken;
 
       return newToken;
     },

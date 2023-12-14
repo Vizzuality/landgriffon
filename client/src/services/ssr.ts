@@ -7,6 +7,11 @@ export const sessionSSR = async ({ req, res }) => await getServerSession(req, re
 
 export const tasksSSR = async ({ req, res }) => {
   const session = await sessionSSR({ req, res });
+
+  if (!session) {
+    throw Error('Unauthorized');
+  }
+
   return await axios({
     method: 'GET',
     url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/tasks`,

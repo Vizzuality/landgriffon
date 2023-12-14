@@ -17,7 +17,10 @@ import {
   UpdateTaskDto,
 } from 'modules/tasks/dto/update-task.dto';
 import { GetReportsDto } from 'modules/tasks/dto/get-reports.dto';
-import { ErrorRecord, ReportService } from 'modules/tasks/report.service';
+import {
+  ErrorRecord,
+  TaskReportService,
+} from 'modules/tasks/task-report.service';
 
 @Injectable()
 export class TasksService extends AppBaseService<
@@ -28,7 +31,7 @@ export class TasksService extends AppBaseService<
 > {
   constructor(
     public readonly taskRepository: TasksRepository,
-    public readonly reportService: ReportService,
+    public readonly reportService: TaskReportService,
   ) {
     super(
       taskRepository,
@@ -141,8 +144,6 @@ export class TasksService extends AppBaseService<
       throw new NotFoundException(`Could not found Task with ID: ${taskId}`);
     }
     const { errors } = task;
-    return this.reportService.generateImportErrorReportStream(
-      errors as ErrorRecord[],
-    );
+    return this.reportService.createImportErrorReport(errors as ErrorRecord[]);
   }
 }

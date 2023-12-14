@@ -33,7 +33,7 @@ const LegendChart: React.FC<ExtendedLegendProps> = ({
             <li
               key={item.value}
               className={classNames(
-                'flex items-center space-x-1 cursor-pointer border py-0.5 px-1 rounded',
+                'flex items-center space-x-1 cursor-pointer border py-0.5 px-1 rounded hover:border-black',
                 {
                   'opacity-50': legendKey && legendKey !== item.id,
                 },

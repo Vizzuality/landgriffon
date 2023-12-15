@@ -89,12 +89,14 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
     }
     return { props: { query } };
   } catch (error) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: '/auth/signin',
-      },
-    };
+    if (error.response.status === 401) {
+      return {
+        redirect: {
+          permanent: false,
+          destination: '/auth/signin',
+        },
+      };
+    }
   }
 };
 

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { getServerSession } from 'next-auth/next';
 
 import { options as authOptions } from 'pages/api/auth/[...nextauth]';
@@ -9,7 +9,7 @@ export const tasksSSR = async ({ req, res }) => {
   const session = await sessionSSR({ req, res });
 
   if (!session) {
-    throw Error('Unauthorized');
+    throw new AxiosError('Unauthorized', '401');
   }
 
   return await axios({

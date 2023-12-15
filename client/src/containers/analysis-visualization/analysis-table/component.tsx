@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { DownloadIcon, InformationCircleIcon } from '@heroicons/react/outline';
 import { uniq, omit } from 'lodash-es';
+import toast from 'react-hot-toast';
 import { ArrowLeftIcon } from '@heroicons/react/solid';
 
 import ComparisonCell from './comparison-cell/component';
@@ -10,14 +11,15 @@ import { useAppSelector } from 'store/hooks';
 import { filtersForTabularAPI } from 'store/features/analysis/selector';
 import { scenarios } from 'store/features/analysis/scenarios';
 import { useIndicators } from 'hooks/indicators';
-import { useImpactData } from 'hooks/impact';
+import { useImpactData, useDownloadImpactData } from 'hooks/impact';
 import { useImpactComparison, useImpactScenarioComparison } from 'hooks/impact/comparison';
 import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
-import { Anchor, Button } from 'components/button';
+import { Button } from 'components/button';
 import Table from 'components/table/component';
 import { NUMBER_FORMAT } from 'utils/number-format';
 import { DEFAULT_PAGE_SIZES } from 'components/table/pagination/constants';
 import { useIndicatorParam } from 'utils/indicator-param';
+import { handleResponseError } from 'services/api';
 
 import type {
   ExpandedState,
@@ -32,37 +34,12 @@ import type { ColumnDefinition } from 'components/table/column';
 import type { ChartData } from './chart-cell/types';
 import type { ComparisonMode, ImpactRowType, ImpactTableValueItem } from './types';
 
-type AnalysisTableProps<Mode extends ComparisonMode> = TableProps<ImpactRowType<Mode>>;
-
 const NUMBER_FORMATTER = NUMBER_FORMAT;
 
 const isParentRow = <Mode extends ComparisonMode>(
   row: ImpactRowType<Mode, true | false>,
 ): row is ImpactRowType<Mode, true> => {
   return 'metadata' in row;
-};
-
-const dataToCsv = <Mode extends ComparisonMode>(tableData: AnalysisTableProps<Mode>): string => {
-  const LINE_SEPARATOR = '\r\n';
-
-  if (!tableData) return null;
-  let str = 'data:text/csv;charset=utf-8,';
-  str +=
-    tableData.columns
-      // .filter(({ dataType }) => ['number', 'string'].includes(dataType))
-      .map((column) => column.header || column.id)
-      .join(';') + LINE_SEPARATOR;
-
-  tableData.data?.forEach(({ name, values }) => {
-    const rowData: (string | number)[] = [name];
-    (values as unknown[] as ImpactRowType<false>['values'])?.forEach(({ value }) => {
-      rowData.push(value);
-    });
-
-    str += rowData.join(';') + LINE_SEPARATOR;
-  });
-
-  return str;
 };
 
 const AnalysisTable = () => {
@@ -87,6 +64,12 @@ const AnalysisTable = () => {
     { 'filter[status]': 'active' },
     { select: (data) => data.data },
   );
+  const downloadImpactData = useDownloadImpactData({
+    onSuccess: () => {
+      toast.success('Data was downloaded successfully');
+    },
+    onError: handleResponseError,
+  });
 
   const filters = useAppSelector(filtersForTabularAPI);
 
@@ -189,6 +172,18 @@ const AnalysisTable = () => {
     if (!impactTable) return null;
     return impactTable[0]?.rows[0]?.values.find((value) => value.isProjected)?.year;
   }, [impactTable]);
+
+  const handleDownloadData = useCallback(() => {
+    const csv = downloadImpactData.mutate();
+    // if (csv) {
+    //   const link = document.createElement('a');
+    //   link.setAttribute('href', csv);
+    //   link.setAttribute('download', 'data.csv');
+    //   document.body.appendChild(link);
+    //   link.click();
+    //   document.body.removeChild(link);
+    // }
+  }, [downloadImpactData]);
 
   const handleExpandedChange = useCallback(
     <Mode extends ComparisonMode>(table: TableType<ImpactRowType<Mode>>) => {
@@ -467,25 +462,22 @@ const AnalysisTable = () => {
     ],
   );
 
-  const csv = useMemo<string | null>(() => encodeURI(dataToCsv(tableProps)), [tableProps]);
-
   return (
     <div className="flex flex-col flex-1">
       <div className="flex justify-between px-6">
         <div className="flex items-end justify-between w-full">
           <AnalysisDynamicMetadata />
           <div>
-            <Anchor
-              href={csv}
+            <Button
               variant="secondary"
               size="base"
               className="flex-shrink-0"
               disabled={isLoading}
-              download="report.csv"
               icon={<DownloadIcon />}
+              onClick={handleDownloadData}
             >
               Download Data
-            </Anchor>
+            </Button>
           </div>
         </div>
       </div>

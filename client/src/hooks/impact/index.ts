@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { apiRawService } from 'services/api';
 
@@ -63,4 +63,14 @@ export const useImpactData = <T = ImpactDataApiResponse<false>>(
   );
 
   return query;
+};
+
+export const useDownloadImpactData = (options) => {
+  const requestDownload = () =>
+    apiRawService.get('/impact/table/report').then((response) => response.data);
+  const mutation = useMutation(requestDownload, {
+    mutationKey: ['download-impact-data'],
+    ...options,
+  });
+  return mutation;
 };

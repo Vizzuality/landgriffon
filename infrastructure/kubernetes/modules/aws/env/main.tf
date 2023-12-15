@@ -1,3 +1,56 @@
+locals {
+  default_api_env_vars_map = {
+    for env in [
+      {
+        name  = "PORT"
+        value = 3000
+      },
+      {
+        name  = "CLIENT_URL"
+        value = module.k8s_ingress.client_url
+      },
+      {
+        name  = "CLIENT_PORT"
+        value = 80
+      },
+      {
+        name  = "JWT_EXPIRES_IN"
+        value = "2h"
+      },
+      {
+        name  = "DISTRIBUTED_MAP"
+        value = "true"
+      },
+      {
+        name  = "REQUIRE_USER_AUTH"
+        value = "true"
+      },
+      {
+        name  = "REQUIRE_USER_ACCOUNT_ACTIVATION"
+        value = "true"
+      },
+      {
+        name  = "USE_NEW_METHODOLOGY"
+        value = "true"
+      },
+      {
+        name  = "FILE_SIZE_LIMIT"
+        value = 31457280
+      }
+    ] : env.name => env.value
+  }
+  overlapping_api_env_vars_map = {
+    for env in var.api_env_vars : env.name => env.value
+  }
+  api_env_vars_map = merge(local.default_api_env_vars_map, local.overlapping_api_env_vars_map)
+  api_env_vars     = [
+    for name, value in local.api_env_vars_map : {
+      name  = name
+      value = value
+    }
+  ]
+}
+
 module "k8s_namespace" {
   source    = "../../k8s_namespace"
   namespace = var.environment
@@ -87,44 +140,7 @@ module "k8s_api" {
 
   ])
 
-  env_vars = concat(var.api_env_vars, [
-    {
-      name  = "PORT"
-      value = 3000
-    },
-    {
-      name  = "CLIENT_URL"
-      value = module.k8s_ingress.client_url
-    },
-    {
-      name  = "CLIENT_PORT"
-      value = 80
-    },
-    {
-      name  = "JWT_EXPIRES_IN"
-      value = "2h"
-    },
-    {
-      name  = "DISTRIBUTED_MAP"
-      value = "true"
-    },
-    {
-      name  = "REQUIRE_USER_AUTH"
-      value = "true"
-    },
-    {
-      name  = "REQUIRE_USER_ACCOUNT_ACTIVATION"
-      value = "true"
-    },
-    {
-      name  = "USE_NEW_METHODOLOGY"
-      value = "true"
-    },
-    {
-      name  = "FILE_SIZE_LIMIT"
-      value = 31457280
-    }
-  ])
+  env_vars = local.api_env_vars
 
   depends_on = [
     module.k8s_namespace,

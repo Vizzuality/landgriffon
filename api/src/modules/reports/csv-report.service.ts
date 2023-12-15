@@ -1,5 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { IReportService } from 'modules/reports/report-service.interface';
+import {
+  Injectable,
+  Logger,
+  ServiceUnavailableException,
+} from '@nestjs/common';
+import { ICSVReportService } from 'modules/reports/report-service.interface';
 import { ParserOptions } from '@json2csv/plainjs';
 
 // import { AsyncParser } from '@json2csv/node';
@@ -9,12 +13,21 @@ import { ParserOptions } from '@json2csv/plainjs';
 const { AsyncParser } = require('@json2csv/node');
 
 @Injectable()
-export class CSVReportService implements IReportService {
+export class CSVReportService implements ICSVReportService {
+  logger: Logger = new Logger(CSVReportService.name);
+
   private getParser(parserOptions: ParserOptions): typeof AsyncParser {
     return new AsyncParser(parserOptions);
   }
 
-  generateReport(data: any, options: ParserOptions): Promise<string> {
-    return this.getParser(options).parse(data).promise();
+  async generateCSVReport(data: any, options: ParserOptions): Promise<string> {
+    try {
+      return this.getParser(options).parse(data).promise();
+    } catch (e) {
+      this.logger.error(`Error generating CSV from data: `, e);
+      throw new ServiceUnavailableException(
+        `Could not generate CSV Report, contact Administrator`,
+      );
+    }
   }
 }

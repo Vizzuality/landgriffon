@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   GetActualVsScenarioImpactTableDto,
   GetScenarioVsScenarioImpactTableDto,
+  GROUP_BY_VALUES,
   ORDER_BY,
 } from 'modules/impact/dto/impact-table.dto';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
@@ -503,7 +504,7 @@ export class ScenarioVsScenarioImpactService {
 
   private createScenarioVsScenarioImpactTableDataByIndicator(
     indicator: Indicator,
-    groupBy: string,
+    groupBy: GROUP_BY_VALUES,
   ): ScenarioVsScenarioImpactTableDataByIndicator {
     return {
       indicatorShortName: indicator.shortName as string,

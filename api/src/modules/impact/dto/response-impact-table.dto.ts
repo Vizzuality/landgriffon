@@ -8,6 +8,7 @@ import {
   ScenarioVsScenarioImpactTableRows,
   ScenarioVsScenarioImpactTableRowsValues,
 } from 'modules/impact/dto/response-scenario-scenario.dto';
+import { GROUP_BY_VALUES } from 'modules/impact/dto/impact-table.dto';
 
 export class ImpactTable {
   @ApiProperty({ type: () => ImpactTableDataByIndicator, isArray: true })
@@ -28,6 +29,7 @@ export class ImpactTableDataAggregationInfo {
   numberOfAggregatedEntities: number;
   sort: string;
 }
+
 export class ImpactTableDataAggregatedValue {
   year: number;
   value: number;
@@ -39,7 +41,7 @@ export class ImpactTableDataByIndicator {
   @ApiProperty()
   indicatorId: string;
   @ApiProperty()
-  groupBy: string;
+  groupBy: GROUP_BY_VALUES;
   @ApiProperty({ type: () => ImpactTableRows, isArray: true })
   rows: ImpactTableRows[];
   @ApiProperty({ type: () => YearSumData, isArray: true })
@@ -61,6 +63,7 @@ export class ImpactTablePurchasedTonnes {
   @ApiProperty()
   isProjected: boolean;
 }
+
 export class ImpactTableRows {
   @ApiProperty()
   name: string;
@@ -74,22 +77,26 @@ export class ImpactTableRows {
   })
   children: ImpactTableRows[];
 }
+
 export class BaseIndicatorSumByYearData {
   @ApiProperty()
   year: number;
   @ApiProperty()
   isProjected: boolean;
 }
+
 export class YearSumData {
   @ApiProperty()
   value: number;
 }
+
 export class ImpactTableBaseRowsValues {
   @ApiProperty()
   year: number;
   @ApiProperty()
   isProjected: boolean;
 }
+
 export class ImpactTableRowsValues extends ImpactTableBaseRowsValues {
   @ApiProperty()
   value: number;

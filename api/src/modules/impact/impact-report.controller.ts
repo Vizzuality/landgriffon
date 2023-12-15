@@ -2,23 +2,21 @@ import {
   Controller,
   Get,
   Query,
+  Res,
   UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
 import { ImpactService } from 'modules/impact/impact.service';
 import { ActualVsScenarioImpactService } from 'modules/impact/comparison/actual-vs-scenario.service';
 import { ScenarioVsScenarioImpactService } from 'modules/impact/comparison/scenario-vs-scenario.service';
-import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
-import {
-  ImpactTable,
-  PaginatedImpactTable,
-} from './dto/response-impact-table.dto';
-import { JSONAPIPaginationQueryParams } from '../../decorators/json-api-parameters.decorator';
-import { SetScenarioIdsInterceptor } from './set-scenario-ids.interceptor';
-import { GetImpactTableDto } from './dto/impact-table.dto';
-import { ImpactReportService } from './impact.report';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { SetScenarioIdsInterceptor } from 'modules/impact/set-scenario-ids.interceptor';
+import { ImpactReportService } from 'modules/impact/impact.report';
+import { Response } from 'express';
+import { GetImpactTableDto } from 'modules/impact/dto/impact-table.dto';
 
 @Controller('/api/v1/impact')
+@ApiTags('Impact')
 export class ImpactReportController {
   constructor(
     private readonly impactService: ImpactService,
@@ -30,15 +28,23 @@ export class ImpactReportController {
   @ApiOperation({
     description: 'Get a Impact Table CSV Report',
   })
-  @JSONAPIPaginationQueryParams()
   @UseInterceptors(SetScenarioIdsInterceptor)
   @Get('table/report')
   async getImpactTable(
     @Query(ValidationPipe) impactTableDto: GetImpactTableDto,
-  ): Promise<string> {
-    const table: any = await this.impactService.getImpactTable(impactTableDto, {
+    @Res() res: Response,
+  ): Promise<void> {
+    const { data } = await this.impactService.getImpactTable(impactTableDto, {
       disablePagination: true,
     });
-    return this.impactReports.generateImpactReport(table);
+    const report: string = await this.impactReports.generateImpactReport(
+      data.impactTable,
+    );
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=impact_report.csv',
+    );
+    res.send(report);
   }
 }

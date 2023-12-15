@@ -21,7 +21,8 @@ copies of the app - environments. To do this, do the following:
 
 ### The "environments" variables
 
-The `environments` variables can hold complex values that control many aspects of the deployment, so it's worth analyzing
+The `environments` variables can hold complex values that control many aspects of the deployment, so it's worth
+analyzing
 in detail. There are two variables of this type: `aws_environments` and `gcp_environments`. They both work in the same
 way, with the first one controlling deployments to AWS, while the second one controls GCP deployments
 
@@ -49,12 +50,12 @@ The `value` in the key-value pair is an object with a set of properties, all of 
 
 - `api_env_vars`: a list of objects, each of which with `name` and `value`. Used to inject non-sensitive environment
   variables to the api application. Internally, other environment variables are merged with this list, the result of
-  which is applied to the kubernetes deployment. There is no handling
-  for overlapping environment variables name. Defaults to an empty list.
+  which is applied to the kubernetes deployment. **Environment variables defined here will overlap default env vars
+  defined for the api pods**. Defaults to an empty list.
 - `tiler_env_vars`: a list of objects, each of which with `name` and `value`. Used to inject non-sensitive environment
   variables to the tiler application. Internally, other environment variables are merged with this list, the result of
-  which is applied to the kubernetes deployment. There is no handling
-  for overlapping environment variables name. Defaults to an empty list.
+  which is applied to the kubernetes deployment. There is no handling yet
+  for overlapping environment variables name. **TODO** Defaults to an empty list.
 - `load_fresh_data`: if "true", it will create a new node group, and start the data importer process in that group. Said
   node group is NOT automatically destroyed upon data import completion, so be sure to set it to "false" and apply
   terraform again once the import process is over, to save costs. Defaults to "false"
@@ -65,6 +66,7 @@ The `value` in the key-value pair is an object with a set of properties, all of 
 
 ### Handling production and staging
 
-The AWS production and staging environments are always deployed, even if they are not declared in the `environments` variable.
+The AWS production and staging environments are always deployed, even if they are not declared in the `environments`
+variable.
 However, if you'd like to customize their behavior (for example, reload fresh data), you can explicitly add them to the
 `environments` variable, and specify your custom values for each configuration, as you would for any other env.

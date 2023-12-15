@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { IReportService } from 'modules/reports/report-service.interface';
+import { ICSVReportService } from 'modules/reports/report-service.interface';
 import { ReportServiceToken } from 'modules/reports/reports.module';
 
 export interface ErrorRecord {
@@ -10,13 +10,13 @@ export interface ErrorRecord {
 @Injectable()
 export class TaskReportService {
   constructor(
-    @Inject(ReportServiceToken) private reportService: IReportService,
+    @Inject(ReportServiceToken) private reportService: ICSVReportService,
   ) {}
 
   async createImportErrorReport(errors: ErrorRecord[]): Promise<string> {
     const parserOptions: { fields: ['line', 'error'] } = {
       fields: ['line', 'error'],
     };
-    return this.reportService.generateReport(errors, parserOptions);
+    return this.reportService.generateCSVReport(errors, parserOptions);
   }
 }

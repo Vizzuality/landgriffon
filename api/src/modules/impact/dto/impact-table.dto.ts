@@ -65,7 +65,7 @@ export class BaseImpactTableDto {
   @IsEnum(GROUP_BY_VALUES, {
     message: 'Available options: ' + Object.values(GROUP_BY_VALUES).toString(),
   })
-  groupBy!: string;
+  groupBy!: GROUP_BY_VALUES;
 
   @ApiPropertyOptional({ name: 'materialIds[]' })
   @IsOptional()

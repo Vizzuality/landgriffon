@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   GetImpactTableDto,
   GetRankedImpactTableDto,
+  GROUP_BY_VALUES,
   ORDER_BY,
 } from 'modules/impact/dto/impact-table.dto';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
@@ -485,7 +486,7 @@ export class ImpactService {
 
   private createImpactTableDataByIndicator(
     indicator: Indicator,
-    groupBy: string,
+    groupBy: GROUP_BY_VALUES,
   ): ImpactTableDataByIndicator {
     return {
       indicatorShortName: indicator.shortName as string,

@@ -1,3 +1,5 @@
-export interface IReportService {
-  generateReport(data: any, options: object): Promise<string>;
+import { ParserOptions } from '@json2csv/plainjs';
+
+export interface ICSVReportService {
+  generateCSVReport(data: any, options: ParserOptions): Promise<string>;
 }

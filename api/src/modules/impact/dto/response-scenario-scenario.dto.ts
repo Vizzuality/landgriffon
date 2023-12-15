@@ -5,6 +5,7 @@ import {
   ImpactTableBaseRowsValues,
   ImpactTablePurchasedTonnes,
 } from 'modules/impact/dto/response-impact-table.dto';
+import { GROUP_BY_VALUES } from 'modules/impact/dto/impact-table.dto';
 
 export class ScenarioVsScenarioImpactTable {
   @ApiProperty({
@@ -32,7 +33,7 @@ export class ScenarioVsScenarioImpactTableDataByIndicator {
   @ApiProperty()
   indicatorId: string;
   @ApiProperty()
-  groupBy: string;
+  groupBy: GROUP_BY_VALUES;
   @ApiProperty({ type: () => ScenarioVsScenarioImpactTableRows, isArray: true })
   rows: ScenarioVsScenarioImpactTableRows[];
   @ApiProperty({
@@ -52,6 +53,7 @@ export class ScenarioVsScenarioImpactTablePurchasedTonnes {
   @ApiProperty()
   isProjected: boolean;
 }
+
 export class ScenarioVsScenarioImpactTableRows {
   @ApiProperty()
   name: string;

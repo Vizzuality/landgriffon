@@ -11,7 +11,7 @@ import { ActualVsScenarioImpactService } from 'modules/impact/comparison/actual-
 import { ScenarioVsScenarioImpactService } from 'modules/impact/comparison/scenario-vs-scenario.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SetScenarioIdsInterceptor } from 'modules/impact/set-scenario-ids.interceptor';
-import { ImpactReportService } from 'modules/impact/impact.report';
+import { ImpactReportService } from 'modules/impact/reports/impact.report';
 import { Response } from 'express';
 import { GetImpactTableDto } from 'modules/impact/dto/impact-table.dto';
 

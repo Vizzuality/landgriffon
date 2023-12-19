@@ -33,13 +33,16 @@ describe('Impact Reports', () => {
     await testApplication.close();
   });
   it('should create an impact report', async () => {
-    const { indicators } = await fixtures.GivenSourcingLocationWithImpact();
+    const { indicators, materials } =
+      await fixtures.GivenSourcingLocationWithImpact();
     const response = await fixtures.WhenIRequestAnImpactReport({
       app: testApplication,
       jwtToken,
       indicatorIds: indicators.map((indicator: Indicator) => indicator.id),
     });
 
-    await fixtures.ThenIShouldGetAnImpactReportAboutProvidedFilters(response);
+    await fixtures.ThenIShouldGetAnImpactReportAboutProvidedFilters(response, {
+      materials,
+    });
   });
 });

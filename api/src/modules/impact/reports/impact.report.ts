@@ -4,8 +4,9 @@ import { ReportServiceToken } from 'modules/reports/reports.module';
 import {
   ImpactTableDataByIndicator,
   ImpactTableRows,
+  ImpactTableRowsValues,
 } from 'modules/impact/dto/response-impact-table.dto';
-import { ImpactTableCSVReport } from 'modules/impact/table-reports/types';
+import { ImpactTableCSVReport } from 'modules/impact/reports/types';
 import { ParserOptions } from '@json2csv/plainjs';
 import { GROUP_BY_VALUES } from 'modules/impact/dto/impact-table.dto';
 
@@ -57,31 +58,24 @@ export class ImpactReportService {
     accumulator: ImpactTableCSVReport[],
   ): void {
     const groupName: string = `Group by ${groupBy}`;
-    const targets: ImpactTableRows[] =
-      node.children && node.children.length > 0 ? node.children : [node];
-
-    targets.forEach((target: any) => {
-      const resultObject: any = {
-        [`Indicator`]: `${indicatorName} (${unit})`,
-        [groupName]: target.name,
-      };
-
-      if (target.values && target.values.length > 0) {
-        target.values.forEach((value: any) => {
-          let yearKey: string = value.year.toString();
-          if (value.isProjected) {
-            yearKey = yearKey.concat(' (projected)');
-          }
-          resultObject[yearKey] = value.value;
-        });
-
-        accumulator.push(resultObject);
+    const resultObject: ImpactTableCSVReport = {
+      [`Indicator`]: `${indicatorName} (${unit})`,
+      [groupName]: node.name,
+    };
+    node.values.forEach((nodeValue: ImpactTableRowsValues) => {
+      let yearKey: string = nodeValue.year.toString();
+      if (nodeValue.isProjected) {
+        yearKey = yearKey.concat(' (projected)');
       }
-
-      if (target.children && target.children.length > 0) {
-        this.processNode(target, indicatorName, groupBy, unit, accumulator);
-      }
+      resultObject[yearKey] = nodeValue.value;
     });
+    accumulator.push(resultObject);
+
+    if (node.children && node.children.length) {
+      node.children.forEach((children: ImpactTableRows) => {
+        this.processNode(children, indicatorName, groupBy, unit, accumulator);
+      });
+    }
   }
 
   private getColumnOrder(dataSample: ImpactTableCSVReport): string[] {

@@ -114,17 +114,30 @@ const AnalysisTable = () => {
     return {};
   }, [sortingState]);
 
-  const params = {
-    indicatorIds,
-    startYear: filters.startYear,
-    endYear: filters.endYear,
-    groupBy: filters.groupBy,
-    ...restFilters,
-    ...sortingParams,
-    scenarioId: currentScenario,
-    'page[number]': paginationState.pageIndex,
-    'page[size]': paginationState.pageSize,
-  };
+  const params = useMemo(
+    () => ({
+      indicatorIds,
+      startYear: filters.startYear,
+      endYear: filters.endYear,
+      groupBy: filters.groupBy,
+      ...restFilters,
+      ...sortingParams,
+      scenarioId: currentScenario,
+      'page[number]': paginationState.pageIndex,
+      'page[size]': paginationState.pageSize,
+    }),
+    [
+      currentScenario,
+      filters.endYear,
+      filters.groupBy,
+      filters.startYear,
+      indicatorIds,
+      paginationState.pageIndex,
+      paginationState.pageSize,
+      restFilters,
+      sortingParams,
+    ],
+  );
 
   const plainImpactData = useImpactData(params, {
     enabled: !isComparisonEnabled && isEnable,
@@ -173,17 +186,19 @@ const AnalysisTable = () => {
     return impactTable[0]?.rows[0]?.values.find((value) => value.isProjected)?.year;
   }, [impactTable]);
 
-  const handleDownloadData = useCallback(() => {
-    const csv = downloadImpactData.mutate();
-    // if (csv) {
-    //   const link = document.createElement('a');
-    //   link.setAttribute('href', csv);
-    //   link.setAttribute('download', 'data.csv');
-    //   document.body.appendChild(link);
-    //   link.click();
-    //   document.body.removeChild(link);
-    // }
-  }, [downloadImpactData]);
+  const handleDownloadData = useCallback(async () => {
+    // do not pass pagination params to download data endpoint
+    const csv = await downloadImpactData.mutateAsync(omit(params, 'page[number]', 'page[size]'));
+    if (csv) {
+      const url = window.URL.createObjectURL(new Blob([csv]));
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `impact_data_${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }, [downloadImpactData, params]);
 
   const handleExpandedChange = useCallback(
     <Mode extends ComparisonMode>(table: TableType<ImpactRowType<Mode>>) => {

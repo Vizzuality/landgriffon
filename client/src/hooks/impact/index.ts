@@ -66,8 +66,8 @@ export const useImpactData = <T = ImpactDataApiResponse<false>>(
 };
 
 export const useDownloadImpactData = (options) => {
-  const requestDownload = () =>
-    apiRawService.get('/impact/table/report').then((response) => response.data);
+  const requestDownload = (params) =>
+    apiRawService.get('/impact/table/report', { params }).then((response) => response.data);
   const mutation = useMutation(requestDownload, {
     mutationKey: ['download-impact-data'],
     ...options,

@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 - Added a new filter for business units in the analysis page
+- On the analysis page, the user can now navigates in the subcategories in the charts view [LANDGRIF-1507](https://vizzuality.atlassian.net/browse/LANDGRIF-1507)
+
+### Changed
+- Download data button in the analysis page now downloads the data according to the filters applied from the API [LANDGRIF-1502](https://vizzuality.atlassian.net/browse/LANDGRIF-1502)
 
 ### Fixed
 - Renew token when it is expired

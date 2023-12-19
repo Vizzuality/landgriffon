@@ -18,15 +18,29 @@ import { TestApplication } from '../../../utils/application-manager';
 import * as request from 'supertest';
 import { GROUP_BY_VALUES } from '../../../../src/modules/impact/dto/impact-table.dto';
 import { range } from 'lodash';
+import { Material } from '../../../../src/modules/materials/material.entity';
 
 export const impactReportFixtures = () => ({
   GivenSourcingLocationWithImpact: async () => {
-    const material = await createMaterial();
+    const parentMaterial = await createMaterial({
+      name: 'CSV Parent Material',
+    });
+    const childMaterial = await createMaterial({
+      parentId: parentMaterial.id,
+      name: 'CSV Child Material',
+    });
     const supplier = await createSupplier();
     const businessUnit = await createBusinessUnit();
     const adminRegion = await createAdminRegion();
-    const sourcingLocation = await createSourcingLocation({
-      materialId: material.id,
+    const sourcingLocationParentMaterial = await createSourcingLocation({
+      materialId: parentMaterial.id,
+      producerId: supplier.id,
+      businessUnitId: businessUnit.id,
+      adminRegionId: adminRegion.id,
+    });
+
+    const sourcingLocationChildMaterial = await createSourcingLocation({
+      materialId: childMaterial.id,
       producerId: supplier.id,
       businessUnitId: businessUnit.id,
       adminRegionId: adminRegion.id,
@@ -47,7 +61,14 @@ export const impactReportFixtures = () => ({
     for (const year of [2018, 2019, 2020, 2021, 2022, 2023]) {
       sourcingRecords.push(
         await createSourcingRecord({
-          sourcingLocationId: sourcingLocation.id,
+          sourcingLocationId: sourcingLocationParentMaterial.id,
+          year,
+          tonnage: 100 * year,
+        }),
+      );
+      sourcingRecords.push(
+        await createSourcingRecord({
+          sourcingLocationId: sourcingLocationChildMaterial.id,
           year,
           tonnage: 100 * year,
         }),
@@ -63,7 +84,7 @@ export const impactReportFixtures = () => ({
       }
     }
     return {
-      sourcingLocation,
+      materials: [parentMaterial, childMaterial],
       indicators,
       sourcingRecords,
     };
@@ -85,7 +106,11 @@ export const impactReportFixtures = () => ({
   },
   ThenIShouldGetAnImpactReportAboutProvidedFilters: (
     response: request.Response,
-    filters?: { groupBy?: GROUP_BY_VALUES; indicators?: Indicator[] },
+    filters?: {
+      groupBy?: GROUP_BY_VALUES;
+      indicators?: Indicator[];
+      materials?: Material[];
+    },
   ) => {
     expect(response.status).toBe(200);
     expect(response.headers['content-type']).toContain('text/csv');
@@ -96,6 +121,11 @@ export const impactReportFixtures = () => ({
     expect(response.text).toContain(
       `Group by ${filters?.groupBy ?? GROUP_BY_VALUES.MATERIAL}`,
     );
+    if (filters?.materials?.length) {
+      for (const material of filters?.materials ?? []) {
+        expect(response.text).toContain(material.name);
+      }
+    }
     for (const year of range(2010, 2027)) {
       expect(response.text).toContain(year.toString());
     }

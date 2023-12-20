@@ -30,7 +30,7 @@ import {
 } from '../../../../entity-mocks';
 import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
 
-export async function createSameMaterialScenariosPreconditions(): Promise<{
+export async function createSameMaterialTwoScenariosPreconditions(): Promise<{
   indicator: Indicator;
   newScenarioChangeSupplier: Scenario;
   newScenarioChangeMaterial: Scenario;
@@ -43,6 +43,7 @@ export async function createSameMaterialScenariosPreconditions(): Promise<{
     name: 'Deforestation',
     unit,
     nameCode: INDICATOR_NAME_CODES.DF_SLUC,
+    shortName: 'Deforestation',
   });
 
   const textile: Material = await createMaterial({ name: 'Textile' });

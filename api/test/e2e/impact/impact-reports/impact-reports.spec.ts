@@ -4,10 +4,7 @@ import ApplicationManager, {
 } from '../../../utils/application-manager';
 import { DataSource } from 'typeorm';
 import { setupTestUser } from '../../../utils/userAuth';
-import {
-  clearEntityTables,
-  clearTestDataFromDatabase,
-} from '../../../utils/database-test-helper';
+import { clearTestDataFromDatabase } from '../../../utils/database-test-helper';
 import { Indicator } from '../../../../src/modules/indicators/indicator.entity';
 
 describe('Impact Reports', () => {
@@ -60,5 +57,21 @@ describe('Impact Reports', () => {
       isActualVsScenario: true,
     });
   });
-  it('should create a scenario vs scenario impact report', async () => {});
+  it('should create a scenario vs scenario impact report', async () => {
+    const { baseScenario, comparedScenario, indicator } =
+      await fixtures.GivenTwoScenarios();
+    const response = await fixtures.WhenIRequestAScenarioVsScenarioImpactReport(
+      {
+        app: testApplication,
+        jwtToken,
+        baseScenarioId: baseScenario.id,
+        comparedScenarioId: comparedScenario.id,
+        indicatorIds: [indicator.id],
+      },
+    );
+    await fixtures.ThenIShouldGetAnImpactReportAboutProvidedFilters(response, {
+      indicators: [indicator],
+      isScenarioVsScenario: true,
+    });
+  });
 });

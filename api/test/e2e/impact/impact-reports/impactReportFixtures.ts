@@ -22,6 +22,7 @@ import { Material } from '../../../../src/modules/materials/material.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 import { createNewCoefficientsInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-coefficients-intervention.preconditions';
 import { ScenarioIntervention } from '../../../../src/modules/scenario-interventions/scenario-intervention.entity';
+import { createSameMaterialTwoScenariosPreconditions } from '../mocks/scenario-vs-scenario-preconditions/same-materials-scenarios.preconditions';
 
 export const impactReportFixtures = () => ({
   GivenSourcingLocationWithImpact: async () => {
@@ -105,6 +106,19 @@ export const impactReportFixtures = () => ({
       scenarioIntervention,
     };
   },
+  GivenTwoScenarios: async (): Promise<any> => {
+    const {
+      newScenarioChangeSupplier: baseScenario,
+      newScenarioChangeMaterial: comparedScenario,
+      indicator,
+    } = await createSameMaterialTwoScenariosPreconditions();
+
+    return {
+      baseScenario,
+      comparedScenario,
+      indicator,
+    };
+  },
 
   WhenIRequestAnImpactReport: (options: {
     app: TestApplication;
@@ -135,6 +149,25 @@ export const impactReportFixtures = () => ({
         startYear: 2010,
         endYear: 2027,
         groupBy: 'material',
+        comparedScenarioId: options.comparedScenarioId,
+      });
+  },
+  WhenIRequestAScenarioVsScenarioImpactReport: (options: {
+    app: TestApplication;
+    jwtToken: string;
+    indicatorIds: string[];
+    baseScenarioId: string;
+    comparedScenarioId: string;
+  }) => {
+    return request(options.app.getHttpServer())
+      .get('/api/v1/impact/compare/scenario/vs/scenario/report')
+      .set('Authorization', `Bearer ${options.jwtToken}`)
+      .query({
+        'indicatorIds[]': [...options.indicatorIds],
+        startYear: 2010,
+        endYear: 2027,
+        groupBy: 'material',
+        baseScenarioId: options.baseScenarioId,
         comparedScenarioId: options.comparedScenarioId,
       });
   },

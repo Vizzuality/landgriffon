@@ -27,7 +27,7 @@ import {
   getSameMaterialScenarioComparisonResponse,
   getScenarioComparisonResponseBySupplier,
 } from '../mocks/scenario-vs-scenario-responses/same-materials-scenarios.reponse';
-import { createSameMaterialScenariosPreconditions } from '../mocks/scenario-vs-scenario-preconditions/same-materials-scenarios.preconditions';
+import { createSameMaterialTwoScenariosPreconditions } from '../mocks/scenario-vs-scenario-preconditions/same-materials-scenarios.preconditions';
 import { DataSource } from 'typeorm';
 import { createImpactTableSortingPreconditions } from '../mocks/sorting.preconditions';
 import { ImpactTableRows } from 'modules/impact/dto/response-impact-table.dto';
@@ -75,7 +75,7 @@ describe('Scenario VS Scenario Impact Table test suite (e2e)', () => {
       newScenarioChangeSupplier: Scenario;
       newScenarioChangeMaterial: Scenario;
       indicator: Indicator;
-    } = await createSameMaterialScenariosPreconditions();
+    } = await createSameMaterialTwoScenariosPreconditions();
 
     const responseGroupByMaterial = await request(
       testApplication.getHttpServer(),
@@ -147,7 +147,7 @@ describe('Scenario VS Scenario Impact Table test suite (e2e)', () => {
         newScenarioChangeSupplier: Scenario;
         newScenarioChangeMaterial: Scenario;
         indicator: Indicator;
-      } = await createSameMaterialScenariosPreconditions();
+      } = await createSameMaterialTwoScenariosPreconditions();
 
       const response = await request(testApplication.getHttpServer())
         .get('/api/v1/impact/compare/scenario/vs/scenario')

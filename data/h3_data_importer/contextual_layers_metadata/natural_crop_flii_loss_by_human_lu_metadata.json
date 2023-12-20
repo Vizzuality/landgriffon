@@ -1,0 +1,37 @@
+{
+    "$schema": "./contextual_metadata_schema.json",
+    "name": "Loss of forest integrity to cropland expansion",
+    "description": "The Forest Landscape Integrity Index (FLII) expresses the\ndegree of intactness of forest ecosystems based on the spatial structure of the forest\nhabitat and on the degree of human modification to the ecosystem",
+    "legend": {
+        "name": "Loss of forest integrity to cropland expansion",
+        "id": "",
+        "unit": "flii score / ha LU",
+        "min": "0",
+        "type": "range",
+        "items": [
+            {
+                "color": "#fff7f3",
+                "value": "0.0"
+            },
+            {
+                "color": "#fcc5c0",
+                "value": "0.0025"
+            },
+            {
+                "color": "#f767a1",
+                "value": "0.005"
+            },
+            {
+                "color": "#ad017e",
+                "value": "0.0075"
+            },
+            {
+                "color": "#49006a",
+                "value": "0.01"
+            }
+        ]
+    },
+    "aggType": "mean",
+    "source": "https://www.biorxiv.org/content/10.1101/2023.11.01.565036v1.full.pdf",
+    "license": "CC BY 4.0"
+}

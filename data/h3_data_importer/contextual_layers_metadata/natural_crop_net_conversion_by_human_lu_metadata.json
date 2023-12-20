@@ -1,0 +1,37 @@
+{
+    "$schema": "./contextual_metadata_schema.json",
+    "name": "Net cropland expansion in natural lands",
+    "description": "Due to limitations in remotely sensed data on sparse human land uses such as logging\nand pasturing, we use a conservative approach evaluating only the conversion of natural\necosystems directly to cropland, using the SBTN Natural Lands dataset (Mazur et al.\n2023).",
+    "legend": {
+        "name": "Net cropland expansion in natural lands",
+        "id": "",
+        "unit": "ha/yr / ha LU",
+        "min": "0",
+        "type": "range",
+        "items": [
+            {
+                "color": "#ffffe5",
+                "value": "0.0"
+            },
+            {
+                "color": "#d9f0a3",
+                "value": "0.0025"
+            },
+            {
+                "color": "#77c679",
+                "value": "0.005"
+            },
+            {
+                "color": "#228343",
+                "value": "0.0075"
+            },
+            {
+                "color": "#004529",
+                "value": "0.01"
+            }
+        ]
+    },
+    "aggType": "mean",
+    "source": "https://www.biorxiv.org/content/10.1101/2023.11.01.565036v1.full.pdf",
+    "license": "CC BY 4.0"
+}

@@ -331,16 +331,16 @@ convert-deforest-by-human-landuse:
 	python cog_to_contextual_layer_linker.py --cog deforest_by_human_lu_50km_1000m_cog.tif --name deforest_by_human_lu --category "Environmental datasets" --tiler_param colormap_name=ylorrd --tp rescale=0,0.0025
 
 convert-deforest-carbon-by-human-landuse:
-	python cog_to_contextual_layer_linker.py --cog deforest_carbon_by_human_lu_50km_1000m_cog.tif --name deforest_carbon_by_human_lu --category "Environmental datasets" --tiler_param colormap_name=bupu --tp rescale=0,0.5
+	python cog_to_contextual_layer_linker.py --cog deforest_carbon_by_human_lu_50km_1000m_cog.tif --name deforest_carbon_by_human_lu --category "Environmental datasets" --tiler_param colormap_name=gnbu --tp rescale=0,0.5
 
 convert-crop-bii-loss-by-human-landuse:
-	python cog_to_contextual_layer_linker.py --cog natural_crop_bii_loss_by_human_lu_50km_1000m_cog.tif --name natural_crop_bii_loss_by_human_lu --category "Environmental datasets" --tiler_param colormap_name=purd --tp rescale=0,0.01
+	python cog_to_contextual_layer_linker.py --cog natural_crop_bii_loss_by_human_lu_50km_1000m_cog.tif --name natural_crop_bii_loss_by_human_lu --category "Environmental datasets" --tiler_param colormap_name=blues --tp rescale=0,0.01
 
 convert-crop-flii-loss-by-human-landuse:
-	python cog_to_contextual_layer_linker.py --cog natural_crop_flii_loss_by_human_lu_50km_1000m_cog.tif --name natural_crop_flii_loss_by_human_lu --category "Environmental datasets" --tiler_param colormap_name=purples --tp rescale=0,0.01
+	python cog_to_contextual_layer_linker.py --cog natural_crop_flii_loss_by_human_lu_50km_1000m_cog.tif --name natural_crop_flii_loss_by_human_lu --category "Environmental datasets" --tiler_param colormap_name=rdpu --tp rescale=0,0.01
 
 convert-crop-net-conversion-by-human-landuse:
-	python cog_to_contextual_layer_linker.py --cog natural_crop_net_conversion_by_human_lu_50km_1000m_cog.tif --name natural_crop_net_conversion_by_human_lu --category "Environmental datasets" --tiler_param colormap_name=oranges --tp rescale=0,0.01
+	python cog_to_contextual_layer_linker.py --cog natural_crop_net_conversion_by_human_lu_50km_1000m_cog.tif --name natural_crop_net_conversion_by_human_lu --category "Environmental datasets" --tiler_param colormap_name=ylgn --tp rescale=0,0.01
 
 
 #####################

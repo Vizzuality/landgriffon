@@ -1,8 +1,10 @@
+"""Main app entrypoint."""
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from titiler.core import TilerFactory
 from titiler.core.errors import DEFAULT_STATUS_CODES, add_exception_handlers
-from titiler.core.middleware import TotalTimeMiddleware, LoggerMiddleware
+from titiler.core.middleware import LoggerMiddleware, TotalTimeMiddleware
 
 from .config.config import get_settings
 from .middlewares.auth_middleware import AuthMiddleware
@@ -14,7 +16,7 @@ titiler_router_prefix = (
 )
 titiler_prefix = get_settings().titiler_prefix if get_settings().titiler_prefix is not None else "/cog"
 
-app = FastAPI(title="LandGriffon Tiler", docs_url="/tiler/docs", openapi_url="/tiler", debug=True)
+app = FastAPI(title="LandGriffon Tiler", docs_url="/tiler/docs", openapi_url="/tiler")
 app.add_middleware(TotalTimeMiddleware)
 app.add_middleware(LoggerMiddleware)
 app.add_middleware(AuthMiddleware)

@@ -78,13 +78,13 @@ export class ImpactReportService {
         yearKey = yearKey.concat(' (projected)');
       }
       if ('baseScenarioValue' in nodeValue) {
-        resultObject[`${yearKey} (base Scenario)`] =
+        resultObject[`${yearKey} (Base Scenario)`] =
           nodeValue.baseScenarioValue;
-        resultObject[`${yearKey} (compared Scenario)`] =
+        resultObject[`${yearKey} (Compared Scenario)`] =
           nodeValue.comparedScenarioValue;
       } else if ('comparedScenarioValue' in nodeValue) {
         resultObject[yearKey] = nodeValue.value;
-        resultObject[`${yearKey} (compared Scenario)`] =
+        resultObject[`${yearKey} (Compared Scenario)`] =
           nodeValue.comparedScenarioValue;
       } else {
         resultObject[yearKey] = nodeValue.value;
@@ -111,20 +111,25 @@ export class ImpactReportService {
     const indicatorKey: string[] = [];
     const groupByKey: string[] = [];
     const yearKeys: string[] = [];
-    const differenceKeys: string[] = [];
+    const comparisonKeys: string[] = [];
     Object.keys(dataSample).forEach((key: string) => {
       if (key.includes(IndicatorColumnKey)) {
         groupByKey.push(key);
       } else if (key.includes(GroupByColumnKey)) {
         groupByKey.push(key);
       } else if (key.includes(AbsoluteDifferenceColumnKey)) {
-        differenceKeys.push(key);
+        comparisonKeys.push(key);
       } else if (key.includes(PercentageDifferenceColumnKey)) {
-        differenceKeys.push(key);
+        comparisonKeys.push(key);
       } else {
         yearKeys.push(key);
       }
     });
-    return [...indicatorKey, ...groupByKey, ...yearKeys, ...differenceKeys];
+    return [
+      ...indicatorKey,
+      ...groupByKey,
+      ...yearKeys.sort(),
+      ...comparisonKeys,
+    ];
   }
 }

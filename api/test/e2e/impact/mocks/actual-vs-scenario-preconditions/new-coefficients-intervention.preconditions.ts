@@ -28,6 +28,8 @@ import {
 import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
 import { Scenario } from 'modules/scenarios/scenario.entity';
 
+// TODO: Pending to start refactoring all precondition creation mess to follow the fixture approach
+
 export async function createNewCoefficientsInterventionPreconditions(
   customScenario?: Scenario,
 ): Promise<{
@@ -48,6 +50,7 @@ export async function createNewCoefficientsInterventionPreconditions(
     name: 'Deforestation',
     unit,
     nameCode: INDICATOR_NAME_CODES.DF_SLUC,
+    shortName: 'Deforestation',
   });
 
   // Creating Materials

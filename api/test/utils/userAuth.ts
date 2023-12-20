@@ -7,6 +7,8 @@ import { User } from 'modules/users/user.entity';
 import { EntityManager } from 'typeorm';
 import { TestApplication } from './application-manager';
 import { faker } from '@faker-js/faker';
+import { Permission } from '../../src/modules/authorization/permissions/permissions.entity';
+import { PERMISSIONS } from '../../src/modules/authorization/permissions/permissions.enum';
 
 export type TestUser = { jwtToken: string; user: User; password: string };
 
@@ -25,6 +27,8 @@ export async function setupTestUser(
 
   const password = extraDataPassword ?? faker.internet.password();
 
+  await setUpRolesAndPermissions(entityManager);
+
   const user = await userRepository.save({
     ...E2E_CONFIG.users.signUp,
     salt,
@@ -39,4 +43,24 @@ export async function setupTestUser(
     .send({ username: user.email, password: password });
 
   return { jwtToken: response.body.accessToken, user, password };
+}
+
+async function setUpRolesAndPermissions(
+  entityManager: EntityManager,
+): Promise<any> {
+  const permissions: Permission[] = Object.values(PERMISSIONS).map(
+    (permission: PERMISSIONS) =>
+      ({
+        action: permission,
+      } as Permission),
+  );
+
+  const roles: Role[] = Object.values(ROLES).map(
+    (role: ROLES) =>
+      ({
+        name: role,
+      } as Role),
+  );
+  await entityManager.getRepository(Permission).save(permissions);
+  await entityManager.getRepository(Role).save(roles);
 }

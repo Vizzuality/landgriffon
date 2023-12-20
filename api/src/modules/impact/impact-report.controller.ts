@@ -35,7 +35,7 @@ export class ImpactReportController {
   })
   @UseInterceptors(SetScenarioIdsInterceptor)
   @Get('table/report')
-  async getImpactTable(
+  async getImpactReport(
     @Query(ValidationPipe) impactTableDto: GetImpactTableDto,
     @Res() res: Response,
   ): Promise<void> {
@@ -63,7 +63,7 @@ export class ImpactReportController {
   })
   @UseInterceptors(SetScenarioIdsInterceptor)
   @Get('compare/scenario/vs/actual/report')
-  async getActualVsScenarioImpactTable(
+  async getActualVsScenarioImpactReport(
     @Query(ValidationPipe)
     actualVsScenarioImpactTableDto: GetActualVsScenarioImpactTableDto,
     @Res() res: Response,
@@ -94,7 +94,7 @@ export class ImpactReportController {
   })
   @UseInterceptors(SetScenarioIdsInterceptor)
   @Get('compare/scenario/vs/scenario/report')
-  async getTwoScenariosImpactTable(
+  async getTwoScenariosImpacReport(
     @Query(ValidationPipe)
     scenarioVsScenarioImpactTableDto: GetScenarioVsScenarioImpactTableDto,
     @Res() res: Response,

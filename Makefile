@@ -19,6 +19,9 @@ NC :=\033[0m # No Color
 start-api:
 	docker compose --project-name ${COMPOSE_PROJECT_NAME} up --build api
 
+start-tiler:
+	docker compose --project-name ${COMPOSE_PROJECT_NAME} up --build tiler
+
 # Starts the CLIENT application
 start-client:
 	docker compose --project-name ${COMPOSE_PROJECT_NAME} up --build client

@@ -1,14 +1,29 @@
+[project]
 name = "LandGriffon Tiler"
+readme = "README.md"
+requires-python = ">=3.9"
 version = "0.1.0"
+env = ["REQUIRE_AUTH=true",
+  "API_HOST=",
+  "API_PORT=3000",
+  "S3_BUCKET_NAME=mybucket",
+  "ROOT_PATH=",
+  "TITILER_PREFIX=/cog",
+  "TITILER_ROUTER_PREFIX=/cog"]
 
 [tool.pytest.ini_options]
 pythonpath = [
   "."
 ]
-env = ["REQUIRE_AUTH=true",
-    "API_HOST=",
-    "API_PORT=3000",
-    "S3_BUCKET_NAME=mybucket",
-    "ROOT_PATH=",
-    "TITILER_PREFIX=/cog",
-    "TITILER_ROUTER_PREFIX=/cog"]
+
+[tool.ruff]
+line-length = 120
+select = [
+    "D1",   # pydocstyle errors
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # flake8
+    "C",    # flake8-comprehensions
+    "B",    # flake8-bugbear
+    "I",    # isort
+]

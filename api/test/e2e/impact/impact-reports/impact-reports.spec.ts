@@ -20,16 +20,16 @@ describe('Impact Reports', () => {
     testApplication = await ApplicationManager.init();
 
     dataSource = testApplication.get<DataSource>(DataSource);
-
+  });
+  beforeEach(async () => {
     ({ jwtToken } = await setupTestUser(testApplication));
   });
 
   afterEach(async () => {
-    await clearEntityTables(dataSource, []);
+    await clearTestDataFromDatabase(dataSource);
   });
 
   afterAll(async () => {
-    await clearTestDataFromDatabase(dataSource);
     await testApplication.close();
   });
   it('should create an impact report', async () => {
@@ -45,4 +45,20 @@ describe('Impact Reports', () => {
       materials,
     });
   });
+  it('should create an actual vs scenario impact report', async () => {
+    const { indicator, scenarioIntervention } =
+      await fixtures.GivenAScenarioIntervention();
+    const response = await fixtures.WhenIRequestAnActualVsScenarioImpactReport({
+      app: testApplication,
+      jwtToken,
+      indicatorIds: [indicator.id],
+      comparedScenarioId: scenarioIntervention.scenarioId,
+    });
+
+    await fixtures.ThenIShouldGetAnImpactReportAboutProvidedFilters(response, {
+      indicators: [indicator],
+      isActualVsScenario: true,
+    });
+  });
+  it('should create a scenario vs scenario impact report', async () => {});
 });

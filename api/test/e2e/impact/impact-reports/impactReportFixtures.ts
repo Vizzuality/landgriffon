@@ -19,6 +19,9 @@ import * as request from 'supertest';
 import { GROUP_BY_VALUES } from '../../../../src/modules/impact/dto/impact-table.dto';
 import { range } from 'lodash';
 import { Material } from '../../../../src/modules/materials/material.entity';
+import { Scenario } from 'modules/scenarios/scenario.entity';
+import { createNewCoefficientsInterventionPreconditions } from '../mocks/actual-vs-scenario-preconditions/new-coefficients-intervention.preconditions';
+import { ScenarioIntervention } from '../../../../src/modules/scenario-interventions/scenario-intervention.entity';
 
 export const impactReportFixtures = () => ({
   GivenSourcingLocationWithImpact: async () => {
@@ -89,6 +92,20 @@ export const impactReportFixtures = () => ({
       sourcingRecords,
     };
   },
+  GivenAScenarioIntervention: async (
+    customScenario?: Scenario,
+  ): Promise<{
+    indicator: Indicator;
+    scenarioIntervention: ScenarioIntervention;
+  }> => {
+    const { indicator, scenarioIntervention } =
+      await createNewCoefficientsInterventionPreconditions(customScenario);
+    return {
+      indicator,
+      scenarioIntervention,
+    };
+  },
+
   WhenIRequestAnImpactReport: (options: {
     app: TestApplication;
     jwtToken: string;
@@ -104,12 +121,32 @@ export const impactReportFixtures = () => ({
         groupBy: 'material',
       });
   },
+  WhenIRequestAnActualVsScenarioImpactReport: (options: {
+    app: TestApplication;
+    jwtToken: string;
+    indicatorIds: string[];
+    comparedScenarioId: string;
+  }): Promise<request.Response> => {
+    return request(options.app.getHttpServer())
+      .get('/api/v1/impact/compare/scenario/vs/actual/report')
+      .set('Authorization', `Bearer ${options.jwtToken}`)
+      .query({
+        'indicatorIds[]': [...options.indicatorIds],
+        startYear: 2010,
+        endYear: 2027,
+        groupBy: 'material',
+        comparedScenarioId: options.comparedScenarioId,
+      });
+  },
+
   ThenIShouldGetAnImpactReportAboutProvidedFilters: (
     response: request.Response,
     filters?: {
       groupBy?: GROUP_BY_VALUES;
       indicators?: Indicator[];
       materials?: Material[];
+      isActualVsScenario?: boolean;
+      isScenarioVsScenario?: boolean;
     },
   ) => {
     expect(response.status).toBe(200);
@@ -125,6 +162,17 @@ export const impactReportFixtures = () => ({
       for (const material of filters?.materials ?? []) {
         expect(response.text).toContain(material.name);
       }
+    }
+    if (filters?.isActualVsScenario) {
+      expect(response.text).toContain('Compared Scenario');
+      expect(response.text).toContain('Absolute Difference');
+      expect(response.text).toContain('Percentage Difference');
+    }
+    if (filters?.isScenarioVsScenario) {
+      expect(response.text).toContain('Base Scenario');
+      expect(response.text).toContain('Compared Scenario');
+      expect(response.text).toContain('Absolute Difference');
+      expect(response.text).toContain('Percentage Difference');
     }
     for (const year of range(2010, 2027)) {
       expect(response.text).toContain(year.toString());

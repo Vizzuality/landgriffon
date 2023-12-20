@@ -1,3 +1,5 @@
+// Response DTO example for a new coefficients type of  scenario intervention
+
 export const newCoefficientsScenarioInterventionTable = {
   impactTable: [
     {

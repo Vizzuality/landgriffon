@@ -2,13 +2,25 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ICSVReportService } from 'modules/reports/report-service.interface';
 import { ReportServiceToken } from 'modules/reports/reports.module';
 import {
+  AnyImpactTableRows,
+  AnyImpactTableRowsValues,
   ImpactTableDataByIndicator,
-  ImpactTableRows,
-  ImpactTableRowsValues,
 } from 'modules/impact/dto/response-impact-table.dto';
 import { ImpactTableCSVReport } from 'modules/impact/reports/types';
 import { ParserOptions } from '@json2csv/plainjs';
 import { GROUP_BY_VALUES } from 'modules/impact/dto/impact-table.dto';
+import { ScenarioVsScenarioImpactTableDataByIndicator } from 'modules/impact/dto/response-scenario-scenario.dto';
+import { ActualVsScenarioImpactTableDataByIndicator } from 'modules/impact/dto/response-actual-scenario.dto';
+
+const IndicatorColumnKey: string = 'Indicator';
+const GroupByColumnKey: string = 'Group by';
+const AbsoluteDifferenceColumnKey: string = 'Absolute Difference';
+const PercentageDifferenceColumnKey: string = 'Percentage Difference';
+
+type ImpactTableToCSVInput =
+  | ImpactTableDataByIndicator
+  | ScenarioVsScenarioImpactTableDataByIndicator
+  | ActualVsScenarioImpactTableDataByIndicator;
 
 @Injectable()
 export class ImpactReportService {
@@ -16,9 +28,7 @@ export class ImpactReportService {
     @Inject(ReportServiceToken) private reportService: ICSVReportService,
   ) {}
 
-  async generateImpactReport(
-    data: ImpactTableDataByIndicator[],
-  ): Promise<string> {
+  async generateImpactReport(data: ImpactTableToCSVInput[]): Promise<string> {
     const parsedData: ImpactTableCSVReport[] = this.parseToCSVShape(data);
     const columnOrder: Pick<ParserOptions, 'fields'> = {
       fields: this.getColumnOrder(parsedData[0]),
@@ -28,13 +38,13 @@ export class ImpactReportService {
   }
 
   private parseToCSVShape(
-    data: ImpactTableDataByIndicator[],
+    data: ImpactTableToCSVInput[],
   ): ImpactTableCSVReport[] {
     const results: ImpactTableCSVReport[] = [];
 
-    data.forEach((indicator: ImpactTableDataByIndicator) => {
+    data.forEach((indicator: ImpactTableToCSVInput) => {
       const unit: string = indicator.metadata.unit;
-      indicator.rows.forEach((row: ImpactTableRows) => {
+      indicator.rows.forEach((row: AnyImpactTableRows) => {
         this.processNode(
           row,
           indicator.indicatorShortName,
@@ -49,7 +59,7 @@ export class ImpactReportService {
   }
 
   private processNode(
-    node: ImpactTableRows,
+    node: AnyImpactTableRows,
     indicatorName:
       | Pick<ImpactTableDataByIndicator, 'indicatorShortName'>
       | string,
@@ -57,22 +67,41 @@ export class ImpactReportService {
     unit: string,
     accumulator: ImpactTableCSVReport[],
   ): void {
-    const groupName: string = `Group by ${groupBy}`;
+    const groupName: string = `${GroupByColumnKey} ${groupBy}`;
     const resultObject: ImpactTableCSVReport = {
       [`Indicator`]: `${indicatorName} (${unit})`,
       [groupName]: node.name,
     };
-    node.values.forEach((nodeValue: ImpactTableRowsValues) => {
+    node.values.forEach((nodeValue: AnyImpactTableRowsValues) => {
       let yearKey: string = nodeValue.year.toString();
       if (nodeValue.isProjected) {
         yearKey = yearKey.concat(' (projected)');
       }
-      resultObject[yearKey] = nodeValue.value;
+      if ('baseScenarioValue' in nodeValue) {
+        resultObject[`${yearKey} (base Scenario)`] =
+          nodeValue.baseScenarioValue;
+        resultObject[`${yearKey} (compared Scenario)`] =
+          nodeValue.comparedScenarioValue;
+      } else if ('comparedScenarioValue' in nodeValue) {
+        resultObject[yearKey] = nodeValue.value;
+        resultObject[`${yearKey} (compared Scenario)`] =
+          nodeValue.comparedScenarioValue;
+      } else {
+        resultObject[yearKey] = nodeValue.value;
+      }
+      if ('absoluteDifference' in nodeValue) {
+        resultObject[AbsoluteDifferenceColumnKey] =
+          nodeValue.absoluteDifference;
+      }
+      if ('percentageDifference' in nodeValue) {
+        resultObject[PercentageDifferenceColumnKey] =
+          nodeValue.percentageDifference;
+      }
     });
     accumulator.push(resultObject);
 
     if (node.children && node.children.length) {
-      node.children.forEach((children: ImpactTableRows) => {
+      node.children.forEach((children: AnyImpactTableRows) => {
         this.processNode(children, indicatorName, groupBy, unit, accumulator);
       });
     }
@@ -82,15 +111,20 @@ export class ImpactReportService {
     const indicatorKey: string[] = [];
     const groupByKey: string[] = [];
     const yearKeys: string[] = [];
+    const differenceKeys: string[] = [];
     Object.keys(dataSample).forEach((key: string) => {
-      if (key.includes('Indicator')) {
+      if (key.includes(IndicatorColumnKey)) {
         groupByKey.push(key);
-      } else if (key.includes('Group by')) {
+      } else if (key.includes(GroupByColumnKey)) {
         groupByKey.push(key);
+      } else if (key.includes(AbsoluteDifferenceColumnKey)) {
+        differenceKeys.push(key);
+      } else if (key.includes(PercentageDifferenceColumnKey)) {
+        differenceKeys.push(key);
       } else {
         yearKeys.push(key);
       }
     });
-    return [...indicatorKey, ...groupByKey, ...yearKeys];
+    return [...indicatorKey, ...groupByKey, ...yearKeys, ...differenceKeys];
   }
 }

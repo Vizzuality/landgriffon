@@ -13,7 +13,12 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SetScenarioIdsInterceptor } from 'modules/impact/set-scenario-ids.interceptor';
 import { ImpactReportService } from 'modules/impact/reports/impact.report';
 import { Response } from 'express';
-import { GetImpactTableDto } from 'modules/impact/dto/impact-table.dto';
+import {
+  GetActualVsScenarioImpactTableDto,
+  GetImpactTableDto,
+  GetScenarioVsScenarioImpactTableDto,
+} from 'modules/impact/dto/impact-table.dto';
+import { CheckUserOwnsScenario } from 'modules/authorization/formodule/scenario-ownership.interceptor';
 
 @Controller('/api/v1/impact')
 @ApiTags('Impact')
@@ -37,6 +42,68 @@ export class ImpactReportController {
     const { data } = await this.impactService.getImpactTable(impactTableDto, {
       disablePagination: true,
     });
+    const report: string = await this.impactReports.generateImpactReport(
+      data.impactTable,
+    );
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=impact_report.csv',
+    );
+    res.send(report);
+  }
+
+  @ApiOperation({
+    description:
+      'Get a Actual Vs Scenario Impact Table CSV Report for a given scenario',
+  })
+  @CheckUserOwnsScenario({
+    bypassIfScenarioIsPublic: true,
+    isComparisonMode: true,
+  })
+  @UseInterceptors(SetScenarioIdsInterceptor)
+  @Get('compare/scenario/vs/actual/report')
+  async getActualVsScenarioImpactTable(
+    @Query(ValidationPipe)
+    actualVsScenarioImpactTableDto: GetActualVsScenarioImpactTableDto,
+    @Res() res: Response,
+  ): Promise<void> {
+    const { data } =
+      await this.actualVsScenarioImpactService.getActualVsScenarioImpactTable(
+        actualVsScenarioImpactTableDto,
+        { disablePagination: true },
+      );
+    const report: string = await this.impactReports.generateImpactReport(
+      data.impactTable,
+    );
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=impact_report.csv',
+    );
+    res.send(report);
+  }
+
+  @ApiOperation({
+    description:
+      'Get a Scenario Vs Scenario Impact Table CSV Report for 2 Scenarios',
+  })
+  @CheckUserOwnsScenario({
+    bypassIfScenarioIsPublic: true,
+    isComparisonMode: true,
+  })
+  @UseInterceptors(SetScenarioIdsInterceptor)
+  @Get('compare/scenario/vs/scenario/report')
+  async getTwoScenariosImpactTable(
+    @Query(ValidationPipe)
+    scenarioVsScenarioImpactTableDto: GetScenarioVsScenarioImpactTableDto,
+    @Res() res: Response,
+  ): Promise<void> {
+    const { data } =
+      await this.scenarioVsScenarioService.getScenarioVsScenarioImpactTable(
+        scenarioVsScenarioImpactTableDto,
+        { disablePagination: true },
+      );
     const report: string = await this.impactReports.generateImpactReport(
       data.impactTable,
     );

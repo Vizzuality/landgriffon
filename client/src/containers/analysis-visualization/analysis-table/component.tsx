@@ -207,6 +207,7 @@ const AnalysisTable = () => {
 
   const handleDownloadData = useCallback(async () => {
     let csv = null;
+    console.log(currentScenario, scenarioToCompare);
     // actual vs scenario
     if (!currentScenario && scenarioToCompare) {
       csv = await downloadActualVsScenarioData.mutateAsync({
@@ -217,7 +218,7 @@ const AnalysisTable = () => {
     // scenario vs scenario
     else if (currentScenario && scenarioToCompare) {
       csv = await downloadScenarioVsScenarioData.mutateAsync({
-        ...omit(params, 'page[number]', 'page[size]'),
+        ...omit(params, 'page[number]', 'page[size]', 'scenarioId'),
         baseScenarioId: currentScenario,
         comparedScenarioId: scenarioToCompare,
       });

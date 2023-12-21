@@ -207,7 +207,6 @@ const AnalysisTable = () => {
 
   const handleDownloadData = useCallback(async () => {
     let csv = null;
-    console.log(currentScenario, scenarioToCompare);
     // actual vs scenario
     if (!currentScenario && scenarioToCompare) {
       csv = await downloadActualVsScenarioData.mutateAsync({
@@ -534,9 +533,19 @@ const AnalysisTable = () => {
               variant="secondary"
               size="base"
               className="flex-shrink-0"
-              disabled={isLoading}
+              disabled={
+                isLoading ||
+                downloadImpactData.isLoading ||
+                downloadActualVsScenarioData.isLoading ||
+                downloadScenarioVsScenarioData.isLoading
+              }
               icon={<DownloadIcon />}
               onClick={handleDownloadData}
+              loading={
+                downloadImpactData.isLoading ||
+                downloadActualVsScenarioData.isLoading ||
+                downloadScenarioVsScenarioData.isLoading
+              }
             >
               Download Data
             </Button>

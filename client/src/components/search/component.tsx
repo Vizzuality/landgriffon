@@ -65,7 +65,7 @@ export const Search: React.FC<SearchProps> = ({
     <div
       className={classnames('bg-white', {
         'w-fit min-w-[260px]': size === 'base',
-        'w-44': size === 'sm',
+        'flex w-auto max-w-[160px]': size === 'sm',
       })}
     >
       <div className="flex items-center justify-center w-full">

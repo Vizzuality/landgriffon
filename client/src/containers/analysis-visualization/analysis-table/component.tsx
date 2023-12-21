@@ -11,7 +11,12 @@ import { useAppSelector } from 'store/hooks';
 import { filtersForTabularAPI } from 'store/features/analysis/selector';
 import { scenarios } from 'store/features/analysis/scenarios';
 import { useIndicators } from 'hooks/indicators';
-import { useImpactData, useDownloadImpactData } from 'hooks/impact';
+import {
+  useImpactData,
+  useDownloadImpactData,
+  useDownloadImpactActualVsScenarioData,
+  useDownloadImpactScenarioVsScenarioData,
+} from 'hooks/impact';
 import { useImpactComparison, useImpactScenarioComparison } from 'hooks/impact/comparison';
 import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
 import { Button } from 'components/button';
@@ -65,6 +70,20 @@ const AnalysisTable = () => {
     { select: (data) => data.data },
   );
   const downloadImpactData = useDownloadImpactData({
+    onSuccess: () => {
+      toast.success('Data was downloaded successfully');
+    },
+    onError: handleResponseError,
+  });
+
+  const downloadActualVsScenarioData = useDownloadImpactActualVsScenarioData({
+    onSuccess: () => {
+      toast.success('Data was downloaded successfully');
+    },
+    onError: handleResponseError,
+  });
+
+  const downloadScenarioVsScenarioData = useDownloadImpactScenarioVsScenarioData({
     onSuccess: () => {
       toast.success('Data was downloaded successfully');
     },
@@ -187,8 +206,27 @@ const AnalysisTable = () => {
   }, [impactTable]);
 
   const handleDownloadData = useCallback(async () => {
-    // do not pass pagination params to download data endpoint
-    const csv = await downloadImpactData.mutateAsync(omit(params, 'page[number]', 'page[size]'));
+    let csv = null;
+    // actual vs scenario
+    if (!currentScenario && scenarioToCompare) {
+      csv = await downloadActualVsScenarioData.mutateAsync({
+        ...omit(params, 'page[number]', 'page[size]'),
+        comparedScenarioId: scenarioToCompare,
+      });
+    }
+    // scenario vs scenario
+    else if (currentScenario && scenarioToCompare) {
+      csv = await downloadScenarioVsScenarioData.mutateAsync({
+        ...omit(params, 'page[number]', 'page[size]'),
+        baseScenarioId: currentScenario,
+        comparedScenarioId: scenarioToCompare,
+      });
+    }
+    // no scenario or comparison
+    else {
+      csv = await downloadImpactData.mutateAsync(omit(params, 'page[number]', 'page[size]'));
+    }
+
     if (csv) {
       const url = window.URL.createObjectURL(new Blob([csv]));
       const link = document.createElement('a');
@@ -198,7 +236,15 @@ const AnalysisTable = () => {
       link.click();
       document.body.removeChild(link);
     }
-  }, [downloadImpactData, params]);
+    // do not pass pagination params to download data endpoint
+  }, [
+    currentScenario,
+    downloadActualVsScenarioData,
+    downloadImpactData,
+    downloadScenarioVsScenarioData,
+    params,
+    scenarioToCompare,
+  ]);
 
   const handleExpandedChange = useCallback(
     <Mode extends ComparisonMode>(table: TableType<ImpactRowType<Mode>>) => {

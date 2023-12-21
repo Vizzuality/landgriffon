@@ -65,11 +65,42 @@ export const useImpactData = <T = ImpactDataApiResponse<false>>(
   return query;
 };
 
+const requestDownload = (params) =>
+  apiRawService.get('/impact/table/report', { params }).then((response) => response.data);
+
 export const useDownloadImpactData = (options) => {
-  const requestDownload = (params) =>
-    apiRawService.get('/impact/table/report', { params }).then((response) => response.data);
   const mutation = useMutation(requestDownload, {
     mutationKey: ['download-impact-data'],
+    ...options,
+  });
+  return mutation;
+};
+
+const requestActualVsScenarioDownload = (params) =>
+  apiRawService
+    .get('/impact/compare/scenario/vs/actual/report', {
+      params,
+    })
+    .then((response) => response.data);
+
+export const useDownloadImpactActualVsScenarioData = (options) => {
+  const mutation = useMutation(requestActualVsScenarioDownload, {
+    mutationKey: ['download-actual-vs-scenario-data'],
+    ...options,
+  });
+  return mutation;
+};
+
+const requestScenarioVsScenarioDownload = (params) =>
+  apiRawService
+    .get('/impact/compare/scenario/vs/scenario/report', {
+      params,
+    })
+    .then((response) => response.data);
+
+export const useDownloadImpactScenarioVsScenarioData = (options) => {
+  const mutation = useMutation(requestScenarioVsScenarioDownload, {
+    mutationKey: ['download-scenario-vs-scenario-data'],
     ...options,
   });
   return mutation;

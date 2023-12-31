@@ -16,8 +16,7 @@ import { ImpactViewUpdater } from 'modules/impact/views/impact-view.updater';
 import { BaseImpactService } from 'modules/impact/base-impact.service';
 import { ImpactRepository } from 'modules/impact/impact.repository';
 import { ImpactReportController } from 'modules/impact/impact-report.controller';
-import { ImpactReportService } from 'modules/impact/reports/impact.report';
-import { ReportsModule } from 'modules/reports/reports.module';
+import { ImpactReportsModule } from 'modules/impact/reports/impact-reports.module';
 
 @Module({
   imports: [
@@ -29,7 +28,7 @@ import { ReportsModule } from 'modules/reports/reports.module';
     MaterialsModule,
     SourcingLocationsModule,
     AuthorizationModule,
-    ReportsModule,
+    ImpactReportsModule,
   ],
   providers: [
     ImpactRepository,
@@ -39,7 +38,6 @@ import { ReportsModule } from 'modules/reports/reports.module';
     ScenarioVsScenarioImpactService,
     MaterialsService,
     ImpactViewUpdater,
-    ImpactReportService,
   ],
   controllers: [ImpactController, ImpactReportController],
   exports: [

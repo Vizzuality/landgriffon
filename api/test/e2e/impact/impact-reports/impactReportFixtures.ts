@@ -106,7 +106,7 @@ export const impactReportFixtures = () => ({
       scenarioIntervention,
     };
   },
-  GivenTwoScenarios: async (): Promise<any> => {
+  GivenTwoScenarioWithInterventions: async (): Promise<any> => {
     const {
       newScenarioChangeSupplier: baseScenario,
       newScenarioChangeMaterial: comparedScenario,

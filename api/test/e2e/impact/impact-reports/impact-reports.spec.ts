@@ -59,7 +59,7 @@ describe('Impact Reports', () => {
   });
   it('should create a scenario vs scenario impact report', async () => {
     const { baseScenario, comparedScenario, indicator } =
-      await fixtures.GivenTwoScenarios();
+      await fixtures.GivenTwoScenarioWithInterventions();
     const response = await fixtures.WhenIRequestAScenarioVsScenarioImpactReport(
       {
         app: testApplication,

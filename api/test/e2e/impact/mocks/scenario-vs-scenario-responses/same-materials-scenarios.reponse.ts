@@ -252,7 +252,7 @@ export function getComparisonResponseWithProjectedYears(
                     comparedScenarioValue: 0,
                     isProjected: false,
                     absoluteDifference: 0,
-                    percentageDifference: null,
+                    percentageDifference: 0,
                   },
                   {
                     year: 2019,
@@ -260,7 +260,7 @@ export function getComparisonResponseWithProjectedYears(
                     comparedScenarioValue: 0,
                     isProjected: false,
                     absoluteDifference: 0,
-                    percentageDifference: null,
+                    percentageDifference: 0,
                   },
                   {
                     year: 2020,
@@ -298,7 +298,7 @@ export function getComparisonResponseWithProjectedYears(
                     comparedScenarioValue: 0,
                     isProjected: false,
                     absoluteDifference: 0,
-                    percentageDifference: null,
+                    percentageDifference: 0,
                   },
                   {
                     year: 2019,
@@ -306,7 +306,7 @@ export function getComparisonResponseWithProjectedYears(
                     comparedScenarioValue: 0,
                     isProjected: false,
                     absoluteDifference: 0,
-                    percentageDifference: null,
+                    percentageDifference: 0,
                   },
                   {
                     year: 2020,
@@ -344,7 +344,7 @@ export function getComparisonResponseWithProjectedYears(
                     comparedScenarioValue: 0,
                     isProjected: false,
                     absoluteDifference: 0,
-                    percentageDifference: null,
+                    percentageDifference: 0,
                   },
                   {
                     year: 2019,
@@ -352,7 +352,7 @@ export function getComparisonResponseWithProjectedYears(
                     comparedScenarioValue: 0,
                     isProjected: false,
                     absoluteDifference: 0,
-                    percentageDifference: null,
+                    percentageDifference: 0,
                   },
                   {
                     year: 2020,
@@ -388,7 +388,7 @@ export function getComparisonResponseWithProjectedYears(
                 comparedScenarioValue: 0,
                 isProjected: false,
                 absoluteDifference: 0,
-                percentageDifference: null,
+                percentageDifference: 0,
               },
               {
                 year: 2019,
@@ -396,7 +396,7 @@ export function getComparisonResponseWithProjectedYears(
                 comparedScenarioValue: 0,
                 isProjected: false,
                 absoluteDifference: 0,
-                percentageDifference: null,
+                percentageDifference: 0,
               },
               {
                 year: 2020,
@@ -431,7 +431,7 @@ export function getComparisonResponseWithProjectedYears(
             baseScenarioValue: 0,
             comparedScenarioValue: 0,
             absoluteDifference: 0,
-            percentageDifference: null,
+            percentageDifference: 0,
             isProjected: false,
           },
           {
@@ -439,7 +439,7 @@ export function getComparisonResponseWithProjectedYears(
             baseScenarioValue: 0,
             comparedScenarioValue: 0,
             absoluteDifference: 0,
-            percentageDifference: null,
+            percentageDifference: 0,
             isProjected: false,
           },
           {

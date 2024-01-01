@@ -238,16 +238,23 @@ export class ScenarioVsScenarioImpactService {
           valueToAggregate[valueIndex].isProjected ||
           entityRowValue.isProjected;
 
-        entityRowValue.absoluteDifference =
+        const absoluteDifference: number =
           entityRowValue.comparedScenarioValue -
           entityRowValue.baseScenarioValue;
-        entityRowValue.percentageDifference =
+        const percentageDifference: number =
           ((entityRowValue.comparedScenarioValue -
             entityRowValue.baseScenarioValue) /
             ((entityRowValue.comparedScenarioValue +
               entityRowValue.baseScenarioValue) /
               2)) *
           100;
+
+        entityRowValue.absoluteDifference = isNaN(absoluteDifference)
+          ? 0
+          : absoluteDifference;
+        entityRowValue.percentageDifference = isNaN(percentageDifference)
+          ? 0
+          : percentageDifference;
       }
     }
     return entity.values;
@@ -423,19 +430,23 @@ export class ScenarioVsScenarioImpactService {
       const comparedScenarioTotalSumByYear: number =
         comparedScenarioYearSumMap.get(year) || 0;
 
+      const absoluteDifference: number =
+        comparedScenarioTotalSumByYear - (baseScenarioTotalSumByYear || 0);
+      const percentageDifference: number =
+        ((comparedScenarioTotalSumByYear - (baseScenarioTotalSumByYear || 0)) /
+          ((comparedScenarioTotalSumByYear +
+            (baseScenarioTotalSumByYear || 0)) /
+            2)) *
+        100;
+
       return {
         year,
         baseScenarioValue: baseScenarioTotalSumByYear,
         comparedScenarioValue: comparedScenarioTotalSumByYear,
-        absoluteDifference:
-          comparedScenarioTotalSumByYear - (baseScenarioTotalSumByYear || 0),
-        percentageDifference:
-          ((comparedScenarioTotalSumByYear -
-            (baseScenarioTotalSumByYear || 0)) /
-            ((comparedScenarioTotalSumByYear +
-              (baseScenarioTotalSumByYear || 0)) /
-              2)) *
-          100,
+        absoluteDifference: isNaN(absoluteDifference) ? 0 : absoluteDifference,
+        percentageDifference: isNaN(percentageDifference)
+          ? 0
+          : percentageDifference,
         isProjected: year > lastYearWithData,
       };
     });

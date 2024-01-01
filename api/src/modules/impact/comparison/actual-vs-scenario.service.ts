@@ -248,16 +248,21 @@ export class ActualVsScenarioImpactService {
     return rangeOfYears.map((year: number) => {
       const totalSumByYear: number = yearSumMap.get(year) || 0;
       const totalScenarioSumByYear: number = yearScenarioSumMap.get(year) || 0;
+      const absoluteDifference: number =
+        totalScenarioSumByYear - totalSumByYear;
+      const percentageDifference: number =
+        ((totalScenarioSumByYear - totalSumByYear) /
+          ((totalScenarioSumByYear + totalSumByYear) / 2)) *
+        100;
 
       return {
         year,
         value: totalSumByYear,
         comparedScenarioValue: totalScenarioSumByYear,
-        absoluteDifference: totalScenarioSumByYear - totalSumByYear,
-        percentageDifference:
-          ((totalScenarioSumByYear - totalSumByYear) /
-            ((totalScenarioSumByYear + totalSumByYear) / 2)) *
-          100,
+        absoluteDifference,
+        percentageDifference: isNaN(percentageDifference)
+          ? 0
+          : percentageDifference,
         isProjected: year > lastYearWithData,
       };
     });
@@ -319,13 +324,20 @@ export class ActualVsScenarioImpactService {
           valueToAggregate[valueIndex].isProjected ||
           entityRowValue.isProjected;
 
-        entityRowValue.absoluteDifference =
+        const absoluteDifference: number =
           entityRowValue.comparedScenarioValue - entityRowValue.value;
-        entityRowValue.percentageDifference =
+        const percentageDifference: number =
           ((entityRowValue.comparedScenarioValue - entityRowValue.value) /
             ((entityRowValue.comparedScenarioValue + entityRowValue.value) /
               2)) *
           100;
+
+        entityRowValue.absoluteDifference = isNaN(absoluteDifference)
+          ? 0
+          : absoluteDifference;
+        entityRowValue.percentageDifference = isNaN(percentageDifference)
+          ? 0
+          : percentageDifference;
       }
     }
     return entity.values;

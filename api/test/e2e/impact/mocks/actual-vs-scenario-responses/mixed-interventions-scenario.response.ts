@@ -216,7 +216,7 @@ export const mixedInterventionsScenarioTable2019 = {
                   comparedScenarioValue: 0,
                   isProjected: false,
                   absoluteDifference: 0,
-                  percentageDifference: null,
+                  percentageDifference: 0,
                 },
                 {
                   year: 2020,
@@ -262,7 +262,7 @@ export const mixedInterventionsScenarioTable2019 = {
                   comparedScenarioValue: 0,
                   isProjected: false,
                   absoluteDifference: 0,
-                  percentageDifference: null,
+                  percentageDifference: 0,
                 },
                 {
                   year: 2020,
@@ -308,7 +308,7 @@ export const mixedInterventionsScenarioTable2019 = {
                   comparedScenarioValue: 0,
                   isProjected: false,
                   absoluteDifference: 0,
-                  percentageDifference: null,
+                  percentageDifference: 0,
                 },
                 {
                   year: 2020,
@@ -352,7 +352,7 @@ export const mixedInterventionsScenarioTable2019 = {
               comparedScenarioValue: 0,
               isProjected: false,
               absoluteDifference: 0,
-              percentageDifference: null,
+              percentageDifference: 0,
             },
             {
               year: 2020,
@@ -395,7 +395,7 @@ export const mixedInterventionsScenarioTable2019 = {
           value: 0,
           comparedScenarioValue: 0,
           absoluteDifference: 0,
-          percentageDifference: null,
+          percentageDifference: 0,
         },
         {
           year: 2020,

@@ -10,7 +10,7 @@ import {
   ImpactTableToCSVInput,
 } from 'modules/impact/reports/types';
 import { Injectable } from '@nestjs/common';
-import { CsvDataBuilder } from 'modules/impact/reports/csv-data.builder';
+import { ImpactReportDtoBuilder } from 'modules/impact/reports/impact-report-dto.builder';
 import { ScenarioVsScenarioImpactTableRowsValues } from 'modules/impact/dto/response-scenario-scenario.dto';
 import { ActualVsScenarioImpactTableRowsValues } from 'modules/impact/dto/response-actual-scenario.dto';
 
@@ -43,36 +43,37 @@ export class ImpactReportDataParser {
     groupBy: GROUP_BY_VALUES,
     unit: string,
     accumulator: ImpactTableCSVReport[],
-    parentName?: string | null,
+    parentNodeName?: string | null,
   ): void {
-    const parsedDataBuilder: CsvDataBuilder = new CsvDataBuilder();
-    parsedDataBuilder.setIndicatorWithUnit(indicatorName, unit);
-    parsedDataBuilder.setGroupingAndNodeName(groupBy, node.name, parentName);
+    const reportDtoBuilder: ImpactReportDtoBuilder =
+      new ImpactReportDtoBuilder();
+    reportDtoBuilder.setIndicatorWithUnit(indicatorName, unit);
+    reportDtoBuilder.setGroupingAndNodeName(groupBy, node.name, parentNodeName);
     node.values.forEach((valuesOfNode: AnyImpactTableRowsValues) => {
-      parsedDataBuilder.setBaseYearKey(valuesOfNode.year);
-      if (parsedDataBuilder.isYearProjected(valuesOfNode)) {
-        parsedDataBuilder.setProjectedYear();
+      reportDtoBuilder.setBaseYearKey(valuesOfNode.year);
+      if (reportDtoBuilder.isYearProjected(valuesOfNode)) {
+        reportDtoBuilder.setYearAsProjected();
       }
-      if (parsedDataBuilder.isScenarioVsScenario(valuesOfNode)) {
-        parsedDataBuilder.setScenarioVsScenarioValues(
+      if (reportDtoBuilder.isScenarioVsScenario(valuesOfNode)) {
+        reportDtoBuilder.setScenarioVsScenarioValues(
           valuesOfNode as ScenarioVsScenarioImpactTableRowsValues,
         );
       }
-      if (parsedDataBuilder.isActualVsScenario(valuesOfNode)) {
-        parsedDataBuilder.setActualVsScenarioValues(
+      if (reportDtoBuilder.isActualVsScenario(valuesOfNode)) {
+        reportDtoBuilder.setActualVsScenarioValues(
           valuesOfNode as ActualVsScenarioImpactTableRowsValues,
         );
       }
-      if (parsedDataBuilder.isOnlyActualData(valuesOfNode)) {
-        parsedDataBuilder.setActualDataValues(
+      if (reportDtoBuilder.isOnlyActualData(valuesOfNode)) {
+        reportDtoBuilder.setActualDataValues(
           valuesOfNode as ImpactTableRowsValues,
         );
       }
     });
-    accumulator.push(parsedDataBuilder.build());
+    accumulator.push(reportDtoBuilder.build());
 
     if (node.children && node.children.length) {
-      const currentNodeName: string = parsedDataBuilder.getCurrentNodeName();
+      const currentNodeName: string = reportDtoBuilder.getCurrentNodeName();
       node.children.forEach((children: AnyImpactTableRows) => {
         this.parseNode(
           children,

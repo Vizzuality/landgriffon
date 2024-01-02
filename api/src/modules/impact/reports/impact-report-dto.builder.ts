@@ -8,10 +8,10 @@ import { ActualVsScenarioImpactTableRowsValues } from 'modules/impact/dto/respon
 import { ImpactTableCSVReport } from 'modules/impact/reports/types';
 
 /**
- * @description Handles the building of the object, for each row that it will be parsed to CSV
+ * @description Handles the building of the DTO for the CSV report
  */
 
-export class CsvDataBuilder {
+export class ImpactReportDtoBuilder {
   csvData: ImpactTableCSVReport;
   currentNodeName: string;
   yearKey: string;
@@ -72,7 +72,7 @@ export class CsvDataBuilder {
     this.yearKey = year.toString();
   }
 
-  setProjectedYear(): void {
+  setYearAsProjected(): void {
     this.yearKey = this.yearKey.concat(' (projected)');
   }
 

@@ -23,6 +23,10 @@ describe('Analysis filters', () => {
   });
 
   it('not to filter by a disabled indicator', () => {
+    cy.intercept('GET', '/api/v1/indicators*', {
+      fixture: 'indicators/index',
+    }).as('fetchIndicators');
+
     cy.wait('@fetchIndicators').then((interception) => {
       const firstDisabledIndicator = interception.response.body?.data.find(
         ({ attributes }) => attributes.status === 'inactive',

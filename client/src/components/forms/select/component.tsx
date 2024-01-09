@@ -228,6 +228,7 @@ const Select = <T,>({
                         }}
                         value={option}
                         disabled={option.disabled}
+                        data-headlessui-state={option.disabled ? 'disabled' : 'active'}
                       >
                         {({ selected, disabled }) => (
                           <div

@@ -16,7 +16,7 @@ const Widget: React.FC<React.PropsWithChildren<WidgetProps>> = ({
 }) => (
   <div className={cx('flex flex-col', className)} style={{ height }}>
     <h2 className="flex-shrink-0 text-base first-letter:uppercase">{`${title} (${unit})`}</h2>
-    <div className="relative flex-grow mt-2">{children}</div>
+    <div className="relative mt-2 flex-grow">{children}</div>
   </div>
 );
 

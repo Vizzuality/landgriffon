@@ -15,7 +15,7 @@ export const StringAvatar: React.FC<stringAvatarProps> = ({
 }: stringAvatarProps) => (
   <div
     className={cx(
-      `flex rounded-lg text-lg items-center bg-navy-400 uppercase text-white justify-center font-semibold border-2 border-white`,
+      `flex items-center justify-center rounded-lg border-2 border-white bg-navy-400 text-lg font-semibold uppercase text-white`,
       className,
     )}
   >

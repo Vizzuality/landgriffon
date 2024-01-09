@@ -11,7 +11,7 @@ const GrowthRate = ({ display }: GrowthRateProps) => {
       {display === 'grid' && <h3 className="text-xs">Growth rates</h3>}
       <div
         className={classNames({
-          'flex mt-2 space-x-4': display === 'grid',
+          'mt-2 flex space-x-4': display === 'grid',
         })}
       >
         <Pill className="bg-orange-50">Entire company +1.5%/yr</Pill>

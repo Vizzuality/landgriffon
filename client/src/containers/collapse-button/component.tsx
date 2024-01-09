@@ -17,7 +17,7 @@ const CollapseButton: React.FC = () => {
   return (
     <button
       type="button"
-      className="flex items-center justify-center w-10 h-10 bg-white border border-gray-200 rounded-full cursor-pointer hover:shadow-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-navy-400/20"
+      className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-gray-200 bg-white hover:bg-gray-100 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-navy-400/20 focus:ring-offset-1"
       onClick={handleClick}
     >
       {isSidebarCollapsed ? (

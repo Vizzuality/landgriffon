@@ -73,7 +73,7 @@ const SignIn: NextPageWithLayout = () => {
         <title>Sign in - Landgriffon</title>
       </Head>
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="px-4 py-8 bg-white shadow sm:rounded-lg sm:px-10">
+        <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
           <div className="mb-10 text-center">
             <h2 className="my-4 font-bold">Sign in to your account</h2>
             <p className="text-sm font-medium text-gray-500">
@@ -118,7 +118,7 @@ const SignIn: NextPageWithLayout = () => {
               <div className="text-sm">
                 <Link
                   href="/auth/forgot-password"
-                  className="font-medium text-navy-400 hover:text-navy-800"
+                  className="hover:text-navy-800 font-medium text-navy-400"
                 >
                   Forgot your password?
                 </Link>

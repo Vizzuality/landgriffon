@@ -406,17 +406,17 @@ const AnalysisTable = () => {
           <div>
             {!!expanded?.name ? (
               <Button
-                className="pt-1 pb-1 pr-0 pl-0 border-0 bg-transparent"
+                className="border-0 bg-transparent pb-1 pl-0 pr-0 pt-1"
                 variant="transparent"
                 onClick={handleExitExpanded}
               >
-                <div className="flex text-gray-900 text-sm text-start font-semibold max-w-[200px] whitespace-normal">
-                  <ArrowLeftIcon className="mr-3.5 w-4 h-4" />
+                <div className="flex max-w-[200px] whitespace-normal text-start text-sm font-semibold text-gray-900">
+                  <ArrowLeftIcon className="mr-3.5 h-4 w-4" />
                   {expanded.name}
                 </div>
               </Button>
             ) : (
-              <span className="text-sm block text-gray-400 normal-case py-[0.70rem]">
+              <span className="block py-[0.70rem] text-sm normal-case text-gray-400">
                 Selected Indicators
               </span>
             )}
@@ -432,9 +432,9 @@ const AnalysisTable = () => {
             indicators.find((i) => i.id === original.indicatorId)?.name;
 
           return (
-            <div className="py-5 flex gap-4">
+            <div className="flex gap-4 py-5">
               {!expanded?.name && (
-                <InformationCircleIcon className="w-4 h-4 text-gray-900 shrink-0" />
+                <InformationCircleIcon className="h-4 w-4 shrink-0 text-gray-900" />
               )}
               <div>
                 {expanded?.name ? (
@@ -477,7 +477,7 @@ const AnalysisTable = () => {
         }) => {
           const chartData = values as ChartData[];
           return (
-            <div className="h-5 my-3 mx-auto w-[130px]">
+            <div className="mx-auto my-3 h-5 w-[130px]">
               <ChartCell data={chartData} />
             </div>
           );
@@ -524,9 +524,9 @@ const AnalysisTable = () => {
   );
 
   return (
-    <div className="flex flex-col flex-1">
+    <div className="flex flex-1 flex-col">
       <div className="flex justify-between px-6">
-        <div className="flex items-end justify-between w-full">
+        <div className="flex w-full items-end justify-between">
           <AnalysisDynamicMetadata />
           <div>
             <Button
@@ -552,7 +552,7 @@ const AnalysisTable = () => {
           </div>
         </div>
       </div>
-      <div className="relative flex-1 px-6 my-6" data-testid="analysis-table">
+      <div className="relative my-6 flex-1 px-6" data-testid="analysis-table">
         <Table {...tableProps} />
       </div>
     </div>

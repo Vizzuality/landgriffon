@@ -35,7 +35,7 @@ const EditUser = ({ user }: EditUserProps) => {
       </Button>
       <Modal size="narrow" open={open} title={`Edit user ${userName}`} onDismiss={closeModal}>
         <UserForm user={user} onSubmit={closeModal}>
-          <div className="flex justify-between flex-1 mr-2.5 px-0.5">
+          <div className="mr-2.5 flex flex-1 justify-between px-0.5">
             <DeleteUser id={user.id} userName={userName} />
             <Button size="xs" variant="white" onClick={closeModal}>
               Cancel

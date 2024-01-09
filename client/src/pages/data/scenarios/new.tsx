@@ -38,7 +38,7 @@ const CreateScenarioPage: React.FC = () => {
       </Head>
       <BackLink
         href="/data/scenarios"
-        className="flex mb-6 xl:sticky xl:top-0"
+        className="mb-6 flex xl:sticky xl:top-0"
         data-testid="scenario-back-button"
       >
         Back to scenarios

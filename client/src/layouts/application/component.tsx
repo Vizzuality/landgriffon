@@ -32,19 +32,19 @@ const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
   ];
 
   return (
-    <div className="flex h-screen overflow-hidden min-h-[700px] min-w-screen-lg bg-navy-600">
-      <div className="flex flex-col shrink-0 grow-0 w-28">
-        <div className="flex justify-center py-12 shrink-0">
-          <LandgriffonLogo className="shadow-menu rounded-lg" />
+    <div className="min-w-screen-lg flex h-screen min-h-[700px] overflow-hidden bg-navy-600">
+      <div className="flex w-28 shrink-0 grow-0 flex-col">
+        <div className="flex shrink-0 justify-center py-12">
+          <LandgriffonLogo className="rounded-lg shadow-menu" />
         </div>
         <div className="grow">
           <Navigation items={navigationItems} />
         </div>
-        <div className="flex py-12 border-t shrink-0 border-t-black/30">
+        <div className="flex shrink-0 border-t border-t-black/30 py-12">
           <UserDropdown />
         </div>
       </div>
-      <div className="flex-1 w-full min-w-0 bg-gray-100 rounded-tl-3xl">{children}</div>
+      <div className="w-full min-w-0 flex-1 rounded-tl-3xl bg-gray-100">{children}</div>
       <ToastContainer position="bottom-center" />
     </div>
   );

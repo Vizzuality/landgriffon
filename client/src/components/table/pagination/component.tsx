@@ -78,7 +78,7 @@ const Pagination: React.FC<PaginationProps> = ({
     <div
       className={classNames(
         className,
-        'flex flex-col md:flex-row gap-2 sm:gap-10 items-center justify-start',
+        'flex flex-col items-center justify-start gap-2 sm:gap-10 md:flex-row',
       )}
     >
       <div className="flex items-center space-x-2">
@@ -89,21 +89,21 @@ const Pagination: React.FC<PaginationProps> = ({
           onChange={handlePageSizeChange}
         />
       </div>
-      <div className="text-sm text-center text-gray-500">
+      <div className="text-center text-sm text-gray-500">
         {itemsRange.start}-{itemsRange.end} of {totalItems}
       </div>
       <div className="flex items-center">
         <Button disabled={currentPage <= 1} onClick={handleFirstPage}>
-          <ChevronDoubleLeftIcon className="w-4 h-4" />
+          <ChevronDoubleLeftIcon className="h-4 w-4" />
         </Button>
         <Button disabled={currentPage <= 1} onClick={handlePreviousPage}>
-          <ChevronLeftIcon className="w-5 h-5" />
+          <ChevronLeftIcon className="h-5 w-5" />
         </Button>
         <Button disabled={currentPage >= totalPages} onClick={handleNextPage}>
-          <ChevronRightIcon className="w-5 h-5" />
+          <ChevronRightIcon className="h-5 w-5" />
         </Button>
         <Button disabled={currentPage >= totalPages} onClick={handleLastPage}>
-          <ChevronDoubleRightIcon className="w-4 h-4" />
+          <ChevronDoubleRightIcon className="h-4 w-4" />
         </Button>
       </div>
     </div>

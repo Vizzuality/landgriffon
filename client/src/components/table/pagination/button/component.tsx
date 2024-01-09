@@ -11,10 +11,10 @@ const Table: React.FC<ButtonProps> = ({
 }: ButtonProps) => (
   <div
     className={classNames(
-      'flex justify-center items-center text-sm min-w-[2.5rem] h-10',
+      'flex h-10 min-w-[2.5rem] items-center justify-center text-sm',
       className,
       {
-        'border-b border-green-700': active,
+        'border-green-700 border-b': active,
         'cursor-pointer': !disabled,
         'opacity-30': disabled,
       },

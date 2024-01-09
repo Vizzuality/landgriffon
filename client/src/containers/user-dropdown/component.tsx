@@ -29,21 +29,21 @@ const UserDropdown: React.FC = () => {
   });
 
   return (
-    <Menu as="div" className="flex justify-center flex-col items-center w-full mb-5">
-      {(!user || status === 'loading') && <Loading className="w-5 h-5 text-white" />}
+    <Menu as="div" className="mb-5 flex w-full flex-col items-center justify-center">
+      {(!user || status === 'loading') && <Loading className="h-5 w-5 text-white" />}
       {user && status === 'success' && (
         <>
           <Menu.Button
-            className="focus-visible:shadow-button-focused focus-visible:outline-none rounded-lg shadow-menu hover:shadow-button-hovered"
+            className="rounded-lg shadow-menu hover:shadow-button-hovered focus-visible:shadow-button-focused focus-visible:outline-none"
             ref={refs.setReference}
           >
             <UserAvatar
               userFullName={userName}
               user={user}
-              className="bg-black/20 h-[50px] w-[50px] "
+              className="h-[50px] w-[50px] bg-black/20 "
             />
           </Menu.Button>
-          <span className="text-white text-xs mt-3">Account</span>
+          <span className="mt-3 text-xs text-white">Account</span>
         </>
       )}
       {!!user && (
@@ -55,10 +55,10 @@ const UserDropdown: React.FC = () => {
               top: y ?? '',
               left: x ?? '',
             }}
-            className="z-40 p-6 bg-white rounded-md shadow-lg focus:outline-none"
+            className="z-40 rounded-md bg-white p-6 shadow-lg focus:outline-none"
           >
-            <div className="flex mb-3 items-center">
-              <UserAvatar userFullName={userName} user={user} className="w-14 h-14" />
+            <div className="mb-3 flex items-center">
+              <UserAvatar userFullName={userName} user={user} className="h-14 w-14" />
 
               <div className="ml-4">
                 <span className="block text-lg leading-8 text-gray-900">{userName}</span>

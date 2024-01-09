@@ -36,8 +36,8 @@ const MakePublic = ({ id, isPublic, display, canEditScenario }: MakePublicProps)
         className={classNames('flex items-center space-x-1', {
           'bg-navy-50': isPublic,
           'bg-gray-100': !isPublic,
-          'rounded-md justify-center p-6': display === 'list',
-          'p-6 -mx-6': display === 'grid',
+          'justify-center rounded-md p-6': display === 'list',
+          '-mx-6 p-6': display === 'grid',
         })}
       >
         <Toggle

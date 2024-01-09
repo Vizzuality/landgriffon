@@ -11,7 +11,7 @@ const Radio = forwardRef<HTMLInputElement, RadioProps>(
       <div className="flex items-center">
         <input
           className={classnames(
-            'border rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-navy-400/20 focus:border-navy-400 px-0',
+            'rounded-full border px-0 text-sm focus:border-navy-400 focus:outline-none focus:ring-2 focus:ring-navy-400/20',
             props.disabled ? 'border-gray-200' : 'border-navy-400',
             !props.disabled && error ? 'border-red-400' : 'border-gray-200',
           )}
@@ -22,7 +22,7 @@ const Radio = forwardRef<HTMLInputElement, RadioProps>(
         <label
           htmlFor={props.id}
           className={classnames(
-            'block ml-2 text-sm',
+            'ml-2 block text-sm',
             props.disabled ? 'text-gray-300' : 'text-gray-900',
           )}
         >

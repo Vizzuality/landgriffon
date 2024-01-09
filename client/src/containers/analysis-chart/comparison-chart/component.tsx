@@ -155,17 +155,17 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
   }, []);
 
   return (
-    <div className="p-6 bg-white rounded-md shadow-sm" data-testid="analysis-chart">
-      {isFetching && <Loading className="w-5 h-5 m-auto text-navy-400" />}
+    <div className="rounded-md bg-white p-6 shadow-sm" data-testid="analysis-chart">
+      {isFetching && <Loading className="m-auto h-5 w-5 text-navy-400" />}
       {!data && !isFetching && (
-        <div className="flex flex-col items-center justify-center h-[370px]">No data</div>
+        <div className="flex h-[370px] flex-col items-center justify-center">No data</div>
       )}
       {!isFetching && isFetched && data && (
         <div>
           <h2 className="flex-shrink-0 text-base">
             {chartData.name} ({chartData.unit})
           </h2>
-          <div className="relative flex-grow mt-3">
+          <div className="relative mt-3 flex-grow">
             <div className="h-[370px] text-xs">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart

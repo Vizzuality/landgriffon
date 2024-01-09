@@ -145,21 +145,21 @@ const ComposedTable = <T,>({
   }, [rowModel, handleExpandedChange, table]);
 
   return (
-    <div className="flex flex-col w-full h-full">
+    <div className="flex h-full w-full flex-col">
       <div className="relative flex-1">
         {isLoading && (
-          <div className="absolute z-40 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
-            <Loading className="w-5 h-5 text-navy-400" />
+          <div className="absolute left-1/2 top-1/2 z-40 -translate-x-1/2 -translate-y-1/2">
+            <Loading className="h-5 w-5 text-navy-400" />
           </div>
         )}
         <div
-          className={classNames('absolute top-0 left-0 overflow-auto w-full h-full', {
-            'blur-sm pointer-events-none': isLoading,
+          className={classNames('absolute left-0 top-0 h-full w-full overflow-auto', {
+            'pointer-events-none blur-sm': isLoading,
           })}
         >
           <table
-            className={classNames('w-full max-h-full min-h-content table-fixed', {
-              'border-spacing-0 border-separate': true,
+            className={classNames('min-h-content max-h-full w-full table-fixed', {
+              'border-separate border-spacing-0': true,
               'mt-[24px]': !!firstProjectedYear,
             })}
           >
@@ -179,7 +179,7 @@ const ComposedTable = <T,>({
               {bodyRows.length === 0 && (
                 <tr>
                   <td colSpan={table.getAllColumns().length}>
-                    <p className="py-16 text-sm text-center">{noDataMessage}</p>
+                    <p className="py-16 text-center text-sm">{noDataMessage}</p>
                   </td>
                 </tr>
               )}
@@ -209,7 +209,7 @@ const ComposedTable = <T,>({
 
       {showPagination && (
         <div
-          className={classNames('grow-0 py-4 bg-gray-100 transition-all ease-in-out duration-100')}
+          className={classNames('grow-0 bg-gray-100 py-4 transition-all duration-100 ease-in-out')}
         >
           <Pagination
             className="justify-between"

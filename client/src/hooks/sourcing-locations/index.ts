@@ -96,7 +96,7 @@ export function useSourcingLocationsMaterials(
             ...data,
           })) || [],
         meta: (response as SourcingLocationsMaterialsAPIResponse).meta || {},
-      } as SourcingLocationsMaterialsDataResponse),
+      }) as SourcingLocationsMaterialsDataResponse,
     [query, response],
   );
 }

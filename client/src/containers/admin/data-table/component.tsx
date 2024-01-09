@@ -101,7 +101,7 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
         isSticky: 'left',
         enableSorting: true,
         cell: ({ row }) => (
-          <div className="flex align-center my-[30px]">{row.original?.material as string}</div>
+          <div className="align-center my-[30px] flex">{row.original?.material as string}</div>
         ),
       },
       {
@@ -147,8 +147,8 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
 
   return (
     <>
-      <div className="flex flex-col h-full space-y-6">
-        <div className="flex w-full gap-2 justify-end">
+      <div className="flex h-full flex-col space-y-6">
+        <div className="flex w-full justify-end gap-2">
           <DownloadMaterialsDataButton />
           <Button
             variant="primary"
@@ -158,9 +158,9 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
             icon={
               <div
                 aria-hidden="true"
-                className="flex items-center justify-center w-5 h-5 bg-white rounded-full"
+                className="flex h-5 w-5 items-center justify-center rounded-full bg-white"
               >
-                <PlusIcon className="w-4 h-4 text-navy-400" />
+                <PlusIcon className="h-4 w-4 text-navy-400" />
               </div>
             }
           >
@@ -171,7 +171,7 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
         {task?.user?.email === session?.user?.email && <DataUploadError task={task} />}
 
         {!isSourcingLocationsLoading && (
-          <div className="flex justify-end w-full">
+          <div className="flex w-full justify-end">
             <div className="text-sm text-gray-400">
               Last update at: {format(new Date(sourcingLocations.data[0].updatedAt), 'd MMM yyyy')}
             </div>
@@ -224,7 +224,7 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
             </div>
           </div>
 
-          <div className="flex justify-between gap-3 mt-8">
+          <div className="mt-8 flex justify-between gap-3">
             <div>
               <Anchor
                 href="/files/data-template.xlsx"

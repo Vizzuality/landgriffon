@@ -33,7 +33,7 @@ const RangeSlider: React.FC<RangeSliderProps> = ({ min, max, step = 1, value, on
         renderTrack={({ props, children }) => (
           <div {...props} className="relative h-6 w-full">
             {children}
-            <div className="w-full h-0.5 flex flex-row top-1/2 relative -z-10">
+            <div className="relative top-1/2 -z-10 flex h-0.5 w-full flex-row">
               <div className="h-full bg-navy-400" style={{ width: `${fillPercentage}%` }} />
               <div className="h-full bg-gray-100" style={{ width: `${100 - fillPercentage}%` }} />
             </div>
@@ -43,7 +43,7 @@ const RangeSlider: React.FC<RangeSliderProps> = ({ min, max, step = 1, value, on
           <div
             {...props}
             className={classNames(
-              'relative h-4 w-4 rounded-full border-navy-400 border-2 text-center',
+              'relative h-4 w-4 rounded-full border-2 border-navy-400 text-center',
               {
                 'bg-white': !isDragged,
                 'bg-navy-400': isDragged,
@@ -51,11 +51,11 @@ const RangeSlider: React.FC<RangeSliderProps> = ({ min, max, step = 1, value, on
             )}
           >
             {isDragged && (
-              <div className="absolute top-2 -translate-y-full left-1/2 -translate-x-1/2">
-                <div className="min-w-fit text-white bg-black p-2 rounded-md text-xs whitespace-nowrap">
+              <div className="absolute left-1/2 top-2 -translate-x-1/2 -translate-y-full">
+                <div className="min-w-fit whitespace-nowrap rounded-md bg-black p-2 text-xs text-white">
                   {value} {unit}
                 </div>
-                <div className="bg-black w-4 h-4 relative left-1/2 -translate-x-1/2 bottom-3 rotate-45 rounded-sm" />
+                <div className="relative bottom-3 left-1/2 h-4 w-4 -translate-x-1/2 rotate-45 rounded-sm bg-black" />
               </div>
             )}
           </div>

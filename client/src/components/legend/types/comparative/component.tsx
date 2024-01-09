@@ -42,7 +42,7 @@ export const LegendTypeComparative: React.FC<LegendTypeComparativeProps> = ({
       </div>
 
       <ul
-        className="flex m-0 mt-1 text-2xs"
+        className="m-0 mt-1 flex text-2xs"
         style={{ width: `${itemWidth * legendItems.length}%` }}
       >
         {legendItems.map(({ label, value }, i) => (
@@ -50,8 +50,8 @@ export const LegendTypeComparative: React.FC<LegendTypeComparativeProps> = ({
             key={`${value}-${i}`}
             className={cx('transform', {
               'text-left': i < (legendItems.length - 1) / 2,
-              'text-center -translate-x-1/2': i === (legendItems.length - 1) / 2,
-              'text-right -translate-x-full': i > (legendItems.length - 1) / 2,
+              '-translate-x-1/2 text-center': i === (legendItems.length - 1) / 2,
+              '-translate-x-full text-right': i > (legendItems.length - 1) / 2,
             })}
             style={{ width: `${itemWidth}%` }}
           >

@@ -20,8 +20,8 @@ const TargetsList: React.FC<TargetsListProps> = ({ data }) => {
 
   return (
     <div className="space-y-1">
-      <div className="rounded-sm shadow-sm bg-gray-50">
-        <div className="grid items-center justify-between grid-cols-12 gap-4 text-xs font-semibold text-gray-500 uppercase">
+      <div className="rounded-sm bg-gray-50 shadow-sm">
+        <div className="grid grid-cols-12 items-center justify-between gap-4 text-xs font-semibold uppercase text-gray-500">
           <div className="col-span-3 p-4">Indicator</div>
           <div className="col-span-2 p-4 text-center">Baseline</div>
           <div className="col-span-7 p-4">
@@ -29,10 +29,10 @@ const TargetsList: React.FC<TargetsListProps> = ({ data }) => {
           </div>
         </div>
         {/* Years */}
-        <div className="grid grid-cols-12 gap-4 text-sm text-gray-400 uppercase border-t border-gray-100">
+        <div className="grid grid-cols-12 gap-4 border-t border-gray-100 text-sm uppercase text-gray-400">
           <div className="col-span-3 p-4" />
           <div className="col-span-2 p-4 text-center">2021</div>
-          <div className="grid grid-cols-4 col-span-7 gap-4 p-4">
+          <div className="col-span-7 grid grid-cols-4 gap-4 p-4">
             {years.map((year) => (
               <div key={`target-head-${year}`} className="text-center">
                 {year}

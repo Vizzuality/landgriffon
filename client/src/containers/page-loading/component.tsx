@@ -8,17 +8,17 @@ const PageLoading: React.FC<PageLoadingProps> = ({
   className,
   message = 'Loading data. This action may take a few seconds',
 }: PageLoadingProps) => (
-  <div className="absolute z-20 bg-black bg-opacity-40 backdrop-blur-sm top-0 bottom-0 right-0 left-0">
+  <div className="absolute bottom-0 left-0 right-0 top-0 z-20 bg-black bg-opacity-40 backdrop-blur-sm">
     <div
       className={classNames(
-        'absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center text-white',
+        'absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center text-white',
         className,
         {
           'text-white': !className,
         },
       )}
     >
-      <Loading className="w-12 h-12 -ml-1 mr-3" />
+      <Loading className="-ml-1 mr-3 h-12 w-12" />
       <p className="mt-6 text-center">{message}</p>
     </div>
   </div>

@@ -9,14 +9,14 @@ const HeaderMobile = () => {
 
   return (
     <div className="lg:hidden">
-      <div className="bg-green-700 py-2 px-4 flex items-center justify-between sm:px-6 lg:px-8">
+      <div className="bg-green-700 flex items-center justify-between px-4 py-2 sm:px-6 lg:px-8">
         <div>
           <LandgriffonLogo />
         </div>
         <div>
           <button
             type="button"
-            className="-mr-3 h-12 w-12 inline-flex items-center justify-center text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+            className="-mr-3 inline-flex h-12 w-12 items-center justify-center text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
             onClick={() => dispatch(setMenuMobileOpen(true))}
           >
             <span className="sr-only">Open sidebar</span>

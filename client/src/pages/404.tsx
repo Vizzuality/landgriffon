@@ -23,7 +23,7 @@ const Page404: React.FC = () => {
   const handleGoBack = useCallback(() => Router.back(), []);
 
   return (
-    <div className="flex justify-center h-screen place-items-center">
+    <div className="flex h-screen place-items-center justify-center">
       <div className="flex-col space-y-44">
         <Logo />
 
@@ -37,9 +37,9 @@ const Page404: React.FC = () => {
           <button
             type="button"
             onClick={handleGoBack}
-            className="flex mt-10 text-green-700 cursor-pointer hover:underline"
+            className="text-green-700 mt-10 flex cursor-pointer hover:underline"
           >
-            <ArrowLeftIcon className="w-4 h-4 mt-1 mr-1" />
+            <ArrowLeftIcon className="mr-1 mt-1 h-4 w-4" />
             Go back
           </button>
         </div>

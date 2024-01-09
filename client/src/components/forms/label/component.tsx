@@ -6,7 +6,7 @@ type LabelProps = React.LabelHTMLAttributes<HTMLLabelElement> & {
 
 const Label: React.FC<LabelProps> = ({ className, children, ...props }) => (
   <label
-    className={classnames('block text-sm font-medium text-gray-900 mb-1', className)}
+    className={classnames('mb-1 block text-sm font-medium text-gray-900', className)}
     {...props}
   >
     {children}

@@ -11,9 +11,9 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
   const [isUploading, setIsUploading] = useState(false);
 
   return (
-    <div className="flex items-center justify-center w-full h-full">
+    <div className="flex h-full w-full items-center justify-center">
       <div className="space-y-16">
-        <div className="space-y-4 text-lg text-center">
+        <div className="space-y-4 text-center text-lg">
           <p className="font-semibold">
             1. Download the Excel template and fill it with your data.
           </p>
@@ -27,7 +27,7 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
             Download template
           </Anchor>
         </div>
-        <div className="space-y-4 text-lg text-center w-[640px]">
+        <div className="w-[640px] space-y-4 text-center text-lg">
           <p className="font-semibold">2. Upload the filled Excel file.</p>
           <DataUploader onUploadInProgress={setIsUploading} />
           {!isUploading && task?.status === 'failed' && <DataUploadError task={task} />}

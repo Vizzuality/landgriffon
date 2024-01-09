@@ -72,7 +72,7 @@ const IndicatorsFilter = () => {
   );
 
   return (
-    <div className="bg-white rounded-md">
+    <div className="rounded-md bg-white">
       <Select
         data-testid="indicators-filter"
         value={current}

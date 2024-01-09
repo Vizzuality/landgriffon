@@ -50,7 +50,7 @@ export function useBusinessUnits(): ResponseData {
       ({
         ...query,
         data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as ResponseData,
-      } as ResponseData),
+      }) as ResponseData,
     [query, isError, data],
   );
 }
@@ -78,7 +78,7 @@ export function useBusinessUnitsTrees(params: BusinessUnitsTreesParams): Respons
       ({
         ...query,
         data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as ResponseData,
-      } as ResponseData),
+      }) as ResponseData,
     [query, isError, data],
   );
 }

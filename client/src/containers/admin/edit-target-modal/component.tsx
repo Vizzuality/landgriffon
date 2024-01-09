@@ -66,14 +66,14 @@ const AdminEditTargetModal: React.FC<EditTargetModalProps> = ({ title, open, onD
 
   return (
     <Modal title={title} open={open} onDismiss={onDismiss} dismissible>
-      <p className="mb-8 text-gray-500 text-md">
+      <p className="text-md mb-8 text-gray-500">
         Set up the baseline year and the targets for this indicator.
       </p>
       <legend className="flex font-medium leading-5">
         <span className="mr-2.5">Baseline Year</span>
         <InfoTooltip info />
       </legend>
-      <div className="grid grid-cols-2 pb-4 mt-5 gap-y-4 gap-x-6 sm:grid-cols-2">
+      <div className="mt-5 grid grid-cols-2 gap-x-6 gap-y-4 pb-4 sm:grid-cols-2">
         <div className="block font-medium text-gray-900">
           <Select<number>
             loading={isLoading}
@@ -85,7 +85,7 @@ const AdminEditTargetModal: React.FC<EditTargetModalProps> = ({ title, open, onD
           />
         </div>
         <div className="block font-medium text-gray-600">
-          <div className="px-6 py-2 text-center rounded-md bg-green-50">
+          <div className="rounded-md bg-green-50 px-6 py-2 text-center">
             <div className="text-base text-gray-900">2.37M tCO2e</div>
           </div>
         </div>
@@ -102,7 +102,7 @@ const AdminEditTargetModal: React.FC<EditTargetModalProps> = ({ title, open, onD
       {/* <Button variant="primary" icon={PlusCircleIcon} onClick={onDismiss}>
           Add a target
       </Button> */}
-      <div className="flex justify-end gap-3 mt-8">
+      <div className="mt-8 flex justify-end gap-3">
         <Button variant="secondary" onClick={onDismiss}>
           Cancel
         </Button>

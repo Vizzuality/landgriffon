@@ -12,10 +12,10 @@ const UserProfile: React.FC = () => (
 
     <section
       aria-labelledby="primary-heading"
-      className="flex flex-col flex-1 h-full min-w-0 p-6 overflow-y-auto"
+      className="flex h-full min-w-0 flex-1 flex-col overflow-y-auto p-6"
     >
       <h1 className="text-center md:text-left">Edit Profile</h1>
-      <section className="pt-4 pb-1 mt-4 md:py-1">
+      <section className="mt-4 pb-1 pt-4 md:py-1">
         <UpdateProfileForm />
         <UpdatePasswordForm />
       </section>

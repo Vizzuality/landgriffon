@@ -78,12 +78,12 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
   );
 
   return (
-    <div className="flex flex-col h-full text-gray-900 bg-white">
-      <div className="sticky top-0 z-20 pt-10 text-sm bg-white pointer-events-none after:bg-gradient-to-b after:from-white after:w-full after:h-3 after:content after:-bottom-3 after:left-0 after:absolute">
+    <div className="flex h-full flex-col bg-white text-gray-900">
+      <div className="after:content pointer-events-none sticky top-0 z-20 bg-white pt-10 text-sm after:absolute after:-bottom-3 after:left-0 after:h-3 after:w-full after:bg-gradient-to-b after:from-white">
         <h1 className="mb-6">Analyze data</h1>
       </div>
 
-      <div className="flex-1 mt-4 space-y-6">
+      <div className="mt-4 flex-1 space-y-6">
         <RadioGroup value={scenarioId} onChange={handleOnChange}>
           <RadioGroup.Label className="sr-only">Scenarios</RadioGroup.Label>
           <div className="space-y-6">
@@ -95,7 +95,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
               !!searchTerm ||
               searchTerm !== '') && (
               <div className="relative z-10 flex-1 overflow-hidden">
-                <ul className="relative grid grid-cols-1 gap-5 my-2 overflow-auto">
+                <ul className="relative my-2 grid grid-cols-1 gap-5 overflow-auto">
                   {scenariosList?.map((item) => (
                     <li key={item.id} className="last-of-type:mb-12">
                       <ScenarioItem scenario={item} isSelected={scenarioId === item.id} />
@@ -108,10 +108,10 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
         </RadioGroup>
 
         {!isLoading && error && (
-          <div className="p-4 my-4 rounded-md bg-red-50">
+          <div className="my-4 rounded-md bg-red-50 p-4">
             <div className="flex">
               <div className="flex-shrink-0">
-                <XCircleIcon className="w-5 h-5 text-red-400" aria-hidden="true" />
+                <XCircleIcon className="h-5 w-5 text-red-400" aria-hidden="true" />
               </div>
               <div className="ml-3">
                 <h3 className="text-sm font-medium text-red-800">
@@ -124,7 +124,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
 
         {isLoading && (
           <div className="flex justify-center p-6 ">
-            <Loading className="w-5 h-5 text-navy-400" />
+            <Loading className="h-5 w-5 text-navy-400" />
           </div>
         )}
 
@@ -150,9 +150,9 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
                 icon={
                   <div
                     aria-hidden="true"
-                    className="flex items-center justify-center w-6 h-6 bg-white rounded-full"
+                    className="flex h-6 w-6 items-center justify-center rounded-full bg-white"
                   >
-                    <PlusIcon className="w-4 h-4 text-navy-400" />
+                    <PlusIcon className="h-4 w-4 text-navy-400" />
                   </div>
                 }
               >
@@ -169,7 +169,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
       </div>
 
       {scenariosList?.length > 0 && (
-        <div className="sticky bottom-0 left-0 z-20 w-full pb-6 bg-white before:bg-gradient-to-t before:from-white before:w-full before:h-16 before:content before:-top-16 before:left-0 before:absolute">
+        <div className="before:content sticky bottom-0 left-0 z-20 w-full bg-white pb-6 before:absolute before:-top-16 before:left-0 before:h-16 before:w-full before:bg-gradient-to-t before:from-white">
           <Anchor
             href="/data/scenarios/new"
             className="w-full"
@@ -177,9 +177,9 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
             icon={
               <div
                 aria-hidden="true"
-                className="flex items-center justify-center w-5 h-5 rounded-full bg-navy-400"
+                className="flex h-5 w-5 items-center justify-center rounded-full bg-navy-400"
               >
-                <PlusIcon className="w-4 h-4 text-white" />
+                <PlusIcon className="h-4 w-4 text-white" />
               </div>
             }
             data-testid="create-scenario"

@@ -42,7 +42,7 @@ export const ZoomControl: React.FC<ZoomControlProps> = ({ className, mapId = 'de
   return (
     <div
       className={cx(
-        'text-gray-900 ml-auto text-4xl flex flex-col justify-center select-none gap-[1.5px] rounded-lg border border-gray-200 overflow-hidden',
+        'ml-auto flex select-none flex-col justify-center gap-[1.5px] overflow-hidden rounded-lg border border-gray-200 text-4xl text-gray-900',
         className,
       )}
     >
@@ -55,7 +55,7 @@ export const ZoomControl: React.FC<ZoomControlProps> = ({ className, mapId = 'de
         disabled={zoom >= maxZoom || (!maxZoom && zoom > 21)}
         onClick={increaseZoom}
       >
-        <PlusIcon className="w-5 h-5" />
+        <PlusIcon className="h-5 w-5" />
       </button>
       <button
         className={COMMON_CLASSES}
@@ -66,7 +66,7 @@ export const ZoomControl: React.FC<ZoomControlProps> = ({ className, mapId = 'de
         disabled={zoom <= minZoom || (!minZoom && zoom < 1)}
         onClick={decreaseZoom}
       >
-        <MinusIcon className="w-5 h-5" />
+        <MinusIcon className="h-5 w-5" />
       </button>
     </div>
   );

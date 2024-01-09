@@ -49,7 +49,7 @@ const AdminTargetsPage: React.FC = () => {
 
       <div className="flex items-center justify-between">
         <div className="flex items-center py-2 text-xs text-black">
-          <InformationCircleIcon className="w-4 h-4 mr-1 text-black" aria-hidden="true" />
+          <InformationCircleIcon className="mr-1 h-4 w-4 text-black" aria-hidden="true" />
           Target value for each indicator by year
         </div>
         <div className="flex space-x-4">
@@ -65,9 +65,9 @@ const AdminTargetsPage: React.FC = () => {
             icon={
               <div
                 aria-hidden="true"
-                className="flex items-center justify-center w-5 h-5 rounded-full bg-navy-400"
+                className="flex h-5 w-5 items-center justify-center rounded-full bg-navy-400"
               >
-                <PlusIcon className="w-4 h-4 text-white" />
+                <PlusIcon className="h-4 w-4 text-white" />
               </div>
             }
             variant="secondary"
@@ -81,7 +81,7 @@ const AdminTargetsPage: React.FC = () => {
       {!isLoading && !hasData && <NoData />}
 
       {isLoading && (
-        <div className="absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <Loading />
         </div>
       )}

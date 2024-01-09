@@ -48,7 +48,7 @@ export const useAdminRegions = <T = OriginRegion[]>(
       ({
         ...query,
         data: (isError ? DEFAULT_QUERY_OPTIONS.placeholderData : data) as ResponseData,
-      } as ResponseData),
+      }) as ResponseData,
     [query, isError, data],
   );
 };

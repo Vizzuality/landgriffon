@@ -55,7 +55,6 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
   intervention,
   isSubmitting,
   onSubmit,
-  isCreation = false,
 }) => {
   const {
     query: { scenarioId },
@@ -441,7 +440,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
           analyze changes.
         </p>
       </div>
-      <div className="pl-10 space-y-4 border-l-2 border-gray-100">
+      <div className="space-y-4 border-l-2 border-gray-100 pl-10">
         <div>
           <label className={LABEL_CLASSNAMES}>
             Title <sup>*</sup>
@@ -625,7 +624,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
       <div className="flex flex-col justify-center pr-10">
         <h2>2. Type of intervention *</h2>
       </div>
-      <div className="pl-10 border-l-2 border-gray-100">
+      <div className="border-l-2 border-gray-100 pl-10">
         <Controller
           name="interventionType"
           control={control}
@@ -644,7 +643,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                     value={value}
                     key={value}
                     className={({ active, checked }) =>
-                      classNames('border p-4 rounded-md', {
+                      classNames('rounded-md border p-4', {
                         'border-orange-100 bg-orange-50 text-gray-900': active || checked,
                         'border-gray-300 text-gray-500':
                           !(active || checked) && !errors.interventionType,
@@ -686,7 +685,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
           </div>
           {/* Those options depending on intervention type selected by the user */}
 
-          <div className="pl-10 space-y-10 border-l-2 border-gray-100">
+          <div className="space-y-10 border-l-2 border-gray-100 pl-10">
             {currentInterventionType === InterventionTypes.Material && (
               <div className="space-y-4">
                 <div className="flex items-center space-x-1">
@@ -736,14 +735,14 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
               <Disclosure as="div" className="space-y-4">
                 {({ open }) => (
                   <>
-                    <div className="flex items-center justify-between w-full">
+                    <div className="flex w-full items-center justify-between">
                       <div className="flex items-center space-x-1">
                         <h3>New location</h3>
                         <InfoToolTip info={InfoTooltip.supplierLocation} />
                       </div>
                       <Disclosure.Button
                         className={classNames(
-                          'border-navy-400 border w-6 h-6 rounded flex items-center justify-center',
+                          'flex h-6 w-6 items-center justify-center rounded border border-navy-400',
                           open ? 'bg-navy-400' : 'bg-transparent',
                           {
                             hidden:
@@ -753,9 +752,9 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                         )}
                       >
                         {open ? (
-                          <MinusIcon className="w-5 h-5 text-white" />
+                          <MinusIcon className="h-5 w-5 text-white" />
                         ) : (
-                          <PlusIcon className="w-5 h-5 text-navy-400" />
+                          <PlusIcon className="h-5 w-5 text-navy-400" />
                         )}
                       </Disclosure.Button>
                     </div>
@@ -934,23 +933,23 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
 
                   return (
                     <>
-                      <div className="flex items-center justify-between w-full">
+                      <div className="flex w-full items-center justify-between">
                         <div className="flex items-center space-x-1">
                           <h3 className="inline-block">Supplier</h3>{' '}
-                          <span className="text-gray-500 text-regular">(optional)</span>
+                          <span className="text-regular text-gray-500">(optional)</span>
                           <InfoToolTip info={InfoTooltip.newSupplier} />
                         </div>
                         {areSupplierEdited || (
                           <Disclosure.Button
                             className={classNames(
-                              'border-navy-400 border w-6 h-6 rounded flex items-center justify-center',
+                              'flex h-6 w-6 items-center justify-center rounded border border-navy-400',
                               open ? 'bg-navy-400' : 'bg-transparent',
                             )}
                           >
                             {open ? (
-                              <MinusIcon className="w-5 h-5 text-white" />
+                              <MinusIcon className="h-5 w-5 text-white" />
                             ) : (
-                              <PlusIcon className="w-5 h-5 text-navy-400" />
+                              <PlusIcon className="h-5 w-5 text-navy-400" />
                             )}
                           </Disclosure.Button>
                         )}
@@ -1029,25 +1028,25 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
 
                 return (
                   <div data-testid="fieldset-impacts-per-ton">
-                    <div className="flex items-center justify-between w-full">
+                    <div className="flex w-full items-center justify-between">
                       <div className="flex items-center space-x-1">
                         <h3>Impacts per ton</h3>
                         {currentInterventionType !== InterventionTypes.Efficiency && (
-                          <span className="text-gray-500 text-regular">(optional)</span>
+                          <span className="text-regular text-gray-500">(optional)</span>
                         )}
                         <InfoToolTip info={InfoTooltip.supplierImpactsPerTon} />
                       </div>
                       <Disclosure.Button
                         className={classNames(
-                          'border-navy-400 border w-6 h-6 rounded flex items-center justify-center',
+                          'flex h-6 w-6 items-center justify-center rounded border border-navy-400',
                           open ? 'bg-navy-400' : 'bg-transparent',
                           currentInterventionType === InterventionTypes.Efficiency && 'hidden',
                         )}
                       >
                         {open ? (
-                          <MinusIcon className="w-5 h-5 text-white" />
+                          <MinusIcon className="h-5 w-5 text-white" />
                         ) : (
-                          <PlusIcon className="w-5 h-5 text-navy-400" />
+                          <PlusIcon className="h-5 w-5 text-navy-400" />
                         )}
                       </Disclosure.Button>
                     </div>
@@ -1089,7 +1088,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
       )}
 
       <div className="col-span-2">
-        <div className="mb-6 text-sm text-right text-gray-500">
+        <div className="mb-6 text-right text-sm text-gray-500">
           Fields marked with (*) are mandatory.
         </div>
         <div className="flex justify-end space-x-6">

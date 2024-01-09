@@ -12,11 +12,11 @@ const TargetItem: React.FC<Target> = ({ id, name, years, unit }) => {
   } = useModal();
 
   return (
-    <div className="grid items-center grid-cols-12 gap-4 p-4 text-sm bg-white shadow-sm">
+    <div className="grid grid-cols-12 items-center gap-4 bg-white p-4 text-sm shadow-sm">
       <div className="col-span-3">{name}</div>
       <div className="col-span-2">
         <div className="flex justify-center">
-          <div className="p-4 text-sm font-semibold text-center text-green-800 rounded-md bg-green-50">
+          <div className="rounded-md bg-green-50 p-4 text-center text-sm font-semibold text-green-800">
             2.37Mt
           </div>
         </div>

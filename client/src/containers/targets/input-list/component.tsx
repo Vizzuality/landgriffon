@@ -9,14 +9,14 @@ interface TargetListProps {
 }
 
 const TargetInputList: React.FC<TargetListProps> = ({ data }) => (
-  <div className="items-center justify-between p-4 overflow-y-scroll rounded-md shadow-sm bg-gray-50 max-h-56">
-    <div className="flex flex-row pb-2 text-sm font-semibold text-gray-500 uppercase">
-      <span className="basis-1/6 mr-2.5">Year</span>
-      <span className="basis-1/4 mr-2.5">Percentage</span>
-      <span className="basis-1/2 mr-2.5">Value</span>
+  <div className="max-h-56 items-center justify-between overflow-y-scroll rounded-md bg-gray-50 p-4 shadow-sm">
+    <div className="flex flex-row pb-2 text-sm font-semibold uppercase text-gray-500">
+      <span className="mr-2.5 basis-1/6">Year</span>
+      <span className="mr-2.5 basis-1/4">Percentage</span>
+      <span className="mr-2.5 basis-1/2">Value</span>
     </div>
     {data.map((target) => (
-      <div key={target.year} className="flex flex-row items-center pb-3 space-x-4 text-gray-900">
+      <div key={target.year} className="flex flex-row items-center space-x-4 pb-3 text-gray-900">
         <Input
           type="number"
           id="year"
@@ -48,7 +48,7 @@ const TargetInputList: React.FC<TargetListProps> = ({ data }) => (
           unit="tCO2e"
           // onInput={handleChange}
         />
-        <XCircleIcon className="w-5 h-5 mr-3 fill-gray-400" />
+        <XCircleIcon className="mr-3 h-5 w-5 fill-gray-400" />
       </div>
     ))}
   </div>

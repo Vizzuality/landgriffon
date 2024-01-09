@@ -391,19 +391,19 @@ const InnerTreeSelect = <IsMulti extends boolean>(
           [THEMES[theme].wrapper]: theme === 'default' && !disabled,
           [THEMES.disabled]: disabled,
           'ring-[1.5px] ring-navy-400': theme === 'default' && isOpen && !error,
-          'flex flex-row justify-between items-center gap-1': theme === 'default',
+          'flex flex-row items-center justify-between gap-1': theme === 'default',
           'ring-1 ring-red-400': theme === 'default' && error,
           'w-fit': theme === 'inline-primary',
         })}
       >
         <div
           className={classNames(
-            'gap-x-1 gap-y-0.5 overflow-hidden h-full flex flex-grow min-h-0',
+            'flex h-full min-h-0 flex-grow gap-x-1 gap-y-0.5 overflow-hidden',
             // apply flex-1 to all children to wrap content nicely
             '[&>*]:flex-1',
             {
               'flex flex-wrap': theme !== 'inline-primary',
-              'ring-navy-400 border-navy-400': isOpen,
+              'border-navy-400 ring-navy-400': isOpen,
               'border-red-400': theme === 'inline-primary' && error,
               [THEMES[theme].wrapper]: theme === 'inline-primary',
             },
@@ -413,7 +413,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
           {multiple ? (
             <>
               {(!currentOptions || !currentOptions.length) && !showSearch && (
-                <span className="inline-block text-gray-500 truncate">{placeholder}</span>
+                <span className="inline-block truncate text-gray-500">{placeholder}</span>
               )}
               {!!currentOptions?.length &&
                 currentOptions.slice(0, badgesToShow).map((option, index) => (
@@ -437,12 +437,12 @@ const InnerTreeSelect = <IsMulti extends boolean>(
             </>
           ) : (
             <div
-              className={classNames('inline-flex items-center min-w-0 my-auto min-h-[36px]', {
+              className={classNames('my-auto inline-flex min-h-[36px] min-w-0 items-center', {
                 'pl-2': selected,
               })}
             >
               {selected ? (
-                <span className="block w-full text-gray-900 truncate">{selected.label}</span>
+                <span className="block w-full truncate text-gray-900">{selected.label}</span>
               ) : (
                 // the placeholder is in the search input already
                 showSearch || <span className="text-gray-500">{placeholder}</span>
@@ -471,8 +471,8 @@ const InnerTreeSelect = <IsMulti extends boolean>(
                 </div>
               )}
               {selected && (
-                <button type="button" onClick={handleReset} className="px-2 py-0 shrink-0">
-                  <XIcon className="w-4 h-4 text-gray-400 hover:text-gray-900" />
+                <button type="button" onClick={handleReset} className="shrink-0 px-2 py-0">
+                  <XIcon className="h-4 w-4 text-gray-400 hover:text-gray-900" />
                 </button>
               )}
             </div>
@@ -503,7 +503,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
         </div>
         <div
           className={classNames(
-            'flex pointer-events-none h-fit shrink-0 px-2',
+            'pointer-events-none flex h-fit shrink-0 px-2',
             THEMES[theme].arrow,
             {
               'text-red-800': !!error,
@@ -513,7 +513,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
           {theme === 'inline-primary' ? (
             <div
               className={classNames(
-                'mt-0.5 border-t-primary border-t-4 border-x-4 border-x-transparent mx-auto w-0 h-0',
+                'border-t-primary mx-auto mt-0.5 h-0 w-0 border-x-4 border-t-4 border-x-transparent',
                 { 'border-t-red-400': error },
               )}
             />
@@ -546,14 +546,14 @@ const InnerTreeSelect = <IsMulti extends boolean>(
           <div
             ref={listContainerRef}
             className={classNames(
-              'bg-white max-h-80 overflow-y-auto',
-              fitContent ? 'max-w-full w-full' : 'max-w-xs',
+              'max-h-80 overflow-y-auto bg-white',
+              fitContent ? 'w-full max-w-full' : 'max-w-xs',
             )}
             id="list-container"
           >
             {loading ? (
               <div className="p-4">
-                <Loading className="w-5 mr-3 -ml-1 h5 text-navy-400" />
+                <Loading className="h5 -ml-1 mr-3 w-5 text-navy-400" />
               </div>
             ) : debouncedSearch ? (
               <SearchOverlay onChange={handleSearchSelection} options={filteredOptions} />
@@ -579,7 +579,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
                   ref={forwardedRef}
                 />
                 {(options.length === 0 || (searchTerm && filteredOptionsKeys?.length === 0)) && (
-                  <div className="p-2 mx-auto text-sm text-gray-600 opacity-60 w-fit">
+                  <div className="mx-auto w-fit p-2 text-sm text-gray-600 opacity-60">
                     No results
                   </div>
                 )}

@@ -17,13 +17,13 @@ export const LegendTypeGradient: React.FC<LegendTypeGradientProps> = ({
     })}
   >
     <div
-      className="flex w-full h-2"
+      className="flex h-2 w-full"
       style={{
         backgroundImage: `linear-gradient(to right, ${items.map((i) => i.color).join(',')})`,
       }}
     />
 
-    <ul className="flex justify-between w-full mt-1">
+    <ul className="mt-1 flex w-full justify-between">
       {items
         .filter(({ value }) => !!value)
         .map(({ label }) => (

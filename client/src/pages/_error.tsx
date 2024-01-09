@@ -18,8 +18,8 @@ const Page500: React.FC = () => {
   const handleReload = () => route.reload();
 
   return (
-    <div className="flex justify-center h-screen place-items-center">
-      <div className="flex-col max-w-md space-y-44">
+    <div className="flex h-screen place-items-center justify-center">
+      <div className="max-w-md flex-col space-y-44">
         <Logo />
 
         <div>

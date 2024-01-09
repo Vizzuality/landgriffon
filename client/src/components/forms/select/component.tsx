@@ -132,13 +132,13 @@ const Select = <T,>({
         {({ open }) => (
           <>
             {!!label && (
-              <Listbox.Label className="block text-sm font-medium text-gray-700">
+              <Listbox.Label className="text-gray-700 block text-sm font-medium">
                 {label}
               </Listbox.Label>
             )}
             <Listbox.Button
               className={classnames(
-                'relative w-full min-h-[42px] inline-flex items-center text-left leading-5 border rounded-md shadow-sm cursor-default hover:cursor-pointer focus:outline-none focus:ring-0 disabled:bg-gray-300/20 disabled:cursor-default',
+                'relative inline-flex min-h-[42px] w-full cursor-default items-center rounded-md border text-left leading-5 shadow-sm hover:cursor-pointer focus:outline-none focus:ring-0 disabled:cursor-default disabled:bg-gray-300/20',
                 {
                   'bg-white focus:border-navy-400': theme === 'light',
                   'bg-navy-400 text-white placeholder:text-white focus:bg-navy-600':
@@ -154,11 +154,11 @@ const Select = <T,>({
               ref={refs.setReference}
             >
               {icon && <div className="mr-2">{cloneElement(icon)}</div>}
-              <span className="min-h-full block text-sm truncate">{labelSelect}</span>
-              <span className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+              <span className="block min-h-full truncate text-sm">{labelSelect}</span>
+              <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
                 {open && !loading && (
                   <ChevronUpIcon
-                    className={classnames('w-4 h-4', {
+                    className={classnames('h-4 w-4', {
                       'text-gray-300': props.disabled,
                       'text-gray-900': theme === 'light',
                       'text-white': theme === 'dark',
@@ -168,7 +168,7 @@ const Select = <T,>({
                 )}
                 {!open && !loading && (
                   <ChevronDownIcon
-                    className={classnames('w-4 h-4', {
+                    className={classnames('h-4 w-4', {
                       'text-gray-300': props.disabled,
                       'text-gray-900': theme === 'light',
                       'text-white': theme === 'dark',
@@ -178,7 +178,7 @@ const Select = <T,>({
                 )}
                 {loading && (
                   <Loading
-                    className={classnames('w-4 h-4 text-navy-400', {
+                    className={classnames('h-4 w-4 text-navy-400', {
                       'text-navy-400': theme === 'light',
                       'text-white': theme === 'dark',
                     })}
@@ -203,11 +203,11 @@ const Select = <T,>({
               }}
               ref={refs.setFloating}
             >
-              <div className="mt-2 overflow-y-auto text-base bg-white rounded-md shadow-sm max-h-60 ring-1 ring-gray-200 focus:outline-none max-w-sm">
+              <div className="mt-2 max-h-60 max-w-sm overflow-y-auto rounded-md bg-white text-base shadow-sm ring-1 ring-gray-200 focus:outline-none">
                 <Listbox.Options
                   ref={parentRef}
                   style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
-                  className="w-full relative"
+                  className="relative w-full"
                 >
                   {rowVirtualizer.getVirtualItems().map((virtualItem) => {
                     const option = options[virtualItem.index];
@@ -216,7 +216,7 @@ const Select = <T,>({
                         key={virtualItem.index}
                         className={({ active, disabled }) =>
                           classnames(
-                            'relative cursor-default text-sm select-none py-2 pl-3 pr-9 hover:cursor-pointer',
+                            'relative cursor-default select-none py-2 pl-3 pr-9 text-sm hover:cursor-pointer',
                             {
                               'bg-navy-50': active,
                               'pointer-events-none cursor-default': disabled,

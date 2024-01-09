@@ -131,15 +131,15 @@ const ScenariosAdminPage: React.FC = () => {
       </Head>
 
       {(!isFetched || isLoading) && (
-        <div className="flex items-center justify-center w-full h-full">
-          <Loading className="w-5 h-5 text-navy-400" />
+        <div className="flex h-full w-full items-center justify-center">
+          <Loading className="h-5 w-5 text-navy-400" />
         </div>
       )}
 
       {!thereAreScenarios && (
-        <div className="flex items-center justify-center w-full h-full">
-          <div className="text-center space-y-8">
-            <div className="m-auto w-[125px] h-[125px]">
+        <div className="flex h-full w-full items-center justify-center">
+          <div className="space-y-8 text-center">
+            <div className="m-auto h-[125px] w-[125px]">
               <Lottie animationData={newScenarioAnimation} loop autoplay />
             </div>
             <h3>Add your scenarios</h3>
@@ -150,9 +150,9 @@ const ScenariosAdminPage: React.FC = () => {
               icon={
                 <div
                   aria-hidden="true"
-                  className="flex items-center justify-center w-5 h-5 rounded-full bg-white"
+                  className="flex h-5 w-5 items-center justify-center rounded-full bg-white"
                 >
-                  <PlusIcon className="w-4 h-4 fill-navy-400" />
+                  <PlusIcon className="h-4 w-4 fill-navy-400" />
                 </div>
               }
             >
@@ -162,7 +162,7 @@ const ScenariosAdminPage: React.FC = () => {
         </div>
       )}
 
-      <div className="flex-1 flex  h-full flex-col">
+      <div className="flex h-full  flex-1 flex-col">
         {thereAreScenarios && (
           <div className="mb-6 space-x-4">
             <div className="w-full bg-white"></div>
@@ -172,7 +172,7 @@ const ScenariosAdminPage: React.FC = () => {
                   value={currentSort}
                   options={SORT_OPTIONS}
                   onChange={handleSort}
-                  icon={<SortDescendingIcon className="w-4 h-4" />}
+                  icon={<SortDescendingIcon className="h-4 w-4" />}
                   data-testid="sort-scenario"
                 />
                 <ButtonGroup>
@@ -183,8 +183,8 @@ const ScenariosAdminPage: React.FC = () => {
                       href={{ pathname: '/data/scenarios', query: { ...query, display } }}
                       data-testid={`scenario-display-${display}`}
                     >
-                      {display === 'grid' && <GridIcon className="w-3 h-3" aria-hidden="true" />}
-                      {display === 'list' && <ListIcon className="w-3 h-3" aria-hidden="true" />}
+                      {display === 'grid' && <GridIcon className="h-3 w-3" aria-hidden="true" />}
+                      {display === 'list' && <ListIcon className="h-3 w-3" aria-hidden="true" />}
                     </LinkGroupItem>
                   ))}
                 </ButtonGroup>
@@ -198,9 +198,9 @@ const ScenariosAdminPage: React.FC = () => {
                   icon={
                     <div
                       aria-hidden="true"
-                      className="flex items-center justify-center w-5 h-5 rounded-full bg-navy-400"
+                      className="flex h-5 w-5 items-center justify-center rounded-full bg-navy-400"
                     >
-                      <PlusIcon className="w-4 h-4 text-white" />
+                      <PlusIcon className="h-4 w-4 text-white" />
                     </div>
                   }
                 >

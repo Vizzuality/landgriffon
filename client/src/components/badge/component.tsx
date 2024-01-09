@@ -26,7 +26,7 @@ const Badge: React.FC<BadgeProps> = ({
   return (
     <div
       className={classNames(
-        'flex items-center overflow-hidden shadow-sm px-2 py-px gap-x-0.5 max-w-fit min-w-fit',
+        'flex min-w-fit max-w-fit items-center gap-x-0.5 overflow-hidden px-2 py-px shadow-sm',
         className,
         THEME_CLASSNAMES[theme]?.wrapper,
         removable && 'pr-1',
@@ -38,7 +38,7 @@ const Badge: React.FC<BadgeProps> = ({
           type="button"
           className={classNames(
             THEME_CLASSNAMES[theme].closeIcon,
-            'flex-shrink-0 h-4 w-4 rounded-full inline-flex items-center justify-center focus:outline-none',
+            'inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full focus:outline-none',
           )}
           onClick={handleClick}
           aria-label="Remove"

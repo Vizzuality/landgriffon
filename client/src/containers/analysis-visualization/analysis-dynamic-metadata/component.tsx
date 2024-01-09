@@ -64,7 +64,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
     () =>
       !!isComparisonEnabled && (
         <span>
-          compared to <span className="font-bold whitespace-nowrap">{scenario2}</span>
+          compared to <span className="whitespace-nowrap font-bold">{scenario2}</span>
         </span>
       ),
     [isComparisonEnabled, scenario2],
@@ -188,14 +188,14 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
 
   return (
     <div
-      className={classNames('flex items-center justify-start text-xs gap-1 flex-wrap', className)}
+      className={classNames('flex flex-wrap items-center justify-start gap-1 text-xs', className)}
       data-testid="analysis-dynamic-metadata"
     >
-      <InformationCircleIcon className="w-4 h-4 text-gray-900 shrink-0" />
+      <InformationCircleIcon className="h-4 w-4 shrink-0 text-gray-900" />
       Viewing {isComparisonEnabled ? <ComparisonToggle /> : values}
       <span>
         <span className="whitespace-nowrap">Impact values for</span>
-        <span className="font-bold whitespace-nowrap"> {scenario1} </span>
+        <span className="whitespace-nowrap font-bold"> {scenario1} </span>
       </span>
       {comparisonTemplate}
       {indicatorsTemplate}

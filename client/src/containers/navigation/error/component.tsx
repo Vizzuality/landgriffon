@@ -7,9 +7,9 @@ const NavigationError: React.FC<NavigationProps> = ({ items }: NavigationProps) 
         <a
           key={item.name}
           href={item.href}
-          className="flex flex-col items-center w-full p-3 text-xs font-medium text-green-800 rounded-md hover:bg-green-800 hover:text-white"
+          className="flex w-full flex-col items-center rounded-md p-3 text-xs font-medium text-green-800 hover:bg-green-800 hover:text-white"
         >
-          <item.icon.default className="w-6 h-6" aria-hidden="true" />
+          <item.icon.default className="h-6 w-6" aria-hidden="true" />
           <span className="mt-2">{item.name}</span>
         </a>
       ))}

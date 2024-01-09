@@ -19,7 +19,6 @@ import { setFilter } from 'store/features/analysis';
 import type { Layer, Material } from 'types';
 
 const sortByOrder: (layers: Record<string, Layer>) => Layer[] = (layers) => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return Object.values(layers).sort((a, b) => a.order! - b.order!);
 };
 
@@ -136,16 +135,16 @@ export const Legend: React.FC = () => {
     <>
       <div className="relative">
         {showLegend && (
-          <div className="absolute bottom-0 z-10 flex flex-col flex-grow overflow-hidden bg-white border border-gray-200 rounded-lg shadow-sm right-12 w-[350px] md:max-h-[75vh]">
+          <div className="absolute bottom-0 right-12 z-10 flex w-[350px] flex-grow flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm md:max-h-[75vh]">
             <div className="overflow-y-auto">
               <div className="divide-y divide-gray-100">
-                <div className="flex items-center justify-between px-2 py-1 place-items-center">
+                <div className="flex place-items-center items-center justify-between px-2 py-1">
                   <div className="px-2 text-sm text-gray-900">Legend</div>
                   <button
                     disabled={!areContextualLayersLoaded}
                     type="button"
                     aria-expanded={showSettings}
-                    className="disabled:cursor-not-allowed disabled:text-gray-500 text-navy-400 py-1.5 px-1.5 flex flex-row gap-2 place-items-center"
+                    className="flex flex-row place-items-center gap-2 px-1.5 py-1.5 text-navy-400 disabled:cursor-not-allowed disabled:text-gray-500"
                     onClick={handleToggleShowLegendSettings}
                     data-testid="contextual-layer-modal-toggle"
                   >
@@ -153,7 +152,7 @@ export const Legend: React.FC = () => {
                       Contextual Layers
                     </span>
                     {visibleContextualLayers > 0 && (
-                      <div className="w-4 h-4 text-xs font-semibold text-center text-white rounded-full bg-navy-400">
+                      <div className="h-4 w-4 rounded-full bg-navy-400 text-center text-xs font-semibold text-white">
                         {visibleContextualLayers}
                       </div>
                     )}
@@ -209,12 +208,12 @@ const ToggleShowLegendButton = ({
       className={classNames(
         bgColorClassnames,
         textColorClassnames,
-        'transition-colors relative flex items-center justify-center w-10 h-10 rounded-lg p-1.5 ',
+        'relative flex h-10 w-10 items-center justify-center rounded-lg p-1.5 transition-colors ',
       )}
       onClick={toggleLegend}
     >
       <ChevronDoubleRightIcon
-        className={classNames('transition-transform w-full hidden group-hover:block', {
+        className={classNames('hidden w-full transition-transform group-hover:block', {
           'rotate-180': showLegend,
         })}
       />
@@ -225,7 +224,7 @@ const ToggleShowLegendButton = ({
         <div
           className={classNames(
             showLegend ? 'bg-inherit' : 'bg-navy-400',
-            'box-content absolute bottom-0 right-0 w-4 h-4 m-auto text-xs font-semibold text-center text-white border border-white rounded-full translate-x-1/3 translate-y-1/3',
+            'absolute bottom-0 right-0 m-auto box-content h-4 w-4 translate-x-1/3 translate-y-1/3 rounded-full border border-white text-center text-xs font-semibold text-white',
           )}
         >
           {activeLayerNumber}

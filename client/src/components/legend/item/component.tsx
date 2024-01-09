@@ -53,39 +53,39 @@ export const LegendItem = ({
 
   return (
     <div
-      className={classNames('flex flex-row gap-1 relative group py-3 pl-1 pr-2', {
+      className={classNames('group relative flex flex-row gap-1 py-3 pl-1 pr-2', {
         'bg-gray-50': !main,
       })}
     >
       <DragHandle className="invisible group-hover:visible" />
-      <div className="flex-grow min-w-0 space-y-2">
+      <div className="min-w-0 flex-grow space-y-2">
         {isLoading && (
-          <div className="flex justify-center w-full align-center">
+          <div className="align-center flex w-full justify-center">
             <Loading />
           </div>
         )}
         {name && (
           <div
-            className={classNames('flex items-start justify-between flex-grow', {
+            className={classNames('flex flex-grow items-start justify-between', {
               hidden: isLoading,
             })}
           >
-            <div className="flex-grow max-w-full min-w-0 text-sm text-left">{name}</div>
+            <div className="min-w-0 max-w-full flex-grow text-left text-sm">{name}</div>
             {showToolbar && (
               <div className="flex flex-row items-center">
-                <div className="flex items-center gap-x-1 mt-0.5">
+                <div className="mt-0.5 flex items-center gap-x-1">
                   <OpacityControl opacity={opacity} onChange={onChangeOpacity} />
                   {info && <InfoModal info={info} />}
                   <button type="button" onClick={handleToggleActive}>
                     {isActive ? (
-                      <EyeOffIcon className="w-4 h-4"></EyeOffIcon>
+                      <EyeOffIcon className="h-4 w-4"></EyeOffIcon>
                     ) : (
-                      <EyeIcon className="w-4 h-4"></EyeIcon>
+                      <EyeIcon className="h-4 w-4"></EyeIcon>
                     )}
                   </button>
                   {onHideLayer && (
                     <button type="button" onClick={onHideLayer}>
-                      <XIcon className="w-4 h-4" />
+                      <XIcon className="h-4 w-4" />
                     </button>
                   )}
                 </div>
@@ -97,9 +97,9 @@ export const LegendItem = ({
           <div className="space-y-2 overflow-hidden">
             {showComparisonModeToggle && isComparisonEnabled && <ComparisonToggle />}
             {children && (
-              <div className="flex flex-row justify-between w-full gap-2 text-gray-500">
+              <div className="flex w-full flex-row justify-between gap-2 text-gray-500">
                 <div className="flex-grow">{children}</div>
-                <div className="-mt-0.5 px text-2xs">{unit && `(${unit})`}</div>
+                <div className="px -mt-0.5 text-2xs">{unit && `(${unit})`}</div>
               </div>
             )}
           </div>

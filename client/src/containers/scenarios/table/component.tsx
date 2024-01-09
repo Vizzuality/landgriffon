@@ -15,7 +15,7 @@ export const ScenarioTable = ({ data, className, onDelete }: ScenarioTableProps)
   const { hasPermission } = usePermissions();
 
   return (
-    <div className={classNames('w-full h-full', className)}>
+    <div className={classNames('h-full w-full', className)}>
       <Table
         data={data}
         columns={[

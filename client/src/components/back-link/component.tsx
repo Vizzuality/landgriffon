@@ -11,11 +11,11 @@ const BackLink: FC<AnchorHTMLAttributes<HTMLAnchorElement>> = forwardRef<
 >(({ children, className, href, ...props }, ref) => (
   <Link
     href={href}
-    className={classNames('flex text-navy-400 text-sm', className)}
+    className={classNames('flex text-sm text-navy-400', className)}
     ref={ref}
     {...props}
   >
-    <ArrowLeftIcon className="inline-block w-5 h-5 mr-4" />
+    <ArrowLeftIcon className="mr-4 inline-block h-5 w-5" />
     {children}
   </Link>
 ));

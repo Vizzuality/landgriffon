@@ -27,12 +27,12 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ payload }) => {
   const percentageDifference = tooltipData[1]?.payload.percentageDifference;
 
   return (
-    <div className="p-4 text-gray-900 bg-white border border-gray-200 rounded-md">
+    <div className="rounded-md border border-gray-200 bg-white p-4 text-gray-900">
       <div className="flex items-center space-x-2">
         {(comparedValue || comparedValue === 0) && (
           <div className="flex items-center space-x-2">
             <div
-              className="w-[16px] h-[1px] border-b-2"
+              className="h-[1px] w-[16px] border-b-2"
               style={{ borderColor: tooltipData[1]?.stroke }}
             />
             <div>{NUMBER_FORMAT(comparedValue)}</div>
@@ -43,8 +43,8 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ payload }) => {
             className={classNames(
               'rounded-sm px-1 text-xs',
               absoluteDifference > 0
-                ? 'text-[#DC3C51] bg-[#DC3C51]/10'
-                : 'text-[#078A3C] bg-[#078A3C]/10',
+                ? 'bg-[#DC3C51]/10 text-[#DC3C51]'
+                : 'bg-[#078A3C]/10 text-[#078A3C]',
             )}
           >
             {absoluteDifference > 0 && '+'}
@@ -56,7 +56,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ payload }) => {
       </div>
       <div className="flex items-center space-x-2">
         <div
-          className="w-[16px] h-[1px] border-b-2"
+          className="h-[1px] w-[16px] border-b-2"
           style={{ borderColor: tooltipData[0].stroke }}
         />
         <div className="text-gray-400">{NUMBER_FORMAT(baseValue)}</div>

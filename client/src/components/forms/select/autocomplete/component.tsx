@@ -127,16 +127,16 @@ const AutoCompleteSelect = <T,>({
         {({ open }) => (
           <>
             {!!label && (
-              <Combobox.Label className="block text-sm font-medium text-gray-700">
+              <Combobox.Label className="text-gray-700 block text-sm font-medium">
                 {label}
               </Combobox.Label>
             )}
             <div className="relative w-full overflow-hidden">
               <Combobox.Input
                 className={classnames(
-                  'w-full inline-flex items-center py-2.5 pl-3 text-left leading-5',
-                  'border rounded-md shadow-sm cursor-default hover:cursor-pointer focus:border-navy-400 focus:outline-none focus:ring-0',
-                  'disabled:bg-gray-300/20 disabled:cursor-default text-sm truncate',
+                  'inline-flex w-full items-center py-2.5 pl-3 text-left leading-5',
+                  'cursor-default rounded-md border shadow-sm hover:cursor-pointer focus:border-navy-400 focus:outline-none focus:ring-0',
+                  'truncate text-sm disabled:cursor-default disabled:bg-gray-300/20',
                   clearable ? 'pr-14' : 'pr-10',
                   {
                     'bg-white placeholder:text-gray-500': theme === 'light',
@@ -153,7 +153,7 @@ const AutoCompleteSelect = <T,>({
                 displayValue={(option: Option<T>) => option?.label}
               />
               <Combobox.Button
-                className="absolute inset-0 flex items-center w-full pr-10"
+                className="absolute inset-0 flex w-full items-center pr-10"
                 as="div"
                 ref={refs.setReference}
               >
@@ -164,12 +164,12 @@ const AutoCompleteSelect = <T,>({
                       {!isEmptySelection && clearable && (
                         <button type="button" onClick={clearSelection}>
                           <XIcon
-                            className={classnames('w-4 h-4', theme === 'dark' && 'text-white')}
+                            className={classnames('h-4 w-4', theme === 'dark' && 'text-white')}
                           />
                         </button>
                       )}
                       <ChevronUpIcon
-                        className={classnames('w-4 h-4', {
+                        className={classnames('h-4 w-4', {
                           'text-gray-900': theme === 'light',
                           'text-white': theme === 'dark',
                           'text-gray-300': props.disabled,
@@ -183,12 +183,12 @@ const AutoCompleteSelect = <T,>({
                       {!isEmptySelection && clearable && (
                         <button type="button" onClick={clearSelection}>
                           <XIcon
-                            className={classnames('w-4 h-4', theme === 'dark' && 'text-white')}
+                            className={classnames('h-4 w-4', theme === 'dark' && 'text-white')}
                           />
                         </button>
                       )}
                       <ChevronDownIcon
-                        className={classnames('w-4 h-4', {
+                        className={classnames('h-4 w-4', {
                           'text-gray-900': theme === 'light',
                           'text-white': theme === 'dark',
                           'text-gray-300': props.disabled,
@@ -199,7 +199,7 @@ const AutoCompleteSelect = <T,>({
                   )}
                   {loading && (
                     <Loading
-                      className={classnames('w-4 h-4 text-navy-400', {
+                      className={classnames('h-4 w-4 text-navy-400', {
                         'text-navy-400': theme === 'light',
                         'text-white': theme === 'dark',
                       })}
@@ -220,7 +220,7 @@ const AutoCompleteSelect = <T,>({
                 leaveFrom="opacity-100 translate-y-0"
                 leaveTo="opacity-0 translate-y-1"
                 afterLeave={handleAfterTransitionLeave}
-                className="z-50 overflow-auto text-base bg-white rounded-md shadow-sm max-h-60 ring-1 ring-gray-200 focus:outline-none"
+                className="z-50 max-h-60 overflow-auto rounded-md bg-white text-base shadow-sm ring-1 ring-gray-200 focus:outline-none"
                 style={{
                   position: strategy,
                   top: y ?? 0,
@@ -241,7 +241,7 @@ const AutoCompleteSelect = <T,>({
                       style={{ height: `${virtualItem.size}px` }}
                       className={({ active, disabled }) =>
                         classnames(
-                          'relative cursor-default text-sm select-none py-2 pl-3 pr-9 hover:cursor-pointer',
+                          'relative cursor-default select-none py-2 pl-3 pr-9 text-sm hover:cursor-pointer',
                           {
                             'bg-navy-50': active,
                             'pointer-events-none cursor-default': disabled,

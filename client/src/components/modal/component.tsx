@@ -30,7 +30,7 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <Transition show={isOpen} as={Fragment}>
-      <Dialog onClose={handleClose} className="z-40 fixed inset-0">
+      <Dialog onClose={handleClose} className="fixed inset-0 z-40">
         {/* The backdrop, rendered as a fixed sibling to the panel container */}
         <Transition.Child
           as={Fragment}
@@ -64,14 +64,14 @@ export const Modal: React.FC<ModalProps> = ({
             >
               <div className="overflow-hidden rounded-md bg-white">
                 {dismissible && theme === 'default' && (
-                  <div className="relative flex items-center mb-4">
+                  <div className="relative mb-4 flex items-center">
                     <div className="text-lg font-medium">{title}</div>
                     <button
                       type="button"
                       onClick={handleClose}
-                      className="absolute flex items-center px-4 py-4 text-sm text-gray-300 rounded-md -right-4 -top-4 focus:text-black hover:text-black"
+                      className="absolute -right-4 -top-4 flex items-center rounded-md px-4 py-4 text-sm text-gray-300 hover:text-black focus:text-black"
                     >
-                      <XIcon className="w-6 h-6 text-gray-500" />
+                      <XIcon className="h-6 w-6 text-gray-500" />
                     </button>
                   </div>
                 )}
@@ -81,9 +81,9 @@ export const Modal: React.FC<ModalProps> = ({
               {theme === 'minimal' && dismissible && (
                 <div
                   onClick={handleClose}
-                  className="absolute z-30 cursor-pointer right-0 top-4 translate-x-1/2 p-6 bg-white rounded-full"
+                  className="absolute right-0 top-4 z-30 translate-x-1/2 cursor-pointer rounded-full bg-white p-6"
                 >
-                  <XIcon className="w-4 h-4" />
+                  <XIcon className="h-4 w-4" />
                 </div>
               )}
             </Dialog.Panel>

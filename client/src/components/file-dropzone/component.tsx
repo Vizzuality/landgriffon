@@ -36,7 +36,7 @@ const FileDropZone: React.FC<FileDropZoneProps> = ({ isUploading, ...dropZoneOpt
       <input {...getInputProps()} />
 
       <div className="space-y-1">
-        <div className="flex justify-center w-full mb-4">
+        <div className="mb-4 flex w-full justify-center">
           {isUploading ? (
             <Lottie animationData={uploaderAnimation} loop autoplay />
           ) : (

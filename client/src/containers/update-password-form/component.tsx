@@ -60,7 +60,7 @@ const UserPasswordForm: React.FC = () => {
           <p className="text-sm text-gray-500">Update your password.</p>
         </div>
 
-        <div className="col-span-8 bg-white rounded-md shadow-lg">
+        <div className="col-span-8 rounded-md bg-white shadow-lg">
           <form onSubmit={handleSubmitPassword(handleEditPassword)}>
             <div className="grid grid-cols-2 gap-6 p-6 pb-8">
               <div className="col-span-2">
@@ -89,7 +89,7 @@ const UserPasswordForm: React.FC = () => {
                 />
               </div>
             </div>
-            <div className="flex justify-end h-16 py-3 pr-6 rounded-md bg-gray-50">
+            <div className="flex h-16 justify-end rounded-md bg-gray-50 py-3 pr-6">
               <Button
                 type="submit"
                 variant="primary"

@@ -48,8 +48,8 @@ const DataUploadError: React.FC<DataUploadErrorProps> = ({ task }) => {
       }
       icon={task?.status === 'completed' && task?.errors.length === 0 && <UploadIcon />}
     >
-      <div className="flex w-full space-x-6 items-center">
-        <div className="space-y-1.5 flex-1">
+      <div className="flex w-full items-center space-x-6">
+        <div className="flex-1 space-y-1.5">
           {task?.status === 'processing' && (
             <>
               <h3>Upload in progress</h3>

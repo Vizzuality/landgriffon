@@ -57,7 +57,7 @@ const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="grid w-full grid-cols-1 gap-6 mt-6"
+      className="mt-6 grid w-full grid-cols-1 gap-6"
       data-testid={`scenario-form-validation-${isValid}`}
     >
       <div className="grid grid-cols-2 gap-4">
@@ -79,7 +79,7 @@ const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
         </div>
         <div className="flex flex-col">
           <label>Access</label>
-          <div className="flex items-center h-full space-x-1">
+          <div className="flex h-full items-center space-x-1">
             <Controller
               name="isPublic"
               control={control}

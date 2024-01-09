@@ -23,7 +23,7 @@ const BasemapControl = ({ value, onChange }: BasemapControlProps) => {
 
   const TooltipContent = useMemo(
     () => (
-      <div className="p-2 text-xs text-white bg-gray-900 rounded-lg">
+      <div className="rounded-lg bg-gray-900 p-2 text-xs text-white">
         Change to {basemapToToggleTo} basemap
       </div>
     ),
@@ -33,11 +33,11 @@ const BasemapControl = ({ value, onChange }: BasemapControlProps) => {
   return (
     <Tooltip hoverTrigger placement="left" theme="dark" content={TooltipContent}>
       <div
-        className="transition-colors duration-200 ease-in-out bg-white border border-white rounded-lg shadow-lg cursor-pointer aspect-square hover:bg-green-50 hover:border-navy-400"
+        className="aspect-square cursor-pointer rounded-lg border border-white bg-white shadow-lg transition-colors duration-200 ease-in-out hover:border-navy-400 hover:bg-green-50"
         onClick={handleClick}
       >
-        <div className="w-full h-full p-px pointer-events-none">
-          <div className="w-full h-full overflow-hidden rounded-md">
+        <div className="pointer-events-none h-full w-full p-px">
+          <div className="h-full w-full overflow-hidden rounded-md">
             <Image
               width={40}
               height={40}

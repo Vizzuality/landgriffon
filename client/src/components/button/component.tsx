@@ -135,8 +135,8 @@ const ButtonTemplate: React.FC<AnchorButtonProps> = ({ danger, icon, loading, si
     {loading && (
       <Loading
         className={classNames('mr-2', {
-          'w-3 h-3': size === 'xs',
-          'w-4 h-4': size !== 'xs',
+          'h-3 w-3': size === 'xs',
+          'h-4 w-4': size !== 'xs',
           'text-gray-900': variant === 'white' && !danger,
         })}
       />

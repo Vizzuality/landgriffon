@@ -39,11 +39,11 @@ const ChartPage: NextPageWithLayout = () => {
   });
 
   return (
-    <div className="pl-6 pr-6 my-6 xl:pl-12">
+    <div className="my-6 pl-6 pr-6 xl:pl-12">
       <TitleTemplate title="Analysis chart" />
       {isLoading && (
-        <div className="flex items-center justify-center h-full">
-          <Loading className="w-5 h-5 m-auto text-navy-400" />
+        <div className="flex h-full items-center justify-center">
+          <Loading className="m-auto h-5 w-5 text-navy-400" />
         </div>
       )}
       {!isLoading && activeIndicators?.length > 0 && (

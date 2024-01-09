@@ -33,7 +33,7 @@ const ToastContainer: React.FC<ToasterProps> = (props) => (
       const { iconColor, backgroundColor, messagesColor } = ALERT_CLASSES[t.type];
       return (
         <div
-          className={classNames('rounded-md text-sm py-4 px-4 max-w-4xl relative', backgroundColor)}
+          className={classNames('relative max-w-4xl rounded-md px-4 py-4 text-sm', backgroundColor)}
         >
           <div className="flex items-center space-x-4">
             <div className="flex-none">

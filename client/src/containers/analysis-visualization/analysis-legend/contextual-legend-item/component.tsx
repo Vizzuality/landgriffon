@@ -74,7 +74,6 @@ const ContextualLegendItem = ({ layer }: ContextualLegendItemProps) => {
       onToggle={onToggleLayer}
       id={layer.id}
       isLoading={areLayersLoading || isLoadingData}
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       name={layer.metadata!.legend.name}
       info={{
         description: layer.metadata?.description,

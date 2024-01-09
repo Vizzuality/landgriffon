@@ -135,8 +135,8 @@ const querySyncMiddleware: Middleware = () => (next) => (action) => {
                     [param]: ['string', 'number'].includes(typeof currentStateValue)
                       ? currentStateValue
                       : checkValidJSON(JSON.stringify(currentStateValue))
-                      ? JSON.stringify(currentStateValue)
-                      : currentStateValue,
+                        ? JSON.stringify(currentStateValue)
+                        : currentStateValue,
                   }
                 : {}),
             },

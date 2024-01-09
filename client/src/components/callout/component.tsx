@@ -22,9 +22,9 @@ const Callout = ({ type, children }: React.PropsWithChildren<CalloutProps>) => {
   const Icon = ICONS_BY_TYPE[type];
   return (
     <div
-      className={classNames('flex flex-row rounded-md p-2 text-sm gap-2', TYPE_CLASSNAMES[type])}
+      className={classNames('flex flex-row gap-2 rounded-md p-2 text-sm', TYPE_CLASSNAMES[type])}
     >
-      <Icon className="w-5 h-5 flex-shrink-0" />
+      <Icon className="h-5 w-5 flex-shrink-0" />
       <div>{children}</div>
     </div>
   );

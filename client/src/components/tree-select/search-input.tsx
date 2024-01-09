@@ -27,7 +27,7 @@ const SearchInput = ({
         placeholder={placeholder}
         disabled={disabled}
         className={classNames(
-          'w-full p-0 py-2 pl-2 truncate bg-transparent border-none appearance-none focus:ring-0 h-[32px]',
+          'h-[32px] w-full appearance-none truncate border-none bg-transparent p-0 py-2 pl-2 focus:ring-0',
           {
             // 'pl-2': multiple,
             'text-sm': theme !== 'inline-primary',
@@ -40,7 +40,7 @@ const SearchInput = ({
       />
       {value && (
         <button type="button" onClick={resetSearch} className="flex-shrink-0">
-          <XIcon className="w-4 h-4 text-gray-400" />
+          <XIcon className="h-4 w-4 text-gray-400" />
         </button>
       )}
     </>

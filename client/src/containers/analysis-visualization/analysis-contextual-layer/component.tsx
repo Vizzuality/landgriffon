@@ -141,8 +141,8 @@ const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onAppl
   );
 
   return (
-    <div className="flex flex-row h-[600px] items-stretch">
-      <div className="flex flex-col gap-5 p-6 w-[25rem]">
+    <div className="flex h-[600px] flex-row items-stretch">
+      <div className="flex w-[25rem] flex-col gap-5 p-6">
         <div className="w-full">
           <Search
             onChange={setSearchText}
@@ -152,10 +152,10 @@ const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onAppl
             disabled
           />
         </div>
-        <div className="text-sm text-right text-navy-400 underline-offset-[3px]">
+        <div className="text-right text-sm text-navy-400 underline-offset-[3px]">
           Selected layers ({localSelectedLayerNumber})
         </div>
-        <div className="max-h-full p-0.5 overflow-y-auto flex-grow">
+        <div className="max-h-full flex-grow overflow-y-auto p-0.5">
           <Accordion>
             <MaterialSettings
               previewStatus={previewStatus}
@@ -182,7 +182,7 @@ const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onAppl
             ))}
           </Accordion>
         </div>
-        <div className="flex flex-row gap-2 justify-between">
+        <div className="flex flex-row justify-between gap-2">
           <Button variant="white" onClick={onDismiss}>
             Cancel
           </Button>
@@ -198,19 +198,19 @@ const LegendSettings: React.FC<LegendSettingsProps> = ({ categories = [], onAppl
         </div>
       </div>
       <div className="relative aspect-square">
-        <div className="absolute h-full w-full top-0 left-0">
+        <div className="absolute left-0 top-0 h-full w-full">
           <PreviewMap
             selectedMaterialId={localMaterial}
             selectedLayerId={selectedLayerForPreview}
             onStatusChange={setPreviewStatus}
           />
-          <div className="absolute flex flex-row text-sm text-white bg-black rounded-md top-3 left-3 h-fit">
+          <div className="absolute left-3 top-3 flex h-fit flex-row rounded-md bg-black text-sm text-white">
             <div className="p-3 font-bold">Preview layers</div>
             {!selectedLayerForPreview && (
               <>
-                <div className="bg-white w-0.5 self-stretch" />
+                <div className="w-0.5 self-stretch bg-white" />
                 <div className="p-3">
-                  Click the eye icon <EyeIcon className="inline w-4 h-4" /> next to the layer name
+                  Click the eye icon <EyeIcon className="inline h-4 w-4" /> next to the layer name
                   preview
                 </div>
               </>

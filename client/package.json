@@ -99,6 +99,7 @@
     "prettier-plugin-tailwindcss": "^0.5.10",
     "start-server-and-test": "1.14.0",
     "typescript": "5.2.2",
+    "update-browserslist-db": "^1.0.13",
     "webpack": "5"
   },
   "packageManager": "yarn@3.3.1"

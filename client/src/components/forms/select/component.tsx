@@ -56,6 +56,7 @@ const Select = <T,>({
     count: options.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 35,
+    overscan: 10,
   });
 
   const handleChange = useCallback(

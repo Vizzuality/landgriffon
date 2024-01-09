@@ -1,4 +1,4 @@
-import React, { cloneElement, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { cloneElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import classnames from 'classnames';
 import { Transition, Combobox } from '@headlessui/react';
 import { ChevronUpIcon, ChevronDownIcon, XIcon } from '@heroicons/react/solid';
@@ -33,6 +33,7 @@ const AutoCompleteSelect = <T,>({
   onSearch,
   ...props
 }: AutoCompleteSelectProps<T>) => {
+  const parentRef = useRef();
   const [virtualizedListWidth, setVirtualizedListWidth] = useState(0);
   const [selected, setSelected] = useState<Option<T> | Option<string>>(
     defaultValue || value || { label: '', value: '' },
@@ -95,11 +96,6 @@ const AutoCompleteSelect = <T,>({
     if (onClearSelection) onClearSelection();
   }, [onClearSelection]);
 
-  const virtualizedListHeight = useMemo(() => {
-    if (!filteredOptions.length) return rowHeight;
-    return filteredOptions.length * rowHeight < 240 ? filteredOptions.length * rowHeight : 240;
-  }, [filteredOptions, rowHeight]);
-
   const isEmptySelection = useMemo(
     () => selected === null || selected?.value === null || selected?.value === '',
     [selected],
@@ -107,8 +103,9 @@ const AutoCompleteSelect = <T,>({
 
   const virtualizedList = useVirtualizer({
     count: filteredOptions.length,
-    getScrollElement: useCallback(() => refs.floating.current, [refs.floating]),
+    getScrollElement: () => parentRef.current,
     estimateSize: useCallback(() => rowHeight, [rowHeight]),
+    overscan: 10,
   });
 
   // ? in case the value is not set in the hook initialization, it will be set here after first render.
@@ -232,8 +229,9 @@ const AutoCompleteSelect = <T,>({
                 <Combobox.Options
                   className="relative w-full"
                   style={{
-                    height: `${virtualizedListHeight}px`,
+                    height: `${virtualizedList.getTotalSize()}px`,
                   }}
+                  ref={parentRef}
                 >
                   {virtualizedList.getVirtualItems().map((virtualItem) => (
                     <Combobox.Option

@@ -55,7 +55,6 @@ describe('Analysis table', () => {
       cy.get('[data-testid="select-year-selector-to"]').click();
 
       // Check that the 'to' options years smaller than the selected 'from' year are disabled
-      cy.get('.ReactVirtualized__List').scrollTo('top'); // select dialog portal to the top to show the options
       cy.get('[data-testid="year-selector-to-option"][aria-disabled="true"]').should(
         'have.length',
         3,

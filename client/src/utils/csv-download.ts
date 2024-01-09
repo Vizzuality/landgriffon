@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
 import { Parser } from '@json2csv/plainjs';
 
 const CSV_FILE_TYPE = 'text/csv;charset=utf-8;';

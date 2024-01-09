@@ -86,7 +86,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
     <div>
       <button
         type="button"
-        className="relative w-full py-2.5 leading-5 text-sm pl-3 pr-10 text-left bg-white border border-gray-200 rounded-md shadow-sm cursor-pointer focus:outline-none focus:border-navy-400 focus:ring-0"
+        className="relative w-full cursor-pointer rounded-md border border-gray-200 bg-white py-2.5 pl-3 pr-10 text-left text-sm leading-5 shadow-sm focus:border-navy-400 focus:outline-none focus:ring-0"
         {...getReferenceProps({
           ref: refs.setReference,
         })}
@@ -98,9 +98,9 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
             {startYearOption?.label} - {endYearOption?.label}
           </span>
         </span>
-        <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
           <ChevronDownIcon
-            className={cx('w-5 h-5 text-gray-900', {
+            className={cx('h-5 w-5 text-gray-900', {
               'rotate-180': isOpen,
             })}
             aria-hidden="true"
@@ -128,7 +128,7 @@ export const YearsRangeFilter: React.FC<YearsRangeFilterProps> = ({
           })}
         >
           <div className="mt-1 w-60">
-            <div className="p-4 bg-white rounded-md shadow-md ring-1 ring-gray-200">
+            <div className="rounded-md bg-white p-4 shadow-md ring-1 ring-gray-200">
               <div className="grid grid-cols-1 gap-2">
                 <div>From</div>
                 <Select<number>

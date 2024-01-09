@@ -42,14 +42,14 @@ const ComparisonCell: React.FC<ComparisonCellProps> = ({
   return (
     <div className="mx-auto w-fit" data-testid="comparison-cell">
       <div className="flex flex-row gap-1">
-        <div className="my-auto text-sm text-gray-900 whitespace-nowrap">
+        <div className="my-auto whitespace-nowrap text-sm text-gray-900">
           {formatWithUnit(scenarioValue, unit)}
         </div>
         <div
           className={classNames(
-            'my-auto text-xs font-semibold text-gray-500 rounded-[4px] px-1 py-0.5',
+            'my-auto rounded-[4px] px-1 py-0.5 text-xs font-semibold text-gray-500',
             {
-              'bg-green-400/40 text-green-700':
+              'text-green-700 bg-green-400/40':
                 (comparisonMode === 'relative' && percentageDifference <= 0) ||
                 (comparisonMode === 'absolute' && absoluteDifference <= 0),
               'bg-red-400/20 text-red-800':
@@ -67,7 +67,7 @@ const ComparisonCell: React.FC<ComparisonCellProps> = ({
           )}
         </div>
       </div>
-      <div className="my-auto text-xs text-left text-gray-300 line-through whitespace-nowrap">
+      <div className="my-auto whitespace-nowrap text-left text-xs text-gray-300 line-through">
         {formatWithUnit(value, unit)}
       </div>
     </div>

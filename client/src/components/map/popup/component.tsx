@@ -12,7 +12,7 @@ const PopUp = ({ children, position: { x, y, width, height } }: PopUpProps) => {
 
   return (
     <div
-      className={classNames('absolute z-10 pointer-events-none transform', {
+      className={classNames('pointer-events-none absolute z-10 transform', {
         '-translate-y-full': !withinYLimit,
         '-translate-x-full': !withinXLimit,
       })}

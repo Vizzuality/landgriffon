@@ -45,12 +45,12 @@ const AccordionEntry = ({ header, children, expanded, onExpandedChange }: Accord
       })}
     >
       <div
-        className="flex flex-row gap-2 p-2 cursor-pointer place-items-start"
+        className="flex cursor-pointer flex-row place-items-start gap-2 p-2"
         onClick={toggleExpand}
       >
         <div className="h-fit">
           <ChevronRightIcon
-            className={classNames('w-5 h-5 text-gray-500 my-auto', {
+            className={classNames('my-auto h-5 w-5 text-gray-500', {
               'rotate-90': localIsExpanded,
             })}
           />

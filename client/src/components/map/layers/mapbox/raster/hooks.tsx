@@ -1,9 +1,8 @@
 import { useMemo } from 'react';
-import { AnyLayer } from 'mapbox-gl';
 
 import { getTiler } from './utils';
 
-import type { AnySourceData } from 'mapbox-gl';
+import type { AnyLayer, AnySourceData } from 'mapbox-gl';
 import type { LayerSettings, LayerProps } from 'components/map/layers/types';
 
 export function useSource({

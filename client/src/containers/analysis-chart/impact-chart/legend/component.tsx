@@ -33,7 +33,7 @@ const LegendChart: React.FC<ExtendedLegendProps> = ({
             <li
               key={item.value}
               className={classNames(
-                'flex items-center space-x-1 cursor-pointer border py-0.5 px-1 rounded hover:border-black',
+                'flex cursor-pointer items-center space-x-1 rounded border px-1 py-0.5 hover:border-black',
                 {
                   'opacity-50': legendKey && legendKey !== item.id,
                 },
@@ -41,7 +41,7 @@ const LegendChart: React.FC<ExtendedLegendProps> = ({
               onClick={handleClick.bind(null, item, index)}
             >
               <div
-                className="w-[6px] h-3 rounded shrink-0 grow-0 bg-gray-400"
+                className="h-3 w-[6px] shrink-0 grow-0 rounded bg-gray-400"
                 style={{
                   ...((!legendKey || legendKey === item.id) && {
                     backgroundColor: `${item.color}`,
@@ -49,7 +49,7 @@ const LegendChart: React.FC<ExtendedLegendProps> = ({
                 }}
               />
               <div
-                className="overflow-hidden text-xs whitespace-nowrap text-ellipsis max-w-[100px]"
+                className="max-w-[100px] overflow-hidden text-ellipsis whitespace-nowrap text-xs"
                 title={item.value}
               >
                 {item.value}
@@ -60,7 +60,7 @@ const LegendChart: React.FC<ExtendedLegendProps> = ({
       <div>
         <div className="flex items-center space-x-1">
           <ProjectedDataIcon />
-          <div className="text-xs whitespace-nowrap py-1">Projected data</div>
+          <div className="whitespace-nowrap py-1 text-xs">Projected data</div>
         </div>
       </div>
     </div>

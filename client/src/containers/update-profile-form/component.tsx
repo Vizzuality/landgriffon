@@ -53,7 +53,7 @@ const UserDataForm: React.FC = () => {
           </p>
         </div>
 
-        <div className="col-span-8 bg-white rounded-md shadow-lg">
+        <div className="col-span-8 rounded-md bg-white shadow-lg">
           {user.data && !user.isLoading && (
             <form onSubmit={handleSubmit(handleEditUserData)}>
               <div className="grid grid-cols-2 gap-6 p-6 pb-8">
@@ -92,7 +92,7 @@ const UserDataForm: React.FC = () => {
                   />
                 </div>
               </div>
-              <div className="flex justify-end h-16 py-3 pr-6 rounded-md bg-gray-50">
+              <div className="flex h-16 justify-end rounded-md bg-gray-50 py-3 pr-6">
                 <Button type="submit" variant="primary" loading={updateProfile.isLoading}>
                   Save
                 </Button>

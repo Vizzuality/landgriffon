@@ -15,11 +15,11 @@ const AnalysisLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { visualizationMode, isSidebarCollapsed } = useAppSelector(analysisUI);
 
   return (
-    <div className="flex w-full h-full">
+    <div className="flex h-full w-full">
       <TitleTemplate title="Analysis" />
 
-      <aside className="relative flex-shrink-0 h-full bg-white rounded-tl-3xl">
-        <div className="absolute right-0 z-40 transform translate-x-1/2 top-6">
+      <aside className="relative h-full flex-shrink-0 rounded-tl-3xl bg-white">
+        <div className="absolute right-0 top-6 z-40 translate-x-1/2 transform">
           <CollapseButton />
         </div>
         <Transition
@@ -31,21 +31,21 @@ const AnalysisLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
           leave="transform transition ease-in duration-100"
           leaveFrom="opacity-100"
           leaveTo="opacity-10"
-          className="h-full px-12 overflow-x-hidden overflow-y-auto w-[410px]"
+          className="h-full w-[410px] overflow-y-auto overflow-x-hidden px-12"
           ref={scrollRef}
         >
           <AnalysisSidebar scrollref={scrollRef} />
         </Transition>
       </aside>
 
-      <section className="relative flex flex-col flex-1 h-screen overflow-auto">
+      <section className="relative flex h-screen flex-1 flex-col overflow-auto">
         <div
           className={classNames(
             {
-              'absolute top-6 left-6 xl:left-12 right-6 z-10': visualizationMode === 'map',
+              'absolute left-6 right-6 top-6 z-10 xl:left-12': visualizationMode === 'map',
               'p-6': visualizationMode !== 'map',
             },
-            'flex flex-wrap gap-2 justify-between',
+            'flex flex-wrap justify-between gap-2',
           )}
         >
           <AnalysisFilters />

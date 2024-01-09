@@ -65,12 +65,12 @@ const EditInterventionPage: React.FC = () => {
       </Head>
       <BackLink
         href={`/data/scenarios/${query.scenarioId}/edit`}
-        className="flex mb-6 xl:sticky xl:top-0"
+        className="mb-6 flex xl:sticky xl:top-0"
       >
         Back to scenario
       </BackLink>
       <div className="grid grid-cols-12 gap-6">
-        <div className="col-span-10 col-start-2 xl:col-start-3 xl:col-span-8">
+        <div className="col-span-10 col-start-2 xl:col-span-8 xl:col-start-3">
           <h1 data-testid="page-title">Edit intervention</h1>
           {isLoading && <Loading />}
           {!isLoading && data && (

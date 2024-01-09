@@ -12,7 +12,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       <div className={classnames('relative rounded-md shadow-sm', className)}>
         <textarea
           className={classnames(
-            'block border w-full rounded-md text-sm focus:outline-none focus:ring-0 focus:border-navy-400 px-4',
+            'block w-full rounded-md border px-4 text-sm focus:border-navy-400 focus:outline-none focus:ring-0',
             error ? 'border-red-400 pr-10' : 'border-gray-200',
             props.disabled ? 'text-gray-200' : 'text-gray-900',
           )}
@@ -20,8 +20,8 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           {...props}
         />
         {error && (
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <ExclamationCircleIcon className="w-4 h-4 text-red-400" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+            <ExclamationCircleIcon className="h-4 w-4 text-red-400" />
           </div>
         )}
       </div>

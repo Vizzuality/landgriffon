@@ -49,21 +49,21 @@ const Disclaimer: React.FC<DisclaimerProps> = ({
     >
       <div
         className={classNames(
-          'p-6 mt-6 text-sm text-left rounded-md bg-white border',
+          'mt-6 rounded-md border bg-white p-6 text-left text-sm',
           WRAPPER_CLASS[variant],
         )}
       >
-        <div className="flex space-x-6 items-center">
+        <div className="flex items-center space-x-6">
           <div className="flex-none">
             {icon || (
               <div
                 className={classNames(
-                  'flex items-center justify-center rounded-full w-[72px] h-[72px]',
+                  'flex h-[72px] w-[72px] items-center justify-center rounded-full',
                   ICON_BG_CLASS[variant],
                 )}
               >
                 <ExclamationIcon
-                  className={classNames('w-8 h-8 text-orange-500', ICON_CLASS[variant])}
+                  className={classNames('h-8 w-8 text-orange-500', ICON_CLASS[variant])}
                 />
               </div>
             )}

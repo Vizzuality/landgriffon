@@ -53,61 +53,61 @@ const ScenarioItem = ({ scenario, isSelected }: ScenariosItemProps) => {
     <div data-testid={`scenario-item-${scenario.id || 'null'}`}>
       <div
         className={classNames(
-          'rounded-lg shadow-sm border p-4 space-y-2',
+          'space-y-2 rounded-lg border p-4 shadow-sm',
           isSelected ? 'border-navy-400' : 'border-gray-200',
         )}
       >
         <RadioGroup.Option
           key={scenario.id}
           value={scenario.id}
-          className="flex w-full gap-2 items-top"
+          className="items-top flex w-full gap-2"
           data-testid="scenario-item-radio"
         >
           {({ checked }) => (
             <>
-              <div className="flex justify-center flex-shrink-0 items-top">
+              <div className="items-top flex flex-shrink-0 justify-center">
                 <span
                   className={classNames(
-                    checked ? 'bg-navy-400 border-transparent' : 'bg-white border-gray-300',
-                    'h-4 w-4 mt-0.5 cursor-pointer rounded-full border flex items-center justify-center',
+                    checked ? 'border-transparent bg-navy-400' : 'border-gray-300 bg-white',
+                    'mt-0.5 flex h-4 w-4 cursor-pointer items-center justify-center rounded-full border',
                   )}
                   aria-hidden="true"
                 >
-                  <span className="rounded-full bg-white w-1.5 h-1.5" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-white" />
                 </span>
               </div>
-              <div className="flex-1 min-w-0 pr-4">
+              <div className="min-w-0 flex-1 pr-4">
                 <h2
                   className={classNames(
-                    'text-sm truncate font-normal',
+                    'truncate text-sm font-normal',
                     isSelected ? 'text-navy-400' : 'text-gray-900',
                   )}
                 >
                   {scenario.title}
                 </h2>
                 {scenario.id ? (
-                  <div className="flex items-center justify-between mt-2 space-x-1 text-xs font-medium text-gray-900">
+                  <div className="mt-2 flex items-center justify-between space-x-1 text-xs font-medium text-gray-900">
                     <div>Show</div>
                     <div className="flex space-x-1">
                       <div className="inline-flex">
-                        <Pill className="inline-flex bg-blue-200 rounded-tr-none rounded-br-none whitespace-nowrap">
+                        <Pill className="inline-flex whitespace-nowrap rounded-br-none rounded-tr-none bg-blue-200">
                           {/** TODO: this value is hardcoded. Update it when the API takes growth rates into account */}
                           1 growth rate
                         </Pill>
-                        <Pill className="inline-flex bg-orange-100 rounded-tl-none rounded-bl-none whitespace-nowrap">
+                        <Pill className="inline-flex whitespace-nowrap rounded-bl-none rounded-tl-none bg-orange-100">
                           {scenario.scenarioInterventions.length} interventions
                         </Pill>
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-center mt-2 text-sm text-gray-500">
-                    <DatabaseIcon className="w-4 h-4 mr-1" />
+                  <div className="mt-2 flex items-center text-sm text-gray-500">
+                    <DatabaseIcon className="mr-1 h-4 w-4" />
                     <span>Based on your uploaded data</span>
                   </div>
                 )}
                 {scenario.id && scenario.updatedAt && (
-                  <div className="flex items-center justify-between mt-4">
+                  <div className="mt-4 flex items-center justify-between">
                     <div className="text-xs text-gray-400" title={updatedAt?.toLocaleString()}>
                       Modified: {formattedUpdatedAgo}
                     </div>

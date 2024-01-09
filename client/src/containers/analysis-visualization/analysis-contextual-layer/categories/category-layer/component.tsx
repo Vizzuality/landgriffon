@@ -32,11 +32,11 @@ const CategoryLayer = ({
 
   return (
     <div className="flex gap-2">
-      <div className="w-5 h-full" />
-      <div className="p-2 flex-1" data-testid={`layer-settings-item-${layer.metadata?.name}`}>
-        <div className="flex flex-row justify-between gap-5 place-items-center">
+      <div className="h-full w-5" />
+      <div className="flex-1 p-2" data-testid={`layer-settings-item-${layer.metadata?.name}`}>
+        <div className="flex flex-row place-items-center justify-between gap-5">
           <div className="flex-grow text-sm">{layer.metadata?.name}</div>
-          <div className="flex flex-row gap-2 place-items-center">
+          <div className="flex flex-row place-items-center gap-2">
             <InfoModal
               info={{
                 description: layer.metadata?.description,

@@ -45,8 +45,8 @@ export type ImpactRowType<
 export type ImpactTableValueItem<Comparison extends ComparisonMode> = Comparison extends false
   ? PlainValueItemProps
   : Comparison extends 'scenario'
-  ? ScenarioComparisonValueItemProps
-  : ComparisonValueItemProps;
+    ? ScenarioComparisonValueItemProps
+    : ComparisonValueItemProps;
 
 export interface ImpactTableData<Comparison extends ComparisonMode> {
   groupBy: string;

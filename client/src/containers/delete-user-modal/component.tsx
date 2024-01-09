@@ -40,15 +40,15 @@ const DeleteUserModal = ({ id, userName }: DeleteUserProps) => {
         size="fit"
         dismissible={false}
       >
-        <div className="flex p-6 pb-8 gap-6">
-          <div className="w-14 shrink-0 h-14 flex justify-center items-center rounded-full bg-red-50">
+        <div className="flex gap-6 p-6 pb-8">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-red-50">
             <ExclamationIcon className="h-6 stroke-red-400" />
           </div>
           <div>
-            <h1 className="text-base leading-7 font-semibold text-gray-900 mb-1">
+            <h1 className="mb-1 text-base font-semibold leading-7 text-gray-900">
               Delete user &quot;{userName}&quot;
             </h1>
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="mb-4 text-sm text-gray-500">
               All of this user data will be permanently removed from our servers forever. This
               action cannot be undone.
             </p>

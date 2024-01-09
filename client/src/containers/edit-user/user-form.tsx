@@ -86,7 +86,7 @@ const UserForm = ({ user, onSubmit, children }: UserFormProps) => {
 
   return (
     <form onSubmit={handleSubmit(createOrUpdateUser)}>
-      <div className="grid grid-cols-2 gap-6 my-6">
+      <div className="my-6 grid grid-cols-2 gap-6">
         <div>
           <label htmlFor="fname">First Name</label>
           <Input {...register('fname')} />

@@ -116,10 +116,10 @@ export const ToolTip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
                 left: arrowX ?? '',
               }}
               className={classNames(
-                '-z-10 absolute',
+                'absolute -z-10',
                 { hidden: !arrow },
                 ARROW_POSITION_CLASSES[floatingPlacement],
-                'w-3 h-3 rotate-45',
+                'h-3 w-3 rotate-45',
                 THEME[theme],
               )}
             />

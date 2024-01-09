@@ -4,9 +4,9 @@ const CleanLayout: React.FC<React.PropsWithChildren> = ({ children }) => (
   <ApplicationLayout>
     <section
       aria-labelledby="primary-heading"
-      className="flex flex-col flex-1 h-screen min-w-0 bg-navy-400"
+      className="flex h-screen min-w-0 flex-1 flex-col bg-navy-400"
     >
-      <div className="relative h-full p-12 overflow-y-auto bg-white rounded-tl-3xl">{children}</div>
+      <div className="relative h-full overflow-y-auto rounded-tl-3xl bg-white p-12">{children}</div>
     </section>
   </ApplicationLayout>
 );

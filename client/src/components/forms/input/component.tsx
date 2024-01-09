@@ -11,7 +11,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     <>
       <div className={classnames('relative rounded-md shadow-sm', className)}>
         {icon && (
-          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
             {cloneElement(icon, {
               className: classnames(
                 'w-4 h-4',
@@ -23,7 +23,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         <input
           className={classnames(
-            'block w-full px-4 py-2.5 leading-5 rounded-md text-sm border placeholder:text-gray-500 focus:outline-none focus:ring-0',
+            'block w-full rounded-md border px-4 py-2.5 text-sm leading-5 placeholder:text-gray-500 focus:outline-none focus:ring-0',
             error ? 'border-red-400 focus:border-red-400' : 'border-gray-200 focus:border-navy-400',
             inputProps.disabled ? 'bg-gray-300/20 text-gray-300' : 'bg-white text-gray-900',
             {
@@ -39,7 +39,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         {unit && (
           <div
             className={classnames(
-              'absolute inset-y-0 flex items-center pr-3 pointer-events-none',
+              'pointer-events-none absolute inset-y-0 flex items-center pr-3',
               error ? 'right-6' : 'right-0',
             )}
           >
@@ -47,8 +47,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           </div>
         )}
         {error && (
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <ExclamationCircleIcon className="w-4 h-4 text-red-400" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+            <ExclamationCircleIcon className="h-4 w-4 text-red-400" />
           </div>
         )}
       </div>

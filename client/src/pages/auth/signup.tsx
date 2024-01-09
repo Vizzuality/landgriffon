@@ -96,7 +96,7 @@ const SignUp: NextPageWithLayout = () => {
         <title>Sign up - Landgriffon</title>
       </Head>
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="px-4 py-8 bg-white shadow sm:rounded-lg sm:px-10">
+        <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
           <div className="mb-10 text-center">
             <h2 className="my-4 font-bold">Sign up</h2>
             <p className="text-sm font-medium text-gray-500">
@@ -167,7 +167,7 @@ const SignUp: NextPageWithLayout = () => {
           </form>
         </div>
         <div className="my-4">
-          <p className="text-sm text-center">
+          <p className="text-center text-sm">
             <span className="text-white/50">Do you already have an account? </span>
             <Link href="/auth/signin" className="text-white">
               Sign-in

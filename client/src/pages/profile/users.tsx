@@ -73,11 +73,11 @@ const AdminUsersPage: React.FC = () => {
           align: 'left',
           enableSorting: true,
           cell: ({ row }) => (
-            <div className="my-6 name flex items-center gap-x-4">
+            <div className="name my-6 flex items-center gap-x-4">
               <UserAvatar
                 userFullName={getUserFullName(row.original, { replaceByEmail: true })}
                 user={row.original}
-                className="w-10 h-10"
+                className="h-10 w-10"
               />
               {getUserFullName(row.original)}
             </div>
@@ -116,7 +116,7 @@ const AdminUsersPage: React.FC = () => {
           size: 100,
           align: 'right',
           cell: ({ row }) => (
-            <div className="pr-6 py-4">
+            <div className="py-4 pr-6">
               <EditUser user={row.original} />
             </div>
           ),
@@ -142,16 +142,16 @@ const AdminUsersPage: React.FC = () => {
       <Head>
         <title>Admin users | Landgriffon</title>
       </Head>
-      <div className="flex-1  h-full flex flex-col">
-        <div className="flex flex-0 justify-end mb-6">
+      <div className="flex  h-full flex-1 flex-col">
+        <div className="flex-0 mb-6 flex justify-end">
           <Button
             variant="primary"
             icon={
               <div
                 aria-hidden="true"
-                className="flex items-center justify-center w-5 h-5 bg-white rounded-full"
+                className="flex h-5 w-5 items-center justify-center rounded-full bg-white"
               >
-                <PlusIcon className="w-4 h-4 text-navy-400" />
+                <PlusIcon className="h-4 w-4 text-navy-400" />
               </div>
             }
             onClick={() => setOpenModal(true)}
@@ -161,7 +161,7 @@ const AdminUsersPage: React.FC = () => {
           </Button>
           <Modal size="narrow" open={openModal} title="Add user" onDismiss={closeModal}>
             <UserForm onSubmit={closeModal}>
-              <div className="w-full flex justify-end mr-2.5">
+              <div className="mr-2.5 flex w-full justify-end">
                 <Button size="base" variant="white" onClick={closeModal}>
                   Cancel
                 </Button>
@@ -169,7 +169,7 @@ const AdminUsersPage: React.FC = () => {
             </UserForm>
           </Modal>
         </div>
-        <div className="flex-1 h-full">
+        <div className="h-full flex-1">
           <Table {...tableProps} isLoading={isFetching || isFetchingUser} />
         </div>
       </div>

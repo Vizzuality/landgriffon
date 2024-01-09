@@ -35,16 +35,16 @@ const LegendChart: React.FC<ExtendedLegendProps> = ({ payload, onClick = () => n
           .map((item, index) => (
             <li
               key={item.value}
-              className={classNames('flex items-center mr-2 space-x-1 cursor-pointer', {
+              className={classNames('mr-2 flex cursor-pointer items-center space-x-1', {
                 'opacity-50': item.payload.fillOpacity === 0.1,
               })}
               onClick={handleClick.bind(null, item, index)}
             >
               <div
-                className="w-[16px] h-[1px] border-b-2"
+                className="h-[1px] w-[16px] border-b-2"
                 style={{ borderColor: `${item.color}` }}
               />
-              <div className="overflow-hidden text-xs whitespace-nowrap text-ellipsis max-w-[150px]">
+              <div className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap text-xs">
                 {item.value === 'scenarioOneValue' && (
                   <span className="capitalize">
                     {scenario?.title || comparedScenario?.title || 'Scenario'}
@@ -61,8 +61,8 @@ const LegendChart: React.FC<ExtendedLegendProps> = ({ payload, onClick = () => n
           ))}
       </ul>
       <div className="flex items-center space-x-1">
-        <div className="w-[16px] h-[1px] border-b-2 border-dashed border-gray-900" />
-        <div className="text-xs whitespace-nowrap">Projected data</div>
+        <div className="h-[1px] w-[16px] border-b-2 border-dashed border-gray-900" />
+        <div className="whitespace-nowrap text-xs">Projected data</div>
       </div>
     </div>
   );

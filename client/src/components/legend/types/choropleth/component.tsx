@@ -36,11 +36,11 @@ export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
       </div>
 
       <ul
-        className="flex m-0 mt-1 text-2xs"
+        className="m-0 mt-1 flex text-2xs"
         style={{ width: `${itemWidth * (items.length + 1)}%` }}
       >
         {(!!min || min === 0) && (
-          <li className="text-left group/item" style={{ width: `${itemWidth}%` }}>
+          <li className="group/item text-left" style={{ width: `${itemWidth}%` }}>
             <span className="truncate" title={min as string}>
               {min}
             </span>
@@ -49,7 +49,7 @@ export const LegendTypeChoropleth: React.FC<LegendTypeChoroplethProps> = ({
         {items.map(({ label, value }, i) => (
           <li
             key={`${value}-${i}`}
-            className={cx('text-center transform', {
+            className={cx('transform text-center', {
               '-translate-x-1/2': i < items.length - 1,
               '-translate-x-full text-right': i === items.length - 1,
             })}

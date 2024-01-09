@@ -81,7 +81,7 @@ const ActivateAccount: NextPageWithLayout = () => {
         <title>Activate account - Landgriffon</title>
       </Head>
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="px-4 py-8 bg-white shadow sm:rounded-lg sm:px-10">
+        <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
           <div className="mb-10 text-center">
             <h2 className="my-4 font-bold">Activate your account</h2>
           </div>

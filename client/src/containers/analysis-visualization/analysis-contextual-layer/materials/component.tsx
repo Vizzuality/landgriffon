@@ -68,7 +68,7 @@ const MaterialSettings = ({
       header={
         <div className="flex flex-row justify-between" data-testid="contextual-material-header">
           <div className="text-sm font-semibold text-gray-500">Food and agriculture</div>
-          <div className="flex flex-row gap-2 place-items-center">
+          <div className="flex flex-row place-items-center gap-2">
             <InfoModal
               info={{
                 description:
@@ -77,14 +77,14 @@ const MaterialSettings = ({
                 title: 'Materials layer',
               }}
             />
-            <div className="w-0.5 h-full bg-gray-200 rounded-full" />
+            <div className="h-full w-0.5 rounded-full bg-gray-200" />
             <ToolTip
               className="z-10"
               hoverTrigger
               enabled={!canPreview}
               theme="dark"
               content={
-                <div className="p-2 text-sm text-center text-white bg-black rounded-md w-36">
+                <div className="w-36 rounded-md bg-black p-2 text-center text-sm text-white">
                   A material must be selected in order to see the preview
                 </div>
               }
@@ -106,10 +106,10 @@ const MaterialSettings = ({
       }
     >
       <div
-        className="flex flex-row justify-between max-w-full gap-2 p-2 place-items-center"
+        className="flex max-w-full flex-row place-items-center justify-between gap-2 p-2"
         data-testid="contextual-material-content"
       >
-        <div className="w-5 h-full" />
+        <div className="h-full w-5" />
         <div className="flex-grow">
           <Materials current={current ?? null} onChange={handleMaterialChange} />
         </div>

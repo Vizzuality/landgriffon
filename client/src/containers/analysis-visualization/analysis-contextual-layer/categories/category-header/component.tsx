@@ -11,7 +11,7 @@ const CategoryHeader: React.FC<{
       <div className="text-sm font-semibold text-gray-500">{category}</div>
       <div
         className={classNames(
-          'w-4 h-4 my-auto text-xs font-semibold text-center text-white rounded-full',
+          'my-auto h-4 w-4 rounded-full text-center text-xs font-semibold text-white',
           visibleLayers === 0 ? 'bg-gray-200' : 'bg-navy-400',
         )}
       >

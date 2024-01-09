@@ -27,11 +27,11 @@ export const DeleteDialog: FC<PropsWithChildren<DeleteDialogProps>> = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
         </Transition.Child>
 
         <div className="fixed inset-0 z-10 overflow-y-auto">
-          <div className="flex items-end justify-center min-h-full p-4 text-center sm:items-center sm:p-0">
+          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -41,12 +41,12 @@ export const DeleteDialog: FC<PropsWithChildren<DeleteDialogProps>> = ({
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative px-4 pt-5 pb-4 overflow-hidden text-left transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                 <div className="sm:flex sm:items-start">
-                  <div className="flex items-center justify-center flex-shrink-0 mx-auto rounded-full w-14 h-14 bg-red-50 sm:mx-0">
-                    <ExclamationIcon className="w-6 h-6 text-red-400" aria-hidden="true" />
+                  <div className="mx-auto flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-red-50 sm:mx-0">
+                    <ExclamationIcon className="h-6 w-6 text-red-400" aria-hidden="true" />
                   </div>
-                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                  <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                     <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
                       {title}
                     </Dialog.Title>
@@ -56,7 +56,7 @@ export const DeleteDialog: FC<PropsWithChildren<DeleteDialogProps>> = ({
                   </div>
                   {children}
                 </div>
-                <div className="flex justify-center mt-4 space-x-4 sm:justify-end sm:mt-4">
+                <div className="mt-4 flex justify-center space-x-4 sm:mt-4 sm:justify-end">
                   <Button type="button" variant="white" onClick={onClose}>
                     Cancel
                   </Button>

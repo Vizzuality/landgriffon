@@ -24,7 +24,7 @@ const CustomCheckbox = forwardRef<
     <input
       type="checkbox"
       className={classNames(
-        'flex-shrink-0 rounded w-4 h-4 focus:ring-2 active:ring-2 ring-offset-1 focus:outline-offset-0 ring-navy-200 m-0.5 focus:outline-none focus:ring-offset-0 disabled:ring-0 disabled:ring-offset-0',
+        'm-0.5 h-4 w-4 flex-shrink-0 rounded ring-navy-200 ring-offset-1 focus:outline-none focus:outline-offset-0 focus:ring-2 focus:ring-offset-0 active:ring-2 disabled:ring-0 disabled:ring-offset-0',
         checked || indeterminate ? 'bg-navy-4 border-none' : 'border border-gray-200',
         className,
       )}

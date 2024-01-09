@@ -9,9 +9,9 @@ const Tabs: React.FC<TabsProps> = ({ activeTab, tabs, bottomBorder = true }: Tab
       <Link
         key={tab.name}
         href={tab.href}
-        className={classNames('py-3 -mb-px', {
+        className={classNames('-mb-px py-3', {
           'ml-10': index !== 0,
-          'text-green-700 border-b-2 border-green-700': activeTab && tab === activeTab,
+          'text-green-700 border-green-700 border-b-2': activeTab && tab === activeTab,
         })}
       >
         {tab.name}

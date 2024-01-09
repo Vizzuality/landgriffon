@@ -39,7 +39,7 @@ const ScenarioIntervention = ({ scenarioId, display }: ScenarioInterventionProps
               <Popover.Button>
                 <Pill className="bg-blue-200">+{interventions.length - 2} more</Pill>
               </Popover.Button>
-              <Popover.Panel className="absolute flex flex-col p-4 space-y-2 bg-white border border-gray-100 rounded-md shadow-md">
+              <Popover.Panel className="absolute flex flex-col space-y-2 rounded-md border border-gray-100 bg-white p-4 shadow-md">
                 {interventions.slice(2, interventions.length).map((intervention) => (
                   <Pill key={intervention.id} className="bg-blue-200">
                     {intervention.title}

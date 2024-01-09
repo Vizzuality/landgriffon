@@ -40,8 +40,8 @@ const AdminDataPage: React.FC = () => {
       </Head>
 
       {(!isFetched || isLoading) && (
-        <div className="flex items-center justify-center w-full h-full">
-          <Loading className="w-5 h-5 text-navy-400" />
+        <div className="flex h-full w-full items-center justify-center">
+          <Loading className="h-5 w-5 text-navy-400" />
         </div>
       )}
 

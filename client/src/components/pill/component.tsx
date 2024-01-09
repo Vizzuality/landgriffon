@@ -16,7 +16,7 @@ const Pill: React.FC<PillProps> = ({
 }: PropsWithChildren<PillProps>) => (
   <span
     {...props}
-    className={classNames('px-2 py-1 text-xs rounded', {
+    className={classNames('rounded px-2 py-1 text-xs', {
       [className]: !!className,
     })}
   >

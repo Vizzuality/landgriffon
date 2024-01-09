@@ -53,28 +53,28 @@ const SignIn: NextPageWithLayout = () => {
         <title>Forgot Password - Landgriffon</title>
       </Head>
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="px-4 text-center min-h-[362px] flex justify-between flex-col py-8 bg-white shadow sm:rounded-lg sm:px-10">
+        <div className="flex min-h-[362px] flex-col justify-between bg-white px-4 py-8 text-center shadow sm:rounded-lg sm:px-10">
           {isSuccess ? (
             <>
-              <div className="text-start mb-20">
-                <div className="bg-blue-400 h-[34px] w-[62px]">
-                  <div className="w-0 h-0 border-t-blue-200 border-t-[26px] border-r-[31px] border-r-transparent border-l-[31px] border-l-transparent"></div>
+              <div className="mb-20 text-start">
+                <div className="h-[34px] w-[62px] bg-blue-400">
+                  <div className="h-0 w-0 border-l-[31px] border-r-[31px] border-t-[26px] border-l-transparent border-r-transparent border-t-blue-200"></div>
                 </div>
-                <h2 className="my-6 font-bold text-xl text-gray-900">Check your email</h2>
+                <h2 className="my-6 text-xl font-bold text-gray-900">Check your email</h2>
                 <p className="text-sm font-medium text-gray-600">
                   We&apos;ve sent a email to:
-                  <span className="text-gray-300 block">{email}</span>
+                  <span className="block text-gray-300">{email}</span>
                 </p>
               </div>
 
-              <div className="text-start mt-2">
+              <div className="mt-2 text-start">
                 <p className="text-sm font-medium text-gray-600">
                   Didn&apos;t recieve an email? Check your spam folder!
                 </p>
                 <Button
                   onClick={reset}
                   variant="transparent"
-                  className="font-medium text-navy-400 hover:text-navy-900 pl-0 pr-0"
+                  className="pl-0 pr-0 font-medium text-navy-400 hover:text-navy-900"
                   loading={isLoading}
                 >
                   Click to resend
@@ -85,14 +85,14 @@ const SignIn: NextPageWithLayout = () => {
             <>
               <div className="flex-1">
                 <h2 className="my-4 font-bold">Forgot Password?</h2>
-                <p className="text-sm font-sm text-gray-400">
+                <p className="font-sm text-sm text-gray-400">
                   Enter your email address and we&apos;ll send you a link to reset your password.
                 </p>
               </div>
 
               <form
                 noValidate
-                className="space-y-6 text-left mt-6"
+                className="mt-6 space-y-6 text-left"
                 id="signInForm"
                 onSubmit={handleSubmit(handleSend)}
               >

@@ -13,27 +13,27 @@ const InfoModal = ({ info: { title, description, source } }: InfoModalProps) => 
   const [open, setOpen] = useState(false);
   return (
     <>
-      <button type="button" className="py-0 px-0" onClick={() => setOpen(true)}>
-        <InformationCircleIcon className="w-4 h-4" />
+      <button type="button" className="px-0 py-0" onClick={() => setOpen(true)}>
+        <InformationCircleIcon className="h-4 w-4" />
       </button>
       <Modal onDismiss={() => setOpen(false)} title={title || NO_DATA} open={open} size="narrow">
         <div>
-          <p className="text-gray-500 text-sm mb-4">{description}</p>
+          <p className="mb-4 text-sm text-gray-500">{description}</p>
           {!!source && (
-            <p className="font-semibold text-sm mb-2">
+            <p className="mb-2 text-sm font-semibold">
               Data layer source{Array.isArray(source) && source.length > 1 ? 's' : ''}:
             </p>
           )}
           {Array.isArray(source) ? (
             <ul className="space-y-2">
               {source.map((s) => (
-                <li key={s} className="text-gray-500 text-sm">
+                <li key={s} className="text-sm text-gray-500">
                   {s}
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-gray-500 text-sm">{source}</p>
+            <p className="text-sm text-gray-500">{source}</p>
           )}
         </div>
       </Modal>

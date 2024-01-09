@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
-import { H3HexagonLayer, H3HexagonLayerProps } from '@deck.gl/geo-layers/typed';
+import { H3HexagonLayer } from '@deck.gl/geo-layers/typed';
 
 import { useAppSelector } from 'store/hooks';
 import { analysisMap } from 'store/features/analysis';
-import { MapboxLayerProps } from 'components/map/layers/types';
 import { useAllContextualLayersData } from 'hooks/h3-data/contextual';
 import DeckLayer from 'components/map/layers/deck';
 
-import type { LayerProps, LayerSettings } from 'components/map/layers/types';
+import type { MapboxLayerProps, LayerProps, LayerSettings } from 'components/map/layers/types';
+import type { H3HexagonLayerProps } from '@deck.gl/geo-layers/typed';
 import type { Layer } from 'types';
 
 export const ContextualDeckLayer = ({

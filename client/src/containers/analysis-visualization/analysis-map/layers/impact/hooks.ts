@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
-import { H3HexagonLayer, H3HexagonLayerProps } from '@deck.gl/geo-layers/typed';
+import { H3HexagonLayer } from '@deck.gl/geo-layers/typed';
 
 import { useImpactLayer } from 'hooks/layers/impact';
 import { useAppSelector } from 'store/hooks';
 import { analysisMap } from 'store/features/analysis';
-import { MapboxLayerProps } from 'components/map/layers/types';
 
-import type { LayerProps, LayerSettings } from 'components/map/layers/types';
+import type { H3HexagonLayerProps } from '@deck.gl/geo-layers/typed';
+import type { MapboxLayerProps, LayerProps, LayerSettings } from 'components/map/layers/types';
 
 export function useLayer(props: LayerProps<LayerSettings>['settings']) {
   const { onHoverLayer } = props;

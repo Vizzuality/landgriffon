@@ -20,9 +20,9 @@ const ModeControl: React.FC = () => {
           href={{ pathname: `/analysis/${mode}`, query }}
           data-testid={`mode-control-${mode}`}
         >
-          {mode === 'map' && <MapIcon className="w-6 h-6" aria-hidden="true" />}
-          {mode === 'table' && <TableIcon className="w-6 h-6" aria-hidden="true" />}
-          {mode === 'chart' && <ChartPieIcon className="w-6 h-6" aria-hidden="true" />}
+          {mode === 'map' && <MapIcon className="h-6 w-6" aria-hidden="true" />}
+          {mode === 'table' && <TableIcon className="h-6 w-6" aria-hidden="true" />}
+          {mode === 'chart' && <ChartPieIcon className="h-6 w-6" aria-hidden="true" />}
         </LinkGroupItem>
       ))}
     </ButtonGroup>

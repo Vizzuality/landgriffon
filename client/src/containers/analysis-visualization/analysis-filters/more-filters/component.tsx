@@ -306,16 +306,16 @@ const MoreFilters = () => {
       {({ open, close }) => (
         <>
           <Popover.Button
-            className="flex items-center space-x-2 px-2 py-2.5 border border-gray-200 rounded-md bg-white shadow-sm hover:cursor-pointer focus:border-navy-400 focus:outline-none focus:ring-0"
+            className="flex items-center space-x-2 rounded-md border border-gray-200 bg-white px-2 py-2.5 shadow-sm hover:cursor-pointer focus:border-navy-400 focus:outline-none focus:ring-0"
             type="button"
             {...getReferenceProps({
               ref: refs.setReference,
             })}
             data-testid="more-filters-button"
           >
-            <FilterIcon className="block w-5 h-5 mx-1 text-gray-900" aria-hidden="true" />
+            <FilterIcon className="mx-1 block h-5 w-5 text-gray-900" aria-hidden="true" />
             {counter > 0 && (
-              <span className="flex items-center justify-center w-5 h-5 text-xs font-semibold text-white rounded-full bg-navy-400">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-navy-400 text-xs font-semibold text-white">
                 {counter}
               </span>
             )}
@@ -342,9 +342,9 @@ const MoreFilters = () => {
             >
               <Popover.Panel
                 static
-                className="p-4 mt-1 bg-white rounded-md shadow-md w-80 ring-1 ring-gray-200"
+                className="mt-1 w-80 rounded-md bg-white p-4 shadow-md ring-1 ring-gray-200"
               >
-                <div className="flex justify-between mb-4">
+                <div className="mb-4 flex justify-between">
                   <div>Filter by</div>
                   <button type="button" className="text-navy-400" onClick={handleClearFilters}>
                     Clear all
@@ -429,7 +429,7 @@ const MoreFilters = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-2 mt-6">
+                <div className="mt-6 flex gap-2">
                   <Button
                     variant="secondary"
                     className="px-9"

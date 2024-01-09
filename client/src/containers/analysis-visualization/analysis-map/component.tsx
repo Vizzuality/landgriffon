@@ -98,10 +98,10 @@ const AnalysisMap = () => {
   }, [layers]);
 
   return (
-    <div className="absolute top-0 left-0 w-full h-full overflow-hidden" data-testid="analysis-map">
+    <div className="absolute left-0 top-0 h-full w-full overflow-hidden" data-testid="analysis-map">
       {isFetching && <PageLoading />}
       <Map
-        className="w-screen h-full"
+        className="h-full w-screen"
         mapStyle={mapStyle}
         viewState={viewState}
         onMapViewStateChange={handleViewState}
@@ -119,7 +119,7 @@ const AnalysisMap = () => {
                   y: tooltipData.y,
                 }}
               >
-                <div className="p-4 space-y-2 bg-white rounded-md shadow-md">
+                <div className="space-y-2 rounded-md bg-white p-4 shadow-md">
                   <div className="text-sm font-semibold text-gray-900">
                     {tooltipData.data.v}
                     {tooltipData.data.unit && ` ${tooltipData.data.unit}`}
@@ -132,16 +132,16 @@ const AnalysisMap = () => {
         )}
       </Map>
       {isError && (
-        <div className="p-4 rounded-md top-20 left-12 bg-red-50">
+        <div className="left-12 top-20 rounded-md bg-red-50 p-4">
           <div className="flex">
-            <XCircleIcon className="w-5 h-5 text-red-400" aria-hidden="true" />
+            <XCircleIcon className="h-5 w-5 text-red-400" aria-hidden="true" />
             <p className="mb-0 ml-3 text-sm text-red-400">
               No available data for the current filter selection. Please try another one.
             </p>
           </div>
         </div>
       )}
-      <div className="absolute z-10 w-10 space-y-2 bottom-10 right-6">
+      <div className="absolute bottom-10 right-6 z-10 w-10 space-y-2">
         <BasemapControl value={mapStyle} onChange={handleMapStyleChange} />
         <ZoomControl />
         <Legend />

@@ -40,21 +40,21 @@ const CellWrapper = <T, C>({ children, context }: React.PropsWithChildren<CellPr
       onClick={isExpandible ? toggleExpand : undefined}
       className={classNames(
         getAlignmentClasses(align),
-        'relative flex items-center justify-start w-full min-h-20',
+        'min-h-20 relative flex w-full items-center justify-start',
         {
           'cursor-pointer': isExpandible,
           'ml-7 pr-7': canExpand && !isExpandible && isFirstColumn,
-          'pl-3 font-normal text-sm': isFirstColumn && depth === 0,
-          'pl-10 uppercase text-2xs font-semibold': isFirstColumn && depth === 1,
+          'pl-3 text-sm font-normal': isFirstColumn && depth === 0,
+          'pl-10 text-2xs font-semibold uppercase': isFirstColumn && depth === 1,
           'pl-[72px] text-xs font-normal': isFirstColumn && depth >= 2,
           'text-sm': !isFirstColumn,
         },
       )}
     >
-      <div className="w-full mx-auto my-auto">
+      <div className="mx-auto my-auto w-full">
         {isExpandible ? (
           <div className="flex items-center gap-3">
-            <div className="w-4 h-4">
+            <div className="h-4 w-4">
               <ChevronRightIcon
                 className={classNames(' text-gray-900', {
                   'rotate-90': isExpanded,
@@ -86,19 +86,19 @@ export const HeaderCell = <T, C>({
 
   return (
     <div
-      className={classNames('py-2 my-auto text-xs text-left text-gray-400 uppercase font-normal', {
+      className={classNames('my-auto py-2 text-left text-xs font-normal uppercase text-gray-400', {
         'pl-[25px]': isFirstColumn,
       })}
     >
       <div
-        className={classNames('flex flex-row gap-2 items-center', getAlignmentClasses(align), {
+        className={classNames('flex flex-row items-center gap-2', getAlignmentClasses(align), {
           'justify-center': align === 'center',
         })}
       >
         <div>{children}</div>
         {context.column.getCanSort() && (
           <div
-            className={classNames('w-5 h-5 cursor-pointer ', {
+            className={classNames('h-5 w-5 cursor-pointer ', {
               'text-gray-400 hover:text-gray-500': !isSorted,
               'text-gray-500': isSorted,
             })}

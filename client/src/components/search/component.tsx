@@ -68,12 +68,12 @@ export const Search: React.FC<SearchProps> = ({
         'flex w-auto max-w-[160px]': size === 'sm',
       })}
     >
-      <div className="flex items-center justify-center w-full">
-        <SearchIcon className="w-6 h-6 text-gray-300" />
+      <div className="flex w-full items-center justify-center">
+        <SearchIcon className="h-6 w-6 text-gray-300" />
         <input
           {...omit(props, ['defaultValue', 'onChange'])}
           className={classnames(
-            'flex-1 p-4 pt-2.5 pb-3 leading-5 text-base placeholder:text-gray-400 focus:outline-none focus:ring-0 border-none truncate',
+            'flex-1 truncate border-none p-4 pb-3 pt-2.5 text-base leading-5 placeholder:text-gray-400 focus:outline-none focus:ring-0',
             props.disabled ? 'text-gray-300' : 'bg-white text-gray-900',
           )}
           type="search"
@@ -86,7 +86,7 @@ export const Search: React.FC<SearchProps> = ({
             type="button"
             onClick={handleReset}
           >
-            <XIcon className="w-4 h-4 text-gray-400" />
+            <XIcon className="h-4 w-4 text-gray-400" />
           </button>
         )}
       </div>

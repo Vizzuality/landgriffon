@@ -97,9 +97,9 @@ const DataUploader: React.FC<DataUploaderProps> = ({ variant = 'default', onUplo
   }, [isWorking, onUploadInProgress]);
 
   return (
-    <div className="relative min-w-[640px] w-full">
+    <div className="relative w-full min-w-[640px]">
       <div
-        className={classNames('relative z-10 bg-white rounded-xl', {
+        className={classNames('relative z-10 rounded-xl bg-white', {
           'p-4 shadow-lg': variant === 'default',
         })}
       >
@@ -114,9 +114,9 @@ const DataUploader: React.FC<DataUploaderProps> = ({ variant = 'default', onUplo
 
       {isWorking && (
         <div className="w-full px-20">
-          <div className="px-10 py-4 bg-white rounded-b-xl">
-            <div className="w-full h-[4px] rounded bg-gradient-to-r from-[#5FCFF9] via-[#42A56A] to-[#F5CA7D]" />
-            <p className="mt-1 text-xs text-left text-gray-500">
+          <div className="rounded-b-xl bg-white px-10 py-4">
+            <div className="h-[4px] w-full rounded bg-gradient-to-r from-[#5FCFF9] via-[#42A56A] to-[#F5CA7D]" />
+            <p className="mt-1 text-left text-xs text-gray-500">
               {isUploading && 'Uploading file...'}
               {isWaiting && 'File uploaded successfully! Starting to process the data...'}
               {isProcessing && 'Processing file...'}

@@ -32,10 +32,10 @@ const SearchOverlay = ({ options, onChange }: SearchOverlayProps) => {
           <button
             title={label}
             type="button"
-            className={classNames('text-sm p-2 w-full text-left', {
-              'font-bold cursor-pointer text-navy-400 hover:bg-navy-50': isSelected,
-              'text-gray-300 hover:bg-white cursor-default pointer-events-none': disabled,
-              'text-gray-900 cursor-pointer hover:bg-navy-50': !isSelected && !disabled,
+            className={classNames('w-full p-2 text-left text-sm', {
+              'cursor-pointer font-bold text-navy-400 hover:bg-navy-50': isSelected,
+              'pointer-events-none cursor-default text-gray-300 hover:bg-white': disabled,
+              'cursor-pointer text-gray-900 hover:bg-navy-50': !isSelected && !disabled,
             })}
             key={key}
             onClick={() => !disabled && getHandleChange(key as string)}

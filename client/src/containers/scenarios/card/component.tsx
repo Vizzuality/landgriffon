@@ -20,15 +20,15 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({
       <div
         className={classNames('bg-white', {
           'w-full  xl:max-w-none': display === 'list',
-          'rounded-[10px] shadow-gray-200 shadow-sm border border-gray-200': display === 'grid',
+          'rounded-[10px] border border-gray-200 shadow-sm shadow-gray-200': display === 'grid',
         })}
         data-testid="scenario-card"
       >
         <div
           className={classNames('p-6', {
-            'grid auto grid-cols-[repeat(5,_minmax(fit-content(100px),_1fr))] gap-4':
+            'auto grid grid-cols-[repeat(5,_minmax(fit-content(100px),_1fr))] gap-4':
               display === 'list',
-            'flex flex-col space-y-6 h-full': display === 'grid',
+            'flex h-full flex-col space-y-6': display === 'grid',
           })}
         >
           <div className="flex flex-col">
@@ -39,7 +39,7 @@ const ScenarioCard: React.FC<ScenarioCardProps> = ({
             >
               Modified: {format(new Date(data.updatedAt), 'yyyy/MM/dd')}
             </div>
-            <h2 className="text-lg break-words" data-testid="scenario-title">
+            <h2 className="break-words text-lg" data-testid="scenario-title">
               {data.title}
             </h2>
             {data.description && display === 'grid' && (

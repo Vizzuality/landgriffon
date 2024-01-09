@@ -34,10 +34,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
     <ApplicationLayout>
       <section
         aria-labelledby="primary-heading"
-        className="flex flex-col w-full h-full overflow-auto"
+        className="flex h-full w-full flex-col overflow-auto"
       >
         <header className="sticky top-0 z-10 bg-navy-600">
-          <div className="px-12 bg-white  rounded-tl-3xl">
+          <div className="rounded-tl-3xl bg-white  px-12">
             <div
               className={classNames('flex items-stretch justify-between', {
                 'border-b border-gray-200': !!searchSection,
@@ -45,7 +45,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
             >
               <h1 className="mt-8 text-left">{title}</h1>
 
-              <nav className="flex mt-11 pb-0.5 space-x-10 text-sm" data-testid="admin-menu-list">
+              <nav className="mt-11 flex space-x-10 pb-0.5 text-sm" data-testid="admin-menu-list">
                 {Object.values(adminTabs).map((tab) => {
                   if (tab.disabled) {
                     return (

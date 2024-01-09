@@ -15,13 +15,13 @@ const ScenarioActions = ({
 }: ScenarioActionsProps) => {
   const handleDeleteClick = useCallback(() => {
     setDeleteVisibility();
-  }, []);
+  }, [setDeleteVisibility]);
 
   return (
     <div
       className={classNames({
-        'flex space-between my-6': display === 'grid',
-        'flex flex-col gap-2 items-end w-fit mx-auto my-4': display === 'list',
+        'space-between my-6 flex': display === 'grid',
+        'mx-auto my-4 flex w-fit flex-col items-end gap-2': display === 'list',
       })}
     >
       <Button
@@ -30,12 +30,12 @@ const ScenarioActions = ({
         icon={<TrashIcon className="-mr-0.5" />}
         data-testid="scenario-delete-btn"
         disabled={!canDeleteScenario}
-        className="w-fit min-w- pr-3 pl-3"
+        className="min-w- w-fit pl-3 pr-3"
       >
         Delete
       </Button>
       <div
-        className={classNames('flex items-center flex-1 space-x-4', {
+        className={classNames('flex flex-1 items-center space-x-4', {
           'justify-between': display === 'list',
           'justify-end': display === 'grid',
         })}
@@ -55,7 +55,7 @@ const ScenarioActions = ({
           href={{ pathname: `/analysis/table`, query: { scenarioId } }}
           variant="primary"
           className={classNames({
-            'grow w-[90px]': display === 'list',
+            'w-[90px] grow': display === 'list',
           })}
         >
           Analyze

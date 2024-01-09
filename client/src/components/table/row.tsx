@@ -33,7 +33,7 @@ const TableRow = <T,>({ row, theme, isLast, firstProjectedYear, ...props }: Tabl
                 'border-l-4': theme === 'default' && i === 0,
                 'border-l-navy-400 group-hover:border-l-navy-400':
                   theme === 'default' && row.getIsSelected() && i === 0,
-                'border-l-white -ml-1': theme === 'default' && !row.getIsSelected() && i === 0,
+                '-ml-1 border-l-white': theme === 'default' && !row.getIsSelected() && i === 0,
                 'bg-white group-hover:border-l-gray-100': theme === 'default',
                 'group-odd:bg-white group-even:bg-gray-50': theme === 'striped',
                 'sticky z-[1]': !!cell.column.columnDef.meta?.isSticky,
@@ -81,7 +81,7 @@ export const TableHeaderRow = <T,>({ headerGroup, firstProjectedYear }: TableHea
         const sticky = header.column.columnDef.meta?.isSticky;
         return (
           <th
-            className={classNames('sticky z-[2] top-0 bg-gray-50', {
+            className={classNames('sticky top-0 z-[2] bg-gray-50', {
               'left-0 z-[3] shadow-[4px_1px_10px_-2px_rgba(21,24,31,0.08)]': sticky === 'left',
               'right-0 z-[3] shadow-[-4px_1px_10px_-2px_rgba(21,24,31,0.08)]': sticky === 'right',
               'rounded-tr-lg': isLastColumn,
@@ -94,7 +94,7 @@ export const TableHeaderRow = <T,>({ headerGroup, firstProjectedYear }: TableHea
             {header.isPlaceholder ? null : (
               <HeaderCell context={header.getContext()}>
                 {firstProjectedYear?.toString() === header.id && (
-                  <div className="font-medium absolute leading-4 top-0 h-[24px] -translate-y-[24px] -translate-x-[58px] bg-gray-200 text-2xs py-1 px-4 rounded-t-lg text-gray-600 normal-case">
+                  <div className="absolute top-0 h-[24px] -translate-x-[58px] -translate-y-[24px] rounded-t-lg bg-gray-200 px-4 py-1 text-2xs font-medium normal-case leading-4 text-gray-600">
                     Projected years
                   </div>
                 )}

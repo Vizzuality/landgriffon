@@ -74,12 +74,12 @@ const PreviewMap = ({ selectedLayerId, selectedMaterialId, onStatusChange }: Pre
   const layers = useMemo(() => [{ id: PREVIEW_LAYER_ID, layer: PreviewLayer }], [PreviewLayer]);
 
   return (
-    <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+    <div className="absolute left-0 top-0 h-full w-full overflow-hidden">
       {isFetching && <PageLoading />}
       <Map id="contextual-preview-map" mapStyle="terrain" viewState={INITIAL_PREVIEW_SETTINGS}>
         {() => <LayerManager layers={layers} />}
       </Map>
-      <div className="absolute z-10 w-10 space-y-2 bottom-2 right-2">
+      <div className="absolute bottom-2 right-2 z-10 w-10 space-y-2">
         <ZoomControl mapId="contextual-preview-map" />
       </div>
     </div>

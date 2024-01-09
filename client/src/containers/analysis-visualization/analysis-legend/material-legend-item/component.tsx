@@ -127,7 +127,7 @@ const MaterialLayer = () => {
         />
       )}
       {isError && error.response?.status === 404 && (
-        <div className="text-sm text-red-500">No data found for this parameters</div>
+        <div className="text-red-500 text-sm">No data found for this parameters</div>
       )}
     </LegendItem>
   );

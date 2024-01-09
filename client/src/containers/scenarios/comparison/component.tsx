@@ -85,7 +85,7 @@ const ScenariosComparison: FC = () => {
 
   return (
     <>
-      <label className="block mb-1 text-sm text-gray-500">Compare with:</label>
+      <label className="mb-1 block text-sm text-gray-500">Compare with:</label>
       <AutoCompleteSelect
         value={selected}
         options={options}

@@ -21,6 +21,10 @@ describe('Analysis filters', () => {
 
   // Indicators
   it('not to filter by a disabled indicator', () => {
+    cy.intercept('GET', '/api/v1/indicators*', {
+      fixture: 'indicators/index',
+    }).as('fetchIndicators');
+
     cy.wait('@fetchIndicators').then((interception) => {
       const firstDisabledIndicator = interception.response.body?.data.find(
         ({ attributes }) => attributes.status === 'inactive',
@@ -121,7 +125,7 @@ describe('Analysis filters', () => {
       const firstItem = interception.response.body?.data[0];
       cy.get('[data-testid="tree-select-producers-filter"]').find('div[role="combobox"]').click();
       cy.get('[data-testid="tree-select-producers-filter"]')
-        .find('div[role="listbox"]')
+        .find('.rc-tree-list')
         .find('.rc-tree-treenode')
         .eq(1)
         .should('have.text', firstItem.attributes.name)

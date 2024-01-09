@@ -1,1 +1,202 @@
-{"meta":{"totalItems":5,"totalPages":1,"size":25,"page":1},"data":[{"type":"indicators","id":"5c595ac7-f144-485f-9f32-601f6faae9fe","attributes":{"id":"5c595ac7-f144-485f-9f32-601f6faae9fe","name":"Land use","description":"The total land area required to produce the material. Land impact is calculated using material production and yield data from the global 2010 MAPSPAM and 2010 Gridded Livestock of the World v3 (GLWv3) datasets.","unit":{"id":"6970f9b8-eba0-4fee-b6ee-2723ce6604d4","name":"hectare per year","shortName":"HAR","symbol":"ha/yr","description":"A unit of count defining the number of units counted in multiples of 100."},"status":"active","metadata":{"name":"Land use","units":"ha/yr","source":["Mapspam 2010","LGW3 2010"],"license":"CC BY 4.0","citation":["International Food Policy Research Institute, 2019, “Global Spatially-Disaggregated Crop Production Statistics Data for 2010 Version 2.0”, https://doi.org/10.7910/DVN/PRFF8V, Harvard Dataverse, V4","Yu, Q., You, L., Wood-Sichra, U., Ru, Y., et. al. 2020. A cultivated planet in 2010: 2. the global gridded agricultural production maps, Earth Syst. Sci. Data Discuss. https://doi.org/10.5194/essd-2020-11","Gilbert, M., Nicolas, G., Cinardi, G., Van Boeckel, T.P., et. al. 2018. Global distribution data for cattle, buffaloes, horses, sheep, goats, pigs, chickens and ducks in 2010. Scientific data, 5(1), pp.1-11. https://doi.org/10.1038/sdata.2018.227"],"name code":"LI","resolution":"10x10 kilometers","short name":"Land use","description":"The total land area required to produce the material. Land impact is calculated using material production and yield data from the global 2010 MAPSPAM and 2010 Gridded Livestock of the World v3 (GLWv3) datasets.","indicator type":"farm-level","date of content":"2010","geographic coverage":"Global coverage.","frequency of updates":""},"nameCode":"LI"}},{"type":"indicators","id":"936d0a9f-fe48-42b4-9433-63282d4dada5","attributes":{"id":"936d0a9f-fe48-42b4-9433-63282d4dada5","name":"Deforestation risk","description":"Forest loss occurring near material production areas. Deforestation is either calculated using Satelligence models trained to identify transitions from forest to non-forest states in satellite imagery, or using global tree cover loss data from Global Forest Watch.","unit":{"id":"6970f9b8-eba0-4fee-b6ee-2723ce6604d4","name":"hectare per year","shortName":"HAR","symbol":"ha/yr","description":"A unit of count defining the number of units counted in multiples of 100."},"status":"active","metadata":{"name":"Deforestation risk","units":"ha/yr","source":["Satelligence 2022","Hansen 2001-2021"],"license":"CC BY 4.0","citation":["Satelligence, 2022. Forest Change Bulletins. https://satelligence.com/technology","Hansen, M. C., P. V. Potapov, R. Moore, M. Hancher, S. A. Turubanova, A. Tyukavina, D. Thau, et al. 2013. “High-Resolution Global Maps of 21st-Century Forest Cover Change.” Science 342 (6160): 850–53. https://doi.org/10.1126/science.1244693. "],"name code":"DF_LUC_T","resolution":"30x30 meters","short name":"Deforestation risk","description":"Forest loss occurring near material production areas. Deforestation is either calculated using Satelligence models trained to identify transitions from forest to non-forest states in satellite imagery, or using global tree cover loss data from Global Forest Watch.","indicator type":"landscape-level","date of content":"2001-2021","geographic coverage":"Global coverage (excluding Antarctica and other Arctic islands).","frequency of updates":"Annual"},"nameCode":"DF_LUC_T"}},{"type":"indicators","id":"157b5f22-916b-4981-84c7-f6607ec65445","attributes":{"id":"157b5f22-916b-4981-84c7-f6607ec65445","name":"Climate risk from land use change","description":"The GHG emissions associated with forest loss near agricultural production areas. The general equation for landscape-level impacts is adjusted for the mean annual gross emissions of GHGs associated with forest change from 2001 to 2019.","unit":{"id":"a0e8110c-fbde-4c8c-ac19-f0f69078b96b","name":"tonnes of carbon dioxide equivalent per year","shortName":"TCO2EYR","symbol":"tCO2e/yr","description":"Tonnes of carbon dioxide equivalent per year"},"status":"active","metadata":{"name":"Climate risk","units":"tCO2eq/yr","source":["Harris 2001-2021"],"license":"CC BY 4.0","citation":["Harris, N.L., Gibbs, D.A., Baccini, A. et al. Global maps of twenty-first century forest carbon fluxes. Nat. Clim. Chang. 11, 234–240 (2021). https://doi.org/10.1038/s41558-020-00976-6"],"name code":"GHG_LUC_T","resolution":"30x30 meters","short name":"Climate risk","description":"The GHG emissions associated with forest loss near agricultural production areas. The general equation for landscape-level impacts is adjusted for the mean annual gross emissions of GHGs associated with forest change from 2001 to 2019.","indicator type":"landscape-level","date of content":"2001-2021","geographic coverage":"Global coverage.","frequency of updates":"Annual"},"nameCode":"GHG_LUC_T"}},{"type":"indicators","id":"ffdd6f19-6737-4a10-9d36-5243d3f14b45","attributes":{"id":"ffdd6f19-6737-4a10-9d36-5243d3f14b45","name":"Unsustainable water use","description":"The water consumption in regions with a baseline water stress (BWS) ratio of more than 0.4, as identified by Aqueduct. BWS measures the ratio of total water withdrawals to available renewable surface and groundwater supplies.","unit":{"id":"9c0da38a-6371-4c79-879b-218fc39c4700","name":"milions of cubic meters per year","shortName":"MM3YR","symbol":"Mm3/yr","description":"Millions of cubic meters per year"},"status":"active","metadata":{"name":"Unsustainable water use","units":"Mm3/yr","source":["Aqueduct 3.0 2019"],"license":"CC BY 4.0","citation":["Hofste, R., S. Kuzma, S. Walker, E.H. Sutanudjaja, et. al. 2019. “Aqueduct 3.0: Updated DecisionRelevant Global Water Risk Indicators.” Technical Note. Washington, DC: World Resources Institute. Available online at: https://www.wri.org/publication/aqueduct-30"],"name code":"UWUSR_T","resolution":"","short name":"Unsustainable water use","description":"The water consumption in regions with a baseline water stress (BWS) ratio of more than 0.4, as identified by Aqueduct. BWS measures the ratio of total water withdrawals to available renewable surface and groundwater supplies.","indicator type":"farm-level","date of content":"2019","geographic coverage":"Global coverage.","frequency of updates":""},"nameCode":"UWUSR_T"}},{"type":"indicators","id":"9c2124c7-5df0-40d5-962e-d35480d48cd3","attributes":{"id":"9c2124c7-5df0-40d5-962e-d35480d48cd3","name":"Water use","description":"The water resources consumed to produce the material. Water consumption impact calculated using product blue water footprint estimates from the period 1996-2005. ","unit":{"id":"9c0da38a-6371-4c79-879b-218fc39c4700","name":"milions of cubic meters per year","shortName":"MM3YR","symbol":"Mm3/yr","description":"Millions of cubic meters per year"},"status":"active","metadata":{"name":"Water use","units":"Mm3/yr","source":["Mekonnen 2011","Mekonnen 2012"],"license":"CC BY 4.0","citation":["Mekonnen, M.M. & Hoekstra, A.Y. (2011) The green, blue and grey water footprint of crops and derived crop products, Hydrology and Earth System Sciences, 15(5): 1577-1600.","Mekonnen, M.M. & Hoekstra, A.Y. (2012) A global assessment of the water footprint of farm animal products, Ecosystems, 15(3): 401–415."],"name code":"UWU_T","resolution":"","short name":"Water use","description":"The water resources consumed to produce the material. Water consumption impact calculated using product blue water footprint estimates from the period 1996-2005.","indicator type":"farm-level","date of content":"1996-2005","geographic coverage":"Global coverage.","frequency of updates":""},"nameCode":"UWU_T"}}]}
+{
+  "meta": {
+    "totalItems": 5,
+    "totalPages": 1,
+    "size": 25,
+    "page": 1
+  },
+  "data": [
+    {
+      "type": "indicators",
+      "id": "5c595ac7-f144-485f-9f32-601f6faae9fe",
+      "attributes": {
+        "id": "5c595ac7-f144-485f-9f32-601f6faae9fe",
+        "name": "Land use",
+        "description": "The total land area required to produce the material. Land impact is calculated using material production and yield data from the global 2010 MAPSPAM and 2010 Gridded Livestock of the World v3 (GLWv3) datasets.",
+        "unit": {
+          "id": "6970f9b8-eba0-4fee-b6ee-2723ce6604d4",
+          "name": "hectare per year",
+          "shortName": "HAR",
+          "symbol": "ha/yr",
+          "description": "A unit of count defining the number of units counted in multiples of 100."
+        },
+        "status": "active",
+        "metadata": {
+          "name": "Land use",
+          "units": "ha/yr",
+          "source": [
+            "Mapspam 2010",
+            "LGW3 2010"
+          ],
+          "license": "CC BY 4.0",
+          "citation": [
+            "International Food Policy Research Institute, 2019, “Global Spatially-Disaggregated Crop Production Statistics Data for 2010 Version 2.0”, https://doi.org/10.7910/DVN/PRFF8V, Harvard Dataverse, V4",
+            "Yu, Q., You, L., Wood-Sichra, U., Ru, Y., et. al. 2020. A cultivated planet in 2010: 2. the global gridded agricultural production maps, Earth Syst. Sci. Data Discuss. https://doi.org/10.5194/essd-2020-11",
+            "Gilbert, M., Nicolas, G., Cinardi, G., Van Boeckel, T.P., et. al. 2018. Global distribution data for cattle, buffaloes, horses, sheep, goats, pigs, chickens and ducks in 2010. Scientific data, 5(1), pp.1-11. https://doi.org/10.1038/sdata.2018.227"
+          ],
+          "name code": "LI",
+          "resolution": "10x10 kilometers",
+          "short name": "Land use",
+          "description": "The total land area required to produce the material. Land impact is calculated using material production and yield data from the global 2010 MAPSPAM and 2010 Gridded Livestock of the World v3 (GLWv3) datasets.",
+          "indicator type": "farm-level",
+          "date of content": "2010",
+          "geographic coverage": "Global coverage.",
+          "frequency of updates": ""
+        },
+        "nameCode": "LI"
+      }
+    },
+    {
+      "type": "indicators",
+      "id": "936d0a9f-fe48-42b4-9433-63282d4dada5",
+      "attributes": {
+        "id": "936d0a9f-fe48-42b4-9433-63282d4dada5",
+        "name": "Deforestation risk",
+        "description": "Forest loss occurring near material production areas. Deforestation is either calculated using Satelligence models trained to identify transitions from forest to non-forest states in satellite imagery, or using global tree cover loss data from Global Forest Watch.",
+        "unit": {
+          "id": "6970f9b8-eba0-4fee-b6ee-2723ce6604d4",
+          "name": "hectare per year",
+          "shortName": "HAR",
+          "symbol": "ha/yr",
+          "description": "A unit of count defining the number of units counted in multiples of 100."
+        },
+        "status": "active",
+        "metadata": {
+          "name": "Deforestation risk",
+          "units": "ha/yr",
+          "source": [
+            "Satelligence 2022",
+            "Hansen 2001-2021"
+          ],
+          "license": "CC BY 4.0",
+          "citation": [
+            "Satelligence, 2022. Forest Change Bulletins. https://satelligence.com/technology",
+            "Hansen, M. C., P. V. Potapov, R. Moore, M. Hancher, S. A. Turubanova, A. Tyukavina, D. Thau, et al. 2013. “High-Resolution Global Maps of 21st-Century Forest Cover Change.” Science 342 (6160): 850–53. https://doi.org/10.1126/science.1244693. "
+          ],
+          "name code": "DF_LUC_T",
+          "resolution": "30x30 meters",
+          "short name": "Deforestation risk",
+          "description": "Forest loss occurring near material production areas. Deforestation is either calculated using Satelligence models trained to identify transitions from forest to non-forest states in satellite imagery, or using global tree cover loss data from Global Forest Watch.",
+          "indicator type": "landscape-level",
+          "date of content": "2001-2021",
+          "geographic coverage": "Global coverage (excluding Antarctica and other Arctic islands).",
+          "frequency of updates": "Annual"
+        },
+        "nameCode": "DF_LUC_T"
+      }
+    },
+    {
+      "type": "indicators",
+      "id": "157b5f22-916b-4981-84c7-f6607ec65445",
+      "attributes": {
+        "id": "157b5f22-916b-4981-84c7-f6607ec65445",
+        "name": "Climate risk from land use change",
+        "description": "The GHG emissions associated with forest loss near agricultural production areas. The general equation for landscape-level impacts is adjusted for the mean annual gross emissions of GHGs associated with forest change from 2001 to 2019.",
+        "unit": {
+          "id": "a0e8110c-fbde-4c8c-ac19-f0f69078b96b",
+          "name": "tonnes of carbon dioxide equivalent per year",
+          "shortName": "TCO2EYR",
+          "symbol": "tCO2e/yr",
+          "description": "Tonnes of carbon dioxide equivalent per year"
+        },
+        "status": "active",
+        "metadata": {
+          "name": "Climate risk",
+          "units": "tCO2eq/yr",
+          "source": [
+            "Harris 2001-2021"
+          ],
+          "license": "CC BY 4.0",
+          "citation": [
+            "Harris, N.L., Gibbs, D.A., Baccini, A. et al. Global maps of twenty-first century forest carbon fluxes. Nat. Clim. Chang. 11, 234–240 (2021). https://doi.org/10.1038/s41558-020-00976-6"
+          ],
+          "name code": "GHG_LUC_T",
+          "resolution": "30x30 meters",
+          "short name": "Climate risk",
+          "description": "The GHG emissions associated with forest loss near agricultural production areas. The general equation for landscape-level impacts is adjusted for the mean annual gross emissions of GHGs associated with forest change from 2001 to 2019.",
+          "indicator type": "landscape-level",
+          "date of content": "2001-2021",
+          "geographic coverage": "Global coverage.",
+          "frequency of updates": "Annual"
+        },
+        "nameCode": "GHG_LUC_T"
+      }
+    },
+    {
+      "type": "indicators",
+      "id": "ffdd6f19-6737-4a10-9d36-5243d3f14b45",
+      "attributes": {
+        "id": "ffdd6f19-6737-4a10-9d36-5243d3f14b45",
+        "name": "Unsustainable water use",
+        "description": "The water consumption in regions with a baseline water stress (BWS) ratio of more than 0.4, as identified by Aqueduct. BWS measures the ratio of total water withdrawals to available renewable surface and groundwater supplies.",
+        "unit": {
+          "id": "9c0da38a-6371-4c79-879b-218fc39c4700",
+          "name": "milions of cubic meters per year",
+          "shortName": "MM3YR",
+          "symbol": "Mm3/yr",
+          "description": "Millions of cubic meters per year"
+        },
+        "status": "active",
+        "metadata": {
+          "name": "Unsustainable water use",
+          "units": "Mm3/yr",
+          "source": [
+            "Aqueduct 3.0 2019"
+          ],
+          "license": "CC BY 4.0",
+          "citation": [
+            "Hofste, R., S. Kuzma, S. Walker, E.H. Sutanudjaja, et. al. 2019. “Aqueduct 3.0: Updated DecisionRelevant Global Water Risk Indicators.” Technical Note. Washington, DC: World Resources Institute. Available online at: https://www.wri.org/publication/aqueduct-30"
+          ],
+          "name code": "UWUSR_T",
+          "resolution": "",
+          "short name": "Unsustainable water use",
+          "description": "The water consumption in regions with a baseline water stress (BWS) ratio of more than 0.4, as identified by Aqueduct. BWS measures the ratio of total water withdrawals to available renewable surface and groundwater supplies.",
+          "indicator type": "farm-level",
+          "date of content": "2019",
+          "geographic coverage": "Global coverage.",
+          "frequency of updates": ""
+        },
+        "nameCode": "UWUSR_T"
+      }
+    },
+    {
+      "type": "indicators",
+      "id": "9c2124c7-5df0-40d5-962e-d35480d48cd3",
+      "attributes": {
+        "id": "9c2124c7-5df0-40d5-962e-d35480d48cd3",
+        "name": "Water use",
+        "description": "The water resources consumed to produce the material. Water consumption impact calculated using product blue water footprint estimates from the period 1996-2005. ",
+        "unit": {
+          "id": "9c0da38a-6371-4c79-879b-218fc39c4700",
+          "name": "milions of cubic meters per year",
+          "shortName": "MM3YR",
+          "symbol": "Mm3/yr",
+          "description": "Millions of cubic meters per year"
+        },
+        "status": "inactive",
+        "metadata": {
+          "name": "Water use",
+          "units": "Mm3/yr",
+          "source": [
+            "Mekonnen 2011",
+            "Mekonnen 2012"
+          ],
+          "license": "CC BY 4.0",
+          "citation": [
+            "Mekonnen, M.M. & Hoekstra, A.Y. (2011) The green, blue and grey water footprint of crops and derived crop products, Hydrology and Earth System Sciences, 15(5): 1577-1600.",
+            "Mekonnen, M.M. & Hoekstra, A.Y. (2012) A global assessment of the water footprint of farm animal products, Ecosystems, 15(3): 401–415."
+          ],
+          "name code": "UWU_T",
+          "resolution": "",
+          "short name": "Water use",
+          "description": "The water resources consumed to produce the material. Water consumption impact calculated using product blue water footprint estimates from the period 1996-2005.",
+          "indicator type": "farm-level",
+          "date of content": "1996-2005",
+          "geographic coverage": "Global coverage.",
+          "frequency of updates": ""
+        },
+        "nameCode": "UWU_T"
+      }
+    }
+  ]
+}

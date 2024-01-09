@@ -1,6 +1,6 @@
-import { ADMIN_TABS, MENU_ITEM_DISABLED_STYLE } from '../../src/layouts/admin/constants';
+import { ADMIN_TABS, MENU_ITEM_DISABLED_STYLE } from '../../../src/layouts/admin/constants';
 
-import type { TabType } from '../../src/components/tabs/types';
+import type { TabType } from '../../../src/components/tabs/types';
 
 const disabledLinks = Object.values(ADMIN_TABS).filter(
   (value: TabType) => value.disabled,

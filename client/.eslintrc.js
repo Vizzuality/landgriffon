@@ -3,10 +3,16 @@ module.exports = {
   extends: [
     'next/core-web-vitals',
     'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
     'plugin:import/recommended',
     'plugin:import/typescript',
+    'plugin:prettier/recommended',
   ],
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    tsconfigRootDir: __dirname,
+    project: ['./tsconfig.eslint.json'],
+  },
+  plugins: ['@typescript-eslint', 'prettier'],
   settings: {
     'import/resolver': {
       typescript: true,

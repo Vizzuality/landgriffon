@@ -1,8 +1,15 @@
 describe('Analysis filters', () => {
   beforeEach(() => {
-    cy.intercept('GET', '/api/v1/indicators?sort=name').as('fetchIndicators');
-    cy.intercept('GET', '/api/v1/indicators?filter[status]=active').as('fetchActiveIndicators');
-    cy.intercept('GET', '/api/v1/h3/years*').as('fetchYears');
+    cy.intercept('GET', '/api/v1/indicators?sort=name', {
+      fixture: 'indicators/index',
+    }).as('fetchIndicators');
+    cy.intercept('GET', '/api/v1/indicators?filter[status]=active', {
+      fixture: 'indicators/index',
+    }).as('fetchActiveIndicators');
+    cy.intercept('GET', '/api/v1/h3/years*', {
+      statusCode: 200,
+      fixture: 'years/index',
+    }).as('fetchYears');
     cy.intercept('GET', '/api/v1/materials/trees*').as('fetchMaterialsTrees');
     cy.intercept('GET', '/api/v1/admin-regions/trees*').as('fetchOriginsTrees');
     cy.intercept('GET', '/api/v1/suppliers/types?type=t1supplier').as('fetchT1Suppliers');
@@ -22,6 +29,7 @@ describe('Analysis filters', () => {
   // Indicators
   it('not to filter by a disabled indicator', () => {
     cy.intercept('GET', '/api/v1/indicators*', {
+      statusCode: 200,
       fixture: 'indicators/index',
     }).as('fetchIndicators');
 
@@ -42,6 +50,11 @@ describe('Analysis filters', () => {
   });
 
   it('filter by an active indicator', () => {
+    cy.intercept('GET', '/api/v1/indicators*', {
+      statusCode: 200,
+      fixture: 'indicators/index',
+    }).as('fetchIndicators');
+
     cy.wait('@fetchIndicators').then((interception) => {
       const activeIndicators = interception.response.body?.data.filter(
         ({ attributes }) => attributes.status === 'active',

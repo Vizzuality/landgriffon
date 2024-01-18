@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 
 import { useAppDispatch } from 'store/hooks';
 import { setLayer } from 'store/features/analysis/map';
-import { NUMBER_FORMAT } from 'utils/number-format';
+import {NUMBER_FORMAT, SMALL_NUMBER_FORMAT} from 'utils/number-format';
 import LegendItem from 'components/legend/item';
 import LegendTypeBasic from 'components/legend/types/basic';
 import LegendTypeCategorical from 'components/legend/types/categorical';
@@ -38,7 +38,9 @@ const ContextualLegendItem = ({ layer }: ContextualLegendItemProps) => {
         ...item,
         label:
           item.label ||
-          `${!Number.isNaN(item.value) ? NUMBER_FORMAT(item.value as number) : item.value}`,
+          `${Number.isNaN(item.value) ? item.value :
+              item.value > 1 ? NUMBER_FORMAT(item.value as number) : SMALL_NUMBER_FORMAT(item.value as number)
+        }`,
       })),
     };
     switch (layer.metadata.legend.type) {

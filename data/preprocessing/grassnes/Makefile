@@ -12,7 +12,7 @@ export AWS_SECRET_ACCESS_KEY
 
 .PHONY: all download_grassnes extract_grassnes_rasters resample_grassnes upload_results write_checksum
 
-all: download_grassnes extract_grassnes_rasters resample_grassnes upload_results write_checksum
+all: clean download_grassnes extract_grassnes_rasters resample_grassnes upload_results write_checksum
 
 download_grassnes:
 	wget $(GRASSNES_URL) -O data/grassnes_HarvAreaYield_Geotiff.zip
@@ -30,12 +30,20 @@ resample_grassnes:
 		$(data_dir)/grassnes_Production_10km.tif \
 		--resampling sum \
 		--res $(resampling_resolution) \
+		--src-nodata nan \
+		--dst-nodata -1 \
+		--co compress=deflate \
+		--co predictor=3 \
 		--overwrite
 	rio warp \
 		$(data_dir)/grassnes_HarvestedAreaHectares.tif \
 		$(data_dir)/grassnes_HarvestedAreaHectares_10km.tif \
 		--resampling sum \
 		--res $(resampling_resolution) \
+		--src-nodata nan \
+		--dst-nodata -1 \
+		--co compress=deflate \
+		--co predictor=3 \
 		--overwrite
 
 	rm $(data_dir)/grassnes_Production.tif
@@ -48,3 +56,6 @@ upload_results:
 
 write_checksum:
 	cd $(data_dir) && sha256sum * > $(checksums_dir)/grassnes
+
+clean:
+	rm -rf $(data_dir)/*

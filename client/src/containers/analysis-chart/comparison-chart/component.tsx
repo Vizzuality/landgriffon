@@ -19,7 +19,7 @@ import { useAppSelector } from 'store/hooks';
 import { filtersForTabularAPI } from 'store/features/analysis/selector';
 import { useImpactComparison } from 'hooks/impact/comparison';
 import Loading from 'components/loading';
-import { NUMBER_FORMAT } from 'utils/number-format';
+import { formatNumber } from 'utils/number-format';
 
 import type { Indicator } from 'types';
 import type { ImpactComparisonParams } from 'hooks/impact/comparison';
@@ -197,7 +197,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                     label={{ value: chartData.unit, angle: -90, position: 'insideLeft' }}
                     tick={{ fill: '#15181F', fontWeight: 300 }}
                     tickLine={false}
-                    tickFormatter={NUMBER_FORMAT}
+                    tickFormatter={formatNumber}
                   />
                   <Tooltip animationDuration={500} content={renderTooltip} />
 

@@ -5,7 +5,7 @@ import { analysisMap, setLayer } from 'store/features/analysis/map';
 import { analysisFilters } from 'store/features/analysis';
 import LegendTypeChoropleth from 'components/legend/types/choropleth';
 import LegendItem from 'components/legend/item';
-import { NUMBER_FORMAT } from 'utils/number-format';
+import { formatNumber } from 'utils/number-format';
 import { COLOR_RAMPS } from 'utils/colors';
 import Materials from 'containers/analysis-visualization/analysis-filters/materials/component';
 import { useMaterial } from 'hooks/materials';
@@ -43,10 +43,10 @@ const MaterialLayer = () => {
                 type: 'basic',
                 name: `${material.metadata.name}`,
                 unit: data.metadata.unit,
-                min: !!data.metadata.quantiles.length && NUMBER_FORMAT(data.metadata.quantiles[0]),
+                min: !!data.metadata.quantiles.length && formatNumber(data.metadata.quantiles[0]),
                 items: data.metadata.quantiles.slice(1).map(
                   (v, index): LegendItemsProps => ({
-                    value: NUMBER_FORMAT(v),
+                    value: formatNumber(v),
                     color: COLOR_RAMPS[LAYER_ID][index],
                   }),
                 ),

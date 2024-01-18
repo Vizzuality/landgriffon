@@ -1,4 +1,4 @@
-import { NUMBER_FORMAT } from 'utils/number-format';
+import { formatNumber } from 'utils/number-format';
 
 type CustomTooltipProps = {
   payload: {
@@ -22,7 +22,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ payload }) => (
               style={{ backgroundColor: item.color }}
             />
             <div className="flex-1 truncate text-left">{item.name}</div>
-            <div className="text-gray-400">{NUMBER_FORMAT(item.value as number)}</div>
+            <div className="text-gray-400">{formatNumber(item.value as number)}</div>
           </li>
         ))}
     </ul>

@@ -20,7 +20,7 @@ import { useImpactRanking } from 'hooks/impact/ranking';
 import { useAppSelector } from 'store/hooks';
 import { scenarios } from 'store/features/analysis';
 import Loading from 'components/loading';
-import { NUMBER_FORMAT } from 'utils/number-format';
+import { formatNumber } from 'utils/number-format';
 
 import type { ExtendedLegendProps } from './legend/component';
 import type { Indicator } from 'types';
@@ -316,7 +316,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
                     label={{ value: chartData.unit, angle: -90, position: 'insideLeft' }}
                     tick={{ fill: '#15181F', fontWeight: 300 }}
                     tickLine={false}
-                    tickFormatter={NUMBER_FORMAT}
+                    tickFormatter={formatNumber}
                   />
 
                   {CHART_DATA.keys.map((key) => (

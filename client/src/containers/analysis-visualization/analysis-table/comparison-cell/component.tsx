@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 
 import { useAppSelector } from 'store/hooks';
 import { scenarios } from 'store/features/analysis/scenarios';
-import { NUMBER_FORMAT } from 'utils/number-format';
+import { formatNumber } from 'utils/number-format';
 
 export interface ComparisonCellProps {
   value: number;
@@ -20,7 +20,7 @@ const ComparisonCell: React.FC<ComparisonCellProps> = ({
   absoluteDifference,
   percentageDifference,
   unit,
-  formatter = NUMBER_FORMAT,
+  formatter = formatNumber,
 }) => {
   const { comparisonMode } = useAppSelector(scenarios);
 

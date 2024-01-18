@@ -5,7 +5,7 @@ import { omit } from 'lodash-es';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
 import { analysisMap, setLayer, setLayerDeckGLProps } from 'store/features/analysis/map';
-import { NUMBER_FORMAT } from 'utils/number-format';
+import { formatNumber } from 'utils/number-format';
 import { COLOR_RAMPS } from 'utils/colors';
 import useH3ImpactData from 'hooks/h3-data/impact';
 import useH3ComparisonData from 'hooks/h3-data/impact/comparison';
@@ -71,13 +71,13 @@ export const useImpactLayer = () => {
                 type: 'basic',
                 name: `${indicator.label} in ${year}`,
                 unit: data.metadata.unit,
-                min: !!data.metadata.quantiles.length && NUMBER_FORMAT(data.metadata.quantiles[0]),
+                min: !!data.metadata.quantiles.length && formatNumber(data.metadata.quantiles[0]),
                 items: data.metadata.quantiles
                   .sort((a, b) => a - b) // always sort quantiles
                   .slice(1)
                   .map(
                     (v, index): LegendItemProp => ({
-                      value: NUMBER_FORMAT(v),
+                      value: formatNumber(v),
                       color: COLOR_RAMPS[colorKey][index],
                     }),
                   ),

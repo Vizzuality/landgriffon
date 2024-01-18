@@ -3,7 +3,7 @@ import { uniqBy } from 'lodash-es';
 
 import { useAppSelector } from 'store/hooks';
 import { scenarios } from 'store/features/analysis';
-import { NUMBER_FORMAT } from 'utils/number-format';
+import { formatNumber } from 'utils/number-format';
 
 type CustomTooltipProps = {
   payload: {
@@ -35,7 +35,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ payload }) => {
               className="h-[1px] w-[16px] border-b-2"
               style={{ borderColor: tooltipData[1]?.stroke }}
             />
-            <div>{NUMBER_FORMAT(comparedValue)}</div>
+            <div>{formatNumber(comparedValue)}</div>
           </div>
         )}
         {(comparedValue || comparedValue === 0) && (
@@ -49,8 +49,8 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ payload }) => {
           >
             {absoluteDifference > 0 && '+'}
             {comparisonMode === 'absolute'
-              ? NUMBER_FORMAT(absoluteDifference)
-              : `${NUMBER_FORMAT(percentageDifference)}%`}
+              ? formatNumber(absoluteDifference)
+              : `${formatNumber(percentageDifference)}%`}
           </div>
         )}
       </div>
@@ -59,7 +59,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ payload }) => {
           className="h-[1px] w-[16px] border-b-2"
           style={{ borderColor: tooltipData[0].stroke }}
         />
-        <div className="text-gray-400">{NUMBER_FORMAT(baseValue)}</div>
+        <div className="text-gray-400">{formatNumber(baseValue)}</div>
       </div>
     </div>
   );

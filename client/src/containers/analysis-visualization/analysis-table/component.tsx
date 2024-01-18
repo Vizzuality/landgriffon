@@ -21,7 +21,7 @@ import { useImpactComparison, useImpactScenarioComparison } from 'hooks/impact/c
 import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
 import { Button } from 'components/button';
 import Table from 'components/table/component';
-import { NUMBER_FORMAT } from 'utils/number-format';
+import { formatNumber } from 'utils/number-format';
 import { DEFAULT_PAGE_SIZES } from 'components/table/pagination/constants';
 import { useIndicatorParam } from 'utils/indicator-param';
 import { handleResponseError } from 'services/api';
@@ -38,8 +38,6 @@ import type { TableProps } from 'components/table/component';
 import type { ColumnDefinition } from 'components/table/column';
 import type { ChartData } from './chart-cell/types';
 import type { ComparisonMode, ImpactRowType, ImpactTableValueItem } from './types';
-
-const NUMBER_FORMATTER = NUMBER_FORMAT;
 
 const isParentRow = <Mode extends ComparisonMode>(
   row: ImpactRowType<Mode, true | false>,
@@ -366,9 +364,9 @@ const AnalysisTable = () => {
 
           if (!isComparison && !isScenarioComparison) {
             if (unit) {
-              return `${NUMBER_FORMATTER(value.value)} ${unit}`;
+              return `${formatNumber(value.value)} ${unit}`;
             }
-            return NUMBER_FORMATTER(value?.value);
+            return formatNumber(value?.value);
           }
 
           if (isScenarioComparison) {
@@ -379,7 +377,7 @@ const AnalysisTable = () => {
                 value={baseScenarioValue}
                 scenarioValue={comparedScenarioValue}
                 unit={unit}
-                formatter={NUMBER_FORMATTER}
+                formatter={formatNumber}
                 isFirs
               />
             );
@@ -389,7 +387,7 @@ const AnalysisTable = () => {
             <ComparisonCell
               {...value}
               scenarioValue={value.comparedScenarioValue}
-              formatter={NUMBER_FORMATTER}
+              formatter={formatNumber}
             />
           );
         },

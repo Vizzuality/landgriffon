@@ -12,7 +12,7 @@ import PageLoading from 'containers/page-loading';
 import ZoomControl from 'components/map/controls/zoom';
 import PopUp from 'components/map/popup';
 import BasemapControl from 'components/map/controls/basemap';
-import { NUMBER_FORMAT } from 'utils/number-format';
+import { formatNumber } from 'utils/number-format';
 import Map, { INITIAL_VIEW_STATE } from 'components/map';
 import { getLayerConfig } from 'components/map/layers/utils';
 
@@ -32,7 +32,7 @@ const getLegendScale = (legendInfo: LegendType) => {
   }
   return (value: number) => {
     if (!value) return null;
-    if (!Number.isNaN(value)) return NUMBER_FORMAT(Number(value));
+    if (!Number.isNaN(value)) return formatNumber(Number(value));
     return value.toString();
   };
 };

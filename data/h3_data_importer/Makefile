@@ -23,6 +23,7 @@ WORKDIR_GHG_FARM=data/ghg_farm
 WORKDIR_LIVESTOCK_PROCESSED=data/livestock_processed
 WORKDIR_LIVESTOCK_GHG=data/livestock_ghg
 WORKDIR_DEFAULT_COMMODITY=data/default_commodity
+WORKDIR_GRASSNES=data/grassnes
 
 
 CHECKSUMS_PATH=data_checksums
@@ -39,8 +40,9 @@ all:
 	fi
 	@echo "AWS S3 bucket access confirmed, proceeding with import..."
 	make clean
-	make crop indicators
-	make delete-h3-tables
+	make convert-grassnes
+#	make crop indicators
+#	make delete-h3-tables
 
 crop: convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock convert-livestock-processed convert-default-commodity
 
@@ -67,6 +69,23 @@ download-mapspam-crop-harvest:
 
 convert-mapspam-crop-harvest: download-mapspam-crop-harvest
 	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM_HA) h3_grid_spam2010v2r0_global_ha harvest_area spam 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+
+# ---------------------------------------------
+# Grassnes (earthstat) - production and harvest
+# ---------------------------------------------
+
+download-grassnes:
+	mkdir -p $(WORKDIR_GRASSNES)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/grassnes/ $(WORKDIR_GRASSNES)
+	cd $(WORKDIR_GRASSNES) && sha256sum --check ../../$(CHECKSUMS_PATH)/grassnes
+
+convert-grassnes: download-grassnes
+	mkdir -p $(WORKDIR_GRASSNES)/production $(WORKDIR_GRASSNES)/harvest
+	mv $(WORKDIR_GRASSNES)/grassnes_Production_10km.tif $(WORKDIR_GRASSNES)/production
+	mv $(WORKDIR_GRASSNES)/grassnes_HarvestedAreaHectares_10km.tif $(WORKDIR_GRASSNES)/harvest
+	python raster_folder_to_h3_table.py $(WORKDIR_GRASSNES)/production h3_grid_grassnes_global_prod production earthstat 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_GRASSNES)/harvest h3_grid_grassnes_global_ha harvest_area earthstat 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+
 
 
 ###############################################################

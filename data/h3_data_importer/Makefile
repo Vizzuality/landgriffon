@@ -40,11 +40,10 @@ all:
 	fi
 	@echo "AWS S3 bucket access confirmed, proceeding with import..."
 	make clean
-	make convert-grassnes
-#	make crop indicators
-#	make delete-h3-tables
+	make crop indicators
+	make delete-h3-tables
 
-crop: convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock convert-livestock-processed convert-default-commodity
+crop: convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock convert-livestock-processed convert-default-commodity convert-grassnes
 
 indicators: convert-aqueduct convert-deforestation convert-forestGHG convert-naturalCropConversion convert-nutrientLoadReduction convert-biodiversity convert-ghg-farm convert-ghg-farm-livestock
 

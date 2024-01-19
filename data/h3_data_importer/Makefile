@@ -81,8 +81,8 @@ download-grassnes:
 
 convert-grassnes: download-grassnes
 	mkdir -p $(WORKDIR_GRASSNES)/production $(WORKDIR_GRASSNES)/harvest
-	mv $(WORKDIR_GRASSNES)/grassnes_Production_10km.tif $(WORKDIR_GRASSNES)/production
-	mv $(WORKDIR_GRASSNES)/grassnes_HarvestedAreaHectares_10km.tif $(WORKDIR_GRASSNES)/harvest
+	mv $(WORKDIR_GRASSNES)/earthstat_global_prod_grassnes_t.tif $(WORKDIR_GRASSNES)/production
+	mv $(WORKDIR_GRASSNES)/earthstat_global_harvest_grassnes_ha.tif $(WORKDIR_GRASSNES)/harvest
 	python raster_folder_to_h3_table.py $(WORKDIR_GRASSNES)/production h3_grid_grassnes_global_prod production earthstat 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 	python raster_folder_to_h3_table.py $(WORKDIR_GRASSNES)/harvest h3_grid_grassnes_global_ha harvest_area earthstat 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 

@@ -27,7 +27,7 @@ extract_grassnes_rasters:
 resample_grassnes:
 	rio warp \
 		$(data_dir)/grassnes_Production.tif \
-		$(data_dir)/grassnes_Production_10km.tif \
+		$(data_dir)/earthstat_global_prod_grassnes_t.tif \
 		--resampling sum \
 		--res $(resampling_resolution) \
 		--src-nodata nan \
@@ -37,7 +37,7 @@ resample_grassnes:
 		--overwrite
 	rio warp \
 		$(data_dir)/grassnes_HarvestedAreaHectares.tif \
-		$(data_dir)/grassnes_HarvestedAreaHectares_10km.tif \
+		$(data_dir)/earthstat_global_harvest_grassnes_ha.tif \
 		--resampling sum \
 		--res $(resampling_resolution) \
 		--src-nodata nan \
@@ -51,8 +51,8 @@ resample_grassnes:
 
 
 upload_results:
-	aws s3 cp $(data_dir)/grassnes_Production_10km.tif ${AWS_S3_BUCKET_URL}/processed/grassnes/
-	aws s3 cp $(data_dir)/grassnes_HarvestedAreaHectares_10km.tif ${AWS_S3_BUCKET_URL}/processed/grassnes/
+	aws s3 cp $(data_dir)/earthstat_global_prod_grassnes_t.tif ${AWS_S3_BUCKET_URL}/processed/grassnes/
+	aws s3 cp $(data_dir)/earthstat_global_harvest_grassnes_ha.tif ${AWS_S3_BUCKET_URL}/processed/grassnes/
 
 write_checksum:
 	cd $(data_dir) && sha256sum * > $(checksums_dir)/grassnes

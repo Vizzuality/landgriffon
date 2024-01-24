@@ -23,7 +23,7 @@ WORKDIR_GHG_FARM=data/ghg_farm
 WORKDIR_LIVESTOCK_PROCESSED=data/livestock_processed
 WORKDIR_LIVESTOCK_GHG=data/livestock_ghg
 WORKDIR_DEFAULT_COMMODITY=data/default_commodity
-WORKDIR_GRASSNES=data/grassnes
+WORKDIR_EARTHSTAT=data/earthstat
 
 
 CHECKSUMS_PATH=data_checksums
@@ -39,8 +39,9 @@ all:
 		false; \
 	fi
 	@echo "AWS S3 bucket access confirmed, proceeding with import..."
-	make clean
-	make crop indicators
+#	make clean
+#	make crop indicators
+	make convert-earthstat
 	make delete-h3-tables
 
 crop: convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock convert-livestock-processed convert-default-commodity convert-grassnes
@@ -70,20 +71,18 @@ convert-mapspam-crop-harvest: download-mapspam-crop-harvest
 	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM_HA) h3_grid_spam2010v2r0_global_ha harvest_area spam 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 # ---------------------------------------------
-# Grassnes (earthstat) - production and harvest
+# EARTHSTAT - production and harvest
 # ---------------------------------------------
 
-download-grassnes:
-	mkdir -p $(WORKDIR_GRASSNES)
-	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/grassnes/ $(WORKDIR_GRASSNES)
-	cd $(WORKDIR_GRASSNES) && sha256sum --check ../../$(CHECKSUMS_PATH)/grassnes
+download-earthstat:
+	mkdir -p $(WORKDIR_EARTHSTAT)/production $(WORKDIR_EARTHSTAT)/harvest
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/earthstat/ $(WORKDIR_EARTHSTAT)
+	cd $(WORKDIR_EARTHSTAT) && sha256sum --check ../../$(CHECKSUMS_PATH)/earthstat
 
-convert-grassnes: download-grassnes
-	mkdir -p $(WORKDIR_GRASSNES)/production $(WORKDIR_GRASSNES)/harvest
-	mv $(WORKDIR_GRASSNES)/earthstat_global_prod_grassnes_t.tif $(WORKDIR_GRASSNES)/production
-	mv $(WORKDIR_GRASSNES)/earthstat_global_harvest_grassnes_ha.tif $(WORKDIR_GRASSNES)/harvest
-	python raster_folder_to_h3_table.py $(WORKDIR_GRASSNES)/production h3_grid_grassnes_global_prod production earthstat 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
-	python raster_folder_to_h3_table.py $(WORKDIR_GRASSNES)/harvest h3_grid_grassnes_global_ha harvest_area earthstat 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+
+convert-earthstat: download-earthstat
+	python raster_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/production h3_grid_earthstat_global_prod production earthstat 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/harvest h3_grid_earthstat_global_ha harvest_area earthstat 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 
 

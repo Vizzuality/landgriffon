@@ -178,6 +178,7 @@ def update_for_material(cursor: psycopg.Cursor, dataset: str, column_name: str, 
         raise ValueError(f"h3_data with 'h3columnName' {column_name} does not exists")
     # FIXME: the current solution for naming a material datasets is hard to follow and easy to mess up.
     dataset_id = dataset + "_" + snakify(column_name).split("_")[-2]
+    log.info(f"Updating material_to_h3 for {column_name} of {dataset_id}")
     type_map = {"harvest_area": "harvest", "production": "producer"}
     delete_query = sql.SQL(
         'DELETE FROM "material_to_h3" WHERE "materialId" = {material_id} AND "type" = {data_type}'

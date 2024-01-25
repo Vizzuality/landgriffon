@@ -1,0 +1,14 @@
+https://s3.us-east-2.amazonaws.com/earthstatdata/HarvestedAreaYield175Crops_Indvidual_Geotiff/grassnes_HarvAreaYield_Geotiff.zip
+https://s3.us-east-2.amazonaws.com/earthstatdata/HarvestedAreaYield175Crops_Indvidual_Geotiff/clover_HarvAreaYield_Geotiff.zip
+https://s3.us-east-2.amazonaws.com/earthstatdata/HarvestedAreaYield175Crops_Indvidual_Geotiff/maizefor_HarvAreaYield_Geotiff.zip
+https://s3.us-east-2.amazonaws.com/earthstatdata/HarvestedAreaYield175Crops_Indvidual_Geotiff/alfalfa_HarvAreaYield_Geotiff.zip
+https://s3.us-east-2.amazonaws.com/earthstatdata/HarvestedAreaYield175Crops_Indvidual_Geotiff/triticale_HarvAreaYield_Geotiff.zip
+https://s3.us-east-2.amazonaws.com/earthstatdata/HarvestedAreaYield175Crops_Indvidual_Geotiff/legumenes_HarvAreaYield_Geotiff.zip
+https://s3.us-east-2.amazonaws.com/earthstatdata/HarvestedAreaYield175Crops_Indvidual_Geotiff/mixedgrass_HarvAreaYield_Geotiff.zip
+https://s3.us-east-2.amazonaws.com/earthstatdata/HarvestedAreaYield175Crops_Indvidual_Geotiff/ryefor_HarvAreaYield_Geotiff.zip
+https://s3.us-east-2.amazonaws.com/earthstatdata/HarvestedAreaYield175Crops_Indvidual_Geotiff/sorghumfor_HarvAreaYield_Geotiff.zip
+https://s3.us-east-2.amazonaws.com/earthstatdata/HarvestedAreaYield175Crops_Indvidual_Geotiff/swedefor_HarvAreaYield_Geotiff.zip
+https://s3.us-east-2.amazonaws.com/earthstatdata/HarvestedAreaYield175Crops_Indvidual_Geotiff/turnipfor_HarvAreaYield_Geotiff.zip
+https://s3.us-east-2.amazonaws.com/earthstatdata/HarvestedAreaYield175Crops_Indvidual_Geotiff/vegfor_HarvAreaYield_Geotiff.zip
+https://s3.us-east-2.amazonaws.com/earthstatdata/HarvestedAreaYield175Crops_Indvidual_Geotiff/oilseedfor_HarvAreaYield_Geotiff.zip
+https://s3.us-east-2.amazonaws.com/earthstatdata/HarvestedAreaYield175Crops_Indvidual_Geotiff/fornes_HarvAreaYield_Geotiff.zip

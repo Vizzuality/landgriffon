@@ -1,10 +1,4 @@
-[tool.black]
-line-length = 120
-
-[tool.isort]
-profile = "black"
-
 [tool.ruff]
-select = ["E", "F", "N"]
+select = ["E", "F", "N", "I"]
 line-length = 120
 ignore = []

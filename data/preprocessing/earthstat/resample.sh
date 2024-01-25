@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 set -e
 
 data_dir="data"
@@ -14,7 +15,7 @@ for file in $data_dir/*.tif; do
    harv_or_prod="production"
    unit="t"
   fi
-  outfile="earthstat_global_${crop_type}_${harv_or_prod}_${unit}.tif"
+  outfile="earthstat_global_${harv_or_prod}_${crop_type}_${unit}.tif"
   echo "Resampling $file to $outfile"
   rio warp \
    $file \

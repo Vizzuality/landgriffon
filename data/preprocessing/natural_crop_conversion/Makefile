@@ -1,5 +1,5 @@
 # Variables
-data_dir=./data/
+data_dir=./data
 resampling_resolution="0.083333"
 checksums_dir=../../../h3_data_importer/data_checksums
 AWS_S3_BUCKET_URL=s3://landgriffon-raw-data

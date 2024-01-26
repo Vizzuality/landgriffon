@@ -23,10 +23,10 @@ jobs:
         working-directory: ${{github.workspace}}/client
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Use Node.js 18.13
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version-file: 'client/.nvmrc'
           cache: 'yarn'
@@ -36,7 +36,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Cypress run
-        uses: cypress-io/github-action@v5
+        uses: cypress-io/github-action@v6
         with:
           record: true
           working-directory: client
@@ -61,7 +61,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           DEBUG: "cypress:server:args"
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: cypress-screenshots

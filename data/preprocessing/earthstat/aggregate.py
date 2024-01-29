@@ -4,6 +4,7 @@ from pathlib import Path
 from time import sleep
 from typing import Annotated
 
+import numpy as np
 import rasterio as rio
 import typer
 
@@ -69,7 +70,7 @@ def aggregate(data_dir: Path, proportions: dict[str, float], harvest_or_prod: Ha
     )
 
     with rio.open(outfile, "w", **ref_meta) as dest:
-        dest.write(data, 1)
+        dest.write(np.round(data, 5), 1)
 
     return outfile.as_posix()
 

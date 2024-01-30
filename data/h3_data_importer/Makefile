@@ -48,7 +48,6 @@ crop: convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-
 indicators: convert-aqueduct convert-deforestation convert-forestGHG convert-naturalCropConversion convert-nutrientLoadReduction convert-biodiversity convert-ghg-farm convert-ghg-farm-livestock
 
 contextual-layers: convert-hdi-contextual \
-	convert-blue-water-contextual \
 	convert-deforest-by-human-landuse \
 	convert-deforest-carbon-by-human-landuse \
 	convert-crop-bii-loss-by-human-landuse \

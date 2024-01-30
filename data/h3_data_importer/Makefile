@@ -318,9 +318,6 @@ download-hdi-contextual:
 convert-hdi-contextual: download-hdi-contextual
 	python csv_to_h3_table.py $(WORKDIR_HDI)/IHDI_HDR2020_040722.csv h3_grid_hdi_global hdi_2019 2019 iso3
 
-convert-blue-water-contextual:
-	python cog_to_contextual_layer_linker.py --cog bluewater.tif --name bluewater_footprint --category "Environmental datasets" --tiler_param colormap_name=viridis --tp rescale=-18,832
-
 convert-deforest-by-human-landuse:
 	python cog_to_contextual_layer_linker.py --cog deforest_by_human_lu_50km_1000m_cog.tif --name deforest_by_human_lu --category "Environmental datasets" --tiler_param colormap_name=ylorrd --tp rescale=0,0.0025
 

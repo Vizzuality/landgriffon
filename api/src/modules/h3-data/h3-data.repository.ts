@@ -765,23 +765,32 @@ export class H3DataRepository extends Repository<H3Data> {
    * has been don't for the time being to unblock FE. Check with Data if calculus is accurate
    */
   private async calculateQuantiles(tmpTableName: string): Promise<number[]> {
+    const N_BINS: number = 7;
     try {
-      const resultArray: number[] = await this.dataSource.query(
-        `select 0                                    as min,
-                percentile_cont(0.1667) within group (order by v) as per16,
-                percentile_cont(0.3337) within group (order by v) as per33,
-                percentile_cont(0.50) within group (order by v)   as per50,
-                percentile_cont(0.6667) within group (order by v) as per66,
-                percentile_cont(0.8337) within group (order by v) as per83,
-                percentile_cont(1) within group (order by v)      as max
-         from "${tmpTableName}"
-         where v>0
-         `,
+      //
+      const max: any[] = await this.dataSource.query(
+        `select percentile_cont(0.99) WITHIN GROUP (ORDER BY v)  as value from "${tmpTableName}"; `,
       );
-      return Object.values(resultArray[0]);
+      let bins: number[] = [];
+      for (let i = 1; i <= N_BINS; i++) {
+
+        // Log scale binning value shifted with + 1
+        // to avoid values < 1, the zone where log behaves badly (rush to -inf for ->0).
+        // Subtract 1 to undo the shift in the final value.
+        let bin: number = Math.pow(10, (Math.log10(max[0]['value'] + 1 ) * i / N_BINS )) - 1;
+
+        // Round small values with 2 significant digits, and bigger ones with just one.
+        // >=10 values look like: 0 50 400 3k 20k 1M...
+        // <10: 0.017 0.035 0.11...
+        let precision: number = bin >= 10? 1: 2;
+        bins.push(Number(bin.toPrecision(precision)));
+      }
+      this.logger.debug(`Computed data Bins: ${bins}`);
+      return bins;
+
     } catch (err) {
       this.logger.error(err);
-      throw new Error(`Quantiles could not been calculated`);
+      throw new Error(`Bins could not be calculated`);
     }
   }
 

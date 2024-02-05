@@ -765,7 +765,7 @@ export class H3DataRepository extends Repository<H3Data> {
    * has been don't for the time being to unblock FE. Check with Data if calculus is accurate
    */
   private async calculateQuantiles(tmpTableName: string): Promise<number[]> {
-    const N_BINS: number = 7;
+    const N_BINS: number = 6;
     // TODO: make threshold configurable by unit
     const DISPLAY_THRESHOLD: number = 0.01;
     try {
@@ -775,7 +775,8 @@ export class H3DataRepository extends Repository<H3Data> {
       );
       // DISPLAY_THRESHOLD is the threshold for the smallest value to be displayed in the map and legend
       const max = Math.max(max_q[0]["value"], DISPLAY_THRESHOLD)
-      let bins: number[] = [];
+      this.logger.debug(`Computed 99th percentile for ${tmpTableName}: ${max}`);
+      let bins: number[] = [0];
       for (let i = 1; i <= N_BINS; i++) {
         // Log scale binning value shifted with + 1
         // to avoid values < 1, the zone where log behaves badly (rush to -inf for ->0).
@@ -787,7 +788,7 @@ export class H3DataRepository extends Repository<H3Data> {
         let precision: number = bin >= 10? 1: 2;
         bins.push(Number(bin.toPrecision(precision)));
       }
-      this.logger.debug(`Computed data Bins: ${bins}`);
+      this.logger.debug(`Computed data Bins for ${tmpTableName}: ${bins}`);
       return bins;
 
     } catch (err) {

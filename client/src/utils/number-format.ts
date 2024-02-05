@@ -8,7 +8,7 @@ export const SMALL_NUMBER_FORMAT = format('.2~g');
 
 export function formatNumber(number: number): string {
   if (Math.abs(number) < 1) {
-    if (Math.abs(number) < 0.001) {
+    if (Math.abs(number) < 0.001 && Math.abs(number) > 0){
       return "< 0.001";
     }
     return SMALL_NUMBER_FORMAT(number)

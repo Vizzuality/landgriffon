@@ -28,15 +28,12 @@ import {
   SCENARIO_INTERVENTION_STATUS,
   ScenarioIntervention,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
-import {
-  LOCATION_TYPES,
-  SourcingLocation,
-} from 'modules/sourcing-locations/sourcing-location.entity';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { ImpactMaterializedView } from 'modules/impact/views/impact.materialized-view.entity';
-import { BaseImpactMap } from './types/base-impact-map.type';
-import { BaseImpactMapFiltersType } from './types/base-impact-map.filters.type';
+import { BaseImpactMap } from 'modules/h3-data/types/base-impact-map.type';
+import { BaseImpactMapFiltersType } from 'modules/h3-data/types/base-impact-map.filters.type';
 
 export enum IMPACT_MAP_TYPE {
   IMPACT_MAP = 'impact-map',
@@ -62,12 +59,6 @@ export class H3DataRepository extends Repository<H3Data> {
     return (Math.random() + 1).toString(36).substring(2);
   }
 
-  /** Retrieves data from dynamically generated H3 data
-   *
-   * @param h3ColumnName: Name of the column inside the dynamically generated table
-   * @param h3TableName: Name of the dynamically generated table
-   *
-   */
   async getH3ByName(
     h3TableName: string,
     h3ColumnName: string,
@@ -760,37 +751,33 @@ export class H3DataRepository extends Repository<H3Data> {
     return impactViewAggregationQueryBuilder;
   }
 
-  /**
-   * @debt: Refactor this to use queryBuilder. Even tho all values are previously validated, this isn't right, but
-   * has been don't for the time being to unblock FE. Check with Data if calculus is accurate
-   */
   private async calculateQuantiles(tmpTableName: string): Promise<number[]> {
     const N_BINS: number = 6;
     // TODO: make threshold configurable by unit
     const DISPLAY_THRESHOLD: number = 0.01;
     try {
       //
-      const max_q: any[] = await this.dataSource.query(
-        `select percentile_cont(0.99) WITHIN GROUP (ORDER BY v)  as value from "${tmpTableName}"; `,
+      const [{ value }] = await this.dataSource.query(
+        `select percentile_cont(0.99) WITHIN GROUP (ORDER BY v) as value from "${tmpTableName}"; `,
       );
       // DISPLAY_THRESHOLD is the threshold for the smallest value to be displayed in the map and legend
-      const max = Math.max(max_q[0]["value"], DISPLAY_THRESHOLD)
-      this.logger.debug(`Computed 99th percentile for ${tmpTableName}: ${max}`);
-      let bins: number[] = [0];
-      for (let i = 1; i <= N_BINS; i++) {
+      const maxValueToBeDisplayed: number = Math.max(value, DISPLAY_THRESHOLD);
+      const bins: number[] = [0];
+      for (let i: number = 1; i <= N_BINS; i++) {
         // Log scale binning value shifted with + 1
         // to avoid values < 1, the zone where log behaves badly (rush to -inf for ->0).
         // Subtract 1 to undo the shift in the final value.
-        let bin: number = Math.pow(10, (Math.log10(max + 1 ) * i / N_BINS )) - 1;
+        const bin: number =
+          Math.pow(10, (Math.log10(maxValueToBeDisplayed + 1) * i) / N_BINS) -
+          1;
         // Round small values with 2 significant digits, and bigger ones with just one.
         // >=10 values look like: 0 50 400 3k 20k 1M...
         // <10: 0.017 0.035 0.11...
-        let precision: number = bin >= 10? 1: 2;
+        const precision: number = bin >= 10 ? 1 : 2;
         bins.push(Number(bin.toPrecision(precision)));
       }
-      this.logger.debug(`Computed data Bins for ${tmpTableName}: ${bins}`);
+      this.logger.debug(`Computed data Bins for Impact Map: ${bins}`);
       return bins;
-
     } catch (err) {
       this.logger.error(err);
       throw new Error(`Bins could not be calculated`);

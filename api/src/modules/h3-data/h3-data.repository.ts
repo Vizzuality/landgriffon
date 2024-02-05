@@ -751,7 +751,7 @@ export class H3DataRepository extends Repository<H3Data> {
     // If map type is Impact Map, sum up values from previous subquery
     if (mapType === IMPACT_MAP_TYPE.IMPACT_MAP) {
       impactViewAggregationQueryBuilder.addSelect(
-        'round(sum(impactview.value * reduced.scaled_value)::numeric, 4)',
+        'sum(impactview.value * reduced.scaled_value)::numeric',
         'v',
       );
     }
@@ -766,19 +766,21 @@ export class H3DataRepository extends Repository<H3Data> {
    */
   private async calculateQuantiles(tmpTableName: string): Promise<number[]> {
     const N_BINS: number = 7;
+    // TODO: make threshold configurable by unit
+    const DISPLAY_THRESHOLD: number = 0.01;
     try {
       //
-      const max: any[] = await this.dataSource.query(
+      const max_q: any[] = await this.dataSource.query(
         `select percentile_cont(0.99) WITHIN GROUP (ORDER BY v)  as value from "${tmpTableName}"; `,
       );
+      // DISPLAY_THRESHOLD is the threshold for the smallest value to be displayed in the map and legend
+      const max = Math.max(max_q[0]["value"], DISPLAY_THRESHOLD)
       let bins: number[] = [];
       for (let i = 1; i <= N_BINS; i++) {
-
         // Log scale binning value shifted with + 1
         // to avoid values < 1, the zone where log behaves badly (rush to -inf for ->0).
         // Subtract 1 to undo the shift in the final value.
-        let bin: number = Math.pow(10, (Math.log10(max[0]['value'] + 1 ) * i / N_BINS )) - 1;
-
+        let bin: number = Math.pow(10, (Math.log10(max + 1 ) * i / N_BINS )) - 1;
         // Round small values with 2 significant digits, and bigger ones with just one.
         // >=10 values look like: 0 50 400 3k 20k 1M...
         // <10: 0.017 0.035 0.11...
@@ -796,6 +798,7 @@ export class H3DataRepository extends Repository<H3Data> {
 
   /**
    * This quantile calculation is meant to be used only for comparison maps
+   * TODO: Refactor this to use log scale (same approach as above in calculateQuantiles)
    */
   private async calculateScenarioComparisonQuantiles(
     tmpTableName: string,

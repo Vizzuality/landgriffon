@@ -11,7 +11,7 @@ export function formatNumber(number: number): string {
     if (Math.abs(number) < 0.001 && Math.abs(number) > 0) {
       return '< 0.001';
     }
-    return SMALL_NUMBER_FORMAT(number)
+    return SMALL_NUMBER_FORMAT(number);
   }
   return NUMBER_FORMAT(number);
 }

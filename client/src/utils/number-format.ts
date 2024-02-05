@@ -1,4 +1,4 @@
-import {format} from 'd3-format';
+import { format } from 'd3-format';
 
 // for numbers bigger than 1
 export const NUMBER_FORMAT = format('.2~s');

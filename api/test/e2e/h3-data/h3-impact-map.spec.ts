@@ -110,19 +110,19 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
     expect(response.body.data).toEqual(
       expect.arrayContaining([
-        { h: '861203a6fffffff', v: '500.0000' },
+        { h: '861203a6fffffff', v: '500' },
         {
           h: '861203a5fffffff',
-          v: '617.0000',
+          v: '617',
         },
-        { h: '861203a4fffffff', v: '1117.0000' },
+        { h: '861203a4fffffff', v: '1117' },
       ]),
     );
     expect(response.body.metadata.unit).toEqual('tonnes');
     expect(
       toBeCloseToArray(
         response.body.metadata.quantiles,
-        [0, 539.0078, 578.0858, 617, 783.699999, 950.7, 1117],
+        [0, 2.2, 9.3, 30, 100, 300, 1000],
         5,
       ),
     ).toBeTruthy();
@@ -140,10 +140,10 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         });
 
       expect(response.body.data).toEqual(
-        expect.arrayContaining([{ h: '821207fffffffff', v: '2234.0000' }]),
+        expect.arrayContaining([{ h: '821207fffffffff', v: '2234' }]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [0, 2234, 2234, 2234, 2234, 2234, 2234],
+        quantiles: [0, 2.6, 10, 50, 200, 600, 2000],
         unit: 'tonnes',
       });
     });
@@ -159,10 +159,10 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         });
 
       expect(response.body.data).toEqual(
-        expect.arrayContaining([{ h: '841203bffffffff', v: '2234.0000' }]),
+        expect.arrayContaining([{ h: '841203bffffffff', v: '2234' }]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [0, 2234, 2234, 2234, 2234, 2234, 2234],
+        quantiles: [0, 2.6, 10, 50, 200, 600, 2000],
         unit: 'tonnes',
       });
     });
@@ -179,19 +179,19 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a6fffffff', v: '500.0000' },
+          { h: '861203a6fffffff', v: '500' },
           {
             h: '861203a5fffffff',
-            v: '617.0000',
+            v: '617',
           },
-          { h: '861203a4fffffff', v: '1117.0000' },
+          { h: '861203a4fffffff', v: '1117' },
         ]),
       );
       expect(response.body.metadata.unit).toEqual('tonnes');
       expect(
         toBeCloseToArray(
           response.body.metadata.quantiles,
-          [0, 539.0078, 578.0858, 617, 783.699999, 950.7, 1117],
+          [0, 2.2, 9.3, 30, 100, 300, 1000],
           5,
         ),
       ).toBeTruthy();
@@ -212,12 +212,12 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a5fffffff', v: '617.0000' },
-          { h: '861203a4fffffff', v: '617.0000' },
+          { h: '861203a5fffffff', v: '617' },
+          { h: '861203a4fffffff', v: '617' },
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [0, 617, 617, 617, 617, 617, 617],
+        quantiles: [0, 1.9, 7.5, 20, 70, 200, 600],
         unit: 'tonnes',
         materialsH3DataYears: [
           {
@@ -247,12 +247,12 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a5fffffff', v: '617.0000' },
-          { h: '861203a4fffffff', v: '617.0000' },
+          { h: '861203a5fffffff', v: '617' },
+          { h: '861203a4fffffff', v: '617' },
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [0, 617, 617, 617, 617, 617, 617],
+        quantiles: [0, 1.9, 7.5, 20, 70, 200, 600],
         unit: 'tonnes',
       });
     });
@@ -270,12 +270,12 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a5fffffff', v: '617.0000' },
-          { h: '861203a4fffffff', v: '617.0000' },
+          { h: '861203a5fffffff', v: '617' },
+          { h: '861203a4fffffff', v: '617' },
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [0, 617, 617, 617, 617, 617, 617],
+        quantiles: [0, 1.9, 7.5, 20, 70, 200, 600],
         unit: 'tonnes',
       });
     });
@@ -293,18 +293,12 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          {
-            h: '861203a5fffffff',
-            v: '617.0000',
-          },
-          {
-            h: '861203a4fffffff',
-            v: '617.0000',
-          },
+          { h: '861203a5fffffff', v: '617' },
+          { h: '861203a4fffffff', v: '617' },
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [0, 617, 617, 617, 617, 617, 617],
+        quantiles: [0, 1.9, 7.5, 20, 70, 200, 600],
         unit: 'tonnes',
       });
     });
@@ -323,9 +317,12 @@ describe('H3 Data Module (e2e) - Impact map', () => {
         });
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a6fffffff', v: '500.0000' },
-          { h: '861203a5fffffff', v: '617.0000' },
-          { h: '861203a4fffffff', v: '1117.0000' },
+          { h: '861203a6fffffff', v: '500' },
+          {
+            h: '861203a5fffffff',
+            v: '617',
+          },
+          { h: '861203a4fffffff', v: '1117' },
         ]),
       );
     });
@@ -342,12 +339,12 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a5fffffff', v: '617.0000' },
-          { h: '861203a4fffffff', v: '617.0000' },
+          { h: '861203a5fffffff', v: '617' },
+          { h: '861203a4fffffff', v: '617' },
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [0, 617, 617, 617, 617, 617, 617],
+        quantiles: [0, 1.9, 7.5, 20, 70, 200, 600],
         unit: 'tonnes',
       });
     });
@@ -365,12 +362,12 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a5fffffff', v: '617.0000' },
-          { h: '861203a4fffffff', v: '617.0000' },
+          { h: '861203a5fffffff', v: '617' },
+          { h: '861203a4fffffff', v: '617' },
         ]),
       );
       expect(response.body.metadata).toEqual({
-        quantiles: [0, 617, 617, 617, 617, 617, 617],
+        quantiles: [0, 1.9, 7.5, 20, 70, 200, 600],
         unit: 'tonnes',
       });
     });
@@ -392,12 +389,12 @@ describe('H3 Data Module (e2e) - Impact map', () => {
 
       expect(response.body.data).toEqual(
         expect.arrayContaining([
-          { h: '861203a6fffffff', v: '450.0000' },
+          { h: '861203a6fffffff', v: '450' },
           {
             h: '861203a5fffffff',
-            v: '592.0000',
+            v: '592',
           },
-          { h: '861203a4fffffff', v: '1042.0000' },
+          { h: '861203a4fffffff', v: '1042' },
         ]),
       );
       expect(response.body.metadata).toBeDefined();
@@ -405,7 +402,7 @@ describe('H3 Data Module (e2e) - Impact map', () => {
       expect(
         toBeCloseToArray(
           response.body.metadata.quantiles,
-          [0, 497.3428, 544.7708, 592, 742.03, 892.329999, 1042],
+          [0, 2.2, 9.1, 30, 100, 300, 1000],
           5,
         ),
       ).toBeTruthy();

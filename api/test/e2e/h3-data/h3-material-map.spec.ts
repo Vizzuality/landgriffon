@@ -177,10 +177,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
     );
 
     expect(responseRes1.body.metadata).toEqual({
-      quantiles: [
-        0, 615.037, 800.0275, 812.5, 825.0784999999998, 1218.3635000000002,
-        1610,
-      ],
+      quantiles: [0, 2.4, 10, 40, 100, 500, 2000],
       unit: 'tonnes',
     });
 
@@ -197,9 +194,7 @@ describe('H3 Data Module (e2e) - Material map', () => {
     );
 
     expect(responseRes3.body.metadata).toEqual({
-      quantiles: [
-        0, 200.006, 231.1110000000001, 735, 750.01, 800.1320000000001, 860,
-      ],
+      quantiles: [0, 2.1, 8.5, 30, 90, 300, 900],
       unit: 'tonnes',
     });
   });

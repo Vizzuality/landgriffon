@@ -308,10 +308,6 @@ export class H3DataRepository extends Repository<H3Data> {
 
   /** Retrieves single crop data by a given resolution
    *
-   * @param materialH3Data: H3 Data table and column name for a specific material
-   * @param resolution: An integer between 1 (min resolution) and 6 (max resolution).
-   * Resolution validation done at route handler
-   *
    */
   async getMaterialMapByResolution(
     materialH3Data: H3Data,

@@ -138,7 +138,7 @@ describe('Analysis filters', () => {
       const firstItem = interception.response.body?.data[0];
       cy.get('[data-testid="tree-select-producers-filter"]').find('div[role="combobox"]').click();
       cy.get('[data-testid="tree-select-producers-filter"]')
-        .find('.rc-tree-list')
+        .find('div[role="listbox"]')
         .find('.rc-tree-treenode')
         .eq(1)
         .should('have.text', firstItem.attributes.name)

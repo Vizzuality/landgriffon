@@ -72,5 +72,8 @@
     "email": {
       "sendGridApiKey": "SENDGRID_API_KEY"
     }
+  },
+  "carto": {
+    "apiKey": "CARTO_API_KEY"
   }
 }

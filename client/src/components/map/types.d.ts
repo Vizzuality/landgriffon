@@ -1,11 +1,11 @@
 import type { StyleIds } from './constants';
-import type { ViewState, MapProps, FitBoundsOptions, MapboxMap } from 'react-map-gl';
+import type { ViewState, MapProps, FitBoundsOptions, MapRef } from 'react-map-gl/maplibre';
 
 export type MapStyle = keyof typeof StyleIds;
 
 export interface CustomMapProps extends MapProps {
   /** A function that returns the map instance */
-  children?: (map: MapboxMap) => React.ReactNode;
+  children?: (map: typeof MapRef.getMap) => React.ReactNode;
 
   /** Custom css class for styling */
   className?: string;

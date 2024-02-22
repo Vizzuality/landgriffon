@@ -1,0 +1,44 @@
+{
+  "version": 8,
+  "name": "ESRI - World Imagery",
+  "metadata": {
+
+  },
+  "sources": {
+    "esri": {
+      "type": "raster",
+      "tiles": ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
+      "attribution": "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+    }
+  },
+  "sprite": "https://tiles.basemaps.cartocdn.com/gl/positron-gl-style/sprite",
+  "glyphs": "https://tiles.basemaps.cartocdn.com/fonts/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "background-color": "#f9f5f3",
+        "background-opacity": 1
+      }
+    },
+    {
+      "id": "esri-world-imagery",
+      "type": "raster",
+      "source": "esri",
+      "minzoom": 2
+    },
+    {
+      "id": "custom-layers",
+      "type": "background",
+      "paint": {
+        "background-color": "#000",
+        "background-opacity": 0
+      }
+    }
+  ],
+  "id": "esri-world-imagery"
+}

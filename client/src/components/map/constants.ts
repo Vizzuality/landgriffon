@@ -1,7 +1,7 @@
-import DefaultMapStyle from './styles/map-style.json';
-import SatelliteMapStyle from './styles/map-style-satellite.json';
+import DefaultMapStyle from './styles/map-style-maplibre.json';
+import SatelliteMapStyle from './styles/map-style-satellite-maplibre.json';
 
-import type { ViewState, MapProps } from 'react-map-gl';
+import type { ViewState, MapProps } from 'react-map-gl/maplibre';
 
 export const DEFAULT_VIEW_STATE: Partial<ViewState> = {
   zoom: 2,

@@ -1,4 +1,4 @@
-import { MapProvider } from 'react-map-gl';
+import { MapProvider } from 'react-map-gl/maplibre';
 
 import useEffectOnce from 'hooks/once';
 import { setVisualizationMode } from 'store/features/analysis';

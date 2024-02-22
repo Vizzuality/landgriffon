@@ -16,7 +16,7 @@ describe('Analysis: map impact layer', () => {
   it('request the impact layer', () => {
     cy.visit('/analysis/map');
 
-    cy.get('canvas.mapboxgl-canvas').should('be.visible');
+    cy.get('canvas.maplibregl-canvas').should('be.visible');
 
     cy.wait('@fetchImpactMap').then((interception) => {
       cy.wrap(JSON.stringify(interception.response.body.data[0])).should(

@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import cx from 'classnames';
-import { useMap } from 'react-map-gl';
+import { useMap } from 'react-map-gl/maplibre';
 import { MinusIcon, PlusIcon } from '@heroicons/react/solid';
 
 import type { MouseEventHandler } from 'react';

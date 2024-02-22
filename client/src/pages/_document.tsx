@@ -17,7 +17,7 @@ class MyDocument extends Document {
             content="Manage food and agriculture supply chain deforestation, climate, water risk and sustainability"
           />
           <link rel="shortcut icon" href="/favicon.ico" />
-          <link href="https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.css" rel="stylesheet" />
+          <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
           {/* Fonts */}
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

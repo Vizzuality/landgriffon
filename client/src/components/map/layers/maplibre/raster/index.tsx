@@ -1,4 +1,4 @@
-import { Source, Layer } from 'react-map-gl';
+import { Source, Layer } from 'react-map-gl/maplibre';
 
 import { useLayer, useSource } from './hooks';
 

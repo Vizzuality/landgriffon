@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Layer } from 'react-map-gl';
+import { Layer } from 'react-map-gl/maplibre';
 
 import { useMapboxOverlayContext } from 'components/map/layer-manager/provider';
 

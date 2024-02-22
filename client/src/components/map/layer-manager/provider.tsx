@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useMemo } from 'react';
-import { useControl } from 'react-map-gl';
+import { useControl } from 'react-map-gl/maplibre';
 import { MapboxOverlay } from '@deck.gl/mapbox/typed';
 
 import type { MapboxOverlayProps } from '@deck.gl/mapbox/typed';

@@ -18,7 +18,7 @@ import { getLayerConfig } from 'components/map/layers/utils';
 
 import type { LayerConstructor } from 'components/map/layers/utils';
 import type { H3HexagonLayerProps } from '@deck.gl/geo-layers/typed';
-import type { ViewState } from 'react-map-gl';
+import type { ViewState } from 'react-map-gl/maplibre';
 import type { MapStyle } from 'components/map/types';
 import type { BasemapValue } from 'components/map/controls/basemap/types';
 import type { Layer, Legend as LegendType } from 'types';
@@ -105,7 +105,6 @@ const AnalysisMap = () => {
         mapStyle={mapStyle}
         viewState={viewState}
         onMapViewStateChange={handleViewState}
-        // style={{ width}}
         sidebarCollapsed={isSidebarCollapsed}
       >
         {() => (

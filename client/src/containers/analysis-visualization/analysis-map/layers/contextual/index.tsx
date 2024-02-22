@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { ContextualDeckLayer } from './hooks';
 
-import MapboxRasterLayer from 'components/map/layers/mapbox/raster';
+import MapboxRasterLayer from 'components/map/layers/maplibre/raster';
 import useContextualLayers from 'hooks/layers/getContextualLayers';
 
 import type { LayerSettings, LayerProps } from 'components/map/layers/types';

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { EudrService } from 'modules/eudr/eudr.service';
 import { EudrController } from 'modules/eudr/eudr.controller';
-import { CartodbRepository } from 'modules/eudr/cartodb.repository';
+import { CartodbRepository } from 'modules/eudr/carto/cartodb.repository';
 
 @Module({
   imports: [HttpModule],

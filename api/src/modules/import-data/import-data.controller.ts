@@ -22,13 +22,17 @@ import { User } from 'modules/users/user.entity';
 import { ROLES } from 'modules/authorization/roles/roles.enum';
 import { RequiredRoles } from 'decorators/roles.decorator';
 import { RolesGuard } from 'guards/roles.guard';
+import { EudrImportService } from './eudr/eudr.import.service';
 
 @ApiTags('Import Data')
 @Controller(`/api/v1/import`)
 @UseGuards(RolesGuard)
 @ApiBearerAuth()
 export class ImportDataController {
-  constructor(public readonly importDataService: ImportDataService) {}
+  constructor(
+    public readonly importDataService: ImportDataService,
+    private readonly eudr: EudrImportService,
+  ) {}
 
   @ApiConsumesXLSX()
   @ApiBadRequestResponse({
@@ -74,21 +78,27 @@ export class ImportDataController {
     @UploadedFile() xlsxFile: Express.Multer.File,
     @GetUser() user: User,
   ): Promise<Partial<Task>> {
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    const userId: string = user.id;
-    const task: Task = await this.importDataService.loadXlsxFile(
-      userId,
-      xlsxFile,
-    );
-    return {
-      data: {
-        id: task.id,
-        createdAt: task.createdAt,
-        status: task.status,
-        createdBy: task.userId,
-      },
-    };
+    const { path } = xlsxFile;
+    const taskId: string = 'fa02307f-70f1-4c8a-a117-2a7cfd6f0be5';
+
+    return this.eudr.importEudr(path, taskId);
   }
+
+  //   if (!user) {
+  //     throw new UnauthorizedException();
+  //   }
+  //   const userId: string = user.id;
+  //   const task: Task = await this.importDataService.loadXlsxFile(
+  //     userId,
+  //     xlsxFile,
+  //   );
+  //   return {
+  //     data: {
+  //       id: task.id,
+  //       createdAt: task.createdAt,
+  //       status: task.status,
+  //       createdBy: task.userId,
+  //     },
+  //   };
+  // }
 }

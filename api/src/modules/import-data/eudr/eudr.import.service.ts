@@ -1,18 +1,11 @@
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  ServiceUnavailableException,
-} from '@nestjs/common';
-import { SourcingLocationGroup } from '../../sourcing-location-groups/sourcing-location-group.entity';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
 import {
   SourcingData,
   SourcingRecordsDtoProcessorService,
   SourcingRecordsDtos,
 } from '../sourcing-data/dto-processor.service';
-import { Material } from '../../materials/material.entity';
-import { Indicator } from '../../indicators/indicator.entity';
-import { BusinessUnit } from '../../business-units/business-unit.entity';
+import { Material } from 'modules/materials/material.entity';
 import { Supplier } from '../../suppliers/supplier.entity';
 import { SourcingRecordsSheets } from '../sourcing-data/sourcing-data-import.service';
 import { FileService } from '../file.service';
@@ -33,8 +26,8 @@ import { ImpactService } from '../../impact/impact.service';
 import { ImpactCalculator } from '../../indicator-records/services/impact-calculator.service';
 import { validateOrReject } from 'class-validator';
 
-const EUDR_SHEET_MAP: Record<'data', 'Data'> = {
-  data: 'Data',
+const EUDR_SHEET_MAP: Record<'Data', 'Data'> = {
+  Data: 'Data',
 };
 
 @Injectable()

@@ -60,4 +60,35 @@ export class ImportDataController {
       },
     };
   }
+
+  @ApiConsumesXLSX()
+  @ApiBadRequestResponse({
+    description:
+      'Bad Request. A .XLSX file not provided as payload or contains missing or incorrect data',
+  })
+  @ApiForbiddenResponse()
+  @UseInterceptors(FileInterceptor('file'), XlsxPayloadInterceptor)
+  @RequiredRoles(ROLES.ADMIN)
+  @Post('/eudr')
+  async importEudr(
+    @UploadedFile() xlsxFile: Express.Multer.File,
+    @GetUser() user: User,
+  ): Promise<Partial<Task>> {
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    const userId: string = user.id;
+    const task: Task = await this.importDataService.loadXlsxFile(
+      userId,
+      xlsxFile,
+    );
+    return {
+      data: {
+        id: task.id,
+        createdAt: task.createdAt,
+        status: task.status,
+        createdBy: task.userId,
+      },
+    };
+  }
 }

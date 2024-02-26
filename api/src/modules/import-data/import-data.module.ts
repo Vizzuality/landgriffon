@@ -25,6 +25,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import * as config from 'config';
 import MulterConfigService from 'modules/import-data/multer-config.service';
 import { ImpactModule } from 'modules/impact/impact.module';
+import { EudrImportService } from './eudr/eudr.import.service';
 
 @Module({
   imports: [
@@ -34,6 +35,9 @@ import { ImpactModule } from 'modules/impact/impact.module';
     }),
     BullModule.registerQueue({
       name: importQueueName,
+    }),
+    BullModule.registerQueue({
+      name: 'eudr',
     }),
     MaterialsModule,
     BusinessUnitsModule,
@@ -58,6 +62,7 @@ import { ImpactModule } from 'modules/impact/impact.module';
     ImportDataProducer,
     ImportDataConsumer,
     ImportDataService,
+    EudrImportService,
     {
       provide: 'FILE_UPLOAD_SIZE_LIMIT',
       useValue: config.get('fileUploads.sizeLimit'),

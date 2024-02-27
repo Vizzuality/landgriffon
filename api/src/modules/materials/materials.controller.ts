@@ -99,6 +99,27 @@ export class MaterialsController {
     return this.materialsService.serialize(results);
   }
 
+  @ApiOperation({
+    description:
+      'Find all EUDR materials and return them in a tree format. Data in the "children" will recursively extend for the full depth of the tree',
+  })
+  @ApiOkTreeResponse({
+    treeNodeType: Material,
+  })
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @Get('/trees/eudr')
+  async getTreesForEudr(
+    @Query(ValidationPipe) materialTreeOptions: GetMaterialTreeWithOptionsDto,
+  ): Promise<Material> {
+    const results: Material[] = await this.materialsService.getTrees({
+      ...materialTreeOptions,
+      withSourcingLocations: true,
+      eudr: true,
+    });
+    return this.materialsService.serialize(results);
+  }
+
   @ApiOperation({ description: 'Find material by id' })
   @ApiNotFoundResponse({ description: 'Material not found' })
   @ApiOkResponse({ type: Material })

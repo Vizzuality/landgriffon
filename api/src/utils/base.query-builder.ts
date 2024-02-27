@@ -47,12 +47,16 @@ export class BaseQueryBuilder {
         originIds: filters.originIds,
       });
     }
-
-    if (filters.locationTypes) {
+    if (filters.eudr) {
+      queryBuilder.andWhere('sl.locationType = :eudr', {
+        eudr: LOCATION_TYPES.EUDR,
+      });
+    } else if (filters.locationTypes) {
       queryBuilder.andWhere('sl.locationType IN (:...locationTypes)', {
         locationTypes: filters.locationTypes,
       });
     }
+
     if (filters.scenarioIds) {
       queryBuilder.leftJoin(
         ScenarioIntervention,
@@ -131,4 +135,6 @@ export class CommonFiltersDto {
   @IsOptional()
   @IsUUID('4', { each: true })
   scenarioIds?: string[];
+
+  eudr?: boolean;
 }

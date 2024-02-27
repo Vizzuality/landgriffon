@@ -28,6 +28,7 @@ export enum LOCATION_TYPES {
   COUNTRY_OF_PRODUCTION = 'country-of-production',
   ADMINISTRATIVE_REGION_OF_PRODUCTION = 'administrative-region-of-production',
   COUNTRY_OF_DELIVERY = 'country-of-delivery',
+  EUDR = 'eudr',
 }
 
 export enum LOCATION_ACCURACY {

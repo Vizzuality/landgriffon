@@ -49,6 +49,9 @@ export class GeoRegion extends BaseEntity {
   @ApiPropertyOptional()
   theGeom?: JSON;
 
+  @Column({ type: 'decimal', nullable: true })
+  totalArea?: number;
+
   @Column({ type: 'boolean', default: true })
   isCreatedByUser: boolean;
 

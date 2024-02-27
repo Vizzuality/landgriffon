@@ -154,14 +154,6 @@ export class MaterialsService extends AppBaseService<
     return this.materialRepository.findByIds(ids);
   }
 
-  async saveMany(entityArray: Material[]): Promise<void> {
-    await this.materialRepository.save(entityArray);
-  }
-
-  async clearTable(): Promise<void> {
-    await this.materialRepository.delete({});
-  }
-
   async findAllUnpaginated(): Promise<Material[]> {
     return this.materialRepository.find();
   }

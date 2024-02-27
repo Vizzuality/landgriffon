@@ -16,15 +16,13 @@ type CartoConfig = {
 export class CartoConnector {
   cartoApiKey: string;
   cartoBaseUrl: string;
-  cartoConnection: string;
   logger: Logger = new Logger(CartoConnector.name);
 
   constructor(private readonly httpService: HttpService) {
-    const { apiKey, baseUrl, connection } = AppConfig.get<CartoConfig>('carto');
+    const { apiKey, baseUrl } = AppConfig.get<CartoConfig>('carto');
     this.cartoApiKey = apiKey;
     this.cartoBaseUrl = baseUrl;
-    this.cartoConnection = connection;
-    if (!this.cartoApiKey || !this.cartoBaseUrl || !this.cartoConnection) {
+    if (!this.cartoApiKey || !this.cartoBaseUrl) {
       this.logger.error('Carto configuration is missing');
     }
   }
@@ -34,5 +32,21 @@ export class CartoConnector {
     throw new ServiceUnavailableException(
       'Unable to connect to Carto. Please contact your administrator.',
     );
+  }
+
+  async select(query: string): Promise<any> {
+    try {
+      const response: any = await this.httpService
+        .get(`${this.cartoBaseUrl}${query}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${this.cartoApiKey}`,
+          },
+        })
+        .toPromise();
+      return response.data;
+    } catch (e: any) {
+      this.handleConnectionError(e);
+    }
   }
 }

@@ -65,6 +65,9 @@ export class Supplier extends TimestampedBaseEntity {
   @Column({ nullable: true })
   description?: string;
 
+  @Column({ type: 'varchar' })
+  companyId: string;
+
   @ApiProperty()
   @Column({
     type: 'enum',

@@ -62,6 +62,9 @@ export class EudrImportService {
 
       await this.cleanDataBeforeImport();
 
+      // TODO: Check what do we need to do with indicators and specially materials:
+      //  Do we need to ingest new materials? Activate some through the import? Activate all?
+
       const { sourcingLocations } = await this.dtoProcessor.save(
         parsedEudrData.Data,
       );
@@ -123,9 +126,9 @@ export class EudrImportService {
       await this.sourcingLocationService.clearTable();
       await this.sourcingRecordService.clearTable();
       await this.geoRegionsService.deleteGeoRegionsCreatedByUser();
-    } catch ({ message }) {
+    } catch (e: any) {
       throw new Error(
-        `Database could not been cleaned before loading new dataset: ${message}`,
+        `Database could not been cleaned before loading new dataset: ${e.message}`,
       );
     }
   }

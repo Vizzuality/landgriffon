@@ -18,6 +18,8 @@ import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 // @ts-ignore
 import * as wellknown from 'wellknown';
 import { DataSource, QueryRunner, Repository } from 'typeorm';
+import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
+import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 
 /**
  * @debt: Define a more accurate DTO / Interface / Class for API-DB trades
@@ -87,6 +89,7 @@ export class EUDRDTOProcessor {
         geoRegion.totalArea = row.total_area_ha;
         geoRegion.theGeom = wellknown.parse(row.geometry) as unknown as JSON;
         geoRegion.isCreatedByUser = true;
+        geoRegion.name = row.plot_name;
         const foundGeoRegion: GeoRegion | null =
           await geoRegionRepository.findOne({
             where: { name: geoRegion.name },
@@ -108,6 +111,13 @@ export class EUDRDTOProcessor {
         sourcingLocation.producer = savedSupplier;
         sourcingLocation.geoRegion = savedGeoRegion;
         sourcingLocation.sourcingRecords = [];
+        sourcingLocation.adminRegionId = row.sourcing_district
+          ? await this.getAdminRegionByAddress(
+              queryRunner,
+              row.sourcing_district,
+              row.geometry,
+            )
+          : (null as unknown as string);
 
         for (const key in row) {
           const sourcingRecord: SourcingRecord = new SourcingRecord();
@@ -126,6 +136,8 @@ export class EUDRDTOProcessor {
       const saved: SourcingLocation[] = await queryRunner.manager
         .getRepository(SourcingLocation)
         .save(sourcingLocations);
+
+      await queryRunner.commitTransaction();
       return {
         sourcingLocations: saved,
       };
@@ -135,6 +147,73 @@ export class EUDRDTOProcessor {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  private async getAdminRegionByAddress(
+    queryRunner: QueryRunner,
+    name: string,
+    geom: string,
+  ): Promise<string> {
+    const adminRegion: AdminRegion | null = await queryRunner.manager
+      .getRepository(AdminRegion)
+      .findOne({ where: { name: name, level: 1 } });
+    if (!adminRegion) {
+      this.logger.warn(
+        `No admin region found for the provided address: ${name}`,
+      );
+      return this.getAdminRegionByIntersection(queryRunner, geom);
+    }
+    return adminRegion.id;
+  }
+
+  // TODO: temporal method to determine the most accurate admin region. For now we only consider Level 0
+  //  as Country and Level 1 as district
+
+  private async getAdminRegionByIntersection(
+    queryRunner: QueryRunner,
+    geometry: string,
+  ): Promise<string> {
+    this.logger.log(`Intersecting EUDR geometry...`);
+
+    const adminRegions: any = await queryRunner.manager.query(
+      `
+    WITH intersections AS (
+        SELECT
+        ar.id,
+        ar.name,
+        ar."geoRegionId",
+        gr."theGeom",
+        ar.level,
+        ST_Area(ST_Intersection(gr."theGeom", ST_GeomFromEWKT('SRID=4326;${geometry}'))) AS intersection_area
+    FROM admin_region ar
+    JOIN geo_region gr ON ar."geoRegionId" = gr.id
+    WHERE
+        ST_Intersects(gr."theGeom", ST_GeomFromEWKT('SRID=4326;${geometry}'))
+    AND ar.level IN (0, 1)
+    ),
+    max_intersection_by_level AS (
+    SELECT
+    level,
+    MAX(intersection_area) AS max_area
+    FROM intersections
+    GROUP BY level
+    )
+    SELECT i.*
+    FROM intersections i
+    JOIN max_intersection_by_level m ON i.level = m.level AND i.intersection_area = m.max_area;
+    `,
+    );
+    if (!adminRegions.length) {
+      throw new GeoCodingError(
+        `No admin region found for the provided geometry`,
+      );
+    }
+
+    const level1AdminRegionid: string = adminRegions.find(
+      (ar: any) => ar.level === 1,
+    ).id;
+    this.logger.log('Admin region found');
+    return level1AdminRegionid;
   }
 
   private async validateCleanData(nonEmptyData: SourcingData[]): Promise<void> {

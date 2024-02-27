@@ -25,7 +25,10 @@ import { MulterModule } from '@nestjs/platform-express';
 import * as config from 'config';
 import MulterConfigService from 'modules/import-data/multer-config.service';
 import { ImpactModule } from 'modules/impact/impact.module';
-import { EudrImportService } from './eudr/eudr.import.service';
+import { EudrImportService } from 'modules/import-data/eudr/eudr.import.service';
+import { EUDRDTOProcessor } from 'modules/import-data/eudr/eudr.dto-processor.service';
+
+// TODO: Move EUDR related stuff to EUDR modules
 
 @Module({
   imports: [
@@ -63,6 +66,7 @@ import { EudrImportService } from './eudr/eudr.import.service';
     ImportDataConsumer,
     ImportDataService,
     EudrImportService,
+    EUDRDTOProcessor,
     {
       provide: 'FILE_UPLOAD_SIZE_LIMIT',
       useValue: config.get('fileUploads.sizeLimit'),

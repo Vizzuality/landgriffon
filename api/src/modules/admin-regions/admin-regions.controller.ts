@@ -99,6 +99,29 @@ export class AdminRegionsController {
 
   @ApiOperation({
     description:
+      'Find all EUDR admin regions and return them in a tree format. Data in the "children" will recursively extend for the full depth of the tree',
+  })
+  @ApiOkTreeResponse({
+    treeNodeType: AdminRegion,
+  })
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @UseInterceptors(SetScenarioIdsInterceptor)
+  @Get('/trees/eudr')
+  async getTreesForEudr(
+    @Query(ValidationPipe)
+    adminRegionTreeOptions: GetAdminRegionTreeWithOptionsDto,
+  ): Promise<AdminRegion> {
+    const results: AdminRegion[] = await this.adminRegionsService.getTrees({
+      ...adminRegionTreeOptions,
+      withSourcingLocations: true,
+      eudr: true,
+    });
+    return this.adminRegionsService.serialize(results);
+  }
+
+  @ApiOperation({
+    description:
       'Find all admin regions given a country and return data in a tree format. Data in the "children" will recursively extend for the full depth of the tree',
   })
   @ApiOkTreeResponse({

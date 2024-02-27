@@ -30,13 +30,20 @@ import {
   FetchSpecification,
   ProcessFetchSpecification,
 } from 'nestjs-base-service';
-import { Supplier, supplierResource } from 'modules/suppliers/supplier.entity';
+import {
+  Supplier,
+  SUPPLIER_TYPES,
+  supplierResource,
+} from 'modules/suppliers/supplier.entity';
 import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
 import { UpdateSupplierDto } from 'modules/suppliers/dto/update.supplier.dto';
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
 import { PaginationMeta } from 'utils/app-base.service';
 import { GetSupplierTreeWithOptions } from 'modules/suppliers/dto/get-supplier-tree-with-options.dto';
-import { GetSupplierByType } from 'modules/suppliers/dto/get-supplier-by-type.dto';
+import {
+  GetSupplierByType,
+  GetSupplierEUDR,
+} from 'modules/suppliers/dto/get-supplier-by-type.dto';
 import { SetScenarioIdsInterceptor } from 'modules/impact/set-scenario-ids.interceptor';
 
 @Controller(`/api/v1/suppliers`)
@@ -91,6 +98,27 @@ export class SuppliersController {
     const results: Supplier[] = await this.suppliersService.getTrees(
       supplierTreeOptions,
     );
+    return this.suppliersService.serialize(results);
+  }
+
+  @ApiOperation({
+    description:
+      'Find all EUDR suppliers and return them in a tree format. Data in the "children" will recursively extend for the full depth of the tree',
+  })
+  @ApiOkTreeResponse({
+    treeNodeType: Supplier,
+  })
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @UseInterceptors(SetScenarioIdsInterceptor)
+  @Get('/trees/eudr')
+  async getTreesForEudr(
+    @Query(ValidationPipe) dto: GetSupplierEUDR,
+  ): Promise<Supplier> {
+    const results: Supplier[] = await this.suppliersService.getSupplierByType({
+      ...dto,
+      eudr: true,
+    });
     return this.suppliersService.serialize(results);
   }
 

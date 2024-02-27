@@ -75,4 +75,6 @@ export class GetSupplierTreeWithOptions {
   @IsOptional()
   @IsUUID('4', { each: true })
   scenarioIds?: string[];
+
+  eudr?: boolean;
 }

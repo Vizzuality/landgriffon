@@ -33,3 +33,7 @@ export class GetSupplierByType extends CommonFiltersDto {
   })
   sort?: 'ASC' | 'DESC';
 }
+
+export class GetSupplierEUDR extends GetSupplierByType {
+  type: SUPPLIER_TYPES = SUPPLIER_TYPES.PRODUCER;
+}

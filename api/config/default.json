@@ -83,6 +83,7 @@
     }
   },
   "carto": {
-    "apuKey": null
+    "apiKey": null,
+    "baseUrl": "null"
   }
 }

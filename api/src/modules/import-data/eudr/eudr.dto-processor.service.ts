@@ -17,7 +17,7 @@ import { Supplier } from 'modules/suppliers/supplier.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 // @ts-ignore
 import * as wellknown from 'wellknown';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, QueryRunner, Repository } from 'typeorm';
 
 /**
  * @debt: Define a more accurate DTO / Interface / Class for API-DB trades
@@ -56,78 +56,85 @@ export class EUDRDTOProcessor {
   ): Promise<{
     sourcingLocations: SourcingLocation[];
   }> {
-    this.logger.debug(`Creating DTOs from sourcing records sheets`);
-    const sourcingLocations: SourcingLocation[] = [];
-    const supplierRepository: Repository<Supplier> =
-      this.dataSource.getRepository(Supplier);
-    const geoRegionRepository: Repository<GeoRegion> =
-      this.dataSource.getRepository(GeoRegion);
-    for (const row of importData) {
-      const supplier: Supplier = new Supplier();
-      let savedSupplier: Supplier;
-      supplier.name = row.company_name;
-      supplier.description = row.company_name;
-      supplier.companyId = row.company_id;
-      const foundSupplier: Supplier | null = await supplierRepository.findOne({
-        where: { name: supplier.name },
-      });
-      if (!foundSupplier) {
-        savedSupplier = await supplierRepository.save(supplier);
-      } else {
-        savedSupplier = foundSupplier;
-      }
-      const geoRegion: GeoRegion = new GeoRegion();
-      let savedGeoRegion: GeoRegion;
-      geoRegion.totalArea = row.total_area_ha;
-      geoRegion.theGeom = wellknown.parse(row.geometry) as unknown as JSON;
-      geoRegion.isCreatedByUser = true;
-      const foundGeoRegion: GeoRegion | null =
-        await geoRegionRepository.findOne({
-          where: { name: geoRegion.name },
-        });
-      if (!foundGeoRegion) {
-        savedGeoRegion = await geoRegionRepository.save(geoRegion);
-      } else {
-        savedGeoRegion = foundGeoRegion;
-      }
-      const sourcingLocation: SourcingLocation = new SourcingLocation();
-      sourcingLocation.locationType = LOCATION_TYPES.EUDR;
-      sourcingLocation.locationCountryInput = row.sourcing_country;
-      sourcingLocation.locationAddressInput = row.sourcing_district;
-      // TODO: materialId is coming like mpath, this is an error in the input file
-      sourcingLocation.materialId = row.material_id
-        .split('.')
-        .filter(Boolean)
-        .pop() as string;
-      sourcingLocation.producer = savedSupplier;
-      sourcingLocation.geoRegion = savedGeoRegion;
-      sourcingLocation.sourcingRecords = [];
+    const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      this.logger.debug(`Creating DTOs from sourcing records sheets`);
+      const sourcingLocations: SourcingLocation[] = [];
+      const supplierRepository: Repository<Supplier> =
+        queryRunner.manager.getRepository(Supplier);
+      const geoRegionRepository: Repository<GeoRegion> =
+        queryRunner.manager.getRepository(GeoRegion);
+      for (const row of importData) {
+        const supplier: Supplier = new Supplier();
+        let savedSupplier: Supplier;
+        supplier.name = row.company_name;
+        supplier.description = row.company_name;
+        supplier.companyId = row.company_id;
+        const foundSupplier: Supplier | null = await supplierRepository.findOne(
+          {
+            where: { name: supplier.name },
+          },
+        );
+        if (!foundSupplier) {
+          savedSupplier = await supplierRepository.save(supplier);
+        } else {
+          savedSupplier = foundSupplier;
+        }
+        const geoRegion: GeoRegion = new GeoRegion();
+        let savedGeoRegion: GeoRegion;
+        geoRegion.totalArea = row.total_area_ha;
+        geoRegion.theGeom = wellknown.parse(row.geometry) as unknown as JSON;
+        geoRegion.isCreatedByUser = true;
+        const foundGeoRegion: GeoRegion | null =
+          await geoRegionRepository.findOne({
+            where: { name: geoRegion.name },
+          });
+        if (!foundGeoRegion) {
+          savedGeoRegion = await geoRegionRepository.save(geoRegion);
+        } else {
+          savedGeoRegion = foundGeoRegion;
+        }
+        const sourcingLocation: SourcingLocation = new SourcingLocation();
+        sourcingLocation.locationType = LOCATION_TYPES.EUDR;
+        sourcingLocation.locationCountryInput = row.sourcing_country;
+        sourcingLocation.locationAddressInput = row.sourcing_district;
+        // TODO: materialId is coming like mpath, this is an error in the input file
+        sourcingLocation.materialId = row.material_id
+          .split('.')
+          .filter(Boolean)
+          .pop() as string;
+        sourcingLocation.producer = savedSupplier;
+        sourcingLocation.geoRegion = savedGeoRegion;
+        sourcingLocation.sourcingRecords = [];
 
-      for (const key in row) {
-        const sourcingRecord: SourcingRecord = new SourcingRecord();
-        if (row.hasOwnProperty(key)) {
-          const match: RegExpMatchArray | null = key.match(/^(\d{4})_t$/);
-          if (match) {
-            sourcingRecord.year = parseInt(match[1]);
-            sourcingRecord.tonnage = row[key] as number;
-            sourcingLocation.sourcingRecords.push(sourcingRecord);
+        for (const key in row) {
+          const sourcingRecord: SourcingRecord = new SourcingRecord();
+          if (row.hasOwnProperty(key)) {
+            const match: RegExpMatchArray | null = key.match(/^(\d{4})_t$/);
+            if (match) {
+              sourcingRecord.year = parseInt(match[1]);
+              sourcingRecord.tonnage = row[key] as number;
+              sourcingLocation.sourcingRecords.push(sourcingRecord);
+            }
           }
         }
+        sourcingLocations.push(sourcingLocation);
       }
-      sourcingLocations.push(sourcingLocation);
+
+      const saved: SourcingLocation[] = await queryRunner.manager
+        .getRepository(SourcingLocation)
+        .save(sourcingLocations);
+      return {
+        sourcingLocations: saved,
+      };
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
     }
-
-    const saved: SourcingLocation[] = await this.dataSource
-      .getRepository(SourcingLocation)
-      .save(sourcingLocations);
-
-    /**
-     * Validating parsed and cleaned from Sourcing Data sheet
-     */
-
-    return {
-      sourcingLocations: saved,
-    };
   }
 
   private async validateCleanData(nonEmptyData: SourcingData[]): Promise<void> {

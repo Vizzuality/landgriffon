@@ -19,6 +19,14 @@ import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
 import { validateOrReject } from 'class-validator';
 import { EUDRDTOProcessor } from 'modules/import-data/eudr/eudr.dto-processor.service';
+import { DataSource } from 'typeorm';
+import { SourcingLocation } from '../../sourcing-locations/sourcing-location.entity';
+import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import { Supplier } from '../../suppliers/supplier.entity';
+import { SourcingRecord } from '../../sourcing-records/sourcing-record.entity';
+
+const { AsyncParser } = require('@json2csv/node');
+import * as fs from 'fs'; // Para tr
 
 const EUDR_SHEET_MAP: Record<'Data', 'Data'> = {
   Data: 'Data',
@@ -44,6 +52,7 @@ export class EudrImportService {
     protected readonly scenarioService: ScenariosService,
     protected readonly indicatorService: IndicatorsService,
     protected readonly indicatorRecordService: IndicatorRecordsService,
+    protected readonly dataSource: DataSource,
   ) {}
 
   async importEudr(filePath: string, taskId: string): Promise<any> {
@@ -69,10 +78,81 @@ export class EudrImportService {
         parsedEudrData.Data,
       );
 
-      return sourcingLocations;
+      // TODO: At this point we should send the data to Carto. For now we will be creating a csv to upload
+      //  and read from there
+
+      const data: {
+        supplierId: string;
+        geoRegionId: string;
+        geometry: string;
+        year: number;
+      }[] = await this.dataSource
+        .createQueryBuilder()
+        .select('s.id', 'supplierId')
+        .addSelect('g.id', 'geoRegionId')
+        .addSelect('g.theGeom', 'geometry')
+        .addSelect('sr.year', 'year')
+        .from(SourcingRecord, 'sr')
+        .leftJoin(SourcingLocation, 'sl', 'sr.sourcingLocationId = sl.id')
+        .leftJoin(GeoRegion, 'g', 'sl.geoRegionId = g.id')
+        .leftJoin(Supplier, 's', 'sl.producerId = s.id')
+
+        .execute();
+
+      const fakedCartoOutput: any[] = data.map((row: any) =>
+        this.generateFakeAlerts(row),
+      );
+      console.log(fakedCartoOutput);
+
+      const parsed: any = await new AsyncParser({
+        fields: [
+          'geoRegionId',
+          'supplierId',
+          'geometry',
+          'year',
+          'alertDate',
+          'alertConfidence',
+          'alertCount',
+        ],
+      })
+        .parse(fakedCartoOutput)
+        .promise();
+      try {
+        await fs.promises.writeFile('fakedCartoOutput.csv', parsed);
+      } catch (e: any) {
+        this.logger.error(`Error writing fakedCartoOutput.csv: ${e.message}`);
+      }
+
+      return fakedCartoOutput;
     } finally {
       await this.fileService.deleteDataFromFS(filePath);
     }
+  }
+
+  private generateFakeAlerts(row: {
+    geoRegionId: string;
+    supplierId: string;
+    geometry: string;
+    year: number;
+  }): any {
+    const { geoRegionId, supplierId, geometry } = row;
+    const alertConfidence: string = Math.random() > 0.5 ? 'high' : 'low';
+    const startDate: Date = new Date(row.year, 0, 1);
+    const endDate: Date = new Date(row.year, 11, 31);
+    const timeDiff: number = endDate.getTime() - startDate.getTime();
+    const randomDate: Date = new Date(
+      startDate.getTime() + Math.random() * timeDiff,
+    );
+    const alertDate: string = randomDate.toISOString().split('T')[0];
+    const alertCount: number = Math.floor(Math.random() * 20) + 1;
+    return {
+      geoRegionId,
+      supplierId,
+      geometry,
+      alertDate,
+      alertConfidence,
+      alertCount,
+    };
   }
 
   private async validateDTOs(

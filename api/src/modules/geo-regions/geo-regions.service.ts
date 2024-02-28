@@ -12,6 +12,12 @@ import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
 import { CreateGeoRegionDto } from 'modules/geo-regions/dto/create.geo-region.dto';
 import { UpdateGeoRegionDto } from 'modules/geo-regions/dto/update.geo-region.dto';
 import { LocationGeoRegionDto } from 'modules/geo-regions/dto/location.geo-region.dto';
+import { GetSupplierByType } from '../suppliers/dto/get-supplier-by-type.dto';
+import { Supplier } from '../suppliers/supplier.entity';
+import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
+import { MaterialsService } from 'modules/materials/materials.service';
+import { SupplierRepository } from 'modules/suppliers/supplier.repository';
+import { GetEUDRGeoRegions } from './dto/get-geo-region.dto';
 
 @Injectable()
 export class GeoRegionsService extends AppBaseService<
@@ -20,7 +26,11 @@ export class GeoRegionsService extends AppBaseService<
   UpdateGeoRegionDto,
   AppInfoDTO
 > {
-  constructor(protected readonly geoRegionRepository: GeoRegionRepository) {
+  constructor(
+    protected readonly geoRegionRepository: GeoRegionRepository,
+    private readonly adminRegionService: AdminRegionsService,
+    private readonly materialsService: MaterialsService,
+  ) {
     super(
       geoRegionRepository,
       geoRegionResource.name.singular,
@@ -86,5 +96,23 @@ export class GeoRegionsService extends AppBaseService<
 
   async deleteGeoRegionsCreatedByUser(): Promise<void> {
     await this.geoRegionRepository.delete({ isCreatedByUser: true });
+  }
+
+  async getGeoRegionsFromSourcingLocations(
+    options: GetEUDRGeoRegions,
+  ): Promise<GeoRegion[]> {
+    if (options.originIds) {
+      options.originIds =
+        await this.adminRegionService.getAdminRegionDescendants(
+          options.originIds,
+        );
+    }
+    if (options.materialIds) {
+      options.materialIds = await this.materialsService.getMaterialsDescendants(
+        options.materialIds,
+      );
+    }
+
+    return this.geoRegionRepository.getGeoRegionsFromSourcingLocations(options);
   }
 }

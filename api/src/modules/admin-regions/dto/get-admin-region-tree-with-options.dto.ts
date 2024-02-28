@@ -1,6 +1,9 @@
 import { IsBoolean, IsNumber, IsOptional, IsUUID } from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { CommonFiltersDto } from 'utils/base.query-builder';
+import { ApiPropertyOptional, OmitType } from '@nestjs/swagger';
+import {
+  CommonEUDRFiltersDTO,
+  CommonFiltersDto,
+} from 'utils/base.query-builder';
 import { Type } from 'class-transformer';
 
 export class GetAdminRegionTreeWithOptionsDto extends CommonFiltersDto {
@@ -23,4 +26,8 @@ export class GetAdminRegionTreeWithOptionsDto extends CommonFiltersDto {
   @IsOptional()
   @IsUUID('4')
   scenarioId?: string;
+}
+
+export class GetEUDRAdminRegions extends CommonEUDRFiltersDTO {
+  withSourcingLocations!: boolean;
 }

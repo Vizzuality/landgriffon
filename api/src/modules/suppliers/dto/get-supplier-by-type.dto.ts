@@ -8,7 +8,10 @@ import {
 } from 'class-validator';
 import { SUPPLIER_TYPES } from 'modules/suppliers/supplier.entity';
 import { Type } from 'class-transformer';
-import { CommonFiltersDto } from 'utils/base.query-builder';
+import {
+  CommonEUDRFiltersDTO,
+  CommonFiltersDto,
+} from 'utils/base.query-builder';
 
 export class GetSupplierByType extends CommonFiltersDto {
   @ApiProperty({
@@ -34,6 +37,6 @@ export class GetSupplierByType extends CommonFiltersDto {
   sort?: 'ASC' | 'DESC';
 }
 
-export class GetSupplierEUDR extends GetSupplierByType {
+export class GetSupplierEUDR extends CommonEUDRFiltersDTO {
   type: SUPPLIER_TYPES = SUPPLIER_TYPES.PRODUCER;
 }

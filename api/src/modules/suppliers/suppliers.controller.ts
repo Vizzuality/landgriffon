@@ -103,7 +103,7 @@ export class SuppliersController {
 
   @ApiOperation({
     description:
-      'Find all EUDR suppliers and return them in a tree format. Data in the "children" will recursively extend for the full depth of the tree',
+      'Find all EUDR suppliers and return them in a flat format. Data in the "children" will recursively extend for the full depth of the tree',
   })
   @ApiOkTreeResponse({
     treeNodeType: Supplier,
@@ -111,7 +111,7 @@ export class SuppliersController {
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
   @UseInterceptors(SetScenarioIdsInterceptor)
-  @Get('/trees/eudr')
+  @Get('/eudr')
   async getTreesForEudr(
     @Query(ValidationPipe) dto: GetSupplierEUDR,
   ): Promise<Supplier> {

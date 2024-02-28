@@ -36,7 +36,10 @@ import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { UpdateMaterialDto } from 'modules/materials/dto/update.material.dto';
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
 import { PaginationMeta } from 'utils/app-base.service';
-import { GetMaterialTreeWithOptionsDto } from 'modules/materials/dto/get-material-tree-with-options.dto';
+import {
+  GetEUDRMaterials,
+  GetMaterialTreeWithOptionsDto,
+} from 'modules/materials/dto/get-material-tree-with-options.dto';
 import { SetScenarioIdsInterceptor } from 'modules/impact/set-scenario-ids.interceptor';
 import { RolesGuard } from 'guards/roles.guard';
 import { RequiredRoles } from 'decorators/roles.decorator';
@@ -110,7 +113,7 @@ export class MaterialsController {
   @ApiForbiddenResponse()
   @Get('/trees/eudr')
   async getTreesForEudr(
-    @Query(ValidationPipe) materialTreeOptions: GetMaterialTreeWithOptionsDto,
+    @Query(ValidationPipe) materialTreeOptions: GetEUDRMaterials,
   ): Promise<Material> {
     const results: Material[] = await this.materialsService.getTrees({
       ...materialTreeOptions,

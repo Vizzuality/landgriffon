@@ -38,7 +38,10 @@ import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-reg
 import { UpdateAdminRegionDto } from 'modules/admin-regions/dto/update.admin-region.dto';
 import { PaginationMeta } from 'utils/app-base.service';
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
-import { GetAdminRegionTreeWithOptionsDto } from 'modules/admin-regions/dto/get-admin-region-tree-with-options.dto';
+import {
+  GetAdminRegionTreeWithOptionsDto,
+  GetEUDRAdminRegions,
+} from 'modules/admin-regions/dto/get-admin-region-tree-with-options.dto';
 import { SetScenarioIdsInterceptor } from 'modules/impact/set-scenario-ids.interceptor';
 
 @Controller(`/api/v1/admin-regions`)
@@ -110,7 +113,7 @@ export class AdminRegionsController {
   @Get('/trees/eudr')
   async getTreesForEudr(
     @Query(ValidationPipe)
-    adminRegionTreeOptions: GetAdminRegionTreeWithOptionsDto,
+    adminRegionTreeOptions: GetEUDRAdminRegions,
   ): Promise<AdminRegion> {
     const results: AdminRegion[] = await this.adminRegionsService.getTrees({
       ...adminRegionTreeOptions,

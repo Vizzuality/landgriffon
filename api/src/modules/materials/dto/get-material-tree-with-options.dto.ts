@@ -1,7 +1,10 @@
 import { IsBoolean, IsNumber, IsOptional, IsUUID } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { CommonFiltersDto } from 'utils/base.query-builder';
+import {
+  CommonEUDRFiltersDTO,
+  CommonFiltersDto,
+} from 'utils/base.query-builder';
 
 export class GetMaterialTreeWithOptionsDto extends CommonFiltersDto {
   @ApiPropertyOptional({
@@ -23,4 +26,8 @@ export class GetMaterialTreeWithOptionsDto extends CommonFiltersDto {
   @IsOptional()
   @IsUUID('4')
   scenarioId?: string;
+}
+
+export class GetEUDRMaterials extends CommonEUDRFiltersDTO {
+  withSourcingLocations!: boolean;
 }

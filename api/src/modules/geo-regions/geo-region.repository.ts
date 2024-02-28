@@ -140,7 +140,8 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
     const initialQueryBuilder: SelectQueryBuilder<GeoRegion> =
       this.createQueryBuilder('gr')
         .innerJoin(SourcingLocation, 'sl', 'sl.geoRegionId = gr.id')
-        .distinct(true);
+        // Using groupBy instead of distinct to avoid the euality opertor for type json
+        .groupBy('gr.id');
     const queryBuilder: SelectQueryBuilder<GeoRegion> =
       BaseQueryBuilder.addFilters(initialQueryBuilder, getGeoRegionsDto);
 

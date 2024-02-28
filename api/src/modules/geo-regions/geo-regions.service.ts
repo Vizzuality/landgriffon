@@ -40,7 +40,7 @@ export class GeoRegionsService extends AppBaseService<
 
   get serializerConfig(): JSONAPISerializerConfig<GeoRegion> {
     return {
-      attributes: ['name'],
+      attributes: ['name', 'theGeom'],
       keyForAttribute: 'camelCase',
     };
   }

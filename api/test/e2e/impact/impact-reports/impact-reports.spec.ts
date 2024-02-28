@@ -38,7 +38,7 @@ describe('Impact Reports', () => {
       indicatorIds: indicators.map((indicator: Indicator) => indicator.id),
     });
 
-    await fixtures.ThenIShouldGetAnImpactReportAboutProvidedFilters(response, {
+    fixtures.ThenIShouldGetAnImpactReportAboutProvidedFilters(response, {
       materials,
     });
   });

@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -35,6 +36,7 @@ import {
 import { CreateGeoRegionDto } from 'modules/geo-regions/dto/create.geo-region.dto';
 import { UpdateGeoRegionDto } from 'modules/geo-regions/dto/update.geo-region.dto';
 import { PaginationMeta } from 'utils/app-base.service';
+import { GetEUDRGeoRegions } from './dto/get-geo-region.dto';
 
 @Controller(`/api/v1/geo-regions`)
 @ApiTags(geoRegionResource.className)
@@ -69,6 +71,32 @@ export class GeoRegionsController {
       metadata: PaginationMeta | undefined;
     } = await this.geoRegionsService.findAllPaginated(fetchSpecification);
     return this.geoRegionsService.serialize(results.data, results.metadata);
+  }
+
+  @ApiOperation({
+    description: 'Find all EUDR geo regions',
+  })
+  @ApiOkResponse({
+    type: GeoRegion,
+    isArray: true,
+  })
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @JSONAPIQueryParams({
+    availableFilters: geoRegionResource.columnsAllowedAsFilter.map(
+      (columnName: string) => ({
+        name: columnName,
+      }),
+    ),
+  })
+  @Get('/eudr')
+  async findAllEudr(
+    @Query(ValidationPipe)
+    dto: GetEUDRGeoRegions,
+  ): Promise<GeoRegion[]> {
+    const results: GeoRegion[] =
+      await this.geoRegionsService.getGeoRegionsFromSourcingLocations(dto);
+    return this.geoRegionsService.serialize(results);
   }
 
   @ApiOperation({ description: 'Find geo region by id' })

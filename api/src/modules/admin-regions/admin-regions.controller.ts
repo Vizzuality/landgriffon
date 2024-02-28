@@ -114,7 +114,7 @@ export class AdminRegionsController {
   async getTreesForEudr(
     @Query(ValidationPipe)
     adminRegionTreeOptions: GetEUDRAdminRegions,
-  ): Promise<AdminRegion> {
+  ): Promise<AdminRegion[]> {
     const results: AdminRegion[] = await this.adminRegionsService.getTrees({
       ...adminRegionTreeOptions,
       withSourcingLocations: true,

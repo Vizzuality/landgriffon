@@ -31,6 +31,15 @@ const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
     },
   ];
 
+  if (process.env.NEXT_PUBLIC_MODULE_EUDR === 'true') {
+    navigationItems.push({
+      name: 'EUDR',
+      href: '/eudr',
+      icon: { default: ChartBarIconOutline, active: ChartBarIconSolid },
+      disabled: !!(!lastTask || lastTask?.status === 'processing'),
+    });
+  }
+
   return (
     <div className="min-w-screen-lg flex h-screen min-h-[700px] overflow-hidden bg-navy-600">
       <div className="flex w-28 shrink-0 grow-0 flex-col">

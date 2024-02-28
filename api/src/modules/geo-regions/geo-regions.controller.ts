@@ -95,7 +95,11 @@ export class GeoRegionsController {
     dto: GetEUDRGeoRegions,
   ): Promise<GeoRegion[]> {
     const results: GeoRegion[] =
-      await this.geoRegionsService.getGeoRegionsFromSourcingLocations(dto);
+      await this.geoRegionsService.getGeoRegionsFromSourcingLocations({
+        ...dto,
+        withSourcingLocations: true,
+        eudr: true,
+      });
     return this.geoRegionsService.serialize(results);
   }
 

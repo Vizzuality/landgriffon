@@ -10,7 +10,7 @@ export interface CustomMapProps extends MapProps {
   /** Custom css class for styling */
   className?: string;
 
-  mapStyle: MapStyle;
+  mapStyle?: MapStyle;
 
   /** An object that defines the viewport
    * @see https://visgl.github.io/react-map-gl/docs/api-reference/map#initialviewstate

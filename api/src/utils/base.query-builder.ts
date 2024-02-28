@@ -5,7 +5,7 @@ import {
   WhereExpressionBuilder,
 } from 'typeorm';
 import { IsEnum, IsOptional, IsUUID } from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional, OmitType } from '@nestjs/swagger';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 import { Type } from 'class-transformer';
 import {
@@ -136,5 +136,14 @@ export class CommonFiltersDto {
   @IsUUID('4', { each: true })
   scenarioIds?: string[];
 
+  eudr?: boolean;
+}
+
+export class CommonEUDRFiltersDTO extends OmitType(CommonFiltersDto, [
+  'scenarioIds',
+  't1SupplierIds',
+  'locationTypes',
+  'businessUnitIds',
+]) {
   eudr?: boolean;
 }

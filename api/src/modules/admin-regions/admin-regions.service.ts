@@ -217,10 +217,6 @@ export class AdminRegionsService extends AppBaseService<
     return this.findTreesWithOptions({ depth: adminRegionTreeOptions.depth });
   }
 
-  async getAdminRegionByIds(ids: string[]): Promise<AdminRegion[]> {
-    return this.adminRegionRepository.findByIds(ids);
-  }
-
   /**
    * @description: Returns an array of all children of given Admin Region's Ids with optional parameters
    * @param {string[]} adminRegionIds - The IDs of the admin regions.

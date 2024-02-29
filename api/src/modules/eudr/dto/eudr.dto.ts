@@ -1,17 +1,10 @@
 // Input DTO to be ingested by Carto
 
-export class EudrInputDTO {
+import { GeoJSON } from 'geojson';
+
+export class EudrInput {
   supplierId: string;
   geoRegionId: string;
-  geom: JSON;
+  geom: GeoJSON;
   year: number;
 }
-
-export class EudrOutputDTO {
-  geoRegionId: string;
-  supplierId: string;
-  hasEUDRAlerts: boolean;
-  alertsNumber: number;
-}
-
-export type EudrDTO = EudrInputDTO & EudrOutputDTO;

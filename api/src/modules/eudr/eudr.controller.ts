@@ -28,6 +28,7 @@ import { GetEUDRAdminRegions } from '../admin-regions/dto/get-admin-region-tree-
 import { GeoRegion, geoRegionResource } from '../geo-regions/geo-region.entity';
 import { JSONAPIQueryParams } from '../../decorators/json-api-parameters.decorator';
 import { GetEUDRGeoRegions } from '../geo-regions/dto/get-geo-region.dto';
+import { EudrAlerts } from './dto/alerts.dto';
 
 @Controller('/api/v1/eudr')
 export class EudrController {
@@ -132,6 +133,11 @@ export class EudrController {
         eudr: true,
       });
     return this.geoRegionsService.serialize(results);
+  }
+
+  @Get('/alerts')
+  async getAlerts(): Promise<EudrAlerts[]> {
+    return [] as EudrAlerts[];
   }
 
   @Public()

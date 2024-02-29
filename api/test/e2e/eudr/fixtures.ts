@@ -7,16 +7,17 @@ import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { AndAssociatedMaterials } from '../../common-steps/and-associated-materials';
 import { AndAssociatedSuppliers } from '../../common-steps/and-associated-suppliers';
 import { TestManager } from '../../utils/test-manager';
+import { GeoRegion } from '../../../src/modules/geo-regions/geo-region.entity';
 
-export class AdminRegionTestManager extends TestManager {
-  url = '/api/v1/admin-regions/';
+export class EUDRTestManager extends TestManager {
+  url = '/api/v1/eudr/';
 
   constructor(manager: TestManager) {
     super(manager.testApp, manager.jwtToken, manager.dataSource);
   }
 
   static async load() {
-    return new AdminRegionTestManager(await this.createManager());
+    return new EUDRTestManager(await this.createManager());
   }
 
   GivenAdminRegionsOfSourcingLocations = async () => {
@@ -77,7 +78,7 @@ export class AdminRegionTestManager extends TestManager {
     'producerIds[]'?: string[];
     'materialIds[]'?: string[];
   }) => {
-    return this.GET({ url: `${this.url}trees/eudr`, query: filters });
+    return this.GET({ url: `${this.url}/admin-regions`, query: filters });
   };
 
   ThenIShouldOnlyReceiveCorrespondingAdminRegions = (
@@ -90,6 +91,58 @@ export class AdminRegionTestManager extends TestManager {
         this.response!.body.data.find(
           (adminRegionResponse: AdminRegion) =>
             adminRegionResponse.id === adminRegion.id,
+        ),
+      ).toBeDefined();
+    }
+  };
+
+  GivenGeoRegionsOfSourcingLocations = async () => {
+    const [geoRegion, geoRegion2] = await this.createGeoRegions([
+      'Regular GeoRegion',
+      'Regular GeoRegion 2',
+    ]);
+    await createSourcingLocation({ geoRegionId: geoRegion.id });
+    await createSourcingLocation({ geoRegionId: geoRegion2.id });
+    return {
+      geoRegions: [geoRegion, geoRegion2],
+    };
+  };
+
+  GivenEUDRGeoRegions = async () => {
+    const [geoRegion, geoRegion2] = await this.createGeoRegions([
+      'EUDR GeoRegion',
+      'EUDR GeoRegion 2',
+    ]);
+    await createSourcingLocation({
+      geoRegionId: geoRegion.id,
+      locationType: LOCATION_TYPES.EUDR,
+    });
+    await createSourcingLocation({
+      geoRegionId: geoRegion2.id,
+      locationType: LOCATION_TYPES.EUDR,
+    });
+    return {
+      eudrGeoRegions: [geoRegion, geoRegion2],
+    };
+  };
+
+  WhenIRequestEUDRGeoRegions = async (filters?: {
+    'producerIds[]'?: string[];
+    'materialIds[]'?: string[];
+  }) => {
+    return this.GET({ url: `${this.url}/geo-regions`, query: filters });
+  };
+
+  ThenIShouldOnlyReceiveCorrespondingGeoRegions = (
+    eudrGeoRegions: GeoRegion[],
+  ) => {
+    expect(this.response!.status).toBe(200);
+    expect(this.response!.body.data.length).toBe(eudrGeoRegions.length);
+    for (const geoRegion of eudrGeoRegions) {
+      expect(
+        this.response!.body.data.find(
+          (adminRegionResponse: AdminRegion) =>
+            adminRegionResponse.id === geoRegion.id,
         ),
       ).toBeDefined();
     }

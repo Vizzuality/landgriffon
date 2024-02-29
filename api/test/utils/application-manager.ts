@@ -40,11 +40,11 @@ export default class ApplicationManager {
 
     const testingModuleBuilder: TestingModuleBuilder =
       initTestingModuleBuilder ||
-      (await Test.createTestingModule({
+      Test.createTestingModule({
         imports: [AppModule],
       })
         .overrideProvider('IEmailService')
-        .useClass(MockEmailService));
+        .useClass(MockEmailService);
 
     ApplicationManager.testApplication.moduleFixture =
       await testingModuleBuilder.compile();

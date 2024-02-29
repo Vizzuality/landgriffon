@@ -6,7 +6,6 @@ import { ROLES } from 'modules/authorization/roles/roles.enum';
 import { User } from 'modules/users/user.entity';
 import { EntityManager } from 'typeorm';
 import { TestApplication } from './application-manager';
-import { faker } from '@faker-js/faker';
 import { Permission } from '../../src/modules/authorization/permissions/permissions.entity';
 import { PERMISSIONS } from '../../src/modules/authorization/permissions/permissions.enum';
 
@@ -15,7 +14,7 @@ export type TestUser = { jwtToken: string; user: User; password: string };
 export async function setupTestUser(
   applicationManager: TestApplication,
   roleName: ROLES = ROLES.ADMIN,
-  extraData: Partial<User> = {},
+  extraData: Partial<User> = { password: 'Password123!' },
 ): Promise<TestUser> {
   const salt = await genSalt();
   const role = new Role();
@@ -23,26 +22,33 @@ export async function setupTestUser(
   const entityManager = applicationManager.get<EntityManager>(EntityManager);
   const userRepository = entityManager.getRepository(User);
 
-  const { password: extraDataPassword, ...restOfExtraData } = extraData;
-
-  const password = extraDataPassword ?? faker.internet.password();
+  const { password, ...restOfExtraData } = extraData;
 
   await setUpRolesAndPermissions(entityManager);
 
-  const user = await userRepository.save({
-    ...E2E_CONFIG.users.signUp,
-    salt,
-    password: await hash(password, salt),
-    isActive: true,
-    isDeleted: false,
-    roles: [role],
-    ...restOfExtraData,
+  let existingUser = await userRepository.findOne({
+    where: { email: E2E_CONFIG.users.signUp.email },
   });
+  if (!existingUser) {
+    existingUser = await userRepository.save({
+      ...E2E_CONFIG.users.signUp,
+      salt,
+      password: await hash(password!, salt),
+      isActive: true,
+      isDeleted: false,
+      roles: [role],
+    });
+  }
+
   const response = await request(applicationManager.application.getHttpServer())
     .post('/auth/sign-in')
-    .send({ username: user.email, password: password });
+    .send({ username: existingUser.email, password: password });
 
-  return { jwtToken: response.body.accessToken, user, password };
+  return {
+    jwtToken: response.body.accessToken,
+    user: existingUser,
+    password: password!,
+  };
 }
 
 async function setUpRolesAndPermissions(

@@ -1,82 +1,50 @@
-import { DataSource } from 'typeorm';
-import { createMaterial, createSupplier } from '../../entity-mocks';
-import ApplicationManager from '../../utils/application-manager';
-import { TestApplication } from '../../utils/application-manager';
-import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
-import { setupTestUser } from '../../utils/userAuth';
-import { adminRegionsFixtures } from './fixtures';
+import { AdminRegionTestManager } from './fixtures';
 
-describe('GeoRegions Filters (e2e)', () => {
-  const fixtures = adminRegionsFixtures();
-  let testApplication: TestApplication;
-  let jwtToken: string;
-  let dataSource: DataSource;
+describe('Admin Regions EUDR Filters (e2e)', () => {
+  let testManager: AdminRegionTestManager;
 
   beforeAll(async () => {
-    testApplication = await ApplicationManager.init();
-
-    dataSource = testApplication.get<DataSource>(DataSource);
+    testManager = await AdminRegionTestManager.load();
   });
+
   beforeEach(async () => {
-    ({ jwtToken } = await setupTestUser(testApplication));
+    await testManager.refreshState();
   });
 
   afterEach(async () => {
-    await clearTestDataFromDatabase(dataSource);
+    await testManager.clearDatabase();
   });
 
   afterAll(async () => {
-    await testApplication.close();
+    await testManager.close();
   });
   describe('EUDR Admin Regions Filters', () => {
-    it('should only get geo-regions that are part of EUDR data', async () => {
-      await fixtures.GivenAdminRegionsOfSourcingLocations();
-      const { eudrAdminRegions } = await fixtures.GivenEUDRAdminRegions();
-      const response = await fixtures.WhenIRequestEUDRAdminRegions({
-        app: testApplication,
-        jwtToken,
-      });
-      fixtures.ThenIShouldOnlyReceiveEUDRAdminRegions(
-        response,
+    it('should only get admin-regions that are part of EUDR data', async () => {
+      await testManager.GivenAdminRegionsOfSourcingLocations();
+      const { eudrAdminRegions } = await testManager.GivenEUDRAdminRegions();
+      await testManager.WhenIRequestEUDRAdminRegions();
+      testManager.ThenIShouldOnlyReceiveCorrespondingAdminRegions(
         eudrAdminRegions,
       );
     });
-    it('should only get geo-regions that are part of EUDR data and are filtered', async () => {
+    it('should only get admin-regions that are part of EUDR data and are filtered', async () => {
       const { sourcingLocations } =
-        await fixtures.GivenAdminRegionsOfSourcingLocations();
-      const regularMaterial = await createMaterial({
-        name: 'Regular Material',
-      });
-      await fixtures.AndAssociatedMaterials(
-        [regularMaterial],
-        sourcingLocations,
-      );
-      const regularSupplier = await createSupplier({
-        name: 'Regular Supplier',
-      });
-      await fixtures.AndAssociatedSuppliers(
-        [regularSupplier],
-        sourcingLocations,
-      );
+        await testManager.GivenAdminRegionsOfSourcingLocations();
+      await testManager.AndAssociatedMaterials(sourcingLocations);
+      await testManager.AndAssociatedSuppliers([sourcingLocations[0]]);
       const { eudrAdminRegions, eudrSourcingLocations } =
-        await fixtures.GivenEUDRAdminRegions();
-      const eudrMaterial = await createMaterial({ name: 'EUDR Material' });
-      await fixtures.AndAssociatedMaterials(
-        [eudrMaterial],
-        [eudrSourcingLocations[0]],
-      );
-      const eudrSupplier = await createSupplier({ name: 'EUDR Supplier' });
-      await fixtures.AndAssociatedSuppliers(
-        [eudrSupplier],
+        await testManager.GivenEUDRAdminRegions();
+      const eudrMaterials = await testManager.AndAssociatedMaterials([
+        eudrSourcingLocations[0],
+      ]);
+      const eudrSuppliers = await testManager.AndAssociatedSuppliers(
         eudrSourcingLocations,
       );
-      const response = await fixtures.WhenIRequestEUDRAdminRegionWithFilters({
-        app: testApplication,
-        jwtToken,
-        materialIds: [eudrMaterial.id],
-        supplierIds: [eudrSupplier.id],
+      await testManager.WhenIRequestEUDRAdminRegions({
+        'materialIds[]': [eudrMaterials[0].id],
+        'producerIds[]': eudrSuppliers.map((s) => s.id),
       });
-      fixtures.ThenIShouldOnlyReceiveFilteredEUDRAdminRegions(response, [
+      testManager.ThenIShouldOnlyReceiveCorrespondingAdminRegions([
         eudrAdminRegions[0],
       ]);
     });

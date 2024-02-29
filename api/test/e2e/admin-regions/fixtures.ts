@@ -1,18 +1,25 @@
-import * as request from 'supertest';
 import {
   LOCATION_TYPES,
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { createAdminRegion, createSourcingLocation } from '../../entity-mocks';
-import { TestApplication } from '../../utils/application-manager';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { AndAssociatedMaterials } from '../../common-steps/and-associated-materials';
 import { AndAssociatedSuppliers } from '../../common-steps/and-associated-suppliers';
-import { Material } from 'modules/materials/material.entity';
-import { Supplier } from '../../../src/modules/suppliers/supplier.entity';
+import { TestManager } from '../../utils/test-manager';
 
-export const adminRegionsFixtures = () => ({
-  GivenAdminRegionsOfSourcingLocations: async () => {
+export class AdminRegionTestManager extends TestManager {
+  url = '/api/v1/admin-regions/';
+
+  constructor(manager: TestManager) {
+    super(manager.testApp, manager.jwtToken, manager.dataSource);
+  }
+
+  static async load() {
+    return new AdminRegionTestManager(await this.createManager());
+  }
+
+  GivenAdminRegionsOfSourcingLocations = async () => {
     const adminRegion = await createAdminRegion({
       name: 'Regular AdminRegion',
     });
@@ -29,20 +36,24 @@ export const adminRegionsFixtures = () => ({
       adminRegions: [adminRegion, adminRegion2],
       sourcingLocations: [sourcingLocation1, sourcingLocation2],
     };
-  },
-  AndAssociatedMaterials: async (
-    materials: Material[],
+  };
+  AndAssociatedMaterials = async (
     sourcingLocations: SourcingLocation[],
+    materialNames?: string[],
   ) => {
-    return AndAssociatedMaterials(materials, sourcingLocations);
-  },
-  AndAssociatedSuppliers: async (
-    suppliers: Supplier[],
+    const materials = await this.createMaterials(materialNames);
+    await AndAssociatedMaterials(materials, sourcingLocations);
+    return materials;
+  };
+  AndAssociatedSuppliers = async (
     sourcingLocations: SourcingLocation[],
+    supplierNames?: string[],
   ) => {
-    return AndAssociatedSuppliers(suppliers, sourcingLocations);
-  },
-  GivenEUDRAdminRegions: async () => {
+    const suppliers = await this.createSuppliers(supplierNames);
+    await AndAssociatedSuppliers(suppliers, sourcingLocations);
+    return suppliers;
+  };
+  GivenEUDRAdminRegions = async () => {
     const adminRegion = await createAdminRegion({
       name: 'EUDR AdminRegion',
     });
@@ -61,57 +72,26 @@ export const adminRegionsFixtures = () => ({
       eudrAdminRegions: [adminRegion, adminRegion2],
       eudrSourcingLocations: [eudrSourcingLocation1, eudrSourcingLocation2],
     };
-  },
-  WhenIRequestEUDRAdminRegions: async (options: {
-    app: TestApplication;
-    jwtToken: string;
+  };
+  WhenIRequestEUDRAdminRegions = async (filters?: {
+    'producerIds[]'?: string[];
+    'materialIds[]'?: string[];
   }) => {
-    return request(options.app.getHttpServer())
-      .get(`/api/v1/admin-regions/trees/eudr`)
-      .set('Authorization', `Bearer ${options.jwtToken}`);
-  },
-  WhenIRequestEUDRAdminRegionWithFilters: async (options: {
-    app: TestApplication;
-    jwtToken: string;
-    supplierIds?: string[];
-    materialIds?: string[];
-  }) => {
-    return request(options.app.getHttpServer())
-      .get(`/api/v1/admin-regions/trees/eudr`)
-      .set('Authorization', `Bearer ${options.jwtToken}`)
-      .query({
-        'producerIds[]': options.supplierIds,
-        'materialIds[]': options.materialIds,
-      });
-  },
-  ThenIShouldOnlyReceiveFilteredEUDRAdminRegions: (
-    response: request.Response,
+    return this.GET({ url: `${this.url}trees/eudr`, query: filters });
+  };
+
+  ThenIShouldOnlyReceiveCorrespondingAdminRegions = (
     eudrAdminRegions: AdminRegion[],
   ) => {
-    expect(response.status).toBe(200);
-    expect(response.body.data.length).toBe(eudrAdminRegions.length);
+    expect(this.response!.status).toBe(200);
+    expect(this.response!.body.data.length).toBe(eudrAdminRegions.length);
     for (const adminRegion of eudrAdminRegions) {
       expect(
-        response.body.data.find(
+        this.response!.body.data.find(
           (adminRegionResponse: AdminRegion) =>
             adminRegionResponse.id === adminRegion.id,
         ),
       ).toBeDefined();
     }
-  },
-  ThenIShouldOnlyReceiveEUDRAdminRegions: (
-    response: request.Response,
-    eudrAdminRegions: AdminRegion[],
-  ) => {
-    expect(response.status).toBe(200);
-    expect(response.body.data.length).toBe(eudrAdminRegions.length);
-    for (const adminRegion of eudrAdminRegions) {
-      expect(
-        response.body.data.find(
-          (adminRegionResponse: AdminRegion) =>
-            adminRegionResponse.id === adminRegion.id,
-        ),
-      ).toBeDefined();
-    }
-  },
-});
+  };
+}

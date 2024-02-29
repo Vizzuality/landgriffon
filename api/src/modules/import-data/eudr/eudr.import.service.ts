@@ -102,7 +102,6 @@ export class EudrImportService {
       const fakedCartoOutput: any[] = data.map((row: any) =>
         this.generateFakeAlerts(row),
       );
-      console.log(fakedCartoOutput);
 
       const parsed: any = await new AsyncParser({
         fields: [

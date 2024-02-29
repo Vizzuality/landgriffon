@@ -52,7 +52,7 @@ describe('Impact Reports', () => {
       comparedScenarioId: scenarioIntervention.scenarioId,
     });
 
-    await fixtures.ThenIShouldGetAnImpactReportAboutProvidedFilters(response, {
+    fixtures.ThenIShouldGetAnImpactReportAboutProvidedFilters(response, {
       indicators: [indicator],
       isActualVsScenario: true,
     });
@@ -69,7 +69,7 @@ describe('Impact Reports', () => {
         indicatorIds: [indicator.id],
       },
     );
-    await fixtures.ThenIShouldGetAnImpactReportAboutProvidedFilters(response, {
+    fixtures.ThenIShouldGetAnImpactReportAboutProvidedFilters(response, {
       indicators: [indicator],
       isScenarioVsScenario: true,
     });

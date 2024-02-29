@@ -73,36 +73,6 @@ export class GeoRegionsController {
     return this.geoRegionsService.serialize(results.data, results.metadata);
   }
 
-  @ApiOperation({
-    description: 'Find all EUDR geo regions',
-  })
-  @ApiOkResponse({
-    type: GeoRegion,
-    isArray: true,
-  })
-  @ApiUnauthorizedResponse()
-  @ApiForbiddenResponse()
-  @JSONAPIQueryParams({
-    availableFilters: geoRegionResource.columnsAllowedAsFilter.map(
-      (columnName: string) => ({
-        name: columnName,
-      }),
-    ),
-  })
-  @Get('/eudr')
-  async findAllEudr(
-    @Query(ValidationPipe)
-    dto: GetEUDRGeoRegions,
-  ): Promise<GeoRegion[]> {
-    const results: GeoRegion[] =
-      await this.geoRegionsService.getGeoRegionsFromSourcingLocations({
-        ...dto,
-        withSourcingLocations: true,
-        eudr: true,
-      });
-    return this.geoRegionsService.serialize(results);
-  }
-
   @ApiOperation({ description: 'Find geo region by id' })
   @ApiOkResponse({ type: GeoRegion })
   @ApiNotFoundResponse({ description: 'Geo region not found' })

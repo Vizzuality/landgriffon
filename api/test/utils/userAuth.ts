@@ -37,6 +37,7 @@ export async function setupTestUser(
       isActive: true,
       isDeleted: false,
       roles: [role],
+      ...restOfExtraData,
     });
   }
 

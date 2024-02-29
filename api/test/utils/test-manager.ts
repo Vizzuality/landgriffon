@@ -87,7 +87,7 @@ export class TestManager {
     return createdSuppliers;
   }
 
-  async createGeoRegion(names?: string[]) {
+  async createGeoRegions(names?: string[]) {
     const namesToCreate = names || [randomName()];
     const createdGeoRegions: GeoRegion[] = [];
     for (let i = 0; i < namesToCreate.length; i++) {

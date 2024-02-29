@@ -1,10 +1,10 @@
-import { AdminRegionTestManager } from './fixtures';
+import { EUDRTestManager } from './fixtures';
 
 describe('Admin Regions EUDR Filters (e2e)', () => {
-  let testManager: AdminRegionTestManager;
+  let testManager: EUDRTestManager;
 
   beforeAll(async () => {
-    testManager = await AdminRegionTestManager.load();
+    testManager = await EUDRTestManager.load();
   });
 
   beforeEach(async () => {

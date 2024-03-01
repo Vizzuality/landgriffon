@@ -8,6 +8,7 @@ import CollapseButton from 'containers/collapse-button/component';
 import TitleTemplate from 'utils/titleTemplate';
 import Map from 'components/map';
 import LayerManager from 'components/map/layer-manager';
+import SuppliersStackedBar from '@/containers/analysis-eudr/suppliers-stacked-bar';
 
 import type { NextPageWithLayout } from 'pages/_app';
 import type { ReactElement } from 'react';
@@ -42,12 +43,7 @@ const MapPage: NextPageWithLayout = () => {
                 <h2>EUDR complience Analysis</h2>
               </div>
               <div className="flex-1 bg-white px-6 py-8">
-                <div>
-                  <div className="text-xs text-gray-400">
-                    Total numbers of suppliers: <span className="font-mono">46.53P</span>
-                  </div>
-                  <h3>Suppliers by category</h3>
-                </div>
+                <SuppliersStackedBar />
               </div>
             </div>
           </Transition>

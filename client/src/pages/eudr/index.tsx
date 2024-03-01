@@ -9,6 +9,7 @@ import TitleTemplate from 'utils/titleTemplate';
 import Map from 'components/map';
 import LayerManager from 'components/map/layer-manager';
 import SuppliersStackedBar from '@/containers/analysis-eudr/suppliers-stacked-bar';
+import EUDRFilters from '@/containers/analysis-eudr/filters/component';
 
 import type { NextPageWithLayout } from 'pages/_app';
 import type { ReactElement } from 'react';
@@ -39,8 +40,9 @@ const MapPage: NextPageWithLayout = () => {
             ref={scrollRef}
           >
             <div className="flex h-full flex-col">
-              <div className="px-6 py-8">
+              <div className="space-y-2 px-6 py-8">
                 <h2>EUDR complience Analysis</h2>
+                <EUDRFilters />
               </div>
               <div className="flex-1 bg-white px-6 py-8">
                 <SuppliersStackedBar />

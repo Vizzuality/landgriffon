@@ -26,6 +26,7 @@
     "node": "^18.16"
   },
   "dependencies": {
+    "@google-cloud/bigquery": "^7.5.0",
     "@googlemaps/google-maps-services-js": "~3.3.2",
     "@json2csv/node": "^7.0.1",
     "@nestjs/axios": "^3.0.0",

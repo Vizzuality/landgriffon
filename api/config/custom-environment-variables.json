@@ -75,6 +75,7 @@
   },
   "carto": {
     "apiKey": "CARTO_API_KEY",
-    "baseUrl": "CARTO_BASE_URL"
+    "baseUrl": "CARTO_BASE_URL",
+    "credentials": "CARTO_CREDENTIALS"
   }
 }

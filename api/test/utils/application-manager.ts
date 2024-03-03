@@ -9,7 +9,10 @@ import { TestingModuleBuilder } from '@nestjs/testing/testing-module.builder';
 import { Type } from '@nestjs/common/interfaces';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { isUndefined } from 'lodash';
-import { MockEmailService } from './service-mocks';
+import { MockAlertRepository, MockEmailService } from './service-mocks';
+import { IEUDRAlertsRepositoryToken } from '../../src/modules/eudr-alerts/eudr.module';
+import { IEmailServiceToken } from '../../src/modules/notifications/notifications.module';
+import { AlertsRepository } from 'modules/eudr-alerts/alerts.repository';
 
 export default class ApplicationManager {
   static readonly regenerateResourcesOnEachTest: boolean = false;
@@ -43,8 +46,10 @@ export default class ApplicationManager {
       Test.createTestingModule({
         imports: [AppModule],
       })
-        .overrideProvider('IEmailService')
-        .useClass(MockEmailService);
+        .overrideProvider(IEmailServiceToken)
+        .useClass(MockEmailService)
+        .overrideProvider(AlertsRepository)
+        .useClass(MockAlertRepository);
 
     ApplicationManager.testApplication.moduleFixture =
       await testingModuleBuilder.compile();

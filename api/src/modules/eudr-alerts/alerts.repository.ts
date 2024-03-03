@@ -1,29 +1,25 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { Injectable } from '@nestjs/common';
-import { DataSource, QueryBuilder, SelectQueryBuilder } from 'typeorm';
+import { DataSource, SelectQueryBuilder } from 'typeorm';
 import { AlertsOutput } from './dto/alerts-output.dto';
-import { SA } from './SA';
 import { ResourceStream } from '@google-cloud/paginator';
 import { RowMetadata } from '@google-cloud/bigquery/build/src/table';
+import { IEUDRAlertsRepository } from './eudr.repositoty.interface';
+import { AppConfig } from '../../utils/app.config';
 
 const projectId: string = 'carto-dw-ac-zk2uhih6';
-
-const BASE_QUERY: string = `SELECT * FROM cartobq.eudr.mock_data LIMIT 1`;
-
-const BASE_DATASET: string = 'cartobq.eudr.dev_mock_data_optimized';
 
 const limit: number = 1;
 
 @Injectable()
-export class AlertsRepository {
+export class AlertsRepository implements IEUDRAlertsRepository {
   bigQueryClient: BigQuery;
   BASE_DATASET: string = 'cartobq.eudr.dev_mock_data_optimized';
 
   constructor(private readonly dataSource: DataSource) {
-    //TODO: Implement error handling for missing service account file
-
+    const { credentials } = AppConfig.get('carto');
     this.bigQueryClient = new BigQuery({
-      credentials: SA,
+      credentials: JSON.parse(credentials),
       projectId,
     });
   }

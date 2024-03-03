@@ -84,6 +84,7 @@
   },
   "carto": {
     "apiKey": null,
-    "baseUrl": "null"
+    "baseUrl": "null",
+    "credentials": null
   }
 }

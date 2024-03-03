@@ -34,7 +34,7 @@ export class ImportDataConsumer {
 
   @OnQueueFailed()
   async onJobFailed(job: Job<EudrImportJob>, err: Error): Promise<void> {
-    // TODO: Handle eudr import errors, updating async tgasks
+    // TODO: Handle eudr-alerts import errors, updating async tgasks
     const { taskId } = job.data;
     this.logger.error(
       `Import Failed for file: ${job.data.xlsxFileData.filename} for task: ${taskId}: ${err}`,
@@ -46,7 +46,7 @@ export class ImportDataConsumer {
     this.logger.log(
       `Import XLSX with TASK ID: ${job.data.taskId} completed successfully`,
     );
-    // TODO: Handle eudr import completion, updating async tasks
+    // TODO: Handle eudr-alerts import completion, updating async tasks
   }
 
   @Process('eudr')

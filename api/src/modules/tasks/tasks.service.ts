@@ -123,7 +123,7 @@ export class TasksService extends AppBaseService<
     const stalledTask: Task | null = await this.taskRepository
       .createQueryBuilder('task')
       .where('task.status = :status', { status: TASK_STATUS.PROCESSING })
-      .orderBy('task.createdAt', 'DESC') // assuming you have a createdAt field
+      .orderBy('task.createdAt', 'DESC')
       .getOne();
     if (stalledTask) {
       stalledTask.status = TASK_STATUS.FAILED;

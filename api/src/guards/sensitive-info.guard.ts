@@ -18,6 +18,15 @@ export class SensitiveInfoGuard implements NestInterceptor {
     context: ExecutionContext,
     next: CallHandler<any>,
   ): Observable<any> {
+    const request = context.switchToHttp().getRequest();
+    if (this.dataComesFromAStreamEndpoint(request.url)) {
+      return next.handle();
+    }
+
     return next.handle().pipe(map((data: any) => instanceToPlain(data)));
+  }
+
+  dataComesFromAStreamEndpoint(url: string): boolean {
+    return url.includes('eudr');
   }
 }

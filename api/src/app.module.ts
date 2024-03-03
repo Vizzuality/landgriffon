@@ -39,7 +39,7 @@ import { AuthorizationService } from 'modules/authorization/authorization.servic
 import { TasksService } from 'modules/tasks/tasks.service';
 import { NotificationsModule } from 'modules/notifications/notifications.module';
 import { ReportsModule } from 'modules/reports/reports.module';
-import { EudrModule } from 'modules/eudr/eudr.module';
+import { EudrModule } from 'modules/eudr-alerts/eudr.module';
 
 const queueConfig: any = config.get('queue');
 

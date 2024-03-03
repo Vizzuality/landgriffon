@@ -2,38 +2,45 @@ import {
   Controller,
   Get,
   Query,
+  Res,
   UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
-import { Public } from 'decorators/public.decorator';
-import { CartoConnector } from 'modules/eudr/carto/carto.connector';
 import {
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { ApiOkTreeResponse } from '../../decorators/api-tree-response.decorator';
-import { Supplier } from '../suppliers/supplier.entity';
-import { SetScenarioIdsInterceptor } from '../impact/set-scenario-ids.interceptor';
-import { GetSupplierEUDR } from '../suppliers/dto/get-supplier-by-type.dto';
-import { SuppliersService } from '../suppliers/suppliers.service';
+import { Response } from 'express';
+import { Writable } from 'stream';
+import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
+import { Supplier } from 'modules/suppliers/supplier.entity';
+import { SetScenarioIdsInterceptor } from 'modules/impact/set-scenario-ids.interceptor';
+import { GetSupplierEUDR } from 'modules/suppliers/dto/get-supplier-by-type.dto';
+import { SuppliersService } from 'modules/suppliers/suppliers.service';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
-import { Material } from '../materials/material.entity';
-import { GetEUDRMaterials } from '../materials/dto/get-material-tree-with-options.dto';
-import { AdminRegion } from '../admin-regions/admin-region.entity';
-import { GetEUDRAdminRegions } from '../admin-regions/dto/get-admin-region-tree-with-options.dto';
-import { GeoRegion, geoRegionResource } from '../geo-regions/geo-region.entity';
-import { JSONAPIQueryParams } from '../../decorators/json-api-parameters.decorator';
-import { GetEUDRGeoRegions } from '../geo-regions/dto/get-geo-region.dto';
-import { EudrAlerts } from './dto/alerts.dto';
+import { Material } from 'modules/materials/material.entity';
+import { GetEUDRMaterials } from 'modules/materials/dto/get-material-tree-with-options.dto';
+import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
+import { GetEUDRAdminRegions } from 'modules/admin-regions/dto/get-admin-region-tree-with-options.dto';
+import {
+  GeoRegion,
+  geoRegionResource,
+} from 'modules/geo-regions/geo-region.entity';
+import { JSONAPIQueryParams } from 'decorators/json-api-parameters.decorator';
+import { GetEUDRGeoRegions } from 'modules/geo-regions/dto/get-geo-region.dto';
+import { AlertsOutput } from 'modules/eudr-alerts/dto/alerts-output.dto';
+import { EudrService } from 'modules/eudr-alerts/eudr.service';
+import { ResourceStream } from '@google-cloud/paginator';
+import { GetEUDRALertsDto } from './dto/get-alerts.dto';
 
 @Controller('/api/v1/eudr')
 export class EudrController {
   constructor(
-    private readonly carto: CartoConnector,
+    private readonly eudrAlertsService: EudrService,
     private readonly suppliersService: SuppliersService,
     private readonly materialsService: MaterialsService,
     private readonly geoRegionsService: GeoRegionsService,
@@ -70,7 +77,7 @@ export class EudrController {
   })
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
-  @Get('/eudr')
+  @Get('/materials')
   async getMaterialsTree(
     @Query(ValidationPipe) materialTreeOptions: GetEUDRMaterials,
   ): Promise<Material> {
@@ -136,13 +143,28 @@ export class EudrController {
   }
 
   @Get('/alerts')
-  async getAlerts(): Promise<EudrAlerts[]> {
-    return [] as EudrAlerts[];
+  async getAlerts(
+    @Res() response: Response,
+    dto: GetEUDRALertsDto,
+  ): Promise<any> {
+    const stream: ResourceStream<AlertsOutput> =
+      this.eudrAlertsService.getAlerts();
+    this.streamResponse(response, stream);
   }
 
-  @Public()
-  @Get('test')
-  async select(): Promise<any> {
-    return this.carto.select('select * from cartobq.eudr.mock_data limit 10');
+  streamResponse(response: Response, stream: Writable): any {
+    stream.on('data', (data: any) => {
+      const json: string = JSON.stringify(data);
+      response.write(json + '\n');
+    });
+
+    stream.on('end', () => {
+      response.end();
+    });
+
+    stream.on('error', (error: any) => {
+      console.error('Stream error:', error);
+      response.status(500).send('Error processing stream');
+    });
   }
 }

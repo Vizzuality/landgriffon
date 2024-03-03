@@ -14,7 +14,8 @@ export type TestUser = { jwtToken: string; user: User; password: string };
 export async function setupTestUser(
   applicationManager: TestApplication,
   roleName: ROLES = ROLES.ADMIN,
-  extraData: Partial<User> = { password: 'Password123!' },
+  extraData: Partial<Omit<User, 'password'>> = {},
+  password: string = 'Password123',
 ): Promise<TestUser> {
   const salt = await genSalt();
   const role = new Role();
@@ -22,22 +23,20 @@ export async function setupTestUser(
   const entityManager = applicationManager.get<EntityManager>(EntityManager);
   const userRepository = entityManager.getRepository(User);
 
-  const { password, ...restOfExtraData } = extraData;
-
   await setUpRolesAndPermissions(entityManager);
 
   let existingUser = await userRepository.findOne({
-    where: { email: E2E_CONFIG.users.signUp.email },
+    where: { email: extraData.email ?? E2E_CONFIG.users.signUp.email },
   });
   if (!existingUser) {
     existingUser = await userRepository.save({
       ...E2E_CONFIG.users.signUp,
       salt,
-      password: await hash(password!, salt),
+      password: await hash(password, salt),
       isActive: true,
       isDeleted: false,
       roles: [role],
-      ...restOfExtraData,
+      ...extraData,
     });
   }
 

@@ -73,9 +73,10 @@
       "sendGridApiKey": "SENDGRID_API_KEY"
     }
   },
-  "carto": {
+  "eudr": {
     "apiKey": "CARTO_API_KEY",
     "baseUrl": "CARTO_BASE_URL",
-    "credentials": "CARTO_CREDENTIALS"
+    "credentials": "EUDR_CREDENTIALS",
+    "dataset": "EUDR_DATASET"
   }
 }

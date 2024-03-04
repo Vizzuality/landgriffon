@@ -46,5 +46,11 @@
     "email": {
       "sendGridApiKey": "SG.forSomeReasonSendGridApiKeysNeedToStartWithSG."
     }
+  },
+  "eudr": {
+    "apiKey": null,
+    "baseUrl": "null",
+    "credentials": null,
+    "dataset": "test_dataset"
   }
 }

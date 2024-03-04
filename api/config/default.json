@@ -82,9 +82,10 @@
       "sendGridApiKey": null
     }
   },
-  "carto": {
+  "eudr": {
     "apiKey": null,
     "baseUrl": "null",
-    "credentials": null
+    "credentials": null,
+    "dataset": null
   }
 }

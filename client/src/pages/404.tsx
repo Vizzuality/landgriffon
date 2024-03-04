@@ -37,7 +37,7 @@ const Page404: React.FC = () => {
           <button
             type="button"
             onClick={handleGoBack}
-            className="text-green-700 mt-10 flex cursor-pointer hover:underline"
+            className="mt-10 flex cursor-pointer text-green-700 hover:underline"
           >
             <ArrowLeftIcon className="mr-1 mt-1 h-4 w-4" />
             Go back

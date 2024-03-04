@@ -49,7 +49,7 @@ const ComparisonCell: React.FC<ComparisonCellProps> = ({
           className={classNames(
             'my-auto rounded-[4px] px-1 py-0.5 text-xs font-semibold text-gray-500',
             {
-              'text-green-700 bg-green-400/40':
+              'bg-green-400/40 text-green-700':
                 (comparisonMode === 'relative' && percentageDifference <= 0) ||
                 (comparisonMode === 'absolute' && absoluteDifference <= 0),
               'bg-red-400/20 text-red-800':

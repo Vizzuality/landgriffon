@@ -10,7 +10,23 @@ import {
   Label,
 } from 'recharts';
 
-import { Button } from '@/components/button';
+import CategoryList from '@/containers/analysis-eudr/category-list';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label as RadioLabel } from '@/components/ui/label';
+
+const VIEW_BY_OPTIONS = [
+  {
+    label: 'Commodities',
+    value: 'commodities',
+    defaultChecked: true,
+  },
+  {
+    label: 'Countries',
+    value: 'countries',
+  },
+];
+
+const defaultViewBy = VIEW_BY_OPTIONS.find((option) => option.defaultChecked)?.value;
 
 const data = [
   {
@@ -66,8 +82,16 @@ const SuppliersStackedBar = () => {
         </div>
         <div className="flex items-center justify-between">
           <h3>Suppliers by category</h3>
-          <div className="flex">
+          <div className="flex space-x-2">
             <div className="text-2xs uppercase">View by:</div>
+            <RadioGroup defaultValue={defaultViewBy} className="flex items-center space-x-2">
+              {VIEW_BY_OPTIONS.map((option) => (
+                <div key={option?.value} className="flex items-center space-x-2">
+                  <RadioGroupItem value={option.value} id={option.value} />
+                  <RadioLabel htmlFor={option.value}>{option.label}</RadioLabel>
+                </div>
+              ))}
+            </RadioGroup>
           </div>
         </div>
       </div>
@@ -121,7 +145,7 @@ const SuppliersStackedBar = () => {
               type="category"
               width={200}
             />
-            <Tooltip />
+            <Tooltip cursor={{ fill: 'transparent' }} />
             <Bar dataKey="pv" stackId="a" fill="#4AB7F3" shapeRendering="crispEdges" />
             <Bar dataKey="uv" stackId="a" fill="#FFC038" shapeRendering="crispEdges" />
             <Bar dataKey="amt" stackId="a" fill="#8460FF" shapeRendering="crispEdges" />
@@ -129,54 +153,73 @@ const SuppliersStackedBar = () => {
         </ResponsiveContainer>
       </div>
       <div className="space-y-1">
-        <div className="flex items-center space-x-6 rounded-xl bg-gray-50 p-5">
-          <div className="flex-1">Deforestation-free suppliers</div>
-          <div className="shrink-0 grow-0">
-            <div>
-              31% <span className="text-xs">of suppliers</span>
+        <CategoryList />
+        {/* <Collapsible className="rounded-xl bg-gray-50 p-5">
+          <CollapsibleTrigger className="w-full">
+            <div className="flex w-full items-center space-x-6">
+              <div className="flex-1 text-left">Deforestation-free suppliers</div>
+              <div className="shrink-0 grow-0">
+                <div>
+                  31% <span className="text-xs">of suppliers</span>
+                </div>
+                <div className="h-[2px] w-[340px] bg-gray-200">
+                  <div className="h-[2px] bg-[#4AB7F3]" style={{ width: '31%' }} />
+                </div>
+              </div>
+
+              <Button type="button" size="xs" variant="white">
+                View details
+              </Button>
             </div>
-            <div className="h-[2px] w-[340px] bg-gray-200">
-              <div className="h-[2px] bg-[#4AB7F3]" style={{ width: '31%' }} />
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div>test</div>
+          </CollapsibleContent>
+        </Collapsible>
+        <Collapsible className="rounded-xl bg-gray-50 p-5">
+          <CollapsibleTrigger className="w-full">
+            <div className="flex w-full items-center space-x-6">
+              <div className="flex-1 text-left">Suppliers with deforestation alerts</div>
+              <div className="shrink-0 grow-0">
+                <div>
+                  36% <span className="text-xs">of suppliers</span>
+                </div>
+                <div className="h-[2px] w-[340px] bg-gray-200">
+                  <div className="h-[2px] bg-[#FFC038]" style={{ width: '31%' }} />
+                </div>
+              </div>
+              <Button type="button" size="xs" variant="white">
+                View details
+              </Button>
             </div>
-          </div>
-          <div>
-            <Button type="button" size="xs" variant="white">
-              View details
-            </Button>
-          </div>
-        </div>
-        <div className="flex items-center space-x-6 rounded-xl bg-gray-50 p-5">
-          <div className="flex-1">Suppliers with deforestation alerts</div>
-          <div className="shrink-0 grow-0">
-            <div>
-              36% <span className="text-xs">of suppliers</span>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div>test</div>
+          </CollapsibleContent>
+        </Collapsible>
+        <Collapsible className="rounded-xl bg-gray-50 p-5">
+          <CollapsibleTrigger className="w-full">
+            <div className="flex w-full items-center space-x-6">
+              <div className="flex-1">Suppliers with no location data</div>
+              <div className="shrink-0 grow-0">
+                <div>
+                  33% <span className="text-xs">of suppliers</span>
+                </div>
+                <div className="h-[2px] w-[340px] bg-gray-200">
+                  <div className="h-[2px] bg-[#8460FF]" style={{ width: '31%' }} />
+                </div>
+              </div>
+              <div>
+                <Button type="button" size="xs" variant="white">
+                  View details
+                </Button>
+              </div>
             </div>
-            <div className="h-[2px] w-[340px] bg-gray-200">
-              <div className="h-[2px] bg-[#FFC038]" style={{ width: '31%' }} />
-            </div>
-          </div>
-          <div>
-            <Button type="button" size="xs" variant="white">
-              View details
-            </Button>
-          </div>
-        </div>
-        <div className="flex items-center space-x-6 rounded-xl bg-gray-50 p-5">
-          <div className="flex-1">Suppliers with no location data</div>
-          <div className="shrink-0 grow-0">
-            <div>
-              33% <span className="text-xs">of suppliers</span>
-            </div>
-            <div className="h-[2px] w-[340px] bg-gray-200">
-              <div className="h-[2px] bg-[#8460FF]" style={{ width: '31%' }} />
-            </div>
-          </div>
-          <div>
-            <Button type="button" size="xs" variant="white">
-              View details
-            </Button>
-          </div>
-        </div>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div>test</div>
+          </CollapsibleContent>
+        </Collapsible> */}
       </div>
     </div>
   );

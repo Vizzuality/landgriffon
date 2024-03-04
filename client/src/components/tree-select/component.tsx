@@ -513,7 +513,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
           {theme === 'inline-primary' ? (
             <div
               className={classNames(
-                'border-t-primary mx-auto mt-0.5 h-0 w-0 border-x-4 border-t-4 border-x-transparent',
+                'mx-auto mt-0.5 h-0 w-0 border-x-4 border-t-4 border-x-transparent border-t-primary',
                 { 'border-t-red-400': error },
               )}
             />

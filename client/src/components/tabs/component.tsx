@@ -11,7 +11,7 @@ const Tabs: React.FC<TabsProps> = ({ activeTab, tabs, bottomBorder = true }: Tab
         href={tab.href}
         className={classNames('-mb-px py-3', {
           'ml-10': index !== 0,
-          'text-green-700 border-green-700 border-b-2': activeTab && tab === activeTab,
+          'border-b-2 border-green-700 text-green-700': activeTab && tab === activeTab,
         })}
       >
         {tab.name}

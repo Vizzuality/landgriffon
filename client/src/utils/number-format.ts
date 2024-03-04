@@ -19,3 +19,7 @@ export function formatNumber(number: number): string {
 export const PRECISE_NUMBER_FORMAT = format(',.3~r');
 
 export const BIG_NUMBER_FORMAT = format('s');
+
+export const formatPercentage = (value: number, options: Intl.NumberFormatOptions = {}) => {
+  return Intl.NumberFormat(undefined, { style: 'percent', ...options }).format(value);
+};

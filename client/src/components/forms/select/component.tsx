@@ -133,7 +133,7 @@ const Select = <T,>({
         {({ open }) => (
           <>
             {!!label && (
-              <Listbox.Label className="text-gray-700 block text-sm font-medium">
+              <Listbox.Label className="block text-sm font-medium text-gray-700">
                 {label}
               </Listbox.Label>
             )}

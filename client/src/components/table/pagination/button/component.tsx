@@ -14,7 +14,7 @@ const Table: React.FC<ButtonProps> = ({
       'flex h-10 min-w-[2.5rem] items-center justify-center text-sm',
       className,
       {
-        'border-green-700 border-b': active,
+        'border-b border-green-700': active,
         'cursor-pointer': !disabled,
         'opacity-30': disabled,
       },

@@ -10,7 +10,7 @@ import { TestManager } from '../../utils/test-manager';
 import { GeoRegion } from '../../../src/modules/geo-regions/geo-region.entity';
 
 export class EUDRTestManager extends TestManager {
-  url = '/api/v1/eudr/';
+  url = '/api/v1/eudr';
 
   constructor(manager: TestManager) {
     super(manager.testApp, manager.jwtToken, manager.dataSource);

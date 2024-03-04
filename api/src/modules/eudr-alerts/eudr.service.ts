@@ -1,13 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ResourceStream } from '@google-cloud/paginator';
-import { RowMetadata } from '@google-cloud/bigquery/build/src/table';
-import { AlertsRepository } from './alerts.repository';
+import { GetEUDRAlertsDto } from 'modules/eudr-alerts/dto/get-alerts.dto';
+import { AlertsOutput } from 'modules/eudr-alerts/dto/alerts-output.dto';
+import { IEUDRAlertsRepository } from 'modules/eudr-alerts/eudr.repositoty.interface';
 
 @Injectable()
 export class EudrService {
-  constructor(private readonly alertsRepository: AlertsRepository) {}
+  constructor(
+    @Inject('IEUDRAlertsRepository')
+    private readonly alertsRepository: IEUDRAlertsRepository,
+  ) {}
 
-  getAlerts(): ResourceStream<RowMetadata> {
-    return this.alertsRepository.select();
+  async getAlerts(dto: GetEUDRAlertsDto): Promise<AlertsOutput[]> {
+    return this.alertsRepository.getAlerts(dto);
   }
 }

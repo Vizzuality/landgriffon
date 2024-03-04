@@ -32,10 +32,8 @@ import {
 } from 'modules/geo-regions/geo-region.entity';
 import { JSONAPIQueryParams } from 'decorators/json-api-parameters.decorator';
 import { GetEUDRGeoRegions } from 'modules/geo-regions/dto/get-geo-region.dto';
-import { AlertsOutput } from 'modules/eudr-alerts/dto/alerts-output.dto';
 import { EudrService } from 'modules/eudr-alerts/eudr.service';
-import { ResourceStream } from '@google-cloud/paginator';
-import { GetEUDRALertsDto } from './dto/get-alerts.dto';
+import { GetEUDRAlertsDto } from 'modules/eudr-alerts/dto/get-alerts.dto';
 
 @Controller('/api/v1/eudr')
 export class EudrController {
@@ -143,13 +141,8 @@ export class EudrController {
   }
 
   @Get('/alerts')
-  async getAlerts(
-    @Res() response: Response,
-    dto: GetEUDRALertsDto,
-  ): Promise<any> {
-    const stream: ResourceStream<AlertsOutput> =
-      this.eudrAlertsService.getAlerts();
-    this.streamResponse(response, stream);
+  async getAlerts(@Query(ValidationPipe) dto: GetEUDRAlertsDto): Promise<any> {
+    return this.eudrAlertsService.getAlerts(dto);
   }
 
   streamResponse(response: Response, stream: Writable): any {

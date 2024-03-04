@@ -40,7 +40,7 @@ const CellWrapper = <T, C>({ children, context }: React.PropsWithChildren<CellPr
       onClick={isExpandible ? toggleExpand : undefined}
       className={classNames(
         getAlignmentClasses(align),
-        'min-h-20 relative flex w-full items-center justify-start',
+        'relative flex min-h-20 w-full items-center justify-start',
         {
           'cursor-pointer': isExpandible,
           'ml-7 pr-7': canExpand && !isExpandible && isFirstColumn,

@@ -9,7 +9,7 @@ const HeaderMobile = () => {
 
   return (
     <div className="lg:hidden">
-      <div className="bg-green-700 flex items-center justify-between px-4 py-2 sm:px-6 lg:px-8">
+      <div className="flex items-center justify-between bg-green-700 px-4 py-2 sm:px-6 lg:px-8">
         <div>
           <LandgriffonLogo />
         </div>

@@ -22,4 +22,4 @@ export function useColors(layerName: string, colorScale): RGBColor[] {
   return colors;
 }
 
-export const themeColors = resolveConfig(tailwindConfig).theme.colors as Record<string, string>;
+export const themeColors = resolveConfig(tailwindConfig).theme.colors;

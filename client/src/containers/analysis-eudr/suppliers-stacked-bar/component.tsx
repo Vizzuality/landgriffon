@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   BarChart,
   Bar,
@@ -13,20 +13,19 @@ import {
 import CategoryList from '@/containers/analysis-eudr/category-list';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label as RadioLabel } from '@/components/ui/label';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { eudr, setViewBy } from '@/store/features/eudr';
 
-const VIEW_BY_OPTIONS = [
+export const VIEW_BY_OPTIONS = [
   {
     label: 'Commodities',
     value: 'commodities',
-    defaultChecked: true,
   },
   {
     label: 'Countries',
     value: 'countries',
   },
-];
-
-const defaultViewBy = VIEW_BY_OPTIONS.find((option) => option.defaultChecked)?.value;
+] as const;
 
 const data = [
   {
@@ -74,6 +73,16 @@ const data = [
 ];
 
 const SuppliersStackedBar = () => {
+  const { viewBy } = useAppSelector(eudr);
+  const dispatch = useAppDispatch();
+
+  const handleViewBy = useCallback(
+    (value: typeof viewBy) => {
+      dispatch(setViewBy(value));
+    },
+    [dispatch],
+  );
+
   return (
     <div className="space-y-4">
       <div>
@@ -84,7 +93,11 @@ const SuppliersStackedBar = () => {
           <h3>Suppliers by category</h3>
           <div className="flex space-x-2">
             <div className="text-2xs uppercase">View by:</div>
-            <RadioGroup defaultValue={defaultViewBy} className="flex items-center space-x-2">
+            <RadioGroup
+              defaultValue={viewBy}
+              className="flex items-center space-x-2"
+              onValueChange={handleViewBy}
+            >
               {VIEW_BY_OPTIONS.map((option) => (
                 <div key={option?.value} className="flex items-center space-x-2">
                   <RadioGroupItem value={option.value} id={option.value} />

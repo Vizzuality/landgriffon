@@ -7,8 +7,9 @@
   "sources": {
     "esri": {
       "type": "raster",
-      "tiles": ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
-      "attribution": "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+      "tiles": ["https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
+      "attribution": "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community",
+      "tileSize": 256
     }
   },
   "sprite": "https://tiles.basemaps.cartocdn.com/gl/positron-gl-style/sprite",
@@ -28,8 +29,7 @@
     {
       "id": "esri-world-imagery",
       "type": "raster",
-      "source": "esri",
-      "minzoom": 2
+      "source": "esri"
     },
     {
       "id": "custom-layers",

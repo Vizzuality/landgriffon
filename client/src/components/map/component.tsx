@@ -73,6 +73,7 @@ export const Map: FC<CustomMapProps> = ({
       {...otherMapProps}
       {...localViewState}
       attributionControl
+      minZoom={1}
     >
       {!!mapRef && children(mapRef.getMap())}
     </ReactMapGL>

@@ -10,7 +10,6 @@ import { Type } from '@nestjs/common/interfaces';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { isUndefined } from 'lodash';
 import { MockAlertRepository, MockEmailService } from './service-mocks';
-import { IEUDRAlertsRepositoryToken } from '../../src/modules/eudr-alerts/eudr.module';
 import { IEmailServiceToken } from '../../src/modules/notifications/notifications.module';
 import { AlertsRepository } from 'modules/eudr-alerts/alerts.repository';
 
@@ -48,7 +47,7 @@ export default class ApplicationManager {
       })
         .overrideProvider(IEmailServiceToken)
         .useClass(MockEmailService)
-        .overrideProvider(AlertsRepository)
+        .overrideProvider('IEUDRAlertsRepository')
         .useClass(MockAlertRepository);
 
     ApplicationManager.testApplication.moduleFixture =

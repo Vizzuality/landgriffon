@@ -1,7 +1,7 @@
 import { SelectQueryBuilder } from 'typeorm';
 import { AlertsOutput } from 'modules/eudr-alerts/dto/alerts-output.dto';
-import { GetEUDRAlertsDto } from 'modules/eudr-alerts/dto/get-alerts.dto';
 import { Query } from '@google-cloud/bigquery';
+import { GetEUDRAlertsDto } from 'modules/eudr-alerts/dto/get-alerts.dto';
 
 export class BigQueryAlertsQueryBuilder {
   queryBuilder: SelectQueryBuilder<AlertsOutput>;
@@ -51,6 +51,8 @@ export class BigQueryAlertsQueryBuilder {
     this.queryBuilder.limit(this.dto?.limit);
 
     const [query, params] = this.queryBuilder.getQueryAndParameters();
+    console.log('query', query);
+    console.log('params', params);
 
     return this.parseToBigQuery(query, params);
   }
@@ -76,7 +78,7 @@ export class BigQueryAlertsQueryBuilder {
 
   addAlertDateRange(): void {
     this.queryBuilder.andWhere(
-      'DATE(alertdate) BETWEEN :startAlertDate AND :endAlertDate',
+      'DATE(alertdate) BETWEEN DATE(:startAlertDate) AND DATE(:endAlertDate)',
       {
         startAlertDate: this.dto?.startAlertDate,
         endAlertDate: this.dto?.endAlertDate,

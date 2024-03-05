@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Query,
-  Res,
   UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
@@ -10,6 +9,7 @@ import {
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Response } from 'express';
@@ -34,7 +34,9 @@ import { JSONAPIQueryParams } from 'decorators/json-api-parameters.decorator';
 import { GetEUDRGeoRegions } from 'modules/geo-regions/dto/get-geo-region.dto';
 import { EudrService } from 'modules/eudr-alerts/eudr.service';
 import { GetEUDRAlertsDto } from 'modules/eudr-alerts/dto/get-alerts.dto';
+import { EUDRAlertDates } from 'modules/eudr-alerts/eudr.repositoty.interface';
 
+@ApiTags('EUDR')
 @Controller('/api/v1/eudr')
 export class EudrController {
   constructor(
@@ -138,6 +140,22 @@ export class EudrController {
         eudr: true,
       });
     return this.geoRegionsService.serialize(results);
+  }
+
+  @ApiOperation({
+    description: 'Get EUDR alerts dates',
+  })
+  @ApiOkResponse({
+    type: EUDRAlertDates,
+    isArray: true,
+  })
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @Get('/dates')
+  async getAlertDates(
+    @Query(ValidationPipe) dto: GetEUDRAlertsDto,
+  ): Promise<EUDRAlertDates[]> {
+    return this.eudrAlertsService.getDates(dto);
   }
 
   @Get('/alerts')

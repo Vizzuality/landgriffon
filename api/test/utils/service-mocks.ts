@@ -5,7 +5,6 @@ import {
 import { Logger } from '@nestjs/common';
 import {
   EUDRAlertDates,
-  GetEUDRAlertDatesDto,
   IEUDRAlertsRepository,
 } from 'modules/eudr-alerts/eudr.repositoty.interface';
 
@@ -28,7 +27,7 @@ export class MockAlertRepository implements IEUDRAlertsRepository {
     });
   }
 
-  getDates(dto: GetEUDRAlertDatesDto): Promise<EUDRAlertDates[]> {
+  getDates(): Promise<EUDRAlertDates[]> {
     return new Promise((resolve) => {
       resolve([]);
     });

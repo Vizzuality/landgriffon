@@ -1,8 +1,8 @@
-import { GeoJSON } from 'geojson';
-
 export type AlertsOutput = {
   alertCount: boolean;
-  date: Date;
+  alertDate: {
+    value: Date | string;
+  };
   year: number;
   alertConfidence: 'low' | 'medium' | 'high' | 'very high';
 };

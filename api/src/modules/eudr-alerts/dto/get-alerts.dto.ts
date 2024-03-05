@@ -1,8 +1,8 @@
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
   IsDate,
-  IsEnum,
   IsInt,
   IsNumber,
   IsOptional,
@@ -10,21 +10,25 @@ import {
 } from 'class-validator';
 
 export class GetEUDRAlertsDto {
+  @ApiPropertyOptional()
   @IsOptional()
   @IsArray()
   @IsUUID('4', { each: true })
   supplierIds: string[];
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsArray()
   @IsUUID('4', { each: true })
   geoRegionIds: string[];
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()
   @Type(() => Number)
   startYear: number;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()
   @Type(() => Number)
@@ -32,16 +36,19 @@ export class GetEUDRAlertsDto {
 
   alertConfidence: 'high' | 'medium' | 'low';
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsDate()
   @Type(() => Date)
   startAlertDate: Date;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsDate()
   @Type(() => Date)
   endAlertDate: Date;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsInt()
   limit: number = 1000;

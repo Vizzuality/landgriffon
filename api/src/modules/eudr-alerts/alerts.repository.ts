@@ -13,7 +13,6 @@ import { DataSource, SelectQueryBuilder } from 'typeorm';
 import { AlertsOutput } from 'modules/eudr-alerts/dto/alerts-output.dto';
 import {
   EUDRAlertDates,
-  GetEUDRAlertDatesDto,
   IEUDRAlertsRepository,
 } from 'modules/eudr-alerts/eudr.repositoty.interface';
 import { GetEUDRAlertsDto } from 'modules/eudr-alerts/dto/get-alerts.dto';
@@ -52,6 +51,23 @@ export class AlertsRepository implements IEUDRAlertsRepository {
     queryBuilder.addSelect('alertconfidence', 'alertConfidence');
     queryBuilder.addSelect('year', 'alertYear');
     queryBuilder.addSelect('alertcount', 'alertCount');
+    return this.query(queryBuilder, dto);
+  }
+
+  async getDates(dto: GetEUDRAlertsDto): Promise<EUDRAlertDates[]> {
+    const queryBuilder: SelectQueryBuilder<AlertsOutput> =
+      this.dataSource.createQueryBuilder();
+    queryBuilder.from(this.baseDataset, 'alerts');
+    queryBuilder.select('alertdate', 'alertDate');
+    queryBuilder.orderBy('alertdate', 'ASC');
+    queryBuilder.groupBy('alertdate');
+    return this.query(queryBuilder, dto);
+  }
+
+  private async query(
+    queryBuilder: SelectQueryBuilder<any>,
+    dto?: GetEUDRAlertsDto,
+  ): Promise<any> {
     try {
       const response: SimpleQueryRowsResponse = await this.bigQueryClient.query(
         this.buildQuery(queryBuilder, dto),
@@ -67,10 +83,6 @@ export class AlertsRepository implements IEUDRAlertsRepository {
         'Unable to retrieve EUDR Data. Please contact your administrator.',
       );
     }
-  }
-
-  getDates(dto: GetEUDRAlertDatesDto): Promise<EUDRAlertDates[]> {
-    return [] as any;
   }
 
   private buildQuery(

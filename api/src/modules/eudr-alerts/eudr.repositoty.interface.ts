@@ -1,19 +1,19 @@
 import { GetEUDRAlertsDto } from 'modules/eudr-alerts/dto/get-alerts.dto';
 import { AlertsOutput } from 'modules/eudr-alerts/dto/alerts-output.dto';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class GetEUDRAlertDatesDto {
-  startDate: string;
-  endDate: string;
+class DateValue {
+  @ApiProperty()
+  value: Date | string;
 }
 
-export type EUDRAlertDates = {
-  alertDate: {
-    value: Date | string;
-  };
-};
+export class EUDRAlertDates {
+  @ApiProperty()
+  alertDate: DateValue;
+}
 
 export interface IEUDRAlertsRepository {
   getAlerts(dto?: GetEUDRAlertsDto): Promise<AlertsOutput[]>;
 
-  getDates(dto: GetEUDRAlertDatesDto): Promise<EUDRAlertDates[]>;
+  getDates(dto: GetEUDRAlertsDto): Promise<EUDRAlertDates[]>;
 }

@@ -57,6 +57,24 @@ variable "sendgrid_api_key" {
   description = "The Sendgrid API key used for sending emails"
 }
 
+variable "eudr_credentials" {
+  type = object({
+    type                        = string
+    project_id                  = string
+    private_key                 = string
+    private_key_id              = string
+    client_email                = string
+    client_id                   = string
+    auth_uri                    = string
+    client_x509_cert_url        = string
+    token_uri                   = string
+    auth_provider_x509_cert_url = string
+    universe_domain             = string
+  })
+  sensitive   = true
+  description = "Service Account credentials to access EUDR Data"
+}
+
 variable "repo_name" {
   type        = string
   description = "Name of the github repo where the project is hosted"

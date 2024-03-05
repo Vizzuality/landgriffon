@@ -8,6 +8,7 @@ import * as compression from 'compression';
 import { JwtAuthGuard } from 'guards/jwt-auth.guard';
 import { useContainer } from 'class-validator';
 import { SensitiveInfoGuard } from 'guards/sensitive-info.guard';
+import { createOrUpdateSwaggerSpec } from 'create-swagger-specification';
 
 async function bootstrap(): Promise<void> {
   const logger: Logger = new Logger('bootstrap');
@@ -34,6 +35,8 @@ async function bootstrap(): Promise<void> {
     swaggerOptions,
   );
   SwaggerModule.setup('/swagger', app, swaggerDocument);
+
+  await createOrUpdateSwaggerSpec(swaggerDocument);
 
   app.useGlobalPipes(
     new ValidationPipe({

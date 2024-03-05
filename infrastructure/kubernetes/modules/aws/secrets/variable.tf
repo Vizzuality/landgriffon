@@ -29,3 +29,9 @@ variable "sendgrid_api_key" {
   sensitive   = true
   description = "The SendGrid API key used for sending emails"
 }
+
+variable "eudr_credentials" {
+  type        = string
+  sensitive   = true
+  description = "Service Account credentials to access EUDR Data"
+}

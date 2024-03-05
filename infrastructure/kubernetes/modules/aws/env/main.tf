@@ -30,12 +30,12 @@ locals {
         value = "true"
       },
       {
-        name  = "USE_NEW_METHODOLOGY"
-        value = "true"
-      },
-      {
         name  = "FILE_SIZE_LIMIT"
         value = 31457280
+      },
+      {
+        name  = "EUDR_DATASET"
+        value = "cartobq.eudr.mock_data_optimized"
       }
     ] : env.name => env.value
   }
@@ -136,7 +136,13 @@ module "k8s_api" {
       name        = "SENDGRID_API_KEY"
       secret_name = "api"
       secret_key  = "SENDGRID_API_KEY"
+    },
+    {
+      name        = "EUDR_CREDENTIALS"
+      secret_name = "api"
+      secret_key  = "EUDR_CREDENTIALS"
     }
+
 
   ])
 
@@ -260,6 +266,7 @@ module "k8s_data_import" {
   ]
 }
 
+
 module "k8s_secrets" {
   source             = "../secrets"
   tf_state_bucket    = var.tf_state_bucket
@@ -268,6 +275,7 @@ module "k8s_secrets" {
   namespace          = var.environment
   gmaps_api_key      = var.gmaps_api_key
   sendgrid_api_key   = var.sendgrid_api_key
+  eudr_credentials   = var.eudr_credentials
 
   depends_on = [
     module.k8s_namespace

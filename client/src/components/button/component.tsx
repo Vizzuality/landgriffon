@@ -1,9 +1,9 @@
 import React from 'react';
-import classNames from 'classnames';
 import Link from 'next/link';
 import { pickBy } from 'lodash-es';
 
 import Loading from 'components/loading';
+import { cn } from '@/lib/utils';
 
 import type { LinkProps } from 'next/link';
 import type { FC } from 'react';
@@ -53,7 +53,7 @@ const PRIMARY =
 const BASE_BORDER =
   'border bg-transparent focus:outline-offset-2 focus:outline focus:outline-none focus:ring-1';
 
-const SECONDARY = classNames(
+const SECONDARY = cn(
   BASE_BORDER,
   'border border-gray-300 focus:border-navy-400 text-gray-600 hover:bg-gray-50 focus:ring-green-700',
 );
@@ -61,7 +61,7 @@ const SECONDARY = classNames(
 const TERTIARY =
   'border-transparent shadow-sm text-white bg-gray-500 hover:bg-gray-600 focus:outline-offset-2 focus:outline focus:outline-gray-500/20';
 
-const PRIMARY_LIGHT = classNames(BASE_BORDER, 'text-navy-400 border-navy-400');
+const PRIMARY_LIGHT = cn(BASE_BORDER, 'text-navy-400 border-navy-400');
 
 export const THEME = {
   default: COMMON_CLASSNAMES,
@@ -106,7 +106,7 @@ const buildClassName = ({
   size,
   variant,
 }: ButtonProps | AnchorProps) =>
-  classNames(
+  cn(
     classes.base,
     danger ? classes.variant[variant].danger : classes.variant[variant].default,
     classes.size[size],
@@ -121,7 +121,7 @@ const ButtonTemplate: React.FC<AnchorButtonProps> = ({ danger, icon, loading, si
     {!loading && icon && (
       <div className="mr-2">
         {React.cloneElement(icon, {
-          className: classNames(
+          className: cn(
             {
               'w-3 h-3': size === 'xs',
               'w-4 h-4': size !== 'xs',
@@ -134,7 +134,7 @@ const ButtonTemplate: React.FC<AnchorButtonProps> = ({ danger, icon, loading, si
     )}
     {loading && (
       <Loading
-        className={classNames('mr-2', {
+        className={cn('mr-2', {
           'h-3 w-3': size === 'xs',
           'h-4 w-4': size !== 'xs',
           'text-gray-900': variant === 'white' && !danger,

@@ -165,75 +165,7 @@ const SuppliersStackedBar = () => {
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <div className="space-y-1">
-        <CategoryList />
-        {/* <Collapsible className="rounded-xl bg-gray-50 p-5">
-          <CollapsibleTrigger className="w-full">
-            <div className="flex w-full items-center space-x-6">
-              <div className="flex-1 text-left">Deforestation-free suppliers</div>
-              <div className="shrink-0 grow-0">
-                <div>
-                  31% <span className="text-xs">of suppliers</span>
-                </div>
-                <div className="h-[2px] w-[340px] bg-gray-200">
-                  <div className="h-[2px] bg-[#4AB7F3]" style={{ width: '31%' }} />
-                </div>
-              </div>
-
-              <Button type="button" size="xs" variant="white">
-                View details
-              </Button>
-            </div>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <div>test</div>
-          </CollapsibleContent>
-        </Collapsible>
-        <Collapsible className="rounded-xl bg-gray-50 p-5">
-          <CollapsibleTrigger className="w-full">
-            <div className="flex w-full items-center space-x-6">
-              <div className="flex-1 text-left">Suppliers with deforestation alerts</div>
-              <div className="shrink-0 grow-0">
-                <div>
-                  36% <span className="text-xs">of suppliers</span>
-                </div>
-                <div className="h-[2px] w-[340px] bg-gray-200">
-                  <div className="h-[2px] bg-[#FFC038]" style={{ width: '31%' }} />
-                </div>
-              </div>
-              <Button type="button" size="xs" variant="white">
-                View details
-              </Button>
-            </div>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <div>test</div>
-          </CollapsibleContent>
-        </Collapsible>
-        <Collapsible className="rounded-xl bg-gray-50 p-5">
-          <CollapsibleTrigger className="w-full">
-            <div className="flex w-full items-center space-x-6">
-              <div className="flex-1">Suppliers with no location data</div>
-              <div className="shrink-0 grow-0">
-                <div>
-                  33% <span className="text-xs">of suppliers</span>
-                </div>
-                <div className="h-[2px] w-[340px] bg-gray-200">
-                  <div className="h-[2px] bg-[#8460FF]" style={{ width: '31%' }} />
-                </div>
-              </div>
-              <div>
-                <Button type="button" size="xs" variant="white">
-                  View details
-                </Button>
-              </div>
-            </div>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <div>test</div>
-          </CollapsibleContent>
-        </Collapsible> */}
-      </div>
+      <CategoryList />
     </div>
   );
 };

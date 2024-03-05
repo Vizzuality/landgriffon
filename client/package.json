@@ -73,6 +73,7 @@
     "react-map-gl": "7.1.7",
     "react-range": "1.8.14",
     "react-redux": "8.0.2",
+    "react-world-flags": "1.6.0",
     "recharts": "2.9.0",
     "rooks": "7.14.1",
     "sharp": "0.32.6",

@@ -104,8 +104,10 @@ export class SourcingLocation extends TimestampedBaseEntity {
     (geoRegion: GeoRegion) => geoRegion.sourcingLocations,
     { eager: true },
   )
+  @JoinColumn({ name: 'geoRegionId' })
   geoRegion: GeoRegion;
 
+  @Index()
   @Column({ nullable: true })
   @ApiPropertyOptional()
   geoRegionId: string;

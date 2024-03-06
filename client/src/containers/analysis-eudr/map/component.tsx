@@ -5,6 +5,7 @@ import Map from 'react-map-gl/maplibre';
 import { type MapViewState } from '@deck.gl/core/typed';
 
 import ZoomControl from './zoom';
+import LegendControl from './legend';
 
 import BasemapControl from '@/components/map/controls/basemap';
 import { INITIAL_VIEW_STATE, MAP_STYLES } from '@/components/map';
@@ -58,6 +59,7 @@ const EUDRMap = () => {
       <div className="absolute bottom-10 right-6 z-10 w-10 space-y-2">
         <BasemapControl value={mapStyle} onChange={handleMapStyleChange} />
         <ZoomControl viewState={viewState} onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} />
+        <LegendControl />
       </div>
     </>
   );

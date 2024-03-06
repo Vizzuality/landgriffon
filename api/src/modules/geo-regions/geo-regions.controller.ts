@@ -6,7 +6,6 @@ import {
   Param,
   Patch,
   Post,
-  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -36,7 +35,6 @@ import {
 import { CreateGeoRegionDto } from 'modules/geo-regions/dto/create.geo-region.dto';
 import { UpdateGeoRegionDto } from 'modules/geo-regions/dto/update.geo-region.dto';
 import { PaginationMeta } from 'utils/app-base.service';
-import { GetEUDRGeoRegions } from './dto/get-geo-region.dto';
 
 @Controller(`/api/v1/geo-regions`)
 @ApiTags(geoRegionResource.className)

@@ -20,6 +20,7 @@ import * as wellknown from 'wellknown';
 import { DataSource, QueryRunner, Repository } from 'typeorm';
 import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
+import { Geometry } from 'geojson';
 
 /**
  * @debt: Define a more accurate DTO / Interface / Class for API-DB trades
@@ -87,7 +88,7 @@ export class EUDRDTOProcessor {
         const geoRegion: GeoRegion = new GeoRegion();
         let savedGeoRegion: GeoRegion;
         geoRegion.totalArea = row.total_area_ha;
-        geoRegion.theGeom = wellknown.parse(row.geometry) as unknown as JSON;
+        geoRegion.theGeom = wellknown.parse(row.geometry) as Geometry;
         geoRegion.isCreatedByUser = true;
         geoRegion.name = row.plot_name;
         const foundGeoRegion: GeoRegion | null =

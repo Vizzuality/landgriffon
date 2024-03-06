@@ -10,6 +10,7 @@ import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { BaseServiceResource } from 'types/resource.interface';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { Geometry } from 'geojson';
 
 export const geoRegionResource: BaseServiceResource = {
   className: 'GeoRegion',
@@ -47,7 +48,7 @@ export class GeoRegion extends BaseEntity {
     nullable: true,
   })
   @ApiPropertyOptional()
-  theGeom?: JSON;
+  theGeom?: Geometry;
 
   // TODO: It might be interesting to add a trigger to calculate the value in case it's not provided. We are considering that EUDR will alwaus provide the value
   //  but not the regular ingestion

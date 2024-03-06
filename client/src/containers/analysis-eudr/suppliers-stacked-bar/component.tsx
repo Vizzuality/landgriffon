@@ -92,7 +92,7 @@ const SuppliersStackedBar = () => {
         <div className="flex items-center justify-between">
           <h3>Suppliers by category</h3>
           <div className="flex space-x-2">
-            <div className="text-2xs uppercase">View by:</div>
+            <div className="text-2xs uppercase text-gray-400">View by:</div>
             <RadioGroup
               defaultValue={viewBy}
               className="flex items-center space-x-2"

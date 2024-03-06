@@ -10,6 +10,7 @@ import Map from 'components/map';
 import LayerManager from 'components/map/layer-manager';
 import SuppliersStackedBar from '@/containers/analysis-eudr/suppliers-stacked-bar';
 import EUDRFilters from '@/containers/analysis-eudr/filters/component';
+import SupplierListTable from '@/containers/analysis-eudr/supplier-list-table';
 
 import type { NextPageWithLayout } from 'pages/_app';
 import type { ReactElement } from 'react';
@@ -44,8 +45,9 @@ const MapPage: NextPageWithLayout = () => {
                 <h2>EUDR complience Analysis</h2>
                 <EUDRFilters />
               </div>
-              <div className="flex-1 bg-white px-6 py-8">
+              <div className="flex-1 space-y-7 bg-white px-6 py-8">
                 <SuppliersStackedBar />
+                <SupplierListTable />
               </div>
             </div>
           </Transition>

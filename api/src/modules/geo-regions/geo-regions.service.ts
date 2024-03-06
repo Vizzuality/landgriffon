@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
@@ -122,6 +122,6 @@ export class GeoRegionsService extends AppBaseService<
   async getGeoJson(
     dto: GetFeaturesGeoJsonDto | GetEUDRFeaturesGeoJSONDto,
   ): Promise<any> {
-    return this.geoFeatures.getGeoJson(dto);
+    return this.geoFeatures.getGeoFeatures(dto);
   }
 }

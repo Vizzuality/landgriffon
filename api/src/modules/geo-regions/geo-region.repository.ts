@@ -7,11 +7,9 @@ import {
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { LocationGeoRegionDto } from 'modules/geo-regions/dto/location.geo-region.dto';
 import { Injectable } from '@nestjs/common';
-import { GetAdminRegionTreeWithOptionsDto } from '../admin-regions/dto/get-admin-region-tree-with-options.dto';
-import { AdminRegion } from '../admin-regions/admin-region.entity';
-import { SourcingLocation } from '../sourcing-locations/sourcing-location.entity';
-import { BaseQueryBuilder } from '../../utils/base.query-builder';
-import { GetEUDRGeoRegions } from './dto/get-geo-region.dto';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { BaseQueryBuilder } from 'utils/base.query-builder';
+import { GetEUDRGeoRegions } from 'modules/geo-regions/dto/get-geo-region.dto';
 
 @Injectable()
 export class GeoRegionRepository extends Repository<GeoRegion> {

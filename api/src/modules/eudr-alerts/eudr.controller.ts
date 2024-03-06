@@ -6,14 +6,15 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import {
+  ApiExtraModels,
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
+  refs,
 } from '@nestjs/swagger';
-import { Response } from 'express';
-import { Writable } from 'stream';
+
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { SetScenarioIdsInterceptor } from 'modules/impact/set-scenario-ids.interceptor';
@@ -35,6 +36,12 @@ import { GetEUDRGeoRegions } from 'modules/geo-regions/dto/get-geo-region.dto';
 import { EudrService } from 'modules/eudr-alerts/eudr.service';
 import { GetEUDRAlertsDto } from 'modules/eudr-alerts/dto/get-alerts.dto';
 import { EUDRAlertDates } from 'modules/eudr-alerts/eudr.repositoty.interface';
+import { GetEUDRFeaturesGeoJSONDto } from 'modules/geo-regions/dto/get-features-geojson.dto';
+import { Feature, FeatureCollection } from 'geojson';
+import {
+  GeoFeatureCollectionResponse,
+  GeoFeatureResponse,
+} from '../geo-regions/dto/geo-feature-response.dto';
 
 @ApiTags('EUDR')
 @Controller('/api/v1/eudr')
@@ -163,19 +170,31 @@ export class EudrController {
     return this.eudrAlertsService.getAlerts(dto);
   }
 
-  streamResponse(response: Response, stream: Writable): any {
-    stream.on('data', (data: any) => {
-      const json: string = JSON.stringify(data);
-      response.write(json + '\n');
-    });
+  @ApiOperation({
+    description: 'Get a Feature List GeoRegion Ids',
+  })
+  @ApiOkResponse({ type: GeoFeatureResponse, isArray: true })
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @Get('/geo-features')
+  async getGeoFeatureList(
+    @Query(ValidationPipe) dto: GetEUDRFeaturesGeoJSONDto,
+  ): Promise<GeoFeatureResponse[]> {
+    return this.geoRegionsService.getGeoJson(dto);
+  }
 
-    stream.on('end', () => {
-      response.end();
-    });
-
-    stream.on('error', (error: any) => {
-      console.error('Stream error:', error);
-      response.status(500).send('Error processing stream');
-    });
+  @ApiOperation({
+    description: 'Get a Feature Collection by GeoRegion Ids',
+  })
+  @ApiOkResponse({ type: GeoFeatureCollectionResponse })
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @Get('/geo-features/collection')
+  async getGeoFeatureCollection(
+    @Query(ValidationPipe) dto: GetEUDRFeaturesGeoJSONDto,
+  ): Promise<GeoFeatureCollectionResponse> {
+    return this.geoRegionsService.getGeoJson(
+      Object.assign(dto, { collection: true }),
+    );
   }
 }

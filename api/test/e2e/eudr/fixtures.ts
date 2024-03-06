@@ -2,12 +2,19 @@ import {
   LOCATION_TYPES,
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
-import { createAdminRegion, createSourcingLocation } from '../../entity-mocks';
+import {
+  createAdminRegion,
+  createGeoRegion,
+  createMaterial,
+  createSourcingLocation,
+  createSupplier,
+} from '../../entity-mocks';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
-import { AndAssociatedMaterials } from '../../common-steps/and-associated-materials';
-import { AndAssociatedSuppliers } from '../../common-steps/and-associated-suppliers';
 import { TestManager } from '../../utils/test-manager';
 import { GeoRegion } from '../../../src/modules/geo-regions/geo-region.entity';
+import { Material } from 'modules/materials/material.entity';
+import { generateRandomName } from '../../utils/generate-random-name';
+import { Supplier } from '../../../src/modules/suppliers/supplier.entity';
 
 export class EUDRTestManager extends TestManager {
   url = '/api/v1/eudr';
@@ -38,17 +45,29 @@ export class EUDRTestManager extends TestManager {
     sourcingLocations: SourcingLocation[],
     materialNames?: string[],
   ) => {
-    const materials = await this.createMaterials(materialNames);
-    await AndAssociatedMaterials(materials, sourcingLocations);
-    return materials;
+    const materials: Material[] = [];
+    for (const name of materialNames || [generateRandomName()]) {
+      materials.push(await createMaterial({ name }));
+    }
+    const limitLength = Math.min(materials.length, sourcingLocations.length);
+    for (let i = 0; i < limitLength; i++) {
+      sourcingLocations[i].materialId = materials[i].id;
+      await sourcingLocations[i].save();
+    }
   };
   AndAssociatedSuppliers = async (
     sourcingLocations: SourcingLocation[],
     supplierNames?: string[],
   ) => {
-    const suppliers = await this.createSuppliers(supplierNames);
-    await AndAssociatedSuppliers(suppliers, sourcingLocations);
-    return suppliers;
+    const suppliers: Supplier[] = [];
+    for (const name of supplierNames || [generateRandomName()]) {
+      suppliers.push(await createSupplier({ name }));
+    }
+    const limitLength = Math.min(suppliers.length, sourcingLocations.length);
+    for (let i = 0; i < limitLength; i++) {
+      sourcingLocations[i].materialId = suppliers[i].id;
+      await sourcingLocations[i].save();
+    }
   };
   GivenEUDRAdminRegions = async () => {
     const adminRegion = await createAdminRegion({
@@ -80,8 +99,8 @@ export class EUDRTestManager extends TestManager {
   ThenIShouldOnlyReceiveCorrespondingAdminRegions = (
     eudrAdminRegions: AdminRegion[],
   ) => {
-    expect(this.response!.status).toBe(200);
-    expect(this.response!.body.data.length).toBe(eudrAdminRegions.length);
+    expect(this.response?.status).toBe(200);
+    expect(this.response?.body.data.length).toBe(eudrAdminRegions.length);
     for (const adminRegion of eudrAdminRegions) {
       expect(
         this.response!.body.data.find(
@@ -93,10 +112,9 @@ export class EUDRTestManager extends TestManager {
   };
 
   GivenGeoRegionsOfSourcingLocations = async () => {
-    const [geoRegion, geoRegion2] = await this.createGeoRegions([
-      'Regular GeoRegion',
-      'Regular GeoRegion 2',
-    ]);
+    const geoRegion = await createGeoRegion({ name: 'Regular GeoRegion' });
+    const geoRegion2 = await createGeoRegion({ name: 'Regular GeoRegion 2' });
+
     await createSourcingLocation({ geoRegionId: geoRegion.id });
     await createSourcingLocation({ geoRegionId: geoRegion2.id });
     return {
@@ -105,10 +123,9 @@ export class EUDRTestManager extends TestManager {
   };
 
   GivenEUDRGeoRegions = async () => {
-    const [geoRegion, geoRegion2] = await this.createGeoRegions([
-      'EUDR GeoRegion',
-      'EUDR GeoRegion 2',
-    ]);
+    const geoRegion = await createGeoRegion({ name: 'EUDR GeoRegion' });
+    const geoRegion2 = await createGeoRegion({ name: 'EUDR GeoRegion 2' });
+
     await createSourcingLocation({
       geoRegionId: geoRegion.id,
       locationType: LOCATION_TYPES.EUDR,

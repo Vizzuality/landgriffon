@@ -1,9 +1,19 @@
-import { createGeoRegion, createSourcingLocation } from '../../entity-mocks';
+import {
+  createAdminRegion,
+  createGeoRegion,
+  createMaterial,
+  createSourcingLocation,
+  createSupplier,
+} from '../../entity-mocks';
 import * as request from 'supertest';
 import { GeoRegion } from '../../../src/modules/geo-regions/geo-region.entity';
-import { LOCATION_TYPES } from '../../../src/modules/sourcing-locations/sourcing-location.entity';
+import {
+  LOCATION_TYPES,
+  SourcingLocation,
+} from '../../../src/modules/sourcing-locations/sourcing-location.entity';
 import { TestManager } from '../../utils/test-manager';
 import { Feature } from 'geojson';
+import { SUPPLIER_TYPES } from 'modules/suppliers/supplier.entity';
 
 export class GeoRegionsTestManager extends TestManager {
   constructor(manager: TestManager) {
@@ -38,13 +48,33 @@ export class GeoRegionsTestManager extends TestManager {
     const geoRegion2 = await createGeoRegion({
       name: this.generateRandomName(),
     });
+
+    const adminRegion = await createAdminRegion({ name: 'EUDR AdminRegion' });
+    const adminRegion2 = await createAdminRegion({
+      name: 'EUDR AdminRegion 2',
+    });
+
+    const supplier = await createSupplier({
+      name: 'EUDR Supplier',
+    });
+
+    const material = await createMaterial({ name: 'EUDR Material' });
+    const material2 = await createMaterial({ name: 'EUDR Material 2' });
+
+    const supplier2 = await createSupplier({ name: 'EUDR Supplier 2' });
     const sourcingLocation1 = await createSourcingLocation({
       geoRegionId: geoRegion.id,
       locationType: LOCATION_TYPES.EUDR,
+      adminRegionId: adminRegion.id,
+      producerId: supplier.id,
+      materialId: material.id,
     });
     const sourcingLocation2 = await createSourcingLocation({
       geoRegionId: geoRegion2.id,
       locationType: LOCATION_TYPES.EUDR,
+      adminRegionId: adminRegion2.id,
+      producerId: supplier2.id,
+      materialId: material2.id,
     });
     return {
       eudrGeoRegions: [geoRegion, geoRegion2],
@@ -63,7 +93,10 @@ export class GeoRegionsTestManager extends TestManager {
   };
 
   WhenIRequestEUDRGeoFeatureCollection = async (filters: {
-    'geoRegionIds[]': string[];
+    'geoRegionIds[]'?: string[];
+    'producerIds[]'?: string[];
+    'materialIds[]'?: string[];
+    'originIds[]'?: string[];
   }): Promise<void> => {
     this.response = await request(this.testApp.getHttpServer())
       .get('/api/v1/eudr/geo-features/collection')

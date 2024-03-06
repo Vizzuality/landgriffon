@@ -6,13 +6,11 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import {
-  ApiExtraModels,
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
-  refs,
 } from '@nestjs/swagger';
 
 import { ApiOkTreeResponse } from 'decorators/api-tree-response.decorator';
@@ -37,11 +35,10 @@ import { EudrService } from 'modules/eudr-alerts/eudr.service';
 import { GetEUDRAlertsDto } from 'modules/eudr-alerts/dto/get-alerts.dto';
 import { EUDRAlertDates } from 'modules/eudr-alerts/eudr.repositoty.interface';
 import { GetEUDRFeaturesGeoJSONDto } from 'modules/geo-regions/dto/get-features-geojson.dto';
-import { Feature, FeatureCollection } from 'geojson';
 import {
   GeoFeatureCollectionResponse,
   GeoFeatureResponse,
-} from '../geo-regions/dto/geo-feature-response.dto';
+} from 'modules/geo-regions/dto/geo-feature-response.dto';
 
 @ApiTags('EUDR')
 @Controller('/api/v1/eudr')
@@ -180,7 +177,7 @@ export class EudrController {
   async getGeoFeatureList(
     @Query(ValidationPipe) dto: GetEUDRFeaturesGeoJSONDto,
   ): Promise<GeoFeatureResponse[]> {
-    return this.geoRegionsService.getGeoJson(dto);
+    return this.geoRegionsService.getGeoJson({ ...dto, eudr: true });
   }
 
   @ApiOperation({
@@ -193,8 +190,10 @@ export class EudrController {
   async getGeoFeatureCollection(
     @Query(ValidationPipe) dto: GetEUDRFeaturesGeoJSONDto,
   ): Promise<GeoFeatureCollectionResponse> {
-    return this.geoRegionsService.getGeoJson(
-      Object.assign(dto, { collection: true }),
-    );
+    return this.geoRegionsService.getGeoJson({
+      ...dto,
+      eudr: true,
+      collection: true,
+    });
   }
 }

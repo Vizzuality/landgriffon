@@ -6,10 +6,8 @@ import {
   GetEUDRFeaturesGeoJSONDto,
   GetFeaturesGeoJsonDto,
 } from 'modules/geo-regions/dto/get-features-geojson.dto';
-import {
-  LOCATION_TYPES,
-  SourcingLocation,
-} from 'modules/sourcing-locations/sourcing-location.entity';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { BaseQueryBuilder } from 'utils/base.query-builder';
 
 @Injectable()
 export class GeoFeaturesService extends Repository<GeoRegion> {
@@ -25,20 +23,14 @@ export class GeoFeaturesService extends Repository<GeoRegion> {
     const queryBuilder: SelectQueryBuilder<GeoRegion> =
       this.createQueryBuilder('gr');
     queryBuilder.innerJoin(SourcingLocation, 'sl', 'sl.geoRegionId = gr.id');
-    if (dto.isEUDRRequested()) {
-      queryBuilder.where('sl.locationType = :locationType', {
-        locationType: LOCATION_TYPES.EUDR,
-      });
-    }
-    if (dto.geoRegionIds) {
-      queryBuilder.andWhere('gr.id IN (:...geoRegionIds)', {
-        geoRegionIds: dto.geoRegionIds,
-      });
-    }
+
+    const filteredQueryBuilder: SelectQueryBuilder<GeoRegion> =
+      BaseQueryBuilder.addFilters(queryBuilder, dto);
+
     if (dto?.collection) {
-      return this.selectAsFeatureCollection(queryBuilder);
+      return this.selectAsFeatureCollection(filteredQueryBuilder);
     }
-    return this.selectAsFeatures(queryBuilder);
+    return this.selectAsFeatures(filteredQueryBuilder);
   }
 
   private async selectAsFeatures(

@@ -47,6 +47,11 @@ export class BaseQueryBuilder {
         originIds: filters.originIds,
       });
     }
+    if (filters.geoRegionIds) {
+      queryBuilder.andWhere('sl.geoRegionId IN (:...geoRegionIds)', {
+        geoRegionIds: filters.geoRegionIds,
+      });
+    }
     if (filters.eudr) {
       queryBuilder.andWhere('sl.locationType = :eudr', {
         eudr: LOCATION_TYPES.EUDR,
@@ -137,6 +142,8 @@ export class CommonFiltersDto {
   scenarioIds?: string[];
 
   eudr?: boolean;
+
+  geoRegionIds?: string[];
 }
 
 export class CommonEUDRFiltersDTO extends OmitType(CommonFiltersDto, [
@@ -146,4 +153,9 @@ export class CommonEUDRFiltersDTO extends OmitType(CommonFiltersDto, [
   'businessUnitIds',
 ]) {
   eudr?: boolean;
+
+  @ApiPropertyOptional({ name: 'geoRegionIds[]' })
+  @IsOptional()
+  @IsUUID('4', { each: true })
+  geoRegionIds?: string[];
 }

@@ -1,10 +1,9 @@
-import { createSourcingLocation } from '../../entity-mocks';
+import { createGeoRegion, createSourcingLocation } from '../../entity-mocks';
 import * as request from 'supertest';
 import { GeoRegion } from '../../../src/modules/geo-regions/geo-region.entity';
 import { LOCATION_TYPES } from '../../../src/modules/sourcing-locations/sourcing-location.entity';
 import { TestManager } from '../../utils/test-manager';
-import { Feature, Geometry } from 'geojson';
-import { GivenGeoRegionWithGeometry } from '../../common-steps/given-geo-region';
+import { Feature } from 'geojson';
 
 export class GeoRegionsTestManager extends TestManager {
   constructor(manager: TestManager) {
@@ -12,8 +11,12 @@ export class GeoRegionsTestManager extends TestManager {
   }
 
   GivenRegularSourcingLocationsWithGeoRegions = async () => {
-    const geoRegion = await GivenGeoRegionWithGeometry();
-    const geoRegion2 = await GivenGeoRegionWithGeometry();
+    const geoRegion = await createGeoRegion({
+      name: this.generateRandomName(),
+    });
+    const geoRegion2 = await createGeoRegion({
+      name: this.generateRandomName(),
+    });
     const sourcingLocation1 = await createSourcingLocation({
       geoRegionId: geoRegion.id,
       locationType: LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION,
@@ -29,8 +32,12 @@ export class GeoRegionsTestManager extends TestManager {
   };
 
   GivenEUDRSourcingLocationsWithGeoRegions = async () => {
-    const geoRegion = await GivenGeoRegionWithGeometry();
-    const geoRegion2 = await GivenGeoRegionWithGeometry();
+    const geoRegion = await createGeoRegion({
+      name: this.generateRandomName(),
+    });
+    const geoRegion2 = await createGeoRegion({
+      name: this.generateRandomName(),
+    });
     const sourcingLocation1 = await createSourcingLocation({
       geoRegionId: geoRegion.id,
       locationType: LOCATION_TYPES.EUDR,

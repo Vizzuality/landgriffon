@@ -102,7 +102,7 @@ export const CategoryList = (): JSX.Element => {
                 size="xs"
                 variant="white"
                 className={cn(
-                  'w-[98px] rounded-md border-none text-sm shadow-none transition-colors hover:shadow-none',
+                  'w-[98px] rounded-md border-none text-sm text-gray-500 shadow-none transition-colors hover:shadow-none',
                   {
                     'bg-navy-400 text-white hover:bg-navy-600': categories[category.slug],
                   },

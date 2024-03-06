@@ -39,6 +39,7 @@ import { User } from '../src/modules/users/user.entity';
 import { faker } from '@faker-js/faker';
 import { genSalt, hash } from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
+import { generateRandomName } from './utils/generate-random-name';
 
 async function createAdminRegion(
   additionalData: Partial<AdminRegion> = {},

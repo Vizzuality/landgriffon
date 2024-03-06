@@ -11,7 +11,7 @@ import {
 import { Material } from 'modules/materials/material.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
-import { randomName } from './random-name';
+import { generateRandomName } from './generate-random-name';
 
 export class TestManager {
   testApp: TestApplication;
@@ -26,6 +26,10 @@ export class TestManager {
     this.testApp = app;
     this.jwtToken = jwtToken;
     this.dataSource = dataSource;
+  }
+
+  static async load(manager: any) {
+    return new manager(await this.createManager());
   }
 
   static async createManager() {
@@ -68,7 +72,7 @@ export class TestManager {
   }
 
   async createMaterials(names?: string[]) {
-    const namesToCreate = names || [randomName()];
+    const namesToCreate = names || [generateRandomName()];
     const createdMaterials: Material[] = [];
     for (let i = 0; i < namesToCreate.length; i++) {
       createdMaterials.push(await createMaterial({ name: namesToCreate[i] }));
@@ -78,7 +82,7 @@ export class TestManager {
   }
 
   async createSuppliers(names?: string[]) {
-    const namesToCreate = names || [randomName()];
+    const namesToCreate = names || [generateRandomName()];
     const createdSuppliers: Supplier[] = [];
     for (let i = 0; i < namesToCreate.length; i++) {
       createdSuppliers.push(await createSupplier({ name: namesToCreate[i] }));
@@ -88,7 +92,7 @@ export class TestManager {
   }
 
   async createGeoRegions(names?: string[]) {
-    const namesToCreate = names || [randomName()];
+    const namesToCreate = names || [generateRandomName()];
     const createdGeoRegions: GeoRegion[] = [];
     for (let i = 0; i < namesToCreate.length; i++) {
       createdGeoRegions.push(await createGeoRegion({ name: namesToCreate[i] }));

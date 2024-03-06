@@ -6,8 +6,7 @@ import { tasksSSR } from 'services/ssr';
 import ApplicationLayout from 'layouts/application';
 import CollapseButton from 'containers/collapse-button/component';
 import TitleTemplate from 'utils/titleTemplate';
-import Map from 'components/map';
-import LayerManager from 'components/map/layer-manager';
+import Map from 'containers/analysis-eudr/map';
 import SuppliersStackedBar from '@/containers/analysis-eudr/suppliers-stacked-bar';
 import EUDRFilters from '@/containers/analysis-eudr/filters/component';
 import SupplierListTable from '@/containers/analysis-eudr/supplier-list-table';
@@ -54,30 +53,7 @@ const MapPage: NextPageWithLayout = () => {
         </aside>
 
         <section className="relative flex h-screen flex-1 flex-col overflow-auto">
-          <Map id="eudr-map">
-            {() => (
-              <>
-                <LayerManager layers={[]} />
-                {/* {tooltipData && tooltipData.data?.v && (
-                  <PopUp
-                    position={{
-                      ...tooltipData.viewport,
-                      x: tooltipData.x,
-                      y: tooltipData.y,
-                    }}
-                  >
-                    <div className="space-y-2 rounded-md bg-white p-4 shadow-md">
-                      <div className="text-sm font-semibold text-gray-900">
-                        {tooltipData.data.v}
-                        {tooltipData.data.unit && ` ${tooltipData.data.unit}`}
-                      </div>
-                      <div className="text-xs text-gray-500">{tooltipData.data.name}</div>
-                    </div>
-                  </PopUp>
-                )} */}
-              </>
-            )}
-          </Map>
+          <Map />
         </section>
       </div>
     </MapProvider>

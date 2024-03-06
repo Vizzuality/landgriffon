@@ -16,10 +16,6 @@ export class EUDRTestManager extends TestManager {
     super(manager.testApp, manager.jwtToken, manager.dataSource);
   }
 
-  static async load() {
-    return new EUDRTestManager(await this.createManager());
-  }
-
   GivenAdminRegionsOfSourcingLocations = async () => {
     const adminRegion = await createAdminRegion({
       name: 'Regular AdminRegion',

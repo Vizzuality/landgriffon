@@ -1,4 +1,4 @@
-export const randomName = (length = 10): string => {
+export const generateRandomName = (length = 10): string => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
   let result = '';
   for (let i = 0; i < length; i++) {

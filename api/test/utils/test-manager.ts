@@ -3,11 +3,6 @@ import ApplicationManager, { TestApplication } from './application-manager';
 import { clearTestDataFromDatabase } from './database-test-helper';
 import { setupTestUser } from './userAuth';
 import * as request from 'supertest';
-import {
-  createGeoRegion,
-  createMaterial,
-  createSupplier,
-} from '../entity-mocks';
 import { Material } from 'modules/materials/material.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
@@ -71,33 +66,7 @@ export class TestManager {
     await this.testApp.close();
   }
 
-  async createMaterials(names?: string[]) {
-    const namesToCreate = names || [generateRandomName()];
-    const createdMaterials: Material[] = [];
-    for (let i = 0; i < namesToCreate.length; i++) {
-      createdMaterials.push(await createMaterial({ name: namesToCreate[i] }));
-    }
-    this.materials?.push(...createdMaterials);
-    return createdMaterials;
-  }
-
-  async createSuppliers(names?: string[]) {
-    const namesToCreate = names || [generateRandomName()];
-    const createdSuppliers: Supplier[] = [];
-    for (let i = 0; i < namesToCreate.length; i++) {
-      createdSuppliers.push(await createSupplier({ name: namesToCreate[i] }));
-    }
-    this.suppliers?.push(...createdSuppliers);
-    return createdSuppliers;
-  }
-
-  async createGeoRegions(names?: string[]) {
-    const namesToCreate = names || [generateRandomName()];
-    const createdGeoRegions: GeoRegion[] = [];
-    for (let i = 0; i < namesToCreate.length; i++) {
-      createdGeoRegions.push(await createGeoRegion({ name: namesToCreate[i] }));
-    }
-    this.geoRegions?.push(...createdGeoRegions);
-    return createdGeoRegions;
+  generateRandomName(): string {
+    return generateRandomName();
   }
 }

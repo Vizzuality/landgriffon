@@ -15,7 +15,10 @@ export const IEUDRAlertsRepositoryToken: symbol = Symbol(
 export const EUDRDataSetToken: symbol = Symbol('EUDRDataSet');
 export const EUDRCredentialsToken: symbol = Symbol('EUDRCredentials');
 
-const { credentials, dataset } = AppConfig.get('eudr');
+const { credentials, dataset } = AppConfig.get<{
+  credentials: string;
+  dataset: string;
+}>('eudr');
 
 // TODO: Use token injection and refer to the interface, right now I am having a dependencv issue
 @Module({

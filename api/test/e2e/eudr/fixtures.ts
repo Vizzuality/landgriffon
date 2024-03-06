@@ -54,6 +54,7 @@ export class EUDRTestManager extends TestManager {
       sourcingLocations[i].materialId = materials[i].id;
       await sourcingLocations[i].save();
     }
+    return materials;
   };
   AndAssociatedSuppliers = async (
     sourcingLocations: SourcingLocation[],
@@ -65,9 +66,10 @@ export class EUDRTestManager extends TestManager {
     }
     const limitLength = Math.min(suppliers.length, sourcingLocations.length);
     for (let i = 0; i < limitLength; i++) {
-      sourcingLocations[i].materialId = suppliers[i].id;
+      sourcingLocations[i].producerId = suppliers[i].id;
       await sourcingLocations[i].save();
     }
+    return suppliers;
   };
   GivenEUDRAdminRegions = async () => {
     const adminRegion = await createAdminRegion({

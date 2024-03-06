@@ -1,25 +1,20 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsOptional, IsUUID } from 'class-validator';
+import { IsBoolean, IsOptional } from 'class-validator';
+import {
+  CommonEUDRFiltersDTO,
+  CommonFiltersDto,
+} from 'utils/base.query-builder';
 
-export class GetFeaturesGeoJsonDto {
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsUUID('4', { each: true })
-  geoRegionIds!: string[];
-
+export class GetFeaturesGeoJsonDto extends CommonFiltersDto {
   @IsOptional()
   @IsBoolean()
   @Type(() => Boolean)
   collection: boolean = false;
-
-  isEUDRRequested(): boolean {
-    return 'eudr' in this;
-  }
 }
 
-export class GetEUDRFeaturesGeoJSONDto extends GetFeaturesGeoJsonDto {
+export class GetEUDRFeaturesGeoJSONDto extends CommonEUDRFiltersDTO {
   @IsOptional()
   @IsBoolean()
-  eudr: boolean = true;
+  @Type(() => Boolean)
+  collection: boolean = false;
 }

@@ -1,5 +1,6 @@
 import { EUDRTestManager } from './fixtures';
 import { TestManager } from '../../utils/test-manager';
+import { Supplier } from '../../../src/modules/suppliers/supplier.entity';
 
 describe('Admin Regions EUDR Filters (e2e)', () => {
   let testManager: EUDRTestManager;
@@ -43,7 +44,7 @@ describe('Admin Regions EUDR Filters (e2e)', () => {
       );
       await testManager.WhenIRequestEUDRAdminRegions({
         'materialIds[]': [eudrMaterials[0].id],
-        'producerIds[]': eudrSuppliers.map((s) => s.id),
+        'producerIds[]': eudrSuppliers.map((s: Supplier) => s.id),
       });
       testManager.ThenIShouldOnlyReceiveCorrespondingAdminRegions([
         eudrAdminRegions[0],

@@ -41,7 +41,21 @@ describe('Admin Regions EUDR Filters (e2e)', () => {
       eudrGeoRegions[0],
     ]);
   });
-  test('sould only get EUDR geo-features as a FeatureCollection', async () => {
+  test('should only get EUDR geo-features filtered by materials, suppliers and admin regions', async () => {
+    const {} = await testManager.GivenRegularSourcingLocationsWithGeoRegions();
+    const { eudrSourcingLocations, eudrGeoRegions } =
+      await testManager.GivenEUDRSourcingLocationsWithGeoRegions();
+    await testManager.WhenIRequestEUDRGeoFeatureCollection({
+      'materialIds[]': [eudrSourcingLocations[0].materialId],
+      'producerIds[]': [eudrSourcingLocations[0].producerId as string],
+      'originIds[]': [eudrSourcingLocations[0].adminRegionId],
+    });
+    testManager.ThenIShouldOnlyRecieveCorrespondingGeoFeatures(
+      [eudrGeoRegions[0]],
+      true,
+    );
+  });
+  test('sould only get EUDR geo-features as a FeatureCollection and filtered by geo regions', async () => {
     await testManager.GivenRegularSourcingLocationsWithGeoRegions();
     const { eudrGeoRegions } =
       await testManager.GivenEUDRSourcingLocationsWithGeoRegions();

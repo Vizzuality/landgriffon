@@ -7,6 +7,7 @@ import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
 import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { MaterialsModule } from 'modules/materials/materials.module';
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
+import { GeoFeaturesService } from 'modules/geo-regions/geo-features.service';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { SuppliersModule } from 'modules/suppliers/suppliers.module';
     SuppliersModule,
   ],
   controllers: [GeoRegionsController],
-  providers: [GeoRegionsService, GeoRegionRepository],
+  providers: [GeoRegionsService, GeoRegionRepository, GeoFeaturesService],
   exports: [GeoRegionsService, GeoRegionRepository],
 })
 export class GeoRegionsModule {}

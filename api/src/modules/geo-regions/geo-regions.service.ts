@@ -12,12 +12,14 @@ import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
 import { CreateGeoRegionDto } from 'modules/geo-regions/dto/create.geo-region.dto';
 import { UpdateGeoRegionDto } from 'modules/geo-regions/dto/update.geo-region.dto';
 import { LocationGeoRegionDto } from 'modules/geo-regions/dto/location.geo-region.dto';
-import { GetSupplierByType } from '../suppliers/dto/get-supplier-by-type.dto';
-import { Supplier } from '../suppliers/supplier.entity';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { MaterialsService } from 'modules/materials/materials.service';
-import { SupplierRepository } from 'modules/suppliers/supplier.repository';
-import { GetEUDRGeoRegions } from './dto/get-geo-region.dto';
+import { GetEUDRGeoRegions } from 'modules/geo-regions/dto/get-geo-region.dto';
+import {
+  GetEUDRFeaturesGeoJSONDto,
+  GetFeaturesGeoJsonDto,
+} from 'modules/geo-regions/dto/get-features-geojson.dto';
+import { GeoFeaturesService } from 'modules/geo-regions/geo-features.service';
 
 @Injectable()
 export class GeoRegionsService extends AppBaseService<
@@ -30,6 +32,7 @@ export class GeoRegionsService extends AppBaseService<
     protected readonly geoRegionRepository: GeoRegionRepository,
     private readonly adminRegionService: AdminRegionsService,
     private readonly materialsService: MaterialsService,
+    private readonly geoFeatures: GeoFeaturesService,
   ) {
     super(
       geoRegionRepository,
@@ -114,5 +117,11 @@ export class GeoRegionsService extends AppBaseService<
     }
 
     return this.geoRegionRepository.getGeoRegionsFromSourcingLocations(options);
+  }
+
+  async getGeoJson(
+    dto: GetFeaturesGeoJsonDto | GetEUDRFeaturesGeoJSONDto,
+  ): Promise<any> {
+    return this.geoFeatures.getGeoJson(dto);
   }
 }

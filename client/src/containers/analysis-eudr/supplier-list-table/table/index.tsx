@@ -22,7 +22,7 @@ import {
   TableBody,
   TableCell,
 } from '@/components/ui/table';
-import { useEUDRSuppliers } from '@/hooks/eudr';
+// import { useEUDRSuppliers } from '@/hooks/eudr';
 
 import type {
   // ColumnFiltersState,
@@ -54,10 +54,11 @@ const SuppliersListTable = (): JSX.Element => {
   // const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
 
-  const { data } = useEUDRSuppliers(undefined, {
-    enabled: false,
-    placeholderData: MOCK_DATA,
-  });
+  const data = MOCK_DATA;
+  // const { data } = useEUDRSuppliers(undefined, {
+  //   enabled: false,
+  //   placeholderData: MOCK_DATA,
+  // });
 
   const table = useReactTable({
     data: data,

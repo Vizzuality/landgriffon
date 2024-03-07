@@ -38,5 +38,6 @@ export class GetSupplierByType extends CommonFiltersDto {
 }
 
 export class GetSupplierEUDR extends CommonEUDRFiltersDTO {
+  @IsOptional()
   type: SUPPLIER_TYPES = SUPPLIER_TYPES.PRODUCER;
 }

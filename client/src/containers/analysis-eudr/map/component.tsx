@@ -16,6 +16,7 @@ import type { BasemapValue } from '@/components/map/controls/basemap/types';
 import type { MapStyle } from '@/components/map/types';
 
 const EUDRMap = () => {
+  const [hoverInfo, setHoverInfo] = useState(null);
   const [mapStyle, setMapStyle] = useState<MapStyle>('terrain');
   const [viewState, setViewState] = useState<MapViewState>(INITIAL_VIEW_STATE);
 
@@ -35,6 +36,7 @@ const EUDRMap = () => {
     pickable: true,
     autoHighlight: true,
     highlightColor: [255, 176, 0, 255],
+    onHover: setHoverInfo,
   });
 
   const layers = [layer];
@@ -87,6 +89,15 @@ const EUDRMap = () => {
     setTimeout(() => fitToPlotBounds(), 0);
   }, [fitToPlotBounds]);
 
+  const handleTooltip = useCallback(({ object }) => {
+    console.log(object);
+    return (
+      object && {
+        html: `<div>${object.properties.plotName}</div>`,
+      }
+    );
+  }, []);
+
   return (
     <>
       <DeckGL
@@ -95,6 +106,7 @@ const EUDRMap = () => {
         controller={{ dragRotate: false }}
         layers={layers}
         onResize={handleResize}
+        getTooltip={handleTooltip}
       >
         <Map reuseMaps mapStyle={MAP_STYLES[mapStyle]} styleDiffing={false} />
       </DeckGL>

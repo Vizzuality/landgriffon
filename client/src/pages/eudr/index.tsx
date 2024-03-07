@@ -77,7 +77,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
     }
     return { props: { query } };
   } catch (error) {
-    if (error.response.status === 401) {
+    if (error.code === '401' || error.response.status === 401) {
       return {
         redirect: {
           permanent: false,

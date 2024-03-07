@@ -95,7 +95,10 @@ export class EUDRTestManager extends TestManager {
     'producerIds[]'?: string[];
     'materialIds[]'?: string[];
   }) => {
-    return this.GET({ url: `${this.url}/admin-regions`, query: filters });
+    return this.getRequest({
+      url: `${this.url}/admin-regions`,
+      query: filters,
+    });
   };
 
   ThenIShouldOnlyReceiveCorrespondingAdminRegions = (
@@ -145,7 +148,7 @@ export class EUDRTestManager extends TestManager {
     'producerIds[]'?: string[];
     'materialIds[]'?: string[];
   }) => {
-    return this.GET({ url: `${this.url}/geo-regions`, query: filters });
+    return this.getRequest({ url: `${this.url}/geo-regions`, query: filters });
   };
 
   ThenIShouldOnlyReceiveCorrespondingGeoRegions = (

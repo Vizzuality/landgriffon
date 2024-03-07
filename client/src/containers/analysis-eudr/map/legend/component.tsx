@@ -19,7 +19,7 @@ const EURDLegend = () => {
           <button
             type="button"
             className={classNames(
-              'relative flex h-10 w-10 items-center justify-center rounded-lg p-1.5 text-black transition-colors hover:text-navy-400',
+              'relative flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 p-1.5 text-black transition-colors hover:text-navy-400',
               isOpen ? 'bg-navy-400 text-white hover:text-white' : 'bg-white',
             )}
           >

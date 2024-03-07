@@ -32,6 +32,8 @@ const EUDRMap = () => {
     autoHighlight: true,
   });
 
+  const layers = [layer];
+
   const handleMapStyleChange = useCallback((newStyle: BasemapValue) => {
     setMapStyle(newStyle);
   }, []);
@@ -52,7 +54,7 @@ const EUDRMap = () => {
         viewState={{ ...viewState }}
         onViewStateChange={({ viewState }) => setViewState(viewState as MapViewState)}
         controller={{ dragRotate: false }}
-        layers={[layer]}
+        layers={layers}
       >
         <Map reuseMaps mapStyle={MAP_STYLES[mapStyle]} styleDiffing={false} />
       </DeckGL>

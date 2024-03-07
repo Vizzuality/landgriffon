@@ -158,8 +158,11 @@ export class EudrController {
   @Get('/dates')
   async getAlertDates(
     @Query(ValidationPipe) dto: GetEUDRAlertsDto,
-  ): Promise<EUDRAlertDates[]> {
-    return this.eudrAlertsService.getDates(dto);
+  ): Promise<{ data: EUDRAlertDates[] }> {
+    const dates: EUDRAlertDates[] = await this.eudrAlertsService.getDates(dto);
+    return {
+      data: dates,
+    };
   }
 
   @Get('/alerts')

@@ -47,7 +47,7 @@ export class TestManager {
     await clearTestDataFromDatabase(this.dataSource);
   }
 
-  async GET(options: { url: string; query?: object | string }) {
+  async getRequest(options: { url: string; query?: object | string }) {
     this.response = await request(this.testApp.getHttpServer())
       .get(options.url)
       .query(options?.query || '')

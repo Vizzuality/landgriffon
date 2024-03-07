@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 class DateValue {
   @ApiProperty()
-  value: Date | string;
+  value: Date;
 }
 
 export class EUDRAlertDates {

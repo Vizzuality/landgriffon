@@ -24,3 +24,28 @@ export const useEUDRSuppliers = <T = Supplier[]>(
     },
   );
 };
+
+export const usePlotGeometries = <T = Supplier[]>(
+  params?: {
+    producersIds: string[];
+    originsId: string[];
+    materialsId: string[];
+    geoRegionIds: string[];
+  },
+  options: UseQueryOptions<Supplier[], unknown, T> = {},
+) => {
+  return useQuery(
+    ['eudr-geo-features-collection', params],
+    () =>
+      apiService
+        .request<{ geojson }>({
+          method: 'GET',
+          url: '/eudr/geo-features/collection',
+          params,
+        })
+        .then((response) => response.data.geojson),
+    {
+      ...options,
+    },
+  );
+};

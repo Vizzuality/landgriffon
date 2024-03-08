@@ -34,7 +34,10 @@ const DatesRange = (): JSX.Element => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" className="space-x-1 border-gray-300 bg-white">
+        <Button
+          variant="ghost"
+          className="h-auto space-x-1 border border-gray-200 bg-white shadow-sm"
+        >
           <span className="text-gray-500">
             from{' '}
             <span className="text-gray-900">{dates.from ? dateFormatter(dates.from) : '-'}</span> to{' '}

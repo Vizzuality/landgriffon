@@ -1,7 +1,8 @@
-import { SelectQueryBuilder } from 'typeorm';
+import { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
 import { AlertsOutput } from 'modules/eudr-alerts/dto/alerts-output.dto';
 import { Query } from '@google-cloud/bigquery';
 import { GetEUDRAlertsDto } from 'modules/eudr-alerts/dto/get-alerts.dto';
+import { EUDRAlertsFields } from 'modules/eudr-alerts/alerts.repository';
 
 export class BigQueryAlertsQueryBuilder {
   queryBuilder: SelectQueryBuilder<AlertsOutput>;
@@ -15,16 +16,59 @@ export class BigQueryAlertsQueryBuilder {
     this.dto = getAlertsDto;
   }
 
+  getQuery(): string {
+    return this.queryBuilder.getQuery();
+  }
+
+  getParameters(): ObjectLiteral {
+    return this.queryBuilder.getParameters();
+  }
+
+  setParameters(parameters: ObjectLiteral): this {
+    this.queryBuilder.setParameters(parameters);
+    return this;
+  }
+
+  select(field: string, alias?: string): this {
+    this.queryBuilder.select(field, alias);
+    return this;
+  }
+
+  getQueryBuilder(): SelectQueryBuilder<AlertsOutput> {
+    return this.queryBuilder;
+  }
+
+  groupBy(fields: string): this {
+    this.queryBuilder.groupBy(fields);
+    return this;
+  }
+
+  from(table: string, alias: string): this {
+    this.queryBuilder.from(table, alias);
+    return this;
+  }
+
+  addSelect(fields: string, alias?: string): this {
+    this.queryBuilder.addSelect(fields, alias);
+    return this;
+  }
+
   buildQuery(): Query {
     if (this.dto?.supplierIds) {
-      this.queryBuilder.andWhere('supplierid IN (:...supplierIds)', {
-        supplierIds: this.dto.supplierIds,
-      });
+      this.queryBuilder.andWhere(
+        `${EUDRAlertsFields.supplierId} IN (:...supplierIds)`,
+        {
+          supplierIds: this.dto.supplierIds,
+        },
+      );
     }
     if (this.dto?.geoRegionIds) {
-      this.queryBuilder.andWhere('georegionid IN (:...geoRegionIds)', {
-        geoRegionIds: this.dto.geoRegionIds,
-      });
+      this.queryBuilder.andWhere(
+        `${EUDRAlertsFields.geoRegionId} IN (:...geoRegionIds)`,
+        {
+          geoRegionIds: this.dto.geoRegionIds,
+        },
+      );
     }
     if (this.dto?.alertConfidence) {
       this.queryBuilder.andWhere('alertConfidence = :alertConfidence', {

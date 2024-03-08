@@ -41,7 +41,6 @@ import {
   GeoFeatureResponse,
 } from 'modules/geo-regions/dto/geo-feature-response.dto';
 import { EudrDashboardService } from './dashboard/eudr-dashboard.service';
-import { CommonEUDRFiltersDTO } from '../../utils/base.query-builder';
 import { IsDate, IsOptional, IsUUID } from 'class-validator';
 import { Type } from 'class-transformer';
 import { EUDRDashboard } from './dashboard/types';
@@ -63,6 +62,21 @@ export class GetDashBoardDTO {
   @IsOptional()
   @IsUUID('4', { each: true })
   producerIds: string[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID('4', { each: true })
+  materialIds: string[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID('4', { each: true })
+  originIds: string[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID('4', { each: true })
+  geoRegionIds: string[];
 }
 
 @ApiTags('EUDR')

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, SelectQueryBuilder } from 'typeorm';
 import {
   EUDRAlertDatabaseResult,
@@ -52,6 +52,9 @@ export class EudrDashboardService {
     );
 
     const entities: Entities[] = await this.getEntities(dto);
+    if (!entities) {
+      throw new NotFoundException('Could not retrive data');
+    }
 
     const transformedEntities: any = entities.reduce(
       (acc: any, cur: Entities) => {
@@ -100,7 +103,7 @@ export class EudrDashboardService {
     };
   }
 
-  async getEntities(dto: any): Promise<any> {
+  async getEntities(dto: GetDashBoardDTO): Promise<any> {
     const queryBuilder: SelectQueryBuilder<any> =
       this.datasource.createQueryBuilder();
     queryBuilder
@@ -124,6 +127,21 @@ export class EudrDashboardService {
     if (dto.producerIds) {
       queryBuilder.andWhere('s.id IN (:...producerIds)', {
         producerIds: dto.producerIds,
+      });
+    }
+    if (dto.materialIds) {
+      queryBuilder.andWhere('m.id IN (:...materialIds)', {
+        materialIds: dto.materialIds,
+      });
+    }
+    if (dto.originIds) {
+      queryBuilder.andWhere('ar.id IN (:...originIds)', {
+        originIds: dto.originIds,
+      });
+    }
+    if (dto.geoRegionIds) {
+      queryBuilder.andWhere('sl.geoRegionId IN (:...geoRegionIds)', {
+        geoRegionIds: dto.geoRegionIds,
       });
     }
 

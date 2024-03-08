@@ -4,7 +4,9 @@ import {
 } from '../../src/modules/notifications/email/email.service.interface';
 import { Logger } from '@nestjs/common';
 import {
+  EUDRAlertDatabaseResult,
   EUDRAlertDates,
+  GetAlertSummary,
   IEUDRAlertsRepository,
 } from 'modules/eudr-alerts/eudr.repositoty.interface';
 
@@ -31,5 +33,9 @@ export class MockAlertRepository implements IEUDRAlertsRepository {
     return new Promise((resolve) => {
       resolve([]);
     });
+  }
+
+  getAlertSummary(dto: GetAlertSummary): Promise<EUDRAlertDatabaseResult[]> {
+    return Promise.resolve([]);
   }
 }

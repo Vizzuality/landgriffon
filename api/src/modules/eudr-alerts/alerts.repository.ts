@@ -12,13 +12,24 @@ import {
 import { DataSource, SelectQueryBuilder } from 'typeorm';
 import { AlertsOutput } from 'modules/eudr-alerts/dto/alerts-output.dto';
 import {
+  EUDRAlertDatabaseResult,
   EUDRAlertDates,
+  GetAlertSummary,
   IEUDRAlertsRepository,
 } from 'modules/eudr-alerts/eudr.repositoty.interface';
 import { GetEUDRAlertsDto } from 'modules/eudr-alerts/dto/get-alerts.dto';
 import { BigQueryAlertsQueryBuilder } from 'modules/eudr-alerts/alerts-query-builder/big-query-alerts-query.builder';
 
 const projectId: string = 'carto-dw-ac-zk2uhih6';
+
+export enum EUDRAlertsFields {
+  alertDate = 'alertdate',
+  alertConfidence = 'alertconfidence',
+  year = 'year',
+  alertCount = 'alertcount',
+  geoRegionId = 'georegionid',
+  supplierId = 'supplierid',
+}
 
 @Injectable()
 export class AlertsRepository implements IEUDRAlertsRepository {
@@ -64,8 +75,52 @@ export class AlertsRepository implements IEUDRAlertsRepository {
     return this.query(queryBuilder, dto);
   }
 
+  async getAlertSummary(dto: any): Promise<EUDRAlertDatabaseResult[]> {
+    const bigQueryBuilder: BigQueryAlertsQueryBuilder =
+      new BigQueryAlertsQueryBuilder(this.dataSource.createQueryBuilder(), dto);
+    bigQueryBuilder
+      .from(this.baseDataset, 'alerts')
+      .select('supplierid', 'supplierId')
+      .addSelect(
+        'SUM(CASE WHEN georegionid IS NULL THEN 1 ELSE 0 END)',
+        'null_geo_regions_count',
+      )
+      .addSelect(
+        'SUM(CASE WHEN alertcount = 0 THEN 1 ELSE 0 END)',
+        'zero_alerts',
+      )
+      .addSelect(
+        'SUM(CASE WHEN alertcount > 0 THEN 1 ELSE 0 END)',
+        'nonzero_alerts',
+      )
+      .addSelect('COUNT(*)', 'total_geo_regions')
+
+      .groupBy('supplierid');
+    const mainQueryBuilder: BigQueryAlertsQueryBuilder =
+      new BigQueryAlertsQueryBuilder(this.dataSource.createQueryBuilder());
+
+    mainQueryBuilder
+      .select('supplierid')
+      .addSelect(
+        '(CAST(zero_alerts AS FLOAT64) / NULLIF(total_geo_regions, 0)) * 100',
+        'dfs',
+      )
+      .addSelect(
+        '(CAST(nonzero_alerts AS FLOAT64) / NULLIF(total_geo_regions, 0)) * 100',
+        'sda',
+      )
+      .addSelect(
+        '(CAST(null_geo_regions_count AS FLOAT64) / NULLIF(total_geo_regions, 0)) * 100',
+        'tpl',
+      )
+      .from('(' + bigQueryBuilder.getQuery() + ')', 'alerts_summary')
+      .setParameters(bigQueryBuilder.getParameters());
+
+    return this.query(mainQueryBuilder);
+  }
+
   private async query(
-    queryBuilder: SelectQueryBuilder<any>,
+    queryBuilder: SelectQueryBuilder<any> | BigQueryAlertsQueryBuilder,
     dto?: GetEUDRAlertsDto,
   ): Promise<any> {
     try {
@@ -86,9 +141,12 @@ export class AlertsRepository implements IEUDRAlertsRepository {
   }
 
   private buildQuery(
-    queryBuilder: SelectQueryBuilder<AlertsOutput>,
+    queryBuilder: SelectQueryBuilder<AlertsOutput> | BigQueryAlertsQueryBuilder,
     dto?: GetEUDRAlertsDto,
   ): Query {
+    if (queryBuilder instanceof BigQueryAlertsQueryBuilder) {
+      return queryBuilder.buildQuery();
+    }
     const alertsQueryBuilder: BigQueryAlertsQueryBuilder =
       new BigQueryAlertsQueryBuilder(queryBuilder, dto);
 

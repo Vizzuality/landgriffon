@@ -8,6 +8,7 @@ import { GeoRegionsModule } from 'modules/geo-regions/geo-regions.module';
 import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { AlertsRepository } from 'modules/eudr-alerts/alerts.repository';
 import { AppConfig } from 'utils/app.config';
+import { EudrDashboardService } from './dashboard/eudr-dashboard.service';
 
 export const IEUDRAlertsRepositoryToken: symbol = Symbol(
   'IEUDRAlertsRepository',
@@ -31,6 +32,7 @@ const { credentials, dataset } = AppConfig.get<{
   ],
   providers: [
     EudrService,
+    EudrDashboardService,
     { provide: 'IEUDRAlertsRepository', useClass: AlertsRepository },
     { provide: 'EUDRDataset', useValue: dataset },
     { provide: 'EUDRCredentials', useValue: credentials },

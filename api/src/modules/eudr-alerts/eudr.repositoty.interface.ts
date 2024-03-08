@@ -12,8 +12,23 @@ export class EUDRAlertDates {
   alertDate: DateValue;
 }
 
+export interface EUDRAlertDatabaseResult {
+  supplierid: string;
+  tpl: number;
+  dfs: number;
+  sda: number;
+}
+
+export type GetAlertSummary = {
+  alertStartDate?: Date;
+  alertEnDate?: Date;
+  supplierIds?: string[];
+};
+
 export interface IEUDRAlertsRepository {
   getAlerts(dto?: GetEUDRAlertsDto): Promise<AlertsOutput[]>;
 
   getDates(dto: GetEUDRAlertsDto): Promise<EUDRAlertDates[]>;
+
+  getAlertSummary(dto: GetAlertSummary): Promise<EUDRAlertDatabaseResult[]>;
 }

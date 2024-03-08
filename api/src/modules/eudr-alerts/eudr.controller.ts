@@ -9,6 +9,7 @@ import {
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiPropertyOptional,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -39,12 +40,37 @@ import {
   GeoFeatureCollectionResponse,
   GeoFeatureResponse,
 } from 'modules/geo-regions/dto/geo-feature-response.dto';
+import { EudrDashboardService } from './dashboard/eudr-dashboard.service';
+import { CommonEUDRFiltersDTO } from '../../utils/base.query-builder';
+import { IsDate, IsOptional, IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
+import { EUDRDashboard } from './dashboard/types';
+
+export class GetDashBoardDTO {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  startAlertDate: Date;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  endAlertDate: Date;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID('4', { each: true })
+  producerIds: string[];
+}
 
 @ApiTags('EUDR')
 @Controller('/api/v1/eudr')
 export class EudrController {
   constructor(
     private readonly eudrAlertsService: EudrService,
+    private readonly dashboard: EudrDashboardService,
     private readonly suppliersService: SuppliersService,
     private readonly materialsService: MaterialsService,
     private readonly geoRegionsService: GeoRegionsService,
@@ -198,5 +224,17 @@ export class EudrController {
       eudr: true,
       collection: true,
     });
+  }
+
+  @ApiOperation({ description: 'Get EUDR Dashboard' })
+  @ApiOkResponse({ type: EUDRDashboard })
+  @Get('/dashboard')
+  async getDashboard(
+    @Query(ValidationPipe) dto: GetDashBoardDTO,
+  ): Promise<{ data: EUDRDashboard }> {
+    const dashboard: EUDRDashboard = await this.dashboard.buildDashboard(dto);
+    return {
+      data: dashboard,
+    };
   }
 }

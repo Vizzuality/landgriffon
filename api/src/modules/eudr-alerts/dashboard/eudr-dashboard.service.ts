@@ -1,3 +1,7 @@
+// supress typescript error
+// eslint-disable-next-line @typescript-eslint/ban-types
+// export type Type<T> = new (...args: any[]) => T;
+// @ts-ignore-file
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, SelectQueryBuilder } from 'typeorm';
 import {
@@ -10,6 +14,7 @@ import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { Material } from 'modules/materials/material.entity';
 import { GetDashBoardDTO } from '../eudr.controller';
+import { cloneDeep } from 'lodash';
 
 type Entities = {
   supplierId: string;
@@ -20,6 +25,7 @@ type Entities = {
   materialId: string;
   materialName: string;
   totalBaselineVolume: number;
+  geoRegionCount: number;
 };
 
 @Injectable()
@@ -37,7 +43,25 @@ export class EudrDashboardService {
         alertEnDate: dto.endAlertDate,
         supplierIds: dto.producerIds,
       });
+    const entities: Entities[] = await this.getEntities(dto);
+    if (!entities) {
+      throw new NotFoundException('Could not retrive data');
+    }
 
+    const alertData: EUDRAlertDatabaseResult[] = cloneDeep(alertSummary);
+    const sourcingData: Entities[] = cloneDeep(entities);
+
+    const materials: any = {
+      'Deforestation-free suppliers': { totalPercentage: 0, detail: [] },
+      'Suppliers with deforestation alerts': { totalPercentage: 0, detail: [] },
+      'Suppliers with no location data': { totalPercentage: 0, detail: [] },
+    };
+
+    const origins: any = {
+      'Deforestation-free suppliers': { totalPercentage: 0, detail: [] },
+      'Suppliers with deforestation alerts': { totalPercentage: 0, detail: [] },
+      'Suppliers with no location data': { totalPercentage: 0, detail: [] },
+    };
     const transformed: any = alertSummary.reduce(
       (acc: any, cur: EUDRAlertDatabaseResult) => {
         acc[cur.supplierid] = {
@@ -51,10 +75,157 @@ export class EudrDashboardService {
       {},
     );
 
-    const entities: Entities[] = await this.getEntities(dto);
-    if (!entities) {
-      throw new NotFoundException('Could not retrive data');
-    }
+    const materialSuppliersMap: Map<string, any> = new Map();
+    const originSuppliersMap: Map<string, any> = new Map();
+
+    sourcingData.forEach(
+      ({
+        supplierId,
+        materialId,
+        materialName,
+        geoRegionCount,
+        adminRegionId,
+        adminRegionName,
+      }) => {
+        if (!materialSuppliersMap.has(materialId)) {
+          materialSuppliersMap.set(materialId, {
+            materialName,
+            suppliers: new Set(),
+            zeroGeoRegionSuppliers: 0,
+            dfsSuppliers: 0,
+            sdaSuppliers: 0,
+            tplSuppliers: 0,
+          });
+        }
+        if (!originSuppliersMap.has(adminRegionId)) {
+          originSuppliersMap.set(adminRegionId, {
+            originName: adminRegionName,
+            suppliers: new Set(),
+            zeroGeoRegionSuppliers: 0,
+            dfsSuppliers: 0,
+            sdaSuppliers: 0,
+            tplSuppliers: 0,
+          });
+        }
+        const material: any = materialSuppliersMap.get(materialId);
+        const origin: any = originSuppliersMap.get(adminRegionId);
+        material.suppliers.add(supplierId);
+        origin.suppliers.add(supplierId);
+        if (geoRegionCount === 0) {
+          material.zeroGeoRegionSuppliers += 1;
+          origin.zeroGeoRegionSuppliers += 1;
+        }
+        if (transformed[supplierId].dfs > 0) {
+          material.dfsSuppliers += 1;
+          origin.dfsSuppliers += 1;
+        }
+        if (transformed[supplierId].sda > 0) {
+          material.sdaSuppliers += 1;
+          origin.sdaSuppliers += 1;
+        }
+        if (transformed[supplierId].tpl > 0) {
+          material.tplSuppliers += 1;
+          origin.tplSuppliers += 1;
+        }
+      },
+    );
+    materialSuppliersMap.forEach(
+      (
+        {
+          materialName,
+          suppliers,
+          zeroGeoRegionSuppliers,
+          dfsSuppliers,
+          sdaSuppliers,
+          tplSuppliers,
+        },
+        materialId: string,
+      ) => {
+        const noLocationPercentage: number =
+          (zeroGeoRegionSuppliers / suppliers.size) * 100;
+        materials['Suppliers with no location data'].detail.push({
+          name: materialName,
+          value: noLocationPercentage,
+        });
+        const dfsPercentage: number = (dfsSuppliers / suppliers.size) * 100;
+        materials['Deforestation-free suppliers'].detail.push({
+          name: materialName,
+          value: dfsPercentage,
+        });
+        const sdaPercentage: number = (sdaSuppliers / suppliers.size) * 100;
+        materials['Suppliers with deforestation alerts'].detail.push({
+          name: materialName,
+          value: sdaPercentage,
+        });
+      },
+    );
+
+    originSuppliersMap.forEach(
+      (
+        {
+          originName,
+          suppliers,
+          zeroGeoRegionSuppliers,
+          dfsSuppliers,
+          sdaSuppliers,
+          tplSuppliers,
+        },
+        adminRegionId: string,
+      ) => {
+        const noLocationPercentage: number =
+          (zeroGeoRegionSuppliers / suppliers.size) * 100;
+        origins['Suppliers with no location data'].detail.push({
+          name: originName,
+          value: noLocationPercentage,
+        });
+        const dfsPercentage: number = (dfsSuppliers / suppliers.size) * 100;
+        origins['Deforestation-free suppliers'].detail.push({
+          name: originName,
+          value: dfsPercentage,
+        });
+        const sdaPercentage: number = (sdaSuppliers / suppliers.size) * 100;
+        origins['Suppliers with deforestation alerts'].detail.push({
+          name: originName,
+          value: sdaPercentage,
+        });
+      },
+    );
+
+    materials['Suppliers with no location data'].totalPercentage =
+      materials['Suppliers with no location data'].detail.reduce(
+        (acc: number, cur: any) => acc + cur.value,
+        0,
+      ) / materials['Suppliers with no location data'].detail.length;
+
+    materials['Deforestation-free suppliers'].totalPercentage =
+      materials['Deforestation-free suppliers'].detail.reduce(
+        (acc: number, cur: any) => acc + cur.value,
+        0,
+      ) / materials['Deforestation-free suppliers'].detail.length;
+
+    materials['Suppliers with deforestation alerts'].totalPercentage =
+      materials['Suppliers with deforestation alerts'].detail.reduce(
+        (acc: number, cur: any) => acc + cur.value,
+        0,
+      ) / materials['Suppliers with deforestation alerts'].detail.length;
+
+    origins['Suppliers with no location data'].totalPercentage =
+      origins['Suppliers with no location data'].detail.reduce(
+        (acc: number, cur: any) => acc + cur.value,
+        0,
+      ) / origins['Suppliers with no location data'].detail.length;
+
+    origins['Deforestation-free suppliers'].totalPercentage =
+      origins['Deforestation-free suppliers'].detail.reduce(
+        (acc: number, cur: any) => acc + cur.value,
+        0,
+      ) / origins['Deforestation-free suppliers'].detail.length;
+
+    origins['Suppliers with deforestation alerts'].totalPercentage =
+      origins['Suppliers with deforestation alerts'].detail.reduce(
+        (acc: number, cur: any) => acc + cur.value,
+        0,
+      ) / origins['Suppliers with deforestation alerts'].detail.length;
 
     const transformedEntities: any = entities.reduce(
       (acc: any, cur: Entities) => {
@@ -99,7 +270,7 @@ export class EudrDashboardService {
     });
     return {
       table: result,
-      breakDown: {},
+      breakDown: { materials, origins },
     };
   }
 
@@ -115,6 +286,7 @@ export class EudrDashboardService {
       .addSelect('ar.id', 'adminRegionId')
       .addSelect('ar.name', 'adminRegionName')
       .addSelect('SUM(sr.tonnage)', 'totalBaselineVolume')
+      .addSelect('COUNT(sl.geoRegionId)', 'geoRegionsCount')
       .from(SourcingLocation, 'sl')
       .leftJoin(Supplier, 's', 's.id = sl.producerId')
       .leftJoin(AdminRegion, 'ar', 'ar.id = sl.adminRegionId')

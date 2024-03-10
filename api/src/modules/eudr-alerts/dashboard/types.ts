@@ -1,14 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class EUDRDashboard {
-  @ApiProperty({ type: () => DashBoardTableElements, isArray: true })
-  table: DashBoardTableElements[];
-
-  @ApiProperty({ description: 'Not available yet' })
-  breakDown: any;
-}
-
 export class DashBoardTableElements {
+  supplierId: string;
   @ApiProperty()
   supplierName: string;
 
@@ -30,53 +23,78 @@ export class DashBoardTableElements {
   @ApiProperty()
   tpl: number;
 
-  @ApiProperty({ type: () => EUDRAlertMaterial, isArray: true })
-  materials: EUDRAlertMaterial[];
+  @ApiProperty({ type: () => EntitiesBySupplier, isArray: true })
+  materials: EntitiesBySupplier[];
 
-  @ApiProperty({ type: () => EUDRAlertOrigin, isArray: true })
-  origins: EUDRAlertOrigin[];
+  @ApiProperty({ type: () => EntitiesBySupplier, isArray: true })
+  origins: EntitiesBySupplier[];
 }
 
-export class EUDRAlertMaterial {
+class EntitiesBySupplier {
   @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  id: string;
+}
+
+export enum EUDRDashBoardFields {
+  DEFORASTATION_FREE_SUPPLIERS = 'Deforestation-free suppliers',
+  SUPPLIERS_WITH_DEFORASTATION_ALERTS = 'Suppliers with deforestation alerts',
+  SUPPLIERS_WITH_NO_LOCATION_DATA = 'Suppliers with no location data',
+}
+
+class CategoryDetail {
+  @ApiProperty()
+  totalPercentage: number;
+
+  @ApiProperty({ type: () => BreakDownByEntity, isArray: true })
+  detail: BreakDownByEntity[];
+}
+
+export type EntityMetadata = {
+  supplierId: string;
+  supplierName: string;
+  companyId: string;
+  adminRegionId: string;
+  adminRegionName: string;
+  materialId: string;
   materialName: string;
+  totalBaselineVolume: number;
+  geoRegionCount: number;
+};
 
-  @ApiProperty()
-  id: string;
+class BreakDownByEUDRCategory {
+  @ApiProperty({ type: () => CategoryDetail })
+  [EUDRDashBoardFields.DEFORASTATION_FREE_SUPPLIERS]: CategoryDetail;
+
+  @ApiProperty({ type: () => CategoryDetail })
+  [EUDRDashBoardFields.SUPPLIERS_WITH_DEFORASTATION_ALERTS]: CategoryDetail;
+
+  @ApiProperty({ type: () => CategoryDetail })
+  [EUDRDashBoardFields.SUPPLIERS_WITH_NO_LOCATION_DATA]: CategoryDetail;
 }
 
-export class EUDRAlertOrigin {
+class BreakDownByEntity {
   @ApiProperty()
-  originName: string;
+  name: string;
 
   @ApiProperty()
-  id: string;
+  value: number;
 }
 
 export class EUDRBreakDown {
-  materials: BreakDownMaterialCategory;
+  @ApiProperty({ type: () => BreakDownByEUDRCategory })
+  materials: BreakDownByEUDRCategory;
 
+  @ApiProperty({ type: () => BreakDownByEUDRCategory })
   origins: any;
 }
 
-export class BreakDownMaterialCategory {
-  category: 'material';
+export class EUDRDashboard {
+  @ApiProperty({ type: () => DashBoardTableElements, isArray: true })
+  table: DashBoardTableElements[];
 
-  detail: BreakDownSupplierDetail[];
-}
-
-export class BreakDownSupplierDetail {
-  // Deforestation-free, partial-deforestation, etc
-  name: string;
-  value: string;
-
-  data: BreakDownByMaterial[];
-}
-
-export class BreakDownByMaterial {
-  // material or origin name
-  name: string;
-
-  // percentaje
-  value: number;
+  @ApiProperty({ type: () => EUDRBreakDown })
+  breakDown: EUDRBreakDown;
 }

@@ -95,8 +95,6 @@ export class BigQueryAlertsQueryBuilder {
     this.queryBuilder.limit(this.dto?.limit);
 
     const [query, params] = this.queryBuilder.getQueryAndParameters();
-    console.log('query', query);
-    console.log('params', params);
 
     return this.parseToBigQuery(query, params);
   }

@@ -1,10 +1,11 @@
 export type AlertsOutput = {
-  alertCount: boolean;
+  alertCount: number;
   alertDate: {
     value: Date | string;
   };
   year: number;
   alertConfidence: 'low' | 'medium' | 'high' | 'very high';
+  geoRegionId: string;
 };
 
 export type AlertGeometry = {

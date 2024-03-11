@@ -1,8 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
 import DeckGL from '@deck.gl/react/typed';
-import { GeoJsonLayer } from '@deck.gl/layers/typed';
+import { BitmapLayer, GeoJsonLayer } from '@deck.gl/layers/typed';
 import Map from 'react-map-gl/maplibre';
-import { WebMercatorViewport } from '@deck.gl/core/typed';
+import { WebMercatorViewport, View, MapView } from '@deck.gl/core/typed';
+import { TileLayer } from '@deck.gl/geo-layers/typed';
 import bbox from '@turf/bbox';
 
 import ZoomControl from './zoom';
@@ -17,6 +18,10 @@ import type { PickingInfo, MapViewState } from '@deck.gl/core/typed';
 import type { BasemapValue } from '@/components/map/controls/basemap/types';
 import type { MapStyle } from '@/components/map/types';
 
+const PlanetQ32023_ID = 'PlanetQ32023';
+const PlanetQ32019_ID = 'PlanetQ32019';
+const DEFORESTATION_QUADBIN_LAYER_ID = 'deforestationQuadbinLayer';
+
 const EUDRMap = () => {
   const [hoverInfo, setHoverInfo] = useState<PickingInfo>(null);
   const [mapStyle, setMapStyle] = useState<MapStyle>('terrain');
@@ -25,7 +30,7 @@ const EUDRMap = () => {
   const plotGeometries = usePlotGeometries();
 
   const layer: GeoJsonLayer = new GeoJsonLayer({
-    id: 'geojson-layer',
+    id: 'top-plots-layer',
     data: plotGeometries.data,
     // Styles
     filled: true,
@@ -41,7 +46,84 @@ const EUDRMap = () => {
     onHover: setHoverInfo,
   });
 
-  const layers = [layer];
+  const layer2: GeoJsonLayer = new GeoJsonLayer({
+    id: 'bottom-plots-layer',
+    data: plotGeometries.data,
+    // Styles
+    filled: true,
+    getFillColor: [255, 0, 0, 255],
+    stroked: true,
+    getLineColor: [255, 0, 0, 255],
+    getLineWidth: 1,
+    lineWidthUnits: 'pixels',
+    // Interactive props
+    pickable: true,
+    autoHighlight: true,
+    highlightColor: [255, 176, 0, 255],
+    onHover: setHoverInfo,
+  });
+
+  const planetQ32019Layer = new TileLayer({
+    // id: PlanetQ32023_ID,
+    id: 'top-planet-q3-2019-layer',
+    data: 'https://tiles.planet.com/basemaps/v1/planet-tiles/global_quarterly_2019q3_mosaic/gmap/{z}/{x}/{y}.png?api_key=PLAK6679039df83f414faf798ba4ad4530db',
+    minZoom: 0,
+    maxZoom: 20,
+    tileSize: 256,
+    visible: true,
+    // onTileLoad: (data) => {
+    //   dispatch(
+    //     updateLayer({
+    //       id: PlanetQ32023_ID,
+    //       layerAttributes: { ...layerConfig },
+    //     })
+    //   );
+    //   //cartoLayerProps.onDataLoad(data);
+    // },
+    renderSubLayers: (props) => {
+      const {
+        bbox: { west, south, east, north },
+      } = props.tile;
+
+      return new BitmapLayer(props, {
+        data: null,
+        image: props.data,
+        bounds: [west, south, east, north],
+      });
+    },
+  });
+
+  const planetQ32023Layer = new TileLayer({
+    // id: PlanetQ32023_ID,
+    id: 'bottom-planet-q3-2023-layer',
+    data: 'https://tiles.planet.com/basemaps/v1/planet-tiles/global_quarterly_2023q3_mosaic/gmap/{z}/{x}/{y}.png?api_key=PLAK6679039df83f414faf798ba4ad4530db',
+    minZoom: 0,
+    maxZoom: 20,
+    tileSize: 256,
+    visible: true,
+    // onTileLoad: (data) => {
+    //   dispatch(
+    //     updateLayer({
+    //       id: PlanetQ32023_ID,
+    //       layerAttributes: { ...layerConfig },
+    //     })
+    //   );
+    //   //cartoLayerProps.onDataLoad(data);
+    // },
+    renderSubLayers: (props) => {
+      const {
+        bbox: { west, south, east, north },
+      } = props.tile;
+
+      return new BitmapLayer(props, {
+        data: null,
+        image: props.data,
+        bounds: [west, south, east, north],
+      });
+    },
+  });
+
+  const layers = [planetQ32019Layer, planetQ32023Layer, layer, layer2];
 
   const handleMapStyleChange = useCallback((newStyle: BasemapValue) => {
     setMapStyle(newStyle);
@@ -98,9 +180,36 @@ const EUDRMap = () => {
         onViewStateChange={({ viewState }) => setViewState(viewState as MapViewState)}
         controller={{ dragRotate: false }}
         layers={layers}
+        layerFilter={({ layer, viewport }) => viewport.id.startsWith(layer.id.split('-')[0])}
         onResize={handleResize}
+        views={[
+          new MapView({
+            id: 'full',
+            controller: true,
+          }),
+          new MapView({
+            id: 'top',
+            y: 0,
+            height: '50%',
+            padding: { top: '100%' },
+            controller: true,
+          }),
+          new MapView({
+            id: 'bottom',
+            y: '50%',
+            height: '50%',
+            padding: { bottom: '100%' },
+            // controller: true,
+          }),
+        ]}
       >
-        <Map reuseMaps mapStyle={MAP_STYLES[mapStyle]} styleDiffing={false} />
+        <View id="full">
+          <Map reuseMaps mapStyle={MAP_STYLES[mapStyle]} styleDiffing={false} />
+        </View>
+        <View id="top" />
+        <View id="bottom" />
+        {/* <Map reuseMaps mapStyle={MAP_STYLES[mapStyle]} styleDiffing={false} /> */}
+        {/* <View id="bottom" /> */}
       </DeckGL>
       {hoverInfo?.object && (
         <div

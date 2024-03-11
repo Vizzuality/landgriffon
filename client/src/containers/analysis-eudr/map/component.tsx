@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import DeckGL from '@deck.gl/react/typed';
 import { GeoJsonLayer } from '@deck.gl/layers/typed';
 import Map from 'react-map-gl/maplibre';
-import { WebMercatorViewport, type MapViewState } from '@deck.gl/core/typed';
+import { WebMercatorViewport } from '@deck.gl/core/typed';
 import bbox from '@turf/bbox';
 
 import ZoomControl from './zoom';
@@ -11,12 +11,14 @@ import LegendControl from './legend';
 import BasemapControl from '@/components/map/controls/basemap';
 import { INITIAL_VIEW_STATE, MAP_STYLES } from '@/components/map';
 import { usePlotGeometries } from '@/hooks/eudr';
+import { formatNumber } from '@/utils/number-format';
 
+import type { PickingInfo, MapViewState } from '@deck.gl/core/typed';
 import type { BasemapValue } from '@/components/map/controls/basemap/types';
 import type { MapStyle } from '@/components/map/types';
 
 const EUDRMap = () => {
-  const [hoverInfo, setHoverInfo] = useState(null);
+  const [hoverInfo, setHoverInfo] = useState<PickingInfo>(null);
   const [mapStyle, setMapStyle] = useState<MapStyle>('terrain');
   const [viewState, setViewState] = useState<MapViewState>(INITIAL_VIEW_STATE);
 
@@ -89,15 +91,6 @@ const EUDRMap = () => {
     setTimeout(() => fitToPlotBounds(), 0);
   }, [fitToPlotBounds]);
 
-  const handleTooltip = useCallback(({ object }) => {
-    console.log(object);
-    return (
-      object && {
-        html: `<div>${object.properties.plotName}</div>`,
-      }
-    );
-  }, []);
-
   return (
     <>
       <DeckGL
@@ -106,10 +99,35 @@ const EUDRMap = () => {
         controller={{ dragRotate: false }}
         layers={layers}
         onResize={handleResize}
-        getTooltip={handleTooltip}
       >
         <Map reuseMaps mapStyle={MAP_STYLES[mapStyle]} styleDiffing={false} />
       </DeckGL>
+      {hoverInfo?.object && (
+        <div
+          className="pointer-events-none absolute z-10 max-w-32 rounded-md bg-white p-2 text-2xs shadow-md"
+          style={{
+            left: hoverInfo?.x + 10,
+            top: hoverInfo?.y + 10,
+          }}
+        >
+          <dl className="space-y-2">
+            <div>
+              <dt>Supplier: </dt>
+              <dd className="font-semibold">{hoverInfo.object.properties.supplierName}</dd>
+            </div>
+            <div>
+              <dt>Plot: </dt>
+              <dd className="font-semibold">{hoverInfo.object.properties.plotName}</dd>
+            </div>
+            <div>
+              <dt>Sourcing volume: </dt>
+              <dd className="font-semibold">
+                {formatNumber(hoverInfo.object.properties.baselineVolume)} t
+              </dd>
+            </div>
+          </dl>
+        </div>
+      )}
       <div className="absolute bottom-10 right-6 z-10 w-10 space-y-2">
         <BasemapControl value={mapStyle} onChange={handleMapStyleChange} />
         <ZoomControl viewState={viewState} onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} />

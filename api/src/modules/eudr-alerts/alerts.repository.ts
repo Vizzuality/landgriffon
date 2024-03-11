@@ -14,7 +14,6 @@ import { AlertsOutput } from 'modules/eudr-alerts/dto/alerts-output.dto';
 import {
   EUDRAlertDatabaseResult,
   EUDRAlertDates,
-  GetAlertSummary,
   IEUDRAlertsRepository,
 } from 'modules/eudr-alerts/eudr.repositoty.interface';
 import { GetEUDRAlertsDto } from 'modules/eudr-alerts/dto/get-alerts.dto';
@@ -62,6 +61,8 @@ export class AlertsRepository implements IEUDRAlertsRepository {
     queryBuilder.addSelect('alertconfidence', 'alertConfidence');
     queryBuilder.addSelect('year', 'alertYear');
     queryBuilder.addSelect('alertcount', 'alertCount');
+    queryBuilder.addSelect('georegionid', 'geoRegionId');
+    queryBuilder.orderBy('alertdate', 'ASC');
     return this.query(queryBuilder, dto);
   }
 

@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Param,
   Query,
   UseInterceptors,
   ValidationPipe,
@@ -33,7 +34,10 @@ import {
 import { JSONAPIQueryParams } from 'decorators/json-api-parameters.decorator';
 import { GetEUDRGeoRegions } from 'modules/geo-regions/dto/get-geo-region.dto';
 import { EudrService } from 'modules/eudr-alerts/eudr.service';
-import { GetEUDRAlertsDto } from 'modules/eudr-alerts/dto/get-alerts.dto';
+import {
+  GetEUDRAlertDatesDto,
+  GetEUDRAlertsDto,
+} from 'modules/eudr-alerts/dto/get-alerts.dto';
 import { EUDRAlertDates } from 'modules/eudr-alerts/eudr.repositoty.interface';
 import { GetEUDRFeaturesGeoJSONDto } from 'modules/geo-regions/dto/get-features-geojson.dto';
 import {
@@ -43,7 +47,8 @@ import {
 import { EudrDashboardService } from './dashboard/eudr-dashboard.service';
 import { IsDate, IsOptional, IsUUID } from 'class-validator';
 import { Type } from 'class-transformer';
-import { EUDRDashboard } from './dashboard/types';
+import { EUDRDashboard } from './dashboard/dashboard.types';
+import { EUDRDashBoardDetail } from './dashboard/dashboard-detail.types';
 
 export class GetDashBoardDTO {
   @ApiPropertyOptional()
@@ -247,6 +252,20 @@ export class EudrController {
     @Query(ValidationPipe) dto: GetDashBoardDTO,
   ): Promise<{ data: EUDRDashboard }> {
     const dashboard: EUDRDashboard = await this.dashboard.buildDashboard(dto);
+    return {
+      data: dashboard,
+    };
+  }
+
+  @ApiOperation({ description: 'Get EUDR Dashboard Detail' })
+  @ApiOkResponse({ type: EUDRDashBoardDetail })
+  @Get('/dashboard/detail/:supplierId')
+  async getDashboardDetail(
+    @Param('supplierId') supplierId: string,
+    @Query(ValidationPipe) dto: GetEUDRAlertDatesDto,
+  ): Promise<{ data: EUDRDashBoardDetail }> {
+    const dashboard: EUDRDashBoardDetail =
+      await this.dashboard.buildDashboardDetail(supplierId, dto);
     return {
       data: dashboard,
     };

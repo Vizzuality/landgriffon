@@ -53,7 +53,7 @@ export class GeoRegion extends BaseEntity {
   // TODO: It might be interesting to add a trigger to calculate the value in case it's not provided. We are considering that EUDR will alwaus provide the value
   //  but not the regular ingestion
   @Column({ type: 'decimal', nullable: true })
-  totalArea?: number;
+  totalArea: number;
 
   @Column({ type: 'boolean', default: true })
   isCreatedByUser: boolean;

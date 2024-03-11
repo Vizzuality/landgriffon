@@ -1,7 +1,7 @@
 // supress typescript error
 // eslint-disable-next-line @typescript-eslint/ban-types
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { DataSource, SelectQueryBuilder } from 'typeorm';
+import { DataSource, EntityManager, SelectQueryBuilder } from 'typeorm';
 import {
   EUDRAlertDatabaseResult,
   IEUDRAlertsRepository,
@@ -18,7 +18,13 @@ import {
   EUDRBreakDown,
   EUDRDashboard,
   EUDRDashBoardFields,
-} from 'modules/eudr-alerts/dashboard/types';
+} from 'modules/eudr-alerts/dashboard/dashboard.types';
+import { GetEUDRAlertDatesDto } from '../dto/get-alerts.dto';
+import { AdminRegionsService } from '../../admin-regions/admin-regions.service';
+import { AlertsOutput } from '../dto/alerts-output.dto';
+
+import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import { EUDRDashBoardDetail } from './dashboard-detail.types';
 
 @Injectable()
 export class EudrDashboardService {
@@ -391,5 +397,156 @@ export class EudrDashboardService {
     }
 
     return queryBuilder.getRawMany();
+  }
+
+  async buildDashboardDetail(
+    supplierId: string,
+    dto?: GetEUDRAlertDatesDto,
+  ): Promise<EUDRDashBoardDetail> {
+    const result: any = {};
+    const sourcingInformation: any = {};
+    let supplier: Supplier;
+    const geoRegionMap: Map<string, { plotName: string }> = new Map();
+
+    return this.datasource.transaction(async (manager: EntityManager) => {
+      supplier = await manager
+        .getRepository(Supplier)
+        .findOneOrFail({ where: { id: supplierId } });
+      result.name = supplier.name;
+      result.address = supplier.address;
+      result.companyId = supplier.companyId;
+      result.sourcingInformation = sourcingInformation;
+      const sourcingData: {
+        materialId: string;
+        materialName: string;
+        hsCode: string;
+        countryName: string;
+        plotName: string;
+        geoRegionId: string;
+        plotArea: number;
+        volume: number;
+        year: number;
+        sourcingLocationId: string;
+      }[] = await manager
+        .createQueryBuilder(SourcingLocation, 'sl')
+        .select('m.name', 'materialName')
+        .addSelect('sl.locationCountryInput', 'countryName')
+        .addSelect('m.hsCodeId', 'hsCode')
+        .addSelect('m.id', 'materialId')
+        .leftJoin(Material, 'm', 'm.id = sl.materialId')
+        .where('sl.producerId = :producerId', { producerId: supplierId })
+        .distinct(true)
+        .getRawMany();
+
+      // TODO: we are assuming that each suppliers supplies only one material and for the same country
+
+      const country: AdminRegion = await manager
+        .getRepository(AdminRegion)
+        .findOneOrFail({
+          where: { name: sourcingData[0].countryName, level: 0 },
+        });
+
+      sourcingInformation.materialName = sourcingData[0].materialName;
+      sourcingInformation.hsCode = sourcingData[0].hsCode;
+      sourcingInformation.country = {
+        name: country.name,
+        isoA3: country.isoA3,
+      };
+
+      for (const material of sourcingData) {
+        const geoRegions: any[] = await manager
+          .createQueryBuilder(SourcingLocation, 'sl')
+          .select('gr.id', 'geoRegionId')
+          .addSelect('gr.name', 'plotName')
+          .addSelect('gr.totalArea', 'totalArea')
+          .distinct(true)
+          .leftJoin(GeoRegion, 'gr', 'gr.id = sl.geoRegionId')
+          .where('sl.materialId = :materialId', {
+            materialId: material.materialId,
+          })
+          .andWhere('sl.producerId = :supplierId', { supplierId })
+          .getRawMany();
+        const totalArea: number = geoRegions.reduce(
+          (acc: number, cur: any) => acc + parseInt(cur.totalArea),
+          0,
+        );
+        let sourcingRecords: SourcingRecord[] = [];
+        for (const geoRegion of geoRegions) {
+          if (!geoRegionMap.get(geoRegion.geoRegionId)) {
+            geoRegionMap.set(geoRegion.geoRegionId, {
+              plotName: geoRegion.plotName,
+            });
+          }
+          sourcingRecords = await manager
+            .createQueryBuilder(SourcingRecord, 'sr')
+            .leftJoin(SourcingLocation, 'sl', 'sr.sourcingLocationId = sl.id')
+            .leftJoin(GeoRegion, 'gr', 'gr.id = sl.geoRegionId')
+            .where('sl.geoRegionId = :geoRegionId', {
+              geoRegionId: geoRegion.geoRegionId,
+            })
+            .andWhere('sl.producerId = :supplierId', { supplierId: supplierId })
+            .andWhere('sl.materialId = :materialId', {
+              materialId: material.materialId,
+            })
+            .select([
+              'sr.year AS year',
+              'sr.tonnage AS volume',
+              'gr.name as plotName',
+              'gr.id as geoRegionId',
+            ])
+            .getRawMany();
+        }
+
+        const totalVolume: number = sourcingRecords.reduce(
+          (acc: number, cur: any) => acc + parseInt(cur.volume),
+          0,
+        );
+
+        sourcingInformation.totalArea = totalArea;
+        sourcingInformation.totalVolume = totalVolume;
+        sourcingInformation.byArea = geoRegions.map((geoRegion: any) => ({
+          plotName: geoRegion.plotName,
+          geoRegionId: geoRegion.geoRegionId,
+          percentage: (geoRegion.totalArea / totalArea) * 100,
+          area: geoRegion.totalArea,
+        }));
+        sourcingInformation.byVolume = sourcingRecords.map((record: any) => ({
+          plotName: record.plotName,
+          geoRegionId: record.geoRegionId,
+          year: record.year,
+          percentage: (parseInt(record.volume) / totalVolume) * 100,
+          volume: parseInt(record.volume),
+        }));
+      }
+
+      const alertsOutput: AlertsOutput[] = await this.eudrRepository.getAlerts({
+        supplierIds: [supplierId],
+        startAlertDate: dto?.startAlertDate,
+        endAlertDate: dto?.endAlertDate,
+      });
+
+      const totalAlerts: number = alertsOutput.reduce(
+        (acc: number, cur: AlertsOutput) => acc + cur.alertCount,
+        0,
+      );
+      const startAlertDate: string = alertsOutput[0].alertDate.value.toString();
+      const endAlertDate: string =
+        alertsOutput[alertsOutput.length - 1].alertDate.value.toString();
+
+      const alerts = {
+        startADateDate: startAlertDate,
+        endAlertDate: endAlertDate,
+        totalAlerts,
+        values: alertsOutput.map((alert: AlertsOutput) => ({
+          geoRegionId: alert.geoRegionId,
+          alertCount: alert.alertCount,
+          plotName: geoRegionMap.get(alert.geoRegionId)!.plotName,
+        })),
+      };
+
+      result.alerts = alerts;
+
+      return result;
+    });
   }
 }

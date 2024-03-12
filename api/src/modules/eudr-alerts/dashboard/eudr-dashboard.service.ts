@@ -122,6 +122,7 @@ export class EudrDashboardService {
         materialName: string;
         totalBaselineVolume: number;
         geoRegionCount: number;
+        isoA3: string;
       };
     } = entityMetadata.reduce((acc: any, cur: EntityMetadata) => {
       acc[cur.supplierId] = { ...cur };
@@ -130,8 +131,10 @@ export class EudrDashboardService {
 
     const supplierToMaterials: Map<string, { name: string; id: string }[]> =
       new Map();
-    const supplierToOriginis: Map<string, { name: string; id: string }[]> =
-      new Map();
+    const supplierToOriginis: Map<
+      string,
+      { name: string; id: string; isoA3: string }[]
+    > = new Map();
     const materialMap: Map<
       string,
       {
@@ -152,6 +155,7 @@ export class EudrDashboardService {
         dfsSuppliers: number;
         sdaSuppliers: number;
         tplSuppliers: number;
+        isoA3: string;
       }
     > = new Map();
 
@@ -163,6 +167,7 @@ export class EudrDashboardService {
         materialName,
         adminRegionName,
         geoRegionCount,
+        isoA3,
       } = entity;
       if (!supplierToMaterials.has(entity.supplierId)) {
         supplierToMaterials.set(entity.supplierId, []);
@@ -181,6 +186,7 @@ export class EudrDashboardService {
       if (!originMap.has(adminRegionId)) {
         originMap.set(adminRegionId, {
           originName: adminRegionName,
+          isoA3: isoA3,
           suppliers: new Set(),
           zeroGeoRegionSuppliers: 0,
           dfsSuppliers: 0,
@@ -217,6 +223,7 @@ export class EudrDashboardService {
       supplierToOriginis.get(entity.supplierId)!.push({
         name: entity.adminRegionName,
         id: entity.adminRegionId,
+        isoA3: entity.isoA3,
       });
     });
 
@@ -260,6 +267,7 @@ export class EudrDashboardService {
           dfsSuppliers,
           sdaSuppliers,
           tplSuppliers,
+          isoA3,
         },
         adminRegionId: string,
       ) => {
@@ -270,11 +278,13 @@ export class EudrDashboardService {
         ].detail.push({
           name: originName,
           value: noLocationPercentage,
+          isoA3,
         });
         const dfsPercentage: number = (dfsSuppliers / suppliers.size) * 100;
         origins[EUDRDashBoardFields.DEFORASTATION_FREE_SUPPLIERS].detail.push({
           name: originName,
           value: dfsPercentage,
+          isoA3,
         });
         const sdaPercentage: number = (sdaSuppliers / suppliers.size) * 100;
         origins[
@@ -282,6 +292,7 @@ export class EudrDashboardService {
         ].detail.push({
           name: originName,
           value: sdaPercentage,
+          isoA3,
         });
       },
     );
@@ -378,9 +389,10 @@ export class EudrDashboardService {
       .addSelect('ar.name', 'adminRegionName')
       .addSelect('SUM(sr.tonnage)', 'totalBaselineVolume')
       .addSelect('COUNT(sl.geoRegionId)', 'geoRegionsCount')
+      .addSelect('ar.isoA3', 'isoA3')
       .from(SourcingLocation, 'sl')
       .leftJoin(Supplier, 's', 's.id = sl.producerId')
-      .leftJoin(AdminRegion, 'ar', 'ar.id = sl.adminRegionId')
+      .leftJoin(AdminRegion, 'ar', 'ar.name = sl.locationCountryInput')
       .leftJoin(Material, 'm', 'm.id = sl.materialId')
       .leftJoin(SourcingRecord, 'sr', 'sr.sourcingLocationId = sl.id')
       .where('sr.year = :year', { year: 2020 })

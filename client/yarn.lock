@@ -2314,6 +2314,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@radix-ui/react-separator@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "@radix-ui/react-separator@npm:1.0.3"
+  dependencies:
+    "@babel/runtime": ^7.13.10
+    "@radix-ui/react-primitive": 1.0.3
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 42f8c95e404de2ce9387040d78049808a48d423cd4c3bad8cca92c4b0bcbdcb3566b5b52a920d4e939a74b51188697f20a012221f0e630fc7f56de64096c15d2
+  languageName: node
+  linkType: hard
+
 "@radix-ui/react-slot@npm:1.0.2":
   version: 1.0.2
   resolution: "@radix-ui/react-slot@npm:1.0.2"
@@ -7813,6 +7833,7 @@ __metadata:
     "@radix-ui/react-popover": 1.0.7
     "@radix-ui/react-radio-group": 1.1.3
     "@radix-ui/react-select": 2.0.0
+    "@radix-ui/react-separator": ^1.0.3
     "@radix-ui/react-slot": 1.0.2
     "@reduxjs/toolkit": 1.8.2
     "@tailwindcss/forms": 0.4.0

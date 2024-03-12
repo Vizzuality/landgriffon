@@ -173,3 +173,72 @@ export const useEUDRData = <T = unknown>(
     },
   );
 };
+
+export interface SupplierDetail {
+  name: string;
+  address: string;
+  companyId: string;
+  sourcingInformation: {
+    materialName: string;
+    hsCode: string;
+    country: {
+      name: string;
+      isoA3: string;
+    };
+    totalArea: number;
+    totalVolume: number;
+    byVolume: [
+      {
+        plotName: string;
+        year: number;
+        percentage: number;
+        volume: number;
+      },
+    ];
+    byArea: [
+      {
+        plotName: string;
+        percentage: number;
+        area: number;
+        geoRegionId: string;
+      },
+    ];
+  };
+  alerts: {
+    startAlertDate: string;
+    endAlertDate: string;
+    totalAlerts: number;
+    values: [
+      {
+        alertDate: string;
+        plots: [
+          {
+            plotName: string;
+            alertCount: number;
+          },
+        ];
+      },
+    ];
+  };
+}
+
+export const useEUDRSupplier = <T = SupplierDetail>(
+  supplierId: string,
+  params?: { startAlertDate: string; endAlertDate: string },
+  options: UseQueryOptions<SupplierDetail, unknown, T> = {},
+) => {
+  return useQuery(
+    ['eudr-supplier', supplierId, params],
+    () =>
+      apiService
+        .request<SupplierDetail>({
+          method: 'GET',
+          url: `/eudr/dashboard/detail/${supplierId}`,
+          params,
+        })
+        .then(({ data: responseData }) => responseData),
+    {
+      ...options,
+    },
+  );
+};

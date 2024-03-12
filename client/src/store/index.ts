@@ -17,6 +17,7 @@ import analysisScenarios, {
   setScenarioToCompare,
 } from 'store/features/analysis/scenarios';
 import eudr from 'store/features/eudr';
+import eudrDetail from 'store/features/eudr-detail';
 
 import type { Action, ReducersMapObject, Middleware } from '@reduxjs/toolkit';
 import type { AnalysisState } from './features/analysis';
@@ -28,6 +29,7 @@ const staticReducers = {
   'analysis/map': analysisMap,
   'analysis/scenarios': analysisScenarios,
   eudr,
+  eudrDetail,
 };
 
 const asyncReducers = {};

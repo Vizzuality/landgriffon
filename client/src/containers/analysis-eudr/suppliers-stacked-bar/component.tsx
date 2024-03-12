@@ -16,7 +16,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label as RadioLabel } from '@/components/ui/label';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { eudr, setViewBy } from '@/store/features/eudr';
-import { useEUDRData, dateFormatter } from '@/hooks/eudr';
+import { useEUDRData } from '@/hooks/eudr';
 
 export const VIEW_BY_OPTIONS = [
   {
@@ -45,8 +45,8 @@ const SuppliersStackedBar = () => {
 
   const { data } = useEUDRData(
     {
-      startAlertDate: dateFormatter(dates.from),
-      endAlertDate: dateFormatter(dates.to),
+      startAlertDate: dates.from,
+      endAlertDate: dates.to,
       producerIds: suppliers?.map(({ value }) => value),
       materialIds: materials?.map(({ value }) => value),
       originIds: origins?.map(({ value }) => value),

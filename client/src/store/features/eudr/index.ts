@@ -15,8 +15,8 @@ export type EUDRState = {
     plots: Option[];
     suppliers: Option[];
     dates: {
-      from: Date;
-      to: Date;
+      from: string;
+      to: string;
     };
   };
 };

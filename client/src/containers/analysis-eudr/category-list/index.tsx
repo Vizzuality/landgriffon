@@ -7,7 +7,7 @@ import SuppliersWithNoLocationDataBreakdown from './breakdown/suppliers-with-no-
 import { Button } from '@/components/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
-import { useEUDRData, dateFormatter } from '@/hooks/eudr';
+import { useEUDRData } from '@/hooks/eudr';
 import { useAppSelector } from '@/store/hooks';
 import { eudr } from '@/store/features/eudr';
 import { themeColors } from '@/utils/colors';
@@ -47,8 +47,8 @@ export const CategoryList = (): JSX.Element => {
 
   const { data } = useEUDRData(
     {
-      startAlertDate: dateFormatter(dates.from),
-      endAlertDate: dateFormatter(dates.to),
+      startAlertDate: dates.from,
+      endAlertDate: dates.to,
       producerIds: suppliers?.map(({ value }) => value),
       materialIds: materials?.map(({ value }) => value),
       originIds: origins?.map(({ value }) => value),
@@ -73,7 +73,7 @@ export const CategoryList = (): JSX.Element => {
     <>
       {parsedData.map((category) => (
         <Collapsible
-          key={category.slug}
+          key={category.name}
           className="rounded-xl bg-gray-50 p-5"
           onOpenChange={() => {
             toggleCategory((prev) => ({
@@ -88,7 +88,7 @@ export const CategoryList = (): JSX.Element => {
                 className="block min-h-4 min-w-4 rounded-full border-2 transition-colors"
                 style={{
                   borderColor: category.color,
-                  ...(categories[category.slug] && {
+                  ...(categories[category.name] && {
                     backgroundColor: category.color,
                   }),
                 }}

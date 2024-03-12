@@ -7,7 +7,7 @@ import { CATEGORIES } from '../..';
 
 import { eudr } from '@/store/features/eudr';
 import { useAppSelector } from '@/store/hooks';
-import { dateFormatter, useEUDRData } from '@/hooks/eudr';
+import { useEUDRData } from '@/hooks/eudr';
 
 import type BreakdownItem from '../breakdown-item';
 
@@ -19,8 +19,8 @@ const SuppliersWithDeforestationAlertsBreakdown = () => {
 
   const { data } = useEUDRData(
     {
-      startAlertDate: dateFormatter(dates.from),
-      endAlertDate: dateFormatter(dates.to),
+      startAlertDate: dates.from,
+      endAlertDate: dates.to,
       producerIds: suppliers?.map(({ value }) => value),
       materialIds: materials?.map(({ value }) => value),
       originIds: origins?.map(({ value }) => value),

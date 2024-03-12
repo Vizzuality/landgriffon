@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { format } from 'date-fns';
 
 import { apiService } from 'services/api';
 
@@ -7,8 +6,6 @@ import type { Supplier as SupplierRow } from '@/containers/analysis-eudr/supplie
 import type { AdminRegionsTreesParams } from '@/hooks/admin-regions';
 import type { MaterialTreeItem, OriginRegion, Supplier } from '@/types';
 import type { UseQueryOptions } from '@tanstack/react-query';
-
-export const dateFormatter = (date: Date) => format(date, 'yyyy-MM-dd');
 
 export const useEUDRSuppliers = <T = Supplier[]>(
   params?: { producersIds: string[]; originsId: string[]; materialsId: string[] },

@@ -1,10 +1,9 @@
-'use client';
-
 import Link from 'next/link';
 
 import { DataTableColumnHeader } from './column-header';
 
 import { Badge } from '@/components/ui/badge';
+import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 
 import type { Supplier } from '.';
 import type { ColumnDef } from '@tanstack/react-table';
@@ -17,7 +16,7 @@ export const columns: ColumnDef<Supplier>[] = [
       return (
         <div className="max-w-[190px] overflow-hidden text-ellipsis">
           <Link
-            href={`/eudr/suppliers/${row.original.id}`}
+            href={`/eudr/suppliers/${row.original.supplierId}`}
             className="whitespace-nowrap underline underline-offset-2 hover:text-navy-400 hover:decoration-navy-400"
           >
             {row.getValue('supplierName')}
@@ -34,11 +33,15 @@ export const columns: ColumnDef<Supplier>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'baseLineVolume',
+    accessorKey: 'baselineVolume',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Baseline Volume" />,
     cell: ({ row }) => {
       // todo: format number
-      return <span>{row.getValue('baseLineVolume')}</span>;
+      return (
+        <div className="flex justify-center">
+          <span>{BIG_NUMBER_FORMAT(row.getValue('baselineVolume'))}</span>
+        </div>
+      );
     },
   },
   {
@@ -58,11 +61,11 @@ export const columns: ColumnDef<Supplier>[] = [
     },
   },
   {
-    accessorKey: 'ttp',
-    header: ({ column }) => <DataTableColumnHeader column={column} title="TTP" />,
+    accessorKey: 'tpl',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="TPL" />,
     cell: ({ row }) => {
-      const ttp = row.getValue('ttp');
-      return <span>{`${Number.isNaN(ttp) ? '-' : `${ttp}%`}`}</span>;
+      const tpl = row.getValue('tpl');
+      return <span>{`${Number.isNaN(tpl) ? '-' : `${tpl}%`}`}</span>;
     },
   },
   {
@@ -86,7 +89,7 @@ export const columns: ColumnDef<Supplier>[] = [
   },
   {
     accessorKey: 'origins',
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Countries" />,
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Origins" />,
     cell: ({ row }) => {
       return (
         <div className="flex min-w-[175px] flex-wrap gap-2">

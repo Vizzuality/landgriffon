@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react';
 import { UTCDate } from '@date-fns/utc';
-import { format } from 'date-fns';
 import { ChevronDown } from 'lucide-react';
 
 import { useAppDispatch, useAppSelector } from 'store/hooks';
@@ -8,13 +7,12 @@ import { eudr, setFilters } from 'store/features/eudr';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
+import { dateFormatter } from '@/hooks/eudr';
 
 import type { DateRange } from 'react-day-picker';
 
 // ! the date range is hardcoded for now
 export const DATES_RANGE = [new UTCDate('2020-12-31'), new UTCDate()];
-
-const dateFormatter = (date: Date) => format(date, 'dd/MM/yyyy');
 
 const DatesRange = (): JSX.Element => {
   const dispatch = useAppDispatch();

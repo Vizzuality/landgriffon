@@ -22,7 +22,7 @@ export type EUDRState = {
 };
 
 export const initialState: EUDRState = {
-  viewBy: 'commodities',
+  viewBy: 'materials',
   filters: {
     materials: [],
     origins: [],

@@ -22,6 +22,8 @@ import { AlertsOutput } from '../dto/alerts-output.dto';
 
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { EUDRDashBoardDetail } from './dashboard-detail.types';
+import { MaterialsService } from 'modules/materials/materials.service';
+import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 
 @Injectable()
 export class EudrDashboardService {
@@ -29,9 +31,21 @@ export class EudrDashboardService {
     @Inject('IEUDRAlertsRepository')
     private readonly eudrRepository: IEUDRAlertsRepository,
     private readonly datasource: DataSource,
+    private readonly materialsService: MaterialsService,
+    private readonly adminRegionService: AdminRegionsService,
   ) {}
 
   async buildDashboard(dto: GetDashBoardDTO): Promise<EUDRDashboard> {
+    if (dto.originIds) {
+      dto.originIds = await this.adminRegionService.getAdminRegionDescendants(
+        dto.originIds,
+      );
+    }
+    if (dto.materialIds) {
+      dto.materialIds = await this.materialsService.getMaterialsDescendants(
+        dto.materialIds,
+      );
+    }
     const alertSummary: EUDRAlertDatabaseResult[] =
       await this.eudrRepository.getAlertSummary({
         alertStartDate: dto.startAlertDate,

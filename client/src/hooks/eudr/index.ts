@@ -157,6 +157,7 @@ export const useEUDRData = <T = unknown>(
     producerIds?: string[];
     materialIds?: string[];
     originIds?: string[];
+    geoRegiondIds?: string[];
   },
   options: UseQueryOptions<EUDRData, unknown, T> = {},
 ) => {

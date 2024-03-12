@@ -144,6 +144,20 @@ export class EUDRTestManager extends TestManager {
     };
   };
 
+  GivenEUDRGeoRegionsWithNoGeometry = async () => {
+    const geoRegion = await createGeoRegion({
+      name: 'EUDR GeoRegion with No Geom',
+      theGeom: null as any,
+    });
+    await createSourcingLocation({
+      geoRegionId: geoRegion.id,
+      locationType: LOCATION_TYPES.EUDR,
+    });
+    return {
+      noGeomEUDRGeoRegions: [geoRegion],
+    };
+  };
+
   WhenIRequestEUDRGeoRegions = async (filters?: {
     'producerIds[]'?: string[];
     'materialIds[]'?: string[];

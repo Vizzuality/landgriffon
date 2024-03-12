@@ -250,11 +250,8 @@ export class EudrController {
   @Get('/dashboard')
   async getDashboard(
     @Query(ValidationPipe) dto: GetDashBoardDTO,
-  ): Promise<{ data: EUDRDashboard }> {
-    const dashboard: EUDRDashboard = await this.dashboard.buildDashboard(dto);
-    return {
-      data: dashboard,
-    };
+  ): Promise<EUDRDashboard> {
+    return this.dashboard.buildDashboard(dto);
   }
 
   @ApiOperation({ description: 'Get EUDR Dashboard Detail' })
@@ -263,11 +260,7 @@ export class EudrController {
   async getDashboardDetail(
     @Param('supplierId') supplierId: string,
     @Query(ValidationPipe) dto: GetEUDRAlertDatesDto,
-  ): Promise<{ data: EUDRDashBoardDetail }> {
-    const dashboard: EUDRDashBoardDetail =
-      await this.dashboard.buildDashboardDetail(supplierId, dto);
-    return {
-      data: dashboard,
-    };
+  ): Promise<EUDRDashBoardDetail> {
+    return this.dashboard.buildDashboardDetail(supplierId, dto);
   }
 }

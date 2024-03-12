@@ -48,24 +48,24 @@ export const columns: ColumnDef<Supplier>[] = [
     accessorKey: 'dfs',
     header: ({ column }) => <DataTableColumnHeader column={column} title="DFS" />,
     cell: ({ row }) => {
-      const dfs = row.getValue('dfs');
-      return <span>{`${Number.isNaN(dfs) ? '-' : `${dfs}%`}`}</span>;
+      const dfs: number = row.getValue('dfs');
+      return <span>{`${Number.isNaN(dfs) ? '-' : `${dfs.toFixed(2)}%`}`}</span>;
     },
   },
   {
     accessorKey: 'sda',
     header: ({ column }) => <DataTableColumnHeader column={column} title="SDA" />,
     cell: ({ row }) => {
-      const sda = row.getValue('sda');
-      return <span>{`${Number.isNaN(sda) ? '-' : `${sda}%`}`}</span>;
+      const sda: number = row.getValue('sda');
+      return <span>{`${Number.isNaN(sda) ? '-' : `${sda.toFixed(2)}%`}`}</span>;
     },
   },
   {
     accessorKey: 'tpl',
     header: ({ column }) => <DataTableColumnHeader column={column} title="TPL" />,
     cell: ({ row }) => {
-      const tpl = row.getValue('tpl');
-      return <span>{`${Number.isNaN(tpl) ? '-' : `${tpl}%`}`}</span>;
+      const tpl: number = row.getValue('tpl');
+      return <span>{`${Number.isNaN(tpl) ? '-' : `${tpl.toFixed(2)}%`}`}</span>;
     },
   },
   {

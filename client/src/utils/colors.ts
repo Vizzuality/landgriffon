@@ -23,3 +23,14 @@ export function useColors(layerName: string, colorScale): RGBColor[] {
 }
 
 export const themeColors = resolveConfig(tailwindConfig).theme.colors;
+
+export const EUDR_COLOR_RAMP = [
+  themeColors.navy['600'],
+  '#50B1F6',
+  '#E2564F',
+  '#FAE26C',
+  '#ED7542',
+  '#ED75CC',
+  '#78C679',
+  '#AB93FF',
+];

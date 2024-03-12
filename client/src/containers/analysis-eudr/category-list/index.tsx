@@ -1,71 +1,83 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import DeforestationFreeSuppliersBreakdown, {
-  CATEGORY_COLOR as DEFORESTATION_FREE_SUPPLIERS_COLOR,
-} from './breakdown/deforestation-free-suppliers';
-import SuppliersWithDeforestationAlertsBreakdown, {
-  CATEGORY_COLOR as SUPPLIERS_WITH_DEFORESTATION_ALERTS_COLOR,
-} from './breakdown/suppliers-with-deforestation-alerts';
-import SuppliersWithNoLocationDataBreakdown, {
-  CATEGORY_COLOR as SUPPLIERS_WITH_NO_LOCATION_DATA_COLOR,
-} from './breakdown/suppliers-with-no-location-data';
+import DeforestationFreeSuppliersBreakdown from './breakdown/deforestation-free-suppliers';
+import SuppliersWithDeforestationAlertsBreakdown from './breakdown/suppliers-with-deforestation-alerts';
+import SuppliersWithNoLocationDataBreakdown from './breakdown/suppliers-with-no-location-data';
 
 import { Button } from '@/components/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { formatPercentage } from '@/utils/number-format';
 import { cn } from '@/lib/utils';
+import { useEUDRData, dateFormatter } from '@/hooks/eudr';
+import { useAppSelector } from '@/store/hooks';
+import { eudr } from '@/store/features/eudr';
+import { themeColors } from '@/utils/colors';
 
-const CATEGORIES = [
+export const CATEGORIES = [
   {
     name: 'Deforestation-free suppliers',
-    slug: 'deforestation-free-suppliers',
-    color: DEFORESTATION_FREE_SUPPLIERS_COLOR,
-    // todo move this value field to the component
-    value: 0.3,
+    color: themeColors.blue[400],
   },
   {
     name: 'Suppliers with deforestation alerts',
-    slug: 'suppliers-with-deforestation-alerts',
-    color: SUPPLIERS_WITH_DEFORESTATION_ALERTS_COLOR,
-    // todo move this value field to the component
-    value: 0.6,
+    color: '#FFC038',
   },
   {
     name: 'Suppliers with no location data',
-    slug: 'suppliers-with-no-location-data',
-    color: SUPPLIERS_WITH_NO_LOCATION_DATA_COLOR,
-    // todo move this value field to the component
-    value: 0.1,
+    color: '#8561FF',
   },
 ] as const;
 
-type CategoryState = Record<(typeof CATEGORIES)[number]['slug'], boolean>;
+type CategoryState = Record<(typeof CATEGORIES)[number]['name'], boolean>;
 
 export const CategoryList = (): JSX.Element => {
   const [categories, toggleCategory] = useState<CategoryState>(
     CATEGORIES.reduce(
       (acc, category) => ({
         ...acc,
-        [category.slug]: false,
+        [category.name]: false,
       }),
       {} as CategoryState,
     ),
   );
-  const categoriesWithValues = CATEGORIES.map((category) => ({
-    ...category,
-    // todo: calculate value field here
-  }));
+
+  const {
+    viewBy,
+    filters: { dates, suppliers, origins, materials },
+  } = useAppSelector(eudr);
+
+  const { data } = useEUDRData(
+    {
+      startAlertDate: dateFormatter(dates.from),
+      endAlertDate: dateFormatter(dates.to),
+      producerIds: suppliers?.map(({ value }) => value),
+      materialIds: materials?.map(({ value }) => value),
+      originIds: origins?.map(({ value }) => value),
+    },
+    {
+      select: (data) => data?.breakDown,
+    },
+  );
+
+  const parsedData = useMemo(() => {
+    const dataByView = data?.[viewBy] || [];
+
+    return Object.keys(dataByView).map((key) => ({
+      name: key,
+      ...dataByView[key],
+      color: CATEGORIES.find((category) => category.name === key)?.color || '#000',
+    }));
+  }, [data, viewBy]);
 
   return (
     <>
-      {categoriesWithValues.map((category) => (
+      {parsedData.map((category) => (
         <Collapsible
           key={category.slug}
           className="rounded-xl bg-gray-50 p-5"
           onOpenChange={() => {
             toggleCategory((prev) => ({
               ...prev,
-              [category.slug]: !prev[category.slug],
+              [category.name]: !prev[category.name],
             }));
           }}
         >
@@ -84,13 +96,13 @@ export const CategoryList = (): JSX.Element => {
             </div>
             <div className="shrink-0 grow-0">
               <div className="text-center">
-                {formatPercentage(category.value)} <span className="text-2xs">of suppliers</span>
+                {`${category.totalPercentage}%`} <span className="text-2xs">of suppliers</span>
               </div>
               <div className="h-[2px] w-[340px] bg-gray-200">
                 <div
                   className="h-[2px]"
                   style={{
-                    width: formatPercentage(category.value),
+                    width: `${category.totalPercentage}%`,
                     backgroundColor: category.color,
                   }}
                 />
@@ -104,24 +116,18 @@ export const CategoryList = (): JSX.Element => {
                 className={cn(
                   'w-[98px] rounded-md border-none text-sm text-gray-500 shadow-none transition-colors hover:shadow-none',
                   {
-                    'bg-navy-400 text-white hover:bg-navy-600': categories[category.slug],
+                    'bg-navy-400 text-white hover:bg-navy-600': categories[category.name],
                   },
                 )}
               >
-                {categories[category.slug] ? 'Close detail' : 'View detail'}
+                {categories[category.name] ? 'Close detail' : 'View detail'}
               </Button>
             </CollapsibleTrigger>
           </div>
           <CollapsibleContent>
-            {category.slug === 'deforestation-free-suppliers' && (
-              <DeforestationFreeSuppliersBreakdown />
-            )}
-            {category.slug === 'suppliers-with-deforestation-alerts' && (
-              <SuppliersWithDeforestationAlertsBreakdown />
-            )}
-            {category.slug === 'suppliers-with-no-location-data' && (
-              <SuppliersWithNoLocationDataBreakdown />
-            )}
+            {category.name === CATEGORIES[0].name && <DeforestationFreeSuppliersBreakdown />}
+            {category.name === CATEGORIES[1].name && <SuppliersWithDeforestationAlertsBreakdown />}
+            {category.name === CATEGORIES[2].name && <SuppliersWithNoLocationDataBreakdown />}
           </CollapsibleContent>
         </Collapsible>
       ))}

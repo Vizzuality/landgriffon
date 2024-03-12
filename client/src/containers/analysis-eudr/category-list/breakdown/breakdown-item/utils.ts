@@ -17,7 +17,7 @@ const SVGS_DICTIONARY = {
   rubber: RubberSVG,
   wood: WoodSVG,
   coffee: CoffeeSVG,
-  'palm-oil': PalmOilSVG,
+  'Palm oil and its fractions': PalmOilSVG,
   cattle: CattleSVG,
 };
 

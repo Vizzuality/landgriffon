@@ -11,7 +11,6 @@ import {
 import { useState } from 'react';
 
 import columns from './columns';
-import { MOCK_DATA } from './mock-data';
 import { DataTablePagination, PAGINATION_SIZES } from './pagination';
 
 import {
@@ -22,7 +21,9 @@ import {
   TableBody,
   TableCell,
 } from '@/components/ui/table';
-// import { useEUDRSuppliers } from '@/hooks/eudr';
+import { useEUDRData, dateFormatter } from '@/hooks/eudr';
+import { useAppSelector } from '@/store/hooks';
+import { eudr } from '@/store/features/eudr';
 
 import type {
   // ColumnFiltersState,
@@ -31,13 +32,13 @@ import type {
 } from '@tanstack/react-table';
 
 export interface Supplier {
-  id: number;
+  supplierId: number;
   supplierName: string;
   companyId: string;
-  baseLineVolume: number;
+  baselineVolume: number;
   dfs: number;
   sda: number;
-  ttp: number;
+  tpl: number;
   materials: {
     name: string;
     id: string;
@@ -53,12 +54,22 @@ const SuppliersListTable = (): JSX.Element => {
   // const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   // const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
+  const {
+    filters: { dates, suppliers, origins, materials },
+  } = useAppSelector(eudr);
 
-  const data = MOCK_DATA;
-  // const { data } = useEUDRSuppliers(undefined, {
-  //   enabled: false,
-  //   placeholderData: MOCK_DATA,
-  // });
+  const { data } = useEUDRData(
+    {
+      startAlertDate: dateFormatter(dates.from),
+      endAlertDate: dateFormatter(dates.to),
+      producerIds: suppliers?.map(({ value }) => value),
+      materialIds: materials?.map(({ value }) => value),
+      originIds: origins?.map(({ value }) => value),
+    },
+    {
+      select: (data) => data?.table,
+    },
+  );
 
   const table = useReactTable({
     data: data,
@@ -86,6 +97,8 @@ const SuppliersListTable = (): JSX.Element => {
     // getFacetedRowModel: getFacetedRowModel(),
     // getFacetedUniqueValues: getFacetedUniqueValues(),
   });
+
+  if (!data?.length) return null;
 
   return (
     <div className="space-y-4">

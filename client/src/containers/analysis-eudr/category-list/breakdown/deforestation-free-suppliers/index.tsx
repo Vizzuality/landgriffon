@@ -14,7 +14,7 @@ import type BreakdownItem from '../breakdown-item';
 const DeforestationFreeSuppliersBreakdown = () => {
   const {
     viewBy,
-    filters: { dates, suppliers, origins, materials },
+    filters: { dates, suppliers, origins, materials, plots },
   } = useAppSelector(eudr);
 
   const { data } = useEUDRData(
@@ -24,6 +24,7 @@ const DeforestationFreeSuppliersBreakdown = () => {
       producerIds: suppliers?.map(({ value }) => value),
       materialIds: materials?.map(({ value }) => value),
       originIds: origins?.map(({ value }) => value),
+      geoRegiondIds: plots?.map(({ value }) => value),
     },
     {
       select: (data) => data?.breakDown,

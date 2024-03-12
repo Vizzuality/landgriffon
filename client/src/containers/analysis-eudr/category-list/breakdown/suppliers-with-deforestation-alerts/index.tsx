@@ -43,7 +43,7 @@ const SuppliersWithDeforestationAlertsBreakdown = () => {
             color: CATEGORIES[1].color,
             icon: getCommodityIconByName(item.name, { fill: CATEGORIES[1].color }),
             ...(viewBy === 'origins' && {
-              icon: <Flag code={item.iso3} className="h-[24px] w-[32px] rounded-md" />,
+              icon: <Flag code={item.isoA3} className="h-[24px] w-[32px] rounded-md" />,
             }),
           }))
           .flat(),

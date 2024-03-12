@@ -43,7 +43,7 @@ const DeforestationFreeSuppliersBreakdown = () => {
             color: CATEGORIES[0].color,
             icon: getCommodityIconByName(item.name, { fill: CATEGORIES[0].color }),
             ...(viewBy === 'origins' && {
-              icon: <Flag code={item.iso3} className="h-[24px] w-[32px] rounded-md" />,
+              icon: <Flag code={item.isoA3} className="h-[24px] w-[32px] rounded-md" />,
             }),
           }))
           .flat(),

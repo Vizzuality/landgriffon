@@ -23,6 +23,7 @@ export type GetAlertSummary = {
   alertStartDate?: Date;
   alertEnDate?: Date;
   supplierIds?: string[];
+  geoRegionIds?: string[];
 };
 
 export interface IEUDRAlertsRepository {

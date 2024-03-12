@@ -51,6 +51,7 @@ export class EudrDashboardService {
         alertStartDate: dto.startAlertDate,
         alertEnDate: dto.endAlertDate,
         supplierIds: dto.producerIds,
+        geoRegionIds: dto.originIds,
       });
     const entityMetadata: EntityMetadata[] = await this.getEntityMetadata(dto);
     if (!entityMetadata.length) {

@@ -167,7 +167,7 @@ const SuppliersStackedBar = () => {
               cursor={{ fill: 'transparent' }}
               labelFormatter={(value: string) => value}
               formatter={(value: number, name: keyof typeof TOOLTIP_LABELS) => [
-                `${value}%`,
+                `${value.toFixed(2)}%`,
                 TOOLTIP_LABELS[name],
               ]}
             />

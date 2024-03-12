@@ -97,7 +97,8 @@ export const CategoryList = (): JSX.Element => {
             </div>
             <div className="shrink-0 grow-0">
               <div className="text-center">
-                {`${category.totalPercentage}%`} <span className="text-2xs">of suppliers</span>
+                {`${category.totalPercentage.toFixed(2)}%`}{' '}
+                <span className="text-2xs">of suppliers</span>
               </div>
               <div className="h-[2px] w-[340px] bg-gray-200">
                 <div

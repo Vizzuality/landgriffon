@@ -62,6 +62,7 @@ export type EntityMetadata = {
   materialName: string;
   totalBaselineVolume: number;
   geoRegionCount: number;
+  isoA3: string;
 };
 
 class BreakDownByEUDRCategory {

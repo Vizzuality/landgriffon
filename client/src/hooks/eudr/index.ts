@@ -1,10 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
+import { format } from 'date-fns';
 
 import { apiService } from 'services/api';
 
+import type { Supplier as SupplierRow } from '@/containers/analysis-eudr/supplier-list-table/table';
 import type { AdminRegionsTreesParams } from '@/hooks/admin-regions';
 import type { MaterialTreeItem, OriginRegion, Supplier } from '@/types';
 import type { UseQueryOptions } from '@tanstack/react-query';
+
+export const dateFormatter = (date: Date) => format(date, 'yyyy-MM-dd');
 
 export const useEUDRSuppliers = <T = Supplier[]>(
   params?: { producersIds: string[]; originsId: string[]; materialsId: string[] },
@@ -135,6 +139,37 @@ export const useEUDRAlertDates = <T = Alert[]>(
           params,
         })
         .then(({ data: responseData }) => responseData.data),
+    {
+      ...options,
+    },
+  );
+};
+
+interface EUDRData {
+  table: SupplierRow[];
+  breakDown: [];
+}
+
+export const useEUDRData = <T = unknown>(
+  params?: {
+    startAlertDate: string;
+    endAlertDate: string;
+    producerIds?: string[];
+    materialIds?: string[];
+    originIds?: string[];
+  },
+  options: UseQueryOptions<EUDRData, unknown, T> = {},
+) => {
+  return useQuery(
+    ['eudr-table', params],
+    () =>
+      apiService
+        .request<EUDRData>({
+          method: 'GET',
+          url: '/eudr/dashboard',
+          params,
+        })
+        .then(({ data }) => data),
     {
       ...options,
     },

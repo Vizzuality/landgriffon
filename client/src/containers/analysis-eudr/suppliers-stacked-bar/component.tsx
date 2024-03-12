@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   BarChart,
   Bar,
@@ -9,71 +9,31 @@ import {
   ResponsiveContainer,
   Label,
 } from 'recharts';
+import { groupBy } from 'lodash-es';
 
-import CategoryList from '@/containers/analysis-eudr/category-list';
+import CategoryList, { CATEGORIES } from '@/containers/analysis-eudr/category-list';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label as RadioLabel } from '@/components/ui/label';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { eudr, setViewBy } from '@/store/features/eudr';
+import { useEUDRData, dateFormatter } from '@/hooks/eudr';
 
 export const VIEW_BY_OPTIONS = [
   {
     label: 'Commodities',
-    value: 'commodities',
+    value: 'materials',
   },
   {
     label: 'Countries',
-    value: 'countries',
+    value: 'origins',
   },
 ] as const;
 
-const data = [
-  {
-    name: 'Cattle',
-    uv: 40,
-    pv: 30,
-    amt: 30,
-  },
-  {
-    name: 'Cocoa',
-    uv: 30,
-    pv: 13,
-    amt: 57,
-  },
-  {
-    name: 'Coffee',
-    uv: 20,
-    pv: 70,
-    amt: 10,
-  },
-  {
-    name: 'Oil palm',
-    uv: 27,
-    pv: 39,
-    amt: 34,
-  },
-  {
-    name: 'Wood',
-    uv: 28,
-    pv: 48,
-    amt: 24,
-  },
-  {
-    name: 'Soya',
-    uv: 23,
-    pv: 38,
-    amt: 39,
-  },
-  {
-    name: 'Rubber',
-    uv: 34,
-    pv: 43,
-    amt: 23,
-  },
-];
-
 const SuppliersStackedBar = () => {
-  const { viewBy } = useAppSelector(eudr);
+  const {
+    viewBy,
+    filters: { dates, suppliers, origins, materials },
+  } = useAppSelector(eudr);
   const dispatch = useAppDispatch();
 
   const handleViewBy = useCallback(
@@ -83,11 +43,50 @@ const SuppliersStackedBar = () => {
     [dispatch],
   );
 
+  const { data } = useEUDRData(
+    {
+      startAlertDate: dateFormatter(dates.from),
+      endAlertDate: dateFormatter(dates.to),
+      producerIds: suppliers?.map(({ value }) => value),
+      materialIds: materials?.map(({ value }) => value),
+      originIds: origins?.map(({ value }) => value),
+    },
+    {
+      select: (data) => data?.breakDown,
+    },
+  );
+
+  const parsedData = useMemo(() => {
+    const dataByView = data?.[viewBy] || [];
+
+    const dataRootLevel = Object.keys(dataByView)
+      .map((key) => ({
+        category: key,
+        ...dataByView[key],
+      }))
+      .map(({ detail, category }) => detail.map((x) => ({ ...x, category })).flat())
+      .flat();
+
+    return Object.keys(groupBy(dataRootLevel, 'name')).map((material) => ({
+      name: material,
+      free: dataRootLevel.find(
+        ({ name, category }) => name === material && category === 'Deforestation-free suppliers',
+      )?.value,
+      alerts: dataRootLevel.find(
+        ({ name, category }) =>
+          name === material && category === 'Suppliers with deforestation alerts',
+      )?.value,
+      noData: dataRootLevel.find(
+        ({ name, category }) => name === material && category === 'Suppliers with no location data',
+      )?.value,
+    }));
+  }, [data, viewBy]);
+
   return (
     <div className="space-y-4">
       <div>
         <div className="text-xs text-gray-400">
-          Total numbers of suppliers: <span className="font-mono">46.53P</span>
+          Total numbers of suppliers: <span className="font-mono">{parsedData?.length || '-'}</span>
         </div>
         <div className="flex items-center justify-between">
           <h3>Suppliers by category</h3>
@@ -113,7 +112,7 @@ const SuppliersStackedBar = () => {
           <BarChart
             width={500}
             height={300}
-            data={data}
+            data={parsedData}
             margin={{
               top: 0,
               right: 0,
@@ -159,9 +158,24 @@ const SuppliersStackedBar = () => {
               width={200}
             />
             <Tooltip cursor={{ fill: 'transparent' }} />
-            <Bar dataKey="pv" stackId="a" fill="#4AB7F3" shapeRendering="crispEdges" />
-            <Bar dataKey="uv" stackId="a" fill="#FFC038" shapeRendering="crispEdges" />
-            <Bar dataKey="amt" stackId="a" fill="#8460FF" shapeRendering="crispEdges" />
+            <Bar
+              dataKey="alerts"
+              stackId="a"
+              fill={CATEGORIES[0].color}
+              shapeRendering="crispEdges"
+            />
+            <Bar
+              dataKey="free"
+              stackId="a"
+              fill={CATEGORIES[1].color}
+              shapeRendering="crispEdges"
+            />
+            <Bar
+              dataKey="noData"
+              stackId="a"
+              fill={CATEGORIES[2].color}
+              shapeRendering="crispEdges"
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>

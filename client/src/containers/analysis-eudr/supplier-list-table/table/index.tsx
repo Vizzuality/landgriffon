@@ -21,7 +21,7 @@ import {
   TableBody,
   TableCell,
 } from '@/components/ui/table';
-import { useEUDRData, dateFormatter } from '@/hooks/eudr';
+import { useEUDRData } from '@/hooks/eudr';
 import { useAppSelector } from '@/store/hooks';
 import { eudr } from '@/store/features/eudr';
 
@@ -60,8 +60,8 @@ const SuppliersListTable = (): JSX.Element => {
 
   const { data } = useEUDRData(
     {
-      startAlertDate: dateFormatter(dates.from),
-      endAlertDate: dateFormatter(dates.to),
+      startAlertDate: dates.from,
+      endAlertDate: dates.to,
       producerIds: suppliers?.map(({ value }) => value),
       materialIds: materials?.map(({ value }) => value),
       originIds: origins?.map(({ value }) => value),

@@ -34,6 +34,11 @@ export class BigQueryAlertsQueryBuilder {
     return this;
   }
 
+  orderBy(field: string, order: 'ASC' | 'DESC'): this {
+    this.queryBuilder.orderBy(field, order);
+    return this;
+  }
+
   getQueryBuilder(): SelectQueryBuilder<AlertsOutput> {
     return this.queryBuilder;
   }

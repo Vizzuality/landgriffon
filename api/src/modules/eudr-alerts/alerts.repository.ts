@@ -53,8 +53,8 @@ export class AlertsRepository implements IEUDRAlertsRepository {
   }
 
   async getAlerts(dto?: GetEUDRAlertsDto): Promise<AlertsOutput[]> {
-    const queryBuilder: SelectQueryBuilder<AlertsOutput> =
-      this.dataSource.createQueryBuilder();
+    const queryBuilder: BigQueryAlertsQueryBuilder =
+      new BigQueryAlertsQueryBuilder(this.dataSource.createQueryBuilder(), dto);
     // TODO: Make field selection dynamic
     queryBuilder.from(this.baseDataset, 'alerts');
     queryBuilder.select('alertdate', 'alertDate');
@@ -63,17 +63,17 @@ export class AlertsRepository implements IEUDRAlertsRepository {
     queryBuilder.addSelect('alertcount', 'alertCount');
     queryBuilder.addSelect('georegionid', 'geoRegionId');
     queryBuilder.orderBy('alertdate', 'ASC');
-    return this.query(queryBuilder, dto);
+    return this.query(queryBuilder);
   }
 
   async getDates(dto: GetEUDRAlertsDto): Promise<EUDRAlertDates[]> {
-    const queryBuilder: SelectQueryBuilder<AlertsOutput> =
-      this.dataSource.createQueryBuilder();
+    const queryBuilder: BigQueryAlertsQueryBuilder =
+      new BigQueryAlertsQueryBuilder(this.dataSource.createQueryBuilder(), dto);
     queryBuilder.from(this.baseDataset, 'alerts');
     queryBuilder.select('alertdate', 'alertDate');
     queryBuilder.orderBy('alertdate', 'ASC');
     queryBuilder.groupBy('alertdate');
-    return this.query(queryBuilder, dto);
+    return this.query(queryBuilder);
   }
 
   async getAlertSummary(dto: any): Promise<EUDRAlertDatabaseResult[]> {
@@ -120,13 +120,10 @@ export class AlertsRepository implements IEUDRAlertsRepository {
     return this.query(mainQueryBuilder);
   }
 
-  private async query(
-    queryBuilder: SelectQueryBuilder<any> | BigQueryAlertsQueryBuilder,
-    dto?: GetEUDRAlertsDto,
-  ): Promise<any> {
+  private async query(queryBuilder: BigQueryAlertsQueryBuilder): Promise<any> {
     try {
       const response: SimpleQueryRowsResponse = await this.bigQueryClient.query(
-        this.buildQuery(queryBuilder, dto),
+        queryBuilder.buildQuery(),
       );
       if (!response.length || 'error' in response) {
         this.logger.error('Error in query', response);
@@ -139,18 +136,5 @@ export class AlertsRepository implements IEUDRAlertsRepository {
         'Unable to retrieve EUDR Data. Please contact your administrator.',
       );
     }
-  }
-
-  private buildQuery(
-    queryBuilder: SelectQueryBuilder<AlertsOutput> | BigQueryAlertsQueryBuilder,
-    dto?: GetEUDRAlertsDto,
-  ): Query {
-    if (queryBuilder instanceof BigQueryAlertsQueryBuilder) {
-      return queryBuilder.buildQuery();
-    }
-    const alertsQueryBuilder: BigQueryAlertsQueryBuilder =
-      new BigQueryAlertsQueryBuilder(queryBuilder, dto);
-
-    return alertsQueryBuilder.buildQuery();
   }
 }

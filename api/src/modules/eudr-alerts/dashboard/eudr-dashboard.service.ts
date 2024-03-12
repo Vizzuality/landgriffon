@@ -1,5 +1,3 @@
-// supress typescript error
-// eslint-disable-next-line @typescript-eslint/ban-types
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, EntityManager, SelectQueryBuilder } from 'typeorm';
 import {
@@ -20,7 +18,6 @@ import {
   EUDRDashBoardFields,
 } from 'modules/eudr-alerts/dashboard/dashboard.types';
 import { GetEUDRAlertDatesDto } from '../dto/get-alerts.dto';
-import { AdminRegionsService } from '../../admin-regions/admin-regions.service';
 import { AlertsOutput } from '../dto/alerts-output.dto';
 
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';

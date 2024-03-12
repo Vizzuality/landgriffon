@@ -29,6 +29,12 @@ export const VIEW_BY_OPTIONS = [
   },
 ] as const;
 
+const TOOLTIP_LABELS = {
+  free: CATEGORIES[0].name,
+  alerts: CATEGORIES[1].name,
+  noData: CATEGORIES[2].name,
+} as const;
+
 const SuppliersStackedBar = () => {
   const {
     viewBy,
@@ -157,15 +163,22 @@ const SuppliersStackedBar = () => {
               type="category"
               width={200}
             />
-            <Tooltip cursor={{ fill: 'transparent' }} />
+            <Tooltip
+              cursor={{ fill: 'transparent' }}
+              labelFormatter={(value: string) => value}
+              formatter={(value: number, name: keyof typeof TOOLTIP_LABELS) => [
+                `${value}%`,
+                TOOLTIP_LABELS[name],
+              ]}
+            />
             <Bar
-              dataKey="alerts"
+              dataKey="free"
               stackId="a"
               fill={CATEGORIES[0].color}
               shapeRendering="crispEdges"
             />
             <Bar
-              dataKey="free"
+              dataKey="alerts"
               stackId="a"
               fill={CATEGORIES[1].color}
               shapeRendering="crispEdges"

@@ -142,6 +142,7 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
         .groupBy('gr.id');
     const queryBuilder: SelectQueryBuilder<GeoRegion> =
       BaseQueryBuilder.addFilters(initialQueryBuilder, getGeoRegionsDto);
+    queryBuilder.andWhere('gr.theGeom IS NOT NULL');
 
     return queryBuilder.getMany();
   }

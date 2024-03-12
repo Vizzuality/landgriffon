@@ -16,11 +16,22 @@ export class EUDRDashBoardDetail {
   alerts: DashBoardDetailAlerts[];
 }
 
+class DashBoardDetailCountry {
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  isoA3: string;
+}
+
 class DashBoardDetailSourcingInformation {
   @ApiProperty()
   materialName: string;
   @ApiProperty()
   hsCode: string;
+
+  @ApiProperty({ type: () => DashBoardDetailCountry })
+  country: DashBoardDetailCountry;
   @ApiProperty()
   totalArea: number;
   @ApiProperty()

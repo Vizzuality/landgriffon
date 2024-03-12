@@ -25,5 +25,11 @@ describe('GeoRegions Filters (e2e)', () => {
       const response = await testManager.WhenIRequestEUDRGeoRegions();
       testManager.ThenIShouldOnlyReceiveCorrespondingGeoRegions(eudrGeoRegions);
     });
+    it('should not show georegions that have no geometries', async () => {
+      const { eudrGeoRegions } = await testManager.GivenEUDRGeoRegions();
+      await testManager.GivenEUDRGeoRegionsWithNoGeometry();
+      const response = await testManager.WhenIRequestEUDRGeoRegions();
+      testManager.ThenIShouldOnlyReceiveCorrespondingGeoRegions(eudrGeoRegions);
+    });
   });
 });

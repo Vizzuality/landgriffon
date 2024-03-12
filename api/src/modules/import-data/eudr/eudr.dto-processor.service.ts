@@ -86,25 +86,19 @@ export class EUDRDTOProcessor {
           savedSupplier = foundSupplier;
         }
         const geoRegion: GeoRegion = new GeoRegion();
-        let savedGeoRegion: GeoRegion;
         geoRegion.totalArea = row.total_area_ha;
-        geoRegion.theGeom = wellknown.parse(row.geometry) as Geometry;
+        geoRegion.theGeom = row.geometry
+          ? (wellknown.parse(row.geometry) as Geometry)
+          : (null as unknown as Geometry);
         geoRegion.isCreatedByUser = true;
         geoRegion.name = row.plot_name;
-        const foundGeoRegion: GeoRegion | null =
-          await geoRegionRepository.findOne({
-            where: { name: geoRegion.name },
-          });
-        if (!foundGeoRegion) {
-          savedGeoRegion = await geoRegionRepository.save(geoRegion);
-        } else {
-          savedGeoRegion = foundGeoRegion;
-        }
+        const savedGeoRegion: GeoRegion = await geoRegionRepository.save(
+          geoRegion,
+        );
         const sourcingLocation: SourcingLocation = new SourcingLocation();
         sourcingLocation.locationType = LOCATION_TYPES.EUDR;
         sourcingLocation.locationCountryInput = row.sourcing_country;
         sourcingLocation.locationAddressInput = row.sourcing_district;
-        // TODO: materialId is coming like mpath, this is an error in the input file
         sourcingLocation.materialId = row.material_id
           .split('.')
           .filter(Boolean)

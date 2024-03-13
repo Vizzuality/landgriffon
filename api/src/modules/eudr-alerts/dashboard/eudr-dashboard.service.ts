@@ -19,7 +19,6 @@ import {
 } from 'modules/eudr-alerts/dashboard/dashboard.types';
 import { GetEUDRAlertDatesDto } from '../dto/get-alerts.dto';
 import { AlertsOutput } from '../dto/alerts-output.dto';
-
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { EUDRDashBoardDetail } from './dashboard-detail.types';
 import { MaterialsService } from 'modules/materials/materials.service';
@@ -521,19 +520,24 @@ export class EudrDashboardService {
           (acc: number, cur: any) => acc + parseInt(cur.totalArea),
           0,
         );
-        let sourcingRecords: SourcingRecord[] = [];
+        const sourcingRecords: SourcingRecord[] = [];
         for (const geoRegion of geoRegions) {
+          geoRegion.geoRegionId = geoRegion.geoRegionId ?? 'Unknown';
+          geoRegion.plotName = geoRegion.plotName ?? 'Unknown';
           if (!geoRegionMap.get(geoRegion.geoRegionId)) {
             geoRegionMap.set(geoRegion.geoRegionId, {
               plotName: geoRegion.plotName,
             });
           }
-          sourcingRecords = await manager
+          const newSourcingRecords: any[] = await manager
             .createQueryBuilder(SourcingRecord, 'sr')
             .leftJoin(SourcingLocation, 'sl', 'sr.sourcingLocationId = sl.id')
             .leftJoin(GeoRegion, 'gr', 'gr.id = sl.geoRegionId')
             .where('sl.geoRegionId = :geoRegionId', {
-              geoRegionId: geoRegion.geoRegionId,
+              geoRegionId:
+                geoRegion.geoRegionId === 'Unknown'
+                  ? null
+                  : geoRegion.geoRegionId,
             })
             .andWhere('sl.producerId = :supplierId', { supplierId: supplierId })
             .andWhere('sl.materialId = :materialId', {
@@ -542,16 +546,26 @@ export class EudrDashboardService {
             .select([
               'sr.year AS year',
               'sr.tonnage AS volume',
-              'gr.name as plotName',
-              'gr.id as geoRegionId',
+              'gr.name as "plotName"',
+              'gr.id as "geoRegionId"',
             ])
             .getRawMany();
+
+          sourcingRecords.push(...newSourcingRecords);
         }
 
         const totalVolume: number = sourcingRecords.reduce(
           (acc: number, cur: any) => acc + parseInt(cur.volume),
           0,
         );
+
+        const test = sourcingRecords.map((record: any) => ({
+          plotName: record.plotName,
+          geoRegionId: record.geoRegionId,
+          year: record.year,
+          percentage: (parseInt(record.volume) / totalVolume) * 100,
+          volume: parseInt(record.volume),
+        }));
 
         sourcingInformation.totalArea = totalArea;
         sourcingInformation.totalVolume = totalVolume;
@@ -580,24 +594,26 @@ export class EudrDashboardService {
         (acc: number, cur: AlertsOutput) => acc + cur.alertCount,
         0,
       );
-      const startAlertDate: string = alertsOutput[0].alertDate.value.toString();
-      const endAlertDate: string =
-        alertsOutput[alertsOutput.length - 1].alertDate.value.toString();
+      const startAlertDate: string | null =
+        alertsOutput[0]?.alertDate?.value.toString() || null;
+      const endAlertDate: string | null =
+        alertsOutput[alertsOutput.length - 1]?.alertDate?.value.toString() ||
+        null;
 
       const alerts = {
-        startADateDate: startAlertDate,
+        startAlertDate: startAlertDate,
         endAlertDate: endAlertDate,
         totalAlerts,
         values: alertsOutput.map((alert: AlertsOutput) => ({
           geoRegionId: alert.geoRegionId,
-          alertCount: alert.alertCount,
+          alertCount: alert.alertCount || null,
           plotName: geoRegionMap.get(alert.geoRegionId)!.plotName,
         })),
       };
 
       result.alerts = alerts;
 
-      return result;
+      return result.sourcingInformation;
     });
   }
 }

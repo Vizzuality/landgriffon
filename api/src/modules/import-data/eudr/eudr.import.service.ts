@@ -97,11 +97,16 @@ export class EudrImportService {
         .leftJoin(GeoRegion, 'g', 'sl.geoRegionId = g.id')
         .leftJoin(Supplier, 's', 'sl.producerId = s.id')
 
-        .execute();
+        .getRawMany();
 
-      const fakedCartoOutput: any[] = data.map((row: any) =>
-        this.generateFakeAlerts(row),
-      );
+      const fakedCartoOutput: any[] = data.reduce((acc: any[], row: any) => {
+        if (!row.geoRegionId && !row.geometry) {
+          return acc;
+        }
+        const fakeAlert = this.generateFakeAlerts(row);
+        acc.push(fakeAlert);
+        return acc;
+      }, []);
 
       const parsed: any = await new AsyncParser({
         fields: [
@@ -116,6 +121,7 @@ export class EudrImportService {
       })
         .parse(fakedCartoOutput)
         .promise();
+
       try {
         await fs.promises.writeFile('fakedCartoOutput.csv', parsed);
       } catch (e: any) {
@@ -134,7 +140,7 @@ export class EudrImportService {
     geometry: string;
     year: number;
   }): any {
-    const { geoRegionId, supplierId, geometry } = row;
+    const { geoRegionId, supplierId, geometry, year } = row;
     const alertConfidence: string = Math.random() > 0.5 ? 'high' : 'low';
     const startDate: Date = new Date(row.year, 0, 1);
     const endDate: Date = new Date(row.year, 11, 31);
@@ -150,6 +156,7 @@ export class EudrImportService {
       geometry,
       alertDate,
       alertConfidence,
+      year,
       alertCount,
     };
   }

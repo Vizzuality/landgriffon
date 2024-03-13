@@ -1,0 +1,82 @@
+[
+  {
+    "id": "suppliers-plot-of-land",
+    "title": "Supplier's with specified plot of land",
+    "description": "Suppliers with necessary geographical data of land to assess deforestation risk linked to a commodity",
+    "content": "Suppliers’s  geometry of the land within a single real estate property, as recognised by the law of the country of production, which possesses sufficiently homogeneous conditions to allow an evaluation of the aggregate level of risk of deforestation and forest degradation associated with relevant commodities produced on that land.",
+    "citation": null,
+    "source": null,
+    "type": "layer",
+    "legend": {
+      "iconClassName": "border-2 border-orange-500 bg-orange-500/30"
+    }
+  },
+  {
+    "id": "forest-cover-2020-ec-jrc",
+    "title": "Forest Cover 2020 (EC JRC)",
+    "description": "Spatial explicit description of forest presence and absence in the year 2020.",
+    "content": "Suppliers’s  geometry of the land within a single real estate property, as recognised by the law of the country of production, which possesses sufficiently homogeneous conditions to allow an evaluation of the aggregate level of risk of deforestation and forest degradation associated with relevant commodities produced on that land.",
+    "citation": [
+      "Bourgoin, Clement; Ameztoy, Iban; Verhegghen, Astrid; Carboni, Silvia; Colditz, Rene R.; Achard, Frederic (2023): Global map of forest cover 2020 - version 1. European Commission, Joint Research Centre (JRC) [Dataset] PID: http://data.europa.eu/89h/10d1b337-b7d1-4938-a048-686c8185b290."
+    ],
+    "source": [
+      "EC/JRC"
+    ],
+    "type": "contextual",
+    "legend": {
+      "iconColor": "#72A950"
+    }
+  },
+  {
+    "id": "deforestation-alerts-2020-2022-hansen",
+    "title": "Deforestation alerts since 2020 (Hansen)",
+    "description": "Identifies annual tree cover loss within forested areas as defined by the EUDR from 2020 to 2022.",
+    "content": "This dataset employs the Hansen tree cover loss layer to analyze annual tree cover loss occurring within forested regions, as defined by the European Union's Regulation on deforestation-related products (EUDR). Specifically, it focuses on the period spanning from 2020 to 2022. By utilizing this layer, which provides comprehensive information on changes in tree cover over time, it aims to assess and quantify the extent of deforestation or degradation within designated forested areas, thereby contributing to monitoring and understanding forest dynamics and associated environmental impacts over the specified timeframe.",
+    "citation": [
+      "Hansen, M. C., P. V. Potapov, R. Moore, M. Hancher, S. A. Turubanova, A. Tyukavina, D. Thau, S. V. Stehman, S. J. Goetz, T. R. Loveland, A. Kommareddy, A. Egorov, L. Chini, C. O. Justice, and J. R. G. Townshend. 2013. “High-Resolution Global Maps of 21st-Century Forest Cover Change.” Science 342 (15 November): 850–53. Data available on-line from:http://earthenginepartners.appspot.com/science-2013-global-forest. Accessed through Global Forest Watch on 12/03/2024. www.globalforestwatch.org",
+      "Bourgoin, Clement; Ameztoy, Iban; Verhegghen, Astrid; Carboni, Silvia; Colditz, Rene R.; Achard, Frederic (2023): Global map of forest cover 2020 - version 1. European Commission, Joint Research Centre (JRC) [Dataset] PID: http://data.europa.eu/89h/10d1b337-b7d1-4938-a048-686c8185b290.",
+      "Adrià, Descals, Serge, Wich, Erik, Meijaard, David, Gaveau, Stephen, Peedell, & Zoltan, Szantoi. (2021, January 27). High resolution global industrial and smallholder oil palm map for 2019 (Version v1). Zenodo. doi:10.5281/zenodo.4473715"
+    ],
+    "source": [
+      "Hansen/UMD/Google/USGS/NASA, accessed through Global Forest Watch",
+      "EC/JRC",
+      "BIOPAMA"
+    ],
+    "type": "contextual",
+    "legend": {
+      "iconColor": "#E0BF24"
+    }
+  },
+  {
+    "title": "Real time deforestation alerts since 2020 (RADD)",
+    "description": "Identifies real-time deforestation alerts from RADD within forested areas as defined by the EUDR, from the 31st of December 2020 to the present.",
+    "content": "This dataset refines real-time deforestation alerts from the RAdar for Detecting Deforestation (RADD) product by overlaying them with the JRC 2020 forest cover data. By filtering the RADD alerts using the forested areas delineated in the JRC 2020 dataset, this process specifically targets deforestation activities within forested regions as defined by the European Union's Regulation on deforestation-related products (EUDR). This approach ensures that only deforestation alerts occurring within designated forested areas, as per the EUDR definition, are captured and analyzed. The timeframe for this analysis spans from the 31st of December 2020, corresponding to the cut-off date specified by the EUDR, to the present.",
+    "citation": [
+      "Cook-Patton, S.C., Leavitt, S.M., Gibbs, D. et al. Mapping carbon accumulation potential from global natural forest regrowth. Nature 585, 545–550 (2020). https://doi.org/10.1038/s41586-020-2686-x",
+      "Bourgoin, Clement; Ameztoy, Iban; Verhegghen, Astrid; Carboni, Silvia; Colditz, Rene R.; Achard, Frederic (2023): Global map of forest cover 2020 - version 1. European Commission, Joint Research Centre (JRC) [Dataset] PID: http://data.europa.eu/89h/10d1b337-b7d1-4938-a048-686c8185b290.",
+      "Adrià, Descals, Serge, Wich, Erik, Meijaard, David, Gaveau, Stephen, Peedell, & Zoltan, Szantoi. (2021, January 27). High resolution global industrial and smallholder oil palm map for 2019 (Version v1). Zenodo. doi:10.5281/zenodo.4473715"
+    ],
+    "source": [
+      "WUR",
+      "EC/JRC",
+      "BIOPAMA"
+    ],
+    "type": "contextual",
+    "legend": {
+      "iconColor": "#C92A6D"
+    }
+  },
+  {
+    "title": "Planet data",
+    "description": "Planet data provides high-resolution satellite imagery crucial for validating deforestation alerts, reducing false positives, and enhancing reporting accuracy.",
+    "content": "Planet data offers high-resolution satellite imagery that is indispensable for validating detected deforestation alerts within specific plots. This data helps to eliminate false positives and reduce the need for on-site inspections, significantly enhancing the certainty of reporting. Leveraging Planet's higher resolution layer increases accuracy and is commonly used to investigate potential causes behind near-real-time deforestation alerts. Additionally, this imagery is instrumental in validation protocols, enabling the assessment of accuracy in land and forest cover products, as well as monitoring changes over time.",
+    "citation": [
+      "Image © [year of image] Planet Labs Inc. Accessed through Global Forest Watch on 12/03/2024. www.globalforestwatch.org"
+    ],
+    "source": [
+      "Planet"
+    ],
+    "type": "basemap",
+    "legend": null
+  }
+]

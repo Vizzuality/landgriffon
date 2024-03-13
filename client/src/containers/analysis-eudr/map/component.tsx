@@ -2,14 +2,15 @@ import { useEffect, useState, useCallback } from 'react';
 import DeckGL from '@deck.gl/react/typed';
 import { BitmapLayer, GeoJsonLayer } from '@deck.gl/layers/typed';
 import Map from 'react-map-gl/maplibre';
-import { WebMercatorViewport, View, MapView } from '@deck.gl/core/typed';
+import { WebMercatorViewport, MapView } from '@deck.gl/core/typed';
+import { View } from '@deck.gl/core';
 import { TileLayer } from '@deck.gl/geo-layers/typed';
 import bbox from '@turf/bbox';
 
 import ZoomControl from './zoom';
 import LegendControl from './legend';
+import BasemapControl from './basemap';
 
-import BasemapControl from '@/components/map/controls/basemap';
 import { INITIAL_VIEW_STATE, MAP_STYLES } from '@/components/map';
 import { usePlotGeometries } from '@/hooks/eudr';
 import { formatNumber } from '@/utils/number-format';
@@ -208,8 +209,6 @@ const EUDRMap = () => {
         </View>
         <View id="top" />
         <View id="bottom" />
-        {/* <Map reuseMaps mapStyle={MAP_STYLES[mapStyle]} styleDiffing={false} /> */}
-        {/* <View id="bottom" /> */}
       </DeckGL>
       {hoverInfo?.object && (
         <div
@@ -238,7 +237,7 @@ const EUDRMap = () => {
         </div>
       )}
       <div className="absolute bottom-10 right-6 z-10 w-10 space-y-2">
-        <BasemapControl value={mapStyle} onChange={handleMapStyleChange} />
+        <BasemapControl />
         <ZoomControl viewState={viewState} onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} />
         <LegendControl />
       </div>

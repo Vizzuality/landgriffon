@@ -2,6 +2,8 @@ import { useState } from 'react';
 import classNames from 'classnames';
 import { MinusIcon, PlusIcon } from '@heroicons/react/outline';
 
+import LayersData from '../layers.json';
+
 import LegendItem from './item';
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -11,6 +13,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 const EURDLegend = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const supplierPlotsData = LayersData.find((layer) => layer.id === 'suppliers-plot-of-land');
+  const contextualLayersData = LayersData.filter((layer) => layer.type === 'contextual');
 
   return (
     <div>
@@ -31,9 +36,11 @@ const EURDLegend = () => {
             <h2 className="px-4 py-2 text-sm font-normal">Legend</h2>
             <div>
               <LegendItem
-                title="Suppliers with specified splot of land"
-                description="Suppliers with necessary geographical data of land to assess deforestation risk linked to a commodity."
-                iconClassName="border-2 border-orange-500 bg-orange-500/30"
+                title={supplierPlotsData.title}
+                content={supplierPlotsData.content}
+                description={supplierPlotsData.description}
+                iconClassName={supplierPlotsData.legend.iconClassName}
+                showVisibility
               />
             </div>
             <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
@@ -52,16 +59,17 @@ const EURDLegend = () => {
                 </div>
               </CollapsibleTrigger>
               <CollapsibleContent className="bg-navy-50">
-                <LegendItem
-                  title="Forest Cover 2020 (EC JRC)"
-                  description="Spatial explicit description of forest presence and absence in the year 2020."
-                  iconClassName="bg-[#72A950]"
-                />
-                <LegendItem
-                  title="Real time deforestation alerts since 2020 (UMD/GLAD)"
-                  description="Monitor forest disturbance in near-real-time using integrated alerts from three alerting systems."
-                  iconClassName="bg-[#C92A6D]"
-                />
+                {contextualLayersData.map((layer) => (
+                  <LegendItem
+                    key={`legend-item-${layer.id}`}
+                    title={layer.title}
+                    description={layer.description}
+                    source={layer.source}
+                    content={layer.content}
+                    iconColor={layer.legend?.iconColor}
+                    showSwitcher
+                  />
+                ))}
               </CollapsibleContent>
             </Collapsible>
           </div>

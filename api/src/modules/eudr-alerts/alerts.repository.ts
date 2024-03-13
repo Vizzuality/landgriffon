@@ -54,7 +54,7 @@ export class AlertsRepository implements IEUDRAlertsRepository {
 
   async getAlerts(dto?: GetEUDRAlertsDto): Promise<AlertsOutput[]> {
     const queryBuilder: BigQueryAlertsQueryBuilder =
-      new BigQueryAlertsQueryBuilder(this.dataSource.createQueryBuilder(), dto);
+      this.createQueryBuilder(dto);
     // TODO: Make field selection dynamic
     queryBuilder.from(this.baseDataset, 'alerts');
     queryBuilder.select('alertdate', 'alertDate');
@@ -68,7 +68,7 @@ export class AlertsRepository implements IEUDRAlertsRepository {
 
   async getDates(dto: GetEUDRAlertsDto): Promise<EUDRAlertDates[]> {
     const queryBuilder: BigQueryAlertsQueryBuilder =
-      new BigQueryAlertsQueryBuilder(this.dataSource.createQueryBuilder(), dto);
+      this.createQueryBuilder(dto);
     queryBuilder.from(this.baseDataset, 'alerts');
     queryBuilder.select('alertdate', 'alertDate');
     queryBuilder.orderBy('alertdate', 'ASC');
@@ -78,14 +78,10 @@ export class AlertsRepository implements IEUDRAlertsRepository {
 
   async getAlertSummary(dto: any): Promise<EUDRAlertDatabaseResult[]> {
     const bigQueryBuilder: BigQueryAlertsQueryBuilder =
-      new BigQueryAlertsQueryBuilder(this.dataSource.createQueryBuilder(), dto);
+      this.createQueryBuilder(dto);
     bigQueryBuilder
       .from(this.baseDataset, 'alerts')
       .select('supplierid', 'supplierId')
-      .addSelect(
-        'SUM(CASE WHEN georegionid IS NULL THEN 1 ELSE 0 END)',
-        'null_geo_regions_count',
-      )
       .addSelect(
         'SUM(CASE WHEN alertcount = 0 THEN 1 ELSE 0 END)',
         'zero_alerts',
@@ -95,10 +91,10 @@ export class AlertsRepository implements IEUDRAlertsRepository {
         'nonzero_alerts',
       )
       .addSelect('COUNT(*)', 'total_geo_regions')
-
       .groupBy('supplierid');
+
     const mainQueryBuilder: BigQueryAlertsQueryBuilder =
-      new BigQueryAlertsQueryBuilder(this.dataSource.createQueryBuilder());
+      this.createQueryBuilder();
 
     mainQueryBuilder
       .select('supplierid')
@@ -109,10 +105,6 @@ export class AlertsRepository implements IEUDRAlertsRepository {
       .addSelect(
         '(CAST(nonzero_alerts AS FLOAT64) / NULLIF(total_geo_regions, 0)) * 100',
         'sda',
-      )
-      .addSelect(
-        '(CAST(null_geo_regions_count AS FLOAT64) / NULLIF(total_geo_regions, 0)) * 100',
-        'tpl',
       )
       .from('(' + bigQueryBuilder.getQuery() + ')', 'alerts_summary')
       .setParameters(bigQueryBuilder.getParameters());
@@ -136,5 +128,14 @@ export class AlertsRepository implements IEUDRAlertsRepository {
         'Unable to retrieve EUDR Data. Please contact your administrator.',
       );
     }
+  }
+
+  private createQueryBuilder(
+    dto?: GetEUDRAlertsDto,
+  ): BigQueryAlertsQueryBuilder {
+    return new BigQueryAlertsQueryBuilder(
+      this.dataSource.createQueryBuilder(),
+      dto,
+    );
   }
 }

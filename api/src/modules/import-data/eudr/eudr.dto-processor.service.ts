@@ -92,9 +92,10 @@ export class EUDRDTOProcessor {
           : (null as unknown as Geometry);
         geoRegion.isCreatedByUser = true;
         geoRegion.name = row.plot_name;
-        const savedGeoRegion: GeoRegion = await geoRegionRepository.save(
-          geoRegion,
-        );
+        let savedGeoRegion: GeoRegion;
+        if (geoRegion.theGeom && geoRegion.name) {
+          savedGeoRegion = await geoRegionRepository.save(geoRegion);
+        }
         const sourcingLocation: SourcingLocation = new SourcingLocation();
         sourcingLocation.locationType = LOCATION_TYPES.EUDR;
         sourcingLocation.locationCountryInput = row.sourcing_country;
@@ -104,7 +105,8 @@ export class EUDRDTOProcessor {
           .filter(Boolean)
           .pop() as string;
         sourcingLocation.producer = savedSupplier;
-        sourcingLocation.geoRegion = savedGeoRegion;
+        // @ts-ignore
+        sourcingLocation.geoRegion = savedGeoRegion ?? null;
         sourcingLocation.sourcingRecords = [];
         sourcingLocation.adminRegionId = row.sourcing_district
           ? await this.getAdminRegionByAddress(

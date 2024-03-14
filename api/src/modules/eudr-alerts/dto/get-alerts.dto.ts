@@ -53,5 +53,5 @@ export class GetEUDRAlertsDto extends GetEUDRAlertDatesDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsInt()
-  limit?: number = 1000;
+  limit?: number;
 }

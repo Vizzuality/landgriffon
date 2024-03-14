@@ -17,10 +17,10 @@ import {
   EUDRDashboard,
   EUDRDashBoardFields,
 } from 'modules/eudr-alerts/dashboard/dashboard.types';
-import { GetEUDRAlertDatesDto } from '../dto/get-alerts.dto';
-import { AlertsOutput } from '../dto/alerts-output.dto';
+import { GetEUDRAlertDatesDto } from 'modules/eudr-alerts/dto/get-alerts.dto';
+import { AlertsOutput } from 'modules/eudr-alerts/dto/alerts-output.dto';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
-import { EUDRDashBoardDetail } from './dashboard-detail.types';
+import { EUDRDashBoardDetail } from 'modules/eudr-alerts/dashboard/dashboard-detail.types';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 

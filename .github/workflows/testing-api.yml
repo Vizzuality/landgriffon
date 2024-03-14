@@ -105,6 +105,28 @@ jobs:
         working-directory: api
         run: yarn test:integration
 
+  testing-api-unit:
+    name: Unit Tests
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js 18.16
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.16'
+
+      - name: Install API dependencies
+        working-directory: api
+        run: yarn install
+
+      - name: Run API tests + coverage
+        working-directory: api
+        run: yarn test:unit
+
 #      - name: Generate API coverage artifact
 #        uses: actions/upload-artifact@v2
 #        with:

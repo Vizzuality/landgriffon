@@ -517,7 +517,7 @@ export class EudrDashboardService {
           .andWhere('sl.producerId = :supplierId', { supplierId })
           .getRawMany();
         const totalArea: number = geoRegions.reduce(
-          (acc: number, cur: any) => acc + parseInt(cur.totalArea),
+          (acc: number, cur: any) => acc + parseInt(cur.totalArea ?? 0),
           0,
         );
         const sourcingRecords: SourcingRecord[] = [];
@@ -529,16 +529,18 @@ export class EudrDashboardService {
               plotName: geoRegion.plotName,
             });
           }
-          const newSourcingRecords: any[] = await manager
+          const queryBuilder = manager
             .createQueryBuilder(SourcingRecord, 'sr')
             .leftJoin(SourcingLocation, 'sl', 'sr.sourcingLocationId = sl.id')
-            .leftJoin(GeoRegion, 'gr', 'gr.id = sl.geoRegionId')
-            .where('sl.geoRegionId = :geoRegionId', {
-              geoRegionId:
-                geoRegion.geoRegionId === 'Unknown'
-                  ? null
-                  : geoRegion.geoRegionId,
-            })
+            .leftJoin(GeoRegion, 'gr', 'gr.id = sl.geoRegionId');
+          if (geoRegion.geoRegionId === 'Unknown') {
+            queryBuilder.andWhere('sl.geoRegionId IS NULL');
+          } else {
+            queryBuilder.andWhere('sl.geoRegionId = :geoRegionId', {
+              geoRegionId: geoRegion.geoRegionId,
+            });
+          }
+          queryBuilder
             .andWhere('sl.producerId = :supplierId', { supplierId: supplierId })
             .andWhere('sl.materialId = :materialId', {
               materialId: material.materialId,
@@ -548,8 +550,9 @@ export class EudrDashboardService {
               'sr.tonnage AS volume',
               'gr.name as "plotName"',
               'gr.id as "geoRegionId"',
-            ])
-            .getRawMany();
+            ]);
+
+          const newSourcingRecords: any[] = await queryBuilder.getRawMany();
 
           sourcingRecords.push(...newSourcingRecords);
         }
@@ -559,14 +562,6 @@ export class EudrDashboardService {
           0,
         );
 
-        const test = sourcingRecords.map((record: any) => ({
-          plotName: record.plotName,
-          geoRegionId: record.geoRegionId,
-          year: record.year,
-          percentage: (parseInt(record.volume) / totalVolume) * 100,
-          volume: parseInt(record.volume),
-        }));
-
         sourcingInformation.totalArea = totalArea;
         sourcingInformation.totalVolume = totalVolume;
         sourcingInformation.byArea = geoRegions.map((geoRegion: any) => ({
@@ -575,7 +570,9 @@ export class EudrDashboardService {
           percentage: (geoRegion.totalArea / totalArea) * 100,
           area: geoRegion.totalArea,
         }));
-        sourcingInformation.byVolume = sourcingRecords.map((record: any) => ({
+        sourcingInformation.byVolume = aggregateUnknownGeoRegionVolumeValues(
+          sourcingRecords,
+        ).map((record: any) => ({
           plotName: record.plotName,
           geoRegionId: record.geoRegionId,
           year: record.year,
@@ -607,13 +604,34 @@ export class EudrDashboardService {
         values: alertsOutput.map((alert: AlertsOutput) => ({
           geoRegionId: alert.geoRegionId,
           alertCount: alert.alertCount || null,
-          plotName: geoRegionMap.get(alert.geoRegionId)!.plotName,
+          plotName: geoRegionMap.get(alert.geoRegionId)?.plotName,
         })),
       };
 
       result.alerts = alerts;
 
-      return result.sourcingInformation;
+      return result;
     });
   }
 }
+
+const aggregateUnknownGeoRegionVolumeValues = (arr: any[]): any[] => {
+  const finalRecords = arr.filter((record) => record.geoRegionId !== null);
+
+  arr.forEach((record) => {
+    if (record.geoRegionId === null) {
+      const existingRecord = finalRecords.find(
+        (r) => r.year === record.year && r.geoRegionId === null,
+      );
+      if (existingRecord) {
+        existingRecord.plotName = 'Unknown';
+        existingRecord.volume = (
+          parseFloat(existingRecord.volume) + parseFloat(record.volume)
+        ).toString();
+      } else {
+        finalRecords.push({ ...record });
+      }
+    }
+  });
+  return finalRecords;
+};

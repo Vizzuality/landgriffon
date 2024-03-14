@@ -44,7 +44,7 @@ const SignIn: NextPageWithLayout = () => {
       });
 
       if (ok) {
-        router.push((router.query?.callbackUrl as string) || '/analysis/map', undefined, {
+        router.push((router.query?.callbackUrl as string) || '/eudr', undefined, {
           shallow: true,
         });
       } else {

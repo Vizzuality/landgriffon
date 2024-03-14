@@ -62,19 +62,10 @@ const EUDRMap = () => {
     maxZoom: 20,
     tileSize: 256,
     visible: true,
-    // onTileLoad: (data) => {
-    //   dispatch(
-    //     updateLayer({
-    //       id: PlanetQ32023_ID,
-    //       layerAttributes: { ...layerConfig },
-    //     })
-    //   );
-    //   //cartoLayerProps.onDataLoad(data);
-    // },
     renderSubLayers: (props) => {
       const {
         bbox: { west, south, east, north },
-      } = props.tile;
+      } = props.tile as { bbox: { west: number; south: number; east: number; north: number } };
 
       return new BitmapLayer(props, {
         data: null,
@@ -91,19 +82,10 @@ const EUDRMap = () => {
     maxZoom: 20,
     tileSize: 256,
     visible: true,
-    // onTileLoad: (data) => {
-    //   dispatch(
-    //     updateLayer({
-    //       id: PlanetQ32023_ID,
-    //       layerAttributes: { ...layerConfig },
-    //     })
-    //   );
-    //   //cartoLayerProps.onDataLoad(data);
-    // },
     renderSubLayers: (props) => {
       const {
         bbox: { west, south, east, north },
-      } = props.tile;
+      } = props.tile as { bbox: { west: number; south: number; east: number; north: number } };
 
       return new BitmapLayer(props, {
         data: null,

@@ -48,6 +48,7 @@
     }
   },
   {
+    "id": "real-time-deforestation-alerts-since-2020-radd",
     "title": "Real time deforestation alerts since 2020 (RADD)",
     "description": "Identifies real-time deforestation alerts from RADD within forested areas as defined by the EUDR, from the 31st of December 2020 to the present.",
     "content": "This dataset refines real-time deforestation alerts from the RAdar for Detecting Deforestation (RADD) product by overlaying them with the JRC 2020 forest cover data. By filtering the RADD alerts using the forested areas delineated in the JRC 2020 dataset, this process specifically targets deforestation activities within forested regions as defined by the European Union's Regulation on deforestation-related products (EUDR). This approach ensures that only deforestation alerts occurring within designated forested areas, as per the EUDR definition, are captured and analyzed. The timeframe for this analysis spans from the 31st of December 2020, corresponding to the cut-off date specified by the EUDR, to the present.",
@@ -67,6 +68,7 @@
     }
   },
   {
+    "id": "planet-data",
     "title": "Planet data",
     "description": "Planet data provides high-resolution satellite imagery crucial for validating deforestation alerts, reducing false positives, and enhancing reporting accuracy.",
     "content": "Planet data offers high-resolution satellite imagery that is indispensable for validating detected deforestation alerts within specific plots. This data helps to eliminate false positives and reduce the need for on-site inspections, significantly enhancing the certainty of reporting. Leveraging Planet's higher resolution layer increases accuracy and is commonly used to investigate potential causes behind near-real-time deforestation alerts. Additionally, this imagery is instrumental in validation protocols, enabling the assessment of accuracy in land and forest cover products, as well as monitoring changes over time.",

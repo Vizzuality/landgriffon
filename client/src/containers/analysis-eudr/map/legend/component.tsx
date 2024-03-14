@@ -6,11 +6,16 @@ import LayersData from '../layers.json';
 
 import LegendItem from './item';
 
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { setContextualLayer, setSupplierLayer } from '@/store/features/eudr';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import SandwichIcon from '@/components/icons/sandwich';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const EURDLegend = () => {
+  const dispatch = useAppDispatch();
+  const { supplierLayer, contextualLayers } = useAppSelector((state) => state.eudr);
+
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -39,8 +44,11 @@ const EURDLegend = () => {
                 title={supplierPlotsData.title}
                 content={supplierPlotsData.content}
                 description={supplierPlotsData.description}
-                iconClassName={supplierPlotsData.legend.iconClassName}
                 showVisibility
+                isActive={supplierLayer.active}
+                changeVisibility={() =>
+                  dispatch(setSupplierLayer({ ...supplierLayer, active: !supplierLayer.active }))
+                }
               />
             </div>
             <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
@@ -68,6 +76,15 @@ const EURDLegend = () => {
                     content={layer.content}
                     iconColor={layer.legend?.iconColor}
                     showSwitcher
+                    isActive={contextualLayers[layer.id].active}
+                    changeVisibility={(isVisible) =>
+                      dispatch(
+                        setContextualLayer({
+                          layer: layer.id,
+                          configuration: { active: isVisible },
+                        }),
+                      )
+                    }
                   />
                 ))}
               </CollapsibleContent>

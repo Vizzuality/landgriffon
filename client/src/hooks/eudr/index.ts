@@ -48,6 +48,8 @@ export const usePlotGeometries = <T = Supplier[]>(
         .then((response) => response.data.geojson),
     {
       ...options,
+      refetchOnReconnect: false,
+      refetchOnWindowFocus: false,
     },
   );
 };

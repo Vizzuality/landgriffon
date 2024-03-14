@@ -12,11 +12,11 @@ type LegendItemProps = {
   content: string;
   description: string;
   source?: string | string[];
-  iconClassName?: string;
   iconColor?: string;
   showVisibility?: boolean;
   showSwitcher?: boolean;
   isActive?: boolean;
+  changeVisibility?: (active: boolean) => void;
 };
 
 const LegendItem: FC<PropsWithChildren<LegendItemProps>> = ({
@@ -25,18 +25,18 @@ const LegendItem: FC<PropsWithChildren<LegendItemProps>> = ({
   description,
   source,
   children,
-  iconClassName,
-  iconColor,
+  iconColor = null,
   showVisibility = false,
   showSwitcher = false,
   isActive = true,
+  changeVisibility = () => null,
 }) => {
   return (
     <div className="flex space-x-2 p-4">
       <div
         className={classNames(
           'mt-0.5 h-3 w-3 shrink-0',
-          iconClassName ?? 'border-2 border-gray-500 bg-gray-500/30',
+          'border-2 border-orange-500 bg-orange-500/30',
         )}
         style={iconColor ? { backgroundColor: iconColor, border: 0 } : undefined}
       />
@@ -50,7 +50,7 @@ const LegendItem: FC<PropsWithChildren<LegendItemProps>> = ({
             </div>
             {showVisibility && (
               <div className="flex items-center pl-1">
-                <button type="button" onClick={() => null}>
+                <button type="button" onClick={() => changeVisibility(!isActive)}>
                   {isActive ? (
                     <EyeOffIcon className="h-4 w-4"></EyeOffIcon>
                   ) : (
@@ -61,7 +61,7 @@ const LegendItem: FC<PropsWithChildren<LegendItemProps>> = ({
             )}
             {showSwitcher && (
               <div className="flex items-center pl-1">
-                <Switch />
+                <Switch checked={isActive} onCheckedChange={changeVisibility} />
               </div>
             )}
           </div>

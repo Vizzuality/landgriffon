@@ -522,7 +522,7 @@ export class EudrDashboardService {
         );
         const sourcingRecords: SourcingRecord[] = [];
         for (const geoRegion of geoRegions) {
-          geoRegion.geoRegionId = geoRegion.geoRegionId ?? 'Unknown';
+          geoRegion.geoRegionId = geoRegion.geoRegionId ?? null;
           geoRegion.plotName = geoRegion.plotName ?? 'Unknown';
           if (!geoRegionMap.get(geoRegion.geoRegionId)) {
             geoRegionMap.set(geoRegion.geoRegionId, {
@@ -533,7 +533,7 @@ export class EudrDashboardService {
             .createQueryBuilder(SourcingRecord, 'sr')
             .leftJoin(SourcingLocation, 'sl', 'sr.sourcingLocationId = sl.id')
             .leftJoin(GeoRegion, 'gr', 'gr.id = sl.geoRegionId');
-          if (geoRegion.geoRegionId === 'Unknown') {
+          if (!geoRegion.geoRegionId) {
             queryBuilder.andWhere('sl.geoRegionId IS NULL');
           } else {
             queryBuilder.andWhere('sl.geoRegionId = :geoRegionId', {
@@ -601,11 +601,13 @@ export class EudrDashboardService {
         startAlertDate: startAlertDate,
         endAlertDate: endAlertDate,
         totalAlerts,
-        values: alertsOutput.map((alert: AlertsOutput) => ({
-          geoRegionId: alert.geoRegionId,
-          alertCount: alert.alertCount || null,
-          plotName: geoRegionMap.get(alert.geoRegionId)?.plotName,
-        })),
+        // values: alertsOutput.map((alert: AlertsOutput) => ({
+        //   alertDate: alert.alertDate.value,
+        //   geoRegionId: alert.geoRegionId,
+        //   alertCount: alert.alertCount || null,
+        //   plotName: geoRegionMap.get(alert.geoRegionId)?.plotName,
+        // })),
+        values: groupAlertsByDate(alertsOutput, geoRegionMap),
       };
 
       result.alerts = alerts;
@@ -634,4 +636,26 @@ const aggregateUnknownGeoRegionVolumeValues = (arr: any[]): any[] => {
     }
   });
   return finalRecords;
+};
+
+const groupAlertsByDate = (
+  alerts: AlertsOutput[],
+  geoRegionMap: Map<string, any>,
+): any[] => {
+  const alertsByDate: any = alerts.reduce((acc: any, cur: AlertsOutput) => {
+    const date: string = cur.alertDate.value.toString();
+    if (!acc[date]) {
+      acc[date] = [];
+    }
+    acc[date].push({
+      plotName: geoRegionMap.get(cur.geoRegionId)?.plotName,
+      geoRegionId: cur.geoRegionId,
+      alertCount: cur.alertCount,
+    });
+    return acc;
+  }, {});
+  return Object.keys(alertsByDate).map((key) => ({
+    alertDate: key,
+    plots: alertsByDate[key],
+  }));
 };

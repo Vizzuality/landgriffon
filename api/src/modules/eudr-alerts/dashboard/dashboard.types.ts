@@ -56,12 +56,13 @@ export type EntityMetadata = {
   supplierId: string;
   supplierName: string;
   companyId: string;
-  adminRegionId: string;
-  adminRegionName: string;
   materialId: string;
   materialName: string;
+  adminRegionId: string;
+  adminRegionName: string;
   totalBaselineVolume: number;
-  geoRegionCount: number;
+  knownGeoRegions: number;
+  totalSourcingLocations: number;
   isoA3: string;
 };
 

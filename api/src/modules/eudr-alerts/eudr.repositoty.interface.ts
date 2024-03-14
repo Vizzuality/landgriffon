@@ -14,7 +14,6 @@ export class EUDRAlertDates {
 
 export interface EUDRAlertDatabaseResult {
   supplierid: string;
-  tpl: number;
   dfs: number;
   sda: number;
 }

@@ -49,6 +49,10 @@ class ByVolume {
   percentage: number;
   @ApiProperty()
   volume: number;
+  @ApiProperty()
+  geoRegionId: string;
+  @ApiProperty()
+  plotName: string;
 }
 
 class ByArea {
@@ -75,9 +79,16 @@ class DashBoardDetailAlerts {
 
 class AlertValues {
   @ApiProperty()
+  alertDate: string;
+  @ApiProperty({ type: () => AlertPlots, isArray: true })
+  plots: AlertPlots[];
+}
+
+class AlertPlots {
+  @ApiProperty()
   geoRegionId: string;
   @ApiProperty()
-  alertCount: number;
-  @ApiProperty()
   plotName: string;
+  @ApiProperty()
+  alertCount: number;
 }

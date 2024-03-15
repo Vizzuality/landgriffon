@@ -8,6 +8,7 @@ import DeforestationAlertsChart from './chart';
 import { useEUDRSupplier } from '@/hooks/eudr';
 import { eudrDetail } from '@/store/features/eudr-detail';
 import { useAppSelector } from '@/store/hooks';
+import InfoModal from '@/components/legend/item/info-modal';
 
 const dateFormatter = (date: string) => format(new UTCDate(date), "do 'of' MMMM yyyy");
 
@@ -29,7 +30,16 @@ const DeforestationAlerts = (): JSX.Element => {
 
   return (
     <section className="space-y-4 rounded-xl border border-gray-100 p-7 shadow-md">
-      <h4 className="font-medium">Deforestation alerts detected within the smallholders</h4>
+      <div className="flex items-center space-x-2">
+        <h4 className="font-medium">Deforestation alerts detected within the smallholders</h4>
+        <InfoModal
+          info={{
+            title: 'Deforestation alerts detected within the smallholders',
+            description:
+              'Number of near-real-time forest disturbances per plot for the selected supplier, based on RADD alerts generated using Sentinel-1’s cloud-penetrating radar sensors. Deforestation alerts conform to the EUDR definition following the WHISP methodology by FAO and WRI, providing robust monitoring of forest changes.',
+          }}
+        />
+      </div>
       {data?.totalAlerts && (
         <div className="rounded-xl bg-orange-100 px-6 py-4 text-xs">
           There were <span className="font-bold">{data?.totalAlerts}</span> deforestation alerts

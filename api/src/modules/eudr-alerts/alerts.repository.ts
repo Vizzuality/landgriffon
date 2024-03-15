@@ -9,7 +9,7 @@ import {
   Logger,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { DataSource, SelectQueryBuilder } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { AlertsOutput } from 'modules/eudr-alerts/dto/alerts-output.dto';
 import {
   EUDRAlertDatabaseResult,

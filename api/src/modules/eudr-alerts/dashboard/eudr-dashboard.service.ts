@@ -23,6 +23,10 @@ import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { EUDRDashBoardDetail } from 'modules/eudr-alerts/dashboard/dashboard-detail.types';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
+import {
+  groupAlertsByDate,
+  aggregateAndCalculatePercentage,
+} from './dashboard-utils';
 
 @Injectable()
 export class EudrDashboardService {
@@ -516,11 +520,13 @@ export class EudrDashboardService {
           })
           .andWhere('sl.producerId = :supplierId', { supplierId })
           .getRawMany();
-        const totalArea: number = geoRegions.reduce(
-          (acc: number, cur: any) => acc + parseInt(cur.totalArea ?? 0),
-          0,
-        );
-        const sourcingRecords: SourcingRecord[] = [];
+
+        const sourcingRecords: {
+          year: number;
+          volume: number;
+          plotName: string;
+          geoRegionId: string;
+        }[] = [];
         for (const geoRegion of geoRegions) {
           geoRegion.geoRegionId = geoRegion.geoRegionId ?? null;
           geoRegion.plotName = geoRegion.plotName ?? 'Unknown';
@@ -529,7 +535,7 @@ export class EudrDashboardService {
               plotName: geoRegion.plotName,
             });
           }
-          const queryBuilder = manager
+          const queryBuilder: SelectQueryBuilder<any> = manager
             .createQueryBuilder(SourcingRecord, 'sr')
             .leftJoin(SourcingLocation, 'sl', 'sr.sourcingLocationId = sl.id')
             .leftJoin(GeoRegion, 'gr', 'gr.id = sl.geoRegionId');
@@ -552,13 +558,22 @@ export class EudrDashboardService {
               'gr.id as "geoRegionId"',
             ]);
 
-          const newSourcingRecords: any[] = await queryBuilder.getRawMany();
+          const newSourcingRecords: {
+            year: number;
+            volume: number;
+            plotName: string;
+            geoRegionId: string;
+          }[] = await queryBuilder.getRawMany();
 
           sourcingRecords.push(...newSourcingRecords);
         }
 
         const totalVolume: number = sourcingRecords.reduce(
-          (acc: number, cur: any) => acc + parseInt(cur.volume),
+          (acc: number, cur: any) => acc + parseFloat(cur.volume),
+          0,
+        );
+        const totalArea: number = geoRegions.reduce(
+          (acc: number, cur: any) => acc + parseFloat(cur.totalArea ?? 0),
           0,
         );
 
@@ -570,15 +585,9 @@ export class EudrDashboardService {
           percentage: (geoRegion.totalArea / totalArea) * 100,
           area: geoRegion.totalArea,
         }));
-        sourcingInformation.byVolume = aggregateUnknownGeoRegionVolumeValues(
-          sourcingRecords,
-        ).map((record: any) => ({
-          plotName: record.plotName,
-          geoRegionId: record.geoRegionId,
-          year: record.year,
-          percentage: (parseInt(record.volume) / totalVolume) * 100,
-          volume: parseInt(record.volume),
-        }));
+
+        sourcingInformation.byVolume =
+          aggregateAndCalculatePercentage(sourcingRecords);
       }
 
       const alertsOutput: AlertsOutput[] = await this.eudrRepository.getAlerts({
@@ -601,12 +610,6 @@ export class EudrDashboardService {
         startAlertDate: startAlertDate,
         endAlertDate: endAlertDate,
         totalAlerts,
-        // values: alertsOutput.map((alert: AlertsOutput) => ({
-        //   alertDate: alert.alertDate.value,
-        //   geoRegionId: alert.geoRegionId,
-        //   alertCount: alert.alertCount || null,
-        //   plotName: geoRegionMap.get(alert.geoRegionId)?.plotName,
-        // })),
         values: groupAlertsByDate(alertsOutput, geoRegionMap),
       };
 
@@ -616,46 +619,3 @@ export class EudrDashboardService {
     });
   }
 }
-
-const aggregateUnknownGeoRegionVolumeValues = (arr: any[]): any[] => {
-  const finalRecords = arr.filter((record) => record.geoRegionId !== null);
-
-  arr.forEach((record) => {
-    if (record.geoRegionId === null) {
-      const existingRecord = finalRecords.find(
-        (r) => r.year === record.year && r.geoRegionId === null,
-      );
-      if (existingRecord) {
-        existingRecord.plotName = 'Unknown';
-        existingRecord.volume = (
-          parseFloat(existingRecord.volume) + parseFloat(record.volume)
-        ).toString();
-      } else {
-        finalRecords.push({ ...record });
-      }
-    }
-  });
-  return finalRecords;
-};
-
-const groupAlertsByDate = (
-  alerts: AlertsOutput[],
-  geoRegionMap: Map<string, any>,
-): any[] => {
-  const alertsByDate: any = alerts.reduce((acc: any, cur: AlertsOutput) => {
-    const date: string = cur.alertDate.value.toString();
-    if (!acc[date]) {
-      acc[date] = [];
-    }
-    acc[date].push({
-      plotName: geoRegionMap.get(cur.geoRegionId)?.plotName,
-      geoRegionId: cur.geoRegionId,
-      alertCount: cur.alertCount,
-    });
-    return acc;
-  }, {});
-  return Object.keys(alertsByDate).map((key) => ({
-    alertDate: key,
-    plots: alertsByDate[key],
-  }));
-};

@@ -9,7 +9,7 @@ import { tasksSSR } from 'services/ssr';
 import ApplicationLayout from 'layouts/application';
 import CollapseButton from 'containers/collapse-button/component';
 import TitleTemplate from 'utils/titleTemplate';
-import Map from 'containers/analysis-eudr/map';
+import Map from '@/containers/analysis-eudr/map';
 import EUDRFilters from '@/containers/analysis-eudr-detail/filters';
 import { Button } from '@/components/ui/button';
 import { useEUDRSupplier } from '@/hooks/eudr';
@@ -78,7 +78,7 @@ const MapPage: NextPageWithLayout = () => {
           </Transition>
         </aside>
 
-        <section className="relative flex h-screen flex-1 flex-col overflow-auto">
+        <section className="relative flex h-screen flex-1 flex-col">
           <Map />
         </section>
       </div>

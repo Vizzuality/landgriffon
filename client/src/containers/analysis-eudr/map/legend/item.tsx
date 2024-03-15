@@ -12,7 +12,11 @@ type LegendItemProps = {
   content: string;
   description: string;
   source?: string | string[];
-  iconColor?: string;
+  legendConfig?: {
+    iconColor?: string;
+    items?: { label: string; color: string }[];
+    dates?: string[];
+  };
   showVisibility?: boolean;
   showSwitcher?: boolean;
   isActive?: boolean;
@@ -25,7 +29,7 @@ const LegendItem: FC<PropsWithChildren<LegendItemProps>> = ({
   description,
   source,
   children,
-  iconColor = null,
+  legendConfig = null,
   showVisibility = false,
   showSwitcher = false,
   isActive = true,
@@ -34,11 +38,12 @@ const LegendItem: FC<PropsWithChildren<LegendItemProps>> = ({
   return (
     <div className="flex space-x-2 p-4">
       <div
-        className={classNames(
-          'mt-0.5 h-3 w-3 shrink-0',
-          'border-2 border-orange-500 bg-orange-500/30',
-        )}
-        style={iconColor ? { backgroundColor: iconColor, border: 0 } : undefined}
+        className={classNames('mt-0.5 h-3 w-3 shrink-0', 'border-2 border-navy-400 bg-navy-400/30')}
+        style={
+          legendConfig?.iconColor
+            ? { backgroundColor: legendConfig.iconColor, border: 0 }
+            : undefined
+        }
       />
       <div className="flex-1 space-y-1">
         <div className="flex items-start justify-between space-x-2">
@@ -67,6 +72,16 @@ const LegendItem: FC<PropsWithChildren<LegendItemProps>> = ({
           </div>
         </div>
         <p className="text-xs text-gray-500">{description}</p>
+        {legendConfig?.items?.length > 0 && (
+          <ul className="space-y-1">
+            {legendConfig?.items?.map((item) => (
+              <li key={item.label} className="flex items-start space-x-2 text-xs text-gray-500">
+                <div className="h-3 w-3 shrink-0" style={{ backgroundColor: item.color }} />
+                <div>{item.label}</div>
+              </li>
+            ))}
+          </ul>
+        )}
         {children}
       </div>
     </div>

@@ -5,9 +5,11 @@ import { MinusIcon, PlusIcon } from '@heroicons/react/outline';
 import LayersData from '../layers.json';
 
 import LegendItem from './item';
+import RADDSlider from './radd-slider';
 
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setContextualLayer, setSupplierLayer } from '@/store/features/eudr';
+import { Slider } from '@/components/ui/slider';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import SandwichIcon from '@/components/icons/sandwich';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -74,7 +76,7 @@ const EURDLegend = () => {
                     description={layer.description}
                     source={layer.source}
                     content={layer.content}
-                    iconColor={layer.legend?.iconColor}
+                    legendConfig={layer.legend}
                     showSwitcher
                     isActive={contextualLayers[layer.id].active}
                     changeVisibility={(isVisible) =>
@@ -85,7 +87,39 @@ const EURDLegend = () => {
                         }),
                       )
                     }
-                  />
+                  >
+                    <>
+                      {layer.id === 'deforestation-alerts-2020-2022-hansen' &&
+                        contextualLayers[layer.id].active && (
+                          <div className="space-y-2">
+                            <Slider
+                              defaultValue={[2020]}
+                              min={2020}
+                              max={2022}
+                              step={1}
+                              className="mt-4"
+                              onValueChange={(yearRange) =>
+                                dispatch(
+                                  setContextualLayer({
+                                    layer: layer.id,
+                                    configuration: { year: yearRange[0] },
+                                  }),
+                                )
+                              }
+                            />
+                            <div className="flex justify-between">
+                              {[2020, 2021, 2022].map((year) => (
+                                <div key={year} className="text-2xs text-gray-500">
+                                  {year}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      {layer.id === 'real-time-deforestation-alerts-since-2020-radd' &&
+                        contextualLayers[layer.id].active && <RADDSlider />}
+                    </>
+                  </LegendItem>
                 ))}
               </CollapsibleContent>
             </Collapsible>

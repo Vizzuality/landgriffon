@@ -52,7 +52,7 @@ const MapPage: NextPageWithLayout = () => {
           </Transition>
         </aside>
 
-        <section className="relative flex h-screen flex-1 flex-col overflow-auto">
+        <section className="relative flex h-screen flex-1 flex-col">
           <Map />
         </section>
       </div>

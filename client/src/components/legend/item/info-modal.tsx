@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Modal from 'components/modal/component';
 
 export type InfoModalProps = {
-  info: { title: string; description: string; source: string | string[] };
+  info: { title: string; description: string; source?: string | string[] };
 };
 
 const NO_DATA = 'No data available';

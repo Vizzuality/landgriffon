@@ -20,6 +20,8 @@ import { useAppSelector } from '@/store/hooks';
 import { eudrDetail } from '@/store/features/eudr-detail';
 import { EUDR_COLOR_RAMP } from '@/utils/colors';
 import { Badge } from '@/components/ui/badge';
+import InfoModal from '@/components/legend/item/info-modal';
+import InfoTooltip from '@/components/info-tooltip';
 
 const SupplierSourcingInfoChart = (): JSX.Element => {
   const [showBy, setShowBy] = useState<'byVolume' | 'byArea'>('byVolume');
@@ -82,7 +84,16 @@ const SupplierSourcingInfoChart = (): JSX.Element => {
   return (
     <div className="flex flex-col space-y-4">
       <div className="flex justify-between">
-        <h4 className="font-medium">Individual plot contributions to volume accumulation</h4>
+        <div className="flex items-center space-x-2">
+          <h4 className="font-medium">Individual plot contributions to volume accumulation</h4>
+          <InfoModal
+            info={{
+              title: 'Individual plot contributions to volume accumulation',
+              description:
+                "This chart displays the percentage of sourcing volume per plot of land by year for the selected supplier. It illustrates the distribution of sourcing activities across different plots of land over time, providing insights into the supplier's sourcing patterns and land utilization.",
+            }}
+          />
+        </div>
         <div className="flex items-center space-x-2">
           <span className="text-2xs uppercase">Show by</span>
           <div>

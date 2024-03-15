@@ -47,15 +47,15 @@ const EUDRMap = () => {
     data: plotGeometries.data,
     // Styles
     filled: true,
-    getFillColor: [255, 176, 0, 84],
+    getFillColor: [63, 89, 224, 84],
     stroked: true,
-    getLineColor: [255, 176, 0, 255],
+    getLineColor: [63, 89, 224, 255],
     getLineWidth: 1,
     lineWidthUnits: 'pixels',
     // Interactive props
     pickable: true,
     autoHighlight: true,
-    highlightColor: [255, 176, 0, 255],
+    highlightColor: [63, 89, 224, 255],
     visible: supplierLayer.active,
     onHover: setHoverInfo,
   });
@@ -105,8 +105,7 @@ const EUDRMap = () => {
     type: MAP_TYPES.TILESET,
     connection: 'eudr',
     data: 'cartobq.eudr.JRC_2020_Forest_d_TILE',
-    pointRadiusMinPixels: 2,
-    getLineColor: [114, 169, 80],
+    stroked: false,
     getFillColor: [114, 169, 80],
     lineWidthMinPixels: 1,
     visible: contextualLayers['forest-cover-2020-ec-jrc'].active,
@@ -122,22 +121,35 @@ const EUDRMap = () => {
     id: 'full-deforestation-alerts-2020-2022-hansen',
     type: MAP_TYPES.QUERY,
     connection: 'eudr',
-    data: 'SELECT * FROM `cartobq.eudr.TCL_hansen_year`',
-    pointRadiusMinPixels: 2,
-    getLineColor: [224, 191, 36],
+    data: 'SELECT * FROM `cartobq.eudr.TCL_hansen_year` WHERE year<=?',
+    queryParameters: [contextualLayers['deforestation-alerts-2020-2022-hansen'].year],
+    stroked: false,
     getFillColor: [224, 191, 36],
     lineWidthMinPixels: 1,
     visible: contextualLayers['deforestation-alerts-2020-2022-hansen'].active,
+    credentials: {
+      apiVersion: API_VERSIONS.V3,
+      apiBaseUrl: 'https://gcp-us-east1.api.carto.com',
+      accessToken:
+        'eyJhbGciOiJIUzI1NiJ9.eyJhIjoiYWNfemsydWhpaDYiLCJqdGkiOiJjZDk0ZWIyZSJ9.oqLagnOEc-j7Z4hY-MTP1yoZA_vJ7WYYAkOz_NUmCJo',
+    },
   });
 
   const raddLayer = new CartoLayer({
     id: 'real-time-deforestation-alerts-since-2020-radd',
     type: MAP_TYPES.QUERY,
     connection: 'eudr',
-    data: 'SELECT * FROM `cartobq.eudr.RADD_date_confidence_3`',
-    pointRadiusMinPixels: 2,
-    getLineColor: [201, 42, 109],
-    getFillColor: [201, 42, 109],
+    data: 'SELECT * FROM `cartobq.eudr.RADD_date_confidence_3` WHERE date BETWEEN ? AND ?',
+    queryParameters: [
+      contextualLayers['real-time-deforestation-alerts-since-2020-radd'].dateFrom,
+      contextualLayers['real-time-deforestation-alerts-since-2020-radd'].dateTo,
+    ],
+    stroked: false,
+    getFillColor: (d) => {
+      const { confidence } = d.properties;
+      if (confidence === 'Low') return [237, 164, 195];
+      return [201, 42, 109];
+    },
     lineWidthMinPixels: 1,
     visible: contextualLayers['real-time-deforestation-alerts-since-2020-radd'].active,
     credentials: {

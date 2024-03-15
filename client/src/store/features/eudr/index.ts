@@ -8,9 +8,11 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from 'store';
 
 type LayerConfiguration = {
-  active: boolean;
+  active?: boolean;
   opacity?: number;
-  month?: number;
+  dateFrom?: string;
+  dateTo?: string;
+  date?: string;
   year?: number;
 };
 
@@ -59,10 +61,13 @@ export const initialState: EUDRState = {
     ['deforestation-alerts-2020-2022-hansen']: {
       active: false,
       opacity: 1,
+      year: 2020,
     },
     ['real-time-deforestation-alerts-since-2020-radd']: {
       active: false,
       opacity: 1,
+      dateFrom: '2020-01-01',
+      dateTo: '2024-07-27',
     },
   },
 };
@@ -101,7 +106,10 @@ export const EUDRSlice = createSlice({
       ...state,
       contextualLayers: {
         ...state.contextualLayers,
-        [action.payload.layer]: action.payload.configuration,
+        [action.payload.layer]: {
+          ...state.contextualLayers[action.payload.layer],
+          ...action.payload.configuration,
+        },
       },
     }),
   },

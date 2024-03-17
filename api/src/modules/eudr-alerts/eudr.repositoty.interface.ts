@@ -18,6 +18,11 @@ export interface EUDRAlertDatabaseResult {
   sda: number;
 }
 
+export interface AlertedGeoregionsBySupplier {
+  supplierId: string;
+  geoRegionId: string;
+}
+
 export type GetAlertSummary = {
   alertStartDate?: Date;
   alertEnDate?: Date;
@@ -31,4 +36,10 @@ export interface IEUDRAlertsRepository {
   getDates(dto: GetEUDRAlertsDto): Promise<EUDRAlertDates[]>;
 
   getAlertSummary(dto: GetAlertSummary): Promise<EUDRAlertDatabaseResult[]>;
+
+  getAlertedGeoRegionsBySupplier(dto: {
+    supplierIds: string[];
+    startAlertDate: Date;
+    endAlertDate: Date;
+  }): Promise<AlertedGeoregionsBySupplier[]>;
 }

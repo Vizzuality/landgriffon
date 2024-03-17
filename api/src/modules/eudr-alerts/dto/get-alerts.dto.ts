@@ -52,6 +52,18 @@ export class GetEUDRAlertsDto extends GetEUDRAlertDatesDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  startAlertDate?: Date;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  endAlertDate?: Date;
+
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsInt()
   limit?: number;
 }

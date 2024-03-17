@@ -4,7 +4,7 @@ export type AlertsOutput = {
     value: Date | string;
   };
   year: number;
-  alertConfidence: 'low' | 'medium' | 'high' | 'very high';
+  supplierId: string;
   geoRegionId: string;
 };
 

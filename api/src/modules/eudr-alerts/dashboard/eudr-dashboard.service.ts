@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, EntityManager, SelectQueryBuilder } from 'typeorm';
 import {
-  EUDRAlertDatabaseResult,
+  AlertedGeoregionsBySupplier,
   IEUDRAlertsRepository,
 } from 'modules/eudr-alerts/eudr.repositoty.interface';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
@@ -50,6 +50,36 @@ export class EudrDashboardService {
       );
     }
 
+    const materials: Record<any, { totalPercentage: number; detail: any[] }> = {
+      [EUDRDashBoardFields.DEFORASTATION_FREE_SUPPLIERS]: {
+        totalPercentage: 0,
+        detail: [],
+      },
+      [EUDRDashBoardFields.SUPPLIERS_WITH_DEFORASTATION_ALERTS]: {
+        totalPercentage: 0,
+        detail: [],
+      },
+      [EUDRDashBoardFields.SUPPLIERS_WITH_NO_LOCATION_DATA]: {
+        totalPercentage: 0,
+        detail: [],
+      },
+    };
+
+    const origins: Record<any, { totalPercentage: number; detail: any[] }> = {
+      [EUDRDashBoardFields.DEFORASTATION_FREE_SUPPLIERS]: {
+        totalPercentage: 0,
+        detail: [],
+      },
+      [EUDRDashBoardFields.SUPPLIERS_WITH_DEFORASTATION_ALERTS]: {
+        totalPercentage: 0,
+        detail: [],
+      },
+      [EUDRDashBoardFields.SUPPLIERS_WITH_NO_LOCATION_DATA]: {
+        totalPercentage: 0,
+        detail: [],
+      },
+    };
+
     const entityMetadata: EntityMetadata[] = await this.getEntityMetadata(dto);
     if (!entityMetadata.length) {
       throw new NotFoundException(
@@ -57,346 +87,242 @@ export class EudrDashboardService {
       );
     }
 
-    const alertSummary: EUDRAlertDatabaseResult[] =
-      await this.eudrRepository.getAlertSummary({
-        alertStartDate: dto.startAlertDate,
-        alertEnDate: dto.endAlertDate,
+    const alerts: AlertedGeoregionsBySupplier[] =
+      await this.eudrRepository.getAlertedGeoRegionsBySupplier({
+        startAlertDate: dto.startAlertDate,
+        endAlertDate: dto.endAlertDate,
         supplierIds: entityMetadata.map(
           (entity: EntityMetadata) => entity.supplierId,
         ),
       });
 
-    const materials: Record<
-      EUDRDashBoardFields,
-      { totalPercentage: number; detail: any[] }
-    > = {
-      [EUDRDashBoardFields.DEFORASTATION_FREE_SUPPLIERS]: {
-        totalPercentage: 0,
-        detail: [],
-      },
-      [EUDRDashBoardFields.SUPPLIERS_WITH_DEFORASTATION_ALERTS]: {
-        totalPercentage: 0,
-        detail: [],
-      },
-      [EUDRDashBoardFields.SUPPLIERS_WITH_NO_LOCATION_DATA]: {
-        totalPercentage: 0,
-        detail: [],
-      },
-    };
+    const alertMap = new Map<string, Set<string>>();
 
-    const origins: Record<
-      EUDRDashBoardFields,
-      { totalPercentage: number; detail: any[] }
-    > = {
-      [EUDRDashBoardFields.DEFORASTATION_FREE_SUPPLIERS]: {
-        totalPercentage: 0,
-        detail: [],
-      },
-      [EUDRDashBoardFields.SUPPLIERS_WITH_DEFORASTATION_ALERTS]: {
-        totalPercentage: 0,
-        detail: [],
-      },
-      [EUDRDashBoardFields.SUPPLIERS_WITH_NO_LOCATION_DATA]: {
-        totalPercentage: 0,
-        detail: [],
-      },
-    };
-    const alertMap: {
-      [key: string]: {
-        supplierId: string;
-        dfs: number;
-        tpl: number;
-        sda: number;
-      };
-    } = alertSummary.reduce((acc: any, cur: EUDRAlertDatabaseResult) => {
-      acc[cur.supplierid] = {
-        supplierid: cur.supplierid,
-        dfs: cur.dfs,
-        sda: cur.sda,
-      };
-      return acc;
-    }, {});
+    alerts.forEach((alert: AlertedGeoregionsBySupplier) => {
+      const { supplierId, geoRegionId } = alert;
 
-    const entityMap: {
-      [key: string]: {
-        supplierId: string;
-        supplierName: string;
-        companyId: string;
-        materialId: string;
-        materialName: string;
-        adminRegionId: string;
-        adminRegionName: string;
-        totalBaselineVolume: number;
-        knownGeoRegions: number;
-        totalSourcingLocations: number;
-        isoA3: string;
-      };
-    } = entityMetadata.reduce((acc: any, cur: EntityMetadata) => {
-      acc[cur.supplierId] = { ...cur };
-      return acc;
-    }, {});
-
-    const supplierToMaterials: Map<string, { name: string; id: string }[]> =
-      new Map();
-    const supplierToOriginis: Map<
-      string,
-      { name: string; id: string; isoA3: string }[]
-    > = new Map();
-    const materialMap: Map<
-      string,
-      {
-        materialName: string;
-        suppliers: Set<string>;
-        dfsSuppliers: number;
-        sdaSuppliers: number;
-        totalSourcingLocations: number;
-        knownGeoRegions: number;
+      if (!alertMap.has(supplierId)) {
+        alertMap.set(supplierId, new Set());
       }
-    > = new Map();
-    const originMap: Map<
-      string,
-      {
-        originName: string;
-        suppliers: Set<string>;
-        dfsSuppliers: number;
-        sdaSuppliers: number;
-        totalSourcingLocations: number;
-        knownGeoRegions: number;
-        isoA3: string;
-      }
-    > = new Map();
 
-    entityMetadata.forEach((entity: EntityMetadata) => {
+      // @ts-ignore
+      alertMap.get(supplierId).add(geoRegionId);
+    });
+
+    const suppliersMap = new Map<string, any>();
+    const materialsMap = new Map<string, any>();
+    const originsMap = new Map<string, any>();
+
+    entityMetadata.forEach((entity) => {
       const {
-        materialId,
         supplierId,
+        materialId,
         adminRegionId,
+        totalSourcingLocations,
+        knownGeoRegions,
+        supplierName,
+        companyId,
         materialName,
         adminRegionName,
-        knownGeoRegions,
-        totalSourcingLocations,
+        totalBaselineVolume,
         isoA3,
       } = entity;
 
-      const unknownGeoRegions: number =
-        totalSourcingLocations - knownGeoRegions;
-      const tplPercentage: number =
-        (unknownGeoRegions / totalSourcingLocations) * 100;
+      const alertedGeoRegionsCount = alertMap.get(supplierId)?.size || 0;
+      const nonAlertedGeoRegions =
+        parseInt(String(totalSourcingLocations)) -
+        parseInt(String(alertedGeoRegionsCount));
+      const unknownGeoRegions =
+        parseInt(String(totalSourcingLocations)) -
+        parseInt(String(knownGeoRegions));
 
-      if (alertMap[supplierId]) {
-        alertMap[supplierId].tpl = tplPercentage;
-      } else {
-        alertMap[supplierId] = {
+      const sdaPercentage =
+        (alertedGeoRegionsCount / totalSourcingLocations) * 100;
+      const tplPercentage = (unknownGeoRegions / totalSourcingLocations) * 100;
+      const dfsPercentage =
+        100 - (sdaPercentage + tplPercentage) > 0
+          ? 100 - (sdaPercentage + tplPercentage)
+          : 0;
+
+      if (!suppliersMap.has(supplierId)) {
+        suppliersMap.set(supplierId, {
           supplierId,
+          supplierName,
+          companyId,
+          materials: [],
+          origins: [],
+          totalBaselineVolume: 0,
           dfs: 0,
           sda: 0,
-          tpl: tplPercentage,
-        };
+          tpl: 0,
+        });
       }
+      const supplier = suppliersMap.get(supplierId);
+      supplier.totalBaselineVolume = totalBaselineVolume;
+      supplier.dfs = dfsPercentage;
+      supplier.sda = sdaPercentage;
+      supplier.tpl = tplPercentage;
+      supplier.materials.push({ id: materialId, name: materialName });
+      supplier.origins.push({
+        id: adminRegionId,
+        name: adminRegionName,
+        isoA3: isoA3,
+      });
 
-      if (!supplierToMaterials.has(supplierId)) {
-        supplierToMaterials.set(supplierId, []);
-      }
-      if (!supplierToOriginis.has(supplierId)) {
-        supplierToOriginis.set(supplierId, []);
-      }
-
-      if (!materialMap.has(materialId)) {
-        materialMap.set(materialId, {
+      if (!materialsMap.has(materialId)) {
+        materialsMap.set(materialId, {
+          materialId,
           materialName,
           suppliers: new Set(),
-          dfsSuppliers: 0,
-          sdaSuppliers: 0,
           totalSourcingLocations: 0,
           knownGeoRegions: 0,
+          alertedGeoRegions: 0,
         });
       }
-      if (!originMap.has(adminRegionId)) {
-        originMap.set(adminRegionId, {
-          originName: adminRegionName,
-          isoA3: isoA3,
-          suppliers: new Set(),
-          dfsSuppliers: 0,
-          sdaSuppliers: 0,
-          totalSourcingLocations: 0,
-          knownGeoRegions: 0,
-        });
-      }
-
-      const material: any = materialMap.get(materialId);
-      const origin: any = originMap.get(adminRegionId);
+      const material = materialsMap.get(materialId);
       material.suppliers.add(supplierId);
-      material.totalSourcingLocations += totalSourcingLocations;
-      material.knownGeoRegions += knownGeoRegions;
-      origin.suppliers.add(supplierId);
-      origin.totalSourcingLocations += totalSourcingLocations;
-      origin.knownGeoRegions += knownGeoRegions;
+      material.totalSourcingLocations += parseFloat(
+        String(totalSourcingLocations),
+      );
+      material.knownGeoRegions += parseInt(String(knownGeoRegions));
+      material.alertedGeoRegions += alertMap.get(supplierId)?.size || 0;
 
-      const alertData: any = alertMap[supplierId];
-      if (alertData) {
-        if (alertData.dfs > 0) {
-          material.dfsSuppliers += 1;
-          origin.dfsSuppliers += 1;
-        }
-        if (alertData.sda > 0) {
-          material.sdaSuppliers += 1;
-          origin.sdaSuppliers += 1;
-        }
+      if (!originsMap.has(adminRegionId)) {
+        originsMap.set(adminRegionId, {
+          adminRegionId,
+          adminRegionName,
+          isoA3,
+          suppliers: new Set(),
+          totalSourcingLocations: 0,
+          knownGeoRegions: 0,
+          alertedGeoRegions: 0,
+        });
       }
+      const origin = originsMap.get(adminRegionId);
+      origin.suppliers.add(supplierId);
+      origin.totalSourcingLocations += parseInt(String(totalSourcingLocations));
+      origin.knownGeoRegions += parseInt(String(knownGeoRegions));
+      origin.alertedGeoRegions += alertMap.get(supplierId)?.size || 0;
+    });
 
-      // Añadir detalles de material y región al supplier
-      supplierToMaterials.get(supplierId)!.push({
+    materialsMap.forEach((material, materialId) => {
+      const {
+        materialName,
+        totalSourcingLocations,
+        knownGeoRegions,
+        alertedGeoRegions,
+      } = material;
+      const nonAlertedGeoRegions = knownGeoRegions - alertedGeoRegions;
+      const unknownGeoRegions = totalSourcingLocations - knownGeoRegions;
+
+      const sdaPercentage = (alertedGeoRegions / totalSourcingLocations) * 100;
+      const tplPercentage = (unknownGeoRegions / totalSourcingLocations) * 100;
+      const dfsPercentage =
+        100 - (sdaPercentage + tplPercentage) > 0
+          ? 100 - (sdaPercentage + tplPercentage)
+          : 0;
+
+      materials[EUDRDashBoardFields.DEFORASTATION_FREE_SUPPLIERS].detail.push({
         name: materialName,
         id: materialId,
+        value: dfsPercentage,
       });
-      supplierToOriginis.get(supplierId)!.push({
-        name: adminRegionName,
-        id: adminRegionId,
-        isoA3: isoA3,
+      materials[
+        EUDRDashBoardFields.SUPPLIERS_WITH_DEFORASTATION_ALERTS
+      ].detail.push({
+        name: materialName,
+        id: materialId,
+        value: sdaPercentage,
+      });
+      materials[
+        EUDRDashBoardFields.SUPPLIERS_WITH_NO_LOCATION_DATA
+      ].detail.push({
+        name: materialName,
+        id: materialId,
+        value: tplPercentage,
       });
     });
 
-    materialMap.forEach(
-      (
-        {
-          materialName,
-          suppliers,
-          totalSourcingLocations,
-          knownGeoRegions,
-          dfsSuppliers,
-          sdaSuppliers,
-        },
-        materialId: string,
-      ) => {
-        const tplPercentage: number =
-          ((totalSourcingLocations - knownGeoRegions) / suppliers.size) * 100;
-        materials['Suppliers with no location data'].detail.push({
-          name: materialName,
-          value: tplPercentage,
-        });
-        const dfsPercentage: number = (dfsSuppliers / suppliers.size) * 100;
-        materials['Deforestation-free suppliers'].detail.push({
-          name: materialName,
-          value: dfsPercentage,
-        });
-        const sdaPercentage: number = (sdaSuppliers / suppliers.size) * 100;
-        materials['Suppliers with deforestation alerts'].detail.push({
-          name: materialName,
-          value: sdaPercentage,
-        });
-      },
-    );
+    // @ts-ignore
+    Object.keys(materials).forEach((key: EUDRDashBoardFields) => {
+      const totalPercentage: number =
+        materials[key].detail.reduce(
+          (acc: number, cur: any) => acc + cur.value,
+          0,
+        ) / materials[key].detail.length;
+      materials[key].totalPercentage = totalPercentage;
+    });
 
-    originMap.forEach(
-      (
-        {
-          originName,
-          suppliers,
-          totalSourcingLocations,
-          knownGeoRegions,
-          dfsSuppliers,
-          sdaSuppliers,
-          isoA3,
-        },
-        adminRegionId: string,
-      ) => {
-        const tplPercentage: number =
-          ((totalSourcingLocations - knownGeoRegions) / suppliers.size) * 100;
-        origins[
-          EUDRDashBoardFields.SUPPLIERS_WITH_NO_LOCATION_DATA
-        ].detail.push({
-          name: originName,
-          value: tplPercentage,
-          isoA3,
-        });
-        const dfsPercentage: number = (dfsSuppliers / suppliers.size) * 100;
-        origins[EUDRDashBoardFields.DEFORASTATION_FREE_SUPPLIERS].detail.push({
-          name: originName,
-          value: dfsPercentage,
-          isoA3,
-        });
-        const sdaPercentage: number = (sdaSuppliers / suppliers.size) * 100;
-        origins[
-          EUDRDashBoardFields.SUPPLIERS_WITH_DEFORASTATION_ALERTS
-        ].detail.push({
-          name: originName,
-          value: sdaPercentage,
-          isoA3,
-        });
-      },
-    );
+    originsMap.forEach((origin, adminRegionId) => {
+      const {
+        adminRegionName,
+        isoA3,
+        totalSourcingLocations,
+        knownGeoRegions,
+        alertedGeoRegions,
+      } = origin;
+      const nonAlertedGeoRegions = knownGeoRegions - alertedGeoRegions;
+      const unknownGeoRegions = totalSourcingLocations - knownGeoRegions;
 
-    materials[
-      EUDRDashBoardFields.SUPPLIERS_WITH_NO_LOCATION_DATA
-    ].totalPercentage =
-      materials[
-        EUDRDashBoardFields.SUPPLIERS_WITH_NO_LOCATION_DATA
-      ].detail.reduce((acc: number, cur: any) => acc + cur.value, 0) /
-      materials[EUDRDashBoardFields.SUPPLIERS_WITH_NO_LOCATION_DATA].detail
-        .length;
+      const sdaPercentage = (alertedGeoRegions / totalSourcingLocations) * 100;
+      const tplPercentage = (unknownGeoRegions / totalSourcingLocations) * 100;
+      const dfsPercentage =
+        100 - (sdaPercentage + tplPercentage) > 0
+          ? 100 - (sdaPercentage + tplPercentage)
+          : 0;
 
-    materials[
-      EUDRDashBoardFields.DEFORASTATION_FREE_SUPPLIERS
-    ].totalPercentage =
-      materials[EUDRDashBoardFields.DEFORASTATION_FREE_SUPPLIERS].detail.reduce(
-        (acc: number, cur: any) => acc + cur.value,
-        0,
-      ) /
-      materials[EUDRDashBoardFields.DEFORASTATION_FREE_SUPPLIERS].detail.length;
-
-    materials[
-      EUDRDashBoardFields.SUPPLIERS_WITH_DEFORASTATION_ALERTS
-    ].totalPercentage =
-      materials[
-        EUDRDashBoardFields.SUPPLIERS_WITH_DEFORASTATION_ALERTS
-      ].detail.reduce((acc: number, cur: any) => acc + cur.value, 0) /
-      materials[EUDRDashBoardFields.SUPPLIERS_WITH_DEFORASTATION_ALERTS].detail
-        .length;
-
-    origins[
-      EUDRDashBoardFields.SUPPLIERS_WITH_NO_LOCATION_DATA
-    ].totalPercentage =
-      origins[
-        EUDRDashBoardFields.SUPPLIERS_WITH_NO_LOCATION_DATA
-      ].detail.reduce((acc: number, cur: any) => acc + cur.value, 0) /
-      origins[EUDRDashBoardFields.SUPPLIERS_WITH_NO_LOCATION_DATA].detail
-        .length;
-
-    origins[EUDRDashBoardFields.DEFORASTATION_FREE_SUPPLIERS].totalPercentage =
-      origins[EUDRDashBoardFields.DEFORASTATION_FREE_SUPPLIERS].detail.reduce(
-        (acc: number, cur: any) => acc + cur.value,
-        0,
-      ) /
-      origins[EUDRDashBoardFields.DEFORASTATION_FREE_SUPPLIERS].detail.length;
-
-    origins[
-      EUDRDashBoardFields.SUPPLIERS_WITH_DEFORASTATION_ALERTS
-    ].totalPercentage =
+      origins[EUDRDashBoardFields.DEFORASTATION_FREE_SUPPLIERS].detail.push({
+        name: adminRegionName,
+        id: adminRegionId,
+        isoA3: isoA3,
+        value: dfsPercentage,
+      });
       origins[
         EUDRDashBoardFields.SUPPLIERS_WITH_DEFORASTATION_ALERTS
-      ].detail.reduce((acc: number, cur: any) => acc + cur.value, 0) /
-      origins[EUDRDashBoardFields.SUPPLIERS_WITH_DEFORASTATION_ALERTS].detail
-        .length;
+      ].detail.push({
+        name: adminRegionName,
+        id: adminRegionId,
+        isoA3: isoA3,
+        value: sdaPercentage,
+      });
+      origins[EUDRDashBoardFields.SUPPLIERS_WITH_NO_LOCATION_DATA].detail.push({
+        name: adminRegionName,
+        id: adminRegionId,
+        isoA3: isoA3,
+        value: tplPercentage,
+      });
+    });
 
-    const table: DashBoardTableElements[] = Object.keys(alertMap).map(
-      (key: string) => {
-        return {
-          supplierId: key,
-          supplierName: entityMap[key].supplierName,
-          companyId: entityMap[key].companyId,
-          baselineVolume: entityMap[key].totalBaselineVolume,
-          dfs: alertMap[key].dfs,
-          sda: alertMap[key].sda,
-          tpl: alertMap[key].tpl,
-          materials: supplierToMaterials.get(key) || [],
-          origins: supplierToOriginis.get(key) || [],
-        };
-      },
-    );
+    // @ts-ignore
+    Object.keys(origins).forEach((key: EUDRDashBoardFields) => {
+      const totalPercentage: number =
+        origins[key].detail.reduce(
+          (acc: number, cur: any) => acc + cur.value,
+          0,
+        ) / origins[key].detail.length;
+      origins[key].totalPercentage = isNaN(totalPercentage)
+        ? 0
+        : totalPercentage;
+    });
+
+    const table: DashBoardTableElements[] = [];
+    suppliersMap.forEach((supplier: any) => {
+      table.push({
+        supplierId: supplier.supplierId,
+        supplierName: supplier.supplierName,
+        companyId: supplier.companyId,
+        materials: supplier.materials,
+        origins: supplier.origins,
+        baselineVolume: supplier.totalBaselineVolume,
+        dfs: supplier.dfs,
+        sda: supplier.sda,
+        tpl: supplier.tpl,
+      });
+    });
 
     return {
       table: table,
-      breakDown: { materials, origins } as EUDRBreakDown,
+      breakDown: { materials, origins } as any,
     };
   }
 

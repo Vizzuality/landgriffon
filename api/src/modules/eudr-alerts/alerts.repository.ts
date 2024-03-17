@@ -12,6 +12,7 @@ import {
 import { DataSource } from 'typeorm';
 import { AlertsOutput } from 'modules/eudr-alerts/dto/alerts-output.dto';
 import {
+  AlertedGeoregionsBySupplier,
   EUDRAlertDatabaseResult,
   EUDRAlertDates,
   IEUDRAlertsRepository,
@@ -57,12 +58,24 @@ export class AlertsRepository implements IEUDRAlertsRepository {
       this.createQueryBuilder(dto);
     // TODO: Make field selection dynamic
     queryBuilder.from(this.baseDataset, 'alerts');
-    queryBuilder.select('alertdate', 'alertDate');
-    queryBuilder.addSelect('alertconfidence', 'alertConfidence');
-    queryBuilder.addSelect('year', 'alertYear');
-    queryBuilder.addSelect('alertcount', 'alertCount');
+    queryBuilder.select('alert_date', 'alertDate');
+    queryBuilder.addSelect('supplierid', 'supplierId');
+    queryBuilder.addSelect('alert_count', 'alertCount');
     queryBuilder.addSelect('georegionid', 'geoRegionId');
-    queryBuilder.orderBy('alertdate', 'ASC');
+    queryBuilder.orderBy('alert_date', 'ASC');
+    return this.query(queryBuilder);
+  }
+
+  async getAlertedGeoRegionsBySupplier(dto: {
+    supplierIds: string[];
+    startAlertDate: Date;
+    endAlertDate: Date;
+  }): Promise<AlertedGeoregionsBySupplier[]> {
+    const queryBuilder: BigQueryAlertsQueryBuilder =
+      this.createQueryBuilder(dto);
+    queryBuilder.from(this.baseDataset, 'alerts');
+    queryBuilder.select('georegionid', 'geoRegionId');
+    queryBuilder.addSelect('supplierid', 'supplierId');
     return this.query(queryBuilder);
   }
 

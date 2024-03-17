@@ -4,6 +4,7 @@ import {
 } from '../../src/modules/notifications/email/email.service.interface';
 import { Logger } from '@nestjs/common';
 import {
+  AlertedGeoregionsBySupplier,
   EUDRAlertDatabaseResult,
   EUDRAlertDates,
   GetAlertSummary,
@@ -36,6 +37,14 @@ export class MockAlertRepository implements IEUDRAlertsRepository {
   }
 
   getAlertSummary(dto: GetAlertSummary): Promise<EUDRAlertDatabaseResult[]> {
+    return Promise.resolve([]);
+  }
+
+  getAlertedGeoRegionsBySupplier(dto: {
+    supplierIds: string[];
+    startAlertDate: Date;
+    endAlertDate: Date;
+  }): Promise<AlertedGeoregionsBySupplier[]> {
     return Promise.resolve([]);
   }
 }

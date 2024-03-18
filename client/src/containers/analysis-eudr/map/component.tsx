@@ -72,6 +72,7 @@ const EUDRMap = () => {
     highlightColor: [63, 89, 224, 255],
     visible: supplierLayer.active,
     onHover: setHoverInfo,
+    opacity: supplierLayer.opacity,
   });
 
   const planetLayer = new TileLayer({
@@ -122,6 +123,7 @@ const EUDRMap = () => {
     stroked: false,
     getFillColor: [114, 169, 80],
     lineWidthMinPixels: 1,
+    opacity: contextualLayers['forest-cover-2020-ec-jrc'].opacity,
     visible: contextualLayers['forest-cover-2020-ec-jrc'].active,
     credentials: {
       apiVersion: API_VERSIONS.V3,
@@ -140,6 +142,7 @@ const EUDRMap = () => {
     stroked: false,
     getFillColor: [224, 191, 36],
     lineWidthMinPixels: 1,
+    opacity: contextualLayers['deforestation-alerts-2020-2022-hansen'].opacity,
     visible: contextualLayers['deforestation-alerts-2020-2022-hansen'].active,
     credentials: {
       apiVersion: API_VERSIONS.V3,
@@ -165,6 +168,7 @@ const EUDRMap = () => {
       return [201, 42, 109];
     },
     lineWidthMinPixels: 1,
+    opacity: contextualLayers['real-time-deforestation-alerts-since-2020-radd'].opacity,
     visible: contextualLayers['real-time-deforestation-alerts-since-2020-radd'].active,
     credentials: {
       apiVersion: API_VERSIONS.V3,

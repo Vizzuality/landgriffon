@@ -13,7 +13,7 @@ const InfoModal = ({ info: { title, description, source } }: InfoModalProps) => 
   const [open, setOpen] = useState(false);
   return (
     <>
-      <button type="button" className="px-0 py-0" onClick={() => setOpen(true)}>
+      <button type="button" className="cursor-pointer px-0 py-0" onClick={() => setOpen(true)}>
         <InformationCircleIcon className="h-4 w-4" />
       </button>
       <Modal onDismiss={() => setOpen(false)} title={title || NO_DATA} open={open} size="narrow">

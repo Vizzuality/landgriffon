@@ -57,6 +57,15 @@ const DeforestationAlertsChart = (): JSX.Element => {
     }));
   }, [parsedData]);
 
+  const xDomain = useMemo(() => {
+    if (!parsedData?.length) return [];
+
+    return [
+      new UTCDate(parsedData[0].alertDate).getTime(),
+      new UTCDate(parsedData[parsedData?.length - 1].alertDate).getTime(),
+    ];
+  }, [parsedData]);
+
   return (
     <>
       <div className="flex flex-wrap gap-2">
@@ -102,10 +111,7 @@ const DeforestationAlertsChart = (): JSX.Element => {
             type="number"
             scale="time"
             dataKey="alertDate"
-            domain={[
-              new UTCDate(parsedData?.[0].alertDate).getTime(),
-              new UTCDate(parsedData?.[parsedData?.length - 1].alertDate).getTime(),
-            ]}
+            domain={xDomain}
             tickFormatter={(value: string | number, x) => {
               if (x === 0) return format(new UTCDate(value), 'LLL yyyy');
               return format(new UTCDate(value), 'LLL');

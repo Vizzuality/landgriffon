@@ -76,7 +76,7 @@ export class BigQueryAlertsQueryBuilder {
       );
     }
     if (this.dto?.alertConfidence) {
-      this.queryBuilder.andWhere('alertConfidence = :alertConfidence', {
+      this.queryBuilder.andWhere('alert_confidence = :alertConfidence', {
         alertConfidence: this.dto.alertConfidence,
       });
     }
@@ -125,7 +125,7 @@ export class BigQueryAlertsQueryBuilder {
 
   addAlertDateRange(): void {
     this.queryBuilder.andWhere(
-      'DATE(alertdate) BETWEEN DATE(:startAlertDate) AND DATE(:endAlertDate)',
+      'DATE(alert_date) BETWEEN DATE(:startAlertDate) AND DATE(:endAlertDate)',
       {
         startAlertDate: this.dto?.startAlertDate,
         endAlertDate: this.dto?.endAlertDate,
@@ -134,13 +134,13 @@ export class BigQueryAlertsQueryBuilder {
   }
 
   addAlertDateGreaterThanOrEqual(): void {
-    this.queryBuilder.andWhere('DATE(alertdate) >= DATE(:startAlertDate)', {
+    this.queryBuilder.andWhere('DATE(alert_date) >= DATE(:startAlertDate)', {
       startAlertDate: this.dto?.startAlertDate,
     });
   }
 
   addAlertDateLessThanOrEqual(): void {
-    this.queryBuilder.andWhere('DATE(alertDate) <= :DATE(endAlertDate)', {
+    this.queryBuilder.andWhere('DATE(alert_date) <= :DATE(endAlertDate)', {
       endAlertDate: this.dto?.endAlertDate,
     });
   }

@@ -40,7 +40,7 @@ const DeforestationAlerts = (): JSX.Element => {
           }}
         />
       </div>
-      {data?.totalAlerts && (
+      {data?.totalAlerts > 0 && (
         <div className="rounded-xl bg-orange-100 px-6 py-4 text-xs">
           There were <span className="font-bold">{data?.totalAlerts}</span> deforestation alerts
           reported for the supplier between the{' '}

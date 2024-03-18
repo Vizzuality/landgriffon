@@ -49,7 +49,7 @@ const SuppliersStackedBar = () => {
     [dispatch],
   );
 
-  const { data } = useEUDRData(
+  const { data, isFetching } = useEUDRData(
     {
       startAlertDate: dates.from,
       endAlertDate: dates.to,
@@ -113,86 +113,100 @@ const SuppliersStackedBar = () => {
           </div>
         </div>
       </div>
-      <div className="h-[300px] rounded-xl bg-gray-50 px-5 pb-1 pt-4">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            width={500}
-            height={300}
-            data={parsedData}
-            margin={{
-              top: 0,
-              right: 0,
-              left: 0,
-              bottom: 0,
-            }}
-            layout="vertical"
-            barSize={14}
-          >
-            <CartesianGrid strokeDasharray="3 1" vertical={false} shapeRendering="crispEdges" />
-            <XAxis
-              domain={['dataMin - 5', 'dataMax + 5']}
-              stroke="#40424B"
-              strokeWidth={1}
-              shapeRendering="crispEdges"
-              tick={{ fontSize: 10 }}
-              ticks={[0, 25, 50, 75, 100]}
-              tickLine={false}
-              type="number"
-              label={
-                <Label
-                  value="Suppliers (%)"
-                  position="insideLeft"
-                  offset={-200}
-                  style={{ fill: '#40424B', fontSize: 10, transform: 'translateY(-5px)' }}
+      {!parsedData?.length && isFetching && (
+        <div className="flex h-[175px] items-center justify-center text-gray-300">
+          Fetching data...
+        </div>
+      )}
+      {!parsedData?.length && !isFetching && (
+        <div className="flex h-[175px] items-center justify-center text-gray-300">
+          No data available
+        </div>
+      )}
+      {parsedData?.length > 0 && (
+        <>
+          <div className="h-[300px] rounded-xl bg-gray-50 px-5 pb-1 pt-4">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                width={500}
+                height={300}
+                data={parsedData}
+                margin={{
+                  top: 0,
+                  right: 0,
+                  left: 0,
+                  bottom: 0,
+                }}
+                layout="vertical"
+                barSize={14}
+              >
+                <CartesianGrid strokeDasharray="3 1" vertical={false} shapeRendering="crispEdges" />
+                <XAxis
+                  domain={['dataMin - 5', 'dataMax + 5']}
+                  stroke="#40424B"
+                  strokeWidth={1}
+                  shapeRendering="crispEdges"
+                  tick={{ fontSize: 10 }}
+                  ticks={[0, 25, 50, 75, 100]}
+                  tickLine={false}
+                  type="number"
+                  label={
+                    <Label
+                      value="Suppliers (%)"
+                      position="insideLeft"
+                      offset={-200}
+                      style={{ fill: '#40424B', fontSize: 10, transform: 'translateY(-5px)' }}
+                    />
+                  }
                 />
-              }
-            />
-            <YAxis
-              axisLine={false}
-              dataKey="name"
-              shapeRendering="crispEdges"
-              stroke="#40424B"
-              tick={({ y, payload }) => (
-                <g x={0} y={y}>
-                  <text x={0} y={y + 7} textAnchor="start">
-                    {payload.value}
-                  </text>
-                </g>
-              )}
-              tickLine={false}
-              type="category"
-              width={200}
-            />
-            <Tooltip
-              cursor={{ fill: 'transparent' }}
-              labelFormatter={(value: string) => value}
-              formatter={(value: number, name: keyof typeof TOOLTIP_LABELS) => [
-                `${value.toFixed(2)}%`,
-                TOOLTIP_LABELS[name],
-              ]}
-            />
-            <Bar
-              dataKey="free"
-              stackId="a"
-              fill={CATEGORIES[0].color}
-              shapeRendering="crispEdges"
-            />
-            <Bar
-              dataKey="alerts"
-              stackId="a"
-              fill={CATEGORIES[1].color}
-              shapeRendering="crispEdges"
-            />
-            <Bar
-              dataKey="noData"
-              stackId="a"
-              fill={CATEGORIES[2].color}
-              shapeRendering="crispEdges"
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-      <CategoryList />
+                <YAxis
+                  axisLine={false}
+                  dataKey="name"
+                  shapeRendering="crispEdges"
+                  stroke="#40424B"
+                  tick={({ y, payload }) => (
+                    <g x={0} y={y}>
+                      <text x={0} y={y + 7} textAnchor="start">
+                        {payload.value}
+                      </text>
+                    </g>
+                  )}
+                  tickLine={false}
+                  type="category"
+                  width={200}
+                />
+                <Tooltip
+                  cursor={{ fill: 'transparent' }}
+                  labelFormatter={(value: string) => value}
+                  formatter={(value: number, name: keyof typeof TOOLTIP_LABELS) => [
+                    `${value.toFixed(2)}%`,
+                    TOOLTIP_LABELS[name],
+                  ]}
+                />
+                <Bar
+                  dataKey="free"
+                  stackId="a"
+                  fill={CATEGORIES[0].color}
+                  shapeRendering="crispEdges"
+                />
+                <Bar
+                  dataKey="alerts"
+                  stackId="a"
+                  fill={CATEGORIES[1].color}
+                  shapeRendering="crispEdges"
+                />
+                <Bar
+                  dataKey="noData"
+                  stackId="a"
+                  fill={CATEGORIES[2].color}
+                  shapeRendering="crispEdges"
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <CategoryList />
+        </>
+      )}
     </div>
   );
 };

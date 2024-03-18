@@ -25,7 +25,7 @@ const DeforestationAlertsChart = (): JSX.Element => {
   const {
     filters: { dates },
   } = useAppSelector(eudrDetail);
-  const { data } = useEUDRSupplier(
+  const { data, isFetching } = useEUDRSupplier(
     supplierId,
     {
       startAlertDate: dates.from,
@@ -68,76 +68,92 @@ const DeforestationAlertsChart = (): JSX.Element => {
 
   return (
     <>
-      <div className="flex flex-wrap gap-2">
-        {plotConfig.map(({ name, color }) => (
-          <Badge
-            key={name}
-            variant="secondary"
-            className={cn(
-              'flex cursor-pointer items-center space-x-1 rounded border border-gray-200 bg-white p-1 text-gray-900',
-              {
-                'bg-secondary/80': selectedPlots.includes(name),
-              },
-            )}
-            onClick={() => {
-              setSelectedPlots((prev) => {
-                if (prev.includes(name)) {
-                  return prev.filter((item) => item !== name);
-                }
-                return [...prev, name];
-              });
-            }}
-          >
-            <span
-              className="inline-block h-[12px] w-[5px] rounded-[18px]"
-              style={{
-                background: color,
-              }}
-            />
-            <span>{name}</span>
-          </Badge>
-        ))}
-      </div>
-      <ResponsiveContainer width="100%" height={285}>
-        <LineChart
-          data={parsedData}
-          margin={{
-            top: 20,
-            bottom: 15,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis
-            type="number"
-            scale="time"
-            dataKey="alertDate"
-            domain={xDomain}
-            tickFormatter={(value: string | number, x) => {
-              if (x === 0) return format(new UTCDate(value), 'LLL yyyy');
-              return format(new UTCDate(value), 'LLL');
-            }}
-            tickLine={false}
-            padding={{ left: 20, right: 20 }}
-            axisLine={false}
-            className="text-xs"
-            tickMargin={15}
-          />
-          <YAxis tickLine={false} axisLine={false} label="(nº)" className="text-xs" />
-          <Tooltip labelFormatter={(v) => format(new UTCDate(v), 'dd/MM/yyyy')} />
-          {plotConfig?.map(({ name, color }) => {
-            return (
-              <Line
+      {!data?.length && isFetching && (
+        <div className="flex h-[175px] items-center justify-center text-gray-300">
+          Fetching data...
+        </div>
+      )}
+      {!data?.length && !isFetching && (
+        <div className="flex h-[175px] items-center justify-center text-gray-300">
+          No data available
+        </div>
+      )}
+      {data?.length > 0 && (
+        <>
+          <div className="flex flex-wrap gap-2">
+            {plotConfig.map(({ name, color }) => (
+              <Badge
                 key={name}
-                dataKey={name}
-                stroke={color}
-                strokeWidth={3}
-                strokeOpacity={selectedPlots.length ? (selectedPlots.includes(name) ? 1 : 0.2) : 1}
-                connectNulls
+                variant="secondary"
+                className={cn(
+                  'flex cursor-pointer items-center space-x-1 rounded border border-gray-200 bg-white p-1 text-gray-900',
+                  {
+                    'bg-secondary/80': selectedPlots.includes(name),
+                  },
+                )}
+                onClick={() => {
+                  setSelectedPlots((prev) => {
+                    if (prev.includes(name)) {
+                      return prev.filter((item) => item !== name);
+                    }
+                    return [...prev, name];
+                  });
+                }}
+              >
+                <span
+                  className="inline-block h-[12px] w-[5px] rounded-[18px]"
+                  style={{
+                    background: color,
+                  }}
+                />
+                <span>{name}</span>
+              </Badge>
+            ))}
+          </div>
+          <ResponsiveContainer width="100%" height={285}>
+            <LineChart
+              data={parsedData}
+              margin={{
+                top: 20,
+                bottom: 15,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis
+                type="number"
+                scale="time"
+                dataKey="alertDate"
+                domain={xDomain}
+                tickFormatter={(value: string | number, x) => {
+                  if (x === 0) return format(new UTCDate(value), 'LLL yyyy');
+                  return format(new UTCDate(value), 'LLL');
+                }}
+                tickLine={false}
+                padding={{ left: 20, right: 20 }}
+                axisLine={false}
+                className="text-xs"
+                tickMargin={15}
               />
-            );
-          })}
-        </LineChart>
-      </ResponsiveContainer>
+              <YAxis tickLine={false} axisLine={false} label="(nº)" className="text-xs" />
+              <Tooltip labelFormatter={(v) => format(new UTCDate(v), 'dd/MM/yyyy')} />
+              {plotConfig?.map(({ name, color }) => {
+                return (
+                  <Line
+                    key={name}
+                    dataKey={name}
+                    stroke={color}
+                    strokeWidth={3}
+                    strokeOpacity={
+                      selectedPlots.length ? (selectedPlots.includes(name) ? 1 : 0.2) : 1
+                    }
+                    connectNulls
+                  />
+                );
+              })}
+            </LineChart>
+          </ResponsiveContainer>
+        </>
+      )}
     </>
   );
 };

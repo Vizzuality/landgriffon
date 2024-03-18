@@ -6,6 +6,7 @@ import { MapView } from '@deck.gl/core/typed';
 import { TileLayer } from '@deck.gl/geo-layers/typed';
 import { CartoLayer, setDefaultCredentials, MAP_TYPES, API_VERSIONS } from '@deck.gl/carto/typed';
 import { useParams } from 'next/navigation';
+import { format } from 'date-fns';
 
 import ZoomControl from './zoom';
 import LegendControl from './legend';
@@ -17,6 +18,8 @@ import { usePlotGeometries } from '@/hooks/eudr';
 import { formatNumber } from '@/utils/number-format';
 
 import type { PickingInfo, MapViewState } from '@deck.gl/core/typed';
+
+const monthFormatter = (date: string) => format(date, 'MM');
 
 const DEFAULT_VIEW_STATE: MapViewState = {
   ...INITIAL_VIEW_STATE,
@@ -35,7 +38,8 @@ setDefaultCredentials({
 const EUDRMap = () => {
   const {
     basemap,
-    planetCompare,
+    planetLayer,
+    planetCompareLayer,
     supplierLayer,
     contextualLayers,
     filters: { suppliers, materials, origins, plots },
@@ -56,7 +60,7 @@ const EUDRMap = () => {
   });
 
   // Supplier plot layer
-  const layer: GeoJsonLayer = new GeoJsonLayer({
+  const eudrSupplierLayer: GeoJsonLayer = new GeoJsonLayer({
     id: 'full-plots-layer',
     data: plotGeometries.data,
     // Styles
@@ -75,13 +79,17 @@ const EUDRMap = () => {
     opacity: supplierLayer.opacity,
   });
 
-  const planetLayer = new TileLayer({
+  const basemapPlanetLayer = new TileLayer({
     id: 'top-planet-monthly-layer',
-    data: 'https://tiles.planet.com/basemaps/v1/planet-tiles/global_monthly_2020_12_mosaic/gmap/{z}/{x}/{y}.png?api_key=PLAK6679039df83f414faf798ba4ad4530db',
+    data: `https://tiles.planet.com/basemaps/v1/planet-tiles/global_monthly_${
+      planetLayer.year
+    }_${monthFormatter(
+      planetLayer.month.toString(),
+    )}_mosaic/gmap/{z}/{x}/{y}.png?api_key=PLAK6679039df83f414faf798ba4ad4530db`,
     minZoom: 0,
     maxZoom: 20,
     tileSize: 256,
-    visible: true,
+    visible: planetLayer.active,
     renderSubLayers: (props) => {
       const {
         bbox: { west, south, east, north },
@@ -95,13 +103,17 @@ const EUDRMap = () => {
     },
   });
 
-  const planetCompareLayer = new TileLayer({
+  const basemapPlanetCompareLayer = new TileLayer({
     id: 'bottom-planet-monthly-layer',
-    data: 'https://tiles.planet.com/basemaps/v1/planet-tiles/global_monthly_2024_02_mosaic/gmap/{z}/{x}/{y}.png?api_key=PLAK6679039df83f414faf798ba4ad4530db',
+    data: `https://tiles.planet.com/basemaps/v1/planet-tiles/global_monthly_${
+      planetCompareLayer.year
+    }_${monthFormatter(
+      planetCompareLayer.month.toString(),
+    )}_mosaic/gmap/{z}/{x}/{y}.png?api_key=PLAK6679039df83f414faf798ba4ad4530db`,
     minZoom: 0,
     maxZoom: 20,
     tileSize: 256,
-    visible: true,
+    visible: planetCompareLayer.active,
     renderSubLayers: (props) => {
       const {
         bbox: { west, south, east, north },
@@ -196,17 +208,19 @@ const EUDRMap = () => {
           onViewStateChange={({ viewState }) => setViewState(viewState as MapViewState)}
           controller={{ dragRotate: false }}
           layers={[
-            basemap === 'planet' && !planetCompare ? [planetLayer] : null,
-            basemap === 'planet' && planetCompare ? [planetLayer, planetCompareLayer] : null,
+            basemap === 'planet' && !planetCompareLayer.active ? [basemapPlanetLayer] : null,
+            basemap === 'planet' && planetCompareLayer.active
+              ? [basemapPlanetLayer, basemapPlanetCompareLayer]
+              : null,
             forestCoverLayer,
             deforestationLayer,
             raddLayer,
-            layer,
+            eudrSupplierLayer,
           ]}
           layerFilter={({ layer, viewport }) => {
-            return !planetCompare || viewport.id.startsWith(layer.id.split('-')[0]);
+            return !planetCompareLayer.active || viewport.id.startsWith(layer.id.split('-')[0]);
           }}
-          {...(planetCompare
+          {...(planetCompareLayer.active
             ? {
                 views: [
                   new MapView({
@@ -234,7 +248,7 @@ const EUDRMap = () => {
         >
           <Map reuseMaps mapStyle={MAP_STYLES.terrain} styleDiffing={false} />
         </DeckGL>
-        {planetCompare && (
+        {planetCompareLayer.active && (
           <div className="pointer-events-none absolute left-0 top-1/2 z-20 h-[2px] w-full bg-white" />
         )}
       </div>

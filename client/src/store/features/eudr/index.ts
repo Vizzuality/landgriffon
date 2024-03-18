@@ -13,6 +13,7 @@ type LayerConfiguration = {
   dateFrom?: string;
   dateTo?: string;
   date?: string;
+  month?: number;
   year?: number;
 };
 
@@ -30,7 +31,8 @@ export type EUDRState = {
   };
   // map
   basemap: 'light' | 'planet';
-  planetCompare: boolean;
+  planetLayer: LayerConfiguration;
+  planetCompareLayer: LayerConfiguration;
   supplierLayer: LayerConfiguration;
   contextualLayers: Record<string, LayerConfiguration>;
 };
@@ -48,7 +50,6 @@ export const initialState: EUDRState = {
     },
   },
   basemap: 'light',
-  planetCompare: false,
   supplierLayer: {
     active: true,
     opacity: 1,
@@ -69,6 +70,16 @@ export const initialState: EUDRState = {
       dateFrom: '2020-01-01',
       dateTo: '2024-07-27',
     },
+  },
+  planetLayer: {
+    active: false,
+    month: 12,
+    year: 2020,
+  },
+  planetCompareLayer: {
+    active: false,
+    month: 2,
+    year: 2024,
   },
 };
 
@@ -91,13 +102,12 @@ export const EUDRSlice = createSlice({
       ...state,
       basemap: action.payload,
     }),
-    setPlanetCompare: (state, action: PayloadAction<boolean>) => ({
-      ...state,
-      planetCompare: action.payload,
-    }),
     setSupplierLayer: (state, action: PayloadAction<LayerConfiguration>) => ({
       ...state,
-      supplierLayer: action.payload,
+      supplierLayer: {
+        ...state.supplierLayer,
+        ...action.payload,
+      },
     }),
     setContextualLayer: (
       state,
@@ -112,6 +122,20 @@ export const EUDRSlice = createSlice({
         },
       },
     }),
+    setPlanetLayer: (state, action: PayloadAction<LayerConfiguration>) => ({
+      ...state,
+      planetLayer: {
+        ...state.planetLayer,
+        ...action.payload,
+      },
+    }),
+    setPlanetCompareLayer: (state, action: PayloadAction<LayerConfiguration>) => ({
+      ...state,
+      planetCompareLayer: {
+        ...state.planetCompareLayer,
+        ...action.payload,
+      },
+    }),
   },
 });
 
@@ -119,9 +143,10 @@ export const {
   setViewBy,
   setFilters,
   setBasemap,
-  setPlanetCompare,
   setSupplierLayer,
   setContextualLayer,
+  setPlanetLayer,
+  setPlanetCompareLayer,
 } = EUDRSlice.actions;
 
 export const eudr = (state: RootState) => state['eudr'];

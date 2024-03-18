@@ -61,6 +61,17 @@ const SupplierSourcingInfo = (): JSX.Element => {
               {data?.totalArea ? `${Intl.NumberFormat(undefined).format(data.totalArea)} Kha` : '-'}
             </span>
           </div>
+          <Separator orientation="vertical" className="h-10" />
+          <div>
+            <h4 className="text-2xs uppercase">Carbon removal</h4>
+            <span>
+              {data?.totalCarbonRemoval
+                ? `${Intl.NumberFormat(undefined, { style: 'unit', unit: 'kilogram' }).format(
+                    data.totalCarbonRemoval,
+                  )}`
+                : '-'}
+            </span>
+          </div>
         </div>
 
         <SupplierSourcingInfoChart />

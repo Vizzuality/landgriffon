@@ -189,6 +189,7 @@ export interface SupplierDetail {
     };
     totalArea: number;
     totalVolume: number;
+    totalCarbonRemoval: number;
     byVolume: [
       {
         plotName: string;

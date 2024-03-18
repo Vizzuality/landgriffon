@@ -4,6 +4,16 @@ import { Query } from '@google-cloud/bigquery';
 import { GetEUDRAlertsDto } from 'modules/eudr-alerts/dto/get-alerts.dto';
 import { EUDRAlertsFields } from 'modules/eudr-alerts/alerts.repository';
 
+export enum EUDR_ALERTS_DATABASE_FIELDS {
+  alertDate = 'alert_date',
+  alertConfidence = 'alert_confidence',
+  alertCount = 'alert_count',
+  geoRegionId = 'georegionid',
+  supplierId = 'supplierid',
+  carbonRemovals = 'carbon_removals',
+  dataset = 'dataset',
+}
+
 export class BigQueryAlertsQueryBuilder {
   queryBuilder: SelectQueryBuilder<AlertsOutput>;
   dto?: GetEUDRAlertsDto;
@@ -76,9 +86,12 @@ export class BigQueryAlertsQueryBuilder {
       );
     }
     if (this.dto?.alertConfidence) {
-      this.queryBuilder.andWhere('alert_confidence = :alertConfidence', {
-        alertConfidence: this.dto.alertConfidence,
-      });
+      this.queryBuilder.andWhere(
+        `${EUDR_ALERTS_DATABASE_FIELDS.alertConfidence} = :alertConfidence`,
+        {
+          alertConfidence: this.dto.alertConfidence,
+        },
+      );
     }
 
     if (this.dto?.startYear && this.dto?.endYear) {
@@ -125,7 +138,7 @@ export class BigQueryAlertsQueryBuilder {
 
   addAlertDateRange(): void {
     this.queryBuilder.andWhere(
-      'DATE(alert_date) BETWEEN DATE(:startAlertDate) AND DATE(:endAlertDate)',
+      `DATE(${EUDR_ALERTS_DATABASE_FIELDS.alertDate}) BETWEEN DATE(:startAlertDate) AND DATE(:endAlertDate)`,
       {
         startAlertDate: this.dto?.startAlertDate,
         endAlertDate: this.dto?.endAlertDate,
@@ -134,15 +147,21 @@ export class BigQueryAlertsQueryBuilder {
   }
 
   addAlertDateGreaterThanOrEqual(): void {
-    this.queryBuilder.andWhere('DATE(alert_date) >= DATE(:startAlertDate)', {
-      startAlertDate: this.dto?.startAlertDate,
-    });
+    this.queryBuilder.andWhere(
+      `DATE(${EUDR_ALERTS_DATABASE_FIELDS.alertDate}) >= DATE(:startAlertDate)`,
+      {
+        startAlertDate: this.dto?.startAlertDate,
+      },
+    );
   }
 
   addAlertDateLessThanOrEqual(): void {
-    this.queryBuilder.andWhere('DATE(alert_date) <= :DATE(endAlertDate)', {
-      endAlertDate: this.dto?.endAlertDate,
-    });
+    this.queryBuilder.andWhere(
+      `DATE(${EUDR_ALERTS_DATABASE_FIELDS.alertDate}) <= :DATE(endAlertDate)`,
+      {
+        endAlertDate: this.dto?.endAlertDate,
+      },
+    );
   }
 
   parseToBigQuery(query: string, params: any[]): Query {

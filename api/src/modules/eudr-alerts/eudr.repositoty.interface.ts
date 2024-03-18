@@ -21,6 +21,7 @@ export interface EUDRAlertDatabaseResult {
 export interface AlertedGeoregionsBySupplier {
   supplierId: string;
   geoRegionId: string;
+  carbonRemovals: number;
 }
 
 export type GetAlertSummary = {

@@ -6,6 +6,7 @@ export type AlertsOutput = {
   year: number;
   supplierId: string;
   geoRegionId: string;
+  carbonRemovals: number;
 };
 
 export type AlertGeometry = {

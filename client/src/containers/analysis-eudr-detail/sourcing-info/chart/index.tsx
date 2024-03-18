@@ -21,7 +21,6 @@ import { eudrDetail } from '@/store/features/eudr-detail';
 import { EUDR_COLOR_RAMP } from '@/utils/colors';
 import { Badge } from '@/components/ui/badge';
 import InfoModal from '@/components/legend/item/info-modal';
-import InfoTooltip from '@/components/info-tooltip';
 
 const SupplierSourcingInfoChart = (): JSX.Element => {
   const [showBy, setShowBy] = useState<'byVolume' | 'byArea'>('byVolume');
@@ -31,7 +30,7 @@ const SupplierSourcingInfoChart = (): JSX.Element => {
     filters: { dates },
   } = useAppSelector(eudrDetail);
 
-  const { data } = useEUDRSupplier(
+  const { data, isFetching } = useEUDRSupplier(
     supplierId,
     {
       startAlertDate: dates.from,
@@ -130,103 +129,119 @@ const SupplierSourcingInfoChart = (): JSX.Element => {
           </div>
         </div>
       </div>
-      <div className="flex flex-wrap gap-2">
-        {plotConfig.map(({ name, color }) => (
-          <Badge
-            key={name}
-            variant="secondary"
-            className={cn(
-              'flex cursor-pointer items-center space-x-1 rounded border border-gray-200 bg-white p-1 text-gray-900',
-              {
-                'bg-secondary/80': selectedPlots.includes(name),
-              },
-            )}
-            onClick={() => {
-              setSelectedPlots((prev) => {
-                if (prev.includes(name)) {
-                  return prev.filter((item) => item !== name);
-                }
-                return [...prev, name];
-              });
-            }}
-          >
-            <span
-              className="inline-block h-[12px] w-[5px] rounded-[18px]"
-              style={{
-                background: color,
-              }}
-            />
-            <span>{name}</span>
-          </Badge>
-        ))}
-      </div>
-
-      <div>
-        <ResponsiveContainer width="100%" height={showBy === 'byArea' ? 100 : 350}>
-          <BarChart
-            data={parsedData}
-            margin={{
-              top: 0,
-              right: 0,
-              left: 0,
-              bottom: 0,
-            }}
-            layout="vertical"
-            barSize={14}
-          >
-            <CartesianGrid strokeDasharray="3 1" vertical={false} shapeRendering="crispEdges" />
-            <XAxis
-              domain={['dataMin - 5', 'dataMax + 5']}
-              stroke="#40424B"
-              strokeWidth={1}
-              shapeRendering="crispEdges"
-              tick={{ fontSize: 10 }}
-              ticks={[0, 25, 50, 75, 100]}
-              tickLine={false}
-              type="number"
-              label={
-                <Label
-                  value={showBy === 'byVolume' ? 'Volume (%)' : 'Area (%)'}
-                  position="insideLeft"
-                  offset={-200}
-                  style={{ fill: '#40424B', fontSize: 10, transform: 'translateY(-5px)' }}
-                />
-              }
-            />
-            <YAxis
-              axisLine={false}
-              dataKey="year"
-              shapeRendering="crispEdges"
-              stroke="#40424B"
-              tick={({ y, payload }) => (
-                <g x={0} y={y}>
-                  <text x={0} y={y + 7} textAnchor="start">
-                    {format(new Date(payload.value), 'yyyy')}
-                  </text>
-                </g>
-              )}
-              tickLine={false}
-              type="category"
-              width={200}
-            />
-            <Tooltip
-              cursor={{ fill: 'transparent' }}
-              labelFormatter={(value: string) => format(new Date(value), 'yyyy')}
-              formatter={(value: number, name) => [`${value.toFixed(2)}%`, name]}
-            />
+      {!parsedData?.length && isFetching && (
+        <div className="flex h-[175px] items-center justify-center text-gray-300">
+          Fetching data...
+        </div>
+      )}
+      {!parsedData?.length && !isFetching && (
+        <div className="flex h-[175px] items-center justify-center text-gray-300">
+          No data available
+        </div>
+      )}
+      {parsedData?.length > 0 && (
+        <>
+          <div className="flex flex-wrap gap-2">
             {plotConfig.map(({ name, color }) => (
-              <Bar
+              <Badge
                 key={name}
-                dataKey={name}
-                stackId="a"
-                fill={color}
-                shapeRendering="crispEdges"
-                fillOpacity={selectedPlots.length ? (selectedPlots.includes(name) ? 1 : 0.2) : 1}
-              />
+                variant="secondary"
+                className={cn(
+                  'flex cursor-pointer items-center space-x-1 rounded border border-gray-200 bg-white p-1 text-gray-900',
+                  {
+                    'bg-secondary/80': selectedPlots.includes(name),
+                  },
+                )}
+                onClick={() => {
+                  setSelectedPlots((prev) => {
+                    if (prev.includes(name)) {
+                      return prev.filter((item) => item !== name);
+                    }
+                    return [...prev, name];
+                  });
+                }}
+              >
+                <span
+                  className="inline-block h-[12px] w-[5px] rounded-[18px]"
+                  style={{
+                    background: color,
+                  }}
+                />
+                <span>{name}</span>
+              </Badge>
             ))}
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+          </div>
+
+          <div>
+            <ResponsiveContainer width="100%" height={showBy === 'byArea' ? 100 : 350}>
+              <BarChart
+                data={parsedData}
+                margin={{
+                  top: 0,
+                  right: 0,
+                  left: 0,
+                  bottom: 0,
+                }}
+                layout="vertical"
+                barSize={14}
+              >
+                <CartesianGrid strokeDasharray="3 1" vertical={false} shapeRendering="crispEdges" />
+                <XAxis
+                  domain={['dataMin - 5', 'dataMax + 5']}
+                  stroke="#40424B"
+                  strokeWidth={1}
+                  shapeRendering="crispEdges"
+                  tick={{ fontSize: 10 }}
+                  ticks={[0, 25, 50, 75, 100]}
+                  tickLine={false}
+                  type="number"
+                  label={
+                    <Label
+                      value={showBy === 'byVolume' ? 'Volume (%)' : 'Area (%)'}
+                      position="insideLeft"
+                      offset={-200}
+                      style={{ fill: '#40424B', fontSize: 10, transform: 'translateY(-5px)' }}
+                    />
+                  }
+                />
+                <YAxis
+                  axisLine={false}
+                  dataKey="year"
+                  shapeRendering="crispEdges"
+                  stroke="#40424B"
+                  tick={({ y, payload }) => (
+                    <g x={0} y={y}>
+                      <text x={0} y={y + 7} textAnchor="start">
+                        {format(new Date(payload.value), 'yyyy')}
+                      </text>
+                    </g>
+                  )}
+                  tickLine={false}
+                  type="category"
+                  width={200}
+                />
+                <Tooltip
+                  cursor={{ fill: 'transparent' }}
+                  labelFormatter={(value: string) => format(new Date(value), 'yyyy')}
+                  formatter={(value: number, name) => [`${value.toFixed(2)}%`, name]}
+                />
+                {plotConfig.map(({ name, color }) => (
+                  <Bar
+                    key={name}
+                    dataKey={name}
+                    stackId="a"
+                    fill={color}
+                    shapeRendering="crispEdges"
+                    fillOpacity={
+                      selectedPlots.length ? (selectedPlots.includes(name) ? 1 : 0.2) : 1
+                    }
+                  />
+                ))}
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </>
+      )}
     </div>
   );
 };

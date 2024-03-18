@@ -58,7 +58,7 @@ const SuppliersListTable = (): JSX.Element => {
     filters: { dates, suppliers, origins, materials },
   } = useAppSelector(eudr);
 
-  const { data } = useEUDRData(
+  const { data, isFetching } = useEUDRData(
     {
       startAlertDate: dates.from,
       endAlertDate: dates.to,
@@ -98,52 +98,64 @@ const SuppliersListTable = (): JSX.Element => {
     // getFacetedUniqueValues: getFacetedUniqueValues(),
   });
 
-  if (!data?.length) return null;
-
   return (
-    <div className="space-y-4">
-      <Table>
-        <TableHeader className="overflow-hidden rounded-tl-2xl rounded-tr-2xl">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className=" !border-b-0 bg-gray-50">
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id} colSpan={header.colSpan}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && 'selected'}
-                className="border-b-gray-100 hover:bg-navy-50"
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+    <>
+      {!data?.length && isFetching && (
+        <div className="flex h-[175px] items-center justify-center text-gray-300">
+          Fetching data...
+        </div>
+      )}
+      {!data?.length && !isFetching && (
+        <div className="flex h-[175px] items-center justify-center text-gray-300">
+          No data available
+        </div>
+      )}
+      {data?.length && (
+        <div className="space-y-4">
+          <Table>
+            <TableHeader className="overflow-hidden rounded-tl-2xl rounded-tr-2xl">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id} className=" !border-b-0 bg-gray-50">
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id} colSpan={header.colSpan}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(header.column.columnDef.header, header.getContext())}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                    className="border-b-gray-100 hover:bg-navy-50"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                    No results.
                   </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-      <DataTablePagination table={table} />
-    </div>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+          <DataTablePagination table={table} />
+        </div>
+      )}
+    </>
   );
 };
 

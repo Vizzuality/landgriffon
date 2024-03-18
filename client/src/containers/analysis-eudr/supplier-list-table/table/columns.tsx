@@ -69,6 +69,14 @@ export const columns: ColumnDef<Supplier>[] = [
     },
   },
   {
+    accessorKey: 'crm',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="CRM" />,
+    cell: ({ row }) => {
+      const crm: number = row.getValue('crm');
+      return <span>{`${Number.isNaN(crm) ? '-' : crm}`}</span>;
+    },
+  },
+  {
     accessorKey: 'materials',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Commodities" />,
     cell: ({ row }) => {

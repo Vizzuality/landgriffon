@@ -18,7 +18,10 @@ import {
   IEUDRAlertsRepository,
 } from 'modules/eudr-alerts/eudr.repositoty.interface';
 import { GetEUDRAlertsDto } from 'modules/eudr-alerts/dto/get-alerts.dto';
-import { BigQueryAlertsQueryBuilder } from 'modules/eudr-alerts/alerts-query-builder/big-query-alerts-query.builder';
+import {
+  BigQueryAlertsQueryBuilder,
+  EUDR_ALERTS_DATABASE_FIELDS,
+} from 'modules/eudr-alerts/alerts-query-builder/big-query-alerts-query.builder';
 
 const projectId: string = 'carto-dw-ac-zk2uhih6';
 
@@ -58,11 +61,24 @@ export class AlertsRepository implements IEUDRAlertsRepository {
       this.createQueryBuilder(dto);
     // TODO: Make field selection dynamic
     queryBuilder.from(this.baseDataset, 'alerts');
-    queryBuilder.select('alert_date', 'alertDate');
-    queryBuilder.addSelect('supplierid', 'supplierId');
-    queryBuilder.addSelect('alert_count', 'alertCount');
-    queryBuilder.addSelect('georegionid', 'geoRegionId');
-    queryBuilder.orderBy('alert_date', 'ASC');
+    queryBuilder.select(EUDR_ALERTS_DATABASE_FIELDS.alertDate, 'alertDate');
+    queryBuilder.addSelect(
+      EUDR_ALERTS_DATABASE_FIELDS.supplierId,
+      'supplierId',
+    );
+    queryBuilder.addSelect(
+      EUDR_ALERTS_DATABASE_FIELDS.alertCount,
+      'alertCount',
+    );
+    queryBuilder.addSelect(
+      EUDR_ALERTS_DATABASE_FIELDS.geoRegionId,
+      'geoRegionId',
+    );
+    queryBuilder.addSelect(
+      EUDR_ALERTS_DATABASE_FIELDS.carbonRemovals,
+      'carbonRemovals',
+    );
+    queryBuilder.orderBy(EUDR_ALERTS_DATABASE_FIELDS.alertDate, 'ASC');
     return this.query(queryBuilder);
   }
 
@@ -74,8 +90,15 @@ export class AlertsRepository implements IEUDRAlertsRepository {
     const queryBuilder: BigQueryAlertsQueryBuilder =
       this.createQueryBuilder(dto);
     queryBuilder.from(this.baseDataset, 'alerts');
-    queryBuilder.select('georegionid', 'geoRegionId');
-    queryBuilder.addSelect('supplierid', 'supplierId');
+    queryBuilder.select(EUDR_ALERTS_DATABASE_FIELDS.geoRegionId, 'geoRegionId');
+    queryBuilder.addSelect(
+      EUDR_ALERTS_DATABASE_FIELDS.supplierId,
+      'supplierId',
+    );
+    queryBuilder.addSelect(
+      EUDR_ALERTS_DATABASE_FIELDS.carbonRemovals,
+      'carbonRemovals',
+    );
     return this.query(queryBuilder);
   }
 
@@ -83,9 +106,9 @@ export class AlertsRepository implements IEUDRAlertsRepository {
     const queryBuilder: BigQueryAlertsQueryBuilder =
       this.createQueryBuilder(dto);
     queryBuilder.from(this.baseDataset, 'alerts');
-    queryBuilder.select('alertdate', 'alertDate');
-    queryBuilder.orderBy('alertdate', 'ASC');
-    queryBuilder.groupBy('alertdate');
+    queryBuilder.select(EUDR_ALERTS_DATABASE_FIELDS.alertDate, 'alertDate');
+    queryBuilder.orderBy(EUDR_ALERTS_DATABASE_FIELDS.alertDate, 'ASC');
+    queryBuilder.groupBy(EUDR_ALERTS_DATABASE_FIELDS.alertDate);
     return this.query(queryBuilder);
   }
 

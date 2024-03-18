@@ -13,7 +13,6 @@ import { GetDashBoardDTO } from 'modules/eudr-alerts/eudr.controller';
 import {
   DashBoardTableElements,
   EntityMetadata,
-  EUDRBreakDown,
   EUDRDashboard,
   EUDRDashBoardFields,
 } from 'modules/eudr-alerts/dashboard/dashboard.types';
@@ -96,24 +95,38 @@ export class EudrDashboardService {
         ),
       });
 
-    const alertMap = new Map<string, Set<string>>();
+    console.log(alerts);
+
+    const alertMap: Map<
+      string,
+      { geoRegionIdSet: Set<string>; carbonRemovalValuesForSupplier: number[] }
+    > = new Map<
+      string,
+      { geoRegionIdSet: Set<string>; carbonRemovalValuesForSupplier: number[] }
+    >();
 
     alerts.forEach((alert: AlertedGeoregionsBySupplier) => {
       const { supplierId, geoRegionId } = alert;
 
       if (!alertMap.has(supplierId)) {
-        alertMap.set(supplierId, new Set());
+        const geoRegionIdSet: Set<string> = new Set();
+        const carbonRemovalValuesForSupplier: number[] = [];
+        alertMap.set(supplierId, {
+          geoRegionIdSet,
+          carbonRemovalValuesForSupplier,
+        });
       }
-
-      // @ts-ignore
-      alertMap.get(supplierId).add(geoRegionId);
+      alertMap.get(supplierId)!.geoRegionIdSet.add(geoRegionId);
+      alertMap
+        .get(supplierId)!
+        .carbonRemovalValuesForSupplier.push(alert.carbonRemovals);
     });
 
     const suppliersMap = new Map<string, any>();
     const materialsMap = new Map<string, any>();
     const originsMap = new Map<string, any>();
 
-    entityMetadata.forEach((entity) => {
+    entityMetadata.forEach((entity: EntityMetadata) => {
       const {
         supplierId,
         materialId,
@@ -128,21 +141,30 @@ export class EudrDashboardService {
         isoA3,
       } = entity;
 
-      const alertedGeoRegionsCount = alertMap.get(supplierId)?.size || 0;
-      const nonAlertedGeoRegions =
+      const alertedGeoRegionsCount: number =
+        alertMap.get(supplierId)?.geoRegionIdSet.size || 0;
+      const nonAlertedGeoRegions: number =
         parseInt(String(totalSourcingLocations)) -
         parseInt(String(alertedGeoRegionsCount));
-      const unknownGeoRegions =
+      const unknownGeoRegions: number =
         parseInt(String(totalSourcingLocations)) -
         parseInt(String(knownGeoRegions));
 
-      const sdaPercentage =
+      const sdaPercentage: number =
         (alertedGeoRegionsCount / totalSourcingLocations) * 100;
-      const tplPercentage = (unknownGeoRegions / totalSourcingLocations) * 100;
-      const dfsPercentage =
+      const tplPercentage: number =
+        (unknownGeoRegions / totalSourcingLocations) * 100;
+      const dfsPercentage: number =
         100 - (sdaPercentage + tplPercentage) > 0
           ? 100 - (sdaPercentage + tplPercentage)
           : 0;
+      const carbonRemovalSumForSupplier: number =
+        alertMap
+          .get(supplierId)
+          ?.carbonRemovalValuesForSupplier.reduce(
+            (acc: number, cur: number) => acc + cur,
+            0,
+          ) || 0;
 
       if (!suppliersMap.has(supplierId)) {
         suppliersMap.set(supplierId, {
@@ -155,6 +177,7 @@ export class EudrDashboardService {
           dfs: 0,
           sda: 0,
           tpl: 0,
+          crm: 0,
         });
       }
       const supplier = suppliersMap.get(supplierId);
@@ -162,6 +185,7 @@ export class EudrDashboardService {
       supplier.dfs = dfsPercentage;
       supplier.sda = sdaPercentage;
       supplier.tpl = tplPercentage;
+      supplier.crm = carbonRemovalSumForSupplier;
       supplier.materials.push({ id: materialId, name: materialName });
       supplier.origins.push({
         id: adminRegionId,
@@ -185,7 +209,8 @@ export class EudrDashboardService {
         String(totalSourcingLocations),
       );
       material.knownGeoRegions += parseInt(String(knownGeoRegions));
-      material.alertedGeoRegions += alertMap.get(supplierId)?.size || 0;
+      material.alertedGeoRegions +=
+        alertMap.get(supplierId)?.geoRegionIdSet.size || 0;
 
       if (!originsMap.has(adminRegionId)) {
         originsMap.set(adminRegionId, {
@@ -202,7 +227,8 @@ export class EudrDashboardService {
       origin.suppliers.add(supplierId);
       origin.totalSourcingLocations += parseInt(String(totalSourcingLocations));
       origin.knownGeoRegions += parseInt(String(knownGeoRegions));
-      origin.alertedGeoRegions += alertMap.get(supplierId)?.size || 0;
+      origin.alertedGeoRegions +=
+        alertMap.get(supplierId)?.geoRegionIdSet.size || 0;
     });
 
     materialsMap.forEach((material, materialId) => {
@@ -212,12 +238,14 @@ export class EudrDashboardService {
         knownGeoRegions,
         alertedGeoRegions,
       } = material;
-      const nonAlertedGeoRegions = knownGeoRegions - alertedGeoRegions;
+      const nonAlertedGeoRegions: number = knownGeoRegions - alertedGeoRegions;
       const unknownGeoRegions = totalSourcingLocations - knownGeoRegions;
 
-      const sdaPercentage = (alertedGeoRegions / totalSourcingLocations) * 100;
-      const tplPercentage = (unknownGeoRegions / totalSourcingLocations) * 100;
-      const dfsPercentage =
+      const sdaPercentage: number =
+        (alertedGeoRegions / totalSourcingLocations) * 100;
+      const tplPercentage: number =
+        (unknownGeoRegions / totalSourcingLocations) * 100;
+      const dfsPercentage: number =
         100 - (sdaPercentage + tplPercentage) > 0
           ? 100 - (sdaPercentage + tplPercentage)
           : 0;
@@ -317,6 +345,7 @@ export class EudrDashboardService {
         dfs: supplier.dfs,
         sda: supplier.sda,
         tpl: supplier.tpl,
+        crm: supplier.crm,
       });
     });
 
@@ -522,9 +551,16 @@ export class EudrDashboardService {
         endAlertDate: dto?.endAlertDate,
       });
 
-      const totalAlerts: number = alertsOutput.reduce(
-        (acc: number, cur: AlertsOutput) => acc + cur.alertCount,
-        0,
+      const { totalAlerts, totalCarbonRemovals } = alertsOutput.reduce(
+        (
+          acc: { totalAlerts: number; totalCarbonRemovals: number },
+          cur: AlertsOutput,
+        ) => {
+          acc.totalAlerts += cur.alertCount;
+          acc.totalCarbonRemovals += cur.carbonRemovals;
+          return acc;
+        },
+        { totalAlerts: 0, totalCarbonRemovals: 0 },
       );
       const startAlertDate: string | null =
         alertsOutput[0]?.alertDate?.value.toString() || null;
@@ -536,6 +572,7 @@ export class EudrDashboardService {
         startAlertDate: startAlertDate,
         endAlertDate: endAlertDate,
         totalAlerts,
+        totalCarbonRemovals,
         values: groupAlertsByDate(alertsOutput, geoRegionMap),
       };
 

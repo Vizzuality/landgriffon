@@ -37,6 +37,7 @@ export interface EudrInputShape {
   plot_name: string;
   company_id: string;
   company_name: string;
+  company_address: string;
   total_area_ha: number;
   sourcing_country: string;
   sourcing_district: string;
@@ -74,6 +75,7 @@ export class EUDRDTOProcessor {
         let savedSupplier: Supplier;
         supplier.name = row.company_name;
         supplier.description = row.company_name;
+        supplier.address = row.company_address;
         supplier.companyId = row.company_id;
         const foundSupplier: Supplier | null = await supplierRepository.findOne(
           {

@@ -51,6 +51,9 @@ const EURDLegend = () => {
                 changeVisibility={() =>
                   dispatch(setSupplierLayer({ ...supplierLayer, active: !supplierLayer.active }))
                 }
+                changeOpacity={(opacity) =>
+                  dispatch(setSupplierLayer({ ...supplierLayer, opacity }))
+                }
               />
             </div>
             <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
@@ -84,6 +87,14 @@ const EURDLegend = () => {
                         setContextualLayer({
                           layer: layer.id,
                           configuration: { active: isVisible },
+                        }),
+                      )
+                    }
+                    changeOpacity={(opacity) =>
+                      dispatch(
+                        setContextualLayer({
+                          layer: layer.id,
+                          configuration: { opacity },
                         }),
                       )
                     }

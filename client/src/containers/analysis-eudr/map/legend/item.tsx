@@ -21,6 +21,7 @@ type LegendItemProps = {
   showSwitcher?: boolean;
   isActive?: boolean;
   changeVisibility?: (active: boolean) => void;
+  changeOpacity?: (opacity: number) => void;
 };
 
 const LegendItem: FC<PropsWithChildren<LegendItemProps>> = ({
@@ -34,6 +35,7 @@ const LegendItem: FC<PropsWithChildren<LegendItemProps>> = ({
   showSwitcher = false,
   isActive = true,
   changeVisibility = () => null,
+  changeOpacity = () => null,
 }) => {
   return (
     <div className="flex space-x-2 p-4">
@@ -50,12 +52,16 @@ const LegendItem: FC<PropsWithChildren<LegendItemProps>> = ({
           <h3 className="text-xs font-normal">{title}</h3>
           <div className="flex divide-x">
             <div className="flex items-center space-x-1 pr-1">
-              <OpacityControl opacity={1} onChange={() => null} />
+              <OpacityControl opacity={1} onChange={changeOpacity} />
               <InfoModal info={{ title, description: content, source }} />
             </div>
             {showVisibility && (
               <div className="flex items-center pl-1">
-                <button type="button" onClick={() => changeVisibility(!isActive)}>
+                <button
+                  type="button"
+                  onClick={() => changeVisibility(!isActive)}
+                  className="cursor-pointer"
+                >
                   {isActive ? (
                     <EyeOffIcon className="h-4 w-4"></EyeOffIcon>
                   ) : (

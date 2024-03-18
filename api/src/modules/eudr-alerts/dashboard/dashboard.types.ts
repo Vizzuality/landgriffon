@@ -23,6 +23,9 @@ export class DashBoardTableElements {
   @ApiProperty()
   tpl: number;
 
+  @ApiProperty()
+  crm: number;
+
   @ApiProperty({ type: () => EntitiesBySupplier, isArray: true })
   materials: EntitiesBySupplier[];
 

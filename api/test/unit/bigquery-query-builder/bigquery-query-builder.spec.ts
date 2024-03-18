@@ -1,5 +1,8 @@
 import { DataSource, SelectQueryBuilder } from 'typeorm';
-import { BigQueryAlertsQueryBuilder } from '../../../src/modules/eudr-alerts/alerts-query-builder/big-query-alerts-query.builder';
+import {
+  BigQueryAlertsQueryBuilder,
+  EUDR_ALERTS_DATABASE_FIELDS,
+} from '../../../src/modules/eudr-alerts/alerts-query-builder/big-query-alerts-query.builder';
 import { typeOrmConfig } from '../../../src/typeorm.config';
 
 describe('BigQueryAlertsQueryBuilder', () => {
@@ -23,7 +26,7 @@ describe('BigQueryAlertsQueryBuilder', () => {
     });
     const result = bigQueryBuilder.buildQuery();
     expect(result.query).toContain(
-      'WHERE DATE(alertdate) BETWEEN DATE(?) AND DATE(?)',
+      `WHERE DATE(${EUDR_ALERTS_DATABASE_FIELDS.alertDate}) BETWEEN DATE(?) AND DATE(?)`,
     );
   });
 

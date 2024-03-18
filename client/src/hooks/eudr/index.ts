@@ -29,9 +29,9 @@ export const useEUDRSuppliers = <T = Supplier[]>(
 
 export const usePlotGeometries = <T = Supplier[]>(
   params?: {
-    producersIds: string[];
-    originsId: string[];
-    materialsId: string[];
+    producerIds: string[];
+    originIds: string[];
+    materialIds: string[];
     geoRegionIds: string[];
   },
   options: UseQueryOptions<Supplier[], unknown, T> = {},

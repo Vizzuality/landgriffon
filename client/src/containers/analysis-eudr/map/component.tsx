@@ -5,6 +5,7 @@ import Map from 'react-map-gl/maplibre';
 import { MapView } from '@deck.gl/core/typed';
 import { TileLayer } from '@deck.gl/geo-layers/typed';
 import { CartoLayer, setDefaultCredentials, MAP_TYPES, API_VERSIONS } from '@deck.gl/carto/typed';
+import { useParams } from 'next/navigation';
 
 import ZoomControl from './zoom';
 import LegendControl from './legend';
@@ -32,14 +33,27 @@ setDefaultCredentials({
 });
 
 const EUDRMap = () => {
-  const { basemap, planetCompare, supplierLayer, contextualLayers } = useAppSelector(
-    (state) => state.eudr,
-  );
+  const {
+    basemap,
+    planetCompare,
+    supplierLayer,
+    contextualLayers,
+    filters: { suppliers, materials, origins, plots },
+  } = useAppSelector((state) => state.eudr);
 
   const [hoverInfo, setHoverInfo] = useState<PickingInfo>(null);
   const [viewState, setViewState] = useState<MapViewState>(DEFAULT_VIEW_STATE);
 
-  const plotGeometries = usePlotGeometries();
+  const params = useParams();
+
+  const plotGeometries = usePlotGeometries({
+    producerIds: params?.supplierId
+      ? [params.supplierId as string]
+      : suppliers?.map(({ value }) => value),
+    materialIds: materials?.map(({ value }) => value),
+    originIds: origins?.map(({ value }) => value),
+    geoRegionIds: plots?.map(({ value }) => value),
+  });
 
   // Supplier plot layer
   const layer: GeoJsonLayer = new GeoJsonLayer({

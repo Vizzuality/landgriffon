@@ -8,6 +8,8 @@ import { BIG_NUMBER_FORMAT } from 'utils/number-format';
 import type { Supplier } from '.';
 import type { ColumnDef } from '@tanstack/react-table';
 
+const numberFormat = new Intl.NumberFormat(undefined, { maximumFractionDigits: 3 });
+
 export const columns: ColumnDef<Supplier>[] = [
   {
     accessorKey: 'supplierName',
@@ -49,7 +51,7 @@ export const columns: ColumnDef<Supplier>[] = [
     header: ({ column }) => <DataTableColumnHeader column={column} title="DFS" />,
     cell: ({ row }) => {
       const dfs: number = row.getValue('dfs');
-      return <span>{`${Number.isNaN(dfs) ? '-' : `${dfs.toFixed(2)}%`}`}</span>;
+      return <span>{`${Number.isNaN(dfs) ? '-' : `${numberFormat.format(dfs)}%`}`}</span>;
     },
   },
   {
@@ -57,7 +59,7 @@ export const columns: ColumnDef<Supplier>[] = [
     header: ({ column }) => <DataTableColumnHeader column={column} title="SDA" />,
     cell: ({ row }) => {
       const sda: number = row.getValue('sda');
-      return <span>{`${Number.isNaN(sda) ? '-' : `${sda.toFixed(2)}%`}`}</span>;
+      return <span>{`${Number.isNaN(sda) ? '-' : `${numberFormat.format(sda)}%`}`}</span>;
     },
   },
   {
@@ -65,7 +67,8 @@ export const columns: ColumnDef<Supplier>[] = [
     header: ({ column }) => <DataTableColumnHeader column={column} title="TPL" />,
     cell: ({ row }) => {
       const tpl: number = row.getValue('tpl');
-      return <span>{`${Number.isNaN(tpl) ? '-' : `${tpl.toFixed(2)}%`}`}</span>;
+
+      return <span>{`${Number.isNaN(tpl) ? '-' : `${numberFormat.format(tpl)}%`}`}</span>;
     },
   },
   {

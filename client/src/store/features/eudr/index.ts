@@ -30,6 +30,13 @@ export type EUDRState = {
       to: string;
     };
   };
+  table: {
+    filters: {
+      dfs: boolean;
+      sda: boolean;
+      tpl: boolean;
+    };
+  };
   // map
   basemap: 'light' | 'planet';
   planetLayer: LayerConfiguration;
@@ -49,6 +56,13 @@ export const initialState: EUDRState = {
     dates: {
       from: DATES_RANGE[0],
       to: DATES_RANGE[1],
+    },
+  },
+  table: {
+    filters: {
+      dfs: false,
+      sda: false,
+      tpl: false,
     },
   },
   basemap: 'light',
@@ -104,6 +118,16 @@ export const EUDRSlice = createSlice({
         ...action.payload,
       },
     }),
+    setTableFilters: (state, action: PayloadAction<Partial<EUDRState['table']['filters']>>) => ({
+      ...state,
+      table: {
+        ...state.table,
+        filters: {
+          ...state.table.filters,
+          ...action.payload,
+        },
+      },
+    }),
     setBasemap: (state, action: PayloadAction<EUDRState['basemap']>) => ({
       ...state,
       basemap: action.payload,
@@ -149,6 +173,7 @@ export const {
   setViewBy,
   setTotalSuppliers,
   setFilters,
+  setTableFilters,
   setBasemap,
   setSupplierLayer,
   setContextualLayer,

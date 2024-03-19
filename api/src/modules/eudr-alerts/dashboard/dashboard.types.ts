@@ -39,7 +39,7 @@ export class DashBoardTableElements {
   @ApiProperty({ type: () => EntitiesBySupplier, isArray: true })
   origins: EntitiesBySupplier[];
 
-  @ApiProperty({ type: () => AffectedPlots, isArray: true })
+  @ApiProperty({ type: () => AffectedPlots })
   plots: AffectedPlots;
 }
 

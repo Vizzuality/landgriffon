@@ -7,21 +7,29 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
+  Dot,
   ResponsiveContainer,
 } from 'recharts';
 import { useParams } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { EUDR_COLOR_RAMP } from '@/utils/colors';
 import { useEUDRSupplier } from '@/hooks/eudr';
-import { useAppSelector } from '@/store/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { eudrDetail } from '@/store/features/eudr-detail';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { setBasemap, setPlanetCompareLayer, setPlanetLayer } from '@/store/features/eudr';
+
+import type { DotProps } from 'recharts';
+
+type DotPropsWithPayload = DotProps & { payload: { alertDate: number } };
 
 const DeforestationAlertsChart = (): JSX.Element => {
   const [selectedPlots, setSelectedPlots] = useState<string[]>([]);
+  const [selectedDate, setSelectedDate] = useState<number>(null);
   const { supplierId }: { supplierId: string } = useParams();
+  const dispatch = useAppDispatch();
   const {
     filters: { dates },
   } = useAppSelector(eudrDetail);
@@ -34,6 +42,33 @@ const DeforestationAlertsChart = (): JSX.Element => {
     {
       select: (data) => data?.alerts?.values,
     },
+  );
+
+  const handleClickDot = useCallback(
+    (payload: DotPropsWithPayload['payload']) => {
+      if (payload.alertDate) {
+        if (selectedDate === payload.alertDate) {
+          setSelectedDate(null);
+          return dispatch(setPlanetCompareLayer({ active: false }));
+        }
+
+        const date = new UTCDate(payload.alertDate);
+
+        setSelectedDate(date.getTime());
+
+        dispatch(setBasemap('planet'));
+        dispatch(setPlanetLayer({ active: true }));
+
+        dispatch(
+          setPlanetCompareLayer({
+            active: true,
+            year: date.getUTCFullYear(),
+            month: date.getUTCMonth() + 1,
+          }),
+        );
+      }
+    },
+    [dispatch, selectedDate],
   );
 
   const parsedData = data
@@ -147,6 +182,32 @@ const DeforestationAlertsChart = (): JSX.Element => {
                       selectedPlots.length ? (selectedPlots.includes(name) ? 1 : 0.2) : 1
                     }
                     connectNulls
+                    dot={(props: DotPropsWithPayload) => {
+                      const { payload } = props;
+                      return (
+                        <Dot
+                          {...props}
+                          onClick={() => handleClickDot(payload)}
+                          className={cn('cursor-pointer', {
+                            // todo: fill when we have design
+                            '': payload.alertDate === selectedDate,
+                          })}
+                        />
+                      );
+                    }}
+                    activeDot={(props: DotPropsWithPayload) => {
+                      const { payload } = props;
+                      return (
+                        <Dot
+                          {...props}
+                          onClick={() => handleClickDot(payload)}
+                          className={cn('cursor-pointer', {
+                            // todo: fill when we have design
+                            '': payload.alertDate === selectedDate,
+                          })}
+                        />
+                      );
+                    }}
                   />
                 );
               })}

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-class AffectedPlots {
+export class AffectedPlots {
   @ApiProperty()
   dfs: string[];
   @ApiProperty()

@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { AffectedPlots } from './dashboard.types';
 
 export class EUDRDashBoardDetail {
   @ApiProperty()
@@ -11,6 +12,9 @@ export class EUDRDashBoardDetail {
     type: () => DashBoardDetailSourcingInformation,
     isArray: true,
   })
+  @ApiProperty({ type: () => AffectedPlots })
+  plots: AffectedPlots;
+  @ApiProperty({ type: () => DashBoardDetailCountry, isArray: true })
   sourcingInformation: DashBoardDetailSourcingInformation[];
   @ApiProperty({ type: () => DashBoardDetailAlerts, isArray: true })
   alerts: DashBoardDetailAlerts[];

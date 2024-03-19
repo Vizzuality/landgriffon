@@ -8,12 +8,22 @@ const nextConfig = {
     return [
       {
         source: '/',
-        destination: '/analysis/map',
+        destination: '/eurd',
         permanent: false,
       },
       {
         source: '/analysis',
-        destination: '/analysis/map',
+        destination: '/eudr',
+        permanent: false,
+      },
+      {
+        source: '/analysis/:id',
+        destination: '/eudr',
+        permanent: false,
+      },
+      {
+        source: '/data',
+        destination: '/eurd',
         permanent: false,
       },
       {

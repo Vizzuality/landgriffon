@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { apiService } from 'services/api';
 
+import type { FeatureCollection, Geometry } from 'geojson';
 import type { Supplier as SupplierRow } from '@/containers/analysis-eudr/supplier-list-table/table';
 import type { MaterialTreeItem, OriginRegion, Supplier } from '@/types';
 import type { UseQueryOptions } from '@tanstack/react-query';
@@ -33,15 +34,15 @@ export const useEUDRSuppliers = <T = Supplier[]>(
   );
 };
 
-export const usePlotGeometries = <T = Supplier[]>(
+export const usePlotGeometries = (
   params?: EUDRParams,
-  options: UseQueryOptions<Supplier[], unknown, T> = {},
+  options?: UseQueryOptions<FeatureCollection<Geometry, { id: string }>>,
 ) => {
   return useQuery(
     ['eudr-geo-features-collection', params],
     () =>
       apiService
-        .request<{ geojson }>({
+        .request<{ geojson: FeatureCollection<Geometry, { id: string }> }>({
           method: 'GET',
           url: '/eudr/geo-features/collection',
           params,

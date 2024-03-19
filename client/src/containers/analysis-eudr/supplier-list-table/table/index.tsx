@@ -57,6 +57,7 @@ const SuppliersListTable = (): JSX.Element => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const {
     filters: { dates, suppliers, origins, materials, plots },
+    table: { filters: tableFilters },
   } = useAppSelector(eudr);
 
   const { data, isFetching } = useEUDRData(
@@ -69,7 +70,14 @@ const SuppliersListTable = (): JSX.Element => {
       geoRegionIds: plots?.map(({ value }) => value),
     },
     {
-      select: (data) => data?.table,
+      select: (data) =>
+        data?.table.filter((dataRow) => {
+          if (Object.values(tableFilters).every((filter) => !filter)) return true;
+
+          if (tableFilters.dfs && dataRow.dfs > 0) return true;
+          if (tableFilters.sda && dataRow.sda > 0) return true;
+          if (tableFilters.tpl && dataRow.tpl > 0) return true;
+        }),
       onSuccess: (data) => {
         dispatch(setTotalSuppliers(data?.length || 0));
       },

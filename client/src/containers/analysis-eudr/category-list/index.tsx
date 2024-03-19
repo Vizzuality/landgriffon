@@ -6,68 +6,60 @@ import SuppliersWithNoLocationDataBreakdown from './breakdown/suppliers-with-no-
 
 import { Button } from '@/components/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { cn } from '@/lib/utils';
 import { useEUDRData } from '@/hooks/eudr';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { eudr, setTableFilters } from '@/store/features/eudr';
 import { themeColors } from '@/utils/colors';
 
-import type { EUDRState } from '@/store/features/eudr';
-
 export const CATEGORIES = [
   {
     name: 'Deforestation-free suppliers',
+    key: 'dfs',
     color: themeColors.blue[400],
   },
   {
     name: 'Suppliers with deforestation alerts',
+    key: 'sda',
     color: '#FFC038',
   },
   {
     name: 'Suppliers with no location data',
+    key: 'tpl',
     color: '#8561FF',
   },
 ] as const;
 
-const CATEGORY_TO_FILTER: Record<
-  (typeof CATEGORIES)[number]['name'],
-  Partial<keyof EUDRState['table']['filters']>
-> = {
-  [CATEGORIES[0].name]: 'dfs',
-  [CATEGORIES[1].name]: 'sda',
-  [CATEGORIES[2].name]: 'tpl',
-} as const;
-
-type CategoryState = Record<(typeof CATEGORIES)[number]['name'], boolean>;
+type CategoryState = Record<(typeof CATEGORIES)[number]['key'], boolean>;
 
 export const CategoryList = (): JSX.Element => {
-  const [categories, toggleCategory] = useState<CategoryState>(
-    CATEGORIES.reduce(
-      (acc, category) => ({
-        ...acc,
-        [category.name]: false,
-      }),
-      {} as CategoryState,
-    ),
-  );
-
   const {
     viewBy,
     filters: { dates, suppliers, origins, materials, plots },
     table: { filters: tableFilters },
   } = useAppSelector(eudr);
+
+  const [categories, toggleCategory] = useState<CategoryState>(
+    CATEGORIES.reduce(
+      (acc, category) => ({
+        ...acc,
+        [category.key]: tableFilters[category.key],
+      }),
+      {} as CategoryState,
+    ),
+  );
+
   const dispatch = useAppDispatch();
 
   const onClickCategory = useCallback(
     (category: (typeof CATEGORIES)[number]) => {
       toggleCategory((prev) => ({
         ...prev,
-        [category.name]: !prev[category.name],
+        [category.key]: !prev[category.key],
       }));
 
       dispatch(
         setTableFilters({
-          [CATEGORY_TO_FILTER[category.name]]: !tableFilters[CATEGORY_TO_FILTER[category.name]],
+          [category.key]: !tableFilters[category.key],
         }),
       );
     },
@@ -91,19 +83,23 @@ export const CategoryList = (): JSX.Element => {
   const parsedData = useMemo(() => {
     const dataByView = data?.[viewBy] || [];
 
-    return Object.keys(dataByView).map((key) => ({
-      name: key,
-      ...dataByView[key],
-      color: CATEGORIES.find((category) => category.name === key)?.color || '#000',
-    }));
+    return Object.keys(dataByView).map((key) => {
+      const category = CATEGORIES.find((category) => category.name === key);
+      return {
+        name: key,
+        ...dataByView[key],
+        key: category?.key,
+        color: category?.color || '#000',
+      };
+    });
   }, [data, viewBy]);
 
   return (
     <>
       {parsedData.map((category) => (
         <Collapsible
-          key={category.name}
-          className="rounded-xl bg-gray-50 p-5"
+          key={category.key}
+          className="group rounded-xl bg-gray-50 p-5"
           onOpenChange={() => onClickCategory(category)}
         >
           <CollapsibleTrigger asChild>
@@ -140,21 +136,16 @@ export const CategoryList = (): JSX.Element => {
                 type="button"
                 size="xs"
                 variant="white"
-                className={cn(
-                  'w-[98px] rounded-md border-none text-sm text-gray-500 shadow-none transition-colors hover:shadow-none',
-                  {
-                    'bg-navy-400 text-white hover:bg-navy-600': categories[category.name],
-                  },
-                )}
+                className="w-[98px] rounded-md border-none text-sm text-gray-500 shadow-none transition-colors hover:shadow-none group-data-[state=open]:bg-navy-400 group-data-[state=open]:text-white group-data-[state=open]:hover:bg-navy-600"
               >
-                {categories[category.name] ? 'Close detail' : 'View detail'}
+                {categories[category.key] ? 'Close detail' : 'View detail'}
               </Button>
             </div>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            {category.name === CATEGORIES[0].name && <DeforestationFreeSuppliersBreakdown />}
-            {category.name === CATEGORIES[1].name && <SuppliersWithDeforestationAlertsBreakdown />}
-            {category.name === CATEGORIES[2].name && <SuppliersWithNoLocationDataBreakdown />}
+            {categories['dfs'] && <DeforestationFreeSuppliersBreakdown />}
+            {categories['sda'] && <SuppliersWithDeforestationAlertsBreakdown />}
+            {categories['tpl'] && <SuppliersWithNoLocationDataBreakdown />}
           </CollapsibleContent>
         </Collapsible>
       ))}

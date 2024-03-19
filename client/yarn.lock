@@ -2817,7 +2817,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/geojson@npm:^7946.0.13":
+"@types/geojson@npm:7946.0.14, @types/geojson@npm:^7946.0.13":
   version: 7946.0.14
   resolution: "@types/geojson@npm:7946.0.14"
   checksum: ae511bee6488ae3bd5a3a3347aedb0371e997b14225b8983679284e22fa4ebd88627c6e3ff8b08bf4cc35068cb29310c89427311ffc9322c255615821a922e71
@@ -7919,6 +7919,7 @@ __metadata:
     "@types/chroma-js": 2.1.3
     "@types/d3-format": 3.0.1
     "@types/d3-scale": 4.0.2
+    "@types/geojson": 7946.0.14
     "@types/lodash-es": 4.17.6
     "@types/node": 16.11.6
     "@types/react": 18.2.28

@@ -101,7 +101,11 @@ const MoreFilters = () => {
   ]);
 
   const { data: materialOptions, isLoading: materialOptionsIsLoading } = useEUDRMaterialsTree(
-    undefined,
+    {
+      producerIds: selectedFilters.suppliers.map((supplier) => supplier.value),
+      originIds: selectedFilters.origins.map((origin) => origin.value),
+      geoRegionIds: selectedFilters.plots.map((plot) => plot.value),
+    },
     {
       ...DEFAULT_QUERY_OPTIONS,
       select: (_materials) => {
@@ -118,22 +122,37 @@ const MoreFilters = () => {
   );
 
   const { data: originOptions, isLoading: originOptionsIsLoading } = useEUDRAdminRegionsTree(
-    undefined,
+    {
+      producerIds: selectedFilters.suppliers.map((supplier) => supplier.value),
+      materialIds: selectedFilters.materials.map((material) => material.value),
+      geoRegionIds: selectedFilters.plots.map((plot) => plot.value),
+    },
     DEFAULT_QUERY_OPTIONS,
   );
 
   const { data: supplierOptions, isLoading: supplierOptionsIsLoading } = useEUDRSuppliers(
-    undefined,
+    {
+      originIds: selectedFilters.origins.map((origin) => origin.value),
+      materialIds: selectedFilters.materials.map((material) => material.value),
+      geoRegionIds: selectedFilters.plots.map((plot) => plot.value),
+    },
     {
       ...DEFAULT_QUERY_OPTIONS,
       initialData: [],
     },
   );
 
-  const { data: plotOptions, isLoading: plotOptionsIsLoading } = useEUDRPlotsTree(undefined, {
-    ...DEFAULT_QUERY_OPTIONS,
-    initialData: [],
-  });
+  const { data: plotOptions, isLoading: plotOptionsIsLoading } = useEUDRPlotsTree(
+    {
+      producerIds: selectedFilters.suppliers.map((supplier) => supplier.value),
+      originIds: selectedFilters.origins.map((origin) => origin.value),
+      materialIds: selectedFilters.materials.map((material) => material.value),
+    },
+    {
+      ...DEFAULT_QUERY_OPTIONS,
+      initialData: [],
+    },
+  );
 
   useEffect(() => {
     const counters = Object.values(filters).map((value) => value.length);

@@ -251,6 +251,7 @@ export class EudrController {
   async getDashboard(
     @Query(ValidationPipe) dto: GetDashBoardDTO,
   ): Promise<EUDRDashboard> {
+    console.log('entra al dashboard', dto);
     return this.dashboard.buildDashboard(dto);
   }
 

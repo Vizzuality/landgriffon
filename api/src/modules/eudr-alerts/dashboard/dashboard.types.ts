@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+class AffectedPlots {
+  @ApiProperty()
+  dfs: string[];
+  @ApiProperty()
+  sda: string[];
+}
+
 export class DashBoardTableElements {
   supplierId: string;
   @ApiProperty()
@@ -31,6 +38,9 @@ export class DashBoardTableElements {
 
   @ApiProperty({ type: () => EntitiesBySupplier, isArray: true })
   origins: EntitiesBySupplier[];
+
+  @ApiProperty({ type: () => AffectedPlots, isArray: true })
+  plots: AffectedPlots;
 }
 
 class EntitiesBySupplier {

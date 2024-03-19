@@ -20,7 +20,10 @@ const SupplierSourcingInfo = (): JSX.Element => {
       endAlertDate: dates.to,
     },
     {
-      select: (data) => data?.sourcingInformation,
+      select: (data) => ({
+        ...data?.sourcingInformation,
+        totalCarbonRemovals: data?.alerts.totalCarbonRemovals,
+      }),
     },
   );
 
@@ -65,9 +68,9 @@ const SupplierSourcingInfo = (): JSX.Element => {
           <div>
             <h4 className="text-2xs uppercase">Carbon removal</h4>
             <span>
-              {data?.totalCarbonRemoval
+              {!isNaN(data?.totalCarbonRemovals)
                 ? `${Intl.NumberFormat(undefined, { style: 'unit', unit: 'kilogram' }).format(
-                    data.totalCarbonRemoval,
+                    data.totalCarbonRemovals,
                   )}`
                 : '-'}
             </span>

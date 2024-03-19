@@ -24,7 +24,7 @@ const SuppliersWithNoLocationDataBreakdown = () => {
       producerIds: suppliers?.map(({ value }) => value),
       materialIds: materials?.map(({ value }) => value),
       originIds: origins?.map(({ value }) => value),
-      geoRegiondIds: plots?.map(({ value }) => value),
+      geoRegionIds: plots?.map(({ value }) => value),
     },
     {
       select: (data) => data?.breakDown,

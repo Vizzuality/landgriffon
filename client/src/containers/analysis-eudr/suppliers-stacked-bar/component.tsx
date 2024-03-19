@@ -38,6 +38,7 @@ const TOOLTIP_LABELS = {
 const SuppliersStackedBar = () => {
   const {
     viewBy,
+    totalSuppliers,
     filters: { dates, suppliers, origins, materials },
   } = useAppSelector(eudr);
   const dispatch = useAppDispatch();
@@ -92,7 +93,7 @@ const SuppliersStackedBar = () => {
     <div className="space-y-4">
       <div>
         <div className="text-xs text-gray-400">
-          Total numbers of suppliers: <span className="font-mono">{parsedData?.length || '-'}</span>
+          Total numbers of suppliers: <span>{totalSuppliers}</span>
         </div>
         <div className="flex items-center justify-between">
           <h3>Suppliers by category</h3>

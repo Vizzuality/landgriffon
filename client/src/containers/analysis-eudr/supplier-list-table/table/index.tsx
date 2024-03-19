@@ -22,8 +22,8 @@ import {
   TableCell,
 } from '@/components/ui/table';
 import { useEUDRData } from '@/hooks/eudr';
-import { useAppSelector } from '@/store/hooks';
-import { eudr } from '@/store/features/eudr';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { eudr, setTotalSuppliers } from '@/store/features/eudr';
 
 import type {
   // ColumnFiltersState,
@@ -50,6 +50,7 @@ export interface Supplier {
 }
 
 const SuppliersListTable = (): JSX.Element => {
+  const dispatch = useAppDispatch();
   // const [rowSelection, setRowSelection] = useState({});
   // const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   // const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -68,6 +69,9 @@ const SuppliersListTable = (): JSX.Element => {
     },
     {
       select: (data) => data?.table,
+      onSuccess: (data) => {
+        dispatch(setTotalSuppliers(data?.length || 0));
+      },
     },
   );
 

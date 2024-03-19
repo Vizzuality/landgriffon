@@ -19,6 +19,7 @@ type LayerConfiguration = {
 
 export type EUDRState = {
   viewBy: (typeof VIEW_BY_OPTIONS)[number]['value'];
+  totalSuppliers: number;
   filters: {
     materials: Option[];
     origins: Option[];
@@ -39,6 +40,7 @@ export type EUDRState = {
 
 export const initialState: EUDRState = {
   viewBy: 'materials',
+  totalSuppliers: 0,
   filters: {
     materials: [],
     origins: [],
@@ -91,6 +93,10 @@ export const EUDRSlice = createSlice({
       ...state,
       viewBy: action.payload,
     }),
+    setTotalSuppliers: (state, action: PayloadAction<EUDRState['totalSuppliers']>) => ({
+      ...state,
+      totalSuppliers: action.payload,
+    }),
     setFilters: (state, action: PayloadAction<Partial<EUDRState['filters']>>) => ({
       ...state,
       filters: {
@@ -141,6 +147,7 @@ export const EUDRSlice = createSlice({
 
 export const {
   setViewBy,
+  setTotalSuppliers,
   setFilters,
   setBasemap,
   setSupplierLayer,

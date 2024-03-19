@@ -36,6 +36,8 @@ jobs:
         run: yarn install --immutable
 
       - name: Cypress run
+        # ! REMOVE THIS LINE IF YOU PLAN TO MERGE THIS CODE INTO THE MAIN BRANCH AND THE ENV VAR IN GITHUB ACTIONS
+        if: ${{ env.CYPRESS_SKIP_TESTS == 'undefined' }}
         uses: cypress-io/github-action@v5
         with:
           record: true

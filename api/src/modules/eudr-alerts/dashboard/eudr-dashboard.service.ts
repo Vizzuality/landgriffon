@@ -25,6 +25,7 @@ import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service
 import {
   groupAlertsByDate,
   aggregateAndCalculatePercentage,
+  findNonAlertedGeoRegions,
 } from './dashboard-utils';
 
 @Injectable()
@@ -95,8 +96,6 @@ export class EudrDashboardService {
         ),
       });
 
-    console.log(alerts);
-
     const alertMap: Map<
       string,
       { geoRegionIdSet: Set<string>; carbonRemovalValuesForSupplier: number[] }
@@ -121,6 +120,13 @@ export class EudrDashboardService {
         .get(supplierId)!
         .carbonRemovalValuesForSupplier.push(alert.carbonRemovals);
     });
+
+    const allGeoRegions: Record<string, string[]> =
+      await this.getGeoRegionsMapBySupplier(
+        entityMetadata.map((e) => e.supplierId),
+      );
+    const nonAlertedGeoregions: Record<string, string[]> =
+      findNonAlertedGeoRegions(allGeoRegions, alertMap);
 
     const suppliersMap = new Map<string, any>();
     const materialsMap = new Map<string, any>();
@@ -167,10 +173,17 @@ export class EudrDashboardService {
           ) || 0;
 
       if (!suppliersMap.has(supplierId)) {
+        const alertedGeoRegions: string[] = [
+          ...(alertMap.get(supplierId)?.geoRegionIdSet || []),
+        ];
         suppliersMap.set(supplierId, {
           supplierId,
           supplierName,
           companyId,
+          plots: {
+            dfs: nonAlertedGeoregions[supplierId] || [],
+            sda: alertedGeoRegions,
+          },
           materials: [],
           origins: [],
           totalBaselineVolume: 0,
@@ -346,6 +359,7 @@ export class EudrDashboardService {
         sda: supplier.sda,
         tpl: supplier.tpl,
         crm: supplier.crm,
+        plots: supplier.plots,
       });
     });
 
@@ -406,6 +420,24 @@ export class EudrDashboardService {
     }
 
     return queryBuilder.getRawMany();
+  }
+
+  async getGeoRegionsMapBySupplier(supplierIds: string[]): Promise<any> {
+    const res = await this.datasource
+      .createQueryBuilder()
+      .from(SourcingLocation, 'sl')
+      .select('sl.geoRegionId', 'geoRegionId')
+      .addSelect('sl.producerId', 'supplierId')
+      .distinct(true)
+      .where('sl.producerId IN (:...supplierIds)', { supplierIds })
+      .getRawMany();
+    return res.reduce((acc, item) => {
+      if (!acc[item.supplierId]) {
+        acc[item.supplierId] = [];
+      }
+      acc[item.supplierId].push(item.geoRegionId);
+      return acc;
+    }, {} as Record<string, string[]>);
   }
 
   async buildDashboardDetail(

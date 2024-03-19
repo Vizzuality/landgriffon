@@ -79,3 +79,29 @@ export const groupAlertsByDate = (
     plots: alertsByDate[key],
   }));
 };
+
+export const findNonAlertedGeoRegions = (
+  geoRegionMapBySupplier: Record<string, string[]>,
+  alertMap: any,
+): Record<string, string[]> => {
+  const missingGeoRegionIds: Record<string, string[]> = {} as Record<
+    string,
+    string[]
+  >;
+
+  Object.entries(geoRegionMapBySupplier).forEach(
+    ([supplierId, geoRegionIds]) => {
+      const alertGeoRegions =
+        alertMap.get(supplierId)?.geoRegionIdSet || new Set<string>();
+      const missingIds = geoRegionIds.filter(
+        (geoRegionId) => !alertGeoRegions.has(geoRegionId),
+      );
+
+      if (missingIds.length > 0) {
+        missingGeoRegionIds[supplierId] = missingIds;
+      }
+    },
+  );
+
+  return missingGeoRegionIds;
+};

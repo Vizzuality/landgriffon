@@ -448,6 +448,7 @@ export class EudrDashboardService {
     const sourcingInformation: any = {};
     let supplier: Supplier;
     const geoRegionMap: Map<string, { plotName: string }> = new Map();
+    const allGeoRegionsBySupplier: string[] = [];
 
     return this.datasource.transaction(async (manager: EntityManager) => {
       supplier = await manager
@@ -514,7 +515,11 @@ export class EudrDashboardService {
           plotName: string;
           geoRegionId: string;
         }[] = [];
+
         for (const geoRegion of geoRegions) {
+          if (geoRegion.geoRegionId) {
+            allGeoRegionsBySupplier.push(geoRegion.geoRegionId);
+          }
           geoRegion.geoRegionId = geoRegion.geoRegionId ?? null;
           geoRegion.plotName = geoRegion.plotName ?? 'Unknown';
           if (!geoRegionMap.get(geoRegion.geoRegionId)) {
@@ -583,6 +588,7 @@ export class EudrDashboardService {
         endAlertDate: dto?.endAlertDate,
       });
 
+      const affectedGeoRegionIds: Set<string> = new Set<string>();
       const { totalAlerts, totalCarbonRemovals } = alertsOutput.reduce(
         (
           acc: { totalAlerts: number; totalCarbonRemovals: number },
@@ -590,6 +596,8 @@ export class EudrDashboardService {
         ) => {
           acc.totalAlerts += cur.alertCount;
           acc.totalCarbonRemovals += cur.carbonRemovals;
+          console.log(cur.geoRegionId);
+          affectedGeoRegionIds.add(cur.geoRegionId);
           return acc;
         },
         { totalAlerts: 0, totalCarbonRemovals: 0 },
@@ -606,6 +614,14 @@ export class EudrDashboardService {
         totalAlerts,
         totalCarbonRemovals,
         values: groupAlertsByDate(alertsOutput, geoRegionMap),
+      };
+
+      const nonAlertedGeoRegions: string[] = allGeoRegionsBySupplier.filter(
+        (id: string) => ![...affectedGeoRegionIds].includes(id),
+      );
+      result.plots = {
+        dfs: nonAlertedGeoRegions,
+        sda: [...affectedGeoRegionIds],
       };
 
       result.alerts = alerts;

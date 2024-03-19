@@ -3,12 +3,18 @@ import { useQuery } from '@tanstack/react-query';
 import { apiService } from 'services/api';
 
 import type { Supplier as SupplierRow } from '@/containers/analysis-eudr/supplier-list-table/table';
-import type { AdminRegionsTreesParams } from '@/hooks/admin-regions';
 import type { MaterialTreeItem, OriginRegion, Supplier } from '@/types';
 import type { UseQueryOptions } from '@tanstack/react-query';
 
+interface EUDRParams {
+  producerIds?: string[];
+  originIds?: string[];
+  materialIds?: string[];
+  geoRegionIds?: string[];
+}
+
 export const useEUDRSuppliers = <T = Supplier[]>(
-  params?: { producersIds: string[]; originsId: string[]; materialsId: string[] },
+  params?: EUDRParams,
   options: UseQueryOptions<Supplier[], unknown, T> = {},
 ) => {
   return useQuery(
@@ -28,12 +34,7 @@ export const useEUDRSuppliers = <T = Supplier[]>(
 };
 
 export const usePlotGeometries = <T = Supplier[]>(
-  params?: {
-    producerIds: string[];
-    originIds: string[];
-    materialIds: string[];
-    geoRegionIds: string[];
-  },
+  params?: EUDRParams,
   options: UseQueryOptions<Supplier[], unknown, T> = {},
 ) => {
   return useQuery(
@@ -55,7 +56,7 @@ export const usePlotGeometries = <T = Supplier[]>(
 };
 
 export const useEUDRMaterialsTree = <T = MaterialTreeItem[]>(
-  params?: { producersIds: string[]; originsId: string[]; materialsId: string[] },
+  params?: EUDRParams,
   options: UseQueryOptions<MaterialTreeItem[], unknown, T> = {},
 ) => {
   return useQuery(
@@ -75,7 +76,7 @@ export const useEUDRMaterialsTree = <T = MaterialTreeItem[]>(
 };
 
 export const useEUDRAdminRegionsTree = <T = OriginRegion[]>(
-  params: AdminRegionsTreesParams,
+  params: EUDRParams,
   options: UseQueryOptions<OriginRegion[], unknown, T> = {},
 ) => {
   const query = useQuery(
@@ -97,7 +98,7 @@ export const useEUDRAdminRegionsTree = <T = OriginRegion[]>(
 };
 
 export const useEUDRPlotsTree = <T = OriginRegion[]>(
-  params: AdminRegionsTreesParams,
+  params: EUDRParams,
   options: UseQueryOptions<OriginRegion[], unknown, T> = {},
 ) => {
   const query = useQuery(

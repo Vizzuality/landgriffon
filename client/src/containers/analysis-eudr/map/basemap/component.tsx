@@ -31,12 +31,12 @@ const EUDRBasemapControl = () => {
 
   const handleLightBasemap = useCallback(
     (checked: boolean) => {
+      dispatch(setBasemap(checked ? 'light' : 'planet'));
       if (checked) {
-        dispatch(setBasemap('light'));
-        dispatch(setPlanetLayer({ active: !checked }));
+        dispatch(setPlanetLayer({ active: false }));
+        dispatch(setPlanetCompareLayer({ active: false }));
       } else {
-        dispatch(setBasemap('planet'));
-        dispatch(setPlanetLayer({ active: checked }));
+        dispatch(setPlanetLayer({ active: true }));
       }
     },
     [dispatch],
@@ -44,9 +44,13 @@ const EUDRBasemapControl = () => {
 
   const handlePlanetLayer = useCallback(
     (checked: boolean) => {
-      dispatch(setBasemap('planet'));
+      if (!checked) {
+        dispatch(setBasemap('light'));
+        dispatch(setPlanetCompareLayer({ active: false }));
+      } else {
+        dispatch(setBasemap('planet'));
+      }
       dispatch(setPlanetLayer({ active: checked }));
-      if (!checked) dispatch(setPlanetCompareLayer({ active: false }));
     },
     [dispatch],
   );

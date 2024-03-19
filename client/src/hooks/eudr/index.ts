@@ -189,7 +189,6 @@ export interface SupplierDetail {
     };
     totalArea: number;
     totalVolume: number;
-    totalCarbonRemoval: number;
     byVolume: [
       {
         plotName: string;
@@ -211,6 +210,7 @@ export interface SupplierDetail {
     startAlertDate: string;
     endAlertDate: string;
     totalAlerts: number;
+    totalCarbonRemovals: number;
     values: [
       {
         alertDate: string;

@@ -13,13 +13,15 @@ import LegendControl from './legend';
 import BasemapControl from './basemap';
 
 import { useAppSelector } from '@/store/hooks';
-import { INITIAL_VIEW_STATE, MAP_STYLES } from '@/components/map';
 import { usePlotGeometries } from '@/hooks/eudr';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
+import { INITIAL_VIEW_STATE, MAP_STYLES } from '@/components/map';
 import { formatNumber } from '@/utils/number-format';
 
 import type { PickingInfo, MapViewState } from '@deck.gl/core/typed';
 
 const monthFormatter = (date: string) => format(date, 'MM');
+const friendlyMonthFormatter = (date: string) => format(date, 'MMM');
 
 const DEFAULT_VIEW_STATE: MapViewState = {
   ...INITIAL_VIEW_STATE,
@@ -47,6 +49,7 @@ const EUDRMap = () => {
 
   const [hoverInfo, setHoverInfo] = useState<PickingInfo>(null);
   const [viewState, setViewState] = useState<MapViewState>(DEFAULT_VIEW_STATE);
+  const [sizes, setSizes] = useState<number[]>([0, 0]);
 
   const params = useParams();
 
@@ -200,57 +203,86 @@ const EUDRMap = () => {
     setViewState({ ...viewState, zoom });
   }, [viewState]);
 
+  console.log(sizes);
+
   return (
     <>
       <div className="absolute left-0 top-0 h-full w-full overflow-hidden">
-        <DeckGL
-          viewState={{ ...viewState }}
-          onViewStateChange={({ viewState }) => setViewState(viewState as MapViewState)}
-          controller={{ dragRotate: false }}
-          layers={[
-            basemap === 'planet' && !planetCompareLayer.active ? [basemapPlanetLayer] : null,
-            basemap === 'planet' && planetCompareLayer.active
-              ? [basemapPlanetLayer, basemapPlanetCompareLayer]
-              : null,
-            forestCoverLayer,
-            deforestationLayer,
-            raddLayer,
-            eudrSupplierLayer,
-          ]}
-          layerFilter={({ layer, viewport }) => {
-            return !planetCompareLayer.active || viewport.id.startsWith(layer.id.split('-')[0]);
-          }}
-          {...(planetCompareLayer.active
-            ? {
-                views: [
-                  new MapView({
-                    id: 'top',
-                    y: 0,
-                    height: '50%',
-                    padding: { top: '100%' },
-                  }),
-                  new MapView({
-                    id: 'bottom',
-                    y: '50%',
-                    height: '50%',
-                    padding: { bottom: '100%' },
-                  }),
-                  new MapView({
-                    id: 'full',
-                    y: 0,
-                    x: 0,
-                    width: '100%',
-                    height: '100%',
-                  }),
-                ],
-              }
-            : {})}
+        <ResizablePanelGroup
+          direction="vertical"
+          className="absolute left-0 top-0 h-full w-full"
+          onLayout={setSizes}
         >
-          <Map reuseMaps mapStyle={MAP_STYLES.terrain} styleDiffing={false} />
-        </DeckGL>
-        {planetCompareLayer.active && (
-          <div className="pointer-events-none absolute left-0 top-1/2 z-20 h-[2px] w-full bg-white" />
-        )}
+          <DeckGL
+            viewState={{ ...viewState }}
+            onViewStateChange={({ viewState }) => setViewState(viewState as MapViewState)}
+            controller={{ dragRotate: false }}
+            layers={[
+              basemap === 'planet' && !planetCompareLayer.active ? [basemapPlanetLayer] : null,
+              basemap === 'planet' && planetCompareLayer.active
+                ? [basemapPlanetLayer, basemapPlanetCompareLayer]
+                : null,
+              forestCoverLayer,
+              deforestationLayer,
+              raddLayer,
+              eudrSupplierLayer,
+            ]}
+            layerFilter={({ layer, viewport }) => {
+              return !planetCompareLayer.active || viewport.id.startsWith(layer.id.split('-')[0]);
+            }}
+            {...(planetCompareLayer.active
+              ? {
+                  views: [
+                    new MapView({
+                      id: 'top',
+                      x: 0,
+                      y: 0,
+                      width: '100%',
+                      height: '100%',
+                      controller: false,
+                    }),
+                    new MapView({
+                      id: 'bottom',
+                      x: 0,
+                      y: `${sizes[0]}%`,
+                      width: '100%',
+                      height: `${sizes[1]}%`,
+                      // padding: { top: `100%`, bottom: `${sizes[0]}%` },
+                      // padding: { bottom: `${sizes[1]}%` },
+                      padding: { top: `${sizes[1]}%`, bottom: `${sizes[0]}%` },
+                      controller: false,
+                    }),
+                    new MapView({
+                      id: 'full',
+                      y: 0,
+                      x: 0,
+                      width: '100%',
+                      height: '100%',
+                      controller: true,
+                    }),
+                  ],
+                }
+              : {})}
+          >
+            <Map reuseMaps mapStyle={MAP_STYLES.terrain} styleDiffing={false} />
+          </DeckGL>
+          {planetCompareLayer.active && (
+            <>
+              <ResizablePanel className="relative" minSize={5}>
+                <div className="absolute bottom-2 left-2 z-10 rounded-sm border border-navy-400 bg-white px-2 py-1 text-xs text-navy-400">
+                  {planetLayer.year} {friendlyMonthFormatter(planetLayer.month.toString())}
+                </div>
+              </ResizablePanel>
+              <ResizableHandle />
+              <ResizablePanel className="relative" minSize={5}>
+                <div className="absolute bottom-2 left-2 z-10 rounded-sm border border-navy-400 bg-white px-2 py-1 text-xs text-navy-400">
+                  {planetCompareLayer.year}{' '}
+                  {friendlyMonthFormatter(planetCompareLayer.month.toString())}
+                </div>
+              </ResizablePanel>
+            </>
+          )}
+        </ResizablePanelGroup>
       </div>
       {hoverInfo?.object && (
         <div

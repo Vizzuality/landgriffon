@@ -32,7 +32,7 @@ import type {
 } from '@tanstack/react-table';
 
 export interface Supplier {
-  supplierId: number;
+  supplierId: string;
   supplierName: string;
   companyId: string;
   baselineVolume: number;
@@ -47,6 +47,10 @@ export interface Supplier {
     name: string;
     id: string;
   }[];
+  plots: {
+    dfs: string[];
+    sda: string[];
+  };
 }
 
 const SuppliersListTable = (): JSX.Element => {

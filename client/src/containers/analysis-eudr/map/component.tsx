@@ -44,6 +44,7 @@ const EUDRMap = () => {
     supplierLayer,
     contextualLayers,
     filters: { suppliers, materials, origins, plots, dates },
+    table: { filters: tableFilters },
   } = useAppSelector((state) => state.eudr);
 
   const [hoverInfo, setHoverInfo] = useState<PickingInfo>(null);
@@ -75,9 +76,17 @@ const EUDRMap = () => {
           };
         }
 
+        const filteredData = data?.table.filter((dataRow) => {
+          if (Object.values(tableFilters).every((filter) => !filter)) return true;
+
+          if (tableFilters.dfs && dataRow.dfs > 0) return true;
+          if (tableFilters.sda && dataRow.sda > 0) return true;
+          if (tableFilters.tpl && dataRow.tpl > 0) return true;
+        });
+
         return {
-          dfs: data.table.map((row) => row.plots.dfs.flat()).flat(),
-          sda: data.table.map((row) => row.plots.sda.flat()).flat(),
+          dfs: filteredData.map((row) => row.plots.dfs.flat()).flat(),
+          sda: filteredData.map((row) => row.plots.sda.flat()).flat(),
         };
       },
     },
@@ -92,12 +101,30 @@ const EUDRMap = () => {
     geoRegionIds: plots?.map(({ value }) => value),
   });
 
-  const eudrSupplierLayer = useMemo(() => {
+  const filteredGeometries: typeof plotGeometries.data = useMemo(() => {
     if (!plotGeometries.data || !data) return null;
 
-    return new GeoJsonLayer({
+    if (params?.supplierId) return plotGeometries.data;
+
+    return {
+      type: 'FeatureCollection',
+      features: plotGeometries.data.features.filter((feature) => {
+        if (Object.values(tableFilters).every((filter) => !filter)) return true;
+
+        if (tableFilters.dfs && data.dfs.indexOf(feature.properties.id) > -1) return true;
+        if (tableFilters.sda && data.sda.indexOf(feature.properties.id) > -1) return true;
+        return false;
+      }),
+    };
+  }, [data, plotGeometries.data, tableFilters, params]);
+
+  const eudrSupplierLayer = useMemo(() => {
+    if (!filteredGeometries?.features || !data) return null;
+
+    return new GeoJsonLayer<(typeof filteredGeometries)['features'][number]>({
       id: 'full-plots-layer',
-      data: plotGeometries.data,
+      // @ts-expect-error will fix this later...
+      data: filteredGeometries,
       // Styles
       filled: true,
       getFillColor: ({ properties }) => {
@@ -133,7 +160,7 @@ const EUDRMap = () => {
       onHover: setHoverInfo,
       opacity: supplierLayer.opacity,
     });
-  }, [plotGeometries.data, data, supplierLayer.active, supplierLayer.opacity]);
+  }, [filteredGeometries, data, supplierLayer.active, supplierLayer.opacity]);
 
   const basemapPlanetLayer = new TileLayer({
     id: 'top-planet-monthly-layer',

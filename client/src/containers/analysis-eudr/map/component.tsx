@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import DeckGL from '@deck.gl/react/typed';
 import { BitmapLayer, GeoJsonLayer } from '@deck.gl/layers/typed';
 import Map from 'react-map-gl/maplibre';
@@ -15,7 +15,7 @@ import BasemapControl from './basemap';
 
 import { useAppSelector } from '@/store/hooks';
 import { INITIAL_VIEW_STATE, MAP_STYLES } from '@/components/map';
-import { usePlotGeometries } from '@/hooks/eudr';
+import { useEUDRData, usePlotGeometries } from '@/hooks/eudr';
 import { formatNumber } from '@/utils/number-format';
 
 import type { PickingInfo, MapViewState } from '@deck.gl/core/typed';
@@ -43,13 +43,45 @@ const EUDRMap = () => {
     planetCompareLayer,
     supplierLayer,
     contextualLayers,
-    filters: { suppliers, materials, origins, plots },
+    filters: { suppliers, materials, origins, plots, dates },
   } = useAppSelector((state) => state.eudr);
 
   const [hoverInfo, setHoverInfo] = useState<PickingInfo>(null);
   const [viewState, setViewState] = useState<MapViewState>(DEFAULT_VIEW_STATE);
 
   const params = useParams();
+
+  const { data } = useEUDRData(
+    {
+      startAlertDate: dates.from,
+      endAlertDate: dates.to,
+      producerIds: suppliers?.map(({ value }) => value),
+      materialIds: materials?.map(({ value }) => value),
+      originIds: origins?.map(({ value }) => value),
+      geoRegionIds: plots?.map(({ value }) => value),
+    },
+    {
+      select: (data) => {
+        if (params?.supplierId) {
+          return {
+            dfs: data.table
+              .filter((row) => row.supplierId === (params.supplierId as string))
+              .map((row) => row.plots.dfs.flat())
+              .flat(),
+            sda: data.table
+              .filter((row) => row.supplierId === (params.supplierId as string))
+              .map((row) => row.plots.sda.flat())
+              .flat(),
+          };
+        }
+
+        return {
+          dfs: data.table.map((row) => row.plots.dfs.flat()).flat(),
+          sda: data.table.map((row) => row.plots.sda.flat()).flat(),
+        };
+      },
+    },
+  );
 
   const plotGeometries = usePlotGeometries({
     producerIds: params?.supplierId
@@ -60,25 +92,48 @@ const EUDRMap = () => {
     geoRegionIds: plots?.map(({ value }) => value),
   });
 
-  // Supplier plot layer
-  const eudrSupplierLayer: GeoJsonLayer = new GeoJsonLayer({
-    id: 'full-plots-layer',
-    data: plotGeometries.data,
-    // Styles
-    filled: true,
-    getFillColor: [63, 89, 224, 84],
-    stroked: true,
-    getLineColor: [63, 89, 224, 255],
-    getLineWidth: 1,
-    lineWidthUnits: 'pixels',
-    // Interactive props
-    pickable: true,
-    autoHighlight: true,
-    highlightColor: [63, 89, 224, 255],
-    visible: supplierLayer.active,
-    onHover: setHoverInfo,
-    opacity: supplierLayer.opacity,
-  });
+  const eudrSupplierLayer = useMemo(() => {
+    if (!plotGeometries.data || !data) return null;
+
+    return new GeoJsonLayer({
+      id: 'full-plots-layer',
+      data: plotGeometries.data,
+      // Styles
+      filled: true,
+      getFillColor: ({ properties }) => {
+        if (data.dfs.indexOf(properties.id) > -1) return [74, 183, 243, 84];
+        if (data.sda.indexOf(properties.id) > -1) return [255, 192, 56, 84];
+        return [0, 0, 0, 84];
+      },
+      stroked: true,
+      getLineColor: ({ properties }) => {
+        if (data.dfs.indexOf(properties.id) > -1) return [74, 183, 243, 255];
+        if (data.sda.indexOf(properties.id) > -1) return [255, 192, 56, 255];
+        return [0, 0, 0, 84];
+      },
+      getLineWidth: 1,
+      lineWidthUnits: 'pixels',
+      // Interactive props
+      pickable: true,
+      autoHighlight: true,
+      highlightColor: (x: PickingInfo) => {
+        if (x.object?.properties?.id) {
+          const {
+            object: {
+              properties: { id },
+            },
+          } = x;
+
+          if (data.dfs.indexOf(id) > -1) return [74, 183, 243, 255];
+          if (data.sda.indexOf(id) > -1) return [255, 192, 56, 255];
+        }
+        return [0, 0, 0, 84];
+      },
+      visible: supplierLayer.active,
+      onHover: setHoverInfo,
+      opacity: supplierLayer.opacity,
+    });
+  }, [plotGeometries.data, data, supplierLayer.active, supplierLayer.opacity]);
 
   const basemapPlanetLayer = new TileLayer({
     id: 'top-planet-monthly-layer',

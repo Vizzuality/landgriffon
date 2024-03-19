@@ -8,10 +8,6 @@ export class EUDRDashBoardDetail {
   address: string;
   @ApiProperty()
   companyId: string;
-  @ApiProperty({
-    type: () => DashBoardDetailSourcingInformation,
-    isArray: true,
-  })
   @ApiProperty({ type: () => AffectedPlots })
   plots: AffectedPlots;
   @ApiProperty({ type: () => DashBoardDetailCountry, isArray: true })

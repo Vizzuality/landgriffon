@@ -97,18 +97,19 @@ export const groupAndFillAlertsByMonth = (
     }
 
     acc[yearMonthKey].push({
-      plotName: geoRegionMap.get(cur.geoRegionId)?.plotName,
       geoRegionId: cur.geoRegionId,
+      plotName: geoRegionMap.get(cur.geoRegionId)?.plotName || 'Unknown',
       alertCount: cur.alertCount,
     });
 
     return acc;
   }, {});
 
+  const allGeoRegions = Array.from(geoRegionMap.keys());
+
   const start = new Date(startDate);
   const end = new Date(endDate);
   const filledMonths: any[] = [];
-  const existingMonths = new Set(Object.keys(alertsByMonth));
 
   for (
     let month = new Date(start);
@@ -118,17 +119,26 @@ export const groupAndFillAlertsByMonth = (
     const yearMonthKey = `${month.getFullYear()}-${(month.getMonth() + 1)
       .toString()
       .padStart(2, '0')}`;
-    if (!existingMonths.has(yearMonthKey)) {
-      filledMonths.push({
-        alertDate: yearMonthKey,
-        plots: [{ geoRegionId: null, plotName: null, alertCount: 0 }],
-      });
-    } else {
-      filledMonths.push({
-        alertDate: yearMonthKey,
-        plots: alertsByMonth[yearMonthKey],
-      });
-    }
+    const monthAlerts = alertsByMonth[yearMonthKey] || [];
+
+    const alertsMap = new Map(
+      monthAlerts.map((alert: any) => [alert.geoRegionId, alert]),
+    );
+
+    const monthPlots = allGeoRegions.map((geoRegionId) => {
+      return (
+        alertsMap.get(geoRegionId) || {
+          geoRegionId: geoRegionId,
+          plotName: geoRegionMap.get(geoRegionId)?.plotName || 'Unknown',
+          alertCount: 0,
+        }
+      );
+    });
+
+    filledMonths.push({
+      alertDate: yearMonthKey,
+      plots: monthPlots,
+    });
   }
 
   return filledMonths.sort((a, b) => a.alertDate.localeCompare(b.alertDate));

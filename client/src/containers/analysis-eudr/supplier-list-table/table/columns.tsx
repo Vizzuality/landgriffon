@@ -48,7 +48,7 @@ export const columns: ColumnDef<Supplier>[] = [
   },
   {
     accessorKey: 'dfs',
-    header: ({ column }) => <DataTableColumnHeader column={column} title="DFS" />,
+    header: ({ column }) => <DataTableColumnHeader column={column} title="DFP" />,
     cell: ({ row }) => {
       const dfs: number = row.getValue('dfs');
       return <span>{`${Number.isNaN(dfs) ? '-' : `${numberFormat.format(dfs)}%`}`}</span>;
@@ -56,7 +56,7 @@ export const columns: ColumnDef<Supplier>[] = [
   },
   {
     accessorKey: 'sda',
-    header: ({ column }) => <DataTableColumnHeader column={column} title="SDA" />,
+    header: ({ column }) => <DataTableColumnHeader column={column} title="PDA" />,
     cell: ({ row }) => {
       const sda: number = row.getValue('sda');
       return <span>{`${Number.isNaN(sda) ? '-' : `${numberFormat.format(sda)}%`}`}</span>;
@@ -64,7 +64,7 @@ export const columns: ColumnDef<Supplier>[] = [
   },
   {
     accessorKey: 'tpl',
-    header: ({ column }) => <DataTableColumnHeader column={column} title="TPL" />,
+    header: ({ column }) => <DataTableColumnHeader column={column} title="PNL" />,
     cell: ({ row }) => {
       const tpl: number = row.getValue('tpl');
 

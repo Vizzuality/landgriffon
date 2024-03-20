@@ -101,6 +101,7 @@ export const CategoryList = (): JSX.Element => {
           key={category.key}
           className="group rounded-xl bg-gray-50 p-5"
           onOpenChange={() => onClickCategory(category)}
+          defaultOpen={categories[category.key]}
         >
           <CollapsibleTrigger asChild>
             <div className="flex w-full cursor-pointer items-center space-x-6">

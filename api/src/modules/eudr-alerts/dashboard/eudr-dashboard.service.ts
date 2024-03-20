@@ -23,9 +23,9 @@ import { EUDRDashBoardDetail } from 'modules/eudr-alerts/dashboard/dashboard-det
 import { MaterialsService } from 'modules/materials/materials.service';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import {
-  groupAlertsByDate,
   aggregateAndCalculatePercentage,
   findNonAlertedGeoRegions,
+  groupAndFillAlertsByMonth,
 } from './dashboard-utils';
 
 @Injectable()
@@ -607,12 +607,22 @@ export class EudrDashboardService {
         alertsOutput[alertsOutput.length - 1]?.alertDate?.value.toString() ||
         null;
 
+      const finalStartDate =
+        dto?.startAlertDate ?? (startAlertDate as unknown as Date);
+      const finalEndDate =
+        dto?.endAlertDate ?? (endAlertDate as unknown as Date);
+
       const alerts = {
-        startAlertDate: startAlertDate,
-        endAlertDate: endAlertDate,
+        startAlertDate: dto?.startAlertDate ?? startAlertDate,
+        endAlertDate: dto?.endAlertDate ?? endAlertDate,
         totalAlerts,
         totalCarbonRemovals,
-        values: groupAlertsByDate(alertsOutput, geoRegionMap),
+        values: groupAndFillAlertsByMonth(
+          alertsOutput,
+          geoRegionMap,
+          finalStartDate,
+          finalEndDate,
+        ),
       };
 
       const nonAlertedGeoRegions: string[] = allGeoRegionsBySupplier.filter(

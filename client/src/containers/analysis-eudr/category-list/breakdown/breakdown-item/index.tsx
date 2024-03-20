@@ -21,7 +21,7 @@ const BreakdownItem = ({
       <div className="shrink-0 grow-0">
         <div className="text-center">
           {`${Intl.NumberFormat(undefined, { maximumFractionDigits: 3 }).format(value)}%`}{' '}
-          <span className="text-2xs">of suppliers</span>
+          <span className="text-2xs">of plots</span>
         </div>
         <div className="h-[2px] w-[340px] bg-gray-200">
           <div className="h-[2px]" style={{ width: `${value}%`, backgroundColor: color }} />

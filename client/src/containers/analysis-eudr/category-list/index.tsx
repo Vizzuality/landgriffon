@@ -125,7 +125,7 @@ export const CategoryList = (): JSX.Element => {
                   {`${Intl.NumberFormat(undefined, { maximumFractionDigits: 3 }).format(
                     category.totalPercentage,
                   )}%`}{' '}
-                  <span className="text-2xs">of suppliers</span>
+                  <span className="text-2xs">of plots</span>
                 </div>
                 <div className="h-[2px] w-[340px] bg-gray-200">
                   <div

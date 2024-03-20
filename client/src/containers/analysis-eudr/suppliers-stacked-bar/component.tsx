@@ -153,7 +153,7 @@ const SuppliersStackedBar = () => {
                   type="number"
                   label={
                     <Label
-                      value="Suppliers (%)"
+                      value="Plots (%)"
                       position="insideLeft"
                       offset={-200}
                       style={{ fill: '#40424B', fontSize: 10, transform: 'translateY(-5px)' }}

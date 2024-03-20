@@ -7,6 +7,7 @@ import { tasksSSR } from 'services/ssr';
 import ApplicationLayout from 'layouts/application';
 import CollapseButton from 'containers/collapse-button/component';
 import TitleTemplate from 'utils/titleTemplate';
+import { useAppSelector } from '@/store/hooks';
 import SuppliersStackedBar from '@/containers/analysis-eudr/suppliers-stacked-bar';
 import EUDRFilters from '@/containers/analysis-eudr/filters/component';
 import SupplierListTable from '@/containers/analysis-eudr/supplier-list-table';
@@ -19,8 +20,13 @@ const DynamicMap = dynamic(() => import('containers/analysis-eudr/map'), {
   ssr: false,
 });
 
+const DynamicCompareMap = dynamic(() => import('containers/analysis-eudr/map/compare'), {
+  ssr: false,
+});
+
 const MapPage: NextPageWithLayout = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { planetCompareLayer } = useAppSelector((state) => state.eudr);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
@@ -57,7 +63,8 @@ const MapPage: NextPageWithLayout = () => {
         </aside>
 
         <section className="relative flex h-screen flex-1 flex-col">
-          <DynamicMap />
+          {!planetCompareLayer.active && <DynamicMap />}
+          {planetCompareLayer.active && <DynamicCompareMap />}
         </section>
       </div>
     </MapProvider>

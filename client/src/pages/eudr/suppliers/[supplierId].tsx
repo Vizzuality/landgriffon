@@ -97,7 +97,7 @@ const MapPage: NextPageWithLayout = () => {
 
         <section className="relative flex h-screen flex-1 flex-col">
           {!planetCompareLayer.active && <DynamicMap supplierId={supplierId} />}
-          {planetCompareLayer.active && <DynamicCompareMap supplierId={supplierId} />}
+          {planetCompareLayer.active && <DynamicCompareMap />}
         </section>
       </div>
     </MapProvider>

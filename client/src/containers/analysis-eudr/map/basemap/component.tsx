@@ -46,7 +46,10 @@ const EUDRBasemapControl = () => {
     (checked: boolean) => {
       dispatch(setBasemap('planet'));
       dispatch(setPlanetLayer({ active: checked }));
-      if (!checked) dispatch(setPlanetCompareLayer({ active: false }));
+      if (!checked) {
+        dispatch(setBasemap('light'));
+        dispatch(setPlanetCompareLayer({ active: false }));
+      }
     },
     [dispatch],
   );

@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import DeckGL from '@deck.gl/react/typed';
 import { BitmapLayer, GeoJsonLayer } from '@deck.gl/layers/typed';
 import Map, { useMap, useControl } from 'react-map-gl/maplibre';
-import { MapView, WebMercatorViewport } from '@deck.gl/core/typed';
+import { WebMercatorViewport } from '@deck.gl/core/typed';
 import { MapboxOverlay } from '@deck.gl/mapbox/typed';
 import MapLibreCompare from '@maplibre/maplibre-gl-compare';
 import { TileLayer } from '@deck.gl/geo-layers/typed';
@@ -25,7 +25,9 @@ import type { PickingInfo, MapViewState } from '@deck.gl/core/typed';
 
 const monthFormatter = (date: string) => format(date, 'MM');
 
-const MAX_BOUNDS = [-76.649412, -10.189886, -73.636411, -7.457082];
+const MAX_BOUNDS = [
+  -75.6527499999999975, -9.0839999999999996, -74.5510000000000019, -8.0745000000000005,
+];
 
 const DEFAULT_VIEW_STATE: MapViewState = {
   ...INITIAL_VIEW_STATE,
@@ -56,7 +58,6 @@ const EUDRMap = () => {
   const maps = useMap();
 
   const {
-    basemap,
     planetLayer,
     planetCompareLayer,
     supplierLayer,
@@ -181,7 +182,7 @@ const EUDRMap = () => {
   }, [filteredGeometries, data, supplierLayer.active, supplierLayer.opacity]);
 
   const basemapPlanetLayer = new TileLayer({
-    id: 'top-planet-monthly-layer',
+    id: 'beforeMap-planet-monthly-layer',
     data: `https://tiles.planet.com/basemaps/v1/planet-tiles/global_monthly_${
       planetLayer.year
     }_${monthFormatter(
@@ -205,7 +206,7 @@ const EUDRMap = () => {
   });
 
   const basemapPlanetCompareLayer = new TileLayer({
-    id: 'bottom-planet-monthly-layer',
+    id: 'afterMap-planet-monthly-layer',
     data: `https://tiles.planet.com/basemaps/v1/planet-tiles/global_monthly_${
       planetCompareLayer.year
     }_${monthFormatter(
@@ -321,17 +322,18 @@ const EUDRMap = () => {
   }, [plotGeometries.data, plotGeometries.isLoading]);
 
   useEffect(() => {
-    if (!maps.afterMap || !maps.beforeMap) return;
+    if (!planetCompareLayer.active || !maps.afterMap || !maps.beforeMap) return;
     const map = new MapLibreCompare(maps.beforeMap, maps.afterMap, '#comparison-container', {
       orientation: 'horizontal',
     });
     return () => map?.remove();
-  }, [maps.afterMap, maps.beforeMap]);
+  }, [maps.afterMap, maps.beforeMap, planetCompareLayer.active]);
 
   return (
     <>
-      {/* <div className="absolute left-0 top-0 h-full w-full overflow-hidden">
+      <div className="absolute left-0 top-0 h-full w-full" id="comparison-container">
         <DeckGL
+          id="newMap"
           viewState={{ ...viewState }}
           onViewStateChange={({ viewState }) => {
             viewState.longitude = Math.min(
@@ -345,56 +347,24 @@ const EUDRMap = () => {
             setViewState(viewState as MapViewState);
           }}
           controller={{ dragRotate: false }}
-          layers={[
-            basemap === 'planet' && !planetCompareLayer.active ? [basemapPlanetLayer] : null,
-            basemap === 'planet' && planetCompareLayer.active
-              ? [basemapPlanetLayer, basemapPlanetCompareLayer]
-              : null,
-            forestCoverLayer,
-            deforestationLayer,
-            raddLayer,
-            eudrSupplierLayer,
-          ]}
-          layerFilter={({ layer, viewport }) => {
-            return !planetCompareLayer.active || viewport.id.startsWith(layer.id.split('-')[0]);
-          }}
-          {...(planetCompareLayer.active
-            ? {
-                views: [
-                  new MapView({
-                    id: 'top',
-                    y: 0,
-                    height: '50%',
-                    padding: { top: '100%' },
-                  }),
-                  new MapView({
-                    id: 'bottom',
-                    y: '50%',
-                    height: '50%',
-                    padding: { bottom: '100%' },
-                  }),
-                  new MapView({
-                    id: 'full',
-                    y: 0,
-                    x: 0,
-                    width: '100%',
-                    height: '100%',
-                  }),
-                ],
-              }
-            : {})}
+          layers={[forestCoverLayer, deforestationLayer, raddLayer, eudrSupplierLayer]}
         >
-          <Map reuseMaps mapStyle={MAP_STYLES.terrain} styleDiffing={false} />
+          {!planetCompareLayer.active && (
+            <Map id="mainMap" reuseMaps mapStyle={MAP_STYLES.terrain} styleDiffing={false}>
+              {planetLayer.active && <DeckGLOverlay layers={[basemapPlanetLayer]} />}
+            </Map>
+          )}
+          {planetCompareLayer.active && (
+            <Map id="beforeMap" mapStyle={MAP_STYLES.terrain} style={{ position: 'absolute' }}>
+              <DeckGLOverlay layers={[basemapPlanetLayer]} />
+            </Map>
+          )}
+          {planetCompareLayer.active && (
+            <Map id="afterMap" mapStyle={MAP_STYLES.terrain} style={{ position: 'absolute' }}>
+              <DeckGLOverlay layers={[basemapPlanetCompareLayer]} />
+            </Map>
+          )}
         </DeckGL>
-        {planetCompareLayer.active && (
-          <div className="pointer-events-none absolute left-0 top-1/2 z-20 h-[2px] w-full bg-white" />
-        )}
-      </div> */}
-      <div className="absolute left-0 top-0 h-full w-full" id="comparison-container">
-        <Map id="beforeMap" mapStyle={MAP_STYLES.terrain} style={{ position: 'absolute' }}>
-          <DeckGLOverlay layers={[eudrSupplierLayer]} />
-        </Map>
-        <Map id="afterMap" mapStyle={MAP_STYLES.satellite} style={{ position: 'absolute' }} />
       </div>
       {hoverInfo?.object && (
         <div

@@ -33,10 +33,10 @@ const EUDRBasemapControl = () => {
     (checked: boolean) => {
       if (checked) {
         dispatch(setBasemap('light'));
-        dispatch(setPlanetLayer({ active: !checked }));
+        dispatch(setPlanetLayer({ active: false }));
       } else {
         dispatch(setBasemap('planet'));
-        dispatch(setPlanetLayer({ active: checked }));
+        dispatch(setPlanetLayer({ active: true }));
       }
     },
     [dispatch],

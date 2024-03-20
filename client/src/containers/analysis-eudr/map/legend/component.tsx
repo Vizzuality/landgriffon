@@ -21,7 +21,9 @@ const EURDLegend = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const supplierPlotsData = LayersData.find((layer) => layer.id === 'suppliers-plot-of-land');
+  // const supplierPlotsData = LayersData.find((layer) => layer.id === 'suppliers-plot-of-land');
+  const PDAData = LayersData.find((layer) => layer.title === 'Plots with deforestation alerts');
+  const DFPData = LayersData.find((layer) => layer.title === 'Deforestation-free plots');
   const contextualLayersData = LayersData.filter((layer) => layer.type === 'contextual');
 
   return (
@@ -43,9 +45,25 @@ const EURDLegend = () => {
             <h2 className="px-4 py-2 text-sm font-normal">Legend</h2>
             <div>
               <LegendItem
-                title={supplierPlotsData.title}
-                content={supplierPlotsData.content}
-                description={supplierPlotsData.description}
+                title={DFPData.title}
+                content={DFPData.content}
+                description={DFPData.description}
+                legendConfig={DFPData.legend}
+                showVisibility
+                isActive={supplierLayer.active}
+                changeVisibility={() =>
+                  dispatch(setSupplierLayer({ ...supplierLayer, active: !supplierLayer.active }))
+                }
+                changeOpacity={(opacity) =>
+                  dispatch(setSupplierLayer({ ...supplierLayer, opacity }))
+                }
+              />
+            </div>
+            <div>
+              <LegendItem
+                title={PDAData.title}
+                content={PDAData.content}
+                description={PDAData.description}
                 showVisibility
                 isActive={supplierLayer.active}
                 changeVisibility={() =>

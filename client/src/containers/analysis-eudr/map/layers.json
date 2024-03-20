@@ -1,14 +1,27 @@
 [
   {
     "id": "suppliers-plot-of-land",
-    "title": "Supplier's with specified plot of land",
-    "description": "Suppliers with necessary geographical data of land to assess deforestation risk linked to a commodity",
+    "title": "Plots with deforestation alerts",
+    "description": "Land areas where recent deforestation activities have been detected using near-real-time RADD alerts",
     "content": "Suppliers’s  geometry of the land within a single real estate property, as recognised by the law of the country of production, which possesses sufficiently homogeneous conditions to allow an evaluation of the aggregate level of risk of deforestation and forest degradation associated with relevant commodities produced on that land.",
     "citation": null,
     "source": null,
     "type": "layer",
+    "legendConfig": {
+      "iconClass": "border-navy-400 bg-navy-400/30",
+      "items": null
+    }
+  },
+  {
+    "id": "suppliers-plot-of-land",
+    "title": "Deforestation-free plots",
+    "description": "Land areas where recent deforestation activities have been detected using near-real-time RADD alerts",
+    "content": "Deforestation-free plots are areas verified to be free from recent deforestation, monitored using near-real-time RADD alerts. These alerts, adhering to the EUDR definition and following the WHISP methodology developed by FAO and WRI, provide robust monitoring of deforestation activities, enabling proactive measures to maintain forest integrity and sustainability.",
+    "citation": null,
+    "source": null,
+    "type": "layer",
     "legend": {
-      "iconClassName": "border-2 border-orange-500 bg-orange-500/30",
+      "iconClass": "border-[#ffc038] bg-[#ffc038]/30",
       "items": null
     }
   },
@@ -16,7 +29,7 @@
     "id": "forest-cover-2020-ec-jrc",
     "title": "Forest Cover 2020 (EC JRC)",
     "description": "Spatial explicit description of forest presence and absence in the year 2020.",
-    "content": "Suppliers’s  geometry of the land within a single real estate property, as recognised by the law of the country of production, which possesses sufficiently homogeneous conditions to allow an evaluation of the aggregate level of risk of deforestation and forest degradation associated with relevant commodities produced on that land.",
+    "content": "Plots with deforestation alerts represent areas where recent deforestation activities have been detected using near-real-time RADD alerts. These alerts adhere to the EUDR definition and follow the WHISP methodology developed by FAO and WRI, providing robust monitoring of deforestation activities and enabling timely intervention measures to address forest degradation and promote sustainable land management practices.",
     "citation": [
       "Bourgoin, Clement; Ameztoy, Iban; Verhegghen, Astrid; Carboni, Silvia; Colditz, Rene R.; Achard, Frederic (2023): Global map of forest cover 2020 - version 1. European Commission, Joint Research Centre (JRC) [Dataset] PID: http://data.europa.eu/89h/10d1b337-b7d1-4938-a048-686c8185b290."
     ],

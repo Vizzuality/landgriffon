@@ -1,5 +1,5 @@
 import { useParams } from 'next/navigation';
-import { format } from 'date-fns';
+import { format, endOfMonth, startOfMonth } from 'date-fns';
 import { UTCDate } from '@date-fns/utc';
 import { BellRing } from 'lucide-react';
 
@@ -10,7 +10,7 @@ import { eudrDetail } from '@/store/features/eudr-detail';
 import { useAppSelector } from '@/store/hooks';
 import InfoModal from '@/components/legend/item/info-modal';
 
-const dateFormatter = (date: string) => format(new UTCDate(date), "do 'of' MMMM yyyy");
+const dateFormatter = (date: UTCDate) => format(date, "do 'of' MMMM yyyy");
 
 const DeforestationAlerts = (): JSX.Element => {
   const { supplierId }: { supplierId: string } = useParams();
@@ -28,6 +28,14 @@ const DeforestationAlerts = (): JSX.Element => {
     },
   );
 
+  const formattedBeginOfMonth = data?.startAlertDate
+    ? dateFormatter(startOfMonth(new UTCDate(data.startAlertDate)))
+    : undefined;
+
+  const formattedEndOfMonth = data?.endAlertDate
+    ? dateFormatter(endOfMonth(new UTCDate(data.endAlertDate)))
+    : undefined;
+
   return (
     <section className="space-y-4 rounded-xl border border-gray-100 p-7 shadow-md">
       <div className="flex items-center space-x-2">
@@ -44,9 +52,10 @@ const DeforestationAlerts = (): JSX.Element => {
         <div className="rounded-xl bg-orange-100 px-6 py-4 text-xs">
           There were <span className="font-bold">{data?.totalAlerts}</span> deforestation alerts
           reported for the supplier between the{' '}
-          <span className="font-bold">{dateFormatter(data.startAlertDate)}</span> and the{' '}
+          <span className="font-bold">{formattedBeginOfMonth}</span> and the{' '}
           <div className="flex items-center space-x-2">
-            <span className="font-bold">{dateFormatter(data.endAlertDate)}</span>.
+            <span className="font-bold">{formattedEndOfMonth}</span>
+            .
             <BellRing className="h-5 w-5 fill-black" />
           </div>
         </div>

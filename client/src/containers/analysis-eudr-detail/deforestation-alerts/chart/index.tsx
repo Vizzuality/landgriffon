@@ -11,7 +11,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useParams } from 'next/navigation';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { EUDR_COLOR_RAMP } from '@/utils/colors';
 import { useEUDRSupplier } from '@/hooks/eudr';
@@ -28,6 +28,7 @@ type DotPropsWithPayload = DotProps & { payload: { alertDate: number } };
 const DeforestationAlertsChart = (): JSX.Element => {
   const [selectedPlots, setSelectedPlots] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<number>(null);
+  const ticks = useRef<number[]>([]);
   const { supplierId }: { supplierId: string } = useParams();
   const dispatch = useAppDispatch();
   const {
@@ -151,6 +152,7 @@ const DeforestationAlertsChart = (): JSX.Element => {
               margin={{
                 top: 20,
                 bottom: 15,
+                right: 20,
               }}
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -159,9 +161,25 @@ const DeforestationAlertsChart = (): JSX.Element => {
                 scale="time"
                 dataKey="alertDate"
                 domain={xDomain}
-                tickFormatter={(value: string | number, x) => {
-                  if (x === 0) return format(new UTCDate(value), 'LLL yyyy');
-                  return format(new UTCDate(value), 'LLL');
+                minTickGap={25}
+                tickFormatter={(value: number, index) => {
+                  ticks.current[index] = value;
+
+                  const tickDate = new UTCDate(value);
+                  const tickYear = tickDate.getUTCFullYear();
+
+                  if (!ticks.current[index - 1]) {
+                    return format(tickDate, 'LLL yyyy');
+                  }
+
+                  const prevTickDate = new UTCDate(ticks.current[index - 1]);
+                  const prevTickYear = prevTickDate.getUTCFullYear();
+
+                  if (prevTickYear !== tickYear) {
+                    return format(tickDate, 'LLL yyyy');
+                  }
+
+                  return format(tickDate, 'LLL');
                 }}
                 tickLine={false}
                 padding={{ left: 20, right: 20 }}
@@ -188,10 +206,7 @@ const DeforestationAlertsChart = (): JSX.Element => {
                         <Dot
                           {...props}
                           onClick={() => handleClickDot(payload)}
-                          className={cn('cursor-pointer', {
-                            // todo: fill when we have design
-                            '': payload.alertDate === selectedDate,
-                          })}
+                          className="cursor-pointer stroke-[3px]"
                         />
                       );
                     }}
@@ -200,11 +215,9 @@ const DeforestationAlertsChart = (): JSX.Element => {
                       return (
                         <Dot
                           {...props}
+                          r={5}
                           onClick={() => handleClickDot(payload)}
-                          className={cn('cursor-pointer', {
-                            // todo: fill when we have design
-                            '': payload.alertDate === selectedDate,
-                          })}
+                          className="cursor-pointer"
                         />
                       );
                     }}

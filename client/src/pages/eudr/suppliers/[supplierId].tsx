@@ -17,6 +17,8 @@ import SupplierInfo from '@/containers/analysis-eudr-detail/supplier-info';
 import SupplierSourcingInfo from '@/containers/analysis-eudr-detail/sourcing-info';
 import { Separator } from '@/components/ui/separator';
 import DeforestationAlerts from '@/containers/analysis-eudr-detail/deforestation-alerts';
+import { eudrDetail } from '@/store/features/eudr-detail';
+import { useAppSelector } from '@/store/hooks';
 
 import type { NextPageWithLayout } from 'pages/_app';
 import type { ReactElement } from 'react';
@@ -25,9 +27,15 @@ import type { GetServerSideProps } from 'next';
 const MapPage: NextPageWithLayout = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const {
+    filters: { dates },
+  } = useAppSelector(eudrDetail);
 
   const { supplierId }: { supplierId: string } = useParams();
-  const { data } = useEUDRSupplier(supplierId);
+  const { data } = useEUDRSupplier(supplierId, {
+    startAlertDate: dates.from,
+    endAlertDate: dates.to,
+  });
 
   return (
     <MapProvider>

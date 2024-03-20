@@ -1,8 +1,10 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import DeckGL from '@deck.gl/react/typed';
 import { BitmapLayer, GeoJsonLayer } from '@deck.gl/layers/typed';
-import Map from 'react-map-gl/maplibre';
+import Map, { useMap, useControl } from 'react-map-gl/maplibre';
 import { WebMercatorViewport } from '@deck.gl/core/typed';
+import { MapboxOverlay } from '@deck.gl/mapbox/typed';
+import MapLibreCompare from '@maplibre/maplibre-gl-compare';
 import { TileLayer } from '@deck.gl/geo-layers/typed';
 import { CartoLayer, setDefaultCredentials, MAP_TYPES, API_VERSIONS } from '@deck.gl/carto/typed';
 import { useParams } from 'next/navigation';
@@ -18,9 +20,11 @@ import { INITIAL_VIEW_STATE, MAP_STYLES } from '@/components/map';
 import { useEUDRData, usePlotGeometries } from '@/hooks/eudr';
 import { formatNumber } from '@/utils/number-format';
 
+import type { MapboxOverlayProps } from '@deck.gl/mapbox/typed';
 import type { PickingInfo, MapViewState } from '@deck.gl/core/typed';
 
 const monthFormatter = (date: string) => format(date, 'MM');
+const friendlyMonthFormatter = (date: string) => format(date, 'MMM');
 
 const MAX_BOUNDS = [-75.76238126131099, -9.1712425377296, -74.4412398476887, -7.9871587484823845];
 
@@ -33,15 +37,28 @@ const DEFAULT_VIEW_STATE: MapViewState = {
   maxZoom: 20,
 };
 
+function DeckGLOverlay(
+  props: MapboxOverlayProps & {
+    interleaved?: boolean;
+  },
+) {
+  const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
+  overlay.setProps(props);
+  return null;
+}
+
 setDefaultCredentials({
   apiBaseUrl: 'https://gcp-us-east1.api.carto.com',
   accessToken:
     'eyJhbGciOiJIUzI1NiJ9.eyJhIjoiYWNfemsydWhpaDYiLCJqdGkiOiJjZDk0ZWIyZSJ9.oqLagnOEc-j7Z4hY-MTP1yoZA_vJ7WYYAkOz_NUmCJo',
 });
 
-const EUDRMap: React.FC<{ supplierId?: string }> = ({ supplierId }) => {
+const EUDRCompareMap: React.FC<{ supplierId?: string }> = ({ supplierId }) => {
+  const maps = useMap();
+
   const {
     planetLayer,
+    planetCompareLayer,
     supplierLayer,
     contextualLayers,
     filters: { suppliers, materials, origins, plots, dates },
@@ -109,7 +126,7 @@ const EUDRMap: React.FC<{ supplierId?: string }> = ({ supplierId }) => {
 
     return {
       type: 'FeatureCollection',
-      features: plotGeometries.data.features?.filter((feature) => {
+      features: plotGeometries.data.features.filter((feature) => {
         if (Object.values(tableFilters).every((filter) => !filter)) return true;
 
         if (tableFilters.dfs && data.dfs.indexOf(feature.properties.id) > -1) return true;
@@ -174,6 +191,30 @@ const EUDRMap: React.FC<{ supplierId?: string }> = ({ supplierId }) => {
     maxZoom: 20,
     tileSize: 256,
     visible: planetLayer.active,
+    renderSubLayers: (props) => {
+      const {
+        bbox: { west, south, east, north },
+      } = props.tile as { bbox: { west: number; south: number; east: number; north: number } };
+
+      return new BitmapLayer(props, {
+        data: null,
+        image: props.data,
+        bounds: [west, south, east, north],
+      });
+    },
+  });
+
+  const basemapPlanetCompareLayer = new TileLayer({
+    id: 'afterMap-planet-monthly-layer',
+    data: `https://tiles.planet.com/basemaps/v1/planet-tiles/global_monthly_${
+      planetCompareLayer.year
+    }_${monthFormatter(
+      planetCompareLayer.month.toString(),
+    )}_mosaic/gmap/{z}/{x}/{y}.png?api_key=PLAK6679039df83f414faf798ba4ad4530db`,
+    minZoom: 0,
+    maxZoom: 20,
+    tileSize: 256,
+    visible: planetCompareLayer.active,
     renderSubLayers: (props) => {
       const {
         bbox: { west, south, east, north },
@@ -261,12 +302,12 @@ const EUDRMap: React.FC<{ supplierId?: string }> = ({ supplierId }) => {
   }, [viewState]);
 
   useEffect(() => {
-    if (!supplierId || plotGeometries.data?.features?.length === 0 || plotGeometries.isLoading) {
+    if (plotGeometries.data?.features?.length === 0 || plotGeometries.isLoading) {
       return;
     }
-    const newViewport = new WebMercatorViewport({ ...viewState, width: 800, height: 600 });
-    const dataBounds = bbox(plotGeometries.data);
     setTimeout(() => {
+      const newViewport = new WebMercatorViewport({ ...viewState, width: 800, height: 600 });
+      const dataBounds = bbox(plotGeometries.data);
       const newViewState = newViewport.fitBounds(
         [
           [dataBounds[0], dataBounds[1]],
@@ -278,15 +319,23 @@ const EUDRMap: React.FC<{ supplierId?: string }> = ({ supplierId }) => {
       );
       const { latitude, longitude, zoom } = newViewState;
       setViewState({ ...viewState, latitude, longitude, zoom });
-    }, 160);
+    }, 100);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [plotGeometries.data, plotGeometries.isLoading, supplierId]);
+  }, [plotGeometries.data, plotGeometries.isLoading]);
+
+  useEffect(() => {
+    if (!maps.afterMap || !maps.beforeMap) return;
+    const map = new MapLibreCompare(maps.beforeMap, maps.afterMap, '#comparison-container', {
+      orientation: 'horizontal',
+    });
+    return () => map?.remove();
+  }, [maps.afterMap, maps.beforeMap]);
 
   return (
     <>
-      <div className="absolute left-0 top-0 h-full w-full">
+      <div className="absolute left-0 top-0 h-full w-full" id="comparison-container">
         <DeckGL
-          id="anotherDeckMap"
+          id="deckMainMap"
           viewState={{ ...viewState }}
           onViewStateChange={({ viewState }) => {
             viewState.longitude = Math.min(
@@ -300,15 +349,28 @@ const EUDRMap: React.FC<{ supplierId?: string }> = ({ supplierId }) => {
             setViewState(viewState as MapViewState);
           }}
           controller={{ dragRotate: false }}
-          layers={[
-            ...(planetLayer.active ? [basemapPlanetLayer] : []),
-            forestCoverLayer,
-            deforestationLayer,
-            raddLayer,
-            eudrSupplierLayer,
-          ]}
+          layers={[forestCoverLayer, deforestationLayer, raddLayer, eudrSupplierLayer]}
         >
-          <Map id="mainMap" reuseMaps mapStyle={MAP_STYLES.terrain} styleDiffing={false} />
+          <Map
+            id="beforeMap"
+            mapStyle={MAP_STYLES.terrain}
+            style={{
+              position: 'absolute',
+            }}
+          >
+            <div className="pointer-events-none absolute left-10 top-10 z-10 rounded-sm border border-navy-400 bg-white px-2 py-1 text-2xs text-navy-400">
+              {`${planetLayer.year} ${friendlyMonthFormatter(planetLayer.month.toString())}`}
+            </div>
+            <DeckGLOverlay id="deckBeforeMap" layers={[basemapPlanetLayer]} />
+          </Map>
+          <Map id="afterMap" mapStyle={MAP_STYLES.terrain} style={{ position: 'absolute' }}>
+            <div className="pointer-events-none absolute bottom-10 left-10 z-10 rounded-sm border border-navy-400 bg-white px-2 py-1 text-2xs text-navy-400">
+              {`${planetCompareLayer.year} ${friendlyMonthFormatter(
+                planetCompareLayer.month.toString(),
+              )}`}
+            </div>
+            <DeckGLOverlay id="deckAfterMap" layers={[basemapPlanetCompareLayer]} />
+          </Map>
         </DeckGL>
       </div>
       {hoverInfo?.object && (
@@ -346,4 +408,4 @@ const EUDRMap: React.FC<{ supplierId?: string }> = ({ supplierId }) => {
   );
 };
 
-export default EUDRMap;
+export default EUDRCompareMap;

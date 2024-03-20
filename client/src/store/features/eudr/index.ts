@@ -41,7 +41,9 @@ export type EUDRState = {
   basemap: 'light' | 'planet';
   planetLayer: LayerConfiguration;
   planetCompareLayer: LayerConfiguration;
-  supplierLayer: LayerConfiguration;
+  // supplierLayer: LayerConfiguration;
+  SDALayer: LayerConfiguration;
+  DFSLayer: LayerConfiguration;
   contextualLayers: Record<string, LayerConfiguration>;
 };
 
@@ -66,7 +68,11 @@ export const initialState: EUDRState = {
     },
   },
   basemap: 'light',
-  supplierLayer: {
+  DFSLayer: {
+    active: true,
+    opacity: 1,
+  },
+  SDALayer: {
     active: true,
     opacity: 1,
   },
@@ -132,13 +138,27 @@ export const EUDRSlice = createSlice({
       ...state,
       basemap: action.payload,
     }),
-    setSupplierLayer: (state, action: PayloadAction<LayerConfiguration>) => ({
+    setSDALayer: (state, action: PayloadAction<LayerConfiguration>) => ({
       ...state,
-      supplierLayer: {
-        ...state.supplierLayer,
+      SDALayer: {
+        ...state.SDALayer,
         ...action.payload,
       },
     }),
+    setDFSLayer: (state, action: PayloadAction<LayerConfiguration>) => ({
+      ...state,
+      DFSLayer: {
+        ...state.DFSLayer,
+        ...action.payload,
+      },
+    }),
+    // setSupplierLayer: (state, action: PayloadAction<LayerConfiguration>) => ({
+    //   ...state,
+    //   supplierLayer: {
+    //     ...state.supplierLayer,
+    //     ...action.payload,
+    //   },
+    // }),
     setContextualLayer: (
       state,
       action: PayloadAction<{ layer: string; configuration: LayerConfiguration }>,
@@ -175,7 +195,8 @@ export const {
   setFilters,
   setTableFilters,
   setBasemap,
-  setSupplierLayer,
+  setDFSLayer,
+  setSDALayer,
   setContextualLayer,
   setPlanetLayer,
   setPlanetCompareLayer,

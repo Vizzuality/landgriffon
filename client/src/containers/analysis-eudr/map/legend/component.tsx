@@ -8,7 +8,7 @@ import LegendItem from './item';
 import RADDSlider from './radd-slider';
 
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { setContextualLayer, setSupplierLayer } from '@/store/features/eudr';
+import { setContextualLayer, setSDALayer, setDFSLayer } from '@/store/features/eudr';
 import { Slider } from '@/components/ui/slider';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import SandwichIcon from '@/components/icons/sandwich';
@@ -16,12 +16,13 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 
 const EURDLegend = () => {
   const dispatch = useAppDispatch();
-  const { supplierLayer, contextualLayers } = useAppSelector((state) => state.eudr);
+  const { DFSLayer, SDALayer, contextualLayers } = useAppSelector((state) => state.eudr);
 
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const supplierPlotsData = LayersData.find((layer) => layer.id === 'suppliers-plot-of-land');
+  const DFSData = LayersData.find((layer) => layer.id === 'dfs-suppliers');
+  const SDAData = LayersData.find((layer) => layer.id === 'sda-suppliers');
   const contextualLayersData = LayersData.filter((layer) => layer.type === 'contextual');
 
   return (
@@ -43,17 +44,28 @@ const EURDLegend = () => {
             <h2 className="px-4 py-2 text-sm font-normal">Legend</h2>
             <div>
               <LegendItem
-                title={supplierPlotsData.title}
-                content={supplierPlotsData.content}
-                description={supplierPlotsData.description}
+                title={SDAData.title}
+                content={SDAData.content}
+                description={SDAData.description}
                 showVisibility
-                isActive={supplierLayer.active}
+                isActive={DFSLayer.active}
                 changeVisibility={() =>
-                  dispatch(setSupplierLayer({ ...supplierLayer, active: !supplierLayer.active }))
+                  dispatch(setDFSLayer({ ...DFSLayer, active: !DFSLayer.active }))
                 }
-                changeOpacity={(opacity) =>
-                  dispatch(setSupplierLayer({ ...supplierLayer, opacity }))
+                changeOpacity={(opacity) => dispatch(setDFSLayer({ ...DFSLayer, opacity }))}
+              />
+            </div>
+            <div>
+              <LegendItem
+                title={DFSData.title}
+                content={DFSData.content}
+                description={DFSData.description}
+                showVisibility
+                isActive={SDALayer.active}
+                changeVisibility={() =>
+                  dispatch(setSDALayer({ ...SDALayer, active: !SDALayer.active }))
                 }
+                changeOpacity={(opacity) => dispatch(setSDALayer({ ...SDALayer, opacity }))}
               />
             </div>
             <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>

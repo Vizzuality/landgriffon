@@ -44,7 +44,8 @@ const EUDRMap = () => {
     basemap,
     planetLayer,
     planetCompareLayer,
-    supplierLayer,
+    DFSLayer: DFSLayerConfig,
+    SDALayer: SDALayerConfig,
     contextualLayers,
     filters: { suppliers, materials, origins, plots, dates },
     table: { filters: tableFilters },
@@ -104,7 +105,24 @@ const EUDRMap = () => {
     geoRegionIds: plots?.map(({ value }) => value),
   });
 
-  const filteredGeometries: typeof plotGeometries.data = useMemo(() => {
+  // const filteredGeometries: typeof plotGeometries.data = useMemo(() => {
+  //   if (!plotGeometries.data || !data) return null;
+
+  //   if (params?.supplierId) return plotGeometries.data;
+
+  //   return {
+  //     type: 'FeatureCollection',
+  //     features: plotGeometries.data.features.filter((feature) => {
+  //       if (Object.values(tableFilters).every((filter) => !filter)) return true;
+
+  //       if (tableFilters.dfs && data.dfs.indexOf(feature.properties.id) > -1) return true;
+  //       if (tableFilters.sda && data.sda.indexOf(feature.properties.id) > -1) return true;
+  //       return false;
+  //     }),
+  //   };
+  // }, [data, plotGeometries.data, tableFilters, params]);
+
+  const sdfGeometries: typeof plotGeometries.data = useMemo(() => {
     if (!plotGeometries.data || !data) return null;
 
     if (params?.supplierId) return plotGeometries.data;
@@ -112,58 +130,116 @@ const EUDRMap = () => {
     return {
       type: 'FeatureCollection',
       features: plotGeometries.data.features.filter((feature) => {
-        if (Object.values(tableFilters).every((filter) => !filter)) return true;
-
-        if (tableFilters.dfs && data.dfs.indexOf(feature.properties.id) > -1) return true;
-        if (tableFilters.sda && data.sda.indexOf(feature.properties.id) > -1) return true;
-        return false;
+        return data.dfs.indexOf(feature.properties.id) > -1;
       }),
     };
-  }, [data, plotGeometries.data, tableFilters, params]);
+  }, [data, plotGeometries.data, params]);
 
-  const eudrSupplierLayer = useMemo(() => {
-    if (!filteredGeometries?.features || !data) return null;
+  const sdaGeometries: typeof plotGeometries.data = useMemo(() => {
+    if (!plotGeometries.data || !data) return null;
 
-    return new GeoJsonLayer<(typeof filteredGeometries)['features'][number]>({
-      id: 'full-plots-layer',
+    if (params?.supplierId) return plotGeometries.data;
+
+    return {
+      type: 'FeatureCollection',
+      features: plotGeometries.data.features.filter((feature) => {
+        return data.sda.indexOf(feature.properties.id) > -1;
+      }),
+    };
+  }, [data, plotGeometries.data, params]);
+
+  // const eudrSupplierLayer = useMemo(() => {
+  //   if (!filteredGeometries?.features || !data) return null;
+
+  //   return new GeoJsonLayer<(typeof filteredGeometries)['features'][number]>({
+  //     id: 'full-plots-layer',
+  //     // @ts-expect-error will fix this later...
+  //     data: filteredGeometries,
+  //     // Styles
+  //     filled: true,
+  //     getFillColor: ({ properties }) => {
+  //       if (data.dfs.indexOf(properties.id) > -1) return [74, 183, 243, 84];
+  //       if (data.sda.indexOf(properties.id) > -1) return [255, 192, 56, 84];
+  //       return [0, 0, 0, 84];
+  //     },
+  //     stroked: true,
+  //     getLineColor: ({ properties }) => {
+  //       if (data.dfs.indexOf(properties.id) > -1) return [74, 183, 243, 255];
+  //       if (data.sda.indexOf(properties.id) > -1) return [255, 192, 56, 255];
+  //       return [0, 0, 0, 84];
+  //     },
+  //     getLineWidth: 1,
+  //     lineWidthUnits: 'pixels',
+  //     // Interactive props
+  //     pickable: true,
+  //     autoHighlight: true,
+  //     highlightColor: (x: PickingInfo) => {
+  //       if (x.object?.properties?.id) {
+  //         const {
+  //           object: {
+  //             properties: { id },
+  //           },
+  //         } = x;
+
+  //         if (data.dfs.indexOf(id) > -1) return [74, 183, 243, 255];
+  //         if (data.sda.indexOf(id) > -1) return [255, 192, 56, 255];
+  //       }
+  //       return [0, 0, 0, 84];
+  //     },
+  //     visible: supplierLayer.active,
+  //     onHover: setHoverInfo,
+  //     opacity: supplierLayer.opacity,
+  //   });
+  // }, [filteredGeometries, data, supplierLayer.active, supplierLayer.opacity]);
+
+  const DFSLayer = useMemo(() => {
+    if (!sdfGeometries?.features) return null;
+
+    return new GeoJsonLayer<(typeof sdfGeometries)['features'][number]>({
+      id: 'dfs-layer',
       // @ts-expect-error will fix this later...
-      data: filteredGeometries,
+      data: sdfGeometries,
       // Styles
       filled: true,
-      getFillColor: ({ properties }) => {
-        if (data.dfs.indexOf(properties.id) > -1) return [74, 183, 243, 84];
-        if (data.sda.indexOf(properties.id) > -1) return [255, 192, 56, 84];
-        return [0, 0, 0, 84];
-      },
+      getFillColor: [74, 183, 243, 84],
       stroked: true,
-      getLineColor: ({ properties }) => {
-        if (data.dfs.indexOf(properties.id) > -1) return [74, 183, 243, 255];
-        if (data.sda.indexOf(properties.id) > -1) return [255, 192, 56, 255];
-        return [0, 0, 0, 84];
-      },
+      getLineColor: [74, 183, 243, 255],
       getLineWidth: 1,
       lineWidthUnits: 'pixels',
       // Interactive props
       pickable: true,
       autoHighlight: true,
-      highlightColor: (x: PickingInfo) => {
-        if (x.object?.properties?.id) {
-          const {
-            object: {
-              properties: { id },
-            },
-          } = x;
-
-          if (data.dfs.indexOf(id) > -1) return [74, 183, 243, 255];
-          if (data.sda.indexOf(id) > -1) return [255, 192, 56, 255];
-        }
-        return [0, 0, 0, 84];
-      },
-      visible: supplierLayer.active,
+      highlightColor: [74, 183, 243, 255],
+      visible: DFSLayerConfig.active,
       onHover: setHoverInfo,
-      opacity: supplierLayer.opacity,
+      opacity: DFSLayerConfig.opacity,
     });
-  }, [filteredGeometries, data, supplierLayer.active, supplierLayer.opacity]);
+  }, [sdfGeometries, DFSLayerConfig]);
+
+  const SDALayer = useMemo(() => {
+    if (!sdaGeometries?.features) return null;
+
+    return new GeoJsonLayer<(typeof sdaGeometries)['features'][number]>({
+      id: 'dfs-layer',
+      // @ts-expect-error will fix this later...
+      data: sdaGeometries,
+      // Styles
+      filled: true,
+      getFillColor: [255, 192, 56, 84],
+      stroked: true,
+      getLineColor: [255, 192, 56, 255],
+      getLineWidth: 1,
+      lineWidthUnits: 'pixels',
+      // Interactive props
+      pickable: true,
+      autoHighlight: true,
+      highlightColor: [255, 192, 56, 255],
+      visible: SDALayerConfig.active,
+      onHover: setHoverInfo,
+      // !change
+      opacity: SDALayerConfig.opacity,
+    });
+  }, [sdaGeometries, SDALayerConfig]);
 
   const basemapPlanetLayer = new TileLayer({
     id: 'top-planet-monthly-layer',
@@ -330,7 +406,9 @@ const EUDRMap = () => {
             forestCoverLayer,
             deforestationLayer,
             raddLayer,
-            eudrSupplierLayer,
+            // eudrSupplierLayer,
+            DFSLayer,
+            SDALayer,
           ]}
           layerFilter={({ layer, viewport }) => {
             return !planetCompareLayer.active || viewport.id.startsWith(layer.id.split('-')[0]);

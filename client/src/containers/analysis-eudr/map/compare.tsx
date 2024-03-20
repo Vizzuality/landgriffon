@@ -53,7 +53,7 @@ setDefaultCredentials({
     'eyJhbGciOiJIUzI1NiJ9.eyJhIjoiYWNfemsydWhpaDYiLCJqdGkiOiJjZDk0ZWIyZSJ9.oqLagnOEc-j7Z4hY-MTP1yoZA_vJ7WYYAkOz_NUmCJo',
 });
 
-const EUDRCompareMap: React.FC<{ supplierId?: string }> = ({ supplierId }) => {
+const EUDRCompareMap = () => {
   const maps = useMap();
 
   const {

@@ -91,7 +91,7 @@ const MapPage: NextPageWithLayout = () => {
         </aside>
 
         <section className="relative flex h-screen flex-1 flex-col">
-          <DynamicMap />
+          <DynamicMap supplierId={supplierId} />
         </section>
       </div>
     </MapProvider>

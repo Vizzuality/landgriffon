@@ -25,9 +25,7 @@ import type { PickingInfo, MapViewState } from '@deck.gl/core/typed';
 
 const monthFormatter = (date: string) => format(date, 'MM');
 
-const MAX_BOUNDS = [
-  -75.6527499999999975, -9.0839999999999996, -74.5510000000000019, -8.0745000000000005,
-];
+const MAX_BOUNDS = [-75.76238126131099, -9.1712425377296, -74.4412398476887, -7.9871587484823845];
 
 const DEFAULT_VIEW_STATE: MapViewState = {
   ...INITIAL_VIEW_STATE,
@@ -54,7 +52,7 @@ setDefaultCredentials({
     'eyJhbGciOiJIUzI1NiJ9.eyJhIjoiYWNfemsydWhpaDYiLCJqdGkiOiJjZDk0ZWIyZSJ9.oqLagnOEc-j7Z4hY-MTP1yoZA_vJ7WYYAkOz_NUmCJo',
 });
 
-const EUDRMap = () => {
+const EUDRMap: React.FC<{ supplierId: string }> = ({ supplierId }) => {
   const maps = useMap();
 
   const {
@@ -303,23 +301,26 @@ const EUDRMap = () => {
   }, [viewState]);
 
   useEffect(() => {
-    if (!plotGeometries.data || !plotGeometries.isLoading) return;
+    if (!supplierId || plotGeometries.data?.features?.length === 0 || plotGeometries.isLoading) {
+      return;
+    }
+    const newViewport = new WebMercatorViewport({ ...viewState });
     const dataBounds = bbox(plotGeometries.data);
-    const newViewport = new WebMercatorViewport(viewState);
-    if (newViewport) {
-      const { latitude, longitude, zoom } = newViewport.fitBounds(
+    setTimeout(() => {
+      const newViewState = newViewport.fitBounds(
         [
           [dataBounds[0], dataBounds[1]],
           [dataBounds[2], dataBounds[3]],
         ],
         {
-          padding: 10,
+          padding: 50,
         },
       );
+      const { latitude, longitude, zoom } = newViewState;
       setViewState({ ...viewState, latitude, longitude, zoom });
-    }
+    }, 160);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [plotGeometries.data, plotGeometries.isLoading]);
+  }, [plotGeometries.data, plotGeometries.isLoading, supplierId]);
 
   useEffect(() => {
     if (!planetCompareLayer.active || !maps.afterMap || !maps.beforeMap) return;
@@ -336,14 +337,14 @@ const EUDRMap = () => {
           id="newMap"
           viewState={{ ...viewState }}
           onViewStateChange={({ viewState }) => {
-            viewState.longitude = Math.min(
-              MAX_BOUNDS[2],
-              Math.max(MAX_BOUNDS[0], viewState.longitude),
-            );
-            viewState.latitude = Math.min(
-              MAX_BOUNDS[3],
-              Math.max(MAX_BOUNDS[1], viewState.latitude),
-            );
+            // viewState.longitude = Math.min(
+            //   MAX_BOUNDS[2],
+            //   Math.max(MAX_BOUNDS[0], viewState.longitude),
+            // );
+            // viewState.latitude = Math.min(
+            //   MAX_BOUNDS[3],
+            //   Math.max(MAX_BOUNDS[1], viewState.latitude),
+            // );
             setViewState(viewState as MapViewState);
           }}
           controller={{ dragRotate: false }}

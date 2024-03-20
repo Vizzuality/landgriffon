@@ -35,7 +35,7 @@ const SuppliersWithNoLocationDataBreakdown = () => {
     const dataByView = data?.[viewBy] || [];
 
     return Object.keys(dataByView)
-      .filter((key) => key === CATEGORIES[2].name)
+      .filter((key) => key === CATEGORIES[2].apiName)
       .map((filteredKey) =>
         dataByView[filteredKey].detail
           .map((item) => ({

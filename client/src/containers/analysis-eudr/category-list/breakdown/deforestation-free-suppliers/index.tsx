@@ -35,7 +35,7 @@ const DeforestationFreeSuppliersBreakdown = () => {
     const dataByView = data?.[viewBy] || [];
 
     return Object.keys(dataByView)
-      .filter((key) => key === CATEGORIES[0].name)
+      .filter((key) => key === CATEGORIES[0].apiName)
       .map((filteredKey) =>
         dataByView[filteredKey].detail
           .map((item) => ({

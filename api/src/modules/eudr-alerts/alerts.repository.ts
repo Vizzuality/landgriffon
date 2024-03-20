@@ -26,10 +26,10 @@ import {
 const projectId: string = 'carto-dw-ac-zk2uhih6';
 
 export enum EUDRAlertsFields {
-  alertDate = 'alertdate',
+  alertDate = 'date',
   alertConfidence = 'alertconfidence',
   year = 'year',
-  alertCount = 'alertcount',
+  alertCount = 'pixel_count',
   geoRegionId = 'georegionid',
   supplierId = 'supplierid',
 }
@@ -74,10 +74,10 @@ export class AlertsRepository implements IEUDRAlertsRepository {
       EUDR_ALERTS_DATABASE_FIELDS.geoRegionId,
       'geoRegionId',
     );
-    queryBuilder.addSelect(
-      EUDR_ALERTS_DATABASE_FIELDS.carbonRemovals,
-      'carbonRemovals',
-    );
+    // queryBuilder.addSelect(
+    //   EUDR_ALERTS_DATABASE_FIELDS.carbonRemovals,
+    //   'carbonRemovals',
+    // );
     queryBuilder.orderBy(EUDR_ALERTS_DATABASE_FIELDS.alertDate, 'ASC');
     return this.query(queryBuilder);
   }
@@ -95,10 +95,10 @@ export class AlertsRepository implements IEUDRAlertsRepository {
       EUDR_ALERTS_DATABASE_FIELDS.supplierId,
       'supplierId',
     );
-    queryBuilder.addSelect(
-      EUDR_ALERTS_DATABASE_FIELDS.carbonRemovals,
-      'carbonRemovals',
-    );
+    // queryBuilder.addSelect(
+    //   EUDR_ALERTS_DATABASE_FIELDS.carbonRemovals,
+    //   'carbonRemovals',
+    // );
     return this.query(queryBuilder);
   }
 

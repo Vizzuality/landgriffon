@@ -5,9 +5,9 @@ import { GetEUDRAlertsDto } from 'modules/eudr-alerts/dto/get-alerts.dto';
 import { EUDRAlertsFields } from 'modules/eudr-alerts/alerts.repository';
 
 export enum EUDR_ALERTS_DATABASE_FIELDS {
-  alertDate = 'alert_date',
+  alertDate = 'date',
   alertConfidence = 'alert_confidence',
-  alertCount = 'alert_count',
+  alertCount = 'pixel_count',
   geoRegionId = 'georegionid',
   supplierId = 'supplierid',
   carbonRemovals = 'carbon_removals',

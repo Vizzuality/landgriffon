@@ -1,15 +1,6 @@
 import { UTCDate } from '@date-fns/utc';
 import { format } from 'date-fns';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Dot,
-  ResponsiveContainer,
-} from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Dot, ResponsiveContainer } from 'recharts';
 import { useParams } from 'next/navigation';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
@@ -188,7 +179,7 @@ const DeforestationAlertsChart = (): JSX.Element => {
                 tickMargin={15}
               />
               <YAxis tickLine={false} axisLine={false} label="(nº)" className="text-xs" />
-              <Tooltip labelFormatter={(v) => format(new UTCDate(v), 'dd/MM/yyyy')} />
+              {/* <Tooltip labelFormatter={(v) => format(new UTCDate(v), 'dd/MM/yyyy')} /> */}
               {plotConfig?.map(({ name, color }) => {
                 return (
                   <Line

@@ -18,6 +18,10 @@ class MyDocument extends Document {
           />
           <link rel="shortcut icon" href="/favicon.ico" />
           <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
+          <link
+            href="https://unpkg.com/@maplibre/maplibre-gl-compare@0.5.0/dist/maplibre-gl-compare.css"
+            rel="stylesheet"
+          />
           {/* Fonts */}
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

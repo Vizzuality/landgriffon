@@ -1,8 +1,10 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import DeckGL from '@deck.gl/react/typed';
 import { BitmapLayer, GeoJsonLayer } from '@deck.gl/layers/typed';
-import Map from 'react-map-gl/maplibre';
+import Map, { useMap, useControl } from 'react-map-gl/maplibre';
 import { MapView, WebMercatorViewport } from '@deck.gl/core/typed';
+import { MapboxOverlay } from '@deck.gl/mapbox/typed';
+import MapLibreCompare from '@maplibre/maplibre-gl-compare';
 import { TileLayer } from '@deck.gl/geo-layers/typed';
 import { CartoLayer, setDefaultCredentials, MAP_TYPES, API_VERSIONS } from '@deck.gl/carto/typed';
 import { useParams } from 'next/navigation';
@@ -18,6 +20,7 @@ import { INITIAL_VIEW_STATE, MAP_STYLES } from '@/components/map';
 import { useEUDRData, usePlotGeometries } from '@/hooks/eudr';
 import { formatNumber } from '@/utils/number-format';
 
+import type { MapboxOverlayProps } from '@deck.gl/mapbox/typed';
 import type { PickingInfo, MapViewState } from '@deck.gl/core/typed';
 
 const monthFormatter = (date: string) => format(date, 'MM');
@@ -33,6 +36,16 @@ const DEFAULT_VIEW_STATE: MapViewState = {
   maxZoom: 20,
 };
 
+function DeckGLOverlay(
+  props: MapboxOverlayProps & {
+    interleaved?: boolean;
+  },
+) {
+  const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
+  overlay.setProps(props);
+  return null;
+}
+
 setDefaultCredentials({
   apiBaseUrl: 'https://gcp-us-east1.api.carto.com',
   accessToken:
@@ -40,6 +53,8 @@ setDefaultCredentials({
 });
 
 const EUDRMap = () => {
+  const maps = useMap();
+
   const {
     basemap,
     planetLayer,
@@ -305,9 +320,17 @@ const EUDRMap = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plotGeometries.data, plotGeometries.isLoading]);
 
+  useEffect(() => {
+    if (!maps.afterMap || !maps.beforeMap) return;
+    const map = new MapLibreCompare(maps.beforeMap, maps.afterMap, '#comparison-container', {
+      orientation: 'horizontal',
+    });
+    return () => map?.remove();
+  }, [maps.afterMap, maps.beforeMap]);
+
   return (
     <>
-      <div className="absolute left-0 top-0 h-full w-full overflow-hidden">
+      {/* <div className="absolute left-0 top-0 h-full w-full overflow-hidden">
         <DeckGL
           viewState={{ ...viewState }}
           onViewStateChange={({ viewState }) => {
@@ -366,6 +389,12 @@ const EUDRMap = () => {
         {planetCompareLayer.active && (
           <div className="pointer-events-none absolute left-0 top-1/2 z-20 h-[2px] w-full bg-white" />
         )}
+      </div> */}
+      <div className="absolute left-0 top-0 h-full w-full" id="comparison-container">
+        <Map id="beforeMap" mapStyle={MAP_STYLES.terrain} style={{ position: 'absolute' }}>
+          <DeckGLOverlay layers={[eudrSupplierLayer]} />
+        </Map>
+        <Map id="afterMap" mapStyle={MAP_STYLES.satellite} style={{ position: 'absolute' }} />
       </div>
       {hoverInfo?.object && (
         <div

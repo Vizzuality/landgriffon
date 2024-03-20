@@ -635,7 +635,7 @@ export class EudrDashboardService {
 
       result.alerts = alerts;
 
-      return result;
+      return result.alerts;
     });
   }
 }

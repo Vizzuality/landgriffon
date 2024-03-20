@@ -4,12 +4,12 @@ import { MapProvider } from 'react-map-gl/maplibre';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import dynamic from 'next/dynamic';
 
 import { tasksSSR } from 'services/ssr';
 import ApplicationLayout from 'layouts/application';
 import CollapseButton from 'containers/collapse-button/component';
 import TitleTemplate from 'utils/titleTemplate';
-import Map from '@/containers/analysis-eudr/map';
 import EUDRFilters from '@/containers/analysis-eudr-detail/filters';
 import { Button } from '@/components/ui/button';
 import { useEUDRSupplier } from '@/hooks/eudr';
@@ -23,6 +23,10 @@ import { useAppSelector } from '@/store/hooks';
 import type { NextPageWithLayout } from 'pages/_app';
 import type { ReactElement } from 'react';
 import type { GetServerSideProps } from 'next';
+
+const DynamicMap = dynamic(() => import('containers/analysis-eudr/map'), {
+  ssr: false,
+});
 
 const MapPage: NextPageWithLayout = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -87,7 +91,7 @@ const MapPage: NextPageWithLayout = () => {
         </aside>
 
         <section className="relative flex h-screen flex-1 flex-col">
-          <Map />
+          <DynamicMap />
         </section>
       </div>
     </MapProvider>

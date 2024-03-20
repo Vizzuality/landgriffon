@@ -28,9 +28,14 @@ const DynamicMap = dynamic(() => import('containers/analysis-eudr/map'), {
   ssr: false,
 });
 
+const DynamicCompareMap = dynamic(() => import('containers/analysis-eudr/map/compare'), {
+  ssr: false,
+});
+
 const MapPage: NextPageWithLayout = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { planetCompareLayer } = useAppSelector((state) => state.eudr);
   const {
     filters: { dates },
   } = useAppSelector(eudrDetail);
@@ -91,7 +96,8 @@ const MapPage: NextPageWithLayout = () => {
         </aside>
 
         <section className="relative flex h-screen flex-1 flex-col">
-          <DynamicMap supplierId={supplierId} />
+          {!planetCompareLayer.active && <DynamicMap supplierId={supplierId} />}
+          {planetCompareLayer.active && <DynamicCompareMap supplierId={supplierId} />}
         </section>
       </div>
     </MapProvider>

@@ -22,11 +22,14 @@ import type { PickingInfo, MapViewState } from '@deck.gl/core/typed';
 
 const monthFormatter = (date: string) => format(date, 'MM');
 
+const MAX_BOUNDS = [-76.649412, -10.189886, -73.636411, -7.457082];
+
 const DEFAULT_VIEW_STATE: MapViewState = {
   ...INITIAL_VIEW_STATE,
   latitude: -8.461844239054608,
   longitude: -74.96226240479487,
   zoom: 9,
+  minZoom: 7,
   maxZoom: 20,
 };
 
@@ -307,7 +310,17 @@ const EUDRMap = () => {
       <div className="absolute left-0 top-0 h-full w-full overflow-hidden">
         <DeckGL
           viewState={{ ...viewState }}
-          onViewStateChange={({ viewState }) => setViewState(viewState as MapViewState)}
+          onViewStateChange={({ viewState }) => {
+            viewState.longitude = Math.min(
+              MAX_BOUNDS[2],
+              Math.max(MAX_BOUNDS[0], viewState.longitude),
+            );
+            viewState.latitude = Math.min(
+              MAX_BOUNDS[3],
+              Math.max(MAX_BOUNDS[1], viewState.latitude),
+            );
+            setViewState(viewState as MapViewState);
+          }}
           controller={{ dragRotate: false }}
           layers={[
             basemap === 'planet' && !planetCompareLayer.active ? [basemapPlanetLayer] : null,

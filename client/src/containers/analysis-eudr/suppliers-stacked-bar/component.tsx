@@ -176,14 +176,14 @@ const SuppliersStackedBar = () => {
                   type="category"
                   width={200}
                 />
-                <Tooltip
+                {/* <Tooltip
                   cursor={{ fill: 'transparent' }}
                   labelFormatter={(value: string) => value}
                   formatter={(value: number, name: keyof typeof TOOLTIP_LABELS) => [
                     `${value.toFixed(2)}%`,
                     TOOLTIP_LABELS[name],
                   ]}
-                />
+                /> */}
                 <Bar
                   dataKey="free"
                   stackId="a"

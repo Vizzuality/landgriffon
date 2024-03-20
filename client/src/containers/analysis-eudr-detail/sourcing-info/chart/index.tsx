@@ -220,11 +220,11 @@ const SupplierSourcingInfoChart = (): JSX.Element => {
                   type="category"
                   width={200}
                 />
-                <Tooltip
+                {/* <Tooltip
                   cursor={{ fill: 'transparent' }}
                   labelFormatter={(value: string) => format(new Date(value), 'yyyy')}
                   formatter={(value: number, name) => [`${value.toFixed(2)}%`, name]}
-                />
+                /> */}
                 {plotConfig.map(({ name, color }) => (
                   <Bar
                     key={name}

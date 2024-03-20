@@ -118,7 +118,9 @@ export const CategoryList = (): JSX.Element => {
               </div>
               <div className="shrink-0 grow-0">
                 <div className="text-center">
-                  {`${category.totalPercentage.toFixed(2)}%`}{' '}
+                  {`${Intl.NumberFormat(undefined, { maximumFractionDigits: 3 }).format(
+                    category.totalPercentage,
+                  )}%`}{' '}
                   <span className="text-2xs">of suppliers</span>
                 </div>
                 <div className="h-[2px] w-[340px] bg-gray-200">
@@ -143,9 +145,13 @@ export const CategoryList = (): JSX.Element => {
             </div>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            {categories['dfs'] && <DeforestationFreeSuppliersBreakdown />}
-            {categories['sda'] && <SuppliersWithDeforestationAlertsBreakdown />}
-            {categories['tpl'] && <SuppliersWithNoLocationDataBreakdown />}
+            {category.key === 'dfs' && categories['dfs'] && <DeforestationFreeSuppliersBreakdown />}
+            {category.key === 'sda' && categories['sda'] && (
+              <SuppliersWithDeforestationAlertsBreakdown />
+            )}
+            {category.key === 'tpl' && categories['tpl'] && (
+              <SuppliersWithNoLocationDataBreakdown />
+            )}
           </CollapsibleContent>
         </Collapsible>
       ))}

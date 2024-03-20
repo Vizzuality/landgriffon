@@ -118,7 +118,7 @@ export class EudrDashboardService {
       alertMap.get(supplierId)!.geoRegionIdSet.add(geoRegionId);
       alertMap
         .get(supplierId)!
-        .carbonRemovalValuesForSupplier.push(alert.carbonRemovals);
+        .carbonRemovalValuesForSupplier.push(alert.carbonRemovals ?? 0);
     });
 
     const allGeoRegions: Record<string, string[]> =
@@ -595,8 +595,7 @@ export class EudrDashboardService {
           cur: AlertsOutput,
         ) => {
           acc.totalAlerts += cur.alertCount;
-          acc.totalCarbonRemovals += cur.carbonRemovals;
-          console.log(cur.geoRegionId);
+          acc.totalCarbonRemovals += cur.carbonRemovals ?? 0;
           affectedGeoRegionIds.add(cur.geoRegionId);
           return acc;
         },

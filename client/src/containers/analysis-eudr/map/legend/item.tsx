@@ -1,6 +1,6 @@
-import classNames from 'classnames';
 import { EyeIcon, EyeOffIcon } from '@heroicons/react/solid';
 
+import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 import OpacityControl from '@/components/legend/item/opacityControl';
 import InfoModal from '@/components/legend/item/info-modal';
@@ -14,6 +14,7 @@ type LegendItemProps = {
   source?: string | string[];
   legendConfig?: {
     iconColor?: string;
+    iconClass?: string;
     items?: { label: string; color: string }[];
     dates?: string[];
   };
@@ -40,7 +41,9 @@ const LegendItem: FC<PropsWithChildren<LegendItemProps>> = ({
   return (
     <div className="flex space-x-2 p-4">
       <div
-        className={classNames('mt-0.5 h-3 w-3 shrink-0', 'border-2 border-navy-400 bg-navy-400/30')}
+        className={cn('mt-0.5 h-3 w-3 shrink-0', 'border-2 border-navy-400 bg-navy-400/30', {
+          [legendConfig?.iconClass]: legendConfig?.iconClass,
+        })}
         style={
           legendConfig?.iconColor
             ? { backgroundColor: legendConfig.iconColor, border: 0 }

@@ -1380,6 +1380,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mapbox/mapbox-gl-sync-move@npm:^0.3.0":
+  version: 0.3.1
+  resolution: "@mapbox/mapbox-gl-sync-move@npm:0.3.1"
+  checksum: 3dcc6ecdb22e3797b3aec0fd36c247a23a485ea6552f2a46c36ba89607fc91babe52fba45eb373a43d35175535f4e08a43a05a0ebd99514c5860c30fec808aaf
+  languageName: node
+  linkType: hard
+
 "@mapbox/martini@npm:^0.2.0":
   version: 0.2.0
   resolution: "@mapbox/martini@npm:0.2.0"
@@ -1428,6 +1435,17 @@ __metadata:
   version: 3.1.0
   resolution: "@mapbox/whoots-js@npm:3.1.0"
   checksum: c1837c04effd205b207f441356d952eae7e8aad6c58f7c4900de50318c2147cf175936fc9434f20dfa409f9e6a78ec604d61e70c1c20572db0cc7655fbb65f50
+  languageName: node
+  linkType: hard
+
+"@maplibre/maplibre-gl-compare@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "@maplibre/maplibre-gl-compare@npm:0.5.0"
+  dependencies:
+    "@mapbox/mapbox-gl-sync-move": ^0.3.0
+  peerDependencies:
+    maplibre-gl: ">=1.14.0"
+  checksum: 18194e9f5eceb451ca3a9b3e18781fdb8e39ce5e33f40f9ee0e70721a6943fdbf4ab7a3c2e1606e0f1b86cc71686dbea92bcb74fa34d2df1615f3cc43589994e
   languageName: node
   linkType: hard
 
@@ -7898,6 +7916,7 @@ __metadata:
     "@json2csv/plainjs": ^6.1.3
     "@loaders.gl/core": 3.3.1
     "@luma.gl/constants": 8.5.18
+    "@maplibre/maplibre-gl-compare": ^0.5.0
     "@radix-ui/react-collapsible": 1.0.3
     "@radix-ui/react-dropdown-menu": ^2.0.6
     "@radix-ui/react-label": 2.0.2

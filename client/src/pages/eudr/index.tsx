@@ -1,12 +1,12 @@
 import { useRef, useState } from 'react';
 import { Transition } from '@headlessui/react';
 import { MapProvider } from 'react-map-gl/maplibre';
+import dynamic from 'next/dynamic';
 
 import { tasksSSR } from 'services/ssr';
 import ApplicationLayout from 'layouts/application';
 import CollapseButton from 'containers/collapse-button/component';
 import TitleTemplate from 'utils/titleTemplate';
-import Map from 'containers/analysis-eudr/map';
 import SuppliersStackedBar from '@/containers/analysis-eudr/suppliers-stacked-bar';
 import EUDRFilters from '@/containers/analysis-eudr/filters/component';
 import SupplierListTable from '@/containers/analysis-eudr/supplier-list-table';
@@ -14,6 +14,10 @@ import SupplierListTable from '@/containers/analysis-eudr/supplier-list-table';
 import type { NextPageWithLayout } from 'pages/_app';
 import type { ReactElement } from 'react';
 import type { GetServerSideProps } from 'next';
+
+const DynamicMap = dynamic(() => import('containers/analysis-eudr/map'), {
+  ssr: false,
+});
 
 const MapPage: NextPageWithLayout = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -53,7 +57,7 @@ const MapPage: NextPageWithLayout = () => {
         </aside>
 
         <section className="relative flex h-screen flex-1 flex-col">
-          <Map />
+          <DynamicMap />
         </section>
       </div>
     </MapProvider>

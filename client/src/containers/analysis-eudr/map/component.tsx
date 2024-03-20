@@ -111,7 +111,7 @@ const EUDRMap = () => {
 
     return {
       type: 'FeatureCollection',
-      features: plotGeometries.data.features.filter((feature) => {
+      features: plotGeometries.data.features?.filter((feature) => {
         if (Object.values(tableFilters).every((filter) => !filter)) return true;
 
         if (tableFilters.dfs && data.dfs.indexOf(feature.properties.id) > -1) return true;

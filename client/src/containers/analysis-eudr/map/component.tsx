@@ -1,12 +1,13 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import DeckGL from '@deck.gl/react/typed';
 import { BitmapLayer, GeoJsonLayer } from '@deck.gl/layers/typed';
 import Map from 'react-map-gl/maplibre';
-import { MapView } from '@deck.gl/core/typed';
+import { MapView, WebMercatorViewport } from '@deck.gl/core/typed';
 import { TileLayer } from '@deck.gl/geo-layers/typed';
 import { CartoLayer, setDefaultCredentials, MAP_TYPES, API_VERSIONS } from '@deck.gl/carto/typed';
 import { useParams } from 'next/navigation';
 import { format } from 'date-fns';
+import bbox from '@turf/bbox';
 
 import ZoomControl from './zoom';
 import LegendControl from './legend';
@@ -199,6 +200,25 @@ const EUDRMap = () => {
     const zoom = viewState.maxZoom === viewState.zoom ? viewState.zoom : viewState.zoom - 1;
     setViewState({ ...viewState, zoom });
   }, [viewState]);
+
+  useEffect(() => {
+    if (!plotGeometries.data || !plotGeometries.isLoading) return;
+    const dataBounds = bbox(plotGeometries.data);
+    const newViewport = new WebMercatorViewport(viewState);
+    if (newViewport) {
+      const { latitude, longitude, zoom } = newViewport.fitBounds(
+        [
+          [dataBounds[0], dataBounds[1]],
+          [dataBounds[2], dataBounds[3]],
+        ],
+        {
+          padding: 10,
+        },
+      );
+      setViewState({ ...viewState, latitude, longitude, zoom });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [plotGeometries.data, plotGeometries.isLoading]);
 
   return (
     <>

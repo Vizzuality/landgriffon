@@ -13,17 +13,20 @@ import { themeColors } from '@/utils/colors';
 
 export const CATEGORIES = [
   {
-    name: 'Deforestation-free suppliers',
+    name: 'Deforestation-free plots',
+    apiName: 'Deforestation-free suppliers',
     key: 'dfs',
     color: themeColors.blue[400],
   },
   {
-    name: 'Suppliers with deforestation alerts',
+    name: 'Plots with defrestation alerts',
+    apiName: 'Suppliers with deforestation alerts',
     key: 'sda',
     color: '#FFC038',
   },
   {
-    name: 'Suppliers with no location data',
+    name: 'Plots with no location data',
+    apiName: 'Suppliers with no location data',
     key: 'tpl',
     color: '#8561FF',
   },
@@ -84,9 +87,9 @@ export const CategoryList = (): JSX.Element => {
     const dataByView = data?.[viewBy] || [];
 
     return Object.keys(dataByView).map((key) => {
-      const category = CATEGORIES.find((category) => category.name === key);
+      const category = CATEGORIES.find((category) => category.apiName === key);
       return {
-        name: key,
+        name: category.name,
         ...dataByView[key],
         key: category?.key,
         color: category?.color || '#000',
@@ -110,7 +113,7 @@ export const CategoryList = (): JSX.Element => {
                   className="block min-h-4 min-w-4 rounded-full border-2 transition-colors"
                   style={{
                     borderColor: category.color,
-                    ...(categories[category.name] && {
+                    ...(categories[category.key] && {
                       backgroundColor: category.color,
                     }),
                   }}

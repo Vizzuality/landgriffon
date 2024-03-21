@@ -7,21 +7,21 @@
     "citation": null,
     "source": null,
     "type": "layer",
-    "legendConfig": {
-      "iconClass": "border-navy-400 bg-navy-400/30",
+    "legend": {
+      "iconClass": "border-[#ffc038] bg-[#ffc038]/30",
       "items": null
     }
   },
   {
     "id": "suppliers-plot-of-land",
     "title": "Deforestation-free plots",
-    "description": "Land areas where recent deforestation activities have been detected using near-real-time RADD alerts",
+    "description": "Land areas with free deforestation monitored using near-real-time RADD alerts",
     "content": "Deforestation-free plots are areas verified to be free from recent deforestation, monitored using near-real-time RADD alerts. These alerts, adhering to the EUDR definition and following the WHISP methodology developed by FAO and WRI, provide robust monitoring of deforestation activities, enabling proactive measures to maintain forest integrity and sustainability.",
     "citation": null,
     "source": null,
     "type": "layer",
     "legend": {
-      "iconClass": "border-[#ffc038] bg-[#ffc038]/30",
+      "iconClass": "border-[#4ab8f3] bg-[#4ab8f3]/30",
       "items": null
     }
   },

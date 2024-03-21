@@ -19,7 +19,7 @@ export const CATEGORIES = [
     color: themeColors.blue[400],
   },
   {
-    name: 'Plots with defrestation alerts',
+    name: 'Plots with deforestation alerts',
     apiName: 'Suppliers with deforestation alerts',
     key: 'sda',
     color: '#FFC038',

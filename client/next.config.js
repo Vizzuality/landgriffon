@@ -33,6 +33,15 @@ const nextConfig = {
       },
     ];
   },
+  env: {
+    NEXT_PUBLIC_PLANET_API_KEY: 'PLAK6679039df83f414faf798ba4ad4530db',
+    NEXT_PUBLIC_CARTO_FOREST_ACCESS_TOKEN:
+      'eyJhbGciOiJIUzI1NiJ9.eyJhIjoiYWNfemsydWhpaDYiLCJqdGkiOiJjY2JlMjUyYSJ9.LoqzuDp076ESVYmHm1mZNtfhnqOVGmSxzp60Fht8PQw',
+    NEXT_PUBLIC_CARTO_DEFORESTATION_ACCESS_TOKEN:
+      'eyJhbGciOiJIUzI1NiJ9.eyJhIjoiYWNfemsydWhpaDYiLCJqdGkiOiJjZDk0ZWIyZSJ9.oqLagnOEc-j7Z4hY-MTP1yoZA_vJ7WYYAkOz_NUmCJo',
+    NEXT_PUBLIC_CARTO_RADD_ACCESS_TOKEN:
+      'eyJhbGciOiJIUzI1NiJ9.eyJhIjoiYWNfemsydWhpaDYiLCJqdGkiOiI3NTFkNzA1YSJ9.jrVugV7HYfhmjxj-p2Iks8nL_AjHR91Q37JVP2fNmtc',
+  },
 };
 
 module.exports = nextConfig;

@@ -27,11 +27,11 @@ const Features: React.FC = () => {
               <FadeIn className="space-y-5 md:space-y-10">
                 <div className="space-y-5">
                   <Icon icon={ENTERPRISE_SVG} className="w-14 h-14" />
-                  <h3 className="text-3xl font-medium font-display">Enterprise-ready.</h3>
+                  <h3 className="text-3xl font-medium font-display">Compliance and beyond.</h3>
                 </div>
                 <p className="text-xl">
-                  Align with new standards and requirements (ESRS, TNFD, SBTN). Produce transparent,
-                  repeatable, and auditable analysis.
+                  Comply with EUDR and ESRS and align with new nature standards SBTN and TNFD.
+                  Produce transparent, repeatable, and auditable analysis.
                 </p>
               </FadeIn>
             </li>

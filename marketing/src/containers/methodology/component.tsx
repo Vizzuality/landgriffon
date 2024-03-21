@@ -6,6 +6,7 @@ import DataProviders from 'containers/methodology/data-providers';
 
 import ContactUs from 'containers/methodology/contact-us';
 import SourcingModel from 'containers/methodology/sourcing-model';
+import WelcomeModal from 'containers/home/eudr-modal';
 
 import ScrollDown from 'containers/scroll-down';
 import Regulations from './regulations/component';
@@ -42,6 +43,7 @@ const Methodology: React.FC = () => {
       <OpenScience />
 
       <ContactUs />
+      <WelcomeModal />
     </>
   );
 };

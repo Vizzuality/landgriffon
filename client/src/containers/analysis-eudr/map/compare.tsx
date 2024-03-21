@@ -1,12 +1,10 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import DeckGL from '@deck.gl/react/typed';
-import { BitmapLayer, GeoJsonLayer } from '@deck.gl/layers/typed';
-import Map, { useMap, useControl } from 'react-map-gl/maplibre';
+import { GeoJsonLayer } from '@deck.gl/layers/typed';
+import Map, { useMap, Source, Layer } from 'react-map-gl/maplibre';
 import { WebMercatorViewport } from '@deck.gl/core/typed';
-import { MapboxOverlay } from '@deck.gl/mapbox/typed';
 import MapLibreCompare from '@maplibre/maplibre-gl-compare';
-import { TileLayer } from '@deck.gl/geo-layers/typed';
-import { CartoLayer, setDefaultCredentials, MAP_TYPES, API_VERSIONS } from '@deck.gl/carto/typed';
+import { CartoLayer, MAP_TYPES, API_VERSIONS } from '@deck.gl/carto/typed';
 import { useParams } from 'next/navigation';
 import { format } from 'date-fns';
 import bbox from '@turf/bbox';
@@ -20,7 +18,6 @@ import { INITIAL_VIEW_STATE, MAP_STYLES } from '@/components/map';
 import { useEUDRData, usePlotGeometries } from '@/hooks/eudr';
 import { formatNumber } from '@/utils/number-format';
 
-import type { MapboxOverlayProps } from '@deck.gl/mapbox/typed';
 import type { PickingInfo, MapViewState } from '@deck.gl/core/typed';
 
 const monthFormatter = (date: string) => format(date, 'MM');
@@ -36,22 +33,6 @@ const DEFAULT_VIEW_STATE: MapViewState = {
   minZoom: 7,
   maxZoom: 20,
 };
-
-function DeckGLOverlay(
-  props: MapboxOverlayProps & {
-    interleaved?: boolean;
-  },
-) {
-  const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
-  overlay.setProps(props);
-  return null;
-}
-
-setDefaultCredentials({
-  apiBaseUrl: 'https://gcp-us-east1.api.carto.com',
-  accessToken:
-    'eyJhbGciOiJIUzI1NiJ9.eyJhIjoiYWNfemsydWhpaDYiLCJqdGkiOiJjZDk0ZWIyZSJ9.oqLagnOEc-j7Z4hY-MTP1yoZA_vJ7WYYAkOz_NUmCJo',
-});
 
 const EUDRCompareMap = () => {
   const maps = useMap();
@@ -180,54 +161,6 @@ const EUDRCompareMap = () => {
     });
   }, [filteredGeometries, data, supplierLayer.active, supplierLayer.opacity]);
 
-  const basemapPlanetLayer = new TileLayer({
-    id: 'beforeMap-planet-monthly-layer',
-    data: `https://tiles.planet.com/basemaps/v1/planet-tiles/global_monthly_${
-      planetLayer.year
-    }_${monthFormatter(
-      planetLayer.month.toString(),
-    )}_mosaic/gmap/{z}/{x}/{y}.png?api_key=PLAK6679039df83f414faf798ba4ad4530db`,
-    minZoom: 0,
-    maxZoom: 20,
-    tileSize: 256,
-    visible: planetLayer.active,
-    renderSubLayers: (props) => {
-      const {
-        bbox: { west, south, east, north },
-      } = props.tile as { bbox: { west: number; south: number; east: number; north: number } };
-
-      return new BitmapLayer(props, {
-        data: null,
-        image: props.data,
-        bounds: [west, south, east, north],
-      });
-    },
-  });
-
-  const basemapPlanetCompareLayer = new TileLayer({
-    id: 'afterMap-planet-monthly-layer',
-    data: `https://tiles.planet.com/basemaps/v1/planet-tiles/global_monthly_${
-      planetCompareLayer.year
-    }_${monthFormatter(
-      planetCompareLayer.month.toString(),
-    )}_mosaic/gmap/{z}/{x}/{y}.png?api_key=PLAK6679039df83f414faf798ba4ad4530db`,
-    minZoom: 0,
-    maxZoom: 20,
-    tileSize: 256,
-    visible: planetCompareLayer.active,
-    renderSubLayers: (props) => {
-      const {
-        bbox: { west, south, east, north },
-      } = props.tile as { bbox: { west: number; south: number; east: number; north: number } };
-
-      return new BitmapLayer(props, {
-        data: null,
-        image: props.data,
-        bounds: [west, south, east, north],
-      });
-    },
-  });
-
   const forestCoverLayer = new CartoLayer({
     id: 'full-forest-cover-2020-ec-jrc',
     type: MAP_TYPES.TILESET,
@@ -241,8 +174,7 @@ const EUDRCompareMap = () => {
     credentials: {
       apiVersion: API_VERSIONS.V3,
       apiBaseUrl: 'https://gcp-us-east1.api.carto.com',
-      accessToken:
-        'eyJhbGciOiJIUzI1NiJ9.eyJhIjoiYWNfemsydWhpaDYiLCJqdGkiOiJjY2JlMjUyYSJ9.LoqzuDp076ESVYmHm1mZNtfhnqOVGmSxzp60Fht8PQw',
+      accessToken: process.env.NEXT_PUBLIC_CARTO_FOREST_ACCESS_TOKEN,
     },
   });
 
@@ -260,8 +192,7 @@ const EUDRCompareMap = () => {
     credentials: {
       apiVersion: API_VERSIONS.V3,
       apiBaseUrl: 'https://gcp-us-east1.api.carto.com',
-      accessToken:
-        'eyJhbGciOiJIUzI1NiJ9.eyJhIjoiYWNfemsydWhpaDYiLCJqdGkiOiJjZDk0ZWIyZSJ9.oqLagnOEc-j7Z4hY-MTP1yoZA_vJ7WYYAkOz_NUmCJo',
+      accessToken: process.env.NEXT_PUBLIC_CARTO_DEFORESTATION_ACCESS_TOKEN,
     },
   });
 
@@ -286,8 +217,7 @@ const EUDRCompareMap = () => {
     credentials: {
       apiVersion: API_VERSIONS.V3,
       apiBaseUrl: 'https://gcp-us-east1.api.carto.com',
-      accessToken:
-        'eyJhbGciOiJIUzI1NiJ9.eyJhIjoiYWNfemsydWhpaDYiLCJqdGkiOiI3NTFkNzA1YSJ9.jrVugV7HYfhmjxj-p2Iks8nL_AjHR91Q37JVP2fNmtc',
+      accessToken: process.env.NEXT_PUBLIC_CARTO_RADD_ACCESS_TOKEN,
     },
   });
 
@@ -361,7 +291,19 @@ const EUDRCompareMap = () => {
             <div className="pointer-events-none absolute left-10 top-10 z-10 rounded-sm border border-navy-400 bg-white px-2 py-1 text-2xs text-navy-400">
               {`${planetLayer.year} ${friendlyMonthFormatter(planetLayer.month.toString())}`}
             </div>
-            <DeckGLOverlay id="deckBeforeMap" layers={[basemapPlanetLayer]} />
+            <Source
+              type="raster"
+              tiles={[
+                `https://tiles.planet.com/basemaps/v1/planet-tiles/global_monthly_${
+                  planetLayer.year
+                }_${monthFormatter(
+                  planetLayer.month.toString(),
+                )}_mosaic/gmap/{z}/{x}/{y}.png?api_key=${process.env.NEXT_PUBLIC_PLANET_API_KEY}`,
+              ]}
+              tileSize={256}
+            >
+              <Layer id="monthlyPlanetLAyer" type="raster" />
+            </Source>
           </Map>
           <Map id="afterMap" mapStyle={MAP_STYLES.terrain} style={{ position: 'absolute' }}>
             <div className="pointer-events-none absolute bottom-10 left-10 z-10 rounded-sm border border-navy-400 bg-white px-2 py-1 text-2xs text-navy-400">
@@ -369,7 +311,19 @@ const EUDRCompareMap = () => {
                 planetCompareLayer.month.toString(),
               )}`}
             </div>
-            <DeckGLOverlay id="deckAfterMap" layers={[basemapPlanetCompareLayer]} />
+            <Source
+              type="raster"
+              tiles={[
+                `https://tiles.planet.com/basemaps/v1/planet-tiles/global_monthly_${
+                  planetCompareLayer.year
+                }_${monthFormatter(
+                  planetCompareLayer.month.toString(),
+                )}_mosaic/gmap/{z}/{x}/{y}.png?api_key=${process.env.NEXT_PUBLIC_PLANET_API_KEY}`,
+              ]}
+              tileSize={256}
+            >
+              <Layer id="monthlyPlanetLAyer" type="raster" />
+            </Source>
           </Map>
         </DeckGL>
       </div>

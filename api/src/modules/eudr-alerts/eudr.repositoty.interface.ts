@@ -40,6 +40,7 @@ export interface IEUDRAlertsRepository {
 
   getAlertedGeoRegionsBySupplier(dto: {
     supplierIds: string[];
+    geoRegionIds?: string[];
     startAlertDate: Date;
     endAlertDate: Date;
   }): Promise<AlertedGeoregionsBySupplier[]>;

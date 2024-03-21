@@ -67,6 +67,7 @@ class CategoryDetail {
 
 export type EntityMetadata = {
   supplierId: string;
+  geoRegionId: string;
   supplierName: string;
   companyId: string;
   materialId: string;

@@ -87,6 +87,10 @@ export class EudrDashboardService {
       );
     }
 
+    const noNullGeoRegions = entityMetadata
+      .map((entityMetadata: EntityMetadata) => entityMetadata.geoRegionId)
+      .filter(Boolean);
+
     const alerts: AlertedGeoregionsBySupplier[] =
       await this.eudrRepository.getAlertedGeoRegionsBySupplier({
         startAlertDate: dto.startAlertDate,
@@ -94,8 +98,9 @@ export class EudrDashboardService {
         supplierIds: entityMetadata.map(
           (entity: EntityMetadata) => entity.supplierId,
         ),
+        geoRegionIds: noNullGeoRegions,
       });
-
+    console.log(alerts);
     const alertMap: Map<
       string,
       { geoRegionIdSet: Set<string>; carbonRemovalValuesForSupplier: number[] }
@@ -385,6 +390,7 @@ export class EudrDashboardService {
       .addSelect('m.name', 'materialName')
       .addSelect('ar.id', 'adminRegionId')
       .addSelect('ar.name', 'adminRegionName')
+      .addSelect('sl.geoRegionId', 'geoRegionId')
       .addSelect('SUM(sr.tonnage)', 'totalBaselineVolume')
       .addSelect('COUNT(sl.geoRegionId)', 'knownGeoRegions')
       .addSelect('COUNT(sl.id)', 'totalSourcingLocations')
@@ -396,6 +402,7 @@ export class EudrDashboardService {
       .leftJoin(SourcingRecord, 'sr', 'sr.sourcingLocationId = sl.id')
       .where('sr.year = :year', { year: 2020 })
       .groupBy('s.id')
+      .addGroupBy('sl.geoRegionId')
       .addGroupBy('m.id')
       .addGroupBy('ar.id');
     if (dto.producerIds) {

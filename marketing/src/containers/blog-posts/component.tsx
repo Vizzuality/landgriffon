@@ -11,7 +11,6 @@ const BlogPosts: FC = () => {
   const { data, isFetched } = usePosts();
 
   const posts = data?.items?.slice(0, 4); // Taking the first 4 posts
-  console.log(posts);
 
   return (
     <section className="relative py-12 bg-blue-600 border-t border-white/10 md:py-32">

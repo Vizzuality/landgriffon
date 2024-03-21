@@ -5,10 +5,10 @@ export interface BlogProps {
   title: string;
   description: string;
   url: string;
-  image: string;
+  image?: string;
 }
 
-const BlogCard: FC<BlogProps> = ({ title, description, url, image }: BlogProps) => {
+const BlogCard: FC<BlogProps> = ({ title, description, url }: BlogProps) => {
   return (
     <div
       data-testid="blog-card-item"
@@ -16,12 +16,17 @@ const BlogCard: FC<BlogProps> = ({ title, description, url, image }: BlogProps) 
     >
       <a href={url} target="_blank" rel="noreferrer noopener">
         <div className="w-full overflow-hidden">
-          <img src={image} alt={title} className="w-full h-[178px] object-cover" />
+          <img
+            src={description.toString().match(/<img[^>]+src="([^">]+)"/)[1]}
+            alt={title}
+            className="w-full h-[178px] object-cover"
+          />
         </div>
         <div className="p-5">
-          <h3 className="text-white font-light text-2xl tracking-tight mb-2 line-clamp-2">
-            {title}
-          </h3>
+          <h3
+            className="text-white font-light text-2xl tracking-tight mb-2 line-clamp-2"
+            dangerouslySetInnerHTML={{ __html: title }}
+          />
           <div
             className="font-light text-base text-white mb-3 line-clamp-4"
             dangerouslySetInnerHTML={{ __html: description }}

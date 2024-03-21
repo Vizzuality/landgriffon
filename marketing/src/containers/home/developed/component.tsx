@@ -35,7 +35,7 @@ const Developed: React.FC = () => {
           </FadeIn>
 
           <FadeIn>
-            <div className="grid grid-cols-4 gap-x-20 gap-y-14 items-center">
+            <div className="grid grid-cols-5 gap-x-20 gap-y-14 items-center">
               <div>
                 <a href="https://www.google.com/" target="_blank" rel="noreferrer noopener">
                   <Image
@@ -47,6 +47,7 @@ const Developed: React.FC = () => {
                   />
                 </a>
               </div>
+
               <div>
                 <a href="https://www.mars.com/" target="_blank" rel="noreferrer noopener">
                   <Image
@@ -58,7 +59,6 @@ const Developed: React.FC = () => {
                   />
                 </a>
               </div>
-
               <div>
                 <a
                   href="https://www.microsoft.com/es-es/"
@@ -74,7 +74,6 @@ const Developed: React.FC = () => {
                   />
                 </a>
               </div>
-
               <div>
                 <a href="https://www.wri.org/" target="_blank" rel="noreferrer noopener">
                   <Image
@@ -97,7 +96,6 @@ const Developed: React.FC = () => {
                   />
                 </a>
               </div>
-
               <div>
                 <a href="https://www.nasa.gov/" target="_blank" rel="noreferrer noopener">
                   <Image
@@ -109,7 +107,6 @@ const Developed: React.FC = () => {
                   />
                 </a>
               </div>
-
               <div>
                 <a href="https://www.esa.int/" target="_blank" rel="noreferrer noopener">
                   <Image
@@ -118,6 +115,39 @@ const Developed: React.FC = () => {
                     alt="ESA"
                     width={145.6}
                     height={64}
+                  />
+                </a>
+              </div>
+              <div>
+                <a href="https://www.tetrapak.com/" target="_blank" rel="noreferrer noopener">
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/tetrapak-logo.png"
+                    alt="Tetrapak"
+                    width={100}
+                    height={100}
+                  />
+                </a>
+              </div>
+              <div>
+                <a href="https://www.unilever.com/" target="_blank" rel="noreferrer noopener">
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/logo-unilever.png"
+                    alt="Unilever"
+                    width={75}
+                    height={80}
+                  />
+                </a>
+              </div>
+              <div>
+                <a href="https://www.fao.org/home/es" target="_blank" rel="noreferrer noopener">
+                  <Image
+                    layout="intrinsic"
+                    src="/images/logos/FAO.png"
+                    alt="FAO"
+                    width={89}
+                    height={90}
                   />
                 </a>
               </div>

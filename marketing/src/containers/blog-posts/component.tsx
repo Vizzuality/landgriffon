@@ -10,7 +10,7 @@ const BlogPosts: FC = () => {
   const [slide, setSlide] = useState(1);
   const { data, isFetched } = usePosts();
 
-  const posts = data?.items?.slice(0, 4); // Taking the first 4 posts
+  const posts = data?.items?.slice(0, 6); // Taking the first 4 posts
 
   return (
     <section className="relative py-12 bg-blue-600 border-t border-white/10 md:py-32">

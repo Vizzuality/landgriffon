@@ -28,7 +28,7 @@ type PostsResponse = {
 function usePosts() {
   const getPosts = async () => {
     const { data } = await axios.get<PostsResponse>(
-      'https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@landgriffon',
+      'https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/vizzuality-blog/tagged/sustainable-supply-chain',
     );
     return data;
   };

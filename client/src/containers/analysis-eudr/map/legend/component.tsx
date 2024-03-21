@@ -66,6 +66,7 @@ const EURDLegend = () => {
                 description={PDAData.description}
                 showVisibility
                 isActive={supplierLayer.active}
+                legendConfig={PDAData.legend}
                 changeVisibility={() =>
                   dispatch(setSupplierLayer({ ...supplierLayer, active: !supplierLayer.active }))
                 }

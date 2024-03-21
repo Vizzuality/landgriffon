@@ -225,6 +225,16 @@ export class EudrController {
   async getGeoFeatureList(
     @Query(ValidationPipe) dto: GetEUDRFeaturesGeoJSONDto,
   ): Promise<GeoFeatureResponse[]> {
+    if (dto.originIds) {
+      dto.originIds = await this.adminRegionsService.getAdminRegionDescendants(
+        dto.originIds,
+      );
+    }
+    if (dto.materialIds) {
+      dto.materialIds = await this.materialsService.getMaterialsDescendants(
+        dto.materialIds,
+      );
+    }
     return this.geoRegionsService.getGeoJson({ ...dto, eudr: true });
   }
 
@@ -238,6 +248,16 @@ export class EudrController {
   async getGeoFeatureCollection(
     @Query(ValidationPipe) dto: GetEUDRFeaturesGeoJSONDto,
   ): Promise<GeoFeatureCollectionResponse> {
+    if (dto.originIds) {
+      dto.originIds = await this.adminRegionsService.getAdminRegionDescendants(
+        dto.originIds,
+      );
+    }
+    if (dto.materialIds) {
+      dto.materialIds = await this.materialsService.getMaterialsDescendants(
+        dto.materialIds,
+      );
+    }
     return this.geoRegionsService.getGeoJson({
       ...dto,
       eudr: true,

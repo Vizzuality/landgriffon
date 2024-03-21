@@ -231,6 +231,7 @@ const Contact: React.FC = () => {
                     <option value="demo">Request a demo</option>
                     <option value="support">Technical support</option>
                     <option value="contact">General contact</option>
+                    <option value="eudr">EUDR Compliance</option>
                   </select>
                 </div>
               </div>

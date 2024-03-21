@@ -8,7 +8,7 @@ import Developed from 'containers/home/developed';
 import Newsletter from 'containers/newsletter';
 import ScrollDown from 'containers/scroll-down';
 import BlogPosts from 'containers/blog-posts';
-import WelcomeModal from 'containers/home/welcome-modal';
+import EUDRModal from 'containers/home/eudr-modal';
 
 const Home: React.FC = () => {
   return (
@@ -21,7 +21,7 @@ const Home: React.FC = () => {
       <Developed />
       <BlogPosts />
       <Newsletter />
-      <WelcomeModal />
+      <EUDRModal />
     </>
   );
 };

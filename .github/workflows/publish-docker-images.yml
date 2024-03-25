@@ -12,8 +12,8 @@ on:
       - 'test'
       - 'benjerry'
       - 'gcp'
-      - 'tetrapack'
       - 'dev'
+      - 'demo'
     paths:
       - 'api/**'
       - 'client/**'

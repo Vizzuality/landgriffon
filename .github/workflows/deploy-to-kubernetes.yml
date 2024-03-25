@@ -7,7 +7,7 @@ on:
       - 'staging'
       - 'test'
       - 'benjerry'
-      - 'tetrapack'
+      - 'demo'
       - 'dev'
     paths:
       - 'api/**'

@@ -47,7 +47,12 @@ crop: convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-
 
 indicators: convert-aqueduct convert-deforestation convert-forestGHG convert-naturalCropConversion convert-nutrientLoadReduction convert-biodiversity convert-ghg-farm convert-ghg-farm-livestock
 
-contextual-layers: convert-hdi-contextual convert-blue-water-contextual
+contextual-layers: convert-hdi-contextual \
+	convert-deforest-by-human-landuse \
+	convert-deforest-carbon-by-human-landuse \
+	convert-crop-bii-loss-by-human-landuse \
+	convert-crop-flii-loss-by-human-landuse \
+	convert-crop-net-conversion-by-human-landuse
 
 ###################################
 #  Mapspam - commodity production #
@@ -312,8 +317,21 @@ download-hdi-contextual:
 convert-hdi-contextual: download-hdi-contextual
 	python csv_to_h3_table.py $(WORKDIR_HDI)/IHDI_HDR2020_040722.csv h3_grid_hdi_global hdi_2019 2019 iso3
 
-convert-blue-water-contextual:
-	python cog_to_contextual_layer_linker.py --cog bluewater.tif --name bluewater_footprint --category "Environmental datasets" --tiler_param colormap_name=viridis --tp rescale=-18,832
+convert-deforest-by-human-landuse:
+	python cog_to_contextual_layer_linker.py --cog deforest_by_human_lu_50km_1000m_cog.tif --name deforest_by_human_lu --category "Environmental datasets" --tiler_param colormap_name=ylorrd --tp rescale=0,0.0025
+
+convert-deforest-carbon-by-human-landuse:
+	python cog_to_contextual_layer_linker.py --cog deforest_carbon_by_human_lu_50km_1000m_cog.tif --name deforest_carbon_by_human_lu --category "Environmental datasets" --tiler_param colormap_name=gnbu --tp rescale=0,0.5
+
+convert-crop-bii-loss-by-human-landuse:
+	python cog_to_contextual_layer_linker.py --cog natural_crop_bii_loss_by_human_lu_50km_1000m_cog.tif --name natural_crop_bii_loss_by_human_lu --category "Environmental datasets" --tiler_param colormap_name=blues --tp rescale=0,0.01
+
+convert-crop-flii-loss-by-human-landuse:
+	python cog_to_contextual_layer_linker.py --cog natural_crop_flii_loss_by_human_lu_50km_1000m_cog.tif --name natural_crop_flii_loss_by_human_lu --category "Environmental datasets" --tiler_param colormap_name=rdpu --tp rescale=0,0.01
+
+convert-crop-net-conversion-by-human-landuse:
+	python cog_to_contextual_layer_linker.py --cog natural_crop_net_conversion_by_human_lu_50km_1000m_cog.tif --name natural_crop_net_conversion_by_human_lu --category "Environmental datasets" --tiler_param colormap_name=ylgn --tp rescale=0,0.01
+
 
 #####################
 # Default commodity #

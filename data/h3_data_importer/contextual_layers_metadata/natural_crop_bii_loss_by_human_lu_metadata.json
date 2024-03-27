@@ -1,0 +1,37 @@
+{
+    "$schema": "./contextual_metadata_schema.json",
+    "name": "Loss of biodiversity intactness to cropland expansion",
+    "description": " The Biodiversity\nIntactness index (BI) is an indicator of loss of species richness and change in species\ncomposition due to human pressures",
+    "legend": {
+        "name": "Loss of biodiversity intactness to cropland expansion",
+        "id": "",
+        "unit": "bii score / ha LU",
+        "min": "0",
+        "type": "range",
+        "items": [
+            {
+                "color": "#f7fbff",
+                "value": "0.0"
+            },
+            {
+                "color": "#c6dbef",
+                "value": "0.0025"
+            },
+            {
+                "color": "#6aaed6",
+                "value": "0.005"
+            },
+            {
+                "color": "#2070b4",
+                "value": "0.0075"
+            },
+            {
+                "color": "#08306b",
+                "value": "0.01"
+            }
+        ]
+    },
+    "aggType": "mean",
+    "source": "https://www.biorxiv.org/content/10.1101/2023.11.01.565036v1.full.pdf",
+    "license": "CC BY 4.0"
+}

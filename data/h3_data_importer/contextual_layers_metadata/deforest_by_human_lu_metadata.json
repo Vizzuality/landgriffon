@@ -1,0 +1,37 @@
+{
+    "$schema": "./contextual_metadata_schema.json",
+    "name": "Deforestation by human land use",
+    "description": "The deforestation indicator estimates the extent of deforestation that can be attributed to\na spatial footprint, such as that required for production of a raw material. It measures the\namount of deforestation that occurs nearby to the areas where raw materials are\nproduced within a supply shed.",
+    "legend": {
+        "name": "Deforestation",
+        "id": "",
+        "unit": "ha/yr / ha LU",
+        "min": "0",
+        "type": "range",
+        "items": [
+            {
+                "color": "#ffffcc",
+                "value": "0.0"
+            },
+            {
+                "color": "#fed976",
+                "value": "0.000625"
+            },
+            {
+                "color": "#fd8c3c",
+                "value": "0.00125"
+            },
+            {
+                "color": "#e2191c",
+                "value": "0.001875"
+            },
+            {
+                "color": "#800026",
+                "value": "0.0025"
+            }
+        ]
+    },
+    "aggType": "mean",
+    "source": "https://www.biorxiv.org/content/10.1101/2023.11.01.565036v1.full.pdf",
+    "license": "CC BY 4.0"
+}

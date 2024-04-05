@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { motion } from 'framer-motion';
+import YouTube from 'react-youtube';
 
 import Icon from 'components/icon';
 
@@ -84,18 +84,11 @@ const Features: React.FC = () => {
         </div>
 
         <div className="flex space-x-2 translate-y-16 md:space-x-6">
-          <motion.iframe
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.75, delay: 0.1 }}
-            width="853"
-            height="480"
-            src="https://www.youtube.com/embed/rUl8jQkyJuw?color=white"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
+          <YouTube
+            videoId="rUl8jQkyJuw"
             title="Landgriffon: Sustainable Supply Chain Solutions"
-            className="w-full h-[190px] md:h-[438px] lg:h-[603px]"
+            className="w-full h-[340px] md:h-[438px] lg:h-[603px]"
+            iframeClassName="w-full h-[320px] md:h-[418px] lg:h-[583px]"
           />
         </div>
       </Wrapper>

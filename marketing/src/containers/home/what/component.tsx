@@ -8,12 +8,20 @@ import Carousel from 'components/carousel';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/solid';
 import { useMemo, useState } from 'react';
 
+const SLIDE_ITEM_CLASSNAME = 'w-full w-[944px] max-h-[446px] border-4 border-white overflow-hidden';
+
 const SLIDES = [
   {
     id: '1',
     content: (
-      <div className="w-full w-[944px] h-[446px] border-4 border-white overflow-hidden">
-        <Image src="/images/home/what/screen_1.jpg" width="936" height="442" alt="Traceability" />
+      <div className={SLIDE_ITEM_CLASSNAME}>
+        <Image
+          src="/images/home/what/screen_1.jpg"
+          width="936"
+          height="442"
+          alt="Traceability"
+          layout="responsive"
+        />
       </div>
     ),
     description: (
@@ -28,8 +36,14 @@ const SLIDES = [
   {
     id: '2',
     content: (
-      <div className="w-full w-[944px] h-[446px] border-4 border-white overflow-hidden">
-        <Image src="/images/home/what/screen_2.jpg" width="936" height="442" alt="Confidence" />
+      <div className={SLIDE_ITEM_CLASSNAME}>
+        <Image
+          src="/images/home/what/screen_2.jpg"
+          width="936"
+          height="442"
+          alt="Confidence"
+          layout="responsive"
+        />
       </div>
     ),
     description: (
@@ -44,8 +58,14 @@ const SLIDES = [
   {
     id: '3',
     content: (
-      <div className="w-full w-[944px] h-[446px] border-4 border-white overflow-hidden">
-        <Image src="/images/home/what/screen_3.jpg" width="936" height="442" alt="Strategize" />
+      <div className={SLIDE_ITEM_CLASSNAME}>
+        <Image
+          src="/images/home/what/screen_3.jpg"
+          width="936"
+          height="442"
+          alt="Strategize"
+          layout="responsive"
+        />
       </div>
     ),
     description: (

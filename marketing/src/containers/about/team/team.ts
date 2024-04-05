@@ -1,12 +1,5 @@
 export const TEAM = [
   {
-    name: 'Emma Gollub',
-    company: 'Global Canopy & Trase',
-    role: 'Advisor',
-    group: 'support',
-    linkedin: 'https://www.linkedin.com/in/emma-gollub-85469017',
-  },
-  {
     name: 'Elena Palao',
     company: 'Vizzuality',
     role: 'Science',
@@ -76,6 +69,13 @@ export const TEAM = [
     linkedin: 'https://www.linkedin.com/in/mar%C3%ADaluena/',
   },
   {
+    name: 'Andrés González',
+    company: 'Vizzuality',
+    role: 'Engineering',
+    group: 'core',
+    linkedin: 'https://www.linkedin.com/in/andr%C3%A9s-gonz%C3%A1lez-mu%C3%B1oz-593608b6/',
+  },
+  {
     name: 'Alex Larrañaga',
     company: 'Vizzuality',
     role: 'Engineering',
@@ -90,13 +90,6 @@ export const TEAM = [
     linkedin: 'https://www.linkedin.com/in/yulia-belyakova/',
   },
   {
-    name: 'Tiago Garcia',
-    company: 'Vizzuality',
-    role: 'Engineering',
-    group: 'core',
-    linkedin: 'https://www.linkedin.com/in/tiago-garcia-644679220/',
-  },
-  {
     name: 'Andrea Rota',
     company: 'Vizzuality',
     role: 'Engineering',
@@ -107,13 +100,6 @@ export const TEAM = [
     company: 'Vizzuality',
     role: 'Engineering',
     group: 'core',
-  },
-  {
-    name: 'Irene Eleta',
-    company: 'Vizzuality',
-    role: 'Design',
-    group: 'support',
-    linkedin: 'https://www.linkedin.com/in/ieleta/',
   },
   {
     name: 'Andreia Ribeiro',
@@ -135,20 +121,6 @@ export const TEAM = [
     role: 'Design',
     group: 'support',
     linkedin: 'https://www.linkedin.com/in/irene-rodriguez-vara',
-  },
-  {
-    name: 'Martin Dubuisson',
-    company: 'Vizzuality',
-    role: 'Design',
-    group: 'support',
-    linkedin: 'https://www.linkedin.com/in/martin-dubuisson-190912b2/',
-  },
-  {
-    name: 'Craig Mills',
-    company: 'Vizzuality',
-    role: 'Business',
-    group: 'core',
-    linkedin: 'https://www.linkedin.com/in/craigmmills/',
   },
   {
     name: 'David González',
@@ -191,20 +163,6 @@ export const TEAM = [
     role: 'Communications',
     group: 'core',
     linkedin: 'https://www.linkedin.com/in/jacinta-hamley/',
-  },
-  {
-    name: 'Alexander Wowra',
-    company: 'Vizzuality',
-    role: 'Communications',
-    group: 'support',
-    linkedin: 'https://www.linkedin.com/in/alexander-wowra-95186167/',
-  },
-  {
-    name: 'Pablo Urrutia',
-    company: 'Vizzuality',
-    role: 'Marketing Consultant',
-    group: 'support',
-    linkedin: 'https://www.linkedin.com/in/pablo-urrutia/',
   },
   {
     name: 'Lidia Arranz',

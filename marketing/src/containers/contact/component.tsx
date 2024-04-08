@@ -256,8 +256,8 @@ const Contact: React.FC = () => {
               </div>
 
               {/* <div className="flex flex-col items-center justify-between space-y-10 md:flex-row md:space-x-10 md:space-y-0"> */}
-              <div className="grid grid-cols-3 gap-3">
-                <div className="col-span-2">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                <div className="lg:col-span-2">
                   <div className="flex items-center space-x-2.5">
                     <input
                       id="terms"
@@ -292,7 +292,7 @@ const Contact: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="justify-self-end">
+                <div className="lg:justify-self-end">
                   <button
                     type="submit"
                     className="py-8 px-10 max-h-44 font-semibold text-black bg-transparent border-2 border-black hover:bg-black/10"

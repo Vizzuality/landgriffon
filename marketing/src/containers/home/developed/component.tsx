@@ -35,7 +35,7 @@ const Developed: React.FC = () => {
           </FadeIn>
 
           <FadeIn>
-            <div className="grid grid-cols-5 gap-x-20 gap-y-14 items-center">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-20 gap-y-14 items-center">
               <div>
                 <a href="https://www.google.com/" target="_blank" rel="noreferrer noopener">
                   <Image

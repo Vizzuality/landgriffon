@@ -60,11 +60,14 @@ const BlogPosts: FC = () => {
                         setSlide(i);
                       }}
                       className={cx({
-                        'relative w-28 h-0.5 border border-white/20': true,
+                        'relative w-full lg:w-28 h-0.5 border border-white/20': true,
                       })}
+                      style={{
+                        maxWidth: `${100 / posts?.length}%`,
+                      }}
                     >
                       {slide === i && (
-                        <div className="absolute w-28 h-0.5 transform -translate-y-1/2 bg-orange-500" />
+                        <div className="absolute w-full h-0.5 transform -translate-y-1/2 bg-orange-500" />
                       )}
                     </button>
                   );

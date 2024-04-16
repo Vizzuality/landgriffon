@@ -1,5 +1,7 @@
 import {
   Controller,
+  Get,
+  Inject,
   Post,
   UnauthorizedException,
   UploadedFile,
@@ -23,6 +25,10 @@ import { ROLES } from 'modules/authorization/roles/roles.enum';
 import { RequiredRoles } from 'decorators/roles.decorator';
 import { RolesGuard } from 'guards/roles.guard';
 import { EudrImportService } from './eudr/eudr.import.service';
+import { NestWebsocketsService } from '../notifications/websockets/websockets.service';
+import { Public } from 'decorators/public.decorator';
+import { IWebSocketServiceToken } from '../notifications/websockets/websockets.module';
+import { IWebSocketService } from '../notifications/websockets/websockets.service.interface';
 
 @ApiTags('Import Data')
 @Controller(`/api/v1/import`)
@@ -32,6 +38,7 @@ export class ImportDataController {
   constructor(
     public readonly importDataService: ImportDataService,
     private readonly eudr: EudrImportService,
+    @Inject(IWebSocketServiceToken) private emitter: IWebSocketService,
   ) {}
 
   @ApiConsumesXLSX()
@@ -101,4 +108,16 @@ export class ImportDataController {
   //     },
   //   };
   // }
+
+  @Public()
+  @Get('/test')
+  async test(): Promise<string> {
+    for (const n of Array(10).keys()) {
+      this.emitter.emit('DATA_IMPORT_PROGRESS' as any, {
+        message: `Hello World ${n}`,
+      });
+    }
+
+    return 'Hello World';
+  }
 }

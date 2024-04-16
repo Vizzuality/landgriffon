@@ -25,8 +25,14 @@ import { MulterModule } from '@nestjs/platform-express';
 import * as config from 'config';
 import MulterConfigService from 'modules/import-data/multer-config.service';
 import { ImpactModule } from 'modules/impact/impact.module';
+import { WebSocketsModule } from 'modules/notifications/websockets/websockets.module';
 import { EudrImportService } from 'modules/import-data/eudr/eudr.import.service';
 import { EUDRDTOProcessor } from 'modules/import-data/eudr/eudr.dto-processor.service';
+import { CqrsModule } from '@nestjs/cqrs';
+import { ImportProgressHandler } from 'modules/import-data/events/import-progress.handler';
+import { ImportProgressService } from 'modules/import-data/events/import-progress.service';
+
+// TODO: Move EUDR related stuff to EUDR modules
 
 // TODO: Move EUDR related stuff to EUDR modules
 
@@ -42,6 +48,10 @@ import { EUDRDTOProcessor } from 'modules/import-data/eudr/eudr.dto-processor.se
     BullModule.registerQueue({
       name: 'eudr',
     }),
+    BullModule.registerQueue({
+      name: 'eudr',
+    }),
+    CqrsModule,
     MaterialsModule,
     BusinessUnitsModule,
     SuppliersModule,
@@ -56,6 +66,7 @@ import { EUDRDTOProcessor } from 'modules/import-data/eudr/eudr.dto-processor.se
     ScenariosModule,
     IndicatorsModule,
     ImpactModule,
+    WebSocketsModule,
   ],
   providers: [
     MulterConfigService,
@@ -67,6 +78,8 @@ import { EUDRDTOProcessor } from 'modules/import-data/eudr/eudr.dto-processor.se
     ImportDataService,
     EudrImportService,
     EUDRDTOProcessor,
+    ImportProgressService,
+    ImportProgressHandler,
     {
       provide: 'FILE_UPLOAD_SIZE_LIMIT',
       useValue: config.get('fileUploads.sizeLimit'),

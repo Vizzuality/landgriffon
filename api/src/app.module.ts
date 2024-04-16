@@ -40,6 +40,7 @@ import { TasksService } from 'modules/tasks/tasks.service';
 import { NotificationsModule } from 'modules/notifications/notifications.module';
 import { ReportsModule } from 'modules/reports/reports.module';
 import { EudrModule } from 'modules/eudr-alerts/eudr.module';
+import { WebSocketsModule } from './modules/notifications/websockets/websockets.module';
 
 const queueConfig: any = config.get('queue');
 
@@ -85,6 +86,7 @@ const queueConfig: any = config.get('queue');
     AuthorizationModule,
     NotificationsModule,
     ReportsModule,
+    WebSocketsModule,
     EudrModule,
   ],
   providers: [

@@ -2,6 +2,7 @@ import { CollectionIcon as CollectionIconOutline } from '@heroicons/react/outlin
 import { CollectionIcon as CollectionIconSolid } from '@heroicons/react/solid';
 
 // The'ChartBarIcon' fom the modules @heroicons/react are different from the website (and design)
+
 import { ChartBarIconOutline, ChartBarIconSolid } from './icons/chart-bar';
 
 import { useLasTask } from 'hooks/tasks';
@@ -30,14 +31,24 @@ const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
       icon: { default: ChartBarIconOutline, active: ChartBarIconSolid },
       disabled: !!(!lastTask || lastTask?.status === 'processing'),
     },
+    ...(process.env.NEXT_PUBLIC_ENABLE_EUDR === 'true'
+      ? [
+          {
+            name: 'EUDR',
+            href: '/eudr',
+            icon: { default: ReportSVG, active: ReportSVG },
+            disabled: !!(!lastTask || lastTask?.status === 'processing'),
+          },
+        ]
+      : []),
   ];
 
-  navigationItems.push({
-    name: 'EUDR',
-    href: '/eudr',
-    icon: { default: ReportSVG, active: ReportSVG },
-    disabled: !!(!lastTask || lastTask?.status === 'processing'),
-  });
+  // navigationItems.push({
+  //   name: 'EUDR',
+  //   href: '/eudr',
+  //   icon: { default: ReportSVG, active: ReportSVG },
+  //   disabled: !!(!lastTask || lastTask?.status === 'processing'),
+  // });
 
   return (
     <div className="min-w-screen-lg flex h-screen min-h-[700px] overflow-hidden bg-navy-600">

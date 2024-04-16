@@ -21,6 +21,15 @@ const nextConfig = {
         destination: '/auth/signin',
         permanent: false,
       },
+      ...(process.env.NEXT_PUBLIC_ENABLE_EUDR !== 'true'
+        ? [
+            {
+              source: '/eudr',
+              destination: '/analysis/map',
+              permanent: false,
+            },
+          ]
+        : []),
     ];
   },
   env: {

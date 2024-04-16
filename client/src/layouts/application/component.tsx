@@ -23,13 +23,12 @@ const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
         default: CollectionIconOutline,
         active: CollectionIconSolid,
       },
-      disabled: true,
     },
     {
       name: 'Analysis',
       href: '/analysis',
       icon: { default: ChartBarIconOutline, active: ChartBarIconSolid },
-      disabled: true,
+      disabled: !!(!lastTask || lastTask?.status === 'processing'),
     },
   ];
 

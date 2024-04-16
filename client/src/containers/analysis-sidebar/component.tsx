@@ -142,7 +142,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
               </div>
               <Anchor
                 href="/data/scenarios/new"
-                className="block w-full"
+                className="w-full"
                 variant="primary"
                 size="xl"
                 data-testid="create-scenario"

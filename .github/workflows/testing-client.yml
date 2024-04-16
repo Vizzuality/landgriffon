@@ -16,7 +16,6 @@ jobs:
     name: Running client tests
     runs-on: ubuntu-22.04
     timeout-minutes: 30
-    if: ${{ github.ref_name != 'test'  }}
     strategy:
       fail-fast: false
     defaults:

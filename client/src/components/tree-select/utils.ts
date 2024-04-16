@@ -155,7 +155,6 @@ const optionToTreeData = (
   const children = option.children?.map((option) => optionToTreeData(option, render, depth + 1));
   return render({
     ...option,
-    disabled: true, // added to prevent the node from being selectable only for EUDR demo
     style: { paddingLeft: 16 * depth },
     children,
   });

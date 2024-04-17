@@ -17,6 +17,7 @@ import { useAppSelector } from '@/store/hooks';
 import { INITIAL_VIEW_STATE, MAP_STYLES } from '@/components/map';
 import { useEUDRData, usePlotGeometries } from '@/hooks/eudr';
 import { formatNumber } from '@/utils/number-format';
+import { env } from '@/env.mjs';
 
 import type { PickingInfo, MapViewState } from '@deck.gl/core/typed';
 
@@ -174,7 +175,7 @@ const EUDRCompareMap = () => {
     credentials: {
       apiVersion: API_VERSIONS.V3,
       apiBaseUrl: 'https://gcp-us-east1.api.carto.com',
-      accessToken: process.env.NEXT_PUBLIC_CARTO_FOREST_ACCESS_TOKEN,
+      accessToken: env.NEXT_PUBLIC_CARTO_FOREST_ACCESS_TOKEN,
     },
   });
 
@@ -192,7 +193,7 @@ const EUDRCompareMap = () => {
     credentials: {
       apiVersion: API_VERSIONS.V3,
       apiBaseUrl: 'https://gcp-us-east1.api.carto.com',
-      accessToken: process.env.NEXT_PUBLIC_CARTO_DEFORESTATION_ACCESS_TOKEN,
+      accessToken: env.NEXT_PUBLIC_CARTO_DEFORESTATION_ACCESS_TOKEN,
     },
   });
 
@@ -217,7 +218,7 @@ const EUDRCompareMap = () => {
     credentials: {
       apiVersion: API_VERSIONS.V3,
       apiBaseUrl: 'https://gcp-us-east1.api.carto.com',
-      accessToken: process.env.NEXT_PUBLIC_CARTO_RADD_ACCESS_TOKEN,
+      accessToken: env.NEXT_PUBLIC_CARTO_RADD_ACCESS_TOKEN,
     },
   });
 
@@ -298,7 +299,7 @@ const EUDRCompareMap = () => {
                   planetLayer.year
                 }_${monthFormatter(
                   planetLayer.month.toString(),
-                )}_mosaic/gmap/{z}/{x}/{y}.png?api_key=${process.env.NEXT_PUBLIC_PLANET_API_KEY}`,
+                )}_mosaic/gmap/{z}/{x}/{y}.png?api_key=${env.NEXT_PUBLIC_PLANET_API_KEY}`,
               ]}
               tileSize={256}
             >
@@ -318,7 +319,7 @@ const EUDRCompareMap = () => {
                   planetCompareLayer.year
                 }_${monthFormatter(
                   planetCompareLayer.month.toString(),
-                )}_mosaic/gmap/{z}/{x}/{y}.png?api_key=${process.env.NEXT_PUBLIC_PLANET_API_KEY}`,
+                )}_mosaic/gmap/{z}/{x}/{y}.png?api_key=${env.NEXT_PUBLIC_PLANET_API_KEY}`,
               ]}
               tileSize={256}
             >

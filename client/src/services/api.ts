@@ -3,6 +3,8 @@ import Jsona from 'jsona';
 import { getSession, signOut } from 'next-auth/react';
 import toast from 'react-hot-toast';
 
+import { env } from '@/env.mjs';
+
 import type { ApiError, ErrorResponse } from 'types';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 
@@ -14,7 +16,7 @@ import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 const dataFormatter = new Jsona();
 
 const defaultConfig: AxiosRequestConfig = {
-  baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api/v1`,
+  baseURL: `${env.NEXT_PUBLIC_API_URL}/api/v1`,
   headers: { 'Content-Type': 'application/json' },
 };
 

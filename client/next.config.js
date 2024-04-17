@@ -1,3 +1,12 @@
+import { fileURLToPath } from 'node:url';
+
+import createJiti from 'jiti';
+
+import { env } from './src/env.mjs';
+
+const jiti = createJiti(fileURLToPath(import.meta.url));
+jiti('./src/env.mjs');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
@@ -21,7 +30,7 @@ const nextConfig = {
         destination: '/auth/signin',
         permanent: false,
       },
-      ...(process.env.NEXT_PUBLIC_ENABLE_EUDR !== 'true'
+      ...(!env.NEXT_PUBLIC_ENABLE_EUDR
         ? [
             {
               source: '/eudr',
@@ -31,15 +40,6 @@ const nextConfig = {
           ]
         : []),
     ];
-  },
-  env: {
-    NEXT_PUBLIC_PLANET_API_KEY: 'PLAK6679039df83f414faf798ba4ad4530db',
-    NEXT_PUBLIC_CARTO_FOREST_ACCESS_TOKEN:
-      'eyJhbGciOiJIUzI1NiJ9.eyJhIjoiYWNfemsydWhpaDYiLCJqdGkiOiJjY2JlMjUyYSJ9.LoqzuDp076ESVYmHm1mZNtfhnqOVGmSxzp60Fht8PQw',
-    NEXT_PUBLIC_CARTO_DEFORESTATION_ACCESS_TOKEN:
-      'eyJhbGciOiJIUzI1NiJ9.eyJhIjoiYWNfemsydWhpaDYiLCJqdGkiOiJjZDk0ZWIyZSJ9.oqLagnOEc-j7Z4hY-MTP1yoZA_vJ7WYYAkOz_NUmCJo',
-    NEXT_PUBLIC_CARTO_RADD_ACCESS_TOKEN:
-      'eyJhbGciOiJIUzI1NiJ9.eyJhIjoiYWNfemsydWhpaDYiLCJqdGkiOiI3NTFkNzA1YSJ9.jrVugV7HYfhmjxj-p2Iks8nL_AjHR91Q37JVP2fNmtc',
   },
 };
 

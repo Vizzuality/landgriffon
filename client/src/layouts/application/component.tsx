@@ -5,6 +5,7 @@ import { CollectionIcon as CollectionIconSolid } from '@heroicons/react/solid';
 
 import { ChartBarIconOutline, ChartBarIconSolid } from './icons/chart-bar';
 
+import { env } from '@/env.mjs';
 import { useLasTask } from 'hooks/tasks';
 import Navigation from 'containers/navigation/desktop';
 import UserDropdown from 'containers/user-dropdown';
@@ -31,7 +32,7 @@ const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
       icon: { default: ChartBarIconOutline, active: ChartBarIconSolid },
       disabled: !!(!lastTask || lastTask?.status === 'processing'),
     },
-    ...(process.env.NEXT_PUBLIC_ENABLE_EUDR === 'true'
+    ...(env.NEXT_PUBLIC_ENABLE_EUDR
       ? [
           {
             name: 'EUDR',

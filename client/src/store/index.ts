@@ -18,6 +18,7 @@ import analysisScenarios, {
 } from 'store/features/analysis/scenarios';
 import eudr from 'store/features/eudr';
 import eudrDetail from 'store/features/eudr-detail';
+import { env } from '@/env.mjs';
 
 import type { Action, ReducersMapObject, Middleware } from '@reduxjs/toolkit';
 import type { AnalysisState } from './features/analysis';
@@ -158,7 +159,7 @@ const querySyncMiddleware: Middleware = () => (next) => (action) => {
 const createStore = (query = {}, currentState?: AnalysisState) =>
   configureStore({
     reducer: createReducer(asyncReducers),
-    devTools: process.env.NODE_ENV !== 'production',
+    devTools: env.NODE_ENV !== 'production',
     preloadedState: getPreloadedState(query, currentState),
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(querySyncMiddleware),
   });

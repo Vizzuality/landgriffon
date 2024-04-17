@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+import { env } from '@/env.mjs';
+
 export const authService = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_URL}/auth`,
+  baseURL: `${env.NEXT_PUBLIC_API_URL}/auth`,
   headers: { 'Content-Type': 'application/json' },
 });
 

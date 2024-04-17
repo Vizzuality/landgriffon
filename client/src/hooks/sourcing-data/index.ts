@@ -1,15 +1,18 @@
 import { useMutation } from '@tanstack/react-query';
 
 import { apiRawService } from 'services/api';
+import { Task } from '@/types';
 
-import type { UseMutationResult } from '@tanstack/react-query';
-
-type ApiResponse = { data: { id: string } };
-
-export function useUploadDataSource(): UseMutationResult<ApiResponse> {
-  const importDataSource = (data) =>
+export function useUploadDataSource() {
+  const importDataSource = (data: FormData) =>
     apiRawService
-      .request({
+      .request<{
+        data: {
+          id: Task['id'];
+          type: Task['type'];
+          attributes: Omit<Task, 'id' | 'type'>;
+        };
+      }>({
         method: 'POST',
         data,
         url: 'import/sourcing-data',
@@ -17,7 +20,7 @@ export function useUploadDataSource(): UseMutationResult<ApiResponse> {
       })
       .then((response) => response.data);
 
-  return useMutation<ApiResponse>(importDataSource, {
+  return useMutation(importDataSource, {
     mutationKey: ['importSourcingData'],
   });
 }

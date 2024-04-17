@@ -21,6 +21,13 @@ const DEFAULT_QUERY_OPTIONS = {
   refetchOnReconnect: false,
 };
 
+export const LAST_TASK_PARAMS = {
+  'page[size]': 1,
+  'page[number]': 1,
+  sort: '-createdAt',
+  include: 'user',
+};
+
 export const useTasks = (
   params: Record<string, string | number | boolean> = {},
   options: UseQueryOptions<TasksAPIResponse> = {},
@@ -45,18 +52,10 @@ export const useTasks = (
 };
 
 export const useLasTask = () => {
-  const tasks = useTasks(
-    {
-      'page[size]': 1,
-      'page[number]': 1,
-      sort: '-createdAt',
-      include: 'user',
-    },
-    {
-      refetchInterval: 20000,
-      refetchOnReconnect: true,
-    },
-  );
+  const tasks = useTasks(LAST_TASK_PARAMS, {
+    refetchInterval: 20000,
+    refetchOnReconnect: true,
+  });
 
   return { ...tasks, data: tasks?.data?.data?.[0] } as UseQueryResult<TaskAPIResponse>;
 };

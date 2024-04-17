@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import { useUploadDataSource } from 'hooks/sourcing-data';
 import { useLasTask } from 'hooks/tasks';
 import FileDropzone from 'components/file-dropzone';
+import { env } from '@/env.mjs';
 
 import type { FileDropZoneProps } from 'components/file-dropzone/types';
 import type { Task } from 'types';
@@ -15,14 +16,12 @@ type DataUploaderProps = {
   onUploadInProgress?: (inProgress: boolean) => void;
 };
 
-const MAX_SIZE = Number(process.env.NEXT_PUBLIC_FILE_UPLOADER_MAX_SIZE || '10000000');
-
 const uploadOptions = {
   accept: {
     'application/vnd.ms-excel': ['.xls'],
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
   },
-  maxSize: MAX_SIZE,
+  maxSize: env.NEXT_PUBLIC_FILE_UPLOADER_MAX_SIZE,
 };
 
 const DataUploader: React.FC<DataUploaderProps> = ({ variant = 'default', onUploadInProgress }) => {

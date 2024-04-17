@@ -1,5 +1,7 @@
 import queryString from 'query-string';
 
+import { env } from '@/env.mjs';
+
 import type { ContextualLayerApiResponse } from 'hooks/layers/getContextualLayers';
 
 export const getTiler = (
@@ -9,7 +11,7 @@ export const getTiler = (
   return queryString.stringifyUrl({
     url: tilerPath.match(/^(http|https):\/\//)
       ? tilerPath
-      : `${process.env.NEXT_PUBLIC_API_URL}${tilerPath}`,
+      : `${env.NEXT_PUBLIC_API_URL}${tilerPath}`,
     query: tilerParams,
   });
 };

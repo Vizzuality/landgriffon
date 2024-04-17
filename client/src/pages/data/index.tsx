@@ -4,27 +4,26 @@ import { GetServerSideProps } from 'next';
 import { dehydrate } from '@tanstack/react-query';
 
 import { auth } from '@/pages/api/auth/[...nextauth]';
-import { useSourcingLocations } from 'hooks/sourcing-locations';
-import { useLasTask } from 'hooks/tasks';
-import AdminLayout from 'layouts/admin';
-import AdminDataUploader from 'containers/admin/data-uploader';
-import AdminDataTable from 'containers/admin/data-table';
-import Loading from 'components/loading';
-import Search from 'components/search';
 import getQueryClient from '@/lib/react-query';
+import { useSourcingLocations } from '@/hooks/sourcing-locations';
+import AdminLayout from '@/layouts/admin';
+import AdminDataUploader from '@/containers/admin/data-uploader';
+import AdminDataTable from '@/containers/admin/data-table';
+import Search from '@/components/search';
+import { useLasTask } from '@/hooks/tasks';
 
 const AdminDataPage: React.FC = () => {
-  // Getting sourcing locations to check if there are any data
-  const { data, isFetched, isLoading } = useSourcingLocations({
+  const { data, isFetched } = useSourcingLocations({
     fields: 'updatedAt',
     'page[number]': 1,
     'page[size]': 1,
   });
+  const { data: lastTask, isFetched: lastTaskIsFetched } = useLasTask();
 
-  // Getting last task to check if there is a processing task
-  const { data: lastTask } = useLasTask();
-
-  const thereIsData = useMemo(() => data?.meta?.totalItems > 0, [data?.meta?.totalItems]);
+  const thereIsData = useMemo(
+    () => isFetched && data?.meta?.totalItems > 0,
+    [isFetched, data?.meta?.totalItems],
+  );
 
   return (
     <AdminLayout
@@ -43,17 +42,10 @@ const AdminDataPage: React.FC = () => {
         <title>Manage data | Landgriffon</title>
       </Head>
 
-      {(!isFetched || isLoading) && (
-        <div className="flex h-full w-full items-center justify-center">
-          <Loading className="h-5 w-5 text-navy-400" />
-        </div>
-      )}
+      {thereIsData && lastTask?.status !== 'processing' && <AdminDataTable />}
 
-      {/* Content when empty, or upload is processing or failed */}
-      {isFetched && !thereIsData && <AdminDataUploader task={lastTask} />}
-
-      {/* Content when data and upload is completed */}
-      {isFetched && thereIsData && <AdminDataTable task={lastTask} />}
+      {(['processing', 'failed'].includes(lastTask?.status) ||
+        (!lastTask && lastTaskIsFetched)) && <AdminDataUploader />}
     </AdminLayout>
   );
 };

@@ -2,13 +2,14 @@ import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import classNames from 'classnames';
 import { useRouter } from 'next/router';
+import { useQueryClient } from '@tanstack/react-query';
 
-import { useUploadDataSource } from 'hooks/sourcing-data';
-import { useLasTask } from 'hooks/tasks';
-import FileDropzone from 'components/file-dropzone';
+import { useUploadDataSource } from '@/hooks/sourcing-data';
+import { LAST_TASK_PARAMS, useLasTask } from '@/hooks/tasks';
 import { env } from '@/env.mjs';
+import FileDropzone from '@/components/file-dropzone';
 
-import type { FileDropZoneProps } from 'components/file-dropzone/types';
+import type { FileDropZoneProps } from '@/components/file-dropzone/types';
 import type { Task } from 'types';
 
 type DataUploaderProps = {
@@ -29,7 +30,7 @@ const DataUploader: React.FC<DataUploaderProps> = ({ variant = 'default', onUplo
   const router = useRouter();
   const uploadDataSource = useUploadDataSource();
   const lastTask = useLasTask();
-  const { refetch: refetchLastTask } = lastTask;
+  const queryClient = useQueryClient();
 
   const handleOnDrop: FileDropZoneProps['onDrop'] = useCallback(
     (acceptedFiles) => {
@@ -40,8 +41,16 @@ const DataUploader: React.FC<DataUploaderProps> = ({ variant = 'default', onUplo
       });
 
       uploadDataSource.mutate(formData, {
-        onSuccess: () => {
-          refetchLastTask();
+        onSuccess: ({ data }) => {
+          const { attributes, ...rest } = data;
+          queryClient.setQueryData(['tasks', LAST_TASK_PARAMS], {
+            data: [
+              {
+                ...rest,
+                ...attributes,
+              },
+            ],
+          });
         },
         onError: ({ response }) => {
           const errors = response?.data?.errors;
@@ -53,7 +62,7 @@ const DataUploader: React.FC<DataUploaderProps> = ({ variant = 'default', onUplo
         },
       });
     },
-    [refetchLastTask, uploadDataSource],
+    [uploadDataSource, queryClient],
   );
 
   const handleFileRejected: FileDropZoneProps['onDropRejected'] = useCallback((rejectedFiles) => {
@@ -69,12 +78,9 @@ const DataUploader: React.FC<DataUploaderProps> = ({ variant = 'default', onUplo
   // Status of the uploading process
   const isUploading = uploadDataSource.isLoading;
   const isWaiting = uploadDataSource.isSuccess && currentTaskId === lastTask.data?.id;
-  const isProcessing = lastTask.data?.status === 'processing';
-  const isWorking = isUploading || isWaiting || isProcessing;
-  const isCompleted =
-    !isWorking &&
-    uploadDataSource.isSuccess &&
-    (lastTask.data?.status === 'completed' || lastTask.data?.status === 'failed');
+  const isTaskFailed = lastTask.data?.status === 'failed';
+  const isWorking = (isUploading || isWaiting) && !isTaskFailed;
+  const isCompleted = !isWorking && uploadDataSource.isSuccess;
 
   useEffect(() => {
     if (!currentTaskId && lastTask.data?.id) {
@@ -83,20 +89,15 @@ const DataUploader: React.FC<DataUploaderProps> = ({ variant = 'default', onUplo
   }, [currentTaskId, lastTask.data?.id]);
 
   useEffect(() => {
-    if (isCompleted && router.isReady) {
-      router.reload();
-      onUploadInProgress(false);
-    }
+    if (isCompleted) onUploadInProgress?.(false);
   }, [isCompleted, onUploadInProgress, router]);
 
   useEffect(() => {
-    if (isWorking && onUploadInProgress) {
-      onUploadInProgress(true);
-    }
+    if (isWorking && onUploadInProgress) onUploadInProgress?.(true);
   }, [isWorking, onUploadInProgress]);
 
   return (
-    <div className="relative w-full min-w-[640px]">
+    <div className="relative w-full">
       <div
         className={classNames('relative z-10 rounded-xl bg-white', {
           'p-4 shadow-lg': variant === 'default',
@@ -110,19 +111,6 @@ const DataUploader: React.FC<DataUploaderProps> = ({ variant = 'default', onUplo
           isUploading={isWorking}
         />
       </div>
-
-      {isWorking && (
-        <div className="w-full px-20">
-          <div className="rounded-b-xl bg-white px-10 py-4">
-            <div className="h-[4px] w-full rounded bg-gradient-to-r from-[#5FCFF9] via-[#42A56A] to-[#F5CA7D]" />
-            <p className="mt-1 text-left text-xs text-gray-500">
-              {isUploading && 'Uploading file...'}
-              {isWaiting && 'File uploaded successfully! Starting to process the data...'}
-              {isProcessing && 'Processing file...'}
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

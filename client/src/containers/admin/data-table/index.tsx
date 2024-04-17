@@ -4,32 +4,33 @@ import { format } from 'date-fns';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
 
-import useModal from 'hooks/modals';
+import useModal from '@/hooks/modals';
 import {
   useSourcingLocations,
   useSourcingLocationsMaterials,
   useSourcingLocationsMaterialsTabularData,
-} from 'hooks/sourcing-locations';
-import DownloadMaterialsDataButton from 'containers/admin/download-materials-data-button';
-import DataUploadError from 'containers/admin/data-upload-error';
-import DataUploader from 'containers/uploader';
-import Button, { Anchor } from 'components/button';
-import Modal from 'components/modal';
-import Table from 'components/table';
-import { DEFAULT_PAGE_SIZES } from 'components/table/pagination/constants';
-import { usePermissions } from 'hooks/permissions';
-import { RoleName } from 'hooks/permissions/enums';
+} from '@/hooks/sourcing-locations';
+import DownloadMaterialsDataButton from '@/containers/admin/download-materials-data-button';
+import DataUploadError from '@/containers/admin/data-upload-error';
+import DataUploader from '@/containers/uploader';
+import Button, { Anchor } from '@/components/button';
+import Modal from '@/components/modal';
+import Table from '@/components/table';
+import { DEFAULT_PAGE_SIZES } from '@/components/table/pagination/constants';
+import { usePermissions } from '@/hooks/permissions';
+import { RoleName } from '@/hooks/permissions/enums';
+import { useLasTask } from '@/hooks/tasks';
 
 import type { PaginationState, SortingState, VisibilityState } from '@tanstack/react-table';
-import type { TableProps } from 'components/table/component';
-import type { Task } from 'types';
+import type { TableProps } from '@/components/table/component';
 
 const YEARS_COLUMNS_UNIT = 't/yr';
 
-const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
+const AdminDataPage: React.FC = () => {
   const { push, query } = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
   const { data: session } = useSession();
+  const { data: task } = useLasTask();
 
   const { hasRole } = usePermissions();
   const isAdmin = hasRole(RoleName.ADMIN);
@@ -220,7 +221,12 @@ const AdminDataPage: React.FC<{ task: Task }> = ({ task }) => {
               Uploading a new file will replace all the current data.
             </p>
             <div className="mt-10">
-              <DataUploader variant="inline" />
+              <DataUploader
+                variant="inline"
+                onUploadInProgress={(isUploadInProgress) => {
+                  if (!isUploadInProgress) closeUploadDataSourceModal();
+                }}
+              />
             </div>
           </div>
 

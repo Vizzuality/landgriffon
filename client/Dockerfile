@@ -38,8 +38,8 @@ COPY --chown=$USER:$USER public ./public
 
 # NextJS required files
 COPY --chown=$USER:$USER next.config.js local.d.ts \
-	postcss.config.js tailwind.config.ts entrypoint.sh \
-	tsconfig.json tsconfig.eslint.json .browserlistrc .eslintrc.js .prettierrc.cjs ./
+	postcss.config.cjs tailwind.config.ts entrypoint.sh \
+	tsconfig.json .browserlistrc .eslintrc.cjs .prettierrc.cjs ./
 
 RUN yarn build
 

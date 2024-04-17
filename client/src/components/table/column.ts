@@ -7,7 +7,6 @@ declare module '@tanstack/table-core' {
     theme: TableProps<TData>['theme'];
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     isSticky?: boolean | 'left' | 'right';
     align?: 'left' | 'right' | 'center';

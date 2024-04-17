@@ -1,6 +1,8 @@
 import { createEnv } from '@t3-oss/env-nextjs';
 import { z } from 'zod';
 
+const castToBoolean = z.preprocess((/** @type {string} */ val) => val === 'true', z.boolean());
+
 export const env = createEnv({
   shared: {
     NODE_ENV: z.enum(['development', 'production', 'test']),
@@ -28,7 +30,7 @@ export const env = createEnv({
     // ? URL (including protocol) of the API
     NEXT_PUBLIC_API_URL: z.string().url(),
     // ? enables access to EUDR page
-    NEXT_PUBLIC_ENABLE_EUDR: z.coerce.boolean().optional().default(false),
+    NEXT_PUBLIC_ENABLE_EUDR: castToBoolean.default(false),
     NEXT_PUBLIC_PLANET_API_KEY: z.string().default('PLAK6679039df83f414faf798ba4ad4530db'),
     NEXT_PUBLIC_CARTO_FOREST_ACCESS_TOKEN: z
       .string()

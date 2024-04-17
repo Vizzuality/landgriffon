@@ -16,29 +16,45 @@ const nextConfig = {
   redirects() {
     return [
       {
-        source: '/',
-        destination: '/analysis/map',
-        permanent: false,
-      },
-      {
-        source: '/analysis',
-        destination: '/analysis/map',
-        permanent: false,
-      },
-      {
         source: '/auth/signup',
         destination: '/auth/signin',
         permanent: false,
       },
-      ...(!env.NEXT_PUBLIC_ENABLE_EUDR
+      ...(env.NEXT_PUBLIC_ENABLE_EUDR
         ? [
+            {
+              source: '/',
+              destination: '/eudr',
+              permanent: false,
+            },
+            {
+              source: '/analysis',
+              destination: '/eudr',
+              permanent: false,
+            },
+            {
+              source: '/analysis/map',
+              destination: '/eudr',
+              permanent: false,
+            },
+          ]
+        : [
+            {
+              source: '/',
+              destination: '/analysis/map',
+              permanent: false,
+            },
+            {
+              source: '/analysis',
+              destination: '/analysis/map',
+              permanent: false,
+            },
             {
               source: '/eudr',
               destination: '/analysis/map',
               permanent: false,
             },
-          ]
-        : []),
+          ]),
     ];
   },
 };

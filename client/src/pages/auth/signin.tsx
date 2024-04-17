@@ -11,6 +11,7 @@ import toast from 'react-hot-toast';
 import AuthenticationLayout from 'layouts/authentication';
 import { Label, Input, Checkbox } from 'components/forms';
 import { Button } from 'components/button';
+import { env } from '@/env.mjs';
 
 import type { ReactElement } from 'react';
 import type { NextPageWithLayout } from 'pages/_app';
@@ -44,9 +45,14 @@ const SignIn: NextPageWithLayout = () => {
       });
 
       if (ok) {
-        router.push((router.query?.callbackUrl as string) || '/analysis/map', undefined, {
-          shallow: true,
-        });
+        router.push(
+          (router.query?.callbackUrl as string) ||
+            (env.NEXT_PUBLIC_ENABLE_EUDR ? '/eudr' : '/analysis/map'),
+          undefined,
+          {
+            shallow: true,
+          },
+        );
       } else {
         setIsLoading(false);
         toast.error('Login failed. Your email or password is incorrect.');

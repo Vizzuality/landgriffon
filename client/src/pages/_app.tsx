@@ -18,8 +18,7 @@ import type { ParsedUrlQuery } from 'querystring';
 
 import 'styles/globals.css';
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   Layout?: (page: ReactElement) => ReactNode;
 };
 

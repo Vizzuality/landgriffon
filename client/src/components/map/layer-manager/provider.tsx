@@ -35,9 +35,7 @@ export const MapboxOverlayProvider = ({ children }: PropsWithChildren) => {
 
   const addLayer = useCallback(
     (layer) => {
-      // TODO: fix this
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+      // @ts-expect-error to fix
       const layers = OVERLAY._props.layers || [];
 
       const l1 = new layer.type({
@@ -54,9 +52,7 @@ export const MapboxOverlayProvider = ({ children }: PropsWithChildren) => {
 
   const removeLayer = useCallback(
     (id) => {
-      // TODO: fix this, same as above
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+      // @ts-expect-error to fix
       const layers = OVERLAY._props.layers || [];
 
       OVERLAY.setProps({

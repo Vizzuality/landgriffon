@@ -29,10 +29,8 @@ import { WebSocketsModule } from 'modules/notifications/websockets/websockets.mo
 import { EudrImportService } from 'modules/import-data/eudr/eudr.import.service';
 import { EUDRDTOProcessor } from 'modules/import-data/eudr/eudr.dto-processor.service';
 import { CqrsModule } from '@nestjs/cqrs';
-import { ImportProgressHandler } from 'modules/import-data/events/import-progress.handler';
-import { ImportProgressService } from 'modules/import-data/events/import-progress.service';
-
-// TODO: Move EUDR related stuff to EUDR modules
+import { ImportProgressHandler } from 'modules/cqrs/import-data/import-progress.handler';
+import { ImportProgressService } from 'modules/cqrs/import-data/import-progress.service';
 
 // TODO: Move EUDR related stuff to EUDR modules
 

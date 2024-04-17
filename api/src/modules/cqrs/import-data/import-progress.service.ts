@@ -3,7 +3,7 @@ import { EventBus } from '@nestjs/cqrs';
 import {
   IMPORT_PROGRESS_STATUS,
   ImportProgressUpdateEvent,
-} from 'modules/import-data/events/import-progress.event';
+} from 'modules/cqrs/import-data/import-progress.event';
 
 /**
  * @note: We use eventBus instead of commandBus because even tho broadcasting via websockets can be considered a command, it is not a command in the context of cqrs. (apparently)

@@ -5,7 +5,7 @@ import {
   EVENT_KINDS,
   IWebSocketService,
 } from 'modules/notifications/websockets/websockets.service.interface';
-import { ImportProgressUpdateEvent } from 'modules/import-data/events/import-progress.event';
+import { ImportProgressUpdateEvent } from 'modules/cqrs/import-data/import-progress.event';
 
 @EventsHandler(ImportProgressUpdateEvent)
 export class ImportProgressHandler

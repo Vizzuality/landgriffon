@@ -25,12 +25,13 @@ const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
         default: CollectionIconOutline,
         active: CollectionIconSolid,
       },
+      disabled: env.NEXT_PUBLIC_ENABLE_EUDR,
     },
     {
       name: 'Analysis',
       href: '/analysis',
       icon: { default: ChartBarIconOutline, active: ChartBarIconSolid },
-      disabled: !!(!lastTask || lastTask?.status === 'processing'),
+      disabled: !!(!lastTask || lastTask?.status === 'processing') || env.NEXT_PUBLIC_ENABLE_EUDR,
     },
     ...(env.NEXT_PUBLIC_ENABLE_EUDR
       ? [
@@ -43,13 +44,6 @@ const ApplicationLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
         ]
       : []),
   ];
-
-  // navigationItems.push({
-  //   name: 'EUDR',
-  //   href: '/eudr',
-  //   icon: { default: ReportSVG, active: ReportSVG },
-  //   disabled: !!(!lastTask || lastTask?.status === 'processing'),
-  // });
 
   return (
     <div className="min-w-screen-lg flex h-screen min-h-[700px] overflow-hidden bg-navy-600">

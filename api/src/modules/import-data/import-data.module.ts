@@ -30,7 +30,7 @@ import { EudrImportService } from 'modules/import-data/eudr/eudr.import.service'
 import { EUDRDTOProcessor } from 'modules/import-data/eudr/eudr.dto-processor.service';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ImportProgressHandler } from 'modules/cqrs/import-data/import-progress.handler';
-import { ImportProgressService } from 'modules/cqrs/import-data/import-progress.service';
+import { ImportProgressEmitter } from 'modules/cqrs/import-data/import-progress.emitter';
 
 // TODO: Move EUDR related stuff to EUDR modules
 
@@ -76,7 +76,7 @@ import { ImportProgressService } from 'modules/cqrs/import-data/import-progress.
     ImportDataService,
     EudrImportService,
     EUDRDTOProcessor,
-    ImportProgressService,
+    ImportProgressEmitter,
     ImportProgressHandler,
     {
       provide: 'FILE_UPLOAD_SIZE_LIMIT',

@@ -20,6 +20,7 @@ export class NestWebsocketsService implements IWebSocketService {
   }
 
   emit(event: EVENT_KINDS, payload: any): void {
+    this.logger.debug(`Emitting event: ${event}`);
     this.server.emit(event, payload);
   }
 }

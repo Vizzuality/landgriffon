@@ -75,43 +75,44 @@ export class SourcingRecordsDtoProcessorService {
     sourcingLocationGroupId?: string,
   ): Promise<SourcingRecordsDtos> {
     this.logger.debug(`Creating DTOs from sourcing records sheets`);
-    const materials: CreateMaterialDto[] = await this.createMaterialDtos(
+    const materialDtos: CreateMaterialDto[] = await this.createMaterialDtos(
       importData.materials,
     );
-    const businessUnits: CreateBusinessUnitDto[] =
+    const businessUnitDtos: CreateBusinessUnitDto[] =
       await this.createBusinessUnitDtos(importData.businessUnits);
-    const suppliers: CreateSupplierDto[] = await this.createSupplierDtos(
+    const supplierDtos: CreateSupplierDto[] = await this.createSupplierDtos(
       importData.suppliers,
     );
-    const adminRegions: CreateAdminRegionDto[] =
+    const adminRegionDtos: CreateAdminRegionDto[] =
       await this.createAdminRegionDtos(importData.countries);
 
-    const indicators: CreateIndicatorDto[] = await this.createIndicatorDtos(
+    // TODO: this probably needs to be removed because we dont create indicators from the excel
+    const indicatorDtos: CreateIndicatorDto[] = await this.createIndicatorDtos(
       importData.indicators,
     );
 
     const processedSourcingData: Record<string, any> =
-      await this.cleanCustomData(importData.sourcingData);
+      await this.parseSourcingDataFromSheet(importData.sourcingData);
 
     /**
      * Validating parsed and cleaned from Sourcing Data sheet
      */
 
-    await this.validateCleanData(processedSourcingData.sourcingData);
+    await this.validateSourcingData(processedSourcingData.sourcingData);
     /**
      * Builds SourcingData from parsed XLSX
      */
-    const sourcingData: SourcingData[] = await this.createSourcingDataDTOs(
-      processedSourcingData.sourcingData,
+    const sourcingDataDtos: SourcingData[] = await this.createSourcingDataDTOs(
+      importData.sourcingData,
       sourcingLocationGroupId,
     );
     return {
-      materials,
-      businessUnits,
-      suppliers,
-      adminRegions,
-      sourcingData,
-      indicators,
+      materials: materialDtos,
+      businessUnits: businessUnitDtos,
+      suppliers: supplierDtos,
+      adminRegions: adminRegionDtos,
+      sourcingData: sourcingDataDtos,
+      indicators: indicatorDtos,
     };
   }
 
@@ -125,7 +126,7 @@ export class SourcingRecordsDtoProcessorService {
     return regexMatch ? parseInt(regexMatch[0]) : null;
   }
 
-  private async cleanCustomData(customData: WorkSheet[]): Promise<{
+  private async parseSourcingDataFromSheet(customData: WorkSheet[]): Promise<{
     sourcingData: SourcingData[];
   }> {
     this.logger.debug(`Cleaning ${customData.length} custom data rows`);
@@ -205,9 +206,8 @@ export class SourcingRecordsDtoProcessorService {
    * Creates an array of CreateMaterialDto objects from the JSON data processed from the XLSX file
    *
    * @param importData
-   * @private
    */
-  private async createMaterialDtos(
+  async createMaterialDtos(
     importData: Record<string, any>[],
   ): Promise<CreateMaterialDto[]> {
     const materialList: CreateMaterialDto[] = [];
@@ -221,9 +221,8 @@ export class SourcingRecordsDtoProcessorService {
    * Creates an array of CreateBusinessUnitDto objects from the JSON data processed from the XLSX file
    *
    * @param importData
-   * @private
    */
-  private async createBusinessUnitDtos(
+  async createBusinessUnitDtos(
     importData: Record<string, any>[],
   ): Promise<CreateBusinessUnitDto[]> {
     const businessUnitDtos: CreateBusinessUnitDto[] = [];
@@ -240,9 +239,8 @@ export class SourcingRecordsDtoProcessorService {
    * Creates an array of CreateSupplierDto objects from the JSON data processed from the XLSX file
    *
    * @param importData
-   * @private
    */
-  private async createSupplierDtos(
+  async createSupplierDtos(
     importData: Record<string, any>[],
   ): Promise<CreateSupplierDto[]> {
     const supplierDtos: CreateSupplierDto[] = [];
@@ -257,9 +255,8 @@ export class SourcingRecordsDtoProcessorService {
    * Creates an array of CreateAdminRegionDto objects from the JSON data processed from the XLSX file
    *
    * @param importData
-   * @private
    */
-  private async createAdminRegionDtos(
+  async createAdminRegionDtos(
     importData: Record<string, any>[],
   ): Promise<CreateAdminRegionDto[]> {
     const adminRegionDtos: CreateAdminRegionDto[] = [];
@@ -269,7 +266,7 @@ export class SourcingRecordsDtoProcessorService {
     return adminRegionDtos;
   }
 
-  private async createIndicatorDtos(
+  async createIndicatorDtos(
     importData: Record<string, any>[],
   ): Promise<CreateIndicatorDto[]> {
     const indicatorsDtos: CreateIndicatorDto[] = [];
@@ -282,20 +279,23 @@ export class SourcingRecordsDtoProcessorService {
   /**
    * Creates an array of SourcingLocation and nested SourcingRecord objects from the JSON data processed from the XLSX file
    *
-   * @param importData
+   * @param sourcingData
    * @param sourcingLocationGroupId
-   * @private
    */
-  private async createSourcingDataDTOs(
-    importData: Record<string, any>[],
+  async createSourcingDataDTOs(
+    sourcingData: Record<string, any>[],
     sourcingLocationGroupId?: string,
   ): Promise<SourcingData[]> {
     this.logger.debug(
-      `Creating sourcing data DTOs from ${importData.length} data rows`,
+      `Creating sourcing data DTOs from ${sourcingData.length} data rows`,
     );
+    const processedSourcingData: Record<string, any> =
+      await this.parseSourcingDataFromSheet(sourcingData);
+
+    await this.validateSourcingData(processedSourcingData.sourcingData);
 
     const sourcingLocationDtos: any[] = [];
-    for (const importRow of importData) {
+    for (const importRow of processedSourcingData.sourcingData) {
       const sourcingLocationDto: CreateSourcingLocationDto =
         await this.createSourcingLocationDTOFromData(
           importRow,
@@ -428,7 +428,9 @@ export class SourcingRecordsDtoProcessorService {
     return sourcingRecordDto;
   }
 
-  private async validateCleanData(nonEmptyData: SourcingData[]): Promise<void> {
+  private async validateSourcingData(
+    nonEmptyData: SourcingData[],
+  ): Promise<void> {
     const excelErrors: {
       line: number;
       column: string;

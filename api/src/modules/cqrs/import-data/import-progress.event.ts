@@ -2,8 +2,8 @@ export class ImportProgressUpdateEvent {
   constructor(
     public readonly taskId: string,
     public readonly kind: string,
-    public readonly status: IMPORT_PROGRESS_STATUS,
-    public readonly progress: number,
+    public readonly status: string,
+    public readonly progress?: number,
   ) {}
 }
 

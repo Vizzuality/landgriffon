@@ -12,6 +12,7 @@ import { ExcelImportJob } from 'modules/import-data/workers/import-data.producer
 import { TasksService } from 'modules/tasks/tasks.service';
 import { Task, TASK_STATUS } from 'modules/tasks/task.entity';
 import { importQueueName } from 'modules/import-data/workers/import-queue.name';
+import { ImportProgressEmitter } from 'modules/cqrs/import-data/import-progress.emitter';
 
 @Processor(importQueueName)
 export class ImportDataConsumer {
@@ -20,6 +21,7 @@ export class ImportDataConsumer {
   constructor(
     public readonly importDataService: ImportDataService,
     public readonly tasksService: TasksService,
+    public readonly importProgress: ImportProgressEmitter,
   ) {}
 
   @OnQueueError()
@@ -36,6 +38,7 @@ export class ImportDataConsumer {
       newStatus: TASK_STATUS.FAILED,
       message: err.message,
     });
+    this.importProgress.emitImportFailed({ taskId: job.data.taskId });
     this.logger.error(
       `Import Failed for file: ${job.data.xlsxFileData.filename} for task: ${task.id}: ${err}`,
     );
@@ -50,10 +53,16 @@ export class ImportDataConsumer {
       taskId: job.data.taskId,
       newStatus: TASK_STATUS.COMPLETED,
     });
+    this.importProgress.emitImportFinished({ taskId: job.data.taskId });
   }
 
   @Process('excel-import-job')
   async readImportDataJob(job: Job<ExcelImportJob>): Promise<void> {
     await this.importDataService.processImportJob(job);
+    this.importProgress.emitValidationProgress({
+      taskId: job.data.taskId,
+      progress: 0,
+      step: this.importProgress.steps.VALIDATING_DATA,
+    });
   }
 }

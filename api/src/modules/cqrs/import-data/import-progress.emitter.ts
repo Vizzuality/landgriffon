@@ -26,13 +26,11 @@ export class ImportProgressEmitter {
   constructor(private readonly eventBus: EventBus) {}
 
   emitValidationProgress(importProgress: {
-    taskId: string;
-    step: string;
+    taskId?: string;
     progress: number;
   }): void {
     this.eventBus.publish(
       new ImportProgressUpdateEvent(
-        importProgress.taskId,
         this.eventKinds.DATA_IMPORT_PROGRESS,
         this.steps.VALIDATING_DATA,
         importProgress.progress,
@@ -41,12 +39,11 @@ export class ImportProgressEmitter {
   }
 
   emitImportProgress(importProgress: {
-    taskId: string;
+    taskId?: string;
     progress: number;
   }): void {
     this.eventBus.publish(
       new ImportProgressUpdateEvent(
-        importProgress.taskId,
         this.eventKinds.DATA_IMPORT_PROGRESS,
         this.steps.IMPORTING_DATA,
         importProgress.progress,
@@ -60,7 +57,6 @@ export class ImportProgressEmitter {
   }): void {
     this.eventBus.publish(
       new ImportProgressUpdateEvent(
-        importProgress.taskId,
         this.eventKinds.DATA_IMPORT_PROGRESS,
         this.steps.GEOCODING,
         importProgress.progress,
@@ -69,12 +65,11 @@ export class ImportProgressEmitter {
   }
 
   emitImpactCalculationProgress(importProgress: {
-    taskId: string;
+    taskId?: string;
     progress: number;
   }): void {
     this.eventBus.publish(
       new ImportProgressUpdateEvent(
-        importProgress.taskId,
         this.eventKinds.DATA_IMPORT_PROGRESS,
         this.steps.CALCULATING_IMPACT,
         importProgress.progress,
@@ -82,20 +77,18 @@ export class ImportProgressEmitter {
     );
   }
 
-  emitImportFinished(importProgress: { taskId: string }): void {
+  emitImportFinished(): void {
     this.eventBus.publish(
       new ImportProgressUpdateEvent(
-        importProgress.taskId,
         this.eventKinds.DATA_IMPORT_PROGRESS,
         this.steps.FINISHED,
       ),
     );
   }
 
-  emitImportFailed(importProgress: { taskId: string }): void {
+  emitImportFailed(): void {
     this.eventBus.publish(
       new ImportProgressUpdateEvent(
-        importProgress.taskId,
         this.eventKinds.DATA_IMPORT_PROGRESS,
         this.steps.FAILED,
       ),

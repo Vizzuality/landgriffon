@@ -31,6 +31,7 @@ import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { ImpactService } from 'modules/impact/impact.service';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
+import { ImportProgressEmitter } from 'modules/cqrs/import-data/import-progress.emitter';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -81,6 +82,7 @@ export class SourcingDataImportService {
     protected readonly indicatorRecordService: IndicatorRecordsService,
     protected readonly impactService: ImpactService,
     protected readonly impactCalculator: ImpactCalculator,
+    protected readonly importProgress: ImportProgressEmitter,
   ) {}
 
   async importSourcingData(filePath: string, taskId: string): Promise<any> {
@@ -100,6 +102,7 @@ export class SourcingDataImportService {
           parsedXLSXDataset,
           sourcingLocationGroup.id,
         ).catch(async (err: any) => {
+          // TODO: The worker handler also updates the task, check if this is redundant
           await this.tasksService.updateImportTask({
             taskId,
             newErrors: err.message,
@@ -319,13 +322,44 @@ export class SourcingDataImportService {
     parsedXLSXDataset: SourcingRecordsSheets,
     sourcingLocationGroupId: string,
   ): Promise<SourcingRecordsDtos> {
-    const dtoMatchedData: SourcingRecordsDtos =
-      await this.dtoProcessor.createDTOsFromSourcingRecordsSheets(
-        parsedXLSXDataset,
-        sourcingLocationGroupId,
-      );
+    const processingMap: Record<string, any> = {
+      materials: this.dtoProcessor.createMaterialDtos.bind(this.dtoProcessor),
+      businessUnits: this.dtoProcessor.createBusinessUnitDtos.bind(
+        this.dtoProcessor,
+      ),
+      suppliers: this.dtoProcessor.createSupplierDtos.bind(this.dtoProcessor),
+      countries: this.dtoProcessor.createAdminRegionDtos.bind(
+        this.dtoProcessor,
+      ),
+      sourcingData: this.dtoProcessor.createSourcingDataDTOs.bind(
+        this.dtoProcessor,
+      ),
+      indicators: this.dtoProcessor.createIndicatorDtos.bind(this.dtoProcessor),
+      sourcingLocationGroupId,
+    };
+    const results: any = {} as SourcingRecordsDtos;
 
-    await this.validateDTOs(dtoMatchedData);
-    return dtoMatchedData;
+    const totalSteps: number = Object.keys(parsedXLSXDataset).length + 1; // +1 for final validation step
+    let currentStep: number = 0;
+
+    for (const [sheetName, sheetEntities] of Object.entries(
+      parsedXLSXDataset,
+    )) {
+      if (sheetName in processingMap) {
+        const result: any = await processingMap[sheetName](
+          sheetEntities,
+          sourcingLocationGroupId,
+        );
+        results[sheetName] = result;
+      } else {
+        await this.validateDTOs(results);
+      }
+      currentStep++;
+      this.importProgress.emitValidationProgress({
+        progress: (currentStep / totalSteps) * 100,
+      });
+    }
+
+    return results;
   }
 }

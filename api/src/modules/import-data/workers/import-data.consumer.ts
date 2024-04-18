@@ -38,7 +38,7 @@ export class ImportDataConsumer {
       newStatus: TASK_STATUS.FAILED,
       message: err.message,
     });
-    this.importProgress.emitImportFailed({ taskId: job.data.taskId });
+    this.importProgress.emitImportFailed();
     this.logger.error(
       `Import Failed for file: ${job.data.xlsxFileData.filename} for task: ${task.id}: ${err}`,
     );
@@ -53,7 +53,7 @@ export class ImportDataConsumer {
       taskId: job.data.taskId,
       newStatus: TASK_STATUS.COMPLETED,
     });
-    this.importProgress.emitImportFinished({ taskId: job.data.taskId });
+    this.importProgress.emitImportFinished();
   }
 
   @Process('excel-import-job')
@@ -62,7 +62,6 @@ export class ImportDataConsumer {
     this.importProgress.emitValidationProgress({
       taskId: job.data.taskId,
       progress: 0,
-      step: this.importProgress.steps.VALIDATING_DATA,
     });
   }
 }

@@ -134,7 +134,7 @@ export class ImportDataController {
       const numberOfIncrements: number = 100 / progressIncrement;
       for (let i: number = 0; i <= 100; i += progressIncrement) {
         if (step === 'VALIDATING_DATA') {
-          this.importProgressEmitter.emitImportProgress({ progress: i });
+          this.importProgressEmitter.emitValidationProgress({ progress: i });
         }
         if (step === 'IMPORTING_DATA') {
           this.importProgressEmitter.emitImportProgress({ progress: i });

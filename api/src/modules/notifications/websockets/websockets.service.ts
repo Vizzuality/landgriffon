@@ -6,7 +6,7 @@ import {
   IWebSocketService,
 } from 'modules/notifications/websockets/websockets.service.interface';
 
-@WebSocketGateway()
+@WebSocketGateway({ cors: true })
 export class NestWebsocketsService implements IWebSocketService {
   logger: Logger = new Logger(NestWebsocketsService.name);
 

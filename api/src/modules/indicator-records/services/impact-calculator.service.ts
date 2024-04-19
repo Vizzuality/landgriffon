@@ -29,6 +29,7 @@ import {
   CACHED_DATA_TYPE,
   CachedData,
 } from 'modules/cached-data/cached-data.entity';
+import { ImportProgressEmitter } from 'modules/cqrs/import-data/import-progress.emitter';
 
 /**
  * @description: This is PoC (Proof of Concept) for the updated LG methodology v0.1
@@ -52,13 +53,34 @@ export class ImpactCalculator {
     private readonly h3DataService: H3DataService,
     private readonly cachedDataService: CachedDataService,
     private readonly dataSource: DataSource,
+    private readonly importProgress: ImportProgressEmitter,
   ) {}
 
   async calculateImpactForAllSourcingRecords(
     activeIndicators: Indicator[],
   ): Promise<void> {
-    const rawData: SourcingRecordsWithIndicatorRawData[] =
-      await this.getImpactRawDataForAllSourcingRecords(activeIndicators);
+    const totalEstimatedTime: number = 600000; // 10 minutos en milisegundos
+    const halfTime: number = totalEstimatedTime / 2; // La mitad del tiempo para esta tarea
+    let progress: number = 0;
+    const progressIncrement: number = 50 / (halfTime / 1000); // Cálculo para actualizar cada segundo hacia el 50% del total
+
+    const interval: NodeJS.Timer = setInterval(() => {
+      progress += progressIncrement;
+      progress = Math.min(progress, 50);
+      this.importProgress.emitImpactCalculationProgress({ progress });
+      if (progress >= 50) {
+        clearInterval(interval);
+      }
+    }, 1000);
+    let rawData: SourcingRecordsWithIndicatorRawData[];
+    try {
+      rawData = await this.getImpactRawDataForAllSourcingRecords(
+        activeIndicators,
+      );
+    } catch (error: any) {
+      clearInterval(interval);
+      throw error;
+    }
 
     const newImpactToBeSaved: IndicatorRecord[] = [];
 
@@ -67,6 +89,7 @@ export class ImpactCalculator {
         this.calculateIndicatorValues(data, data.tonnage);
 
       activeIndicators.forEach((indicator: Indicator) => {
+        this.logger.log('CREATING INDICATOR RECORD DTO');
         newImpactToBeSaved.push(
           IndicatorRecord.merge(new IndicatorRecord(), {
             value: indicatorValues.get(indicator.nameCode),
@@ -80,7 +103,14 @@ export class ImpactCalculator {
       });
     });
 
-    await this.indicatorRecordRepository.saveChunks(newImpactToBeSaved);
+    await this.indicatorRecordRepository.saveChunks(
+      newImpactToBeSaved,
+      {},
+      {
+        step: 'CALCULATING_IMPACT',
+        progressStartingPoint: 50,
+      },
+    );
   }
 
   async createIndicatorRecordsBySourcingRecords(

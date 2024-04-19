@@ -108,7 +108,14 @@ export class SourcingLocationsService extends AppBaseService<
         return sourcingLocation;
       },
     );
-    return await this.sourcingLocationRepository.saveChunks(sourcingLocations);
+    return await this.sourcingLocationRepository.saveChunks(
+      sourcingLocations,
+      {},
+      {
+        step: 'IMPORTING_DATA',
+        progressStartingPoint: 0,
+      },
+    );
   }
 
   /**

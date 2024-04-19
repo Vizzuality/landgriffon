@@ -28,9 +28,6 @@ import { ImpactModule } from 'modules/impact/impact.module';
 import { WebSocketsModule } from 'modules/notifications/websockets/websockets.module';
 import { EudrImportService } from 'modules/import-data/eudr/eudr.import.service';
 import { EUDRDTOProcessor } from 'modules/import-data/eudr/eudr.dto-processor.service';
-import { CqrsModule } from '@nestjs/cqrs';
-import { ImportProgressHandler } from 'modules/cqrs/import-data/import-progress.handler';
-import { ImportProgressEmitter } from 'modules/cqrs/import-data/import-progress.emitter';
 
 // TODO: Move EUDR related stuff to EUDR modules
 
@@ -49,7 +46,6 @@ import { ImportProgressEmitter } from 'modules/cqrs/import-data/import-progress.
     BullModule.registerQueue({
       name: 'eudr',
     }),
-    CqrsModule,
     MaterialsModule,
     BusinessUnitsModule,
     SuppliersModule,
@@ -76,8 +72,6 @@ import { ImportProgressEmitter } from 'modules/cqrs/import-data/import-progress.
     ImportDataService,
     EudrImportService,
     EUDRDTOProcessor,
-    ImportProgressEmitter,
-    ImportProgressHandler,
     {
       provide: 'FILE_UPLOAD_SIZE_LIMIT',
       useValue: config.get('fileUploads.sizeLimit'),

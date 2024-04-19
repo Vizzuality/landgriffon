@@ -3,6 +3,7 @@ import {
   Get,
   Inject,
   Post,
+  Query,
   UnauthorizedException,
   UploadedFile,
   UseGuards,
@@ -38,6 +39,7 @@ export class ImportDataController {
   constructor(
     public readonly importDataService: ImportDataService,
     private readonly eudr: EudrImportService,
+    private readonly importProgressEmitter: ImportProgressEmitter,
     @Inject(IWebSocketServiceToken) private emitter: IWebSocketService,
   ) {}
 
@@ -111,23 +113,45 @@ export class ImportDataController {
 
   @Public()
   @Get('/sockets/start')
-  async test(): Promise<string> {
-    for (const n of Array(10).keys()) {
-      this.emitter.emit('DATA_IMPORT_PROGRESS' as any, {
-        message: `Hello World ${n}`,
-      });
+  async startEmittingProgress(@Query() time: any): Promise<void> {
+    const steps = [
+      'VALIDATING_DATA',
+      'IMPORTING_DATA',
+      'GEOCODING',
+      'CALCULATING_IMPACT',
+      'FINISHED',
+    ];
+
+    const totalTime: number = parseInt(time.time) * 1000 || 30000;
+    const stepTime: number = totalTime / steps.length;
+
+    function sleep(ms: number): Promise<any> {
+      return new Promise((resolve: any) => setTimeout(resolve, ms));
     }
 
-    return 'Hello World';
-  }
-
-  @Public()
-  @Get('/sockets/stop')
-  async stop(): Promise<string> {
-    this.emitter.emit('DATA_IMPORT_FINISHED' as any, {
-      message: `Hello World`,
-    });
-
-    return 'Hello World';
+    for (const step of steps) {
+      const progressIncrement: number = 10;
+      const numberOfIncrements: number = 100 / progressIncrement;
+      for (let i: number = 0; i <= 100; i += progressIncrement) {
+        if (step === 'VALIDATING_DATA') {
+          this.importProgressEmitter.emitImportProgress({ progress: i });
+        }
+        if (step === 'IMPORTING_DATA') {
+          this.importProgressEmitter.emitImportProgress({ progress: i });
+        }
+        if (step === 'GEOCODING') {
+          this.importProgressEmitter.emitGeocodingProgress({ progress: i });
+        }
+        if (step === 'CALCULATING_IMPACT') {
+          this.importProgressEmitter.emitImpactCalculationProgress({
+            progress: i,
+          });
+        }
+        // if (step === 'FINISHED') {
+        //   this.importProgressEmitter.emitImportFinished();
+        // }
+        await sleep(stepTime / numberOfIncrements); // Wait a fraction of the step's total time before the next update
+      }
+    }
   }
 }

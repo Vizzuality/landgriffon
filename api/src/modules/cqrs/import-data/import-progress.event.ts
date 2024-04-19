@@ -6,14 +6,11 @@ export class ImportProgressUpdateEvent implements IEvent {
     'IMPORTING_DATA',
     'GEOCODING',
     'CALCULATING_IMPACT',
+    'FINISHED',
   ];
   payload: Record<string, any>;
 
-  constructor(
-    public readonly step: string,
-    public readonly status: string,
-    public readonly progress: number,
-  ) {
+  constructor(public readonly step: string, public readonly progress: number) {
     this.payload = {
       VALIDATING_DATA: {
         step: 'VALIDATING_DATA',
@@ -36,13 +33,13 @@ export class ImportProgressUpdateEvent implements IEvent {
         progress: 0,
       },
     };
-    this.updatePayload(step, status, progress);
+    this.updatePayload(step, progress);
   }
 
-  private updatePayload(step: string, status: string, progress: number): void {
+  private updatePayload(step: string, progress: number): void {
     this.payload[step] = {
       step: step,
-      status: status,
+      status: 'processing',
       progress: progress,
     };
     // Update all previous steps to 'completed' status and 100% progress

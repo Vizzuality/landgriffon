@@ -31,7 +31,6 @@ export class ImportProgressEmitter {
   }): void {
     this.eventBus.publish(
       new ImportProgressUpdateEvent(
-        this.eventKinds.DATA_IMPORT_PROGRESS,
         this.steps.VALIDATING_DATA,
         importProgress.progress,
       ),
@@ -45,7 +44,6 @@ export class ImportProgressEmitter {
     this.eventBus.publish(
       new ImportProgressUpdateEvent(
         this.steps.IMPORTING_DATA,
-        'idle',
         importProgress.progress,
       ),
     );
@@ -57,7 +55,6 @@ export class ImportProgressEmitter {
   }): void {
     this.eventBus.publish(
       new ImportProgressUpdateEvent(
-        this.eventKinds.DATA_IMPORT_PROGRESS,
         this.steps.GEOCODING,
         importProgress.progress,
       ),
@@ -70,7 +67,6 @@ export class ImportProgressEmitter {
   }): void {
     this.eventBus.publish(
       new ImportProgressUpdateEvent(
-        this.eventKinds.DATA_IMPORT_PROGRESS,
         this.steps.CALCULATING_IMPACT,
         importProgress.progress,
       ),
@@ -79,21 +75,13 @@ export class ImportProgressEmitter {
 
   emitImportFinished(): void {
     this.eventBus.publish(
-      new ImportProgressUpdateEvent(
-        this.eventKinds.CALCULATING_IMPACT,
-        'completed',
-        100,
-      ),
+      new ImportProgressUpdateEvent(this.eventKinds.FINISHED, 100),
     );
   }
 
   emitImportFailed(): void {
     this.eventBus.publish(
-      new ImportProgressUpdateEvent(
-        this.eventKinds.CALCULATING_IMPACT,
-        'failed',
-        100,
-      ),
+      new ImportProgressUpdateEvent(this.eventKinds.CALCULATING_IMPACT, 100),
     );
   }
 }

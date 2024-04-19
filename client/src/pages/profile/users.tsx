@@ -13,7 +13,6 @@ import Search from 'components/search';
 import Table from 'components/table';
 import { DEFAULT_PAGE_SIZES } from 'components/table/pagination/constants';
 import UserAvatar from 'containers/user-avatar';
-import { useProfile } from 'hooks/profile';
 import EditUser from 'containers/edit-user';
 import getUserFullName from 'utils/user-full-name';
 import { usePermissions } from 'hooks/permissions';
@@ -21,6 +20,7 @@ import { RoleName } from 'hooks/permissions/enums';
 import Modal from 'components/modal';
 import UserForm from 'containers/edit-user/user-form';
 import getQueryClient from '@/lib/react-query';
+import { useUsersControllerUserMetadata } from '@/types/generated/user';
 
 import type { User } from 'types';
 import type { TableProps } from 'components/table/component';
@@ -40,7 +40,14 @@ const AdminUsersPage: React.FC = () => {
     return sorting.map((sort) => (sort.desc ? `-${sort.id}` : sort.id)).join(',') || null;
   }, [sorting]);
 
-  const { data: user, isFetching: isFetchingUser } = useProfile();
+  const { data: user, isFetching: isFetchingUser } = useUsersControllerUserMetadata({
+    query: {
+      select: (data) => ({
+        id: data?.data?.id,
+        ...data?.data?.attributes,
+      }),
+    },
+  });
 
   const searchTerm = useMemo(
     () => (typeof query.search === 'string' ? query.search : null),

@@ -30,14 +30,17 @@ COPY --chown=$USER:$USER .yarn ./.yarn
 COPY --chown=$USER:$USER package.json yarn.lock .yarnrc.yml ./
 RUN yarn install --immutable
 
-# NextJS project folders
+
+# ? NextJS project folders and files
 COPY --chown=$USER:$USER src ./src
 COPY --chown=$USER:$USER public ./public
-
-# NextJS required files
 COPY --chown=$USER:$USER next.config.js local.d.ts \
-	postcss.config.cjs tailwind.config.ts entrypoint.sh \
-	tsconfig.json .browserlistrc .eslintrc.cjs .prettierrc.cjs ./
+postcss.config.cjs tailwind.config.ts entrypoint.sh \
+tsconfig.json .browserlistrc .eslintrc.cjs .prettierrc.cjs \
+orval.config.ts	./
+
+# ? generates types based on API's schemas
+RUN yarn types
 
 RUN yarn build
 

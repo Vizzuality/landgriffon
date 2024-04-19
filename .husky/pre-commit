@@ -1,0 +1,1 @@
+cd ./client && yarn types && yarn check-types && git add src/types/generated/

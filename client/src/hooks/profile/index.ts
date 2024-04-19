@@ -1,29 +1,10 @@
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { useSession } from 'next-auth/react';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
 
 import { apiRawServiceWithoutAuth, apiService } from 'services/api';
 import { authService } from 'services/authentication';
 
 import type { User, PasswordPayload, ErrorResponse, ProfilePayload } from 'types';
 import type { AxiosPromise } from 'axios';
-
-export function useProfile() {
-  const { data: session } = useSession();
-
-  return useQuery(['profile', session.accessToken], () =>
-    apiService
-      .request<{
-        data: User & {
-          id: string;
-          type: 'users';
-        };
-      }>({
-        method: 'GET',
-        url: '/users/me',
-      })
-      .then(({ data }) => data?.data),
-  );
-}
 
 export function useUpdateProfile() {
   const queryClient = useQueryClient();

@@ -18,5 +18,5 @@ module.exports = {
     'no-console': ['warn'],
     'no-debugger': ['warn'],
   },
-  ignorePatterns: ['*.md'],
+  ignorePatterns: ['*.md', 'src/types/generated/*'],
 };

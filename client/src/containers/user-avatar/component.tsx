@@ -1,7 +1,6 @@
 import Avatar from 'components/avatar/component';
 import StringAvatar from 'components/string-avatar/component';
-
-import type { User } from 'types';
+import { User } from '@/types/generated/api.schemas';
 
 type UserAvatarProps = {
   user: User;

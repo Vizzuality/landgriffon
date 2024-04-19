@@ -25,10 +25,10 @@ import { ROLES } from 'modules/authorization/roles/roles.enum';
 import { RequiredRoles } from 'decorators/roles.decorator';
 import { RolesGuard } from 'guards/roles.guard';
 import { EudrImportService } from './eudr/eudr.import.service';
-import { NestWebsocketsService } from '../notifications/websockets/websockets.service';
 import { Public } from 'decorators/public.decorator';
 import { IWebSocketServiceToken } from '../notifications/websockets/websockets.module';
 import { IWebSocketService } from '../notifications/websockets/websockets.service.interface';
+import { ImportProgressEmitter } from '../cqrs/import-data/import-progress.emitter';
 
 @ApiTags('Import Data')
 @Controller(`/api/v1/import`)
@@ -110,13 +110,23 @@ export class ImportDataController {
   // }
 
   @Public()
-  @Get('/test')
+  @Get('/sockets/start')
   async test(): Promise<string> {
     for (const n of Array(10).keys()) {
       this.emitter.emit('DATA_IMPORT_PROGRESS' as any, {
         message: `Hello World ${n}`,
       });
     }
+
+    return 'Hello World';
+  }
+
+  @Public()
+  @Get('/sockets/stop')
+  async stop(): Promise<string> {
+    this.emitter.emit('DATA_IMPORT_FINISHED' as any, {
+      message: `Hello World`,
+    });
 
     return 'Hello World';
   }

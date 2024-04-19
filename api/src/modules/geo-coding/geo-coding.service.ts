@@ -10,6 +10,7 @@ import {
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { AdminRegionOfProductionService } from 'modules/geo-coding/strategies/admin-region-of-production.service';
+import { ImportProgressEmitter } from 'modules/cqrs/import-data/import-progress.emitter';
 
 interface locationInfo {
   locationAddressInput?: string;
@@ -30,6 +31,7 @@ export class GeoCodingService extends GeoCodingAbstractClass {
     protected readonly countryOfProductionService: CountryOfProductionGeoCodingStrategy,
     protected readonly unknownLocationService: UnknownLocationGeoCodingStrategy,
     protected readonly adminRegionOfProductionService: AdminRegionOfProductionService,
+    protected readonly importProgress: ImportProgressEmitter,
   ) {
     super();
   }
@@ -42,7 +44,9 @@ export class GeoCodingService extends GeoCodingAbstractClass {
     );
     const geoCodedSourcingData: SourcingData[] = [];
     const errors: any[] = [];
-    for (let i: number = 0; i < sourcingData.length; i++) {
+    const totalLocations: number = sourcingData.length;
+    let processedLocations: number = 0;
+    for (let i: number = 0; i < totalLocations; i++) {
       const location: SourcingData = sourcingData[i];
       this.logger.debug(
         `Geocoding location: Country: ${location.locationCountryInput}, Address: ${location.locationAddressInput}, LAT: ${location.locationLatitude}, LONG: ${location.locationLongitude}`,
@@ -84,8 +88,16 @@ export class GeoCodingService extends GeoCodingAbstractClass {
             await this.geoCodeAdminRegionOfProductionLocationType(location),
           );
         }
+        processedLocations++;
+        this.importProgress.emitGeocodingProgress({
+          progress: (processedLocations / totalLocations) * 100,
+        });
       } catch (e: any) {
         errors.push({ line: i + 5, error: e.message });
+        processedLocations++;
+        this.importProgress.emitGeocodingProgress({
+          progress: (processedLocations / totalLocations) * 100,
+        });
       }
     }
 

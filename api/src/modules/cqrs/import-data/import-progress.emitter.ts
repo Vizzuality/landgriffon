@@ -44,15 +44,15 @@ export class ImportProgressEmitter {
   }): void {
     this.eventBus.publish(
       new ImportProgressUpdateEvent(
-        this.eventKinds.DATA_IMPORT_PROGRESS,
         this.steps.IMPORTING_DATA,
+        'idle',
         importProgress.progress,
       ),
     );
   }
 
   emitGeocodingProgress(importProgress: {
-    taskId: string;
+    taskId?: string;
     progress: number;
   }): void {
     this.eventBus.publish(
@@ -80,8 +80,9 @@ export class ImportProgressEmitter {
   emitImportFinished(): void {
     this.eventBus.publish(
       new ImportProgressUpdateEvent(
-        this.eventKinds.DATA_IMPORT_PROGRESS,
-        this.steps.FINISHED,
+        this.eventKinds.CALCULATING_IMPACT,
+        'completed',
+        100,
       ),
     );
   }
@@ -89,8 +90,9 @@ export class ImportProgressEmitter {
   emitImportFailed(): void {
     this.eventBus.publish(
       new ImportProgressUpdateEvent(
-        this.eventKinds.DATA_IMPORT_PROGRESS,
-        this.steps.FAILED,
+        this.eventKinds.CALCULATING_IMPACT,
+        'failed',
+        100,
       ),
     );
   }

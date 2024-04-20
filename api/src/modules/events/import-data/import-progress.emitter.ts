@@ -1,20 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
-import {
-  IMPORT_PROGRESS_STATUS,
-  ImportProgressUpdateEvent,
-} from 'modules/cqrs/import-data/import-progress.event';
+import { ImportProgressUpdateEvent } from 'modules/events/import-data/import-progress.event';
+import { ImportProgressSteps } from './types';
 
 /**
- * @note: We use eventBus instead of commandBus because even tho broadcasting via websockets can be considered a command, it is not a command in the context of cqrs. (apparently)
+ * @note: We use eventBus instead of commandBus because even tho broadcasting via websockets can be considered a command, it is not a command in the context of events. (apparently)
  */
 
 @Injectable()
 export class ImportProgressEmitter {
-  public eventKinds: Record<string, string> = {
-    DATA_IMPORT_PROGRESS: 'DATA_IMPORT_PROGRESS',
-  };
-  public steps: Record<IMPORT_PROGRESS_STATUS, string> = {
+  public steps: Record<ImportProgressSteps, ImportProgressSteps> = {
     VALIDATING_DATA: 'VALIDATING_DATA',
     IMPORTING_DATA: 'IMPORTING_DATA',
     GEOCODING: 'GEOCODING',
@@ -73,15 +68,13 @@ export class ImportProgressEmitter {
     );
   }
 
-  emitImportFinished(): void {
-    this.eventBus.publish(
-      new ImportProgressUpdateEvent(this.eventKinds.FINISHED, 100),
-    );
-  }
+  //TODO: Check with Andres how to handle finished and specially failed events
 
-  emitImportFailed(): void {
-    this.eventBus.publish(
-      new ImportProgressUpdateEvent(this.eventKinds.CALCULATING_IMPACT, 100),
-    );
-  }
+  // emitImportFinished(): void {
+  //   this.eventBus.publish(new ImportProgressUpdateEvent(100));
+  // }
+  //
+  // emitImportFailed(): void {
+  //   this.eventBus.publish(new ImportProgressUpdateEvent(100));
+  // }
 }

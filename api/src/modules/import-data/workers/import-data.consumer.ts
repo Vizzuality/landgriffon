@@ -12,7 +12,7 @@ import { ExcelImportJob } from 'modules/import-data/workers/import-data.producer
 import { TasksService } from 'modules/tasks/tasks.service';
 import { Task, TASK_STATUS } from 'modules/tasks/task.entity';
 import { importQueueName } from 'modules/import-data/workers/import-queue.name';
-import { ImportProgressEmitter } from 'modules/cqrs/import-data/import-progress.emitter';
+import { ImportProgressEmitter } from 'modules/events/import-data/import-progress.emitter';
 
 @Processor(importQueueName)
 export class ImportDataConsumer {
@@ -31,6 +31,8 @@ export class ImportDataConsumer {
     );
   }
 
+  // TODO: Handle events finished and failed cases
+
   @OnQueueFailed()
   async onJobFailed(job: Job<ExcelImportJob>, err: Error): Promise<void> {
     const task: Task | undefined = await this.tasksService.updateImportTask({
@@ -38,7 +40,7 @@ export class ImportDataConsumer {
       newStatus: TASK_STATUS.FAILED,
       message: err.message,
     });
-    this.importProgress.emitImportFailed();
+    // this.importProgress.emitImportFailed();
     this.logger.error(
       `Import Failed for file: ${job.data.xlsxFileData.filename} for task: ${task.id}: ${err}`,
     );
@@ -53,7 +55,7 @@ export class ImportDataConsumer {
       taskId: job.data.taskId,
       newStatus: TASK_STATUS.COMPLETED,
     });
-    this.importProgress.emitImportFinished();
+    // this.importProgress.emitImportFinished();
   }
 
   @Process('excel-import-job')

@@ -41,7 +41,7 @@ import { NotificationsModule } from 'modules/notifications/notifications.module'
 import { ReportsModule } from 'modules/reports/reports.module';
 import { EudrModule } from 'modules/eudr-alerts/eudr.module';
 import { WebSocketsModule } from 'modules/notifications/websockets/websockets.module';
-import { AppCqrsModule } from 'modules/cqrs/app-cqrs.module';
+import { AppEventsModule } from 'modules/events/app-events.module';
 
 const queueConfig: any = config.get('queue');
 
@@ -89,7 +89,7 @@ const queueConfig: any = config.get('queue');
     ReportsModule,
     WebSocketsModule,
     EudrModule,
-    AppCqrsModule,
+    AppEventsModule,
   ],
   providers: [
     {

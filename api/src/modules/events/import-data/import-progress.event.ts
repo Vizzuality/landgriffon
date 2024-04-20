@@ -1,16 +1,25 @@
 import { IEvent } from '@nestjs/cqrs';
+import {
+  ImportProgressPayload,
+  ImportProgressSequence,
+  ImportProgressSteps,
+} from './types';
 
 export class ImportProgressUpdateEvent implements IEvent {
-  stepOrder: string[] = [
+  stepOrder: ImportProgressSequence = [
     'VALIDATING_DATA',
     'IMPORTING_DATA',
     'GEOCODING',
     'CALCULATING_IMPACT',
     'FINISHED',
+    'FAILED',
   ];
-  payload: Record<string, any>;
+  payload: ImportProgressPayload;
 
-  constructor(public readonly step: string, public readonly progress: number) {
+  constructor(
+    public readonly step: ImportProgressSteps,
+    public readonly progress: number,
+  ) {
     this.payload = {
       VALIDATING_DATA: {
         step: 'VALIDATING_DATA',
@@ -32,32 +41,37 @@ export class ImportProgressUpdateEvent implements IEvent {
         status: 'idle',
         progress: 0,
       },
+      FINISHED: {
+        step: 'FINISHED',
+        status: 'idle',
+        progress: 0,
+      },
+      FAILED: {
+        step: 'FAILED',
+        status: 'idle',
+        progress: 0,
+      },
     };
     this.updatePayload(step, progress);
   }
 
-  private updatePayload(step: string, progress: number): void {
+  private updatePayload(step: ImportProgressSteps, progress: number): void {
     this.payload[step] = {
       step: step,
       status: 'processing',
       progress: progress,
     };
+    this.setPreviousStepsAsCompleted(step);
+  }
+
+  private setPreviousStepsAsCompleted(step: ImportProgressSteps): void {
     // Update all previous steps to 'completed' status and 100% progress
     const currentStepIndex: number = this.stepOrder.indexOf(step);
 
     for (let i: number = 0; i < currentStepIndex; i++) {
-      const previousStep: string = this.stepOrder[i];
+      const previousStep: ImportProgressSteps = this.stepOrder[i];
       this.payload[previousStep].status = 'completed';
       this.payload[previousStep].progress = 100;
     }
   }
-}
-
-export enum IMPORT_PROGRESS_STATUS {
-  VALIDATING_DATA = 'VALIDATING_DATA',
-  IMPORTING_DATA = 'IMPORTING_DATA',
-  GEOCODING = 'GEOCODING',
-  CALCULATING_IMPACT = 'CALCULATING_IMPACT',
-  FINISHED = 'FINISHED',
-  FAILED = 'FAILED',
 }

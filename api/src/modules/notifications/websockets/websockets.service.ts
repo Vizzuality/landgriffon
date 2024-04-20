@@ -1,10 +1,11 @@
 import { Logger } from '@nestjs/common';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import { IWebSocketService } from 'modules/notifications/websockets/websockets.service.interface';
 import {
   EVENT_KINDS,
-  IWebSocketService,
-} from 'modules/notifications/websockets/websockets.service.interface';
+  SocketPayload,
+} from 'modules/notifications/websockets/types';
 
 @WebSocketGateway({ cors: true })
 export class NestWebsocketsService implements IWebSocketService {
@@ -19,9 +20,9 @@ export class NestWebsocketsService implements IWebSocketService {
     });
   }
 
-  emit(event: EVENT_KINDS, data: any): void {
-    this.logger.debug(`Emitting event: ${event}`);
-    this.server.emit(event, { kind: event, data: data.payload });
-    this.logger.debug(`Event emitted: ${data.payload}`);
+  emit(event: EVENT_KINDS, payload: any): void {
+    const socketPayload: SocketPayload = { kind: event, data: payload };
+    this.server.emit(event, socketPayload);
+    this.logger.debug(`Payload: ${payload} emitted to Socket`);
   }
 }

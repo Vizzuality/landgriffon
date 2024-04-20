@@ -25,11 +25,9 @@ import { User } from 'modules/users/user.entity';
 import { ROLES } from 'modules/authorization/roles/roles.enum';
 import { RequiredRoles } from 'decorators/roles.decorator';
 import { RolesGuard } from 'guards/roles.guard';
-import { EudrImportService } from './eudr/eudr.import.service';
+import { EudrImportService } from 'modules/import-data/eudr/eudr.import.service';
 import { Public } from 'decorators/public.decorator';
-import { IWebSocketServiceToken } from '../notifications/websockets/websockets.module';
-import { IWebSocketService } from '../notifications/websockets/websockets.service.interface';
-import { ImportProgressEmitter } from '../cqrs/import-data/import-progress.emitter';
+import { ImportProgressEmitter } from 'modules/events/import-data/import-progress.emitter';
 
 @ApiTags('Import Data')
 @Controller(`/api/v1/import`)
@@ -40,7 +38,6 @@ export class ImportDataController {
     public readonly importDataService: ImportDataService,
     private readonly eudr: EudrImportService,
     private readonly importProgressEmitter: ImportProgressEmitter,
-    @Inject(IWebSocketServiceToken) private emitter: IWebSocketService,
   ) {}
 
   @ApiConsumesXLSX()
@@ -114,7 +111,7 @@ export class ImportDataController {
   @Public()
   @Get('/sockets/start')
   async startEmittingProgress(@Query() time: any): Promise<void> {
-    const steps = [
+    const steps: any[] = [
       'VALIDATING_DATA',
       'IMPORTING_DATA',
       'GEOCODING',
@@ -133,6 +130,7 @@ export class ImportDataController {
       const progressIncrement: number = 10;
       const numberOfIncrements: number = 100 / progressIncrement;
       for (let i: number = 0; i <= 100; i += progressIncrement) {
+        console.log('SOCKETS MESSAGE WORKING');
         if (step === 'VALIDATING_DATA') {
           this.importProgressEmitter.emitValidationProgress({ progress: i });
         }

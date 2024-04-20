@@ -3,7 +3,7 @@ import { SaveOptions } from 'typeorm/repository/SaveOptions';
 import { chunk } from 'lodash';
 import { Injectable, Logger } from '@nestjs/common';
 import * as config from 'config';
-import { ImportProgressEmitter } from '../modules/cqrs/import-data/import-progress.emitter';
+import { ImportProgressEmitter } from '../modules/events/import-data/import-progress.emitter';
 
 const dbConfig: any = config.get('db');
 const batchChunkSize: number = parseInt(`${dbConfig.batchChunkSize}`, 10);

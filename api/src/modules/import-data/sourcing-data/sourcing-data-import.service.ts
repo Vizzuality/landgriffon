@@ -31,7 +31,7 @@ import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { ImpactService } from 'modules/impact/impact.service';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
-import { ImportProgressEmitter } from 'modules/cqrs/import-data/import-progress.emitter';
+import { ImportProgressEmitter } from 'modules/events/import-data/import-progress.emitter';
 
 export interface LocationData {
   locationAddressInput?: string;

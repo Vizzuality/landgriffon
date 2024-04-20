@@ -1,8 +1,5 @@
 import { Logger, OnModuleInit } from '@nestjs/common';
-
-export enum EVENT_KINDS {
-  DATA_IMPORT_PROGRESS = 'DATA_IMPORT_PROGRESS',
-}
+import { EVENT_KINDS } from './types';
 
 export interface IWebSocketService extends OnModuleInit {
   logger: Logger;

@@ -10,7 +10,8 @@ import {
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { AdminRegionOfProductionService } from 'modules/geo-coding/strategies/admin-region-of-production.service';
-import { ImportProgressEmitter } from 'modules/cqrs/import-data/import-progress.emitter';
+import { GeoCodingProgressTracker } from 'modules/geo-coding/progress-tracker/geo-coding.progress-tracker';
+import { GeoCodingProgressTrackerFactory } from './progress-tracker/geo-coding.progress-tracker.factory';
 
 interface locationInfo {
   locationAddressInput?: string;
@@ -31,7 +32,7 @@ export class GeoCodingService extends GeoCodingAbstractClass {
     protected readonly countryOfProductionService: CountryOfProductionGeoCodingStrategy,
     protected readonly unknownLocationService: UnknownLocationGeoCodingStrategy,
     protected readonly adminRegionOfProductionService: AdminRegionOfProductionService,
-    protected readonly importProgress: ImportProgressEmitter,
+    protected readonly progressTrackerFactory: GeoCodingProgressTrackerFactory,
   ) {
     super();
   }
@@ -45,7 +46,8 @@ export class GeoCodingService extends GeoCodingAbstractClass {
     const geoCodedSourcingData: SourcingData[] = [];
     const errors: any[] = [];
     const totalLocations: number = sourcingData.length;
-    let processedLocations: number = 0;
+    const progressTracker: GeoCodingProgressTracker =
+      this.progressTrackerFactory.createTracker({ totalLocations });
     for (let i: number = 0; i < totalLocations; i++) {
       const location: SourcingData = sourcingData[i];
       this.logger.debug(
@@ -88,16 +90,10 @@ export class GeoCodingService extends GeoCodingAbstractClass {
             await this.geoCodeAdminRegionOfProductionLocationType(location),
           );
         }
-        processedLocations++;
-        this.importProgress.emitGeocodingProgress({
-          progress: (processedLocations / totalLocations) * 100,
-        });
+        progressTracker.trackProgress();
       } catch (e: any) {
         errors.push({ line: i + 5, error: e.message });
-        processedLocations++;
-        this.importProgress.emitGeocodingProgress({
-          progress: (processedLocations / totalLocations) * 100,
-        });
+        progressTracker.trackProgress();
       }
     }
 

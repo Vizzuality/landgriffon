@@ -28,6 +28,9 @@ import { RolesGuard } from 'guards/roles.guard';
 import { EudrImportService } from 'modules/import-data/eudr/eudr.import.service';
 import { Public } from 'decorators/public.decorator';
 import { ImportProgressEmitter } from 'modules/events/import-data/import-progress.emitter';
+import { SourcingDataImportService } from './sourcing-data/sourcing-data-import.service';
+import { TasksService } from '../tasks/tasks.service';
+import { DataSource } from 'typeorm';
 
 @ApiTags('Import Data')
 @Controller(`/api/v1/import`)
@@ -38,6 +41,9 @@ export class ImportDataController {
     public readonly importDataService: ImportDataService,
     private readonly eudr: EudrImportService,
     private readonly importProgressEmitter: ImportProgressEmitter,
+    // TODO: for testing purposes, remove this dependency
+    private readonly sourcingDataImportService: SourcingDataImportService,
+    private readonly dataSource: DataSource,
   ) {}
 
   @ApiConsumesXLSX()
@@ -151,5 +157,15 @@ export class ImportDataController {
         await sleep(stepTime / numberOfIncrements); // Wait a fraction of the step's total time before the next update
       }
     }
+  }
+
+  @Get('/wipeout')
+  async wipeOutDb(): Promise<string> {
+    console.log('WIPING OUT DB...');
+    await this.sourcingDataImportService.cleanDataBeforeImport();
+    const taskRepo = this.dataSource.getRepository(Task);
+    await taskRepo.delete({});
+    console.log('DB WIPED OUT');
+    return 'DB deleted';
   }
 }

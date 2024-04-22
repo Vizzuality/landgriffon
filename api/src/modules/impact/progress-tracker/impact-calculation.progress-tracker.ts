@@ -18,6 +18,7 @@ export class ImpactCalculationProgressTracker {
     this.importProgressEmitter = importProgressEmitter;
     this.totalRecords = importTrackInfo.totalRecords;
     const startingPercentage: number = importTrackInfo.startingPercentage ?? 0;
+    this.progress = startingPercentage;
     this.progressPerChunk =
       (100 - startingPercentage) / importTrackInfo.totalChunks;
   }

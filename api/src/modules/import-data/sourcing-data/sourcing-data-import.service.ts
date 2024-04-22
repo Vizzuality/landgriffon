@@ -31,7 +31,8 @@ import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { ImpactService } from 'modules/impact/impact.service';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
-import { ImportProgressEmitter } from 'modules/events/import-data/import-progress.emitter';
+import { ImportProgressTrackerFactory } from 'modules/events/import-data/import-progress.tracker.factory';
+import { ValidationProgressTracker } from 'modules/import-data/progress-tracker/validation.progress-tracker';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -82,7 +83,7 @@ export class SourcingDataImportService {
     protected readonly indicatorRecordService: IndicatorRecordsService,
     protected readonly impactService: ImpactService,
     protected readonly impactCalculator: ImpactCalculator,
-    protected readonly importProgress: ImportProgressEmitter,
+    protected readonly importProgressTrackerFactory: ImportProgressTrackerFactory,
   ) {}
 
   async importSourcingData(filePath: string, taskId: string): Promise<any> {
@@ -340,7 +341,11 @@ export class SourcingDataImportService {
     const results: any = {} as SourcingRecordsDtos;
 
     const totalSteps: number = Object.keys(parsedXLSXDataset).length + 1; // +1 for final validation step
-    let currentStep: number = 0;
+
+    const tracker: ValidationProgressTracker =
+      this.importProgressTrackerFactory.createValidationProgressTracker({
+        totalSteps: totalSteps,
+      });
 
     for (const [sheetName, sheetEntities] of Object.entries(
       parsedXLSXDataset,
@@ -354,10 +359,7 @@ export class SourcingDataImportService {
       } else {
         await this.validateDTOs(results);
       }
-      currentStep++;
-      this.importProgress.emitValidationProgress({
-        progress: (currentStep / totalSteps) * 100,
-      });
+      tracker.trackProgress();
     }
 
     return results;

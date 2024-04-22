@@ -2,17 +2,13 @@ export type ImportProgressSteps =
   | 'VALIDATING_DATA'
   | 'IMPORTING_DATA'
   | 'GEOCODING'
-  | 'CALCULATING_IMPACT'
-  | 'FINISHED'
-  | 'FAILED';
+  | 'CALCULATING_IMPACT';
 
 export type ImportProgressSequence = [
   'VALIDATING_DATA',
-  'IMPORTING_DATA',
   'GEOCODING',
+  'IMPORTING_DATA',
   'CALCULATING_IMPACT',
-  'FINISHED',
-  'FAILED',
 ];
 
 type StepStatus = 'idle' | 'processing' | 'completed';

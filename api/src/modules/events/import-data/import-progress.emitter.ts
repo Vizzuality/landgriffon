@@ -14,8 +14,6 @@ export class ImportProgressEmitter {
     IMPORTING_DATA: 'IMPORTING_DATA',
     GEOCODING: 'GEOCODING',
     CALCULATING_IMPACT: 'CALCULATING_IMPACT',
-    FINISHED: 'FINISHED',
-    FAILED: 'FAILED',
   };
 
   constructor(private readonly eventBus: EventBus) {}

@@ -8,11 +8,9 @@ import {
 export class ImportProgressUpdateEvent implements IEvent {
   stepOrder: ImportProgressSequence = [
     'VALIDATING_DATA',
-    'IMPORTING_DATA',
     'GEOCODING',
+    'IMPORTING_DATA',
     'CALCULATING_IMPACT',
-    'FINISHED',
-    'FAILED',
   ];
   payload: ImportProgressPayload;
 
@@ -38,16 +36,6 @@ export class ImportProgressUpdateEvent implements IEvent {
       },
       CALCULATING_IMPACT: {
         step: 'CALCULATING_IMPACT',
-        status: 'idle',
-        progress: 0,
-      },
-      FINISHED: {
-        step: 'FINISHED',
-        status: 'idle',
-        progress: 0,
-      },
-      FAILED: {
-        step: 'FAILED',
         status: 'idle',
         progress: 0,
       },

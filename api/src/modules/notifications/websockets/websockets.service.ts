@@ -1,4 +1,4 @@
-import { Logger, UseGuards } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import {
   WebSocketGateway,
   WebSocketServer,
@@ -29,8 +29,8 @@ export class NestWebsocketsService
   }
 
   handleConnection(client: any, ...args: any[]): any {
-    this.logger.warn('token in query', client.handshake.query.token);
-    this.logger.warn('token in header', client.handshake.header);
+    this.logger.log(`Client connected: ${client.id}`);
+    this.logger.warn('token in header', client.handshake.headers);
   }
 
   emit(event: EVENT_KINDS, payload: any): void {

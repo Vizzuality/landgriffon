@@ -1,12 +1,14 @@
 import { Inject } from '@nestjs/common';
-import { EVENT_KINDS } from 'modules/notifications/websockets/types';
 import { IWebSocketServiceToken } from 'modules/notifications/websockets/websockets.module';
 import { IWebSocketService } from 'modules/notifications/websockets/websockets.service.interface';
 import { ImportProgressPayload } from 'modules/events/import-data/types';
 
 export class ImportProgressSocket {
-  importDataEventKind: EVENT_KINDS.DATA_IMPORT_PROGRESS =
-    EVENT_KINDS.DATA_IMPORT_PROGRESS;
+  importDataEventKind: Record<any, any> = {
+    DATA_IMPORT_PROGRESS: 'DATA_IMPORT_PROGRESS',
+    DATA_IMPORT_COMPLETE: 'DATA_IMPORT_COMPLETED',
+    DATA_IMPORT_FAILURE: 'DATA_IMPORT_FAILURE',
+  };
 
   constructor(
     @Inject(IWebSocketServiceToken)
@@ -14,6 +16,23 @@ export class ImportProgressSocket {
   ) {}
 
   emitProgressUpdateToSocket(payload: ImportProgressPayload): void {
-    this.websockets.emit(this.importDataEventKind, payload);
+    this.websockets.emit(
+      this.importDataEventKind.DATA_IMPORT_PROGRESS,
+      payload,
+    );
+  }
+
+  emitImportCompleteToSocket(completedPayload: any): void {
+    this.websockets.emit(
+      this.importDataEventKind.DATA_IMPORT_COMPLETE,
+      completedPayload,
+    );
+  }
+
+  emitImportFailureToSocket(failurePayload: any): void {
+    this.websockets.emit(
+      this.importDataEventKind.DATA_IMPORT_FAILURE,
+      failurePayload,
+    );
   }
 }

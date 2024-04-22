@@ -4,7 +4,7 @@ import { ImportProgressHandler } from 'modules/events/import-data/import-progres
 import { ImportProgressEmitter } from 'modules/events/import-data/import-progress.emitter';
 import { WebSocketsModule } from 'modules/notifications/websockets/websockets.module';
 import { ImportProgressSocket } from 'modules/events/import-data/import-progress.socket';
-import { ImportProgressTrackerFactory } from './import-data/import-progress.tracker.factory';
+import { ImportProgressTrackerFactory } from 'modules/events/import-data/import-progress.tracker.factory';
 
 @Global()
 @Module({
@@ -15,6 +15,10 @@ import { ImportProgressTrackerFactory } from './import-data/import-progress.trac
     ImportProgressSocket,
     ImportProgressTrackerFactory,
   ],
-  exports: [ImportProgressEmitter, ImportProgressTrackerFactory],
+  exports: [
+    ImportProgressEmitter,
+    ImportProgressTrackerFactory,
+    ImportProgressSocket,
+  ],
 })
 export class AppEventsModule {}

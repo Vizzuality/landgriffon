@@ -33,6 +33,8 @@ import {
   locationTypeParser,
   toLocationType,
 } from 'modules/sourcing-locations/helpers/location-type.parser';
+import { SourcingDataImportProgressTracker } from './progress-tracker/sourcing-data.progress-tracker';
+import { ImportProgressTrackerFactory } from 'modules/events/import-data/import-progress.tracker.factory';
 
 @Injectable()
 export class SourcingLocationsService extends AppBaseService<
@@ -108,14 +110,7 @@ export class SourcingLocationsService extends AppBaseService<
         return sourcingLocation;
       },
     );
-    return await this.sourcingLocationRepository.saveChunks(
-      sourcingLocations,
-      {},
-      {
-        step: 'IMPORTING_DATA',
-        progressStartingPoint: 0,
-      },
-    );
+    return await this.sourcingLocationRepository.saveChunks(sourcingLocations);
   }
 
   /**

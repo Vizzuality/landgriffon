@@ -14,15 +14,10 @@ export abstract class AppBaseRepository<
 > extends Repository<Entity> {
   logger: Logger = new Logger(this.constructor.name);
   protected dataSource: DataSource;
-  protected importProgress: ImportProgressEmitter;
 
   async saveChunks<Entity>(
     entities: Entity[],
     options?: SaveOptions,
-    trackingOptions?: {
-      step: string;
-      progressStartingPoint: number;
-    },
   ): Promise<Entity[]> {
     const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -30,11 +25,6 @@ export abstract class AppBaseRepository<
     const result: Entity[][] = [];
     const totalEntities: number = entities.length;
     const totalChunks: number = Math.ceil(totalEntities / batchChunkSize);
-    const progressStartingPoint: number =
-      trackingOptions?.progressStartingPoint ?? 0;
-    let progress: number = progressStartingPoint;
-    const progressPerChunk: number =
-      (100 - progressStartingPoint ?? 0) / totalChunks; // Distribuir el progreso restante entre los chunks
 
     try {
       for (const [index, dataChunk] of chunk(
@@ -49,17 +39,6 @@ export abstract class AppBaseRepository<
         );
         const saved: Entity[] = await Promise.all(promises);
         result.push(saved);
-        progress += progressPerChunk;
-        if (trackingOptions?.step === 'IMPORTING_DATA') {
-          this.importProgress.emitImportProgress({
-            progress,
-          });
-        }
-        if (trackingOptions?.step === 'CALCULATING_IMPACT') {
-          this.importProgress.emitImpactCalculationProgress({
-            progress,
-          });
-        }
       }
 
       // commit transaction if every chunk was saved successfully

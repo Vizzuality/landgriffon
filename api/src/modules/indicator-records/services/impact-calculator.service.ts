@@ -29,7 +29,9 @@ import {
   CACHED_DATA_TYPE,
   CachedData,
 } from 'modules/cached-data/cached-data.entity';
-import { ImportProgressEmitter } from 'modules/cqrs/import-data/import-progress.emitter';
+import { ImportProgressEmitter } from 'modules/events/import-data/import-progress.emitter';
+import { ImpactCalculationProgressTracker } from '../../impact/progress-tracker/impact-calculation.progress-tracker';
+import { ImportProgressTrackerFactory } from '../../events/import-data/import-progress.tracker.factory';
 
 /**
  * @description: This is PoC (Proof of Concept) for the updated LG methodology v0.1
@@ -50,35 +52,42 @@ export class ImpactCalculator {
     private readonly materialToH3: MaterialsToH3sService,
     private readonly indicatorService: IndicatorsService,
     private readonly dependencyManager: IndicatorQueryDependencyManager,
-    private readonly h3DataService: H3DataService,
     private readonly cachedDataService: CachedDataService,
     private readonly dataSource: DataSource,
     private readonly importProgress: ImportProgressEmitter,
+    private readonly importProgressTrackerFactory: ImportProgressTrackerFactory,
   ) {}
 
   async calculateImpactForAllSourcingRecords(
     activeIndicators: Indicator[],
   ): Promise<void> {
-    const totalEstimatedTime: number = 600000; // 10 minutos en milisegundos
+    const totalEstimatedTime: number = 600000; // 10 minutos
     const halfTime: number = totalEstimatedTime / 2; // La mitad del tiempo para esta tarea
-    let progress: number = 0;
-    const progressIncrement: number = 50 / (halfTime / 1000); // Cálculo para actualizar cada segundo hacia el 50% del total
+    const progressIncrement: number = 50 / (halfTime / 1000); // Cálculo para incrementar al 50%
+    const tracker: ImpactCalculationProgressTracker =
+      this.importProgressTrackerFactory.createImpactCalculationProgressTracker({
+        totalRecords: 1,
+        totalChunks: 1,
+        startingPercentage: 0,
+      });
 
-    const interval: NodeJS.Timer = setInterval(() => {
-      progress += progressIncrement;
-      progress = Math.min(progress, 50);
-      this.importProgress.emitImpactCalculationProgress({ progress });
-      if (progress >= 50) {
-        clearInterval(interval);
-      }
-    }, 1000);
+    // const interval: NodeJS.Timer = setInterval(() => {
+    //   progress += progressIncrement;
+    //   progress = Math.min(progress, 50);
+    //   this.importProgress.emitImpactCalculationProgress({ progress });
+    //   if (progress >= 50) {
+    //     clearInterval(interval);
+    //   }
+    // }, 1000);
+    tracker.startProgressInterval(progressIncrement, 50);
     let rawData: SourcingRecordsWithIndicatorRawData[];
     try {
       rawData = await this.getImpactRawDataForAllSourcingRecords(
         activeIndicators,
       );
+      tracker.stopProgressInterval();
     } catch (error: any) {
-      clearInterval(interval);
+      tracker.stopProgressInterval();
       throw error;
     }
 
@@ -89,7 +98,6 @@ export class ImpactCalculator {
         this.calculateIndicatorValues(data, data.tonnage);
 
       activeIndicators.forEach((indicator: Indicator) => {
-        this.logger.log('CREATING INDICATOR RECORD DTO');
         newImpactToBeSaved.push(
           IndicatorRecord.merge(new IndicatorRecord(), {
             value: indicatorValues.get(indicator.nameCode),
@@ -103,14 +111,7 @@ export class ImpactCalculator {
       });
     });
 
-    await this.indicatorRecordRepository.saveChunks(
-      newImpactToBeSaved,
-      {},
-      {
-        step: 'CALCULATING_IMPACT',
-        progressStartingPoint: 50,
-      },
-    );
+    await this.indicatorRecordRepository.saveChunks(newImpactToBeSaved);
   }
 
   async createIndicatorRecordsBySourcingRecords(

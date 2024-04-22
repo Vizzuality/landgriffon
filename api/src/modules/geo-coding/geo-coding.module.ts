@@ -18,7 +18,6 @@ import {
 import { GoogleMapsGeocoder } from 'modules/geo-coding/geocoders/google-maps.geocoder';
 import * as redisStore from 'cache-manager-redis-store';
 import * as config from 'config';
-import { GeoCodingProgressTrackerFactory } from 'modules/geo-coding/progress-tracker/geo-coding.progress-tracker.factory';
 
 const geocodingCacheConfig: any = config.get('geocodingCache');
 
@@ -61,7 +60,6 @@ const geocodingCacheEnabled: boolean =
     AggregationPointGeocodingStrategy,
     PointOfProductionGeocodingStrategy,
     AdminRegionOfProductionService,
-    GeoCodingProgressTrackerFactory,
   ],
   exports: [GeoCodingAbstractClass],
 })

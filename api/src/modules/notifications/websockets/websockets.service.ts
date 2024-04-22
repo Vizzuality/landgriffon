@@ -10,12 +10,13 @@ import {
   EVENT_KINDS,
   SocketPayload,
 } from 'modules/notifications/websockets/types';
-import { AuthGuard } from '@nestjs/passport';
 
 //TODO: Implement authentication on client connection
 
 @WebSocketGateway({ cors: true })
-export class NestWebsocketsService implements IWebSocketService {
+export class NestWebsocketsService
+  implements IWebSocketService, OnGatewayConnection
+{
   logger: Logger = new Logger(NestWebsocketsService.name);
 
   @WebSocketServer()
@@ -23,13 +24,14 @@ export class NestWebsocketsService implements IWebSocketService {
 
   onModuleInit(): void {
     this.server.on('connection', (socket) => {
-      this.handleConnection(socket.id);
       this.logger.log(`Client connected: ${socket.id}`);
     });
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  handleConnection(client: any, ...args: any[]): any {}
+  handleConnection(client: any, ...args: any[]): any {
+    this.logger.warn('token in query', client.handshake.query.token);
+    this.logger.warn('token in header', client.handshake.header);
+  }
 
   emit(event: EVENT_KINDS, payload: any): void {
     const socketPayload: SocketPayload = { kind: event, data: payload };

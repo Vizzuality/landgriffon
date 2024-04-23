@@ -65,14 +65,4 @@ export class ImportProgressEmitter {
       ),
     );
   }
-
-  //TODO: Check with Andres how to handle finished and specially failed events
-
-  // emitImportFinished(): void {
-  //   this.eventBus.publish(new ImportProgressUpdateEvent(100));
-  // }
-  //
-  // emitImportFailed(): void {
-  //   this.eventBus.publish(new ImportProgressUpdateEvent(100));
-  // }
 }

@@ -20,7 +20,7 @@ export class SourcingDataImportProgressTracker {
   trackProgress(): void {
     this.progress += this.progressPerChunk;
 
-    this.importProgressEmitter.emitGeocodingProgress({
+    this.importProgressEmitter.emitImportProgress({
       progress: this.getProgress(),
     });
   }

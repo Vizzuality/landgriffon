@@ -36,7 +36,7 @@ export class ImportDataService {
     });
     try {
       await this.importDataProducer.addExcelImportJob(xlsxFileData, task.id);
-      return task;
+      return this.tasksService.serialize(task);
     } catch (error: any) {
       this.logger.error(
         `Job for file: ${

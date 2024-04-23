@@ -67,14 +67,7 @@ export class ImportDataController {
       userId,
       xlsxFile,
     );
-    return {
-      data: {
-        id: task.id,
-        createdAt: task.createdAt,
-        status: task.status,
-        createdBy: task.userId,
-      },
-    };
+    return task;
   }
 
   @ApiConsumesXLSX()

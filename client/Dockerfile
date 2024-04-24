@@ -1,4 +1,4 @@
-FROM node:18.15-bullseye-slim
+FROM node:20.12-bullseye-slim
 
 ARG UID=5000
 ARG GID=5000

@@ -15,6 +15,7 @@ export type SelectProps<T = string> = Omit<
   error?: string;
   icon?: React.ReactElement<SVGElement | HTMLDivElement>;
   label?: React.ReactNode;
+  placeholder?: string | undefined;
   loading?: boolean;
   options: Option<T>[];
   showHint?: boolean;

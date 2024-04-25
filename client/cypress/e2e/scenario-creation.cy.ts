@@ -41,9 +41,19 @@ describe('Scenario creation', () => {
     cy.get('[data-testid="create-scenario-button"]').should('be.disabled');
   });
 
-  it('a user types an invalid name and submit is disabled', () => {
+  it('a user types a name with a single character', () => {
     cy.url().should('contain', '/data/scenarios/new');
     cy.get('[data-testid="scenario-name-input"]').type('?');
     cy.get('[data-testid="create-scenario-button"]').should('be.disabled');
+    cy.contains('Name must be at least 2 characters.').should('exist');
+  });
+
+  it('a user types a name with more than 40 characters', () => {
+    cy.url().should('contain', '/data/scenarios/new');
+    cy.get('[data-testid="scenario-name-input"]').type(
+      'this is a very looong name for an scenario',
+    );
+    cy.get('[data-testid="create-scenario-button"]').should('be.disabled');
+    cy.contains('Name must be at most 40 characters.').should('exist');
   });
 });

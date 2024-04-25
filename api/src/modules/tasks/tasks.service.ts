@@ -116,7 +116,11 @@ export class TasksService extends AppBaseService<
     }
 
     if (newStatus) task.status = newStatus;
-    return task.save();
+    await task.save();
+    return this.taskRepository.findOneOrFail({
+      where: { id: taskId },
+      relations: ['user'],
+    });
   }
 
   async cleanStalledTasks(): Promise<void> {

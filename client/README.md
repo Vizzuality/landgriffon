@@ -26,11 +26,15 @@ yarn dev
 The application handles environmental variables using [@t3-oss/env-nextjs](https://env.t3.gg/docs). You can see the available (and required) variables in the `./src/env` file. **NOTE**: the application will NOT start if the required variables are not set previously.
 
 #### Testing
-Additionally, and exclusively for testing purposes, you can set the following environmental variables:
+Additionally, and exclusively for testing purposes, you can set the following environmental variables in the `cypress.env.json` file:
 
-- `CYPRESS_USERNAME`: email to authenticate for the e2e tests.
-- `CYPRESS_PASSWORD`: password to authenticate for the e2e tests.
-- `CYPRESS_API_URL`: API used to run the e2e tests.
+```
+{
+  "USERNAME": "", // email to authenticate for the e2e tests.
+  "PASSWORD": "", // password to authenticate for the e2e tests.
+  "API_URL": "" // API used to run the e2e tests.
+}
+```
 
 ### Running tests
 

@@ -1,6 +1,6 @@
 import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 
 import Input from 'components/forms/input';
 import Textarea from 'components/forms/textarea';
@@ -17,13 +17,16 @@ type ScenarioFormProps = {
   onSubmit?: (scenario: ScenarioFormData) => void;
 };
 
-const schemaValidation = yup.object({
-  title: yup.string().min(2).max(40).required(),
-  isPublic: yup.boolean(),
-  description: yup.string().optional().nullable(),
+const schemaValidation = z.object({
+  title: z
+    .string()
+    .min(2, {
+      message: 'Name must be at least 2 characters.',
+    })
+    .max(40, { message: 'Name must be at most 40 characters.' }),
+  isPublic: z.boolean(),
+  description: z.string().optional().nullable(),
 });
-
-type SubSchema = yup.InferType<typeof schemaValidation>;
 
 const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
   children,
@@ -36,13 +39,14 @@ const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
     control,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm<SubSchema>({
-    resolver: yupResolver(schemaValidation),
+  } = useForm<z.infer<typeof schemaValidation>>({
+    resolver: zodResolver(schemaValidation),
     defaultValues: {
       title: scenario?.title || null,
       isPublic: scenario?.isPublic || false,
       description: scenario?.description || null,
     },
+    mode: 'onChange',
     criteriaMode: 'all',
   });
 
@@ -79,7 +83,7 @@ const ScenarioForm: React.FC<React.PropsWithChildren<ScenarioFormProps>> = ({
         </div>
         <div className="flex flex-col">
           <label>Access</label>
-          <div className="flex h-full items-center space-x-1">
+          <div className="mt-[11px] flex items-center space-x-1">
             <Controller
               name="isPublic"
               control={control}

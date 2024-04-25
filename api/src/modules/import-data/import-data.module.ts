@@ -28,6 +28,8 @@ import { ImpactModule } from 'modules/impact/impact.module';
 import { WebSocketsModule } from 'modules/notifications/websockets/websockets.module';
 import { EudrImportService } from 'modules/import-data/eudr/eudr.import.service';
 import { EUDRDTOProcessor } from 'modules/import-data/eudr/eudr.dto-processor.service';
+import { ImportMailService } from 'modules/import-data/import-mail/import-mail.service';
+import { NotificationsModule } from 'modules/notifications/notifications.module';
 
 // TODO: Move EUDR related stuff to EUDR modules
 
@@ -61,6 +63,7 @@ import { EUDRDTOProcessor } from 'modules/import-data/eudr/eudr.dto-processor.se
     IndicatorsModule,
     ImpactModule,
     WebSocketsModule,
+    NotificationsModule,
   ],
   providers: [
     MulterConfigService,
@@ -72,6 +75,7 @@ import { EUDRDTOProcessor } from 'modules/import-data/eudr/eudr.dto-processor.se
     ImportDataService,
     EudrImportService,
     EUDRDTOProcessor,
+    ImportMailService,
     {
       provide: 'FILE_UPLOAD_SIZE_LIMIT',
       useValue: config.get('fileUploads.sizeLimit'),

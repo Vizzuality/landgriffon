@@ -12,8 +12,8 @@ import { ExcelImportJob } from 'modules/import-data/workers/import-data.producer
 import { TasksService } from 'modules/tasks/tasks.service';
 import { Task, TASK_STATUS } from 'modules/tasks/task.entity';
 import { importQueueName } from 'modules/import-data/workers/import-queue.name';
-import { ImportProgressEmitter } from 'modules/events/import-data/import-progress.emitter';
-import { ImportProgressSocket } from '../../events/import-data/import-progress.socket';
+import { ImportProgressSocket } from 'modules/events/import-data/import-progress.socket';
+import { ImportMailService } from 'modules/import-data/import-mail/import-mail.service';
 
 @Processor(importQueueName)
 export class ImportDataConsumer {
@@ -23,6 +23,7 @@ export class ImportDataConsumer {
     public readonly importDataService: ImportDataService,
     public readonly tasksService: TasksService,
     public readonly importSocket: ImportProgressSocket,
+    public readonly importMail: ImportMailService,
   ) {}
 
   @OnQueueError()
@@ -42,6 +43,7 @@ export class ImportDataConsumer {
       message: err.message,
     });
     this.importSocket.emitImportFailureToSocket({ error: err });
+
     this.logger.error(
       `Import Failed for file: ${job.data.xlsxFileData.filename} for task: ${task.id}: ${err}`,
     );
@@ -49,14 +51,20 @@ export class ImportDataConsumer {
 
   @OnQueueCompleted()
   async onJobComplete(job: Job<ExcelImportJob>): Promise<void> {
-    this.logger.log(
-      `Import XLSX with TASK ID: ${job.data.taskId} completed successfully`,
-    );
-    await this.tasksService.updateImportTask({
+    const task: Task = await this.tasksService.updateImportTask({
       taskId: job.data.taskId,
       newStatus: TASK_STATUS.COMPLETED,
     });
+
     this.importSocket.emitImportCompleteToSocket({ status: 'completed' });
+    await this.importMail.sendImportSuccessMail({
+      email: task.user.email,
+      fileName: job.data.xlsxFileData.originalname,
+      importDate: task.createdAt,
+    });
+    this.logger.log(
+      `Import Completed for file: ${job.data.xlsxFileData.filename} for task: ${task.id}`,
+    );
   }
 
   @Process('excel-import-job')

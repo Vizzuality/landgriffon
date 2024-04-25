@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { ImportProgressUpdateEvent } from 'modules/events/import-data/import-progress.event';
-import { ImportProgressSteps } from './types';
+import { ImportProgressSteps } from 'modules/events/import-data/types';
 
 /**
  * @note: We use eventBus instead of commandBus because even tho broadcasting via websockets can be considered a command, it is not a command in the context of events. (apparently)

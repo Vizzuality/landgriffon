@@ -199,7 +199,7 @@ export class SourcingLocation extends TimestampedBaseEntity {
     },
   )
   @JoinColumn({ name: 'sourcingLocationGroupId' })
-  sourcingLocationGroup: SourcingLocationGroup;
+  sourcingLocationGroup?: SourcingLocationGroup;
 
   @Column({ nullable: true })
   @ApiPropertyOptional()

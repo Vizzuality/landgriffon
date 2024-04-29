@@ -5,6 +5,7 @@ import { PlusIcon, SortDescendingIcon } from '@heroicons/react/solid';
 import Lottie from 'lottie-react';
 import classNames from 'classnames';
 import toast from 'react-hot-toast';
+import { dehydrate } from '@tanstack/react-query';
 
 import { tasksSSR } from 'services/ssr';
 import newScenarioAnimation from 'containers/scenarios/animations/new-scenario.json';
@@ -22,6 +23,8 @@ import { usePermissions } from 'hooks/permissions';
 import { Permission } from 'hooks/permissions/enums';
 import ScenarioTable from 'containers/scenarios/table';
 import DeleteDialog from 'components/dialogs/delete/component';
+import { auth } from '@/pages/api/auth/[...nextauth]';
+import getQueryClient from '@/lib/react-query';
 
 import type { Option } from 'components/forms/select';
 import type { ScenarioCardProps } from 'containers/scenarios/card/types';
@@ -267,7 +270,12 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
         },
       };
     }
-    return { props: { query } };
+    const session = await auth(req, res);
+    const queryClient = getQueryClient();
+
+    queryClient.setQueryData(['profile', session.accessToken], session.user);
+
+    return { props: { query, session, dehydratedState: dehydrate(queryClient) } };
   } catch (error) {
     if (error.response.status === 401) {
       return {

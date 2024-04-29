@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import { dehydrate } from '@tanstack/react-query';
 
 import { tasksSSR } from 'services/ssr';
 import ApplicationLayout from 'layouts/application';
@@ -19,6 +20,8 @@ import { Separator } from '@/components/ui/separator';
 import DeforestationAlerts from '@/containers/analysis-eudr-detail/deforestation-alerts';
 import { eudrDetail } from '@/store/features/eudr-detail';
 import { useAppSelector } from '@/store/hooks';
+import { auth } from '@/pages/api/auth/[...nextauth]';
+import getQueryClient from '@/lib/react-query';
 
 import type { NextPageWithLayout } from 'pages/_app';
 import type { ReactElement } from 'react';
@@ -119,7 +122,12 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
         },
       };
     }
-    return { props: { query } };
+    const session = await auth(req, res);
+    const queryClient = getQueryClient();
+
+    queryClient.setQueryData(['profile', session.accessToken], session.user);
+
+    return { props: { query, session, dehydratedState: dehydrate(queryClient) } };
   } catch (error) {
     if (error.code === '401' || error.response.status === 401) {
       return {

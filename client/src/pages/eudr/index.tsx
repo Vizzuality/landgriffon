@@ -2,7 +2,9 @@ import { useRef, useState } from 'react';
 import { Transition } from '@headlessui/react';
 import { MapProvider } from 'react-map-gl/maplibre';
 import dynamic from 'next/dynamic';
+import { dehydrate } from '@tanstack/react-query';
 
+import { auth } from '@/pages/api/auth/[...nextauth]';
 import { tasksSSR } from 'services/ssr';
 import ApplicationLayout from 'layouts/application';
 import CollapseButton from 'containers/collapse-button/component';
@@ -11,6 +13,7 @@ import { useAppSelector } from '@/store/hooks';
 import SuppliersStackedBar from '@/containers/analysis-eudr/suppliers-stacked-bar';
 import EUDRFilters from '@/containers/analysis-eudr/filters/component';
 import SupplierListTable from '@/containers/analysis-eudr/supplier-list-table';
+import getQueryClient from '@/lib/react-query';
 
 import type { NextPageWithLayout } from 'pages/_app';
 import type { ReactElement } from 'react';
@@ -86,7 +89,13 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
         },
       };
     }
-    return { props: { query } };
+
+    const session = await auth(req, res);
+    const queryClient = getQueryClient();
+
+    queryClient.setQueryData(['profile', session.accessToken], session.user);
+
+    return { props: { query, session, dehydratedState: dehydrate(queryClient) } };
   } catch (error) {
     if (error.code === '401' || error.response.status === 401) {
       return {

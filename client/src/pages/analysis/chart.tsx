@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import classNames from 'classnames';
+import { dehydrate } from '@tanstack/react-query';
 
+import { auth } from '@/pages/api/auth/[...nextauth]';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { setVisualizationMode } from 'store/features/analysis';
 import { analysisFilters } from 'store/features/analysis/filters';
@@ -13,6 +15,7 @@ import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-
 import Loading from 'components/loading';
 import TitleTemplate from 'utils/titleTemplate';
 import { tasksSSR } from 'services/ssr';
+import getQueryClient from '@/lib/react-query';
 
 import type { ReactElement } from 'react';
 import type { NextPageWithLayout } from 'pages/_app';
@@ -87,7 +90,12 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
         },
       };
     }
-    return { props: { query } };
+    const session = await auth(req, res);
+    const queryClient = getQueryClient();
+
+    queryClient.setQueryData(['profile', session.accessToken], session.user);
+
+    return { props: { query, session, dehydratedState: dehydrate(queryClient) } };
   } catch (error) {
     if (error.response.status === 401) {
       return {

@@ -2,7 +2,10 @@ import { useMemo, useState } from 'react';
 import Head from 'next/head';
 import { PlusIcon } from '@heroicons/react/solid';
 import { useRouter } from 'next/router';
+import { GetServerSideProps } from 'next';
+import { dehydrate } from '@tanstack/react-query';
 
+import { auth } from '@/pages/api/auth/[...nextauth]';
 import { useUsers } from 'hooks/users';
 import ProfileLayout from 'layouts/profile';
 import Button from 'components/button';
@@ -17,6 +20,7 @@ import { usePermissions } from 'hooks/permissions';
 import { RoleName } from 'hooks/permissions/enums';
 import Modal from 'components/modal';
 import UserForm from 'containers/edit-user/user-form';
+import getQueryClient from '@/lib/react-query';
 
 import type { User } from 'types';
 import type { TableProps } from 'components/table/component';
@@ -175,6 +179,20 @@ const AdminUsersPage: React.FC = () => {
       </div>
     </ProfileLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const session = await auth(ctx.req, ctx.res);
+  const queryClient = getQueryClient();
+
+  queryClient.setQueryData(['profile', session.accessToken], session.user);
+
+  return {
+    props: {
+      session,
+      dehydratedState: dehydrate(queryClient),
+    },
+  };
 };
 
 export default AdminUsersPage;

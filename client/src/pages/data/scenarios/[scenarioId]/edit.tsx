@@ -4,8 +4,9 @@ import toast from 'react-hot-toast';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useQueryClient } from '@tanstack/react-query';
+import { dehydrate, useQueryClient } from '@tanstack/react-query';
 import { PlusIcon, DotsVerticalIcon } from '@heroicons/react/solid';
+import { GetServerSideProps } from 'next';
 
 import InfoTooltip from 'components/info-tooltip';
 import { useScenario, useUpdateScenario } from 'hooks/scenarios';
@@ -26,6 +27,8 @@ import Toggle from 'components/toggle';
 import Dropdown from 'components/dropdown';
 import Badge from 'components/badge';
 import { handleResponseError } from 'services/api';
+import { auth } from '@/pages/api/auth/[...nextauth]';
+import getQueryClient from '@/lib/react-query';
 
 import type { ScenarioFormData } from 'containers/scenarios/types';
 
@@ -236,6 +239,20 @@ const UpdateScenarioPage: React.FC = () => {
       </div>
     </CleanLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const session = await auth(ctx.req, ctx.res);
+  const queryClient = getQueryClient();
+
+  queryClient.setQueryData(['profile', session.accessToken], session.user);
+
+  return {
+    props: {
+      session,
+      dehydratedState: dehydrate(queryClient),
+    },
+  };
 };
 
 export default UpdateScenarioPage;

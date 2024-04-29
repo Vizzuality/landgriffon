@@ -2,12 +2,16 @@ import { useCallback } from 'react';
 import toast from 'react-hot-toast';
 import Head from 'next/head';
 import router from 'next/router';
+import { GetServerSideProps } from 'next';
+import { dehydrate } from '@tanstack/react-query';
 
 import { useCreateScenario } from 'hooks/scenarios';
 import CleanLayout from 'layouts/clean';
 import BackLink from 'components/back-link';
 import ScenarioForm from 'containers/scenarios/form';
 import { handleResponseError } from 'services/api';
+import { auth } from '@/pages/api/auth/[...nextauth]';
+import getQueryClient from '@/lib/react-query';
 
 import type { ScenarioFormData } from 'containers/scenarios/types';
 
@@ -51,6 +55,20 @@ const CreateScenarioPage: React.FC = () => {
       </div>
     </CleanLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const session = await auth(ctx.req, ctx.res);
+  const queryClient = getQueryClient();
+
+  queryClient.setQueryData(['profile', session.accessToken], session.user);
+
+  return {
+    props: {
+      session,
+      dehydratedState: dehydrate(queryClient),
+    },
+  };
 };
 
 export default CreateScenarioPage;

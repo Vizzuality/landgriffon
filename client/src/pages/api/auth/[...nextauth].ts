@@ -1,15 +1,12 @@
-import NextAuth from 'next-auth';
+import NextAuth, { getServerSession } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next';
 
 import { authService } from 'services/authentication';
 import getUserFullName from 'utils/user-full-name';
+import { User } from '@/types';
 
 import type { NextAuthOptions } from 'next-auth';
-
-type CustomCredentials = Credential & {
-  password: string;
-  username: string;
-};
 
 export const options: NextAuthOptions = {
   /**
@@ -38,10 +35,13 @@ export const options: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        const { username, password } = credentials as CustomCredentials;
+        const { username, password } = credentials;
 
         // Request to sign in
-        const signInRequest = await authService.request({
+        const signInRequest = await authService.request<{
+          user: User;
+          accessToken: string;
+        }>({
           url: '/sign-in',
           method: 'POST',
           data: { username, password },
@@ -50,7 +50,6 @@ export const options: NextAuthOptions = {
 
         const { data, status } = signInRequest;
 
-        // Parsing session data
         if (data && status === 201) {
           return {
             ...data.user,
@@ -71,8 +70,9 @@ export const options: NextAuthOptions = {
       const newToken = { ...token };
 
       if (user) {
-        const { accessToken } = user;
-        newToken.accessToken = accessToken as string;
+        const { accessToken, ...rest } = user;
+        newToken.accessToken = accessToken;
+        newToken.user = rest;
 
         // If it's not expired, return the token,
         // if (Date.now() / 1000 + TIME_TO_REFRESH_TOKEN < (newToken?.exp as number)) {
@@ -98,10 +98,20 @@ export const options: NextAuthOptions = {
 
     // Extending session object
     session({ session, token }) {
-      session.accessToken = token.accessToken as string;
+      session.accessToken = token.accessToken;
+      session.user = token.user;
       return session;
     },
   },
 };
+
+export function auth(
+  ...args:
+    | [GetServerSidePropsContext['req'], GetServerSidePropsContext['res']]
+    | [NextApiRequest, NextApiResponse]
+    | []
+) {
+  return getServerSession(...args, options);
+}
 
 export default NextAuth(options);

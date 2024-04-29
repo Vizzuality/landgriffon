@@ -1,6 +1,9 @@
 import { useMemo } from 'react';
 import Head from 'next/head';
+import { GetServerSideProps } from 'next';
+import { dehydrate } from '@tanstack/react-query';
 
+import { auth } from '@/pages/api/auth/[...nextauth]';
 import { useSourcingLocations } from 'hooks/sourcing-locations';
 import { useLasTask } from 'hooks/tasks';
 import AdminLayout from 'layouts/admin';
@@ -8,6 +11,7 @@ import AdminDataUploader from 'containers/admin/data-uploader';
 import AdminDataTable from 'containers/admin/data-table';
 import Loading from 'components/loading';
 import Search from 'components/search';
+import getQueryClient from '@/lib/react-query';
 
 const AdminDataPage: React.FC = () => {
   // Getting sourcing locations to check if there are any data
@@ -52,6 +56,20 @@ const AdminDataPage: React.FC = () => {
       {isFetched && thereIsData && <AdminDataTable task={lastTask} />}
     </AdminLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const session = await auth(ctx.req, ctx.res);
+  const queryClient = getQueryClient();
+
+  queryClient.setQueryData(['profile', session.accessToken], session.user);
+
+  return {
+    props: {
+      session,
+      dehydratedState: dehydrate(queryClient),
+    },
+  };
 };
 
 export default AdminDataPage;

@@ -1,38 +1,28 @@
-import { useMemo } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
 
 import { apiRawServiceWithoutAuth, apiService } from 'services/api';
 import { authService } from 'services/authentication';
 
 import type { User, PasswordPayload, ErrorResponse, ProfilePayload } from 'types';
-import type { UseQueryResult, UseQueryOptions } from '@tanstack/react-query';
 import type { AxiosPromise } from 'axios';
 
-type ResponseData = UseQueryResult<User>;
+export function useProfile() {
+  const { data: session } = useSession();
 
-const DEFAULT_QUERY_OPTIONS: UseQueryOptions<User> = {
-  retry: false,
-  keepPreviousData: true,
-  refetchOnWindowFocus: false,
-};
-
-export function useProfile(): ResponseData {
-  const fetchProfile = useQuery(
-    ['profile'],
-    () =>
-      apiService
-        .request({
-          method: 'GET',
-          url: '/users/me',
-        })
-        .then((response) => {
-          if (response.status === 200) return response.data.data;
-          return response;
-        }),
-    DEFAULT_QUERY_OPTIONS,
+  return useQuery(['profile', session.accessToken], () =>
+    apiService
+      .request<{
+        data: User & {
+          id: string;
+          type: 'users';
+        };
+      }>({
+        method: 'GET',
+        url: '/users/me',
+      })
+      .then(({ data }) => data?.data),
   );
-
-  return useMemo<ResponseData>((): ResponseData => fetchProfile, [fetchProfile]);
 }
 
 export function useUpdateProfile() {

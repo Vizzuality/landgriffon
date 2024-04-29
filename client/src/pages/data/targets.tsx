@@ -2,7 +2,9 @@ import Head from 'next/head';
 import { useMemo } from 'react';
 import { InformationCircleIcon } from '@heroicons/react/outline';
 import { PlusIcon } from '@heroicons/react/solid';
+import { dehydrate } from '@tanstack/react-query';
 
+import { auth } from '@/pages/api/auth/[...nextauth]';
 import { tasksSSR } from 'services/ssr';
 import Button from 'components/button';
 import Radio from 'components/forms/radio';
@@ -12,6 +14,7 @@ import TargetsList from 'containers/targets/list';
 import { useIndicators } from 'hooks/indicators';
 import { useTargets } from 'hooks/targets';
 import AdminLayout from 'layouts/admin';
+import getQueryClient from '@/lib/react-query';
 
 import type { Target } from 'types';
 import type { GetServerSideProps } from 'next';
@@ -106,7 +109,12 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
         },
       };
     }
-    return { props: { query } };
+    const session = await auth(req, res);
+    const queryClient = getQueryClient();
+
+    queryClient.setQueryData(['profile', session.accessToken], session.user);
+
+    return { props: { query, session, dehydratedState: dehydrate(queryClient) } };
   } catch (error) {
     if (error.response.status === 401) {
       return {

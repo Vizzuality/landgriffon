@@ -1,5 +1,7 @@
 import { MapProvider } from 'react-map-gl/maplibre';
+import { dehydrate } from '@tanstack/react-query';
 
+import { auth } from '@/pages/api/auth/[...nextauth]';
 import useEffectOnce from 'hooks/once';
 import { setVisualizationMode } from 'store/features/analysis';
 import { useAppDispatch } from 'store/hooks';
@@ -8,6 +10,7 @@ import AnalysisLayout from 'layouts/analysis';
 import AnalysisMap from 'containers/analysis-visualization/analysis-map';
 import TitleTemplate from 'utils/titleTemplate';
 import { tasksSSR } from 'services/ssr';
+import getQueryClient from '@/lib/react-query';
 
 import type { NextPageWithLayout } from 'pages/_app';
 import type { ReactElement } from 'react';
@@ -49,7 +52,13 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
         },
       };
     }
-    return { props: { query } };
+
+    const session = await auth(req, res);
+    const queryClient = getQueryClient();
+
+    queryClient.setQueryData(['profile', session.accessToken], session.user);
+
+    return { props: { query, session, dehydratedState: dehydrate(queryClient) } };
   } catch (error) {
     if (error.response.status === 401) {
       return {

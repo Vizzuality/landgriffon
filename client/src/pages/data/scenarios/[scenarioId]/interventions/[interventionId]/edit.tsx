@@ -2,6 +2,8 @@ import { useCallback } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
+import { GetServerSideProps } from 'next';
+import { dehydrate } from '@tanstack/react-query';
 
 import { useIntervention, useUpdateIntervention } from 'hooks/interventions';
 import { parseInterventionFormDataToDto } from 'containers/interventions/utils';
@@ -10,6 +12,8 @@ import InterventionForm from 'containers/interventions/form';
 import BackLink from 'components/back-link/component';
 import Loading from 'components/loading';
 import { handleResponseError } from 'services/api';
+import { auth } from '@/pages/api/auth/[...nextauth]';
+import getQueryClient from '@/lib/react-query';
 
 import type { InterventionFormData } from 'containers/interventions/types';
 
@@ -84,6 +88,20 @@ const EditInterventionPage: React.FC = () => {
       </div>
     </CleanLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const session = await auth(ctx.req, ctx.res);
+  const queryClient = getQueryClient();
+
+  queryClient.setQueryData(['profile', session.accessToken], session.user);
+
+  return {
+    props: {
+      session,
+      dehydratedState: dehydrate(queryClient),
+    },
+  };
 };
 
 export default EditInterventionPage;

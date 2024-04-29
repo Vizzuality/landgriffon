@@ -4,7 +4,7 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
-import { SourcingDataExcelValidator } from 'modules/import-data/sourcing-data/validators/sourcing-data.class.validator';
+import { SourcingDataExcelValidator } from 'modules/import-data/sourcing-data/validation/sourcing-data.class.validator';
 
 @ValidatorConstraint({ name: 'longitude', async: false })
 export class LocationLongitudeInputValidator
@@ -38,6 +38,7 @@ export class LocationLongitudeInputValidator
       return true;
     }
   }
+
   defaultMessage(args: ValidationArguments): string {
     if (
       (args.object as SourcingDataExcelValidator).location_type ===

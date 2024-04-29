@@ -13,7 +13,7 @@ import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sou
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { WorkSheet } from 'xlsx';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
-import { SourcingDataExcelValidator } from 'modules/import-data/sourcing-data/validators/sourcing-data.class.validator';
+import { SourcingDataExcelValidator } from 'modules/import-data/sourcing-data/validation/sourcing-data.class.validator';
 import { validateOrReject } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto';

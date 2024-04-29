@@ -5,6 +5,14 @@ export class SendMailDTO {
   subject: string;
   html: string;
   text?: string;
+  attachments?: MailAttachment[];
+}
+
+interface MailAttachment {
+  content: string;
+  filename: string;
+  type: string;
+  disposition: string;
 }
 
 export interface IEmailService {

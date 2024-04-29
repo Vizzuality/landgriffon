@@ -5,6 +5,7 @@ type ImportEmailDTO = {
   email: string;
   fileName: string;
   importDate: string;
+  errorContent?: string;
 };
 
 @Injectable()
@@ -30,15 +31,26 @@ export class ImportMailService {
   }
 
   async sendImportFailureMail(dto: ImportEmailDTO): Promise<void> {
+    const base64Csv = Buffer.from(dto.errorContent || '').toString('base64');
+
     const htmlContent: string = `
       <p>Dear ${dto.email || 'User'},</p>
       <p>Your import of file ${dto.fileName} has failed.</p>
       <p>Import date: ${dto.importDate}</p>
+      <p>Please find the error report attached.</p>
     `;
     await this.emailService.sendMail({
       to: dto.email,
       subject: 'Import failure',
       html: htmlContent,
+      attachments: [
+        {
+          content: base64Csv,
+          filename: `${dto.fileName}_error_report.csv`,
+          type: 'text/csv',
+          disposition: 'attachment',
+        },
+      ],
     });
     this.logger.debug(`Sent import failure email to ${dto.email}`);
   }

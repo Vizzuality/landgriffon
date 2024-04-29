@@ -10,7 +10,7 @@ import { Logger, ServiceUnavailableException } from '@nestjs/common';
 import { ImportDataService } from 'modules/import-data/import-data.service';
 import { ExcelImportJob } from 'modules/import-data/workers/import-data.producer';
 import { TasksService } from 'modules/tasks/tasks.service';
-import { Task, TASK_STATUS } from 'modules/tasks/task.entity';
+import { Task, TASK_STATUS, TASK_TYPE } from 'modules/tasks/task.entity';
 import { importQueueName } from 'modules/import-data/workers/import-queue.name';
 import { ImportProgressSocket } from 'modules/events/import-data/import-progress.socket';
 import { ImportMailService } from 'modules/import-data/import-mail/import-mail.service';
@@ -47,6 +47,20 @@ export class ImportDataConsumer {
     this.logger.error(
       `Import Failed for file: ${job.data.xlsxFileData.filename} for task: ${task.id}: ${err}`,
     );
+
+    const errorReport: string = await this.tasksService.getTaskErrorReport(
+      task.id,
+      {
+        type: TASK_TYPE.SOURCING_DATA_IMPORT,
+      },
+    );
+
+    await this.importMail.sendImportFailureMail({
+      email: task.user.email,
+      fileName: job.data.xlsxFileData.originalname,
+      importDate: task.createdAt,
+      errorContent: errorReport,
+    });
   }
 
   @OnQueueCompleted()

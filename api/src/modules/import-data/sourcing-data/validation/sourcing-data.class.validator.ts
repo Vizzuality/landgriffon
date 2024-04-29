@@ -12,9 +12,9 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
-import { LocationAddressInputValidator } from 'modules/import-data/sourcing-data/validators/address-input.custom.validator';
-import { LocationLatitudeInputValidator } from 'modules/import-data/sourcing-data/validators/latitude-input.custom.validator';
-import { LocationLongitudeInputValidator } from 'modules/import-data/sourcing-data/validators/longitude-input.custom.validator';
+import { LocationAddressInputValidator } from 'modules/import-data/sourcing-data/validation/address-input.custom.validator';
+import { LocationLatitudeInputValidator } from 'modules/import-data/sourcing-data/validation/latitude-input.custom.validator';
+import { LocationLongitudeInputValidator } from 'modules/import-data/sourcing-data/validation/longitude-input.custom.validator';
 import { Type } from 'class-transformer';
 
 const MAX_INT32_VALUE: number = 2147483647;

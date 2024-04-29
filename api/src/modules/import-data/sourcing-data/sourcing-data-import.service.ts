@@ -106,7 +106,7 @@ export class SourcingDataImportService {
           // TODO: The worker handler also updates the task, check if this is redundant
           await this.tasksService.updateImportTask({
             taskId,
-            newErrors: err.message,
+            newErrors: err.response.message,
           });
           throw new BadRequestException(
             'Import failed. There are constraint errors present in the file',

@@ -23,7 +23,9 @@ export class SheetValidatorMaterial {
   description: string;
 
   @IsString()
-  @IsEnum(['active', 'inactive'])
+  @IsEnum(['active', 'inactive'], {
+    message: 'Material status must be active or inactive',
+  })
   status: string;
 
   @IsOptional()

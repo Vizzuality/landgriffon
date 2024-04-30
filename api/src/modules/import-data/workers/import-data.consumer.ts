@@ -36,11 +36,12 @@ export class ImportDataConsumer {
   // TODO: Handle events finished and failed cases
 
   @OnQueueFailed()
-  async onJobFailed(job: Job<ExcelImportJob>, err: Error): Promise<void> {
+  async onJobFailed(job: Job<ExcelImportJob>, err: any): Promise<void> {
     const task: Task | undefined = await this.tasksService.updateImportTask({
       taskId: job.data.taskId,
       newStatus: TASK_STATUS.FAILED,
       message: err.message,
+      newErrors: err.validationErrors,
     });
     this.importSocket.emitImportFailureToSocket({ error: err });
 

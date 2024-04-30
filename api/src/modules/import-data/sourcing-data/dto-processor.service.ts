@@ -91,14 +91,14 @@ export class SourcingRecordsDtoProcessorService {
       importData.indicators,
     );
 
-    const processedSourcingData: Record<string, any> =
-      await this.parseSourcingDataFromSheet(importData.sourcingData);
-
-    /**
-     * Validating parsed and cleaned from Sourcing Data sheet
-     */
-
-    await this.validateSourcingData(processedSourcingData.sourcingData);
+    // const processedSourcingData: Record<string, any> =
+    //   await this.parseSourcingDataFromSheet(importData.sourcingData);
+    //
+    // /**
+    //  * Validating parsed and cleaned from Sourcing Data sheet
+    //  */
+    //
+    // await this.validateSourcingData(processedSourcingData.sourcingData);
     /**
      * Builds SourcingData from parsed XLSX
      */
@@ -126,7 +126,7 @@ export class SourcingRecordsDtoProcessorService {
     return regexMatch ? parseInt(regexMatch[0]) : null;
   }
 
-  private async parseSourcingDataFromSheet(customData: WorkSheet[]): Promise<{
+  async parseSourcingDataFromSheet(customData: WorkSheet[]): Promise<{
     sourcingData: SourcingData[];
   }> {
     this.logger.debug(`Cleaning ${customData.length} custom data rows`);
@@ -135,18 +135,13 @@ export class SourcingRecordsDtoProcessorService {
     /**
      * Clean all hashmaps that are empty therefore useless
      */
-    const nonEmptyData: WorkSheet[] = customData.filter(
-      (row: WorkSheet) =>
-        row['material.hsCode'] && row['material.hsCode'] !== '',
-    );
-    this.logger.debug(`Found ${customData.length} non-empty custom data rows`);
     /**
      * Separate base properties common for each sourcing-location row
      * Separate metadata properties to metadata object common for each sourcing-location row
      * Check if current key contains a year ('2018_tonnage') if so, get the year and its value
      */
 
-    for (const eachRecordOfCustomData of nonEmptyData) {
+    for (const eachRecordOfCustomData of customData) {
       const sourcingRecords: Record<string, any>[] = [];
       const years: Record<string, any> = {};
       const baseProps: Record<string, any> = {};
@@ -163,9 +158,6 @@ export class SourcingRecordsDtoProcessorService {
         } else if (!this.isSourcingLocationData(field)) {
           metadata[field] = eachRecordOfCustomData[field];
         } else {
-          eachRecordOfCustomData[field] === ' '
-            ? (baseProps[field] = null)
-            : (baseProps[field] = eachRecordOfCustomData[field]);
         }
       }
       /**
@@ -289,13 +281,13 @@ export class SourcingRecordsDtoProcessorService {
     this.logger.debug(
       `Creating sourcing data DTOs from ${sourcingData.length} data rows`,
     );
-    const processedSourcingData: Record<string, any> =
-      await this.parseSourcingDataFromSheet(sourcingData);
-
-    await this.validateSourcingData(processedSourcingData.sourcingData);
+    // const processedSourcingData: Record<string, any> =
+    //   await this.parseSourcingDataFromSheet(sourcingData);
+    //
+    // await this.validateSourcingData(processedSourcingData.sourcingData);
 
     const sourcingLocationDtos: any[] = [];
-    for (const importRow of processedSourcingData.sourcingData) {
+    for (const importRow of sourcingData) {
       const sourcingLocationDto: CreateSourcingLocationDto =
         await this.createSourcingLocationDTOFromData(
           importRow,

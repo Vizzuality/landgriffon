@@ -30,6 +30,7 @@ import { EudrImportService } from 'modules/import-data/eudr/eudr.import.service'
 import { EUDRDTOProcessor } from 'modules/import-data/eudr/eudr.dto-processor.service';
 import { ImportMailService } from 'modules/import-data/import-mail/import-mail.service';
 import { NotificationsModule } from 'modules/notifications/notifications.module';
+import { ExcelValidatorService } from 'modules/import-data/sourcing-data/validation/excel-validator.service';
 
 // TODO: Move EUDR related stuff to EUDR modules
 
@@ -76,6 +77,7 @@ import { NotificationsModule } from 'modules/notifications/notifications.module'
     EudrImportService,
     EUDRDTOProcessor,
     ImportMailService,
+    ExcelValidatorService,
     {
       provide: 'FILE_UPLOAD_SIZE_LIMIT',
       useValue: config.get('fileUploads.sizeLimit'),

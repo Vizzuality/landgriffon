@@ -23,8 +23,6 @@ export class SourcingDataSheetValidator {
   @IsNotEmpty({
     message: 'Material hs code cannot be empty',
   })
-  @IsString()
-  @MinLength(2)
   'material.hsCode': string;
 
   @IsNotEmpty({
@@ -42,8 +40,7 @@ export class SourcingDataSheetValidator {
   'producer.name': string;
 
   @IsNotEmpty({
-    message:
-      'New location type input is required for the selected intervention type',
+    message: 'location type input is required',
   })
   @IsEnum(
     Object.values(LOCATION_TYPES).map((s: string) => s.replace(/-/g, ' ')),

@@ -14,8 +14,10 @@ export class TaskReportService {
   ) {}
 
   async createImportErrorReport(errors: ErrorRecord[]): Promise<string> {
-    const parserOptions: { fields: ['line', 'error'] } = {
-      fields: ['line', 'error'],
+    const parserOptions: {
+      fields: ['line', 'error', 'column', 'sheet', 'type'];
+    } = {
+      fields: ['line', 'error', 'column', 'sheet', 'type'],
     };
     return this.reportService.generateCSVReport(errors, parserOptions);
   }

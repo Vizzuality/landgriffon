@@ -33,6 +33,13 @@ import { ImpactService } from 'modules/impact/impact.service';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 import { ImportProgressTrackerFactory } from 'modules/events/import-data/import-progress.tracker.factory';
 import { ValidationProgressTracker } from 'modules/import-data/progress-tracker/validation.progress-tracker';
+import { SourcingDataExcelValidator } from './validation/sourcing-data.class.validator';
+import {
+  ExcelValidatorService,
+  Sheet,
+} from './validation/excel-validator.service';
+import { ExcelValidationError } from './validation/validators/excel-validation.error';
+import { GeoCodingError } from '../../geo-coding/errors/geo-coding.error';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -84,6 +91,7 @@ export class SourcingDataImportService {
     protected readonly impactService: ImpactService,
     protected readonly impactCalculator: ImpactCalculator,
     protected readonly importProgressTrackerFactory: ImportProgressTrackerFactory,
+    protected readonly excelValidator: ExcelValidatorService,
   ) {}
 
   async importSourcingData(filePath: string, taskId: string): Promise<any> {
@@ -98,20 +106,13 @@ export class SourcingDataImportService {
           title: 'Sourcing Records import from XLSX file',
         });
 
-      const dtoMatchedData: SourcingRecordsDtos =
-        await this.validateAndCreateDTOs(
-          parsedXLSXDataset,
-          sourcingLocationGroup.id,
-        ).catch(async (err: any) => {
-          // TODO: The worker handler also updates the task, check if this is redundant
-          await this.tasksService.updateImportTask({
-            taskId,
-            newErrors: err.response.message,
-          });
-          throw new BadRequestException(
-            'Import failed. There are constraint errors present in the file',
-          );
-        });
+      const { data: dtoMatchedData, validationErrors } =
+        await this.excelValidator.validate(
+          parsedXLSXDataset as unknown as Sheet,
+        );
+      if (validationErrors.length) {
+        throw new ExcelValidationError('Validation Errors', validationErrors);
+      }
 
       //TODO: Implement transactional import. Move geocoding to first step
 
@@ -157,8 +158,7 @@ export class SourcingDataImportService {
           dtoMatchedData.sourcingData,
         );
       if (errors.length) {
-        await this.tasksService.updateImportTask({ taskId, newErrors: errors });
-        throw new BadRequestException(
+        throw new GeoCodingError(
           'Import failed. There are GeoCoding errors present in the file',
         );
       }

@@ -4,7 +4,7 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
-import { SourcingDataExcelValidator } from 'modules/import-data/sourcing-data/validation/sourcing-data.class.validator';
+import { SourcingDataExcelValidator } from 'modules/import-data/sourcing-data/validation/validators/sourcing-data.class.validator';
 
 @ValidatorConstraint({ name: 'latitude', async: false })
 export class LocationLatitudeInputValidator

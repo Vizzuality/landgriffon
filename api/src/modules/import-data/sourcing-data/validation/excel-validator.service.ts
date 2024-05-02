@@ -8,6 +8,8 @@ import { IndicatorsSheetValidator } from './validators/indicators.sheet-validato
 import { plainToInstance } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
 import { SourcingRecordsSheets } from '../sourcing-records-sheets.interface';
+import { ValidationProgressTracker } from '../../progress-tracker/validation.progress-tracker';
+import { ImportProgressTrackerFactory } from 'modules/events/import-data/import-progress.tracker.factory';
 
 export type Sheet = {
   materials: SheetValidatorMaterial[];
@@ -44,14 +46,16 @@ export class ExcelValidatorService {
 
   constructor(
     private readonly dtoProcessor: SourcingRecordsDtoProcessorService,
+    private readonly importProgressTrackerFactory: ImportProgressTrackerFactory,
   ) {}
 
   async validate(sheet: Sheet): Promise<any> {
+    const progressTracker: ValidationProgressTracker =
+      this.getProgressTracker(sheet);
     const validationErrors: any[] = [];
     const { sourcingData } = await this.dtoProcessor.parseSourcingDataFromSheet(
       sheet.sourcingData,
     );
-
     sheet.sourcingData =
       sourcingData as unknown as SourcingDataSheetValidator[];
 
@@ -60,12 +64,6 @@ export class ExcelValidatorService {
       for (const [index, record] of sheetData.entries()) {
         const validator = this.getValidator(sheetName);
         const instance: any = plainToInstance(validator, record);
-        if (
-          instance.location_address_input ===
-          'country of production should not have address'
-        ) {
-          console.log('stop here');
-        }
         const errors: ValidationError[] = await validate(instance);
         if (errors.length) {
           errors.forEach((error: ValidationError) => {
@@ -82,6 +80,7 @@ export class ExcelValidatorService {
             }
           });
         }
+        progressTracker.trackProgress();
       }
     }
 
@@ -97,5 +96,16 @@ export class ExcelValidatorService {
 
   private setLineNumber(index: number, sheetName: SheetName): number {
     return sheetName === 'sourcingData' ? index + 5 : index + 1;
+  }
+
+  private getProgressTracker(sheet: Sheet): ValidationProgressTracker {
+    const totalSteps: number =
+      SHEET_NAMES.reduce(
+        (acc: number, sheetName: SheetName) => acc + sheet[sheetName].length,
+        0,
+      ) + 1;
+    return this.importProgressTrackerFactory.createValidationProgressTracker({
+      totalSteps: totalSteps,
+    });
   }
 }

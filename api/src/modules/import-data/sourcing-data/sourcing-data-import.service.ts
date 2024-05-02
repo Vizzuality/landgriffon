@@ -33,13 +33,12 @@ import { ImpactService } from 'modules/impact/impact.service';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 import { ImportProgressTrackerFactory } from 'modules/events/import-data/import-progress.tracker.factory';
 import { ValidationProgressTracker } from 'modules/import-data/progress-tracker/validation.progress-tracker';
-import { SourcingDataExcelValidator } from './validation/sourcing-data.class.validator';
 import {
   ExcelValidatorService,
   Sheet,
-} from './validation/excel-validator.service';
-import { ExcelValidationError } from './validation/validators/excel-validation.error';
-import { GeoCodingError } from '../../geo-coding/errors/geo-coding.error';
+} from 'modules/import-data/sourcing-data/validation/excel-validator.service';
+import { ExcelValidationError } from 'modules/import-data/sourcing-data/validation/validators/excel-validation.error';
+import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 
 export interface LocationData {
   locationAddressInput?: string;
@@ -90,7 +89,6 @@ export class SourcingDataImportService {
     protected readonly indicatorRecordService: IndicatorRecordsService,
     protected readonly impactService: ImpactService,
     protected readonly impactCalculator: ImpactCalculator,
-    protected readonly importProgressTrackerFactory: ImportProgressTrackerFactory,
     protected readonly excelValidator: ExcelValidatorService,
   ) {}
 
@@ -206,41 +204,6 @@ export class SourcingDataImportService {
     }
   }
 
-  private async validateDTOs(
-    dtoLists: SourcingRecordsDtos,
-  ): Promise<void | Array<ErrorConstructor>> {
-    const validationErrorArray: {
-      line: number;
-      property: string;
-      message: any;
-    }[] = [];
-    for (const parsedSheet in dtoLists) {
-      if (dtoLists.hasOwnProperty(parsedSheet)) {
-        for (const [i, dto] of dtoLists[
-          parsedSheet as keyof SourcingRecordsDtos
-        ].entries()) {
-          try {
-            await validateOrReject(dto);
-          } catch (err: any) {
-            validationErrorArray.push({
-              line: i + 5,
-              property: err[0].property,
-              message: err[0].constraints,
-            });
-          }
-        }
-      }
-    }
-
-    /**
-     * @note If errors are thrown, we should bypass all-exceptions.exception.filter.ts
-     * in order to return the array containing errors in a more readable way
-     * Or add a function per entity to validate
-     */
-    if (validationErrorArray.length)
-      throw new BadRequestException(validationErrorArray);
-  }
-
   /**
    * @note: Deletes DB content from required entities
    * to ensure DB is prune prior loading a XLSX dataset
@@ -317,51 +280,5 @@ export class SourcingDataImportService {
       sourcingLocation.materialId = materialMap[sourcingLocationMaterialId];
     }
     return sourcingData;
-  }
-
-  async validateAndCreateDTOs(
-    parsedXLSXDataset: SourcingRecordsSheets,
-    sourcingLocationGroupId: string,
-  ): Promise<SourcingRecordsDtos> {
-    const processingMap: Record<string, any> = {
-      materials: this.dtoProcessor.createMaterialDtos.bind(this.dtoProcessor),
-      businessUnits: this.dtoProcessor.createBusinessUnitDtos.bind(
-        this.dtoProcessor,
-      ),
-      suppliers: this.dtoProcessor.createSupplierDtos.bind(this.dtoProcessor),
-      countries: this.dtoProcessor.createAdminRegionDtos.bind(
-        this.dtoProcessor,
-      ),
-      sourcingData: this.dtoProcessor.createSourcingDataDTOs.bind(
-        this.dtoProcessor,
-      ),
-      indicators: this.dtoProcessor.createIndicatorDtos.bind(this.dtoProcessor),
-      sourcingLocationGroupId,
-    };
-    const results: any = {} as SourcingRecordsDtos;
-
-    const totalSteps: number = Object.keys(parsedXLSXDataset).length + 1; // +1 for final validation step
-
-    const tracker: ValidationProgressTracker =
-      this.importProgressTrackerFactory.createValidationProgressTracker({
-        totalSteps: totalSteps,
-      });
-
-    for (const [sheetName, sheetEntities] of Object.entries(
-      parsedXLSXDataset,
-    )) {
-      if (sheetName in processingMap) {
-        const result: any = await processingMap[sheetName](
-          sheetEntities,
-          sourcingLocationGroupId,
-        );
-        results[sheetName] = result;
-      } else {
-        await this.validateDTOs(results);
-      }
-      tracker.trackProgress();
-    }
-
-    return results;
   }
 }

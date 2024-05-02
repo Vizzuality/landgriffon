@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
-import { SourcingDataExcelValidator } from 'modules/import-data/sourcing-data/validation/sourcing-data.class.validator';
+import { SourcingDataExcelValidator } from 'modules/import-data/sourcing-data/validation/validators/sourcing-data.class.validator';
 import { validateOrReject } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 import {

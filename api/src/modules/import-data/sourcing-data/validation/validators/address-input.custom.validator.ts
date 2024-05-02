@@ -4,36 +4,38 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
-import { SourcingDataExcelValidator } from 'modules/import-data/sourcing-data/validation/sourcing-data.class.validator';
+import { SourcingDataExcelValidator } from 'modules/import-data/sourcing-data/validation/validators/sourcing-data.class.validator';
 
-@ValidatorConstraint({ name: 'longitude', async: false })
-export class LocationLongitudeInputValidator
+@ValidatorConstraint({ name: 'location_address', async: false })
+export class LocationAddressInputValidator
   implements ValidatorConstraintInterface
 {
-  validate(longitudeInput: number, args: ValidationArguments): boolean {
+  validate(addressInput: string, args: ValidationArguments): boolean {
     if (
       (args.object as SourcingDataExcelValidator).location_type ===
         LOCATION_TYPES.UNKNOWN ||
       (args.object as SourcingDataExcelValidator).location_type ===
         LOCATION_TYPES.COUNTRY_OF_PRODUCTION
     ) {
-      return !longitudeInput;
+      return !addressInput;
     } else if (
       ((args.object as SourcingDataExcelValidator).location_type ===
         LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT ||
         (args.object as SourcingDataExcelValidator).location_type ===
           LOCATION_TYPES.POINT_OF_PRODUCTION) &&
-      (args.object as SourcingDataExcelValidator).location_address_input
+      ((args.object as SourcingDataExcelValidator).location_latitude_input ||
+        (args.object as SourcingDataExcelValidator).location_longitude_input)
     ) {
-      return !longitudeInput;
+      return !addressInput;
     } else if (
       ((args.object as SourcingDataExcelValidator).location_type ===
         LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT ||
         (args.object as SourcingDataExcelValidator).location_type ===
           LOCATION_TYPES.POINT_OF_PRODUCTION) &&
-      !(args.object as SourcingDataExcelValidator).location_address_input
+      (!(args.object as SourcingDataExcelValidator).location_latitude_input ||
+        !(args.object as SourcingDataExcelValidator).location_longitude_input)
     ) {
-      return longitudeInput >= -180 && longitudeInput <= 180;
+      return typeof addressInput === 'string' && addressInput.length > 2;
     } else {
       return true;
     }
@@ -46,23 +48,24 @@ export class LocationLongitudeInputValidator
       (args.object as SourcingDataExcelValidator).location_type ===
         LOCATION_TYPES.COUNTRY_OF_PRODUCTION
     ) {
-      return `Coordinates must be empty for locations of type ${
-        (args.object as SourcingDataExcelValidator).location_type
+      return `Address must be empty for locations of type ${
+        JSON.parse(JSON.stringify(args.object)).location_type
       }`;
     } else if (
       ((args.object as SourcingDataExcelValidator).location_type ===
         LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT ||
         (args.object as SourcingDataExcelValidator).location_type ===
           LOCATION_TYPES.POINT_OF_PRODUCTION) &&
-      (args.object as SourcingDataExcelValidator).location_address_input
+      ((args.object as SourcingDataExcelValidator).location_latitude_input ||
+        (args.object as SourcingDataExcelValidator).location_longitude_input)
     ) {
-      return `Address input OR coordinates must be provided for locations of type ${
+      return `Address input OR coordinates are required for locations of type ${
         (args.object as SourcingDataExcelValidator).location_type
-      }. Latitude must be empty if address is provided`;
+      }. Address must be empty if coordinates are provided`;
     } else {
       return `Address input or coordinates are required for locations of type ${
         (args.object as SourcingDataExcelValidator).location_type
-      }. Longitude values must be min: -180, max: 180`;
+      }.`;
     }
   }
 }

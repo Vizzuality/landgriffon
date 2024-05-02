@@ -42,14 +42,11 @@ export class SourcingDataSheetValidator {
   @IsNotEmpty({
     message: 'location type input is required',
   })
-  @IsEnum(
-    Object.values(LOCATION_TYPES).map((s: string) => s.replace(/-/g, ' ')),
-    {
-      message: `Available columns for new location type: ${Object.values(
-        LOCATION_TYPES,
-      ).join(', ')}`,
-    },
-  )
+  @IsEnum(Object.values(LOCATION_TYPES), {
+    message: `Available columns for new location type: ${Object.values(
+      LOCATION_TYPES,
+    ).join(', ')}`,
+  })
   'location_type': LOCATION_TYPES;
 
   @IsNotEmpty({

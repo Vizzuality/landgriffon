@@ -158,6 +158,7 @@ export class SourcingDataImportService {
       if (errors.length) {
         throw new GeoCodingError(
           'Import failed. There are GeoCoding errors present in the file',
+          errors,
         );
       }
       const warnings: string[] = [];

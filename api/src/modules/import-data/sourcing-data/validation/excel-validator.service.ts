@@ -95,7 +95,7 @@ export class ExcelValidatorService {
   }
 
   private setLineNumber(index: number, sheetName: SheetName): number {
-    return sheetName === 'sourcingData' ? index + 5 : index + 1;
+    return sheetName === 'sourcingData' ? index + 5 : index + 2;
   }
 
   private getProgressTracker(sheet: Sheet): ValidationProgressTracker {

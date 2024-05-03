@@ -1,9 +1,6 @@
 import {
   Controller,
-  Get,
-  Inject,
   Post,
-  Query,
   UnauthorizedException,
   UploadedFile,
   UseGuards,
@@ -25,26 +22,13 @@ import { User } from 'modules/users/user.entity';
 import { ROLES } from 'modules/authorization/roles/roles.enum';
 import { RequiredRoles } from 'decorators/roles.decorator';
 import { RolesGuard } from 'guards/roles.guard';
-import { EudrImportService } from 'modules/import-data/eudr/eudr.import.service';
-import { Public } from 'decorators/public.decorator';
-import { ImportProgressEmitter } from 'modules/events/import-data/import-progress.emitter';
-import { SourcingDataImportService } from './sourcing-data/sourcing-data-import.service';
-import { TasksService } from '../tasks/tasks.service';
-import { DataSource } from 'typeorm';
 
 @ApiTags('Import Data')
 @Controller(`/api/v1/import`)
 @UseGuards(RolesGuard)
 @ApiBearerAuth()
 export class ImportDataController {
-  constructor(
-    public readonly importDataService: ImportDataService,
-    private readonly eudr: EudrImportService,
-    private readonly importProgressEmitter: ImportProgressEmitter,
-    // TODO: for testing purposes, remove this dependency
-    private readonly sourcingDataImportService: SourcingDataImportService,
-    private readonly dataSource: DataSource,
-  ) {}
+  constructor(public readonly importDataService: ImportDataService) {}
 
   @ApiConsumesXLSX()
   @ApiBadRequestResponse({

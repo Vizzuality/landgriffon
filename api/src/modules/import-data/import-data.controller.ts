@@ -70,24 +70,24 @@ export class ImportDataController {
     return task;
   }
 
-  @ApiConsumesXLSX()
-  @ApiBadRequestResponse({
-    description:
-      'Bad Request. A .XLSX file not provided as payload or contains missing or incorrect data',
-  })
-  @ApiForbiddenResponse()
-  @UseInterceptors(FileInterceptor('file'), XlsxPayloadInterceptor)
-  @RequiredRoles(ROLES.ADMIN)
-  @Post('/eudr')
-  async importEudr(
-    @UploadedFile() xlsxFile: Express.Multer.File,
-    @GetUser() user: User,
-  ): Promise<Partial<Task>> {
-    const { path } = xlsxFile;
-    const taskId: string = 'fa02307f-70f1-4c8a-a117-2a7cfd6f0be5';
-
-    return this.eudr.importEudr(path, taskId);
-  }
+  // @ApiConsumesXLSX()
+  // @ApiBadRequestResponse({
+  //   description:
+  //     'Bad Request. A .XLSX file not provided as payload or contains missing or incorrect data',
+  // })
+  // @ApiForbiddenResponse()
+  // @UseInterceptors(FileInterceptor('file'), XlsxPayloadInterceptor)
+  // @RequiredRoles(ROLES.ADMIN)
+  // @Post('/eudr')
+  // async importEudr(
+  //   @UploadedFile() xlsxFile: Express.Multer.File,
+  //   @GetUser() user: User,
+  // ): Promise<Partial<Task>> {
+  //   const { path } = xlsxFile;
+  //   const taskId: string = 'fa02307f-70f1-4c8a-a117-2a7cfd6f0be5';
+  //
+  //   return this.eudr.importEudr(path, taskId);
+  // }
 
   //   if (!user) {
   //     throw new UnauthorizedException();

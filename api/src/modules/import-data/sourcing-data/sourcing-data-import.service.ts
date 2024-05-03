@@ -13,7 +13,7 @@ import { FileService } from 'modules/import-data/file.service';
 import {
   SourcingData,
   SourcingRecordsDtoProcessorService,
-  SourcingRecordsDtos,
+  SourcingDataDTOs,
 } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
 import { SourcingLocationGroupsService } from 'modules/sourcing-location-groups/sourcing-location-groups.service';
@@ -35,7 +35,7 @@ import { ImportProgressTrackerFactory } from 'modules/events/import-data/import-
 import { ValidationProgressTracker } from 'modules/import-data/progress-tracker/validation.progress-tracker';
 import {
   ExcelValidatorService,
-  Sheet,
+  SourcingDataSheet,
 } from 'modules/import-data/sourcing-data/validation/excel-validator.service';
 import { ExcelValidationError } from 'modules/import-data/sourcing-data/validation/validators/excel-validation.error';
 import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
@@ -106,7 +106,7 @@ export class SourcingDataImportService {
 
       const { data: dtoMatchedData, validationErrors } =
         await this.excelValidator.validate(
-          parsedXLSXDataset as unknown as Sheet,
+          parsedXLSXDataset as unknown as SourcingDataSheet,
         );
       if (validationErrors.length) {
         throw new ExcelValidationError('Validation Errors', validationErrors);

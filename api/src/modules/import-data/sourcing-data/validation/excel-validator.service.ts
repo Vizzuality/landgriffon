@@ -1,25 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { SourcingRecordsDtoProcessorService } from '../dto-processor.service';
-import { SheetValidatorMaterial } from './validators/material.sheet-validator';
+import {
+  SourcingDataDTOs,
+  SourcingRecordsDtoProcessorService,
+} from '../dto-processor.service';
+import { MaterialSheetValidator } from './validators/material.sheet-validator';
 import { BusinessUnitsSheetValidator } from './validators/business-units.sheet-validator';
-import { SheetValidatorSupplier } from './validators/supplier.sheet-validator';
+import { SupplierSheetValidator } from './validators/supplier.sheet-validator';
 import { SourcingDataSheetValidator } from './validators/sourcing-data.sheet-validator';
 import { IndicatorsSheetValidator } from './validators/indicators.sheet-validator';
 import { plainToInstance } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
-import { SourcingRecordsSheets } from '../sourcing-records-sheets.interface';
 import { ValidationProgressTracker } from '../../progress-tracker/validation.progress-tracker';
 import { ImportProgressTrackerFactory } from 'modules/events/import-data/import-progress.tracker.factory';
+import { ImportTaskError } from '../../../tasks/types/import-task-error.type';
 
-export type Sheet = {
-  materials: SheetValidatorMaterial[];
+export type SourcingDataSheet = {
+  materials: MaterialSheetValidator[];
   businessUnits: BusinessUnitsSheetValidator[];
-  suppliers: SheetValidatorSupplier[];
+  suppliers: SupplierSheetValidator[];
   sourcingData: SourcingDataSheetValidator[];
   indicators: IndicatorsSheetValidator[];
 };
 
-type SheetName =
+export type SheetName =
   | 'materials'
   | 'businessUnits'
   | 'suppliers'
@@ -37,9 +40,9 @@ export const SHEET_NAMES: SheetName[] = [
 @Injectable()
 export class ExcelValidatorService {
   private readonly validators = {
-    materials: SheetValidatorMaterial,
+    materials: MaterialSheetValidator,
     businessUnits: BusinessUnitsSheetValidator,
-    suppliers: SheetValidatorSupplier,
+    suppliers: SupplierSheetValidator,
     sourcingData: SourcingDataSheetValidator,
     indicators: IndicatorsSheetValidator,
   };
@@ -49,10 +52,14 @@ export class ExcelValidatorService {
     private readonly importProgressTrackerFactory: ImportProgressTrackerFactory,
   ) {}
 
-  async validate(sheet: Sheet): Promise<any> {
+  async validate(sheet: SourcingDataSheet): Promise<any> {
     const progressTracker: ValidationProgressTracker =
       this.getProgressTracker(sheet);
-    const validationErrors: any[] = [];
+    const validationErrors: ImportTaskError[] = [];
+
+    /*
+     * Parse sourcing location rows and sourcing records from the sourcing data sheet
+     */
     const { sourcingData } = await this.dtoProcessor.parseSourcingDataFromSheet(
       sheet.sourcingData,
     );
@@ -66,27 +73,14 @@ export class ExcelValidatorService {
         const instance: any = plainToInstance(validator, record);
         const errors: ValidationError[] = await validate(instance);
         if (errors.length) {
-          errors.forEach((error: ValidationError) => {
-            if (error.constraints) {
-              Object.values(error.constraints).forEach((constraint) => {
-                validationErrors.push({
-                  line: this.setLineNumber(index, sheetName),
-                  column: error.property,
-                  error: constraint,
-                  sheet: sheetName,
-                  type: 'validation-error',
-                });
-              });
-            }
-          });
+          this.handleErrors(errors, index, sheetName, validationErrors);
         }
         progressTracker.trackProgress();
       }
     }
 
-    const data = await this.dtoProcessor.createDTOsFromSourcingRecordsSheets(
-      sheet as unknown as SourcingRecordsSheets,
-    );
+    const data: SourcingDataDTOs =
+      await this.dtoProcessor.createDTOsFromSourcingRecordsSheets(sheet);
     return { data, validationErrors };
   }
 
@@ -98,7 +92,9 @@ export class ExcelValidatorService {
     return sheetName === 'sourcingData' ? index + 5 : index + 2;
   }
 
-  private getProgressTracker(sheet: Sheet): ValidationProgressTracker {
+  private getProgressTracker(
+    sheet: SourcingDataSheet,
+  ): ValidationProgressTracker {
     const totalSteps: number =
       SHEET_NAMES.reduce(
         (acc: number, sheetName: SheetName) => acc + sheet[sheetName].length,
@@ -106,6 +102,27 @@ export class ExcelValidatorService {
       ) + 1;
     return this.importProgressTrackerFactory.createValidationProgressTracker({
       totalSteps: totalSteps,
+    });
+  }
+
+  private handleErrors(
+    errors: ValidationError[],
+    index: number,
+    sheetName: SheetName,
+    validationErrors: ImportTaskError[],
+  ): void {
+    errors.forEach((error: ValidationError) => {
+      if (error.constraints) {
+        Object.values(error.constraints).forEach((constraint: string) => {
+          validationErrors.push({
+            row: this.setLineNumber(index, sheetName),
+            column: error.property,
+            error: constraint,
+            sheet: sheetName,
+            type: 'validation-error',
+          });
+        });
+      }
     });
   }
 }

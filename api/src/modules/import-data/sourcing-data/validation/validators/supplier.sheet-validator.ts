@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 
-export class SheetValidatorSupplier {
+export class SupplierSheetValidator {
   @IsString()
   @IsNotEmpty({ message: 'Supplier path_id must not be empty' })
   path_id: string;

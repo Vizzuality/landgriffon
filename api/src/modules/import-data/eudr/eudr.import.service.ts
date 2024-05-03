@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
-import { SourcingRecordsDtos } from 'modules/import-data/sourcing-data/dto-processor.service';
-
+import { SourcingDataDTOs } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { SourcingRecordsSheets } from 'modules/import-data/sourcing-data/sourcing-data-import.service';
 import { FileService } from 'modules/import-data/file.service';
 import { SourcingLocationGroupsService } from 'modules/sourcing-location-groups/sourcing-location-groups.service';
@@ -47,8 +46,6 @@ export class EudrImportService {
     protected readonly sourcingLocationGroupService: SourcingLocationGroupsService,
     protected readonly fileService: FileService<SourcingRecordsSheets>,
     protected readonly dtoProcessor: EUDRDTOProcessor,
-    protected readonly geoCodingService: GeoCodingAbstractClass,
-    protected readonly tasksService: TasksService,
     protected readonly scenarioService: ScenariosService,
     protected readonly indicatorService: IndicatorsService,
     protected readonly indicatorRecordService: IndicatorRecordsService,
@@ -162,7 +159,7 @@ export class EudrImportService {
   }
 
   private async validateDTOs(
-    dtoLists: SourcingRecordsDtos,
+    dtoLists: SourcingDataDTOs,
   ): Promise<void | Array<ErrorConstructor>> {
     const validationErrorArray: {
       line: number;
@@ -172,7 +169,7 @@ export class EudrImportService {
     for (const parsedSheet in dtoLists) {
       if (dtoLists.hasOwnProperty(parsedSheet)) {
         for (const [i, dto] of dtoLists[
-          parsedSheet as keyof SourcingRecordsDtos
+          parsedSheet as keyof SourcingDataDTOs
         ].entries()) {
           try {
             await validateOrReject(dto);

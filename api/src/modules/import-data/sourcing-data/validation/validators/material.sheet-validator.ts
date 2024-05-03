@@ -9,7 +9,7 @@ import {
 
 //TODO: double check if we only use the material sheet in the excel to activate materials
 
-export class SheetValidatorMaterial {
+export class MaterialSheetValidator {
   @IsString()
   @MinLength(1, { message: 'Material hs_2017_code is too short' })
   @IsNotEmpty({ message: 'Material hs_2017_code must not be empty' })

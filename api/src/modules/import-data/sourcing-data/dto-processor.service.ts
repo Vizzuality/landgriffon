@@ -1,24 +1,16 @@
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  ValidationError,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateMaterialDto } from 'modules/materials/dto/create.material.dto';
 import { CreateBusinessUnitDto } from 'modules/business-units/dto/create.business-unit.dto';
 import { CreateSupplierDto } from 'modules/suppliers/dto/create.supplier.dto';
 import { CreateAdminRegionDto } from 'modules/admin-regions/dto/create.admin-region.dto';
-import { SourcingRecordsSheets } from 'modules/import-data/sourcing-data/sourcing-records-sheets.interface';
 import { CreateSourcingRecordDto } from 'modules/sourcing-records/dto/create.sourcing-record.dto';
 import { CreateSourcingLocationDto } from 'modules/sourcing-locations/dto/create.sourcing-location.dto';
 import { WorkSheet } from 'xlsx';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
-import { SourcingDataExcelValidator } from 'modules/import-data/sourcing-data/validation/validators/sourcing-data.class.validator';
-import { validateOrReject } from 'class-validator';
-import { plainToClass } from 'class-transformer';
 import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto';
 import { replaceStringWhiteSpacesWithDash } from 'utils/transform-location-type.util';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
+import { SourcingDataSheet } from 'modules/import-data/sourcing-data/validation/excel-validator.service';
 
 /**
  * @debt: Define a more accurate DTO / Interface / Class for API-DB trades
@@ -30,9 +22,8 @@ export interface SourcingData extends CreateSourcingLocationDto {
   adminRegionId?: string;
 }
 
-export interface SourcingRecordsDtos {
+export interface SourcingDataDTOs {
   materials: CreateMaterialDto[];
-  adminRegions: CreateAdminRegionDto[];
   businessUnits: CreateBusinessUnitDto[];
   suppliers: CreateSupplierDto[];
   indicators: CreateIndicatorDto[];
@@ -71,46 +62,30 @@ export class SourcingRecordsDtoProcessorService {
   );
 
   async createDTOsFromSourcingRecordsSheets(
-    importData: SourcingRecordsSheets,
+    sourcingDataSheet: SourcingDataSheet,
     sourcingLocationGroupId?: string,
-  ): Promise<SourcingRecordsDtos> {
+  ): Promise<SourcingDataDTOs> {
     this.logger.debug(`Creating DTOs from sourcing records sheets`);
     const materialDtos: CreateMaterialDto[] = await this.createMaterialDtos(
-      importData.materials,
+      sourcingDataSheet.materials,
     );
     const businessUnitDtos: CreateBusinessUnitDto[] =
-      await this.createBusinessUnitDtos(importData.businessUnits);
+      await this.createBusinessUnitDtos(sourcingDataSheet.businessUnits);
     const supplierDtos: CreateSupplierDto[] = await this.createSupplierDtos(
-      importData.suppliers,
+      sourcingDataSheet.suppliers,
     );
-    const adminRegionDtos: CreateAdminRegionDto[] =
-      await this.createAdminRegionDtos(importData.countries);
-
-    // TODO: this probably needs to be removed because we dont create indicators from the excel
     const indicatorDtos: CreateIndicatorDto[] = await this.createIndicatorDtos(
-      importData.indicators,
+      sourcingDataSheet.indicators,
     );
 
-    // const processedSourcingData: Record<string, any> =
-    //   await this.parseSourcingDataFromSheet(importData.sourcingData);
-    //
-    // /**
-    //  * Validating parsed and cleaned from Sourcing Data sheet
-    //  */
-    //
-    // await this.validateSourcingData(processedSourcingData.sourcingData);
-    /**
-     * Builds SourcingData from parsed XLSX
-     */
     const sourcingDataDtos: SourcingData[] = await this.createSourcingDataDTOs(
-      importData.sourcingData,
+      sourcingDataSheet.sourcingData,
       sourcingLocationGroupId,
     );
     return {
       materials: materialDtos,
       businessUnits: businessUnitDtos,
       suppliers: supplierDtos,
-      adminRegions: adminRegionDtos,
       sourcingData: sourcingDataDtos,
       indicators: indicatorDtos,
     };
@@ -241,21 +216,6 @@ export class SourcingRecordsDtoProcessorService {
     }
 
     return supplierDtos;
-  }
-
-  /**
-   * Creates an array of CreateAdminRegionDto objects from the JSON data processed from the XLSX file
-   *
-   * @param importData
-   */
-  async createAdminRegionDtos(
-    importData: Record<string, any>[],
-  ): Promise<CreateAdminRegionDto[]> {
-    const adminRegionDtos: CreateAdminRegionDto[] = [];
-    for (const importRow of importData) {
-      adminRegionDtos.push(await this.createAdminRegionDTOFromData(importRow));
-    }
-    return adminRegionDtos;
   }
 
   async createIndicatorDtos(
@@ -418,48 +378,5 @@ export class SourcingRecordsDtoProcessorService {
     sourcingRecordDto.tonnage = sourcingRecordData.tonnage;
     sourcingRecordDto.year = sourcingRecordData.year;
     return sourcingRecordDto;
-  }
-
-  private async validateSourcingData(
-    nonEmptyData: SourcingData[],
-  ): Promise<void> {
-    const excelErrors: {
-      line: number;
-      column: string;
-      errors: { [type: string]: string } | undefined;
-    }[] = [];
-
-    for (const [index, dto] of nonEmptyData.entries()) {
-      const objectToValidate: SourcingDataExcelValidator = plainToClass(
-        SourcingDataExcelValidator,
-        dto,
-      );
-
-      try {
-        await validateOrReject(objectToValidate);
-      } catch (errors: any) {
-        errors.forEach((error: ValidationError) => {
-          if (error.children?.length) {
-            error.children.forEach((nestedError: ValidationError) => {
-              excelErrors.push({
-                line: index + 5,
-                column: nestedError.value.year,
-                errors: nestedError.children?.[0].constraints,
-              });
-            });
-          } else {
-            excelErrors.push({
-              line: index + 5,
-              column: error?.property,
-              errors: error?.constraints,
-            });
-          }
-        });
-      }
-    }
-
-    if (excelErrors.length) {
-      throw new BadRequestException(excelErrors);
-    }
   }
 }

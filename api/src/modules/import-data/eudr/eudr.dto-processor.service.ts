@@ -99,7 +99,7 @@ export class EUDRDTOProcessor {
           savedGeoRegion = await geoRegionRepository.save(geoRegion);
         }
         const sourcingLocation: SourcingLocation = new SourcingLocation();
-        sourcingLocation.locationType = LOCATION_TYPES.EUDR;
+        sourcingLocation.locationType = 'eudr' as LOCATION_TYPES;
         sourcingLocation.locationCountryInput = row.sourcing_country;
         sourcingLocation.locationAddressInput = row.sourcing_district;
         sourcingLocation.materialId = row.material_id

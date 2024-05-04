@@ -1,7 +1,7 @@
 import { EUDRTestManager } from './fixtures';
 import { TestManager } from '../../utils/test-manager';
 
-describe('GeoRegions Filters (e2e)', () => {
+describe('EUDR GeoRegions Filters (e2e)', () => {
   let testManager: EUDRTestManager;
 
   beforeAll(async () => {

@@ -133,11 +133,11 @@ export class EUDRTestManager extends TestManager {
 
     await createSourcingLocation({
       geoRegionId: geoRegion.id,
-      locationType: LOCATION_TYPES.EUDR,
+      locationType: 'eudr' as LOCATION_TYPES,
     });
     await createSourcingLocation({
       geoRegionId: geoRegion2.id,
-      locationType: LOCATION_TYPES.EUDR,
+      locationType: 'eudr' as LOCATION_TYPES,
     });
     return {
       eudrGeoRegions: [geoRegion, geoRegion2],
@@ -151,7 +151,7 @@ export class EUDRTestManager extends TestManager {
     });
     await createSourcingLocation({
       geoRegionId: geoRegion.id,
-      locationType: LOCATION_TYPES.EUDR,
+      locationType: 'eudr' as LOCATION_TYPES,
     });
     return {
       noGeomEUDRGeoRegions: [geoRegion],

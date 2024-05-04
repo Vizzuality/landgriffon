@@ -54,7 +54,7 @@ export class BaseQueryBuilder {
     }
     if (filters.eudr) {
       queryBuilder.andWhere('sl.locationType = :eudr', {
-        eudr: LOCATION_TYPES.EUDR,
+        eudr: 'eudr',
       });
     } else if (filters.locationTypes) {
       queryBuilder.andWhere('sl.locationType IN (:...locationTypes)', {

@@ -21,6 +21,7 @@ import {
   ErrorRecord,
   TaskReportService,
 } from 'modules/tasks/task-report.service';
+import { ImportTaskError } from './types/import-task-error.type';
 
 @Injectable()
 export class TasksService extends AppBaseService<
@@ -148,6 +149,8 @@ export class TasksService extends AppBaseService<
       throw new NotFoundException(`Could not found Task with ID: ${taskId}`);
     }
     const { errors } = task;
-    return this.reportService.createImportErrorReport(errors as ErrorRecord[]);
+    return this.reportService.createImportErrorReport(
+      errors as ImportTaskError[],
+    );
   }
 }

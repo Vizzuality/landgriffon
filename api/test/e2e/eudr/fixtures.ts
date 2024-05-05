@@ -80,11 +80,11 @@ export class EUDRTestManager extends TestManager {
     });
     const eudrSourcingLocation1 = await createSourcingLocation({
       adminRegionId: adminRegion.id,
-      locationType: LOCATION_TYPES.EUDR,
+      locationType: 'eudr' as LOCATION_TYPES,
     });
     const eudrSourcingLocation2 = await createSourcingLocation({
       adminRegionId: adminRegion2.id,
-      locationType: LOCATION_TYPES.EUDR,
+      locationType: 'eudr' as LOCATION_TYPES,
     });
     return {
       eudrAdminRegions: [adminRegion, adminRegion2],

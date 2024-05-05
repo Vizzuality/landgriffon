@@ -51,13 +51,28 @@ describe('Tasks Get Reports (e2e)', () => {
     test('Creating a task without being authenticated should return a 401 error', async () => {
       const task = await createTask({
         errors: [
-          { line: 1, error: 'Fake Error' },
-          { line: 2, error: 'Fake Error 2' },
+          {
+            row: 1,
+            error: 'Fake Error',
+            column: 'Fake Column',
+            sheet: 'Fake Sheet',
+            type: 'Fake Type',
+          },
+          {
+            row: 2,
+            error: 'Fake Error 2',
+            column: 'Fake Column',
+            sheet: 'Fake Sheet',
+            type: 'Fake Type',
+          },
         ],
       });
 
-      const expectedCSV = `"line","error"\n${task.errors
-        .map((error: any) => `${error.line},"${error.error}"`)
+      const expectedCSV = `"row","error","column","sheet","type"\n${task.errors
+        .map(
+          (error: any) =>
+            `${error.row},"${error.error}","Fake Column","Fake Sheet","Fake Type"`,
+        )
         .join('\n')}`;
 
       const response = await request(testApplication.getHttpServer())

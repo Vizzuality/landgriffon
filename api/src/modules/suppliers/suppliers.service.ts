@@ -130,10 +130,6 @@ export class SuppliersService extends AppBaseService<
     return this.supplierRepository.saveListToTree(importData, 'mpath');
   }
 
-  async clearTable(): Promise<void> {
-    await this.supplierRepository.delete({});
-  }
-
   async findTreesWithOptions(depth?: number): Promise<Supplier[]> {
     return this.supplierRepository.findTrees({ depth });
   }

@@ -11,8 +11,6 @@ import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service
 import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
-import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
-import { TasksService } from 'modules/tasks/tasks.service';
 import { ScenariosService } from 'modules/scenarios/scenarios.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
@@ -66,7 +64,7 @@ export class EudrImportService {
           title: 'Sourcing Records import from EUDR input file',
         });
 
-      await this.cleanDataBeforeImport();
+      //await this.cleanDataBeforeImport();
 
       // TODO: Check what do we need to do with indicators and specially materials:
       //  Do we need to ingest new materials? Activate some through the import? Activate all?
@@ -193,26 +191,26 @@ export class EudrImportService {
       throw new BadRequestException(validationErrorArray);
   }
 
-  /**
-   * @note: Deletes DB content from required entities
-   * to ensure DB is prune prior loading a XLSX dataset
-   */
-  async cleanDataBeforeImport(): Promise<void> {
-    this.logger.log('Cleaning database before import...');
-    try {
-      await this.indicatorService.deactivateAllIndicators();
-      await this.materialService.deactivateAllMaterials();
-      await this.scenarioService.clearTable();
-      await this.indicatorRecordService.clearTable();
-      await this.businessUnitService.clearTable();
-      await this.supplierService.clearTable();
-      await this.sourcingLocationService.clearTable();
-      await this.sourcingRecordService.clearTable();
-      await this.geoRegionsService.deleteGeoRegionsCreatedByUser();
-    } catch (e: any) {
-      throw new Error(
-        `Database could not been cleaned before loading new dataset: ${e.message}`,
-      );
-    }
-  }
+  // /**
+  //  * @note: Deletes DB content from required entities
+  //  * to ensure DB is prune prior loading a XLSX dataset
+  //  */
+  // async cleanDataBeforeImport(): Promise<void> {
+  //   this.logger.log('Cleaning database before import...');
+  //   try {
+  //     await this.indicatorService.deactivateAllIndicators();
+  //     await this.materialService.deactivateAllMaterials();
+  //     await this.scenarioService.clearTable();
+  //     await this.indicatorRecordService.clearTable();
+  //     await this.businessUnitService.clearTable();
+  //     await this.supplierService.clearTable();
+  //     await this.sourcingLocationService.clearTable();
+  //     await this.sourcingRecordService.clearTable();
+  //     await this.geoRegionsService.deleteGeoRegionsCreatedByUser();
+  //   } catch (e: any) {
+  //     throw new Error(
+  //       `Database could not been cleaned before loading new dataset: ${e.message}`,
+  //     );
+  //   }
+  // }
 }

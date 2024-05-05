@@ -3,15 +3,11 @@ import { ImportDataController } from 'modules/import-data/import-data.controller
 import { MaterialsModule } from 'modules/materials/materials.module';
 import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
-import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
-import { SourcingRecordsModule } from 'modules/sourcing-records/sourcing-records.module';
-import { SourcingLocationGroupsModule } from 'modules/sourcing-location-groups/sourcing-location-groups.module';
 import { FileService } from 'modules/import-data/file.service';
 import { SourcingDataImportService } from 'modules/import-data/sourcing-data/sourcing-data-import.service';
 import { SourcingRecordsDtoProcessorService } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { GeoCodingModule } from 'modules/geo-coding/geo-coding.module';
-import { GeoRegionsModule } from 'modules/geo-regions/geo-regions.module';
 import { IndicatorRecordsModule } from 'modules/indicator-records/indicator-records.module';
 import { BullModule } from '@nestjs/bull';
 import { ImportDataProducer } from 'modules/import-data/workers/import-data.producer';
@@ -19,18 +15,16 @@ import { ImportDataConsumer } from 'modules/import-data/workers/import-data.cons
 import { ImportDataService } from 'modules/import-data/import-data.service';
 import { TasksModule } from 'modules/tasks/tasks.module';
 import { importQueueName } from 'modules/import-data/workers/import-queue.name';
-import { ScenariosModule } from 'modules/scenarios/scenarios.module';
 import { IndicatorsModule } from 'modules/indicators/indicators.module';
 import { MulterModule } from '@nestjs/platform-express';
 import * as config from 'config';
 import MulterConfigService from 'modules/import-data/multer-config.service';
 import { ImpactModule } from 'modules/impact/impact.module';
 import { WebSocketsModule } from 'modules/notifications/websockets/websockets.module';
-import { EudrImportService } from 'modules/import-data/eudr/eudr.import.service';
-import { EUDRDTOProcessor } from 'modules/import-data/eudr/eudr.dto-processor.service';
 import { ImportMailService } from 'modules/import-data/import-mail/import-mail.service';
 import { NotificationsModule } from 'modules/notifications/notifications.module';
 import { ExcelValidatorService } from 'modules/import-data/sourcing-data/validation/excel-validator.service';
+import { SourcingDataDbCleaner } from 'modules/import-data/sourcing-data/sourcing-data.db-cleaner';
 
 // TODO: Move EUDR related stuff to EUDR modules
 
@@ -46,21 +40,13 @@ import { ExcelValidatorService } from 'modules/import-data/sourcing-data/validat
     BullModule.registerQueue({
       name: 'eudr',
     }),
-    BullModule.registerQueue({
-      name: 'eudr',
-    }),
     MaterialsModule,
     BusinessUnitsModule,
     SuppliersModule,
-    AdminRegionsModule,
     SourcingLocationsModule,
-    SourcingRecordsModule,
-    SourcingLocationGroupsModule,
     GeoCodingModule,
-    GeoRegionsModule,
     IndicatorRecordsModule,
     TasksModule,
-    ScenariosModule,
     IndicatorsModule,
     ImpactModule,
     WebSocketsModule,
@@ -74,10 +60,9 @@ import { ExcelValidatorService } from 'modules/import-data/sourcing-data/validat
     ImportDataProducer,
     ImportDataConsumer,
     ImportDataService,
-    EudrImportService,
-    EUDRDTOProcessor,
     ImportMailService,
     ExcelValidatorService,
+    SourcingDataDbCleaner,
     {
       provide: 'FILE_UPLOAD_SIZE_LIMIT',
       useValue: config.get('fileUploads.sizeLimit'),

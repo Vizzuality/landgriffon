@@ -6,15 +6,36 @@ import { useContainer } from 'class-validator';
 import * as config from 'config';
 import { AppModule } from 'app.module';
 import { TestingModuleBuilder } from '@nestjs/testing/testing-module.builder';
-import { Type } from '@nestjs/common/interfaces';
+import {
+  ClassProvider,
+  FactoryProvider,
+  Type,
+  ValueProvider,
+} from '@nestjs/common/interfaces';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { isUndefined } from 'lodash';
 import { MockAlertRepository, MockEmailService } from './service-mocks';
 import { IEmailServiceToken } from '../../src/modules/notifications/notifications.module';
-import { AlertsRepository } from 'modules/eudr-alerts/alerts.repository';
+
+type Overrides = {
+  classes: ClassProvider[];
+  values: ValueProvider[];
+  factories: FactoryProvider[];
+};
 
 export default class ApplicationManager {
   static readonly regenerateResourcesOnEachTest: boolean = false;
+  static readonly defaultOverriders: Overrides = {
+    classes: [
+      { provide: IEmailServiceToken, useClass: MockEmailService },
+      {
+        provide: 'IEUDRAlertsRepository',
+        useClass: MockAlertRepository,
+      },
+    ],
+    values: [],
+    factories: [],
+  };
 
   static testApplication?: TestApplication;
   static isCustomApplication: boolean;
@@ -44,11 +65,11 @@ export default class ApplicationManager {
       initTestingModuleBuilder ||
       Test.createTestingModule({
         imports: [AppModule],
-      })
-        .overrideProvider(IEmailServiceToken)
-        .useClass(MockEmailService)
-        .overrideProvider('IEUDRAlertsRepository')
-        .useClass(MockAlertRepository);
+      });
+    overrideProviders(
+      testingModuleBuilder,
+      ApplicationManager.defaultOverriders,
+    );
 
     ApplicationManager.testApplication.moduleFixture =
       await testingModuleBuilder.compile();
@@ -119,3 +140,22 @@ export class TestApplication {
     ApplicationManager.testApplication = undefined;
   }
 }
+
+const overrideProviders = (
+  module: TestingModuleBuilder,
+  overrides: Overrides,
+) => {
+  const { classes, values, factories } = overrides;
+
+  classes.forEach(({ provide, useClass }) =>
+    module.overrideProvider(provide).useClass(useClass),
+  );
+  values.forEach(({ provide, useValue }) =>
+    module.overrideProvider(provide).useValue(useValue),
+  );
+  factories.forEach(({ provide, useFactory }) =>
+    module
+      .overrideProvider(provide)
+      .useFactory({ factory: (args) => useFactory(...args) }),
+  );
+};

@@ -10,7 +10,6 @@ import {
 } from 'utils/app-base.service';
 import {
   Indicator,
-  INDICATOR_NAME_CODES,
   INDICATOR_STATUS,
   indicatorResource,
 } from 'modules/indicators/indicator.entity';
@@ -18,9 +17,7 @@ import { AppInfoDTO } from 'dto/info.dto';
 import { IndicatorRepository } from 'modules/indicators/indicator.repository';
 import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto';
 import { UpdateIndicatorDto } from 'modules/indicators/dto/update.indicator.dto';
-import { H3Data } from 'modules/h3-data/h3-data.entity';
 import { FindManyOptions, FindOptionsWhere, In } from 'typeorm';
-import { IndicatorNameCodeWithRelatedH3 } from 'modules/indicators/dto/indicator-namecode-with-related-h3.dto';
 import { getDiffForEntitiesToBeActivated } from 'utils/helpers/array-diff.helper';
 
 @Injectable()
@@ -53,15 +50,6 @@ export class IndicatorsService extends AppBaseService<
     };
   }
 
-  /**
-   * Returns all available valid indicators
-   */
-  async getAllIndicators(): Promise<Indicator[]> {
-    // It is assumed that the indicators that are enabled/valid, are the ones that are present on the DB since
-    // the initial seeding import. So a simple getAll is sufficient
-    return this.findAllIndicators();
-  }
-
   async getIndicatorById(id: string): Promise<Indicator> {
     const found: Indicator | null = await this.indicatorRepository.findOne({
       where: { id },
@@ -72,36 +60,6 @@ export class IndicatorsService extends AppBaseService<
     }
 
     return found;
-  }
-
-  async getDeforestationH3Data(): Promise<H3Data> {
-    /**
-     * @note: For at least 2 types of risk maps, retrieving a fixed Indicator's data
-     * is required to perform the query, and no data to retrieve this Indicator is provided
-     * in the client's request
-     */
-
-    const deforestationIndicator: Indicator | null =
-      await this.indicatorRepository.findOne({
-        where: { nameCode: INDICATOR_NAME_CODES.DF_SLUC },
-      });
-    if (!deforestationIndicator)
-      throw new NotFoundException(
-        'No Deforestation Indicator data found in database',
-      );
-    const deforestationH3Data: any = await this.indicatorRepository
-      .createQueryBuilder()
-      .select()
-      .from('h3_data', 'h3_data')
-      .where('"indicatorId" = :indicatorId', {
-        indicatorId: deforestationIndicator.id,
-      })
-      .getRawOne();
-    if (!deforestationH3Data)
-      throw new NotFoundException(
-        'No Deforestation Indicator H3 data found in database, required to retrieve Biodiversity Loss and Carbon Risk-Maps',
-      );
-    return deforestationH3Data;
   }
 
   async getIndicatorsById(ids: string[]): Promise<Indicator[]> {
@@ -125,28 +83,6 @@ export class IndicatorsService extends AppBaseService<
       : { cache: 1000 };
 
     return this.indicatorRepository.find(findOptions);
-  }
-
-  async getIndicatorsAndRelatedH3DataIds(): Promise<
-    IndicatorNameCodeWithRelatedH3[]
-  > {
-    const indicators: IndicatorNameCodeWithRelatedH3[] =
-      await this.indicatorRepository
-        .createQueryBuilder('indicator')
-        .select([
-          'indicator.id as id',
-          'indicator.nameCode as "nameCode"',
-          'h3.id as "h3DataId"',
-        ])
-        .innerJoin(H3Data, 'h3', 'h3.indicatorId = indicator.id')
-        .getRawMany();
-
-    if (!indicators.length) {
-      throw new NotFoundException(
-        `No Indicators with related H3 Data could be found`,
-      );
-    }
-    return indicators;
   }
 
   async activateIndicators(

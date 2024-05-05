@@ -58,6 +58,7 @@ import { clearTestDataFromDatabase } from '../../../utils/database-test-helper';
 import ApplicationManager, {
   TestApplication,
 } from '../../../utils/application-manager';
+import { SourcingDataDbCleaner } from '../../../../src/modules/import-data/sourcing-data/sourcing-data.db-cleaner';
 
 let tablesToDrop: string[] = [];
 
@@ -152,6 +153,7 @@ describe('Sourcing Data import', () => {
   }
 
   let dataSource: DataSource;
+  let sourcingDataCleaner: SourcingDataDbCleaner;
   let businessUnitRepository: BusinessUnitRepository;
   let materialRepository: MaterialRepository;
   let materialToH3Service: MaterialsToH3sService;
@@ -185,6 +187,9 @@ describe('Sourcing Data import', () => {
 
     businessUnitRepository = testApplication.get<BusinessUnitRepository>(
       BusinessUnitRepository,
+    );
+    sourcingDataCleaner = testApplication.get<SourcingDataDbCleaner>(
+      SourcingDataDbCleaner,
     );
     materialRepository =
       testApplication.get<MaterialRepository>(MaterialRepository);
@@ -499,7 +504,7 @@ describe('Sourcing Data import', () => {
       material,
     });
 
-    await sourcingDataImportService.cleanDataBeforeImport();
+    await sourcingDataCleaner.cleanDataBeforeImport();
 
     expect(
       await geoRegionRepository.find({ where: { isCreatedByUser: true } }),

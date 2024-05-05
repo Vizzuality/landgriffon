@@ -59,37 +59,4 @@ describe('XLSX Upload Feature Validation Tests', () => {
       );
     });
   });
-
-  // TODO: Move this to integration tests sets as all types of validations will be moved to a async queue
-  describe.skip('XLSX Upload Feature File Content Validation Tests', () => {
-    test('When file with invalid content is sent to the API it should return 400 "Bad Request" error', async () => {
-      await request(testApplication.getHttpServer())
-        .post('/api/v1/import/sourcing-data')
-        .set('Authorization', `Bearer ${jwtToken}`)
-        .attach('file', __dirname + '/files/bad-dataset.xlsx')
-        .expect(HttpStatus.BAD_REQUEST);
-
-      const folderContent = await readdir(
-        config.get('fileUploads.storagePath'),
-      );
-      expect(folderContent.length).toEqual(0);
-    }, 100000);
-
-    test('When file with incorrect or missing inputs for upload is sent to API, proper error messages should be received', async () => {
-      await request(testApplication.getHttpServer())
-        .post('/api/v1/import/sourcing-data')
-        .set('Authorization', `Bearer ${jwtToken}`)
-        .attach('file', __dirname + '/files/base-dataset-location-errors.xlsx');
-
-      expect(HttpStatus.BAD_REQUEST);
-      // TODO: Double check excel used for this test, it has REF errors in it
-      // expect(response.body.errors[0].meta.rawError.response.message).toEqual(
-      //   sourcingDataValidationErrorResponse,
-      // );
-      const folderContent = await readdir(
-        config.get('fileUploads.storagePath'),
-      );
-      expect(folderContent.length).toEqual(0);
-    }, 100000);
-  });
 });

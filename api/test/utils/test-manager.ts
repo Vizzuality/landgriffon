@@ -3,19 +3,16 @@ import ApplicationManager, { TestApplication } from './application-manager';
 import { clearTestDataFromDatabase } from './database-test-helper';
 import { setupTestUser } from './userAuth';
 import * as request from 'supertest';
-import { Material } from 'modules/materials/material.entity';
-import { Supplier } from 'modules/suppliers/supplier.entity';
-import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { generateRandomName } from './generate-random-name';
+import { TestingModuleBuilder } from '@nestjs/testing/testing-module.builder';
+import { Test } from '@nestjs/testing';
+import { AppModule } from '../../src/app.module';
 
 export class TestManager {
   testApp: TestApplication;
   jwtToken: string;
   dataSource: DataSource;
   response?: request.Response;
-  materials?: Material[];
-  suppliers?: Supplier[];
-  geoRegions?: GeoRegion[];
 
   constructor(app: TestApplication, jwtToken: string, dataSource: DataSource) {
     this.testApp = app;
@@ -23,12 +20,16 @@ export class TestManager {
     this.dataSource = dataSource;
   }
 
-  static async load(manager: any) {
-    return new manager(await this.createManager());
+  static async load(manager: any, testingModuleBuilder?: TestingModuleBuilder) {
+    return new manager(await this.createManager(testingModuleBuilder));
   }
 
-  static async createManager() {
-    const testApplication = await ApplicationManager.init();
+  static buildCustomTestModule(): TestingModuleBuilder {
+    return Test.createTestingModule({ imports: [AppModule] });
+  }
+
+  static async createManager(testingModuleBuilder?: TestingModuleBuilder) {
+    const testApplication = await ApplicationManager.init(testingModuleBuilder);
     const dataSource = testApplication.get<DataSource>(DataSource);
     const { jwtToken } = await setupTestUser(testApplication);
     return new TestManager(testApplication, jwtToken, dataSource);
@@ -37,9 +38,6 @@ export class TestManager {
   async refreshState() {
     const { jwtToken } = await setupTestUser(this.testApp);
     this.jwtToken = jwtToken;
-    this.materials = undefined;
-    this.suppliers = undefined;
-    this.geoRegions = undefined;
     this.response = undefined;
   }
 

@@ -2,7 +2,6 @@ import {
   OnQueueCompleted,
   OnQueueError,
   OnQueueFailed,
-  Process,
   Processor,
 } from '@nestjs/bull';
 import { Job } from 'bull';
@@ -49,8 +48,8 @@ export class ImportDataConsumer {
     // TODO: Handle eudr-alerts import completion, updating async tasks
   }
 
-  @Process('eudr')
-  async readImportDataJob(job: Job<ExcelImportJob>): Promise<void> {
-    await this.importDataService.processEudrJob(job);
-  }
+  // @Process('eudr')
+  // async readImportDataJob(job: Job<ExcelImportJob>): Promise<void> {
+  //   await this.importDataService.processEudrJob(job);
+  // }
 }

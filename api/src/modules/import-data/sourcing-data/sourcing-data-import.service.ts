@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Injectable,
   Logger,
   ServiceUnavailableException,
@@ -7,45 +6,26 @@ import {
 import { MaterialsService } from 'modules/materials/materials.service';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
-import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { FileService } from 'modules/import-data/file.service';
-import {
-  SourcingData,
-  SourcingRecordsDtoProcessorService,
-  SourcingDataDTOs,
-} from 'modules/import-data/sourcing-data/dto-processor.service';
-import { SourcingRecordsService } from 'modules/sourcing-records/sourcing-records.service';
-import { SourcingLocationGroupsService } from 'modules/sourcing-location-groups/sourcing-location-groups.service';
-import { validateOrReject } from 'class-validator';
-import { SourcingLocationGroup } from 'modules/sourcing-location-groups/sourcing-location-group.entity';
+import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { Material } from 'modules/materials/material.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
-import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
-import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { TasksService } from 'modules/tasks/tasks.service';
-import { ScenariosService } from 'modules/scenarios/scenarios.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { ImpactService } from 'modules/impact/impact.service';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
-import { ImportProgressTrackerFactory } from 'modules/events/import-data/import-progress.tracker.factory';
-import { ValidationProgressTracker } from 'modules/import-data/progress-tracker/validation.progress-tracker';
 import {
   ExcelValidatorService,
   SourcingDataSheet,
 } from 'modules/import-data/sourcing-data/validation/excel-validator.service';
 import { ExcelValidationError } from 'modules/import-data/sourcing-data/validation/validators/excel-validation.error';
 import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
-
-export interface LocationData {
-  locationAddressInput?: string;
-  locationCountryInput?: string;
-  locationLatitude?: string;
-  locationLongitude?: string;
-}
+import { SourcingDataDbCleaner } from './sourcing-data.db-cleaner';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 
 export interface SourcingRecordsSheets extends Record<string, any[]> {
   materials: Record<string, any>[];
@@ -75,21 +55,15 @@ export class SourcingDataImportService {
     protected readonly materialService: MaterialsService,
     protected readonly businessUnitService: BusinessUnitsService,
     protected readonly supplierService: SuppliersService,
-    protected readonly adminRegionService: AdminRegionsService,
-    protected readonly geoRegionsService: GeoRegionsService,
     protected readonly sourcingLocationService: SourcingLocationsService,
-    protected readonly sourcingRecordService: SourcingRecordsService,
-    protected readonly sourcingLocationGroupService: SourcingLocationGroupsService,
     protected readonly fileService: FileService<SourcingRecordsSheets>,
-    protected readonly dtoProcessor: SourcingRecordsDtoProcessorService,
     protected readonly geoCodingService: GeoCodingAbstractClass,
     protected readonly tasksService: TasksService,
-    protected readonly scenarioService: ScenariosService,
     protected readonly indicatorService: IndicatorsService,
-    protected readonly indicatorRecordService: IndicatorRecordsService,
     protected readonly impactService: ImpactService,
     protected readonly impactCalculator: ImpactCalculator,
     protected readonly excelValidator: ExcelValidatorService,
+    protected readonly dbCleaner: SourcingDataDbCleaner,
   ) {}
 
   async importSourcingData(filePath: string, taskId: string): Promise<any> {
@@ -98,11 +72,6 @@ export class SourcingDataImportService {
     try {
       const parsedXLSXDataset: SourcingRecordsSheets =
         await this.fileService.transformToJson(filePath, SHEETS_MAP);
-
-      const sourcingLocationGroup: SourcingLocationGroup =
-        await this.sourcingLocationGroupService.create({
-          title: 'Sourcing Records import from XLSX file',
-        });
 
       const { data: dtoMatchedData, validationErrors } =
         await this.excelValidator.validate(
@@ -114,7 +83,7 @@ export class SourcingDataImportService {
 
       //TODO: Implement transactional import. Move geocoding to first step
 
-      await this.cleanDataBeforeImport();
+      await this.dbCleaner.cleanDataBeforeImport();
 
       const materials: Material[] =
         await this.materialService.findAllUnpaginated();
@@ -171,7 +140,7 @@ export class SourcingDataImportService {
           newLogs: warnings,
         }));
 
-      const sourcingDataWithOrganizationalEntities: any =
+      const sourcingDataWithOrganizationalEntities: SourcingLocation[] =
         await this.relateSourcingDataWithOrganizationalEntities(
           suppliers,
           businessUnits,
@@ -209,24 +178,24 @@ export class SourcingDataImportService {
    * @note: Deletes DB content from required entities
    * to ensure DB is prune prior loading a XLSX dataset
    */
-  async cleanDataBeforeImport(): Promise<void> {
-    this.logger.log('Cleaning database before import...');
-    try {
-      await this.indicatorService.deactivateAllIndicators();
-      await this.materialService.deactivateAllMaterials();
-      await this.scenarioService.clearTable();
-      await this.indicatorRecordService.clearTable();
-      await this.businessUnitService.clearTable();
-      await this.supplierService.clearTable();
-      await this.sourcingLocationService.clearTable();
-      await this.sourcingRecordService.clearTable();
-      await this.geoRegionsService.deleteGeoRegionsCreatedByUser();
-    } catch ({ message }) {
-      throw new Error(
-        `Database could not been cleaned before loading new dataset: ${message}`,
-      );
-    }
-  }
+  // async cleanDataBeforeImport(): Promise<void> {
+  //   this.logger.log('Cleaning database before import...');
+  //   try {
+  //     await this.indicatorService.deactivateAllIndicators();
+  //     await this.materialService.deactivateAllMaterials();
+  //     await this.scenarioService.clearTable();
+  //     await this.indicatorRecordService.clearTable();
+  //     await this.businessUnitService.clearTable();
+  //     await this.supplierService.clearTable();
+  //     await this.sourcingLocationService.clearTable();
+  //     await this.sourcingRecordService.clearTable();
+  //     await this.geoRegionsService.deleteGeoRegionsCreatedByUser();
+  //   } catch ({ message }) {
+  //     throw new Error(
+  //       `Database could not been cleaned before loading new dataset: ${message}`,
+  //     );
+  //   }
+  // }
 
   /**
    * @note: Type hack as mpath property does not exist on Materials and BusinessUnits, but its created
@@ -239,7 +208,7 @@ export class SourcingDataImportService {
     businessUnits: Record<string, any>[],
     materials: Material[],
     sourcingData: SourcingData[],
-  ): Promise<SourcingData[] | void> {
+  ): Promise<SourcingLocation[]> {
     this.logger.log(`Relating sourcing data with organizational entities`);
     this.logger.log(`Supplier count: ${suppliers.length}`);
     this.logger.log(`Business Units count: ${businessUnits.length}`);
@@ -268,9 +237,7 @@ export class SourcingDataImportService {
           sourcingLocation.businessUnitId = businessUnit.id;
         }
       }
-      if (typeof sourcingLocation.materialId === 'undefined') {
-        return;
-      }
+
       const sourcingLocationMaterialId: string = sourcingLocation.materialId;
 
       if (!(sourcingLocationMaterialId in materialMap)) {
@@ -280,6 +247,6 @@ export class SourcingDataImportService {
       }
       sourcingLocation.materialId = materialMap[sourcingLocationMaterialId];
     }
-    return sourcingData;
+    return sourcingData as SourcingLocation[];
   }
 }

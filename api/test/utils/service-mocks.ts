@@ -10,6 +10,7 @@ import {
   GetAlertSummary,
   IEUDRAlertsRepository,
 } from 'modules/eudr-alerts/eudr.repositoty.interface';
+import { FileService } from '../../src/modules/import-data/file.service';
 
 export class MockEmailService implements IEmailService {
   logger: Logger = new Logger(MockEmailService.name);
@@ -46,5 +47,11 @@ export class MockAlertRepository implements IEUDRAlertsRepository {
     endAlertDate: Date;
   }): Promise<AlertedGeoregionsBySupplier[]> {
     return Promise.resolve([]);
+  }
+}
+
+export class MockFileService extends FileService<any> {
+  async deleteDataFromFS(): Promise<void> {
+    return;
   }
 }

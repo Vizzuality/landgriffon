@@ -1,9 +1,4 @@
-import {
-  forwardRef,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import {
   AppBaseService,
   JSONAPISerializerConfig,
@@ -52,17 +47,6 @@ export class BusinessUnitsService extends AppBaseService<
     };
   }
 
-  async getBusinessUnitById(id: string): Promise<BusinessUnit> {
-    const found: BusinessUnit | null =
-      await this.businessUnitRepository.findOneBy({ id });
-
-    if (!found) {
-      throw new NotFoundException(`Business Unit with ID "${id}" not found`);
-    }
-
-    return found;
-  }
-
   async getBusinessUnitsById(ids: string[]): Promise<BusinessUnit[]> {
     return this.businessUnitRepository.findBy({ id: In(ids) });
   }
@@ -78,10 +62,6 @@ export class BusinessUnitsService extends AppBaseService<
   ): Promise<BusinessUnit[]> {
     this.logger.log(`Creating Business tree with ${importData.length} nodes`);
     return this.businessUnitRepository.saveListToTree(importData, 'mpath');
-  }
-
-  async clearTable(): Promise<void> {
-    await this.businessUnitRepository.delete({});
   }
 
   async getTrees(

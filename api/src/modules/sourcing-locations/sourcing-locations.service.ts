@@ -33,8 +33,6 @@ import {
   locationTypeParser,
   toLocationType,
 } from 'modules/sourcing-locations/helpers/location-type.parser';
-import { SourcingDataImportProgressTracker } from './progress-tracker/sourcing-data.progress-tracker';
-import { ImportProgressTrackerFactory } from 'modules/events/import-data/import-progress.tracker.factory';
 
 @Injectable()
 export class SourcingLocationsService extends AppBaseService<
@@ -88,10 +86,6 @@ export class SourcingLocationsService extends AppBaseService<
     }
 
     return found;
-  }
-
-  async clearTable(): Promise<void> {
-    await this.sourcingLocationRepository.delete({});
   }
 
   /**

@@ -15,10 +15,12 @@ import { FileService } from '../../src/modules/import-data/file.service';
 export class MockEmailService implements IEmailService {
   logger: Logger = new Logger(MockEmailService.name);
 
-  async sendMail(mail: SendMailDTO): Promise<void> {
-    this.logger.warn(`Email Service mock called... `);
-    return Promise.resolve();
-  }
+  // async sendMail(mail: SendMailDTO): Promise<void> {
+  //   this.logger.warn(`Email Service mock called... `);
+  //   return Promise.resolve();
+  // }
+
+  sendMail = jest.fn((mail: SendMailDTO): Promise<void> => Promise.resolve());
 }
 
 export class MockAlertRepository implements IEUDRAlertsRepository {

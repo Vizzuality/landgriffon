@@ -66,6 +66,7 @@ export default class ApplicationManager {
       Test.createTestingModule({
         imports: [AppModule],
       });
+    // TODO: modify this so the default overrrides can be overriden by the custom ones. Right now we are applying them to other custom that might come
     overrideProviders(
       testingModuleBuilder,
       ApplicationManager.defaultOverriders,

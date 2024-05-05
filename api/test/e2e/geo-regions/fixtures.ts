@@ -66,14 +66,14 @@ export class GeoRegionsTestManager extends TestManager {
     const supplier2 = await createSupplier({ name: 'EUDR Supplier 2' });
     const sourcingLocation1 = await createSourcingLocation({
       geoRegionId: geoRegion.id,
-      locationType: LOCATION_TYPES.EUDR,
+      locationType: 'eudr' as LOCATION_TYPES,
       adminRegionId: adminRegion.id,
       producerId: supplier.id,
       materialId: material.id,
     });
     const sourcingLocation2 = await createSourcingLocation({
       geoRegionId: geoRegion2.id,
-      locationType: LOCATION_TYPES.EUDR,
+      locationType: 'eudr' as LOCATION_TYPES,
       adminRegionId: adminRegion2.id,
       producerId: supplier2.id,
       materialId: material2.id,

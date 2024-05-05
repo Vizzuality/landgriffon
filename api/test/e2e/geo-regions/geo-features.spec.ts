@@ -20,6 +20,7 @@ describe('Geo Features tests (e2e)', () => {
     await testManager.close();
   });
 
+  // Skipped test until EUDR module is fully integrated in the platform
   describe('EUDR Geo Features', () => {
     test('should only get geo-features that are part of EUDR data', async () => {
       await testManager.GivenRegularSourcingLocationsWithGeoRegions();

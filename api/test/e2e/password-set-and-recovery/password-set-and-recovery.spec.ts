@@ -17,20 +17,18 @@ import { Test } from '@nestjs/testing';
 import { AppModule } from '../../../src/app.module';
 import { setupTestUser } from '../../utils/userAuth';
 import { ROLES } from 'modules/authorization/roles/roles.enum';
-
-const mockEmailService = {
-  sendMail: jest.fn(),
-};
+import { MockEmailService } from '../../utils/service-mocks';
 
 describe('Password recovery tests (e2e)', () => {
   let testApplication: TestApplication;
   let dataSource: DataSource;
   let authenticationService: AuthenticationService;
   let jwtToken: string;
+  let mockEmailService: MockEmailService;
 
   beforeAll(async () => {
     testApplication = await ApplicationManager.init(
-      await Test.createTestingModule({
+      Test.createTestingModule({
         imports: [AppModule],
       })
         .overrideProvider('IEmailService')
@@ -39,6 +37,7 @@ describe('Password recovery tests (e2e)', () => {
     ({ jwtToken } = await setupTestUser(testApplication));
 
     dataSource = testApplication.get<DataSource>(DataSource);
+    mockEmailService = testApplication.get<MockEmailService>('IEmailService');
 
     authenticationService = testApplication.get<AuthenticationService>(
       AuthenticationService,

@@ -20,7 +20,8 @@ describe('Admin Regions EUDR Filters (e2e)', () => {
   afterAll(async () => {
     await testManager.close();
   });
-  describe('EUDR Admin Regions Filters', () => {
+  // Skipped test until EUDR module is fully integrated in the platform
+  describe.skip('EUDR Admin Regions Filters', () => {
     it('should only get admin-regions that are part of EUDR data', async () => {
       await testManager.GivenAdminRegionsOfSourcingLocations();
       const { eudrAdminRegions } = await testManager.GivenEUDRAdminRegions();

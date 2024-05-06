@@ -17,6 +17,8 @@ import {
 } from '../import-mocks';
 import { IndicatorRecord } from '../../../../../src/modules/indicator-records/indicator-record.entity';
 import { SourcingRecord } from '../../../../../src/modules/sourcing-records/sourcing-record.entity';
+import { BusinessUnit } from 'modules/business-units/business-unit.entity';
+import { Supplier } from 'modules/suppliers/supplier.entity';
 
 export class SourcingDataImportTestManager extends TestManager {
   url: string = '/api/v1/import/sourcing-data';
@@ -78,6 +80,19 @@ export class SourcingDataImportTestManager extends TestManager {
         .find({ where: { status: INDICATOR_STATUS.ACTIVE } });
       expect(indicatorRecords.length).toBe(25 * 10 * activeIndicators.length);
     };
+
+  AndAllSuppliersShouldBeImported = async (): Promise<any> => {
+    const suppliers: any[] = await this.dataSource
+      .getRepository(Supplier)
+      .find();
+    expect(suppliers.length).toBe(2);
+  };
+  AndAllBusinessUnitsShouldBeImported = async (): Promise<any> => {
+    const businessUnits: any[] = await this.dataSource
+      .getRepository(BusinessUnit)
+      .find();
+    expect(businessUnits.length).toBe(2);
+  };
 }
 
 const indicatorsForXLSXUpload: any[] = [

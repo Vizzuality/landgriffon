@@ -73,11 +73,6 @@ export class MaterialsService extends AppBaseService<
     };
   }
 
-  async createTree(importData: CreateMaterialDto[]): Promise<Material[]> {
-    this.logger.log(`Creating Material tree with ${importData.length} nodes`);
-    return this.materialRepository.saveListToTree(importData, 'mpath');
-  }
-
   /**
    * Remove from tree all materials that don't have h3 data associated with them
    *

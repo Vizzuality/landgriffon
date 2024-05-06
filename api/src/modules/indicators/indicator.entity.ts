@@ -40,7 +40,7 @@ export const indicatorResource: BaseServiceResource = {
     plural: 'indicators',
   },
   entitiesAllowedAsIncludes: ['unit'],
-  columnsAllowedAsFilter: ['name', 'description', 'status'],
+  columnsAllowedAsFilter: ['name', 'description', 'status', 'category'],
 };
 
 @Entity()
@@ -75,6 +75,9 @@ export class Indicator extends BaseEntity {
   })
   @ApiProperty()
   status!: INDICATOR_STATUS;
+
+  @Column({ type: 'text', nullable: false })
+  category: string;
 
   @Column({ type: 'jsonb', nullable: true })
   @ApiPropertyOptional()

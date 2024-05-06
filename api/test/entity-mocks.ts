@@ -138,6 +138,7 @@ async function createIndicator(
 ): Promise<Indicator> {
   const defaultData: DeepPartial<Indicator> = {
     name: 'test indicator',
+    category: 'test category',
   };
 
   const indicator = Indicator.merge(

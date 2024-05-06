@@ -5,6 +5,7 @@ export class BusinessUnitsSheetValidator {
   @IsString({ message: 'Business Unit path_id must be a string' })
   path_id: string;
 
+  @IsString({ message: 'Business Unit Name must be a string' })
   @IsNotEmpty({ message: 'Business Unit Name must not be empty' })
   name: string;
 

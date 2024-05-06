@@ -4,8 +4,12 @@ import { DataSource, EntityManager } from 'typeorm';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { Supplier } from 'modules/suppliers/supplier.entity';
+import { Injectable, Logger } from '@nestjs/common';
 
+@Injectable()
 export class SourcingDataDbCleaner {
+  logger: Logger = new Logger(SourcingDataDbCleaner.name);
+
   constructor(private readonly dataSource: DataSource) {}
 
   async cleanDataBeforeImport(): Promise<void> {
@@ -17,11 +21,11 @@ export class SourcingDataDbCleaner {
   }
 
   private async deactivateAllIndicators(manager: EntityManager): Promise<void> {
-    await manager.query('UPDATE indicators SET active = false');
+    await manager.query(`UPDATE indicator SET status = 'inactive'`);
   }
 
   private async deactivateAllMaterials(manager: EntityManager): Promise<void> {
-    await manager.query('UPDATE materials SET active = false');
+    await manager.query(`UPDATE material SET status = 'inactive'`);
   }
 
   private async deleteExistingUserData(manager: EntityManager): Promise<void> {

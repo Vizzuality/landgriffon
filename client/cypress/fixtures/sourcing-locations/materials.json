@@ -1,68 +1,1144 @@
 {
+  "meta": {
+    "totalItems": 21,
+    "totalPages": 1,
+    "size": 50,
+    "page": 1
+  },
   "data": [
     {
       "type": "sourcingLocations",
       "attributes": {
-        "material": "Barley",
-        "materialId": "24bcd3aa-0a9a-495b-958b-8a7fb712890f",
-        "t1Supplier": "Europe",
-        "producer": "Luxembourg",
-        "businessUnit": "Entire company",
-        "country": "Luxembourg",
-        "locationType": "country-of-production",
+        "material": "Cocoa and cocoa preparations",
+        "materialId": "33a20a3d-be8f-4baa-a0bf-db1084422719",
+        "t1Supplier": null,
+        "producer": "Unknown",
+        "businessUnit": "Protein Supplements",
+        "country": "Côte d'Ivoire",
+        "locationType": "production-aggregation-point",
         "purchases": [
           {
-            "year": 2022,
-            "tonnage": "4"
-          },
-          {
-            "year": 2021,
-            "tonnage": "7"
-          },
-          {
-            "year": 2020,
-            "tonnage": "3"
-          },
-          {
-            "year": 2019,
-            "tonnage": "6"
-          },
-          {
-            "year": 2012,
-            "tonnage": "3"
-          },
-          {
-            "year": 2018,
-            "tonnage": "1"
-          },
-          {
-            "year": 2017,
-            "tonnage": "1"
+            "year": 2015,
+            "tonnage": "66"
           },
           {
             "year": 2016,
-            "tonnage": "9"
+            "tonnage": "127"
+          },
+          {
+            "year": 2017,
+            "tonnage": "241"
+          },
+          {
+            "year": 2018,
+            "tonnage": "408"
+          },
+          {
+            "year": 2019,
+            "tonnage": "411"
+          },
+          {
+            "year": 2020,
+            "tonnage": "466"
+          },
+          {
+            "year": 2021,
+            "tonnage": "466"
+          },
+          {
+            "year": 2022,
+            "tonnage": "466"
+          },
+          {
+            "year": 2023,
+            "tonnage": "466"
+          },
+          {
+            "year": 2024,
+            "tonnage": "466"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sourcingLocations",
+      "attributes": {
+        "material": "Cocoa and cocoa preparations",
+        "materialId": "33a20a3d-be8f-4baa-a0bf-db1084422719",
+        "t1Supplier": null,
+        "producer": "Unknown",
+        "businessUnit": "Protein Supplements",
+        "country": "Algeria",
+        "locationType": "production-aggregation-point",
+        "purchases": [
+          {
+            "year": 2015,
+            "tonnage": "512"
+          },
+          {
+            "year": 2016,
+            "tonnage": "921"
+          },
+          {
+            "year": 2017,
+            "tonnage": "1606"
+          },
+          {
+            "year": 2018,
+            "tonnage": "1894"
+          },
+          {
+            "year": 2019,
+            "tonnage": "2130"
+          },
+          {
+            "year": 2020,
+            "tonnage": "2859"
+          },
+          {
+            "year": 2021,
+            "tonnage": "2859"
+          },
+          {
+            "year": 2022,
+            "tonnage": "2859"
+          },
+          {
+            "year": 2023,
+            "tonnage": "2859"
+          },
+          {
+            "year": 2024,
+            "tonnage": "2859"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sourcingLocations",
+      "attributes": {
+        "material": "Cotton",
+        "materialId": "80d52237-bb4a-4f25-9133-cbbebaa68734",
+        "t1Supplier": "Unknown",
+        "producer": "Unknown",
+        "businessUnit": "Women's Clothing",
+        "country": "India",
+        "locationType": "country-of-production",
+        "purchases": [
+          {
+            "year": 2016,
+            "tonnage": "5160"
+          },
+          {
+            "year": 2017,
+            "tonnage": "4009"
+          },
+          {
+            "year": 2018,
+            "tonnage": "8494"
+          },
+          {
+            "year": 2019,
+            "tonnage": "6191"
+          },
+          {
+            "year": 2020,
+            "tonnage": "11117"
+          },
+          {
+            "year": 2021,
+            "tonnage": "13199"
           },
           {
             "year": 2015,
-            "tonnage": "2"
+            "tonnage": "4694"
           },
           {
-            "year": 2014,
-            "tonnage": "8"
+            "year": 2022,
+            "tonnage": "11909"
           },
           {
-            "year": 2013,
-            "tonnage": "9"
+            "year": 2023,
+            "tonnage": "15437"
+          },
+          {
+            "year": 2024,
+            "tonnage": "19207"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sourcingLocations",
+      "attributes": {
+        "material": "Cotton",
+        "materialId": "80d52237-bb4a-4f25-9133-cbbebaa68734",
+        "t1Supplier": "Unknown",
+        "producer": null,
+        "businessUnit": "Women's Clothing",
+        "country": "Vietnam",
+        "locationType": "country-of-production",
+        "purchases": [
+          {
+            "year": 2021,
+            "tonnage": "18482"
+          },
+          {
+            "year": 2015,
+            "tonnage": "7178"
+          },
+          {
+            "year": 2016,
+            "tonnage": "2272"
+          },
+          {
+            "year": 2017,
+            "tonnage": "1135"
+          },
+          {
+            "year": 2018,
+            "tonnage": "5136"
+          },
+          {
+            "year": 2019,
+            "tonnage": "7200"
+          },
+          {
+            "year": 2020,
+            "tonnage": "14568"
+          },
+          {
+            "year": 2022,
+            "tonnage": "12620"
+          },
+          {
+            "year": 2023,
+            "tonnage": "17253"
+          },
+          {
+            "year": 2024,
+            "tonnage": "17912"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sourcingLocations",
+      "attributes": {
+        "material": "Cotton",
+        "materialId": "80d52237-bb4a-4f25-9133-cbbebaa68734",
+        "t1Supplier": "Unknown",
+        "producer": "Unknown",
+        "businessUnit": "Women's Clothing",
+        "country": "Argentina",
+        "locationType": "point-of-production",
+        "purchases": [
+          {
+            "year": 2015,
+            "tonnage": "1470"
+          },
+          {
+            "year": 2016,
+            "tonnage": "9228"
+          },
+          {
+            "year": 2017,
+            "tonnage": "7522"
+          },
+          {
+            "year": 2018,
+            "tonnage": "1936"
+          },
+          {
+            "year": 2019,
+            "tonnage": "2540"
+          },
+          {
+            "year": 2020,
+            "tonnage": "11112"
+          },
+          {
+            "year": 2021,
+            "tonnage": "18723"
+          },
+          {
+            "year": 2022,
+            "tonnage": "16174"
+          },
+          {
+            "year": 2023,
+            "tonnage": "17970"
+          },
+          {
+            "year": 2024,
+            "tonnage": "10142"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sourcingLocations",
+      "attributes": {
+        "material": "Cotton",
+        "materialId": "80d52237-bb4a-4f25-9133-cbbebaa68734",
+        "t1Supplier": "Unknown",
+        "producer": "Unknown",
+        "businessUnit": "Women's Clothing",
+        "country": "Cameroon",
+        "locationType": "point-of-production",
+        "purchases": [
+          {
+            "year": 2024,
+            "tonnage": "14006"
+          },
+          {
+            "year": 2023,
+            "tonnage": "14155"
+          },
+          {
+            "year": 2022,
+            "tonnage": "10996"
+          },
+          {
+            "year": 2021,
+            "tonnage": "11995"
+          },
+          {
+            "year": 2020,
+            "tonnage": "18415"
+          },
+          {
+            "year": 2019,
+            "tonnage": "15368"
+          },
+          {
+            "year": 2018,
+            "tonnage": "197"
+          },
+          {
+            "year": 2017,
+            "tonnage": "2405"
+          },
+          {
+            "year": 2016,
+            "tonnage": "5030"
+          },
+          {
+            "year": 2015,
+            "tonnage": "8270"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sourcingLocations",
+      "attributes": {
+        "material": "Cotton",
+        "materialId": "80d52237-bb4a-4f25-9133-cbbebaa68734",
+        "t1Supplier": "Unknown",
+        "producer": null,
+        "businessUnit": "Women's Clothing",
+        "country": "China",
+        "locationType": "production-aggregation-point",
+        "purchases": [
+          {
+            "year": 2015,
+            "tonnage": "2769"
+          },
+          {
+            "year": 2016,
+            "tonnage": "4472"
+          },
+          {
+            "year": 2017,
+            "tonnage": "6325"
+          },
+          {
+            "year": 2018,
+            "tonnage": "5678"
+          },
+          {
+            "year": 2019,
+            "tonnage": "3931"
+          },
+          {
+            "year": 2020,
+            "tonnage": "13624"
+          },
+          {
+            "year": 2021,
+            "tonnage": "10434"
+          },
+          {
+            "year": 2022,
+            "tonnage": "14851"
+          },
+          {
+            "year": 2023,
+            "tonnage": "12587"
+          },
+          {
+            "year": 2024,
+            "tonnage": "17922"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sourcingLocations",
+      "attributes": {
+        "material": "Cotton",
+        "materialId": "80d52237-bb4a-4f25-9133-cbbebaa68734",
+        "t1Supplier": "Unknown",
+        "producer": "Unknown",
+        "businessUnit": "Women's Clothing",
+        "country": "Swaziland",
+        "locationType": "point-of-production",
+        "purchases": [
+          {
+            "year": 2024,
+            "tonnage": "15821"
+          },
+          {
+            "year": 2023,
+            "tonnage": "14454"
+          },
+          {
+            "year": 2022,
+            "tonnage": "18259"
+          },
+          {
+            "year": 2021,
+            "tonnage": "12693"
+          },
+          {
+            "year": 2020,
+            "tonnage": "17213"
+          },
+          {
+            "year": 2019,
+            "tonnage": "9363"
+          },
+          {
+            "year": 2018,
+            "tonnage": "8323"
+          },
+          {
+            "year": 2017,
+            "tonnage": "4988"
+          },
+          {
+            "year": 2016,
+            "tonnage": "7474"
+          },
+          {
+            "year": 2015,
+            "tonnage": "6913"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sourcingLocations",
+      "attributes": {
+        "material": "Cotton",
+        "materialId": "80d52237-bb4a-4f25-9133-cbbebaa68734",
+        "t1Supplier": "Unknown",
+        "producer": "Unknown",
+        "businessUnit": "Women's Clothing",
+        "country": "Brazil",
+        "locationType": "country-of-production",
+        "purchases": [
+          {
+            "year": 2024,
+            "tonnage": "10663"
+          },
+          {
+            "year": 2023,
+            "tonnage": "11106"
+          },
+          {
+            "year": 2022,
+            "tonnage": "17554"
+          },
+          {
+            "year": 2021,
+            "tonnage": "16924"
+          },
+          {
+            "year": 2020,
+            "tonnage": "17543"
+          },
+          {
+            "year": 2019,
+            "tonnage": "10054"
+          },
+          {
+            "year": 2018,
+            "tonnage": "851"
+          },
+          {
+            "year": 2017,
+            "tonnage": "1070"
+          },
+          {
+            "year": 2016,
+            "tonnage": "3461"
+          },
+          {
+            "year": 2015,
+            "tonnage": "6911"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sourcingLocations",
+      "attributes": {
+        "material": "Cotton",
+        "materialId": "80d52237-bb4a-4f25-9133-cbbebaa68734",
+        "t1Supplier": "Unknown",
+        "producer": null,
+        "businessUnit": "Women's Clothing",
+        "country": "Uzbekistan",
+        "locationType": "country-of-production",
+        "purchases": [
+          {
+            "year": 2024,
+            "tonnage": "10189"
+          },
+          {
+            "year": 2023,
+            "tonnage": "10811"
+          },
+          {
+            "year": 2022,
+            "tonnage": "14403"
+          },
+          {
+            "year": 2021,
+            "tonnage": "17543"
+          },
+          {
+            "year": 2020,
+            "tonnage": "11613"
+          },
+          {
+            "year": 2019,
+            "tonnage": "2712"
+          },
+          {
+            "year": 2018,
+            "tonnage": "5425"
+          },
+          {
+            "year": 2017,
+            "tonnage": "5276"
+          },
+          {
+            "year": 2016,
+            "tonnage": "9451"
+          },
+          {
+            "year": 2015,
+            "tonnage": "1502"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sourcingLocations",
+      "attributes": {
+        "material": "Palm oil and its fractions",
+        "materialId": "52370288-8c6c-4f31-919c-d30538d39ee3",
+        "t1Supplier": null,
+        "producer": "Unknown",
+        "businessUnit": "Haircare",
+        "country": "Brazil",
+        "locationType": "administrative-region-of-production",
+        "purchases": [
+          {
+            "year": 2024,
+            "tonnage": "243717"
+          },
+          {
+            "year": 2023,
+            "tonnage": "243717"
+          },
+          {
+            "year": 2022,
+            "tonnage": "243717"
+          },
+          {
+            "year": 2021,
+            "tonnage": "162201"
+          },
+          {
+            "year": 2020,
+            "tonnage": "122496"
+          },
+          {
+            "year": 2019,
+            "tonnage": "93524"
+          },
+          {
+            "year": 2018,
+            "tonnage": "52518"
+          },
+          {
+            "year": 2017,
+            "tonnage": "32699.733"
+          },
+          {
+            "year": 2016,
+            "tonnage": "13163.878"
+          },
+          {
+            "year": 2015,
+            "tonnage": "12716.391"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sourcingLocations",
+      "attributes": {
+        "material": "Palm oil and its fractions",
+        "materialId": "52370288-8c6c-4f31-919c-d30538d39ee3",
+        "t1Supplier": null,
+        "producer": null,
+        "businessUnit": "Haircare",
+        "country": "Afghanistan",
+        "locationType": "production-aggregation-point",
+        "purchases": [
+          {
+            "year": 2022,
+            "tonnage": "7319"
+          },
+          {
+            "year": 2015,
+            "tonnage": "8722"
+          },
+          {
+            "year": 2016,
+            "tonnage": "12"
+          },
+          {
+            "year": 2017,
+            "tonnage": "6335"
+          },
+          {
+            "year": 2018,
+            "tonnage": "9804"
+          },
+          {
+            "year": 2019,
+            "tonnage": "1953"
+          },
+          {
+            "year": 2020,
+            "tonnage": "2163"
+          },
+          {
+            "year": 2021,
+            "tonnage": "9164"
+          },
+          {
+            "year": 2023,
+            "tonnage": "2868"
+          },
+          {
+            "year": 2024,
+            "tonnage": "9464"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sourcingLocations",
+      "attributes": {
+        "material": "Palm oil and its fractions",
+        "materialId": "52370288-8c6c-4f31-919c-d30538d39ee3",
+        "t1Supplier": null,
+        "producer": "Unknown",
+        "businessUnit": "Haircare",
+        "country": "Brazil",
+        "locationType": "administrative-region-of-production",
+        "purchases": [
+          {
+            "year": 2017,
+            "tonnage": "61"
+          },
+          {
+            "year": 2018,
+            "tonnage": "73"
+          },
+          {
+            "year": 2019,
+            "tonnage": "126"
+          },
+          {
+            "year": 2020,
+            "tonnage": "146"
+          },
+          {
+            "year": 2021,
+            "tonnage": "164"
+          },
+          {
+            "year": 2022,
+            "tonnage": "295"
+          },
+          {
+            "year": 2023,
+            "tonnage": "295"
+          },
+          {
+            "year": 2024,
+            "tonnage": "295"
+          },
+          {
+            "year": 2016,
+            "tonnage": "0.02842105263"
+          },
+          {
+            "year": 2015,
+            "tonnage": "0.2484210526"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sourcingLocations",
+      "attributes": {
+        "material": "Palm oil and its fractions",
+        "materialId": "52370288-8c6c-4f31-919c-d30538d39ee3",
+        "t1Supplier": null,
+        "producer": null,
+        "businessUnit": "Haircare",
+        "country": "Albania",
+        "locationType": "production-aggregation-point",
+        "purchases": [
+          {
+            "year": 2024,
+            "tonnage": "7196"
+          },
+          {
+            "year": 2023,
+            "tonnage": "287"
+          },
+          {
+            "year": 2022,
+            "tonnage": "2610"
+          },
+          {
+            "year": 2021,
+            "tonnage": "7756"
+          },
+          {
+            "year": 2020,
+            "tonnage": "9207"
+          },
+          {
+            "year": 2019,
+            "tonnage": "5077"
+          },
+          {
+            "year": 2018,
+            "tonnage": "263"
+          },
+          {
+            "year": 2017,
+            "tonnage": "4188"
+          },
+          {
+            "year": 2016,
+            "tonnage": "6695"
+          },
+          {
+            "year": 2015,
+            "tonnage": "5600"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sourcingLocations",
+      "attributes": {
+        "material": "Palm oil and its fractions",
+        "materialId": "52370288-8c6c-4f31-919c-d30538d39ee3",
+        "t1Supplier": "AAA",
+        "producer": null,
+        "businessUnit": "Haircare",
+        "country": "Indonesia",
+        "locationType": "production-aggregation-point",
+        "purchases": [
+          {
+            "year": 2021,
+            "tonnage": "2775"
+          },
+          {
+            "year": 2017,
+            "tonnage": "2364"
+          },
+          {
+            "year": 2018,
+            "tonnage": "6053"
+          },
+          {
+            "year": 2019,
+            "tonnage": "351"
+          },
+          {
+            "year": 2020,
+            "tonnage": "5509"
+          },
+          {
+            "year": 2022,
+            "tonnage": "7360"
+          },
+          {
+            "year": 2023,
+            "tonnage": "5310"
+          },
+          {
+            "year": 2024,
+            "tonnage": "2778"
+          },
+          {
+            "year": 2015,
+            "tonnage": "6328"
+          },
+          {
+            "year": 2016,
+            "tonnage": "5651"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sourcingLocations",
+      "attributes": {
+        "material": "Palm oil and its fractions",
+        "materialId": "52370288-8c6c-4f31-919c-d30538d39ee3",
+        "t1Supplier": "Cargill",
+        "producer": null,
+        "businessUnit": "Haircare",
+        "country": "Malaysia",
+        "locationType": "production-aggregation-point",
+        "purchases": [
+          {
+            "year": 2016,
+            "tonnage": "7320"
+          },
+          {
+            "year": 2015,
+            "tonnage": "4406"
+          },
+          {
+            "year": 2024,
+            "tonnage": "2933"
+          },
+          {
+            "year": 2023,
+            "tonnage": "8213"
+          },
+          {
+            "year": 2022,
+            "tonnage": "7800"
+          },
+          {
+            "year": 2021,
+            "tonnage": "3684"
+          },
+          {
+            "year": 2020,
+            "tonnage": "4875"
+          },
+          {
+            "year": 2019,
+            "tonnage": "368"
+          },
+          {
+            "year": 2018,
+            "tonnage": "4179"
+          },
+          {
+            "year": 2017,
+            "tonnage": "8553"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sourcingLocations",
+      "attributes": {
+        "material": "Palm oil and its fractions",
+        "materialId": "52370288-8c6c-4f31-919c-d30538d39ee3",
+        "t1Supplier": null,
+        "producer": null,
+        "businessUnit": "Haircare",
+        "country": "Malaysia",
+        "locationType": "production-aggregation-point",
+        "purchases": [
+          {
+            "year": 2023,
+            "tonnage": "1086"
+          },
+          {
+            "year": 2022,
+            "tonnage": "8049"
+          },
+          {
+            "year": 2021,
+            "tonnage": "2918"
+          },
+          {
+            "year": 2020,
+            "tonnage": "1363"
+          },
+          {
+            "year": 2019,
+            "tonnage": "5628"
+          },
+          {
+            "year": 2018,
+            "tonnage": "9504"
+          },
+          {
+            "year": 2017,
+            "tonnage": "5668"
+          },
+          {
+            "year": 2024,
+            "tonnage": "3027"
+          },
+          {
+            "year": 2016,
+            "tonnage": "4778"
+          },
+          {
+            "year": 2015,
+            "tonnage": "9154"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sourcingLocations",
+      "attributes": {
+        "material": "Palm oil and its fractions",
+        "materialId": "52370288-8c6c-4f31-919c-d30538d39ee3",
+        "t1Supplier": "AAA",
+        "producer": null,
+        "businessUnit": "Haircare",
+        "country": "Indonesia",
+        "locationType": "production-aggregation-point",
+        "purchases": [
+          {
+            "year": 2024,
+            "tonnage": "7814"
+          },
+          {
+            "year": 2015,
+            "tonnage": "5957"
+          },
+          {
+            "year": 2016,
+            "tonnage": "9678"
+          },
+          {
+            "year": 2017,
+            "tonnage": "3984"
+          },
+          {
+            "year": 2018,
+            "tonnage": "7545"
+          },
+          {
+            "year": 2019,
+            "tonnage": "5068"
+          },
+          {
+            "year": 2020,
+            "tonnage": "4442"
+          },
+          {
+            "year": 2021,
+            "tonnage": "7945"
+          },
+          {
+            "year": 2022,
+            "tonnage": "1852"
+          },
+          {
+            "year": 2023,
+            "tonnage": "4291"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sourcingLocations",
+      "attributes": {
+        "material": "Rice",
+        "materialId": "2cf5e53b-6030-403a-8849-e961474fead7",
+        "t1Supplier": "Unknown",
+        "producer": "Unknown",
+        "businessUnit": "Grains & Cereals",
+        "country": "Spain",
+        "locationType": "administrative-region-of-production",
+        "purchases": [
+          {
+            "year": 2023,
+            "tonnage": "979"
+          },
+          {
+            "year": 2024,
+            "tonnage": "3646"
+          },
+          {
+            "year": 2022,
+            "tonnage": "8951"
+          },
+          {
+            "year": 2021,
+            "tonnage": "8668"
+          },
+          {
+            "year": 2020,
+            "tonnage": "719"
+          },
+          {
+            "year": 2019,
+            "tonnage": "918"
+          },
+          {
+            "year": 2018,
+            "tonnage": "1869"
+          },
+          {
+            "year": 2017,
+            "tonnage": "2789"
+          },
+          {
+            "year": 2016,
+            "tonnage": "6386"
+          },
+          {
+            "year": 2015,
+            "tonnage": "8702"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sourcingLocations",
+      "attributes": {
+        "material": "Rice",
+        "materialId": "2cf5e53b-6030-403a-8849-e961474fead7",
+        "t1Supplier": "Unknown",
+        "producer": "Unknown",
+        "businessUnit": "Grains & Cereals",
+        "country": "Spain",
+        "locationType": "country-of-production",
+        "purchases": [
+          {
+            "year": 2024,
+            "tonnage": "1921"
+          },
+          {
+            "year": 2023,
+            "tonnage": "6524"
+          },
+          {
+            "year": 2022,
+            "tonnage": "1801"
+          },
+          {
+            "year": 2021,
+            "tonnage": "6766"
+          },
+          {
+            "year": 2020,
+            "tonnage": "7025"
+          },
+          {
+            "year": 2019,
+            "tonnage": "9741"
+          },
+          {
+            "year": 2018,
+            "tonnage": "2416"
+          },
+          {
+            "year": 2017,
+            "tonnage": "5510"
+          },
+          {
+            "year": 2016,
+            "tonnage": "4892"
+          },
+          {
+            "year": 2015,
+            "tonnage": "3671"
+          }
+        ]
+      }
+    },
+    {
+      "type": "sourcingLocations",
+      "attributes": {
+        "material": "Wheat and meslin",
+        "materialId": "43fc319e-08d4-4cfb-a56d-347cc3754e39",
+        "t1Supplier": "Unknown",
+        "producer": "Unknown",
+        "businessUnit": "Health Foods",
+        "country": "Turkey",
+        "locationType": "country-of-production",
+        "purchases": [
+          {
+            "year": 2024,
+            "tonnage": "4844.4"
+          },
+          {
+            "year": 2023,
+            "tonnage": "2132.4"
+          },
+          {
+            "year": 2015,
+            "tonnage": "2310"
+          },
+          {
+            "year": 2016,
+            "tonnage": "2818.2"
+          },
+          {
+            "year": 2017,
+            "tonnage": "1036.8"
+          },
+          {
+            "year": 2018,
+            "tonnage": "4401"
+          },
+          {
+            "year": 2019,
+            "tonnage": "1947"
+          },
+          {
+            "year": 2020,
+            "tonnage": "3531.6"
+          },
+          {
+            "year": 2021,
+            "tonnage": "13.2"
+          },
+          {
+            "year": 2022,
+            "tonnage": "2626.2"
           }
         ]
       }
     }
-  ],
-  "meta": {
-    "totalItems": 1314,
-    "totalPages": 27,
-    "size": 50,
-    "page": 1
-  }
+  ]
 }

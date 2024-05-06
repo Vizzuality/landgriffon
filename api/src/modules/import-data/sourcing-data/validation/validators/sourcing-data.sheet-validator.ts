@@ -28,14 +28,14 @@ export class SourcingDataSheetValidator {
   @IsNotEmpty({
     message: 'Business Unit path cannot be empty',
   })
-  @IsString()
+  @IsString({ message: 'Business Unit path must be a string' })
   'business_unit.path': string;
 
-  @IsString()
+  @IsString({ message: 'Business Unit name must be a string' })
   @IsOptional()
   't1_supplier.name': string;
 
-  @IsString()
+  @IsString({ message: 'Producer name must be a string' })
   @IsOptional()
   'producer.name': string;
 
@@ -52,7 +52,7 @@ export class SourcingDataSheetValidator {
   @IsNotEmpty({
     message: 'Location country input is required',
   })
-  @IsString()
+  @IsString({ message: 'Location country must be a string' })
   'location_country_input': string;
 
   @Validate(LocationAddressInputValidator)

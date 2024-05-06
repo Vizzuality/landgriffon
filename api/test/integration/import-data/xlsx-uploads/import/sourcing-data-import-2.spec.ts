@@ -38,5 +38,7 @@ describe('Sourcing Data Correct Import (Integration Tests)', () => {
     await sourcingDataImportTestManager.WhenIImportACorrectFile();
     await sourcingDataImportTestManager.ThenAllSourcingLocationsShouldBeImported();
     await sourcingDataImportTestManager.AndImpactRelatedToTheseLocationsShouldBeCalculated();
+    await sourcingDataImportTestManager.AndAllSuppliersShouldBeImported();
+    await sourcingDataImportTestManager.AndAllBusinessUnitsShouldBeImported();
   });
 });

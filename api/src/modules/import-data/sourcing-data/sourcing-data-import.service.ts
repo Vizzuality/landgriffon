@@ -24,7 +24,7 @@ import {
 } from 'modules/import-data/sourcing-data/validation/excel-validator.service';
 import { ExcelValidationError } from 'modules/import-data/sourcing-data/validation/validators/excel-validation.error';
 import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
-import { SourcingDataDbCleaner } from './sourcing-data.db-cleaner';
+import { SourcingDataDbCleaner } from 'modules/import-data/sourcing-data/sourcing-data.db-cleaner';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 
 export interface SourcingRecordsSheets extends Record<string, any[]> {
@@ -165,6 +165,7 @@ export class SourcingDataImportService {
         this.logger.log('Indicator Records generated');
         await this.impactService.updateImpactView();
       } catch (err: any) {
+        this.logger.error(err);
         throw new ServiceUnavailableException(
           'Could not calculate Impact for current data. Please contact with the administrator',
         );
@@ -173,29 +174,6 @@ export class SourcingDataImportService {
       await this.fileService.deleteDataFromFS(filePath);
     }
   }
-
-  /**
-   * @note: Deletes DB content from required entities
-   * to ensure DB is prune prior loading a XLSX dataset
-   */
-  // async cleanDataBeforeImport(): Promise<void> {
-  //   this.logger.log('Cleaning database before import...');
-  //   try {
-  //     await this.indicatorService.deactivateAllIndicators();
-  //     await this.materialService.deactivateAllMaterials();
-  //     await this.scenarioService.clearTable();
-  //     await this.indicatorRecordService.clearTable();
-  //     await this.businessUnitService.clearTable();
-  //     await this.supplierService.clearTable();
-  //     await this.sourcingLocationService.clearTable();
-  //     await this.sourcingRecordService.clearTable();
-  //     await this.geoRegionsService.deleteGeoRegionsCreatedByUser();
-  //   } catch ({ message }) {
-  //     throw new Error(
-  //       `Database could not been cleaned before loading new dataset: ${message}`,
-  //     );
-  //   }
-  // }
 
   /**
    * @note: Type hack as mpath property does not exist on Materials and BusinessUnits, but its created

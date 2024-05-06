@@ -271,32 +271,6 @@ describe('Sourcing Data import', () => {
     }
   }, 100000);
 
-  test.skip('When a file is processed by the API and its size is allowed then it should return a 201 code and the storage folder should be empty', async () => {
-    const geoRegion: GeoRegion = await createGeoRegion({
-      isCreatedByUser: false,
-    });
-    await createAdminRegion({
-      isoA2: 'ABC',
-      geoRegion,
-    });
-
-    const indicatorPreconditions = await createWorldToCalculateIndicatorRecords(
-      dataSource,
-    );
-
-    tablesToDrop = [
-      ...(await createMaterialTreeForXLSXImport(dataSource)),
-      ...indicatorPreconditions.h3tableNames,
-    ];
-
-    const task = await createTask();
-
-    await sourcingDataImportService.importSourcingData(
-      __dirname + '/files/test-base-dataset.xlsx',
-      task.id,
-    );
-  }, 100000);
-
   test('When a valid file is sent to the API it should return a 201 code and the data in it should be imported (happy case)', async () => {
     const geoRegion: GeoRegion = await createGeoRegion({
       isCreatedByUser: false,

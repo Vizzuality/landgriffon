@@ -36,16 +36,27 @@ export class SourcingDataImportTestManager extends TestManager {
     );
   };
 
+  ButThereIsNoBaseDataInThePlatform = async (): Promise<any> => {
+    return;
+  };
+
+  ThenAnErrorShouldBeThrown = (error: Error, expectedMessage: string): void => {
+    expect(error.message).toBe(expectedMessage);
+  };
+
   WhenIImportACorrectFile = async (): Promise<any> => {
     const task: Task = await createTask();
     const sourcingDataImportService = this.testApp.get(
       SourcingDataImportService,
     );
-
-    await sourcingDataImportService.importSourcingData(
-      __dirname + '/api_test_datasheet.xlsx',
-      task.id,
-    );
+    try {
+      await sourcingDataImportService.importSourcingData(
+        __dirname + '/api_test_datasheet.xlsx',
+        task.id,
+      );
+    } catch (error) {
+      return error;
+    }
   };
   ThenAllSourcingLocationsShouldBeImported = async (): Promise<any> => {
     const sourcingLocations: any[] = await this.dataSource

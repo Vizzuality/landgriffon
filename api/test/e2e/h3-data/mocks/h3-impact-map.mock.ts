@@ -87,6 +87,7 @@ export const createImpactMapMockData = async (
   indicator.name = 'test indicator';
   indicator.unit = unit;
   indicator.nameCode = 'UWU_T' as INDICATOR_NAME_CODES;
+  indicator.category = 'test category';
   await indicator.save();
 
   const inactiveIndicator: Indicator = new Indicator();
@@ -94,6 +95,7 @@ export const createImpactMapMockData = async (
   inactiveIndicator.unit = unit;
   inactiveIndicator.status = INDICATOR_STATUS.INACTIVE;
   inactiveIndicator.nameCode = 'INA_IN' as INDICATOR_NAME_CODES;
+  inactiveIndicator.category = 'test category';
   await inactiveIndicator.save();
 
   const harvestH3Data = await h3DataMock(dataSource, {

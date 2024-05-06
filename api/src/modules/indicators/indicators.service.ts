@@ -41,6 +41,7 @@ export class IndicatorsService extends AppBaseService<
         'id',
         'name',
         'description',
+        'category',
         'unit',
         'status',
         'metadata',

@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -92,6 +93,7 @@ export class IndicatorsController {
       await this.indicatorsService.getById(id, fetchSpecification),
     );
   }
+
   @RequiredRoles(ROLES.ADMIN)
   @ApiForbiddenResponse()
   @ApiOperation({ description: 'Create a indicator' })
@@ -122,6 +124,7 @@ export class IndicatorsController {
       await this.indicatorsService.update(id, dto),
     );
   }
+
   @RequiredRoles(ROLES.ADMIN)
   @ApiForbiddenResponse()
   @ApiOperation({ description: 'Deletes a indicator' })

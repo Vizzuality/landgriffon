@@ -4,9 +4,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
-import { useProfile, useUpdateProfile } from 'hooks/profile';
+import { useUpdateProfile } from 'hooks/profile';
 import { Label, Input } from 'components/forms';
 import { Button } from 'components/button';
+import { useUsersControllerUserMetadata } from '@/types/generated/user';
 
 import type { ProfilePayload, ErrorResponse } from 'types';
 
@@ -25,7 +26,11 @@ const UserDataForm: React.FC = () => {
     resolver: yupResolver(schemaValidation),
   });
 
-  const user = useProfile();
+  const user = useUsersControllerUserMetadata({
+    query: {
+      select: (data) => data?.data?.attributes,
+    },
+  });
   const updateProfile = useUpdateProfile();
 
   const handleEditUserData = useCallback(

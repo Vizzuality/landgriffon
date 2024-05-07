@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import { env } from '@/env.mjs';
 
 import type { ApiError, ErrorResponse } from 'types';
-import type { AxiosRequestConfig, AxiosResponse } from 'axios';
+import type { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 /**
  * API service require to be authenticated.
@@ -20,14 +20,14 @@ const defaultConfig: AxiosRequestConfig = {
   headers: { 'Content-Type': 'application/json' },
 };
 
-const authorizedRequest = async (config) => {
+export const authorizedRequest = async (config: InternalAxiosRequestConfig) => {
   const session = await getSession();
   config.headers['Authorization'] = `Bearer ${session?.accessToken}`;
 
   return config;
 };
 
-const onResponseError = async (error: unknown) => {
+export const onResponseError = async (error: unknown) => {
   if (axios.isAxiosError<ApiError>(error)) {
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     if (error.response.status === 401) {
@@ -41,7 +41,7 @@ const onResponseError = async (error: unknown) => {
 // This endpoint by default will deserialize the data
 export const apiService = axios.create(defaultConfig);
 
-const responseDeserializer = (response: AxiosResponse) => ({
+export const responseDeserializer = (response: AxiosResponse) => ({
   ...response,
   data: {
     ...response.data,

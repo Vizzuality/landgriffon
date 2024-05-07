@@ -1,4 +1,4 @@
-import type { User } from 'types';
+import { User } from '@/types/generated/api.schemas';
 
 const getUserFullName = (user: User, options?: { replaceByEmail?: boolean }) => {
   if (!user) return '';

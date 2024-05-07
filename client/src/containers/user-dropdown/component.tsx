@@ -8,8 +8,8 @@ import { FloatingPortal } from '@floating-ui/react';
 
 import Loading from 'components/loading';
 import UserAvatar from 'containers/user-avatar';
-import { useProfile } from 'hooks/profile';
 import getUserFullName from 'utils/user-full-name';
+import { useUsersControllerUserMetadata } from '@/types/generated/user';
 
 const MENU_ITEM_CLASSNAME =
   'block w-full py-2 px-4 text-sm text-left text-gray-900 h-9 hover:bg-navy-50 focus-visible:outline-navy-50';
@@ -20,7 +20,11 @@ const UserDropdown: React.FC = () => {
     middleware: [offset({ crossAxis: 20, mainAxis: 10 }), shift()],
   });
 
-  const { data: user, status } = useProfile();
+  const { data: user, status } = useUsersControllerUserMetadata({
+    query: {
+      select: (data) => data?.data?.attributes,
+    },
+  });
 
   const handleSignOut = useCallback(() => signOut({ callbackUrl: '/auth/signin' }), []);
 

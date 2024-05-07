@@ -2,7 +2,9 @@ import { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { omit } from 'lodash-es';
 
-import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { useIndicator } from '../indicators';
+
+import { useAppDispatch, useAppSelector, useSyncIndicators } from 'store/hooks';
 import { analysisFilters } from 'store/features/analysis/filters';
 import { analysisMap, setLayer, setLayerDeckGLProps } from 'store/features/analysis/map';
 import { formatNumber } from 'utils/number-format';
@@ -23,6 +25,7 @@ export const useImpactLayer = () => {
   const isComparisonEnabled = !!compareScenarioId;
   const { comparisonMode } = useAppSelector(scenarios);
   const colorKey = !!compareScenarioId ? 'compare' : 'impact';
+  const [syncedIndicators] = useSyncIndicators();
 
   const {
     layers: { impact: impactLayer },
@@ -32,14 +35,14 @@ export const useImpactLayer = () => {
     () =>
       storeToQueryParams({
         ...filters,
+        indicators: syncedIndicators?.[0] ? [syncedIndicators?.[0]] : undefined,
         currentScenario: scenarioId as string,
         scenarioToCompare: compareScenarioId as string,
         isComparisonEnabled,
       }),
-    [compareScenarioId, filters, isComparisonEnabled, scenarioId],
+    [compareScenarioId, filters, isComparisonEnabled, scenarioId, syncedIndicators],
   );
 
-  const { indicator } = filters;
   const { year } = params;
 
   const normalQuery = useH3ImpactData(params, { enabled: !isComparisonEnabled });
@@ -57,6 +60,10 @@ export const useImpactLayer = () => {
 
   const { data, isSuccess, isFetched } = query;
 
+  const { data: indicator } = useIndicator(syncedIndicators?.[0], {
+    enabled: Boolean(syncedIndicators?.[0]),
+  });
+
   // Populating legend
   useEffect(() => {
     if (data && isSuccess && indicator) {
@@ -67,9 +74,9 @@ export const useImpactLayer = () => {
             loading: query.isFetching,
             metadata: {
               legend: {
-                id: `impact-${indicator.value}-${isComparisonEnabled || 'compare'}`,
+                id: `impact-${indicator.id}-${isComparisonEnabled || 'compare'}`,
                 type: 'basic',
-                name: `${indicator.label} in ${year}`,
+                name: `${indicator.name} in ${year}`,
                 unit: data.metadata.unit,
                 min: !!data.metadata.quantiles.length && formatNumber(data.metadata.quantiles[0]),
                 items: data.metadata.quantiles

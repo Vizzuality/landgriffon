@@ -20,7 +20,7 @@ import type { Target } from 'types';
 import type { GetServerSideProps } from 'next';
 
 const AdminTargetsPage: React.FC = () => {
-  const { data: indicators } = useIndicators({}, { select: (data) => data.data });
+  const { data: indicators } = useIndicators(undefined, { select: (data) => data.data });
   const { isLoading } = useTargets();
   const hasData = useMemo(() => indicators?.length > 0, [indicators]);
 

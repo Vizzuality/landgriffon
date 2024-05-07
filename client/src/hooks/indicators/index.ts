@@ -24,7 +24,10 @@ export const useIndicators = <T = ResponseData>(
         .request<ResponseData>({
           method: 'GET',
           url: '/indicators',
-          params: queryParams,
+          params: {
+            'filter[status]': 'active',
+            ...queryParams,
+          },
         })
         .then(({ data }) => data),
     {

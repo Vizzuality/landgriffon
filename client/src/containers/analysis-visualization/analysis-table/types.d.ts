@@ -40,6 +40,7 @@ export type ImpactRowType<
       children?: this[];
       name: string;
       values: ImpactTableValueItem<Comparison>[];
+      indicatorId?: string;
     };
 
 export type ImpactTableValueItem<Comparison extends ComparisonMode> = Comparison extends false

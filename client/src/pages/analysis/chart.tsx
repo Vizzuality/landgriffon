@@ -3,39 +3,35 @@ import classNames from 'classnames';
 import { dehydrate } from '@tanstack/react-query';
 
 import { auth } from '@/pages/api/auth/[...nextauth]';
-import { useAppSelector, useAppDispatch } from 'store/hooks';
-import { setVisualizationMode } from 'store/features/analysis';
-import { analysisFilters } from 'store/features/analysis/filters';
-import { useIndicators } from 'hooks/indicators';
-import useEffectOnce from 'hooks/once';
-import ApplicationLayout from 'layouts/application';
-import AnalysisLayout from 'layouts/analysis';
-import AnalysisChart from 'containers/analysis-chart';
-import AnalysisDynamicMetadata from 'containers/analysis-visualization/analysis-dynamic-metadata';
-import Loading from 'components/loading';
-import TitleTemplate from 'utils/titleTemplate';
-import { tasksSSR } from 'services/ssr';
+import { useAppDispatch, useSyncIndicators } from '@/store/hooks';
+import { setVisualizationMode } from '@/store/features/analysis';
+import { useIndicators } from '@/hooks/indicators';
+import useEffectOnce from '@/hooks/once';
+import ApplicationLayout from '@/layouts/application';
+import AnalysisLayout from '@/layouts/analysis';
+import AnalysisChart from '@/containers/analysis-chart';
+import AnalysisDynamicMetadata from '@/containers/analysis-visualization/analysis-dynamic-metadata';
+import Loading from '@/components/loading';
+import TitleTemplate from '@/utils/titleTemplate';
+import { tasksSSR } from '@/services/ssr';
 import getQueryClient from '@/lib/react-query';
 
 import type { ReactElement } from 'react';
 import type { NextPageWithLayout } from 'pages/_app';
-import type { Indicator } from 'types';
 import type { GetServerSideProps } from 'next';
 
 const ChartPage: NextPageWithLayout = () => {
   const dispatch = useAppDispatch();
-  const { indicator } = useAppSelector(analysisFilters);
+  const [syncedIndicators] = useSyncIndicators();
 
-  // Show as many charts as there are indicators selected
-  const { data, isLoading } = useIndicators({ 'filter[status]': 'active' });
+  const { data, isLoading } = useIndicators(undefined, {
+    select: (data) => data?.data,
+  });
 
-  const activeIndicators: Indicator[] = useMemo(() => {
-    if (indicator?.value === 'all') return data?.data;
-    if (data?.data.length) {
-      return data.data.filter((indicatorData) => indicatorData.id === indicator?.value);
-    }
-    return [];
-  }, [data, indicator]);
+  const activeIndicators = useMemo(() => {
+    if (!syncedIndicators) return data;
+    return data.filter(({ id }) => syncedIndicators.includes(id));
+  }, [data, syncedIndicators]);
 
   useEffectOnce(() => {
     dispatch(setVisualizationMode('chart'));

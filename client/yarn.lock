@@ -7421,6 +7421,7 @@ __metadata:
     maplibre-gl: "npm:3.6.2"
     next: "npm:14.2.2"
     next-auth: "npm:4.24.7"
+    nuqs: "npm:1.17.2"
     nyc: "npm:15.1.0"
     nyc-report-lcov-absolute: "npm:1.0.0"
     postcss: "npm:8.4.31"
@@ -7993,6 +7994,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mitt@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "mitt@npm:3.0.1"
+  checksum: 10/287c70d8e73ffc25624261a4989c783768aed95ecb60900f051d180cf83e311e3e59865bfd6e9d029cdb149dc20ba2f128a805e9429c5c4ce33b1416c65bbd14
+  languageName: node
+  linkType: hard
+
 "mjolnir.js@npm:^2.7.0":
   version: 2.7.1
   resolution: "mjolnir.js@npm:2.7.1"
@@ -8302,6 +8310,17 @@ __metadata:
   dependencies:
     boolbase: "npm:^1.0.0"
   checksum: 10/5afc3dafcd1573b08877ca8e6148c52abd565f1d06b1eb08caf982e3fa289a82f2cae697ffb55b5021e146d60443f1590a5d6b944844e944714a5b549675bcd3
+  languageName: node
+  linkType: hard
+
+"nuqs@npm:1.17.2":
+  version: 1.17.2
+  resolution: "nuqs@npm:1.17.2"
+  dependencies:
+    mitt: "npm:^3.0.1"
+  peerDependencies:
+    next: ">=13.4 <14.0.2 || ^14.0.3"
+  checksum: 10/26390678234ff08e6a8bb5a9a31c25d8b7496630a0d018147503c412c206aee22eae6d4daf485b7ba9cb32dbd4ef6973f4a558c97663222ee1c6cd734a4b887e
   languageName: node
   linkType: hard
 

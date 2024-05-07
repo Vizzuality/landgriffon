@@ -4,7 +4,6 @@ import { InformationCircleIcon } from '@heroicons/react/outline';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { useScenario } from 'hooks/scenarios';
-import { useIndicator } from 'hooks/indicators';
 import { scenarios } from 'store/features/analysis/scenarios';
 import { analysisFilters, setFilters } from 'store/features/analysis/filters';
 import Badge from 'components/badge/component';
@@ -42,7 +41,7 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
     [scenarioToCompare, scenarioB?.title],
   );
 
-  const { materials, origins, t1Suppliers, producers, locationTypes, indicator } =
+  const { materials, origins, t1Suppliers, producers, locationTypes } =
     useAppSelector(analysisFilters);
 
   const handleRemoveBadge = useCallback(
@@ -51,13 +50,6 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
       dispatch(setFilters({ [id]: filteredKeys }));
     },
     [dispatch],
-  );
-
-  const { data: unit } = useIndicator(indicator?.value, { select: (data) => data?.unit });
-
-  const indicatorsTemplate = useMemo(
-    () => indicator?.value !== 'all' && <span className="font-bold">({unit?.symbol})</span>,
-    [indicator?.value, unit?.symbol],
   );
 
   const comparisonTemplate = useMemo(
@@ -194,11 +186,10 @@ const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
       <InformationCircleIcon className="h-4 w-4 shrink-0 text-gray-900" />
       Viewing {isComparisonEnabled ? <ComparisonToggle /> : values}
       <span>
-        <span className="whitespace-nowrap">Impact values for</span>
+        <span className="whitespace-nowrap">impact values for</span>
         <span className="whitespace-nowrap font-bold"> {scenario1} </span>
       </span>
       {comparisonTemplate}
-      {indicatorsTemplate}
       {materialTemplate}
       {originTemplate}
       {supplierTemplate}

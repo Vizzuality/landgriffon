@@ -429,7 +429,12 @@ const InnerTreeSelect = <IsMulti extends boolean>(
                     {theme === 'inline-primary' && index < currentOptions.length - 1 && ','}
                   </Badge>
                 ))}
-              {currentOptions?.length > badgesToShow && (
+              {!badgesToShow && currentOptions?.length > 0 && (
+                <Badge className="whitespace-nowrap text-xs" theme="big">
+                  {currentOptions.length - badgesToShow} selected
+                </Badge>
+              )}
+              {currentOptions?.length > badgesToShow && Boolean(badgesToShow) && (
                 <Badge className="whitespace-nowrap text-xs" theme="big">
                   {currentOptions.length - badgesToShow} more selected
                 </Badge>

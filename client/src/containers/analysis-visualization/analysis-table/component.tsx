@@ -7,7 +7,7 @@ import { ArrowLeftIcon } from '@heroicons/react/solid';
 import ComparisonCell from './comparison-cell/component';
 import ChartCell from './chart-cell';
 
-import { useAppSelector } from 'store/hooks';
+import { useAppSelector, useSyncIndicators, useSyncTableDetailView } from 'store/hooks';
 import { filtersForTabularAPI } from 'store/features/analysis/selector';
 import { scenarios } from 'store/features/analysis/scenarios';
 import { useIndicators } from 'hooks/indicators';
@@ -23,7 +23,6 @@ import { Button } from 'components/button';
 import Table from 'components/table/component';
 import { formatNumber } from 'utils/number-format';
 import { DEFAULT_PAGE_SIZES } from 'components/table/pagination/constants';
-import { useIndicatorParam } from 'utils/indicator-param';
 import { handleResponseError } from 'services/api';
 
 import type {
@@ -62,11 +61,13 @@ const AnalysisTable = () => {
     };
   }, [expandedState, paginationState, rowSelectionState, sortingState]);
 
+  const [syncedIndicators, setSyncedIndicators] = useSyncIndicators();
+  const [syncedDetailView, setSyncedDetailView] = useSyncTableDetailView();
+
+  const selectedIndicators = syncedIndicators;
+
   const { scenarioToCompare, isComparisonEnabled, currentScenario } = useAppSelector(scenarios);
-  const { data: indicators } = useIndicators(
-    { 'filter[status]': 'active' },
-    { select: (data) => data.data },
-  );
+  const { data: indicators } = useIndicators(undefined, { select: (data) => data?.data });
   const downloadImpactData = useDownloadImpactData({
     onSuccess: () => {
       toast.success('Data was downloaded successfully');
@@ -88,7 +89,7 @@ const AnalysisTable = () => {
     onError: handleResponseError,
   });
 
-  const filters = useAppSelector(filtersForTabularAPI);
+  const { indicatorId, ...restFilters } = useAppSelector(filtersForTabularAPI);
 
   const useIsComparison = useCallback(
     (table: ImpactRowType<ComparisonMode>[]): table is ImpactRowType<true | 'scenario'>[] => {
@@ -104,22 +105,23 @@ const AnalysisTable = () => {
     [isComparisonEnabled, currentScenario],
   );
 
-  const { indicatorId, ...restFilters } = filters;
-
   const isEnable =
-    !!indicatorId &&
     !!indicators?.length &&
-    !!filters.startYear &&
-    !!filters.endYear &&
-    filters.endYear !== filters.startYear;
+    !!restFilters.startYear &&
+    !!restFilters.endYear &&
+    restFilters.endYear !== restFilters.startYear;
 
   const indicatorIds = useMemo(() => {
-    if (indicatorId === 'all') {
-      return indicators.map((indicator) => indicator.id);
+    if (Array.isArray(selectedIndicators)) {
+      return selectedIndicators.map((id) => id);
     }
-    if (indicatorId) return [indicatorId];
-    return [];
-  }, [indicators, indicatorId]);
+
+    if (selectedIndicators && !Array.isArray(selectedIndicators)) {
+      return [selectedIndicators];
+    }
+
+    return indicators.map((indicator) => indicator.id);
+  }, [indicators, selectedIndicators]);
 
   const sortingParams = useMemo(() => {
     if (!!sortingState.length) {
@@ -134,9 +136,9 @@ const AnalysisTable = () => {
   const params = useMemo(
     () => ({
       indicatorIds,
-      startYear: filters.startYear,
-      endYear: filters.endYear,
-      groupBy: filters.groupBy,
+      startYear: restFilters.startYear,
+      endYear: restFilters.endYear,
+      groupBy: restFilters.groupBy,
       ...restFilters,
       ...sortingParams,
       scenarioId: currentScenario,
@@ -145,9 +147,6 @@ const AnalysisTable = () => {
     }),
     [
       currentScenario,
-      filters.endYear,
-      filters.groupBy,
-      filters.startYear,
       indicatorIds,
       paginationState.pageIndex,
       paginationState.pageSize,
@@ -293,30 +292,40 @@ const AnalysisTable = () => {
   const [tableData, setTableData] = useState<ImpactRowType<ComparisonMode>[]>([]);
 
   useEffect(() => {
-    if (indicatorId !== 'all') {
-      // A single indicator is selected so we force its expansion
-      setTableData(initialTableData[0]?.children);
-    } else {
-      // All indicators are selected and no indicator is expanded
+    // ? a single indicator is expanded
+    if (syncedDetailView) {
+      setTableData(initialTableData.find((row) => row.indicatorId === syncedDetailView)?.children);
+    }
+
+    //  ? several indicators are selected
+    if (selectedIndicators && !syncedDetailView) {
+      setTableData(initialTableData.filter((row) => selectedIndicators.includes(row.indicatorId)));
+    }
+
+    // ? all indicators are selected
+    if (!selectedIndicators?.length && !syncedDetailView) {
       setTableData(initialTableData);
     }
+
     setExpandedState(null);
     setRowSelectionState({});
-  }, [indicatorId, initialTableData]);
-
-  const setIndicatorParam = useIndicatorParam();
+  }, [selectedIndicators, initialTableData, syncedDetailView]);
 
   const handleExitExpanded = useCallback(() => {
     setExpandedState({});
-    setIndicatorParam('all');
-  }, [setIndicatorParam]);
+    setSyncedDetailView(null);
+
+    if (syncedIndicators?.length === 1) {
+      setSyncedIndicators(null);
+    }
+  }, [setSyncedDetailView, syncedIndicators, setSyncedIndicators]);
 
   const handleExpandRow = useCallback(
     (indicatorId: string) => {
       setExpandedState({});
-      setIndicatorParam(indicatorId);
+      setSyncedDetailView(indicatorId);
     },
-    [setIndicatorParam],
+    [setSyncedDetailView],
   );
 
   const isComparison = useIsComparison(tableData);
@@ -329,10 +338,9 @@ const AnalysisTable = () => {
     [isComparison, isScenarioComparison],
   );
 
-  const expanded = useMemo(
-    () => (indicatorId === 'all' ? null : indicators.find((i) => i.id === indicatorId)),
-    [indicatorId, indicators],
-  );
+  const expanded = useMemo(() => {
+    return indicators.find((i) => i.id === syncedDetailView);
+  }, [syncedDetailView, indicators]);
 
   const comparisonColumn = useCallback(
     <Mode extends ComparisonMode>(year: number): ColumnDefinition<ImpactRowType<Mode>> => {
@@ -490,7 +498,7 @@ const AnalysisTable = () => {
     <Mode extends ComparisonMode>(): TableProps<ImpactRowType<Mode>> & {
       firstProjectedYear: number;
     } => ({
-      showPagination: indicatorId !== 'all',
+      showPagination: Boolean(selectedIndicators),
       paginationProps: {
         totalItems: metadata.totalItems,
         totalPages: metadata.totalPages,
@@ -503,7 +511,7 @@ const AnalysisTable = () => {
       onPaginationChange: setPaginationState,
       onExpandedChange: setExpandedState,
       isLoading: isFetching,
-      enableExpanding: indicatorId !== 'all',
+      enableExpanding: Boolean(syncedDetailView),
       data: (tableData as ImpactRowType<Mode>[]) || [],
       columns: baseColumns as ColumnDefinition<ImpactRowType<Mode>>[],
       handleExpandedChange,
@@ -513,11 +521,12 @@ const AnalysisTable = () => {
       metadata,
       tableState,
       isFetching,
-      indicatorId,
       tableData,
       baseColumns,
       handleExpandedChange,
       firstProjectedYear,
+      selectedIndicators,
+      syncedDetailView,
     ],
   );
 

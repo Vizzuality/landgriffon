@@ -48,11 +48,7 @@ const StackedAreaChart: React.FC<StackedAreaChartProps> = ({ indicator }) => {
     scenarioId,
   };
 
-  const enabled =
-    !!filters?.indicatorId &&
-    !!filters.startYear &&
-    !!filters.endYear &&
-    filters.endYear !== filters.startYear;
+  const enabled = !!filters.startYear && !!filters.endYear && filters.endYear !== filters.startYear;
 
   const { data, isFetched, isFetching } = useImpactRanking(
     {

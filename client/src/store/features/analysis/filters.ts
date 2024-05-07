@@ -3,13 +3,13 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { Option } from 'components/forms/select';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from 'store';
-import type { Indicator, Material } from 'types';
+import type { Material } from 'types';
 import type { LocationTypes } from 'containers/interventions/enums';
 
 export type AnalysisFiltersState = {
   layer: 'impact' | 'risk' | 'material' | 'water';
   indicator: Option;
-  indicators: Indicator[];
+  indicators: string[];
   by: string;
   startYear: number;
   endYear: number;

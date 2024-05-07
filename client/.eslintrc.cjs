@@ -7,7 +7,7 @@ module.exports = {
   ],
   plugins: ['prettier'],
   rules: {
-    '@typescript-eslint/no-unused-vars': ['warn'],
+    '@typescript-eslint/no-unused-vars': ['warn', { ignoreRestSiblings: true }],
     'import/order': [
       'warn',
       {

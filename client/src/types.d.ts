@@ -117,6 +117,7 @@ export interface Indicator {
   type: 'indicators';
   unit?: Unit;
   metadata: IndicatorMetadata;
+  category: string;
 }
 
 export type Group = {

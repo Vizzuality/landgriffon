@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
-import { useAppSelector, useAppDispatch } from 'store/hooks';
+import { useAppSelector, useAppDispatch, useSyncIndicators } from 'store/hooks';
 import { analysisMap, setLayer } from 'store/features/analysis/map';
 import { analysisFilters } from 'store/features/analysis';
 import LegendTypeChoropleth from 'components/legend/types/choropleth';
@@ -19,7 +19,8 @@ const LAYER_ID = 'material';
 
 const MaterialLayer = () => {
   const dispatch = useAppDispatch();
-  const { indicator, materialId } = useAppSelector(analysisFilters);
+  const { materialId } = useAppSelector(analysisFilters);
+  const [syncedIndicators] = useSyncIndicators();
 
   const {
     layers: { [LAYER_ID]: layer },
@@ -39,7 +40,7 @@ const MaterialLayer = () => {
           layer: {
             metadata: {
               legend: {
-                id: `${LAYER_ID}-${indicator.value}`,
+                id: `${LAYER_ID}-${syncedIndicators?.[0]}`,
                 type: 'basic',
                 name: `${material.metadata.name}`,
                 unit: data.metadata.unit,

@@ -76,6 +76,7 @@
     "maplibre-gl": "3.6.2",
     "next": "14.2.2",
     "next-auth": "4.24.7",
+    "nuqs": "1.17.2",
     "postcss": "8.4.31",
     "query-string": "8.1.0",
     "rc-tree": "5.7.0",

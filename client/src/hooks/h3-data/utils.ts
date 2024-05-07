@@ -18,7 +18,7 @@ type ScalesType = ScaleOrdinal<H3Item['v'], H3Item['c']> | ScaleThreshold<H3Item
 
 export const storeToQueryParams = ({
   startYear,
-  indicator,
+  indicators,
   materials,
   businessUnits,
   t1Suppliers,
@@ -29,7 +29,7 @@ export const storeToQueryParams = ({
 }: Partial<AnalysisFiltersState & ScenariosState>) => {
   return {
     year: startYear,
-    indicatorId: indicator?.value === 'all' ? null : indicator?.value,
+    indicatorId: indicators?.[0] || null,
     ...(materials?.length ? { materialIds: materials?.map(({ value }) => value) } : {}),
     ...(t1Suppliers?.length ? { t1SupplierIds: t1Suppliers?.map(({ value }) => value) } : {}),
     ...(producers?.length ? { producerIds: producers?.map(({ value }) => value) } : {}),

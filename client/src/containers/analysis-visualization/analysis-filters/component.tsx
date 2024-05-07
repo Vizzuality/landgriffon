@@ -1,4 +1,5 @@
 import IndicatorsFilter from './indicators';
+import IndicatorsMapFilter from './indicators/map';
 import GroupByFilter from './group-by';
 import YearsRangeFilter from './years-range';
 import MoreFilters from './more-filters';
@@ -12,10 +13,19 @@ const AnalysisFilters: React.FC = () => {
 
   return (
     <div className="inline-flex flex-wrap gap-2">
-      <IndicatorsFilter />
-      {visualizationMode !== 'map' && <GroupByFilter />}
-      {visualizationMode === 'map' && <YearsFilter />}
-      {visualizationMode !== 'map' && <YearsRangeFilter />}
+      {visualizationMode === 'map' && (
+        <>
+          <IndicatorsMapFilter />
+          <YearsFilter />
+        </>
+      )}
+      {visualizationMode !== 'map' && (
+        <>
+          <IndicatorsFilter />
+          <GroupByFilter />
+          <YearsRangeFilter />
+        </>
+      )}
       <MoreFilters />
     </div>
   );

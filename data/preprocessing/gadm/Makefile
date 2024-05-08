@@ -5,13 +5,20 @@ DATADIR=data
 # intermediate files
 WORKDIR=data/tmp
 
-all: checksum
+all: upload_results
 	make clean-workdir
 
-checksum: compress-geo_region
+upload_results: checksum
+	aws s3 cp $(DATADIR)/geo_region.zip $(AWS_S3_BUCKET_URL)/processed/geo_region/
+	rm $(DATADIR)/geo_region.zip $(DATADIR)/geo_region.csv
+	aws s3 sync $(DATADIR) $(AWS_S3_BUCKET_URL)/processed/gadm
+
+
+checksum:
 	@echo "Generating checksums..."
-	cd $(DATADIR) && sha256sum geo_region.zip > geo_region.zip.sha256
-	cd $(DATADIR) && sha256sum gadm36_levels0-2_simp.* > gadm36_levels0-2_simp.sha256
+	cd $(DATADIR) && sha256sum geo_region.zip > ../../../gadm_importer/data_checksums/geo_region.zip.sha256
+	cd $(DATADIR) && sha256sum gadm36_levels0-2_simp.* > ../../../gadm_importer/data_checksums/gadm36_levels0-2_simp.sha256
+
 
 compress-geo_region: geo_region_table
 	@echo "Compressing geo_region.csv..."
@@ -30,7 +37,7 @@ geo_region_table: combine-gadm-file
 	PGPASSWORD=$$API_POSTGRES_PASSWORD && \
 	psql -d $$API_POSTGRES_DATABASE -h $$API_POSTGRES_HOST -p $$API_POSTGRES_PORT -U $$API_POSTGRES_USERNAME -f make_geo_region_table.sql
 
-combine-gadm-file: gadm36_0_simp.shp gadm36_1_simp.shp gadm36_2_simp.shp
+$(DATADIR)/gadm36_levels0-2_simp.shp: gadm36_0_simp.shp gadm36_1_simp.shp gadm36_2_simp.shp
 	@echo "Combining GADM files..."
 	mapshaper -i $(WORKDIR)/gadm36_0_simp.shp $(WORKDIR)/gadm36_1_simp.shp $(WORKDIR)/gadm36_2_simp.shp snap combine-files \
 		-each 'level = this.layer_name == "gadm36_0_simp" ? 0 \
@@ -53,12 +60,12 @@ gadm36_%_simp.shp: decompress-gadm
 	@echo "Simplifying $@ ..."
 	mapshaper $(WORKDIR)/gadm36_$*.shp -simplify 10% -filter-islands min-vertices=3 -filter-slivers -clean -o $(WORKDIR)/$@ force
 
-decompress-gadm: download-gadm
+decompress-gadm: $(WORKDIR)/gadm36_levels_shp.zip
 	@echo "Decompressing GADM file..."
 	unzip -u $(WORKDIR)/gadm36_levels_shp.zip gadm36_0* gadm36_1* gadm36_2* -d $(WORKDIR)
 	rm $(WORKDIR)/gadm36_levels_shp.zip
 
-download-gadm:
+$(WORKDIR)/gadm36_levels_shp.zip:
 	@echo "Downloading GADM file..."
 	mkdir -p $(WORKDIR)
 	cd $(WORKDIR) && curl -O https://data.biogeo.ucdavis.edu/data/gadm3.6/gadm36_levels_shp.zip

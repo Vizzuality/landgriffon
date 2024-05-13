@@ -71,7 +71,7 @@ const IndicatorsMapFilter = () => {
     <Select value={value} onValueChange={handleChange} disabled={!isFetched && isFetching}>
       <SelectTrigger
         className="h-full w-[325px] overflow-ellipsis text-left"
-        data-testid="indicators-filter"
+        data-testid="select-indicators-filter"
       >
         <SelectValue>{indicatorName}</SelectValue>
       </SelectTrigger>

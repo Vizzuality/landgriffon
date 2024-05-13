@@ -14,6 +14,13 @@
               "name": "Cropland expansion in natural ecosystems",
               "description": "The annual average area of cropland expansion into natural ecosystems occuring within a 50km radius attributable to the raw material sourced.",
               "category": "Natural ecosystem conversion",
+              "unit": {
+                  "id": "6970f9b8-eba0-4fee-b6ee-2723ce6604d4",
+                  "name": "hectare per year",
+                  "shortName": "HAR",
+                  "symbol": "ha/yr",
+                  "description": "A unit of count defining the number of units counted in multiples of 100."
+              },
               "status": "active",
               "metadata": {
                   "name": "Cropland expansion in natural ecosystems",
@@ -49,6 +56,13 @@
               "name": "Deforestation footprint (sLUC)",
               "description": "The deforestation footprint (sLUC) indicator quantifies the annual average area of deforestation within a 50km radius attributable to the raw material sourced.",
               "category": "Natural ecosystem conversion",
+              "unit": {
+                  "id": "6970f9b8-eba0-4fee-b6ee-2723ce6604d4",
+                  "name": "hectare per year",
+                  "shortName": "HAR",
+                  "symbol": "ha/yr",
+                  "description": "A unit of count defining the number of units counted in multiples of 100."
+              },
               "status": "active",
               "metadata": {
                   "name": "Deforestation footprint (sLUC)",
@@ -88,6 +102,13 @@
               "name": "Excess freshwater nutrient load assimilation volume",
               "description": "The excess freshwater nutrient load assimilation volume indicator aims to quantify the volume by which nutrient load associated with the raw material sourced must be decreased to achieve the desired instream nutrient concentration.",
               "category": "Water quality",
+              "unit": {
+                  "id": "9c0da38a-6371-4c79-879b-218fc39c4700",
+                  "name": "milions of cubic meters per year",
+                  "shortName": "MM3YR",
+                  "symbol": "Mm3/yr",
+                  "description": "Millions of cubic meters per year"
+              },
               "status": "active",
               "metadata": {
                   "name": "Excess freshwater nutrient load assimilation volume",
@@ -126,6 +147,13 @@
               "name": "Excess surface or groundwater use",
               "description": "The excess surface or groundwater use indicator calculates the volume by which the water consumption associated with the production of the raw material sourced must be decreased to reduce pressure on nature.",
               "category": "Water quantity",
+              "unit": {
+                  "id": "9c0da38a-6371-4c79-879b-218fc39c4700",
+                  "name": "milions of cubic meters per year",
+                  "shortName": "MM3YR",
+                  "symbol": "Mm3/yr",
+                  "description": "Millions of cubic meters per year"
+              },
               "status": "active",
               "metadata": {
                   "name": "Excess surface or groundwater use",
@@ -163,6 +191,13 @@
               "name": "Freshwater nutrient load assimilation volume",
               "description": "The freshwater nutrient load assimilation volume indicator estimates the annual average water volume required to assimilate the nutrient load added by the raw material sourced.",
               "category": "Water quality",
+              "unit": {
+                  "id": "9c0da38a-6371-4c79-879b-218fc39c4700",
+                  "name": "milions of cubic meters per year",
+                  "shortName": "MM3YR",
+                  "symbol": "Mm3/yr",
+                  "description": "Millions of cubic meters per year"
+              },
               "status": "active",
               "metadata": {
                   "name": "Freshwater nutrient load assimilation volume",
@@ -198,6 +233,13 @@
               "name": "Surface or groundwater use",
               "description": "The surface or groundwater use indicator estimates the volume of surface or groundwater that is consumed in the production of the raw material sourced.",
               "category": "Water quantity",
+              "unit": {
+                  "id": "9c0da38a-6371-4c79-879b-218fc39c4700",
+                  "name": "milions of cubic meters per year",
+                  "shortName": "MM3YR",
+                  "symbol": "Mm3/yr",
+                  "description": "Millions of cubic meters per year"
+              },
               "status": "active",
               "metadata": {
                   "name": "Surface or groundwater use",

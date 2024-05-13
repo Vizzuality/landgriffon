@@ -1,6 +1,10 @@
 beforeEach(() => {
   cy.interceptAllRequests();
 
+  cy.intercept('GET', '/api/v1/indicators?filter[status]=active&include=unit&sort=name', {
+    fixture: 'indicators/withUnits',
+  }).as('fetchIndicatorsWithUnits');
+
   cy.intercept('GET', '/api/v1/admin-regions/trees*', {
     statusCode: 200,
     fixture: 'scenario/scenario-location-countries',

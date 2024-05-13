@@ -58,7 +58,7 @@ export const EUDRModal: React.FC = () => {
             <div className="text-xl lg:text-2xl">Find out how it will work for you.</div>
           </div>
           <Link href="/contact">
-            <a className="font-semibold block w-[195px] h-[82px] flex items-center hover:cursor-pointer justify-center border-2 border-white focus-visible:ring-0 focus-visible:outline-0">
+            <a className="font-semibold w-[195px] h-[82px] flex items-center hover:cursor-pointer justify-center border-2 border-white focus-visible:ring-0 focus-visible:outline-0">
               Contact us now
             </a>
           </Link>

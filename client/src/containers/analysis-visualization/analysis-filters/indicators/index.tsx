@@ -106,6 +106,7 @@ const IndicatorsFilter = () => {
   return (
     <div className="h-full w-[235px]">
       <TreeSelect
+        id="indicators"
         multiple
         showSearch
         loading={isFetching}

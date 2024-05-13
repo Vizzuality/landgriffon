@@ -13,7 +13,7 @@ describe('Analysis charts', () => {
     cy.wait(['@fetchIndicators', '@fetchChartRanking']).then(() => {
       cy.get('[data-testid="analysis-chart"]').as('chart');
       cy.get('@chart').should('be.visible');
-      cy.get('@chart').find('.recharts-responsive-container').and('have.length', 5);
+      cy.get('@chart').find('.recharts-responsive-container').and('have.length', 6);
     });
   });
 });

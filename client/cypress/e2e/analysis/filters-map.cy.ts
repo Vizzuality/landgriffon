@@ -1,9 +1,9 @@
 describe('Analysis filters', () => {
   beforeEach(() => {
-    cy.intercept('GET', '/api/v1/indicators?sort=name', {
-      fixture: 'indicators/index',
-    }).as('fetchIndicators');
-    cy.intercept('GET', '/api/v1/indicators?filter[status]=active', {
+    // cy.intercept('GET', '/api/v1/indicators?sort=name', {
+    //   fixture: 'indicators/index',
+    // }).as('fetchIndicators');
+    cy.intercept('GET', '/api/v1/indicators*', {
       fixture: 'indicators/index',
     }).as('fetchActiveIndicators');
     cy.intercept('GET', '/api/v1/h3/years*', {
@@ -27,47 +27,24 @@ describe('Analysis filters', () => {
   });
 
   // Indicators
-  it('not to filter by a disabled indicator', () => {
-    cy.intercept('GET', '/api/v1/indicators*', {
-      statusCode: 200,
-      fixture: 'indicators/index',
-    }).as('fetchIndicators');
-
-    cy.wait('@fetchIndicators').then((interception) => {
-      const firstDisabledIndicator = interception.response.body?.data.find(
-        ({ attributes }) => attributes.status === 'inactive',
+  it('arriving to /analysis/map without params will load the first active indicator available and reflect it in the URL', () => {
+    cy.wait('@fetchActiveIndicators').then((interception) => {
+      const firstIndicator = interception.response.body?.data[0];
+      cy.get('[data-testid="select-indicators-filter"]').should(
+        'contain',
+        firstIndicator?.attributes.name,
       );
-      // opens the select
-      cy.get('[data-testid="select-indicators-filter"]').find('button').click();
-      cy.get('[data-testid="select-indicators-filter"]')
-        .find('li[data-headlessui-state="disabled"]')
-        .first()
-        .should('contain', firstDisabledIndicator?.attributes.name)
-        .should('have.attr', 'aria-disabled', 'true');
-      // url should not include the disabled indicator
-      cy.url().should('not.include', `indicator=${firstDisabledIndicator?.id}`); // Land use
+      cy.url().should('include', `indicators=${firstIndicator?.id}`);
     });
   });
 
-  it('filter by an active indicator', () => {
-    cy.intercept('GET', '/api/v1/indicators*', {
-      statusCode: 200,
-      fixture: 'indicators/index',
-    }).as('fetchIndicators');
-
-    cy.wait('@fetchIndicators').then((interception) => {
-      const activeIndicators = interception.response.body?.data.filter(
-        ({ attributes }) => attributes.status === 'active',
-      );
-      // opens the select
-      cy.get('[data-testid="select-indicators-filter"]').find('button').click();
+  it('in analysis map, selecting an indicator will update the URL accordingly ', () => {
+    cy.wait('@fetchActiveIndicators').then((interception) => {
+      const thirdIndicator = interception.response.body?.data[2];
       cy.get('[data-testid="select-indicators-filter"]')
-        .find('li:not([data-headlessui-state="disabled"])')
-        .eq(1)
-        .should('contain', activeIndicators[1]?.attributes.name)
-        .click();
-      // url should include the active indicator
-      cy.url().should('include', `indicator=${activeIndicators[1]?.id}`);
+        .type('{downarrow}{downarrow}{enter}')
+        .should('contain', thirdIndicator?.attributes.name);
+      cy.url().should('include', `indicators=${thirdIndicator?.id}`);
     });
   });
 

@@ -5,9 +5,9 @@ node_modules
 /api/coverage
 .env
 
-## Data
+## Data folders (except for root "data" module which contains all the data engineering bits
 /data/datasets/**
-/data/h3_data_importer/data
+/data/**/data
 
 infrastructure/base/vars/*
 infrastructure/kubernetes/vars/*

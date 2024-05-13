@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import Link from 'next/link';
 
 import Wrapper from 'containers/wrapper';
 import FadeIn from 'components/fade';
@@ -174,84 +173,6 @@ const EUDRCompliance: React.FC = () => {
                       </ul>
                     </div>
                   </div>
-                </div>
-              </FadeIn>
-
-              <FadeIn>
-                <div className="space-y-8">
-                  <p className="text-2xl font-light leading-relaxed">
-                    LandGriffon supports you in meeting your Climate, Nature and SDG targets:
-                  </p>
-
-                  <div className="flex space-x-2 justify-start">
-                    <div>
-                      <Image
-                        layout="intrinsic"
-                        src="/images/methodology/regulations/SDG_06.png"
-                        alt="SDG 06"
-                        width={136}
-                        height={136}
-                      />
-                    </div>
-
-                    <div>
-                      <Image
-                        layout="intrinsic"
-                        src="/images/methodology/regulations/SDG_08.png"
-                        alt="SDG 08"
-                        width={136}
-                        height={136}
-                      />
-                    </div>
-
-                    <div>
-                      <Image
-                        layout="intrinsic"
-                        src="/images/methodology/regulations/SDG_12.png"
-                        alt="SDG 12"
-                        width={136}
-                        height={136}
-                      />
-                    </div>
-
-                    <div>
-                      <Image
-                        layout="intrinsic"
-                        src="/images/methodology/regulations/SDG_13.png"
-                        alt="SDG 13"
-                        width={136}
-                        height={136}
-                      />
-                    </div>
-
-                    <div>
-                      <Image
-                        layout="intrinsic"
-                        src="/images/methodology/regulations/SDG_14.png"
-                        alt="SDG 14"
-                        width={136}
-                        height={136}
-                      />
-                    </div>
-
-                    <div>
-                      <Image
-                        layout="intrinsic"
-                        src="/images/methodology/regulations/SDG_15.png"
-                        alt="SDG 15"
-                        width={136}
-                        height={136}
-                      />
-                    </div>
-                  </div>
-
-                  <p>
-                    Want to know more about how we can help you align with emerging nature standards
-                    and regulations?{' '}
-                    <Link href="/contact">
-                      <a className="underline font-bold">Contact us</a>
-                    </Link>
-                  </p>
                 </div>
               </FadeIn>
             </div>

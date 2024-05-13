@@ -5,7 +5,7 @@ import Webinar from 'containers/compliance/webinar';
 import DataProviders from 'containers/compliance/data-providers';
 
 import ContactUs from 'containers/compliance/contact-us';
-import SourcingModel from 'containers/compliance/sourcing-model';
+import EUDRTool from 'containers/compliance/eudr-tool';
 
 import ScrollDown from 'containers/scroll-down';
 import EUDRCompliance from './eudr-compliance/component';
@@ -37,7 +37,7 @@ const Compliance: React.FC = () => {
       <Webinar />
 
       <EUDRCompliance />
-      <SourcingModel />
+      <EUDRTool />
       <DataProviders />
       <OpenScience />
 

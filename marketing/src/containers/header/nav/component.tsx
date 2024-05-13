@@ -96,6 +96,23 @@ const HeaderNav: React.FC<NavProps> = ({ open }: NavProps) => {
               </Link>
             </li>
             <li>
+              <Link href="/compliance">
+                <a
+                  className={cx({
+                    'relative block font-light text-2xl lg:text-base py-1 lg:py-7 mx-5 lg:mx-0 px-5 lg:px-0':
+                      true,
+                    'hover:after:absolute hover:after:top-0 hover:after:left-0 hover:after:h-full hover:after:w-2 lg:hover:after:h-1 lg:hover:after:w-full hover:after:bg-green-500':
+                      true,
+                    'text-green-500': pathname === '/compliance',
+                    'after:content-[""] after:absolute after:top-0 after:left-0 after:h-full after:w-2 lg:after:h-1 lg:after:w-full after:bg-green-500':
+                      pathname === '/compliance',
+                  })}
+                >
+                  Compliance
+                </a>
+              </Link>
+            </li>
+            <li>
               <Link href="/about">
                 <a
                   className={cx({

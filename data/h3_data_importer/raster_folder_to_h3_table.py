@@ -1,3 +1,5 @@
+"""Raster to h3 table converter."""
+
 import logging
 import multiprocessing
 from functools import partial
@@ -5,14 +7,15 @@ from io import StringIO
 from pathlib import Path
 
 import click
-import h3ronpy.raster
 import pandas as pd
 import psycopg
 import rasterio as rio
+from h3ronpy import DEFAULT_CELL_COLUMN_NAME
+from h3ronpy.pandas.raster import raster_to_dataframe
 from psycopg import sql
 from rasterio import DatasetReader
 
-from utils import DTYPES_TO_PG, slugify, snakify, get_connection_info
+from utils import DTYPES_TO_PG, get_connection_info, slugify, snakify
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("raster_to_h3")
@@ -54,20 +57,23 @@ def raster_to_h3(reference_raster: Path, h3_resolution: int, raster_file: Path) 
             check_srs(ref, raster)
             check_transform(ref, raster)
 
-        h3 = h3ronpy.raster.raster_to_dataframe(
+        h3 = raster_to_dataframe(
             raster.read(1),
             transform=raster.transform,
             nodata_value=raster.nodata,
             h3_resolution=h3_resolution,
-            compacted=False,
+            compact=False,
             geo=False,
-        ).set_index("h3index")
+        )
+        h3 = h3.rename(columns={DEFAULT_CELL_COLUMN_NAME: "h3index"})
+        h3 = h3.set_index("h3index")
         # we need the h3 index in the hexadecimal form for the DB
         h3.index = pd.Series(h3.index).apply(lambda x: hex(x)[2:])
         return h3.rename(columns={"value": slugify(Path(raster.name).stem)})
 
 
 def create_h3_grid_table(connection: psycopg.Connection, table: str, df: pd.DataFrame):
+    """Create H3 table with schema from df"""
     index = [sql.SQL("h3index h3index PRIMARY KEY")]
     extra = [
         sql.SQL("{} {}").format(sql.Identifier(col), sql.SQL(DTYPES_TO_PG[str(dtype)]))
@@ -82,6 +88,7 @@ def create_h3_grid_table(connection: psycopg.Connection, table: str, df: pd.Data
 
 
 def write_data_to_h3_grid_table(connection: psycopg.Connection, table: str, data: pd.DataFrame):
+    """Copy data to table"""
     with connection.cursor() as cur:
         log.info(f"Writing H3 data to {table}")
         with StringIO() as buffer:
@@ -93,6 +100,7 @@ def write_data_to_h3_grid_table(connection: psycopg.Connection, table: str, data
 
 
 def clean_before_insert(connection: psycopg.Connection, table: str):
+    """Delete h3_data and material_to_h3 entries that will be inserted"""
     with connection.cursor() as cur:
         cur.execute(
             'DELETE FROM "material_to_h3" WHERE "h3DataId" IN (SELECT id FROM "h3_data" WHERE "h3tableName" = %s);',
@@ -104,6 +112,7 @@ def clean_before_insert(connection: psycopg.Connection, table: str):
 def insert_to_h3_master_table(
     connection: psycopg.Connection, table: str, df: pd.DataFrame, h3_res: int, year: int, data_type: str, dataset: str
 ):
+    """Create entry to h3_data that points to the newly created h3 table"""
     with connection.cursor() as cur:
         log.info(f"Inserting data for {table} into h3_data master table.")
         for column_name in df.columns:
@@ -126,6 +135,7 @@ def insert_to_h3_master_table(
 
 
 def update_for_material_indicator(cursor: psycopg.Cursor, dataset: str, column_name: str):
+    """Updates entry in material_indicator_to_h3"""
     cursor.execute('select id from "indicator" where "nameCode" = %s', (dataset,))
     indicator_id = cursor.fetchone()
     if not indicator_id:
@@ -159,6 +169,7 @@ def update_for_material_indicator(cursor: psycopg.Cursor, dataset: str, column_n
 
 
 def update_for_indicator(cursor: psycopg.Cursor, dataset: str, column_name: str):
+    """Updates h3_data with indicatorId"""
     cursor.execute('select id from "indicator" where "nameCode" = %s', (dataset,))
     indicator_id = cursor.fetchone()
     if not indicator_id:
@@ -170,6 +181,7 @@ def update_for_indicator(cursor: psycopg.Cursor, dataset: str, column_name: str)
 
 
 def update_for_material(cursor: psycopg.Cursor, dataset: str, column_name: str, data_type: str):
+    """Delete and insert for material_to_h3"""
     select_query = sql.SQL('SELECT id FROM "h3_data" WHERE "h3columnName" = {}').format(sql.Literal(column_name))
     cursor.execute(select_query)
     h3_data_id = cursor.fetchone()

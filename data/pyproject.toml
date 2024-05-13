@@ -1,4 +1,5 @@
 [tool.ruff]
+src = ["h3_data_importer"]
 line-length = 120
 select = [
     "D1",   # pydocstyle errors

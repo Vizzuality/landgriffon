@@ -4,7 +4,7 @@ CREATE EXTENSION IF NOT EXISTS ltree;
 -- 1. Upsert from gadm to geo_region converting geometry to H3
 TRUNCATE TABLE geo_region CASCADE;
 
-\copy geo_region FROM 'geo_region.csv' WITH (FORMAT csv, HEADER, FORCE_NULL ("h3Compact", "h3Flat"));
+\copy geo_region("id", "h3Compact", "h3Flat", "h3FlatLength", "name", "theGeom") FROM 'geo_region.csv' WITH (FORMAT csv, HEADER, FORCE_NULL ("h3Compact", "h3Flat"));
 
 -- 2. Insert into admin_region referencing geo_region
 BEGIN;

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 
 import Hero from 'containers/compliance/hero';
-import Webinar from 'containers/compliance/webinar';
+import Video from 'containers/compliance/video';
 
 import ContactUs from 'containers/compliance/contact-us';
 import EUDRTool from 'containers/compliance/eudr-tool';
@@ -37,7 +37,7 @@ const Compliance: React.FC = () => {
     <>
       <ScrollDown theme="light" />
       <Hero />
-      <Webinar />
+      <Video />
 
       <EUDRCompliance />
       <EUDRTool />

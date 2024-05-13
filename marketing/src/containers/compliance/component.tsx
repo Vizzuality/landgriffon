@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 
 import Hero from 'containers/compliance/hero';
 import Webinar from 'containers/compliance/webinar';
-import DataProviders from 'containers/compliance/data-providers';
 
 import ContactUs from 'containers/compliance/contact-us';
 import EUDRTool from 'containers/compliance/eudr-tool';
@@ -10,6 +9,10 @@ import EUDRTool from 'containers/compliance/eudr-tool';
 import ScrollDown from 'containers/scroll-down';
 import EUDRCompliance from './eudr-compliance/component';
 import OpenScience from './open-science/component';
+import ScienceBasedTargets from './science-based-targets';
+import SBTNandTNFDOverview from './sbtn-and-tnfd-overview';
+import ImpactBeyondCompliance from './impact-beyond-compliance';
+import Footer from './footer';
 
 const Compliance: React.FC = () => {
   useEffect(() => {
@@ -38,10 +41,13 @@ const Compliance: React.FC = () => {
 
       <EUDRCompliance />
       <EUDRTool />
-      <DataProviders />
       <OpenScience />
 
       <ContactUs />
+      <SBTNandTNFDOverview />
+      <ScienceBasedTargets />
+      <ImpactBeyondCompliance />
+      <Footer />
     </>
   );
 };

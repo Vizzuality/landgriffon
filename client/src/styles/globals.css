@@ -135,11 +135,11 @@
 }
 
 .rc-tree .rc-tree-node-content-wrapper {
-  @apply flex flex-row w-full gap-1 overflow-hidden truncate text-ellipsis place-items-center;
+  @apply flex flex-1 gap-1 min-w-0 items-center;
 }
 
 .rc-tree .rc-tree-title {
-  @apply w-full text-gray-900;
+  @apply text-gray-900 overflow-hidden overflow-ellipsis;
 }
 
 .rc-tree .rc-tree-indent-unit {

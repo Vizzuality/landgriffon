@@ -34,7 +34,7 @@ const IndicatorsMapFilter = () => {
     const categoryGroups = categories.map((category) => {
       const indicators = data?.filter((indicator) => indicator.category === category);
       const categoryOptions = indicators.map((indicator) => ({
-        label: indicator.name,
+        label: indicator.metadata?.short_name,
         value: indicator.id,
         disabled: indicator.status === 'inactive',
       }));
@@ -46,7 +46,7 @@ const IndicatorsMapFilter = () => {
 
   const indicatorName = useMemo(() => {
     const indicator = data?.find((indicator) => indicator.id === value);
-    return indicator?.name;
+    return indicator?.metadata?.short_name;
   }, [data, value]);
 
   const handleChange = useCallback(
@@ -61,9 +61,11 @@ const IndicatorsMapFilter = () => {
       return setValue(syncedIndicators?.[0]);
     }
 
-    if (options?.at(0)?.options?.at(0)?.value) {
-      setSyncedIndicators([options?.at(0)?.options?.at(0)?.value]);
-      setValue(options?.at(0)?.options?.at(0)?.value);
+    const firstOption = options?.at(0)?.options?.at(0)?.value;
+
+    if (firstOption) {
+      setSyncedIndicators([firstOption]);
+      setValue(firstOption);
     }
   }, [options, syncedIndicators, indicatorName, setSyncedIndicators]);
 

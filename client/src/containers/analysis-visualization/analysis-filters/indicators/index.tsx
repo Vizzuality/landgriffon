@@ -33,9 +33,8 @@ const IndicatorsFilter = () => {
       const categoryOptions = indicators.map(
         (indicator) =>
           ({
-            label: indicator.name,
+            label: indicator.metadata?.short_name,
             value: indicator.id,
-            // disabled: indicator.status === 'inactive',
           }) satisfies TreeSelectOption<(typeof indicator)['id']>,
       );
       return {
@@ -104,7 +103,7 @@ const IndicatorsFilter = () => {
   }, [initialSelectedOptions]);
 
   return (
-    <div className="h-full w-[235px]">
+    <div className="h-full w-[325px]">
       <TreeSelect
         id="indicators"
         multiple
@@ -115,6 +114,7 @@ const IndicatorsFilter = () => {
         current={selectedOptions}
         placeholder="All indicators"
         maxBadges={0}
+        selectedBadgeLabel={`indicator${selectedOptions?.length > 1 ? 's' : ''} selected`}
       />
     </div>
   );

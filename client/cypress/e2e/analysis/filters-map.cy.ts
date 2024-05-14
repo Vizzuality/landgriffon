@@ -1,8 +1,5 @@
 describe('Analysis filters', () => {
   beforeEach(() => {
-    // cy.intercept('GET', '/api/v1/indicators?sort=name', {
-    //   fixture: 'indicators/index',
-    // }).as('fetchIndicators');
     cy.intercept('GET', '/api/v1/indicators*', {
       fixture: 'indicators/index',
     }).as('fetchActiveIndicators');
@@ -32,7 +29,7 @@ describe('Analysis filters', () => {
       const firstIndicator = interception.response.body?.data[0];
       cy.get('[data-testid="select-indicators-filter"]').should(
         'contain',
-        firstIndicator?.attributes.name,
+        firstIndicator?.attributes.metadata.short_name,
       );
       cy.url().should('include', `indicators=${firstIndicator?.id}`);
     });
@@ -43,7 +40,7 @@ describe('Analysis filters', () => {
       const thirdIndicator = interception.response.body?.data[2];
       cy.get('[data-testid="select-indicators-filter"]')
         .type('{downarrow}{downarrow}{enter}')
-        .should('contain', thirdIndicator?.attributes.name);
+        .should('contain', thirdIndicator?.attributes.metadata.short_name);
       cy.url().should('include', `indicators=${thirdIndicator?.id}`);
     });
   });

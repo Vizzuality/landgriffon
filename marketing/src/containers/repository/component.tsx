@@ -12,6 +12,7 @@ import Regulations from './regulations/component';
 import Webinar from './webinar/component';
 import DatasetReleases from './releases/component';
 import OpenScience from './open-science/component';
+import Podcast from './podcast';
 
 const Repository: React.FC = () => {
   useEffect(() => {
@@ -40,6 +41,7 @@ const Repository: React.FC = () => {
       <Regulations />
       <DatasetReleases />
       <Webinar />
+      <Podcast />
       <SourcingModel />
       <DataProviders />
       <OpenScience />

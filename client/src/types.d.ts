@@ -101,7 +101,7 @@ export interface IndicatorMetadata {
   citation: string[];
   'name code': string;
   resolution: string;
-  'short name': string;
+  short_name: string;
   description: string;
   'indicator type': Autocomplete<`${'landscape' | 'farm'}-level`>;
   'date of content': `${number}-${number}`;

@@ -61,6 +61,7 @@ const InnerTreeSelect = <IsMulti extends boolean>(
     current: currentRaw,
     loading,
     maxBadges = 5,
+    selectedBadgeLabel = 'more selected',
     multiple,
     options = [],
     placeholder = '',
@@ -275,6 +276,11 @@ const InnerTreeSelect = <IsMulti extends boolean>(
     [checkedKeys, multiple, onChange, options],
   );
 
+  const handleRemoveAll = useCallback(() => {
+    setCheckedKeys([]);
+    onChange?.([] as TreeSelectProps<IsMulti>['current']);
+  }, [onChange]);
+
   // Current selection
   useEffect(() => {
     // Clear selection when current is empty
@@ -430,13 +436,18 @@ const InnerTreeSelect = <IsMulti extends boolean>(
                   </Badge>
                 ))}
               {!badgesToShow && currentOptions?.length > 0 && (
-                <Badge className="whitespace-nowrap text-xs" theme="big">
-                  {currentOptions.length - badgesToShow} selected
+                <Badge
+                  className="whitespace-nowrap text-xs"
+                  theme="big"
+                  removable
+                  onClick={handleRemoveAll}
+                >
+                  {currentOptions.length - badgesToShow} {selectedBadgeLabel}
                 </Badge>
               )}
               {currentOptions?.length > badgesToShow && Boolean(badgesToShow) && (
                 <Badge className="whitespace-nowrap text-xs" theme="big">
-                  {currentOptions.length - badgesToShow} more selected
+                  {currentOptions.length - badgesToShow} {selectedBadgeLabel}
                 </Badge>
               )}
             </>

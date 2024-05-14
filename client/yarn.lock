@@ -7428,7 +7428,7 @@ __metadata:
     prettier: "npm:^3.1.1"
     prettier-plugin-tailwindcss: "npm:^0.5.10"
     query-string: "npm:8.1.0"
-    rc-tree: "npm:5.7.0"
+    rc-tree: "npm:5.8.7"
     react: "npm:18.2.0"
     react-day-picker: "npm:8.10.0"
     react-dom: "npm:18.2.0"
@@ -9183,19 +9183,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rc-tree@npm:5.7.0":
-  version: 5.7.0
-  resolution: "rc-tree@npm:5.7.0"
+"rc-tree@npm:5.8.7":
+  version: 5.8.7
+  resolution: "rc-tree@npm:5.8.7"
   dependencies:
     "@babel/runtime": "npm:^7.10.1"
     classnames: "npm:2.x"
     rc-motion: "npm:^2.0.1"
     rc-util: "npm:^5.16.1"
-    rc-virtual-list: "npm:^3.4.8"
+    rc-virtual-list: "npm:^3.5.1"
   peerDependencies:
     react: "*"
     react-dom: "*"
-  checksum: 10/9ac1382db60fb634695b0f08adeeea865c3d4f29e9a0b302733f933932d3b09f622f2a7eec3bb63d756a2f23a57f30b90379d68a6e62600875e9a80be5dd27f7
+  checksum: 10/d51b1bdc13408e9f6bed0af5ed312d50923a011139ad8b7166dd4f749afda819d80fad9a063347e2cbfbb9555e09f52976cd9117a1af54f9b5933a0bc49df9b1
   languageName: node
   linkType: hard
 
@@ -9227,18 +9227,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rc-virtual-list@npm:^3.4.8":
-  version: 3.4.11
-  resolution: "rc-virtual-list@npm:3.4.11"
+"rc-util@npm:^5.36.0":
+  version: 5.39.3
+  resolution: "rc-util@npm:5.39.3"
+  dependencies:
+    "@babel/runtime": "npm:^7.18.3"
+    react-is: "npm:^18.2.0"
+  peerDependencies:
+    react: ">=16.9.0"
+    react-dom: ">=16.9.0"
+  checksum: 10/55d7fe0664fbc025473f678ac8db874bcb6e1788f7b2dc785d90713ee3cd25d2a6706a98d456c5fd60e742220a3f52f45cca888d9c322787fc3952a0239737b1
+  languageName: node
+  linkType: hard
+
+"rc-virtual-list@npm:^3.5.1":
+  version: 3.12.0
+  resolution: "rc-virtual-list@npm:3.12.0"
   dependencies:
     "@babel/runtime": "npm:^7.20.0"
     classnames: "npm:^2.2.6"
     rc-resize-observer: "npm:^1.0.0"
-    rc-util: "npm:^5.15.0"
+    rc-util: "npm:^5.36.0"
   peerDependencies:
-    react: "*"
-    react-dom: "*"
-  checksum: 10/e88e19f74c8759637e690544504da626ae610b6be7df9f4e2871b5b6cdb566d42c0295547bfbd2bbb450737794c20a04330f2bc5ac4d2fa68512d7038bbb057c
+    react: ">=16.9.0"
+    react-dom: ">=16.9.0"
+  checksum: 10/55b46da1e94b5da220e4de1b160efc5df4be4fd4c365b508de45a3df6aa9ac62e7d2671f0385c9c712a5019348e43923124877e0923b609837caef1c9a44e197
   languageName: node
   linkType: hard
 
@@ -9323,6 +9336,13 @@ __metadata:
   version: 18.2.0
   resolution: "react-is@npm:18.2.0"
   checksum: 10/200cd65bf2e0be7ba6055f647091b725a45dd2a6abef03bf2380ce701fd5edccee40b49b9d15edab7ac08a762bf83cb4081e31ec2673a5bfb549a36ba21570df
+  languageName: node
+  linkType: hard
+
+"react-is@npm:^18.2.0":
+  version: 18.3.1
+  resolution: "react-is@npm:18.3.1"
+  checksum: 10/d5f60c87d285af24b1e1e7eaeb123ec256c3c8bdea7061ab3932e3e14685708221bf234ec50b21e10dd07f008f1b966a2730a0ce4ff67905b3872ff2042aec22
   languageName: node
   linkType: hard
 

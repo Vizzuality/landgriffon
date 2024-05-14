@@ -26,11 +26,11 @@ const SelectTrigger = React.forwardRef<
     <SelectPrimitive.Icon asChild>
       <>
         <ChevronDownIcon
-          className="hidden h-4 w-4 text-gray-900 group-data-[state=closed]:block"
+          className="hidden h-4 min-h-4 w-4 min-w-4 text-gray-900 group-data-[state=closed]:block"
           aria-hidden="true"
         />
         <ChevronUpIcon
-          className="hidden h-4 w-4 text-gray-900 group-data-[state=open]:block"
+          className="hidden h-4 min-h-4 w-4 min-w-4 text-gray-900 group-data-[state=open]:block"
           aria-hidden="true"
         />
       </>

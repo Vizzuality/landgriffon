@@ -9,6 +9,7 @@ import WelcomeModal from 'containers/home/welcome-modal';
 
 import ScrollDown from 'containers/scroll-down';
 import Regulations from './regulations/component';
+import Webinar from './webinar/component';
 import DatasetReleases from './releases/component';
 import OpenScience from './open-science/component';
 
@@ -38,6 +39,7 @@ const Repository: React.FC = () => {
 
       <Regulations />
       <DatasetReleases />
+      <Webinar />
       <SourcingModel />
       <DataProviders />
       <OpenScience />

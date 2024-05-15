@@ -7,11 +7,10 @@ from io import StringIO
 from pathlib import Path
 
 import click
+import h3ronpy.raster
 import pandas as pd
 import psycopg
 import rasterio as rio
-from h3ronpy import DEFAULT_CELL_COLUMN_NAME
-from h3ronpy.pandas.raster import raster_to_dataframe
 from psycopg import sql
 from rasterio import DatasetReader
 
@@ -57,16 +56,14 @@ def raster_to_h3(reference_raster: Path, h3_resolution: int, raster_file: Path) 
             check_srs(ref, raster)
             check_transform(ref, raster)
 
-        h3 = raster_to_dataframe(
+        h3 = h3ronpy.raster.raster_to_dataframe(
             raster.read(1),
             transform=raster.transform,
             nodata_value=raster.nodata,
             h3_resolution=h3_resolution,
-            compact=False,
+            compacted=False,
             geo=False,
-        )
-        h3 = h3.rename(columns={DEFAULT_CELL_COLUMN_NAME: "h3index"})
-        h3 = h3.set_index("h3index")
+        ).set_index("h3index")
         # we need the h3 index in the hexadecimal form for the DB
         h3.index = pd.Series(h3.index).apply(lambda x: hex(x)[2:])
         return h3.rename(columns={"value": slugify(Path(raster.name).stem)})

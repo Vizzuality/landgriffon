@@ -8,7 +8,6 @@ all: upload_results
 
 upload_results: checksum
 	aws s3 cp $(WORKDIR)/geo_region.zip $(AWS_S3_BUCKET_URL)/processed/geo_region/
-	#rm $(WORKDIR)/geo_region.zip $(WORKDIR)/geo_region.csv
 	aws s3 sync --exclude="*" --include="gadm36_levels0-2_simp.*" $(WORKDIR) $(AWS_S3_BUCKET_URL)/processed/gadm
 
 

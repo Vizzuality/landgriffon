@@ -31,7 +31,7 @@ from typing import List, Union
 import fiona
 import geopandas as gpd
 import pandas as pd
-from h3ronpy.pandas.vector import geodataframe_to_cells
+from h3ronpy import vector
 from psycopg2 import sql
 from psycopg2.extensions import connection
 from psycopg2.pool import ThreadedConnectionPool
@@ -89,7 +89,7 @@ def vector_file_to_h3dataframe(
     """Converts a vector file to a GeoDataFrame"""
     log.info(f"Reading {str(filename)} and converting geometry to H3...")
     gdf = gpd.GeoDataFrame.from_features(records(filename.as_posix(), [column], layer=layer)).set_crs("EPSG:4326")
-    h3df = geodataframe_to_cells(gdf, h3_res).set_index("h3index")  # type: ignore
+    h3df = vector.geodataframe_to_h3(gdf, h3_res).set_index("h3index")  # type: ignore
     # check for duplicated h3 indices since the aqueduct data set generates duplicated h3 indices
     # we currently don't know why this happens and further investigation is needed
     # but for now we just drop the duplicates if it is safe to do so (i.e. the dupes have the same value)
@@ -215,14 +215,16 @@ if __name__ == "__main__":
     parser.add_argument("--layer", help="Layer name. Only if file has multiple layers (ie, a GDB)", default=None)
     args = parser.parse_args()
 
-    main(
-        args.folder,
-        args.table,
-        args.column,
-        args.dataset,
-        args.category,
-        args.year,
-        args.h3res,
-        args.indicator,
-        args.layer,
+    raise SystemExit(
+        main(
+            args.folder,
+            args.table,
+            args.column,
+            args.dataset,
+            args.category,
+            args.year,
+            args.h3res,
+            args.indicator,
+            args.layer,
+        )
     )

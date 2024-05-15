@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 #########################
 # About this var
 # This is a rough controller of how many parallel system threads you'll have

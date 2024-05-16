@@ -84,8 +84,14 @@ const ScienceBasedTargets: React.FC = () => {
                 ))}
               </ul>
             </FadeIn>
-            <div className="w-full max-h-[459px] aspect-auto"></div>
-            <Image src="/images/compliance/forest.png" alt="Forest" layout="fill" />
+            <div className="relative w-full h-full aspect-auto"></div>
+            <Image
+              src="/images/compliance/forest.png"
+              alt="Forest"
+              layout="fill"
+              objectFit="cover"
+              priority
+            />
           </div>
         </div>
       </Wrapper>

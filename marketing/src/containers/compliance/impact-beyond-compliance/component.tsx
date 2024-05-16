@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 const ImpactBeyondCompliance: React.FC = () => {
   return (
-    <section className="relative pt-12 py-36 space-y-12 bg-blue-600 md:space-y-64 md:pt-36 md:pb-[360px]">
+    <section className="relative pt-12 pb-36 space-y-12 bg-blue-600 md:space-y-64 md:pt-36 md:pb-[320px]">
       <Wrapper>
         <div className="space-y-10 text-white md:space-y-20">
           <FadeIn>
@@ -14,8 +14,8 @@ const ImpactBeyondCompliance: React.FC = () => {
           </FadeIn>
 
           <FadeIn>
-            <div className="space-y-12 relative">
-              <p className="z-10">
+            <div className="space-y-12 relative text-2xl">
+              <p>
                 Sustainability leaders recognize that compliance for compliance&apos;s sake falls
                 short of realizing the full potential for positive change. Embracing sustainability
                 not only helps in tackling climate change and ecological challenges but also
@@ -31,7 +31,7 @@ const ImpactBeyondCompliance: React.FC = () => {
                 and opportunities within their supply chains.
               </p>
 
-              <p className="z-10">
+              <p>
                 Time to harness technology to develop holistic sustainability strategies and
                 confidently showcase your company&apos;s impactful contributions to a better world. 
               </p>

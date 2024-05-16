@@ -7,7 +7,7 @@ const ContactUs: FC = () => {
   return (
     <section className="bg-orange-500 xl:bg-white">
       <Wrapper>
-        <div className="relative z-10 py-14 bg-orange-500 xl:-mt-10 xl:px-20 xl:-mx-20 space-y-10">
+        <div className="relative z-10 py-14 bg-orange-500 xl:-mt-14 xl:px-20 xl:-mx-20 space-y-10">
           <h2 className="text-4xl font-black uppercase md:text-6xl font-display">
           Drive positive impact with your supply chain.
           </h2>

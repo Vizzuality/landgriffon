@@ -12,12 +12,12 @@ const EUDRCompliance: React.FC = () => {
             <div className="space-y-10">
               <FadeIn>
                 <h2 className="w-5/12 text-4xl font-black uppercase md:text-6xl font-display">
-                  UDR Compliance.
+                  EUDR Compliance
                 </h2>
               </FadeIn>
 
               <FadeIn>
-                <div className="space-y-6">
+                <div className="space-y-28">
                   <p className="text-2xl font-light leading-relaxed">
                     <a
                       href="https://www.vizzuality.com/"
@@ -43,135 +43,132 @@ const EUDRCompliance: React.FC = () => {
                     high-resolution satellite imagery, our tool ensures accuracy and reliability in
                     deforestation assessmen and decision-making..
                   </p>
+                  <div className="space-y-5">
+                    <h4 className="text-xs">Base data from:</h4>
 
-                  <div className="w-full">
-                    <div className="space-y-5">
-                      <h4 className="text-xs">Base data from:</h4>
+                    <ul className="px-5 grid grid-cols-2 gap-5 md:grid-cols-4 md:gap-20 lg:gap-20">
+                      <li className="flex items-center justify-center">
+                        <a href="https://www.esa.int/" target="_blank" rel="noopener noreferrer">
+                          <Image
+                            layout="intrinsic"
+                            priority
+                            src="/images/logos/ESA_logo.png"
+                            alt="ESA"
+                            width={160}
+                            height={58.07}
+                          />
+                        </a>
+                      </li>
+                      <li className="flex items-center justify-center">
+                        <a
+                          href="https://www.wur.nl/en/education-programmes/wageningen-university.htm"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Image
+                            layout="intrinsic"
+                            priority
+                            src="/images/logos/wur_logo.png"
+                            alt="Wageningen University & Reseacrh"
+                            width={228}
+                            height={80}
+                          />
+                        </a>
+                      </li>
+                      <li className="flex items-center justify-center">
+                        <a
+                          href="https://www.globalforestwatch.org/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Image
+                            layout="intrinsic"
+                            priority
+                            src="/images/logos/gfw.png"
+                            alt="GFW"
+                            width={120}
+                            height={122}
+                          />
+                        </a>
+                      </li>
+                      <li className="flex items-center justify-center">
+                        <a
+                          href="https://www.fao.org/faostat/en/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Image
+                            layout="intrinsic"
+                            priority
+                            src="/images/logos/FAO.png"
+                            alt="FAO"
+                            width={120}
+                            height={122.5}
+                          />
+                        </a>
+                      </li>
 
-                      <ul className="grid grid-cols-2 gap-5 md:grid-cols-4 md:gap-20 lg:gap-20">
-                        <li className="flex items-center justify-center">
-                          <a href="https://www.esa.int/" target="_blank" rel="noopener noreferrer">
-                            <Image
-                              layout="intrinsic"
-                              priority
-                              src="/images/logos/ESA_logo.png"
-                              alt="ESA"
-                              width={160}
-                              height={58.07}
-                            />
-                          </a>
-                        </li>
-                        <li className="flex items-center justify-center">
-                          <a
-                            href="https://www.wur.nl/en/education-programmes/wageningen-university.htm"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Image
-                              layout="intrinsic"
-                              priority
-                              src="/images/logos/wur_logo.png"
-                              alt="Wageningen University & Reseacrh"
-                              width={228}
-                              height={80}
-                            />
-                          </a>
-                        </li>
-                        <li className="flex items-center justify-center">
-                          <a
-                            href="https://www.globalforestwatch.org/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Image
-                              layout="intrinsic"
-                              priority
-                              src="/images/logos/gfw.png"
-                              alt="GFW"
-                              width={120}
-                              height={122}
-                            />
-                          </a>
-                        </li>
-                        <li className="flex items-center justify-center">
-                          <a
-                            href="https://www.fao.org/faostat/en/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Image
-                              layout="intrinsic"
-                              priority
-                              src="/images/logos/FAO.png"
-                              alt="FAO"
-                              width={120}
-                              height={122.5}
-                            />
-                          </a>
-                        </li>
-
-                        <li className="flex items-center justify-center">
-                          <a
-                            href="https://www.unep-wcmc.org/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Image
-                              layout="intrinsic"
-                              priority
-                              src="/images/logos/WCMC_logo.png"
-                              alt="World Conservation Monitoring Centre"
-                              width={120}
-                              height={122.5}
-                            />
-                          </a>
-                        </li>
-                        <li className="flex items-center justify-center">
-                          <a href="https://glad.umd.edu/" target="_blank" rel="noopener noreferrer">
-                            <Image
-                              layout="intrinsic"
-                              priority
-                              src="/images/logos/GLAD_logo.png"
-                              alt="GLAD | Global Land Analysis & Discovery"
-                              width={214}
-                              height={49}
-                            />
-                          </a>
-                        </li>
-                        <li className="flex items-center justify-center">
-                          <a
-                            href="https://www.forestdatapartnership.org/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Image
-                              layout="intrinsic"
-                              priority
-                              src="/images/logos/Forest_Data_Partnership_logo.png"
-                              alt="Forest data Partnership"
-                              width={175}
-                              height={49}
-                            />
-                          </a>
-                        </li>
-                        <li className="flex items-center justify-center">
-                          <a
-                            href="https://www.forestdatapartnership.org/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Image
-                              layout="intrinsic"
-                              priority
-                              src="/images/logos/JRC_logo.png"
-                              alt="Forest data Partnership"
-                              width={151}
-                              height={68}
-                            />
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
+                      <li className="flex items-center justify-center">
+                        <a
+                          href="https://www.unep-wcmc.org/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Image
+                            layout="intrinsic"
+                            priority
+                            src="/images/logos/WCMC_logo.png"
+                            alt="World Conservation Monitoring Centre"
+                            width={120}
+                            height={122.5}
+                          />
+                        </a>
+                      </li>
+                      <li className="flex items-center justify-center">
+                        <a href="https://glad.umd.edu/" target="_blank" rel="noopener noreferrer">
+                          <Image
+                            layout="intrinsic"
+                            priority
+                            src="/images/logos/GLAD_logo.png"
+                            alt="GLAD | Global Land Analysis & Discovery"
+                            width={214}
+                            height={49}
+                          />
+                        </a>
+                      </li>
+                      <li className="flex items-center justify-center">
+                        <a
+                          href="https://www.forestdatapartnership.org/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Image
+                            layout="intrinsic"
+                            priority
+                            src="/images/logos/Forest_Data_Partnership_logo.png"
+                            alt="Forest data Partnership"
+                            width={175}
+                            height={49}
+                          />
+                        </a>
+                      </li>
+                      <li className="flex items-center justify-center">
+                        <a
+                          href="https://www.forestdatapartnership.org/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Image
+                            layout="intrinsic"
+                            priority
+                            src="/images/logos/JRC_logo.png"
+                            alt="Forest data Partnership"
+                            width={151}
+                            height={68}
+                          />
+                        </a>
+                      </li>
+                    </ul>
                   </div>
                 </div>
               </FadeIn>

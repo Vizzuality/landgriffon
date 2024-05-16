@@ -4,11 +4,10 @@ import Wrapper from 'containers/wrapper';
 import FadeIn from 'components/fade';
 
 import { EUDRToolFeatures1, EUDRToolFeatures2 } from './constants';
-import Fade from 'components/fade';
 
 const Card = ({ index, title, description }) => (
   <div className="space-y-2">
-    <span className="text-6xl font-bold text-blue-500 tracking-[-1.12px]">{index}</span>
+    <span className="text-6xl font-bold text-blue-500 -tracking-[0.02em]">{index}</span>
     <h3 className="text-3xl font-bold text-white">{title}</h3>
     <p className="text-white">{description}</p>
   </div>
@@ -26,7 +25,7 @@ const EUDRTool: React.FC = () => {
           </FadeIn>
 
           <FadeIn>
-            <div className="grid grid-cols-3 w-full gap-[74px]">
+            <div className="grid grid-cols-3 w-full gap-x-14">
               {EUDRToolFeatures1.map((feature) => (
                 <Card key={feature.title} {...feature} />
               ))}
@@ -56,7 +55,7 @@ const EUDRTool: React.FC = () => {
           </FadeIn>
 
           <FadeIn>
-            <div className="grid grid-cols-3 w-full gap-[74px]">
+            <div className="grid grid-cols-3 w-full gap-x-14">
               {EUDRToolFeatures2.map((feature) => (
                 <Card key={feature.title} {...feature} />
               ))}

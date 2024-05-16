@@ -2,13 +2,11 @@ import React, { useEffect } from 'react';
 
 import Hero from 'containers/compliance/hero';
 import Video from 'containers/compliance/video';
-
 import ContactUs from 'containers/compliance/contact-us';
 import EUDRTool from 'containers/compliance/eudr-tool';
 
 import ScrollDown from 'containers/scroll-down';
 import EUDRCompliance from './eudr-compliance/component';
-import OpenScience from './open-science/component';
 import ScienceBasedTargets from './science-based-targets';
 import SBTNandTNFDOverview from './sbtn-and-tnfd-overview';
 import ImpactBeyondCompliance from './impact-beyond-compliance';
@@ -38,11 +36,8 @@ const Compliance: React.FC = () => {
       <ScrollDown theme="light" />
       <Hero />
       <Video />
-
       <EUDRCompliance />
       <EUDRTool />
-      <OpenScience />
-
       <ContactUs />
       <SBTNandTNFDOverview />
       <ScienceBasedTargets />

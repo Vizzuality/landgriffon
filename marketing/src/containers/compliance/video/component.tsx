@@ -27,10 +27,6 @@ const Video: FC = () => {
   }, []);
 
   useEffect(() => {
-    if (videoRef.current && inView) {
-      videoRef.current.play();
-    }
-
     if (videoRef.current && !inView) {
       videoRef.current.pause();
     }
@@ -76,13 +72,13 @@ const Video: FC = () => {
         </Wrapper>
       </div>
 
-      <div className="flex flex-col justify-end overflow-hidden relative z-10 aspect-[1440/580] -mt-80 h-[696px]">
+      <div className="flex flex-col justify-end overflow-hidden relative z-10 -mt-96 h-[696px]">
         <Image
           alt="field"
           src="/images/compliance/hero_1.jpg"
           layout="fill"
           objectFit="fill"
-          objectPosition="bottom"
+          objectPosition="top"
         />
       </div>
     </section>

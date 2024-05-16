@@ -40,7 +40,7 @@ const constants = [
 
 const ScienceBasedTargets: React.FC = () => {
   return (
-    <section className="relative py-12 space-y-12 bg-blue-600 md:space-y-64 md:py-36 overflow-hidden">
+    <section className="relative py-12 space-y-12 bg-blue-600 md:space-y-64 md:py-8 overflow-hidden">
       <Wrapper>
         <div className="space-y-10 text-white md:space-y-20">
           <FadeIn>
@@ -84,17 +84,20 @@ const ScienceBasedTargets: React.FC = () => {
                 ))}
               </ul>
             </FadeIn>
-            <div className="relative w-full h-full aspect-auto"></div>
-            <Image
-              src="/images/compliance/forest.png"
-              alt="Forest"
-              layout="fill"
-              objectFit="cover"
-              priority
-            />
           </div>
         </div>
       </Wrapper>
+      <FadeIn>
+        <div className="w-screen min-h-[459px] h-auto relative aspect-auto">
+          <Image
+            src="/images/compliance/forest.png"
+            alt="Forest"
+            layout="fill"
+            objectFit="cover"
+            objectPosition="top"
+          />
+        </div>
+      </FadeIn>
     </section>
   );
 };

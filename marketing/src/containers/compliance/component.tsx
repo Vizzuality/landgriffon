@@ -5,7 +5,6 @@ import Video from 'containers/compliance/video';
 import ContactUs from 'containers/compliance/contact-us';
 import EUDRTool from 'containers/compliance/eudr-tool';
 
-import ScrollDown from 'containers/scroll-down';
 import EUDRCompliance from './eudr-compliance/component';
 import ScienceBasedTargets from './science-based-targets';
 import SBTNandTNFDOverview from './sbtn-and-tnfd-overview';
@@ -33,7 +32,6 @@ const Compliance: React.FC = () => {
 
   return (
     <>
-      <ScrollDown theme="light" />
       <Hero />
       <Video />
       <EUDRCompliance />

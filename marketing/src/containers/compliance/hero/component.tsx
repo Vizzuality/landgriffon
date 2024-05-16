@@ -2,10 +2,7 @@ import { PauseIcon, PlayIcon } from '@heroicons/react/solid';
 import Wrapper from 'containers/wrapper';
 
 import { motion } from 'framer-motion';
-import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import Icon from 'components/icon';
-import DOWNLOAD_SVG from 'svgs/ui/icn_download.svg?sprite';
 
 const Hero: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>();

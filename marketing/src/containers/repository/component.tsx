@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 
-import Hero from 'containers/repository/hero';
-import DataProviders from 'containers/repository/data-providers';
-
-import Resources from './resources';
 import Newsletter from 'containers/newsletter';
+import ScrollDown from 'containers/scroll-down';
+
+import Hero from './hero';
+import Resources from './resources';
+import DiscoverOurJourney from './discover-our-journey';
 
 const Repository: React.FC = () => {
   useEffect(() => {
@@ -27,9 +28,10 @@ const Repository: React.FC = () => {
 
   return (
     <>
+      <ScrollDown theme="light" />
       <Hero />
       <Resources />
-      <DataProviders />
+      <DiscoverOurJourney />
       <Newsletter />
     </>
   );

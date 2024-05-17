@@ -7,6 +7,7 @@ import Carousel from 'components/carousel/component';
 import Link from 'next/link';
 import Icon from 'components/icon';
 
+import { AnimatePresence, motion } from 'framer-motion';
 import ARROW_SVG from 'svgs/ui/arrow-top-right.svg?sprite';
 
 type CardTypes = {
@@ -15,12 +16,39 @@ type CardTypes = {
   description: string;
 };
 
+const arrow = {
+  default: {
+    opacity: 0,
+    x: -55,
+    transition: {
+      duration: 0,
+      type: 'tween',
+      delay: 0,
+    },
+  },
+  hover: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.6,
+      type: 'tween',
+    },
+  },
+};
+
 const Card: FC<CardTypes> = ({ thumb, title, description }: CardTypes) => (
-  <div className="rounded-[38px] w-full border border-[#1D3786] border-opacity-90 space-y-5 flex flex-col p-14 items-start hover:bg-blue-900 hover:cursor-pointer">
+  <motion.div
+    initial="default"
+    whileHover="hover"
+    className="rounded-[38px] w-full border border-[#1D3786] border-opacity-90 space-y-5 flex flex-col p-14 items-start hover:bg-blue-900 hover:cursor-pointer"
+  >
     <Image src={thumb} width={78} height={74} alt={title} layout="intrinsic" />
     <h5 className="font-bold text-xl flex">{title}</h5>
     <p className="font-light flex">{description}</p>
-  </div>
+    <motion.div variants={arrow} className="w-full justify-end flex">
+      <Icon icon={ARROW_SVG} className="w-14 h-11 rotate-45" />
+    </motion.div>
+  </motion.div>
 );
 
 const SLIDES = [
@@ -106,7 +134,7 @@ const SLIDES = [
   },
 ];
 
-const DataProviders: FC = () => {
+const DiscoverOurJourney: FC = () => {
   const [slide, setSlide] = useState(0);
   return (
     <section className="relative py-12 space-y-12 bg-blue-600 bg-cover md:space-y-64 md:py-36 overflow-hidden text-white">
@@ -168,4 +196,4 @@ const DataProviders: FC = () => {
   );
 };
 
-export default DataProviders;
+export default DiscoverOurJourney;

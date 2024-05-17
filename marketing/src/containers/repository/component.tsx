@@ -3,11 +3,7 @@ import React, { useEffect } from 'react';
 import Hero from 'containers/repository/hero';
 import DataProviders from 'containers/repository/data-providers';
 
-import ScrollDown from 'containers/scroll-down';
-import Regulations from './regulations/component';
-import Webinar from './webinar/component';
-import DatasetReleases from './releases/component';
-import Podcast from './podcast';
+import Resources from './resources';
 import Newsletter from 'containers/newsletter';
 
 const Repository: React.FC = () => {
@@ -31,13 +27,8 @@ const Repository: React.FC = () => {
 
   return (
     <>
-      <ScrollDown theme="light" />
       <Hero />
-
-      <Regulations />
-      <DatasetReleases />
-      <Webinar />
-      <Podcast />
+      <Resources />
       <DataProviders />
       <Newsletter />
     </>

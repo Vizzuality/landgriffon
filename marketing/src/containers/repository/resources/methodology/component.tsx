@@ -7,7 +7,7 @@ import Icon from 'components/icon';
 
 import CALENDAR_SVG from 'svgs/ui/calendar.svg?sprite';
 
-const Regulations: React.FC = () => (
+const Methodology: React.FC = () => (
   <section className="relative bg-white">
     <Wrapper>
       <FadeIn>
@@ -59,4 +59,4 @@ const Regulations: React.FC = () => (
   </section>
 );
 
-export default Regulations;
+export default Methodology;

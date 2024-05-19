@@ -16,7 +16,7 @@ const Methodology: React.FC = () => (
           intro="Access previous versions of our methodologies to understand the evolution of our
                   approach to sustainability and environmental impact assessments."
         >
-          <div className="grid grid-cols-2 gap-6 text-white">
+          <div className="md:grid md:grid-cols-2 md:gap-6 text-white flex flex-col space-y-6 md:space-y-0">
             <div className="bg-[url('/images/repository/methodology_bg_1.jpg')] flex h-[400px] bg-cover p-5">
               <div className="bg-blue-900 p-6 space-y-4 h-fit">
                 <div className="flex space-x-2.5 items-center">

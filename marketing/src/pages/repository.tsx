@@ -29,7 +29,8 @@ const RepositoryPage: NextPage<PageProps> = () => {
           />
           <meta name="og:type" content="website" />
           <meta name="og:url" content="https://landgriffon.com/repository" />
-          <meta name="og:image" content="https://landgriffon.com/images/og/OG-Repository.png" />
+          {/* TO DO - Add image https://landgriffon.com/images/og/OG-Repository.png */}
+          <meta name="og:image" content="https://landgriffon.com/images/og/OG-LandGriffon.png" />
         </Head>
 
         <Repository />

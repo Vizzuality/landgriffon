@@ -28,8 +28,8 @@ const Repository: React.FC = () => {
 
   return (
     <>
-      <ScrollDown theme="light" />
       <Hero />
+      <ScrollDown theme="light" />
       <Resources />
       <DiscoverOurJourney />
       <Newsletter />

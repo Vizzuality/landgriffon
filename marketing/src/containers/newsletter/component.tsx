@@ -116,7 +116,7 @@ const NewsLetter: React.FC = () => {
                   type="checkbox"
                   {...register('terms')}
                   className={cx({
-                    'rounded-full bg-transparent border-black w-7.5 h-7.5': true,
+                    'rounded-full bg-transparent border-black border-2 w-7.5 h-7.5': true,
                     'border-red-500': errors.terms,
                   })}
                 />

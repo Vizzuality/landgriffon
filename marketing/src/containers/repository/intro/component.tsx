@@ -2,7 +2,7 @@ import FadeIn from 'components/fade';
 
 type IntroType = Readonly<{
   title: string;
-  intro: string;
+  intro: string | JSX.Element;
   children?: React.ReactNode;
 }>;
 

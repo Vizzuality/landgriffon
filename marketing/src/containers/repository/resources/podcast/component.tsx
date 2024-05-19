@@ -14,12 +14,20 @@ const Webinar: React.FC = () => (
       <FadeIn>
         <Intro
           title="Podcast with Innovation Forum"
-          intro={`Francis Gassert, strategy and impact lead at Vizzuality, talks with Innovation Forum's Ian Welsh about ${(
-            <span className="font-bold">measuring</span>
-          )} impact and how to ensure credibility when doing so. They discuss the importance of companies considering their land, carbon and biodiversity impacts and incoming regulatory changes driving this action.`}
+          intro={
+            <>
+              Francis Gassert, strategy and impact lead at Vizzuality, talks with Innovation
+              Forum&apos;s Ian Welsh about{' '}
+              <span className="font-bold">
+                measuring impact and how to ensure credibility when doing so.
+              </span>
+              They discuss the importance of companies considering their land, carbon and
+              biodiversity impacts and incoming regulatory changes driving this action.
+            </>
+          }
         >
-          <div className="grid grid-cols-2 gap-16">
-            <div className="w-full max-w-[297px] h-[365px] flex relative">
+          <div className="md:grid md:grid-cols-3 gap-14 pb-56 flex flex-col">
+            <div className="md:col-span-1 w-full max-w-[297px] h-[365px] flex relative m-auto">
               <Image
                 layout="fill"
                 objectFit="cover"
@@ -28,7 +36,7 @@ const Webinar: React.FC = () => (
                 className="object-center"
               />
             </div>
-            <div className="flex flex-col justify-between">
+            <div className="col-span-2 flex flex-col justify-between">
               <p className="italic">
                 “Agriculture is the source of civilization, the way we are tied to the earth, and
                 the way we are most directly using and affecting nature. If you manage sourcing for

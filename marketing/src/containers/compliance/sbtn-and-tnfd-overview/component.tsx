@@ -3,10 +3,10 @@ import Wrapper from 'containers/wrapper';
 
 const SBTNandTNFDOverview: React.FC = () => {
   return (
-    <section className="bg-white ">
+    <section className="bg-white">
       <Wrapper>
-        <div className="relative py-12 border-t border-black/10">
-          <div className="flex items-center py-12">
+        <div className="relative md:py-32 py-12 border-t border-black/10">
+          <div className="flex items-center">
             <div className="space-y-16">
               <FadeIn>
                 <h2 className="text-4xl font-black uppercase md:text-6xl font-display">

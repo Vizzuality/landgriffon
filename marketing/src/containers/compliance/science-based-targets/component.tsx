@@ -13,7 +13,7 @@ import CHART_SVG from 'svgs/compliance/chart.svg?sprite';
 const constants = [
   {
     icon: NATURE_SVG,
-    title: 'Assess Impact on Nature:',
+    title: 'Assess Impact on Nature: ',
     text: 'Use LandGriffon’s methodology to appraise nature impacts against SBTN-aligned indicators.',
   },
   {
@@ -40,16 +40,16 @@ const constants = [
 
 const ScienceBasedTargets: React.FC = () => {
   return (
-    <section className="relative py-12 space-y-12 bg-blue-600 md:space-y-64 md:py-8 overflow-hidden">
+    <section className="relative space-y-12 bg-blue-600 md:py-8 overflow-hidden">
       <Wrapper>
-        <div className="space-y-10 text-white md:space-y-20">
+        <div className="space-y-10 text-white md:space-y-20 md:py-32 py-12">
           <FadeIn>
             <h2 className="text-5xl font-black text-white uppercase font-display md:text-7xl">
               Implement Science-Based <span className="text-orange-500">Targets for Nature: </span>
             </h2>
           </FadeIn>
 
-          <div className="grid grid-cols-2">
+          <div className="md:grid md:grid-cols-2 flex flex-col space-y-12 md:space-y-0">
             <FadeIn>
               <div className="space-y-8 max-w-[420px]">
                 <p className="inline-block text-2xl">
@@ -62,7 +62,7 @@ const ScienceBasedTargets: React.FC = () => {
                 </p>
 
                 <Link href="/contact">
-                  <a className="px-7 py-5 border-2 border-white inline-block leading-8">
+                  <a className="px-7 py-5 border-2 border-white inline-block leading-8 hover:bg-white/10 font-semibold">
                     <span>Contact us now</span>
                   </a>
                 </Link>

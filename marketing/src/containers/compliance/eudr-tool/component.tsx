@@ -8,16 +8,18 @@ import { EUDRToolFeatures1, EUDRToolFeatures2 } from './constants';
 const Card = ({ index, title, description }) => (
   <div className="space-y-2">
     <span className="text-6xl font-bold text-blue-500 -tracking-[0.02em]">{index}</span>
-    <h3 className="text-3xl font-bold text-white">{title}</h3>
-    <p className="text-white">{description}</p>
+    <div className="space-y-4">
+      <h3 className="text-3xl font-bold text-white font-display">{title}</h3>
+      <p className="text-white">{description}</p>
+    </div>
   </div>
 );
 
 const EUDRTool: React.FC = () => {
   return (
-    <section className="relative py-12 space-y-12 bg-blue-600 bg-cover md:space-y-64 md:py-32">
+    <section className="relative py-12 bg-blue-600 bg-cover md:space-y-64">
       <Wrapper>
-        <div className="space-y-28 text-white md:space-y-20">
+        <div className="space-y-12 text-white md:space-y-20 md:py-32 py-12">
           <FadeIn>
             <h2 className="text-5xl font-black text-white uppercase max-w-3xl font-display md:text-7xl">
               With our EUDR tool,<span className="text-blue-500 block">you can </span>
@@ -25,7 +27,7 @@ const EUDRTool: React.FC = () => {
           </FadeIn>
 
           <FadeIn>
-            <div className="grid grid-cols-3 w-full gap-x-14">
+            <div className="md:grid md:grid-cols-3 w-full md:gap-x-14 flex flex-col space-y-14 md:space-y-0">
               {EUDRToolFeatures1.map((feature) => (
                 <Card key={feature.title} {...feature} />
               ))}
@@ -33,7 +35,7 @@ const EUDRTool: React.FC = () => {
           </FadeIn>
 
           <FadeIn>
-            <div className="w-full space-y-4">
+            <div className="w-full space-y-4 md:py-16">
               <div className="relative max-w-3xl">
                 <Image
                   width={728}
@@ -42,7 +44,7 @@ const EUDRTool: React.FC = () => {
                   src="/images/compliance/eudr_tool.png"
                   alt="EUDR Tool"
                 />
-                <div className="absolute top-0 right-0 transform translate-x-1/2 translate-y-1/2">
+                <div className="md:absolute md:top-0 md:right-0 md:transform md:translate-x-1/2 md:translate-y-1/2">
                   <Image
                     width={443}
                     height={221}
@@ -55,7 +57,7 @@ const EUDRTool: React.FC = () => {
           </FadeIn>
 
           <FadeIn>
-            <div className="grid grid-cols-3 w-full gap-x-14">
+            <div className="md:grid md:grid-cols-3 w-full md:gap-x-14 flex flex-col space-y-14 md:space-y-0">
               {EUDRToolFeatures2.map((feature) => (
                 <Card key={feature.title} {...feature} />
               ))}

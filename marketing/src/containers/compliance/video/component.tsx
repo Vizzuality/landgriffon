@@ -41,7 +41,7 @@ const Video: FC = () => {
       <div className="relative z-20">
         <Wrapper>
           <section ref={ref} className="relative max-h-screen bg-white">
-            <Media lessThan="sm">
+            <Media lessThan="md">
               <Image
                 layout="responsive"
                 src="/images/compliance/video_image.jpg"
@@ -71,16 +71,17 @@ const Video: FC = () => {
           </section>
         </Wrapper>
       </div>
-
-      <div className="flex flex-col justify-end overflow-hidden relative z-10 -mt-96 h-[696px]">
-        <Image
-          alt="field"
-          src="/images/compliance/hero_1.jpg"
-          layout="fill"
-          objectFit="fill"
-          objectPosition="top"
-        />
-      </div>
+      <Media greaterThanOrEqual="md">
+        <div className="flex flex-col justify-end overflow-hidden relative z-10 -mt-96 h-[696px]">
+          <Image
+            alt="field"
+            src="/images/compliance/hero_1.jpg"
+            layout="fill"
+            objectFit="fill"
+            objectPosition="top"
+          />
+        </div>
+      </Media>
     </section>
   );
 };

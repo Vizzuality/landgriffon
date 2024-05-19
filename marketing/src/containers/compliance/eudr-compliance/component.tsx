@@ -7,8 +7,8 @@ const EUDRCompliance: React.FC = () => {
   return (
     <section className="relative bg-white">
       <Wrapper>
-        <div className="relative py-12 border-t border-black/10">
-          <div className="flex items-center py-12 ">
+        <div className="relative border-t border-black/10 md:py-32 py-12">
+          <div className="flex items-center">
             <div className="space-y-10">
               <FadeIn>
                 <h2 className="w-5/12 text-4xl font-black uppercase md:text-6xl font-display">

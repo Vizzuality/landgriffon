@@ -5,6 +5,8 @@ CREATE EXTENSION IF NOT EXISTS ltree;
 TRUNCATE TABLE geo_region CASCADE;
 
 \copy geo_region("id", "h3Compact", "h3Flat", "h3FlatLength", "name", "theGeom") FROM 'geo_region.csv' WITH (FORMAT csv, HEADER, FORCE_NULL ("h3Compact", "h3Flat"));
+-- isCreatedByUser must be false from the start
+UPDATE geo_region SET "isCreatedByUser" = FALSE;
 
 -- 2. Insert into admin_region referencing geo_region
 BEGIN;
@@ -28,14 +30,14 @@ FROM geo_region
 ON CONFLICT ("gadmId") DO UPDATE SET
     "geoRegionId" = EXCLUDED."geoRegionId";
 
--- 1.2 Build the tree from the gadmId which is a materialized path
+-- 2.2 Build the tree from the gadmId which is a materialized path
 UPDATE admin_region child
 SET "parentId" = parent.id
 FROM admin_region parent
 WHERE subpath(child."gadmId"::ltree, 0, -1)::text = replace(parent."gadmId", '_1', '');
 -- for some reason GADM has "_1" appended to the end of some IDs
 
--- 1.3 Create the id-based materialized path as `parent.mpath`.`child.id` from
+-- 2.3 Create the id-based materialized path as `parent.mpath`.`child.id` from
 -- the tree as this is usually created by TypeORM
 WITH RECURSIVE q(id, mpath) AS (
     SELECT id, id::text as mpath

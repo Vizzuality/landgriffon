@@ -435,7 +435,7 @@ const AnalysisTable = () => {
           const name =
             isParentRow(original) &&
             depth === 0 &&
-            indicators.find((i) => i.id === original.indicatorId)?.name;
+            indicators.find((i) => i.id === original.indicatorId)?.metadata?.short_name;
 
           return (
             <div className="flex gap-4 py-5">

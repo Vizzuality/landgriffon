@@ -76,7 +76,7 @@ export const useImpactLayer = () => {
               legend: {
                 id: `impact-${indicator.id}-${isComparisonEnabled || 'compare'}`,
                 type: 'basic',
-                name: `${indicator.name} in ${year}`,
+                name: `${indicator?.metadata?.short_name} in ${year}`,
                 unit: data.metadata.unit,
                 min: !!data.metadata.quantiles.length && formatNumber(data.metadata.quantiles[0]),
                 items: data.metadata.quantiles

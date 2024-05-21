@@ -23,13 +23,13 @@ const Methodology: React.FC = () => (
                   <Icon icon={CALENDAR_SVG} className="w-6 h-6" />
                   <span>October 2023:</span>
                 </div>
-                <Link href="//https://landgriffon.com/docs/LG_Methodology_Technical_Note.pdf">
+                <Link href="https://landgriffon.com/docs/LG_Methodology_Technical_Note.pdf">
                   <a
-                    className="text-white underline text-[25px] w-[90%] flex"
+                    className="text-white underline text-[25px] w-full inline-block md:pr-12 pr-4"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Methodology Version 0.2 
+                    Methodology Version <span className="md:block">0.2 </span>
                   </a>
                 </Link>
               </div>
@@ -43,11 +43,11 @@ const Methodology: React.FC = () => (
                 </div>
                 <Link href="https://landgriffon.com/docs/LG_Methodology_Technical_Note.pdf">
                   <a
-                    className="text-white underline text-[25px] w-[90%] flex"
+                    className="text-white underline text-[25px] inline-block md:pr-12 pr-4"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Methodology Version 0.1
+                    Methodology Version <span className="md:block">0.1 </span>
                   </a>
                 </Link>
               </div>

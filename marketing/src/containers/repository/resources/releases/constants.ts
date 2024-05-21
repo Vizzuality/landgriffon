@@ -7,7 +7,7 @@ export const LANDGRIFFON_ANALYSIS = {
     },
     {
       name: 'Kuzma et al. Aqueduct 4.0: Updated decision-relevant global water risk indicators',
-      url: 'http://doi.org/10.46830/writn.23.00061',
+      url: 'https://doi.org/10.46830/writn.23.00061',
     },
     {
       name: 'McDowell et al. Global Mapping of Freshwater Nutrient Enrichment and Periphyton Growth Potential',
@@ -57,7 +57,7 @@ export const DATASET_FOR_EUDR = {
   datasets: [
     {
       name: 'Bourgoin et al. Global map of forest cover 2020 - version 1.',
-      url: 'http://data.europa.eu/89h/10d1b337-b7d1-4938-a048-686c8185b290',
+      url: 'https://data.europa.eu/89h/10d1b337-b7d1-4938-a048-686c8185b290',
     },
     {
       name: 'Bourgoin et al. Mapping Global Forest Cover of the Year 2020 to Support the EU Regulation on Deforestation-free Supply Chains.',

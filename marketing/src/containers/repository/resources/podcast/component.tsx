@@ -51,7 +51,11 @@ const Webinar: React.FC = () => (
                 one we are left with.”
               </p>
               <Link href="https://www.podbean.com/media/share/pb-4nqcj-1526415?utm_campaign=au_share_ep&utm_medium=dlink&utm_source=au_share">
-                <a className="flex space-x-5 items-center font-bold">
+                <a
+                  className="flex space-x-5 items-center font-bold"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <span className="underline">Listen to the full episode.</span>
                   <Icon icon={ARROW_SVG} className="w-5 h-5 -rotate-45 font-bold" />
                 </a>

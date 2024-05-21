@@ -17,12 +17,12 @@ const Card = ({ index, title, description }) => (
 
 const EUDRTool: React.FC = () => {
   return (
-    <section className="relative py-12 bg-blue-600 bg-cover md:space-y-64">
+    <section className="relative bg-blue-600 bg-cover md:space-y-64">
       <Wrapper>
         <div className="space-y-12 text-white md:space-y-20 md:py-32 py-12">
           <FadeIn>
             <h2 className="text-5xl font-black text-white uppercase max-w-3xl font-display md:text-7xl">
-              With our EUDR tool,<span className="text-blue-500 block">you can </span>
+              With our EUDR tool,<span className="text-blue-500 md:block">you can </span>
             </h2>
           </FadeIn>
 

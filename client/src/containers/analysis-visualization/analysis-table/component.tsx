@@ -6,6 +6,7 @@ import { ArrowLeftIcon } from '@heroicons/react/solid';
 
 import ComparisonCell from './comparison-cell/component';
 import ChartCell from './chart-cell';
+import AnalysisTableFooter from './footer';
 
 import { useAppSelector, useSyncIndicators, useSyncTableDetailView } from 'store/hooks';
 import { filtersForTabularAPI } from 'store/features/analysis/selector';
@@ -531,8 +532,8 @@ const AnalysisTable = () => {
   );
 
   return (
-    <div className="flex flex-1 flex-col">
-      <div className="flex justify-between px-6">
+    <div className="flex flex-1 flex-col space-y-6 px-6 pb-6">
+      <div className="flex justify-between">
         <div className="flex w-full items-end justify-between">
           <AnalysisDynamicMetadata />
           <div>
@@ -559,9 +560,10 @@ const AnalysisTable = () => {
           </div>
         </div>
       </div>
-      <div className="relative my-6 flex-1 px-6" data-testid="analysis-table">
+      <div className="relative flex-1" data-testid="analysis-table">
         <Table {...tableProps} />
       </div>
+      <AnalysisTableFooter />
     </div>
   );
 };

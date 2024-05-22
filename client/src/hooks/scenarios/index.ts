@@ -4,11 +4,7 @@ import { useQuery, useQueryClient, useInfiniteQuery, useMutation } from '@tansta
 import { apiService } from 'services/api';
 
 // types
-import type {
-  UseQueryResult,
-  UseInfiniteQueryResult,
-  UseQueryOptions,
-} from '@tanstack/react-query';
+import type { UseInfiniteQueryResult, UseQueryOptions } from '@tanstack/react-query';
 import type { AxiosResponse } from 'axios';
 import type { Scenario, ScenarioDTO } from 'containers/scenarios/types';
 import type { APIMetadataPagination } from 'types';
@@ -23,8 +19,6 @@ type ResponseInfiniteData = UseInfiniteQueryResult<
     meta: Record<string, unknown>;
   }>
 >;
-
-type ResponseDataScenario = UseQueryResult<Scenario>;
 
 type QueryParams = {
   sort?: string;
@@ -98,24 +92,23 @@ export function useInfiniteScenarios(queryParams: QueryParams): ResponseInfinite
   return useMemo<ResponseInfiniteData>((): ResponseInfiniteData => query, [query]);
 }
 
-export function useScenario(
-  id?: Scenario['id'] | null,
+export function useScenario<T = Scenario>(
+  id: Scenario['id'],
   queryParams?: QueryParams,
-): ResponseDataScenario {
-  const response: ResponseDataScenario = useQuery(
+  queryOptions: UseQueryOptions<Scenario, unknown, T> = {},
+) {
+  return useQuery(
     ['scenario', id],
     () =>
       apiService
-        .request({
+        .request<{ data: Scenario }>({
           method: 'GET',
           url: `/scenarios/${id}`,
           params: queryParams,
         })
         .then(({ data: responseData }) => responseData.data),
-    { ...DEFAULT_QUERY_OPTIONS, enabled: !!id },
+    { enabled: Boolean(id), ...queryOptions },
   );
-
-  return useMemo<ResponseDataScenario>(() => response, [response]);
 }
 
 export function useDeleteScenario() {

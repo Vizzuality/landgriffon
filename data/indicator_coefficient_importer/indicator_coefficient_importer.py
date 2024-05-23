@@ -8,14 +8,6 @@ Postgres connection params read from environment:
  - API_POSTGRES_USER
  - API_POSTGRES_PASSWORD
  - API_POSTGRES_DATABASE
-
-Usage:
-    indicator_coefficient_importer.py <file> <indicator_code> <year>
-
-Arguments:
-    <file>            Path to the csv file with the indicator coefficient data.
-    <indicator_code>  Indicator code to link the indicator coefficient data.
-    <year>            Year of the data used.
 """
 
 import logging
@@ -122,7 +114,6 @@ def main(file: Path, indicator_code: str, year: int):
     data = pd.merge(data, admin_region_ids, on="country", how="left")
     data = pd.merge(data, material_ids, on="hs_2017_code", how="left")
     data["indicatorId"] = indicator_id
-    data = data.drop_duplicates(subset=["value", "year", "adminRegionId", "indicatorId", "materialId"])
     data_to_insert = data[["value", "year", "adminRegionId", "indicatorId", "materialId"]]
     copy_data_to_table(conn, data_to_insert, indicator_id)
     postgres_thread_pool.putconn(conn, close=True)

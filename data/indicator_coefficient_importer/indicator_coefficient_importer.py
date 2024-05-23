@@ -1,3 +1,23 @@
+"""
+The script process and import indicator coefficients from a CSV file into a PostgreSQL database.
+The main functionality includes loading data from a CSV file,
+retrieving administrative region and material IDs, and copying the processed data into the database.
+
+Postgres connection params read from environment:
+ - API_POSTGRES_HOST
+ - API_POSTGRES_USER
+ - API_POSTGRES_PASSWORD
+ - API_POSTGRES_DATABASE
+
+Usage:
+    indicator_coefficient_importer.py <file> <indicator_code> <year>
+
+Arguments:
+    <file>            Path to the csv file with the indicator coefficient data.
+    <indicator_code>  Indicator code to link the indicator coefficient data.
+    <year>            Year of the data used.
+"""
+
 import logging
 import os
 from io import StringIO
@@ -22,6 +42,7 @@ postgres_thread_pool = ThreadedConnectionPool(
 
 
 def load_data(filename: Path, year: int) -> pd.DataFrame:
+    "Load data from a CSV file and add a year column."
     dtype_mapping = {"hs_2017_code": str}
     df = pd.read_csv(filename, dtype=dtype_mapping)
     df["year"] = year
@@ -29,25 +50,23 @@ def load_data(filename: Path, year: int) -> pd.DataFrame:
 
 
 def get_admin_region_ids_from_countries(conn, countries: list) -> pd.DataFrame:
+    "Retrieve administrative region IDs from the database based on country names."
     with conn.cursor() as cur:
         cur.execute(
             """select id, name from admin_region ar where ar.name = any(%s);""",
             (countries,),
         )
-        return pd.DataFrame.from_records(
-            cur.fetchall(), columns=["adminRegionId", "country"]
-        )
+        return pd.DataFrame.from_records(cur.fetchall(), columns=["adminRegionId", "country"])
 
 
 def get_material_ids_from_hs_codes(conn, hs_codes: list) -> pd.DataFrame:
+    "Retrieve material IDs from the database based on hscodes."
     with conn.cursor() as cur:
         cur.execute(
             """select id, "hsCodeId" from material m where m."hsCodeId" = any(%s)""",
             (hs_codes,),
         )
-        return pd.DataFrame.from_records(
-            cur.fetchall(), columns=["materialId", "hs_2017_code"]
-        )
+        return pd.DataFrame.from_records(cur.fetchall(), columns=["materialId", "hs_2017_code"])
 
 
 def copy_data_to_table(conn: connection, df: pd.DataFrame, indicator_id: str):
@@ -96,20 +115,15 @@ def main(file: Path, indicator_code: str, year: int):
             indicator_id = cursor.fetchone()[0]
         # add admin region ID to dataframe so we can insert all rows at once
         # without having to query for the IDs every time
-        admin_region_ids = get_admin_region_ids_from_countries(
-            conn, list(data.country.unique())
-        )
+        admin_region_ids = get_admin_region_ids_from_countries(conn, list(data.country.unique()))
         # same with material ID
-        material_ids = get_material_ids_from_hs_codes(
-            conn, data.hs_2017_code.astype(str).to_list()
-        )
+        material_ids = get_material_ids_from_hs_codes(conn, data.hs_2017_code.astype(str).to_list())
 
     data = pd.merge(data, admin_region_ids, on="country", how="left")
     data = pd.merge(data, material_ids, on="hs_2017_code", how="left")
     data["indicatorId"] = indicator_id
-    data_to_insert = data[
-        ["value", "year", "adminRegionId", "indicatorId", "materialId"]
-    ]
+    data = data.drop_duplicates(subset=["value", "year", "adminRegionId", "indicatorId", "materialId"])
+    data_to_insert = data[["value", "year", "adminRegionId", "indicatorId", "materialId"]]
     copy_data_to_table(conn, data_to_insert, indicator_id)
     postgres_thread_pool.putconn(conn, close=True)
 

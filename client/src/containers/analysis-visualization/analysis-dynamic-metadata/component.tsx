@@ -1,6 +1,7 @@
 import { useMemo, useCallback } from 'react';
 import classNames from 'classnames';
 import { InformationCircleIcon } from '@heroicons/react/outline';
+import { useSearchParams } from 'next/navigation';
 
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import { useScenario } from 'hooks/scenarios';
@@ -26,8 +27,11 @@ type AnalysisDynamicMetadataTypes = {
 const AnalysisDynamicMetadata: FC<AnalysisDynamicMetadataTypes> = ({
   className,
 }: AnalysisDynamicMetadataTypes) => {
+  const searchParams = useSearchParams();
+  const isComparisonEnabled = Boolean(searchParams.get('compareScenarioId'));
+
   const dispatch = useAppDispatch();
-  const { currentScenario, scenarioToCompare, isComparisonEnabled } = useAppSelector(scenarios);
+  const { currentScenario, scenarioToCompare } = useAppSelector(scenarios);
   const { data: scenario } = useScenario(currentScenario);
   const { data: scenarioB } = useScenario(scenarioToCompare);
 

@@ -566,7 +566,7 @@ const AnalysisTable = () => {
       <div className="relative flex-1" data-testid="analysis-table">
         <Table {...tableProps} />
       </div>
-      <AnalysisTableFooter />
+      {isComparisonEnabled && <AnalysisTableFooter />}
     </div>
   );
 };

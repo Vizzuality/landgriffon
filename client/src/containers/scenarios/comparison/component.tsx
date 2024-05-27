@@ -4,12 +4,8 @@ import { pickBy } from 'lodash-es';
 
 import { useScenarios } from 'hooks/scenarios';
 import { useAppDispatch } from 'store/hooks';
-import {
-  setComparisonEnabled,
-  setScenarioToCompare as setScenarioToCompareAction,
-} from 'store/features/analysis/scenarios';
+import { setScenarioToCompare as setScenarioToCompareAction } from 'store/features/analysis/scenarios';
 import { AutoCompleteSelect } from 'components/forms/select';
-import useEffectOnce from 'hooks/once';
 
 import type { Option } from 'components/forms/select';
 import type { Dispatch, FC } from 'react';
@@ -39,7 +35,6 @@ const ScenariosComparison: FC = () => {
   const handleOnChange = useCallback<Dispatch<Option>>(
     (current) => {
       // TODO: deprecated, we'll keep only for retro-compatibility
-      dispatch(setComparisonEnabled(!!current));
       dispatch(setScenarioToCompareAction(current?.value || null));
 
       push({ query: pickBy({ ...query, compareScenarioId: current?.value || null }) }, null, {
@@ -51,7 +46,6 @@ const ScenariosComparison: FC = () => {
 
   const handleScenarioRemoval = useCallback(() => {
     // TODO: deprecated, we'll keep only for retro-compatibility
-    dispatch(setComparisonEnabled(false));
     dispatch(setScenarioToCompareAction(null));
 
     push({ query: pickBy({ ...query, compareScenarioId: null }) }, null, {
@@ -64,7 +58,6 @@ const ScenariosComparison: FC = () => {
     if (selected?.value && compareScenarioId !== selected?.value) {
       // TO-DO: deprecated, we'll keep only for retro-compatibility
       dispatch(setScenarioToCompareAction(null));
-      dispatch(setComparisonEnabled(false));
 
       push(
         {
@@ -77,11 +70,6 @@ const ScenariosComparison: FC = () => {
       );
     }
   }, [selected, dispatch, options, compareScenarioId, push, query]);
-
-  // We consider comparison is enabled when compareScenarioId is present
-  useEffectOnce(() => {
-    if (compareScenarioId) dispatch(setComparisonEnabled(true));
-  });
 
   return (
     <>

@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
-import { useRouter } from 'next/router';
 import { omit } from 'lodash-es';
+import { useSearchParams } from 'next/navigation';
 
 import { useIndicator } from '../indicators';
 
@@ -17,14 +17,15 @@ import { storeToQueryParams } from 'hooks/h3-data/utils';
 import type { LegendItem as LegendItemProp } from 'types';
 
 export const useImpactLayer = () => {
+  const searchParams = useSearchParams();
+  const compareScenarioId = searchParams.get('compareScenarioId');
+  const scenarioId = searchParams.get('scenarioId');
+  const isComparisonEnabled = Boolean(compareScenarioId);
+
   const dispatch = useAppDispatch();
   const filters = useAppSelector(analysisFilters);
-  const {
-    query: { scenarioId, compareScenarioId },
-  } = useRouter();
-  const isComparisonEnabled = !!compareScenarioId;
   const { comparisonMode } = useAppSelector(scenarios);
-  const colorKey = !!compareScenarioId ? 'compare' : 'impact';
+  const colorKey = isComparisonEnabled ? 'compare' : 'impact';
   const [syncedIndicators] = useSyncIndicators();
 
   const {
@@ -36,11 +37,10 @@ export const useImpactLayer = () => {
       storeToQueryParams({
         ...filters,
         indicators: syncedIndicators?.[0] ? [syncedIndicators?.[0]] : undefined,
-        currentScenario: scenarioId as string,
-        scenarioToCompare: compareScenarioId as string,
-        isComparisonEnabled,
+        currentScenario: scenarioId,
+        scenarioToCompare: compareScenarioId,
       }),
-    [compareScenarioId, filters, isComparisonEnabled, scenarioId, syncedIndicators],
+    [compareScenarioId, filters, scenarioId, syncedIndicators],
   );
 
   const { year } = params;

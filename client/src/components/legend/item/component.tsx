@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { EyeIcon, EyeOffIcon, XIcon } from '@heroicons/react/solid';
 import { useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 import OpacityControl from './opacityControl';
 import DragHandle from './dragHandle';
@@ -8,8 +9,6 @@ import { ComparisonToggle } from './comparisonModeToggle';
 import InfoModal from './info-modal';
 
 import Loading from 'components/loading';
-import { useAppSelector } from 'store/hooks';
-import { scenarios } from 'store/features/analysis';
 
 import type { Dispatch } from 'react';
 import type { InfoModalProps } from './info-modal';
@@ -45,7 +44,8 @@ export const LegendItem = ({
   onToggle,
   isActive,
 }: LegendItemProps) => {
-  const { isComparisonEnabled } = useAppSelector(scenarios);
+  const searchParams = useSearchParams();
+  const isComparisonEnabled = Boolean(searchParams.get('compareScenarioId'));
 
   const handleToggleActive = useCallback(() => {
     onToggle(!isActive);

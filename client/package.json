@@ -1,5 +1,5 @@
 {
-  "name": "landgriffon-client",
+  "name": "client",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -13,7 +13,7 @@
     "cypress": "cypress open",
     "cypress:headless": "cypress run --browser chrome",
     "test:e2e": "./node_modules/.bin/cypress run --headless --browser chrome",
-    "test": "start-server-and-test 'yarn build && yarn start' http://localhost:3000/auth/signin 'nyc --reporter nyc-report-lcov-absolute yarn cypress:headless'"
+    "test": "start-server-and-test 'pnpm build && pnpm start' http://localhost:3000/auth/signin 'nyc --reporter nyc-report-lcov-absolute pnpm cypress:headless'"
   },
   "dependencies": {
     "@date-fns/utc": "1.1.1",
@@ -126,6 +126,5 @@
     "prettier-plugin-tailwindcss": "^0.5.10",
     "start-server-and-test": "1.14.0",
     "typescript": "5.4.5"
-  },
-  "packageManager": "yarn@4.1.1"
+  }
 }

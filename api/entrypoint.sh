@@ -4,27 +4,27 @@ set -e
 case "$1" in
     develop)
         echo "Running api application in development mode"
-        exec yarn start
+        exec pnpm start
         ;;
     test)
         echo "Synchronizing database..."
-        exec yarn typeorm schema:sync
+        exec pnpm typeorm schema:sync
         echo "Running Tests"
-        exec yarn test
+        exec pnpm test
         ;;
     build)
         echo "Build api application"
-        exec yarn build
+        exec pnpm build
         ;;
     start:watch)
         echo "Synchronizing database..."
-        exec yarn typeorm schema:sync
+        exec pnpm typeorm schema:sync
         echo "Running api application in development mode with watch"
-        exec yarn start:watch
+        exec pnpm start:watch
         ;;
     start:prod)
         echo "Synchronizing database..."
-        yarn start:prod
+        pnpm start:prod
         ;;
     *)
         echo "Usage: service.sh {develop|test|build|start:watch|start:prod}" >&2

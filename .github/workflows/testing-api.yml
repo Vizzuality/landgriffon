@@ -38,24 +38,25 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Use Node.js 18.16
-        uses: actions/setup-node@v3
+      - name: Node setup
+        uses: actions/setup-node@v4
         with:
-          node-version: '18.16'
+          node-version-file: '.nvmrc'
+
+      - uses: pnpm/action-setup@v4
 
       - name: Install API dependencies
-        working-directory: api
-        run: yarn install
+        run: pnpm api:deps
 
       - name: Prepare database
         working-directory: api
-        run: yarn test:db-prepare
+        run: pnpm test:db-prepare
 
       - name: Run API tests + coverage
         working-directory: api
-        run: yarn test:e2e
+        run: pnpm test:e2e
 
   #      - name: Generate API coverage artifact
   #        uses: actions/upload-artifact@v2
@@ -86,24 +87,23 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Use Node.js 18.16
-        uses: actions/setup-node@v3
+      - name: Node setup
+        uses: actions/setup-node@v4
         with:
-          node-version: '18.16'
+          node-version-file: '.nvmrc'
 
       - name: Install API dependencies
-        working-directory: api
-        run: yarn install
+        run: pnpm api:deps
 
       - name: Prepare database
         working-directory: api
-        run: yarn test:db-prepare
+        run: pnpm test:db-prepare
 
       - name: Run API tests + coverage
         working-directory: api
-        run: yarn test:integration
+        run: pnpm test:integration
 
   testing-api-unit:
     name: Unit Tests
@@ -112,20 +112,19 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Use Node.js 18.16
-        uses: actions/setup-node@v3
+      - name: Node setup
+        uses: actions/setup-node@v4
         with:
-          node-version: '18.16'
+          node-version-file: '.nvmrc'
 
       - name: Install API dependencies
-        working-directory: api
-        run: yarn install
+        run: pnpm api:deps
 
       - name: Run API tests + coverage
         working-directory: api
-        run: yarn test:unit
+        run: pnpm test:unit
 
 #      - name: Generate API coverage artifact
 #        uses: actions/upload-artifact@v2

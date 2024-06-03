@@ -1,4 +1,6 @@
-FROM node:20.12-bullseye-slim
+FROM node:20.14-bullseye-slim
+
+WORKDIR /app
 
 ARG UID=5000
 ARG GID=5000
@@ -19,27 +21,12 @@ ENV CYPRESS_USERNAME $CYPRESS_USERNAME
 ENV CYPRESS_PASSWORD $CYPRESS_PASSWORD
 ENV CYPRESS_API_URL $NEXT_PUBLIC_API_URL
 
-RUN groupadd -g $GID $USER && adduser --uid $UID --gid $GID $USER
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY client ./client
 
-WORKDIR $APP_HOME
-RUN chown $USER:$USER $APP_HOME
-
-USER $USER
-
-COPY --chown=$USER:$USER .yarn ./.yarn
-COPY --chown=$USER:$USER package.json yarn.lock .yarnrc.yml ./
-RUN yarn install --immutable
-
-# NextJS project folders
-COPY --chown=$USER:$USER src ./src
-COPY --chown=$USER:$USER public ./public
-
-# NextJS required files
-COPY --chown=$USER:$USER next.config.js local.d.ts \
-	postcss.config.cjs tailwind.config.ts entrypoint.sh \
-	tsconfig.json .browserlistrc .eslintrc.cjs .prettierrc.cjs ./
-
-RUN yarn build
+RUN corepack enable pnpm
+RUN pnpm client:deps
+RUN pnpm client:build
 
 EXPOSE 3000
 ENTRYPOINT ["./entrypoint.sh"]

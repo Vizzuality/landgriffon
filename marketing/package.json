@@ -1,5 +1,5 @@
 {
-  "name": "landgriffon-marketing-v2",
+  "name": "marketing",
   "version": "2.1.2",
   "private": true,
   "scripts": {
@@ -11,7 +11,7 @@
     "prettier": "prettier --config .prettierrc.json --check --write \"./src/**/*.{tsx,jsx,ts,js}\"",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run --headless --browser chrome",
-    "test": "start-server-and-test 'yarn build && yarn start' http://localhost:3000/auth/sign-in 'nyc --reporter nyc-report-lcov-absolute yarn cypress:run'"
+    "test": "start-server-and-test 'pnpm build && pnpm start' http://localhost:3000/auth/sign-in 'nyc --reporter nyc-report-lcov-absolute pnpm cypress:run'"
   },
   "dependencies": {
     "@artsy/fresnel": "^3.5.0",

@@ -1,0 +1,5 @@
+packages:
+  - 'api/**'
+  - 'client/**'
+  - 'cookie-traceability/**'
+  - 'marketing/**'

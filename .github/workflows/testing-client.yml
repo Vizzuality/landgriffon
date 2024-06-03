@@ -6,11 +6,6 @@ on:
       - 'client/**'
       - '.github/workflows/testing-client.yml'
 
-  workflow_dispatch:
-
-env:
-  NODE_ENV: production
-
 jobs:
   testing-client:
     name: Running client tests
@@ -19,22 +14,19 @@ jobs:
     if: ${{ github.ref_name != 'test' }}
     strategy:
       fail-fast: false
-    defaults:
-      run:
-        working-directory: ${{github.workspace}}/client
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Use Node.js 18.13
-        uses: actions/setup-node@v3
+      - name: Node setup
+        uses: actions/setup-node@v4
         with:
-          node-version-file: 'client/.nvmrc'
-          cache: 'yarn'
-          cache-dependency-path: client/yarn.lock
+          node-version-file: '.nvmrc'
 
-      - name: Install dependencies
-        run: yarn install --immutable
+      - uses: pnpm/action-setup@v4
+
+      - name: Install Client dependencies
+        run: pnpm client:deps
 
       - name: Cypress run
         uses: cypress-io/github-action@v5
@@ -42,13 +34,13 @@ jobs:
           record: true
           working-directory: client
           install: false
-          build: yarn build
-          start: yarn start
+          build: pnpm build
+          start: pnpm start
           browser: chrome
           wait-on: http://localhost:3000/auth/signin
           config-file: cypress.config.ts
-          command-prefix: yarn dlx
-          command: "yarn test:e2e"
+          command-prefix: pnpm dlx
+          command: "pnpm test:e2e"
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.CYPRESS_API_URL }}
           NEXT_TELEMETRY_DISABLED: 1

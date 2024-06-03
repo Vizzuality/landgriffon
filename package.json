@@ -1,0 +1,24 @@
+{
+  "name": "landgriffon",
+  "version": "1.0.0",
+  "description": "landgriffon platform",
+  "scripts": {
+    "api:deps": "pnpm --filter api install",
+    "api:dev": "pnpm --filter api run start:dev",
+    "api:build": "pnpm --filter api run build",
+    "api:prod": "pnpm --filter api run start:prod",
+    "client:deps": "pnpm --filter client install",
+    "client:dev": "pnpm --filter client run dev",
+    "client:build": "pnpm --filter client run build",
+    "client:prod": "pnpm --filter client run start",
+    "marketing:deps": "pnpm --filter marketing install",
+    "marketing:dev": "pnpm --filter marketing run dev",
+    "marketing:build": "pnpm --filter marketing run build",
+    "marketing:prod": "pnpm --filter marketing run start",
+    "cookie-traceability:deps": "pnpm --filter cookie-traceability install",
+    "cookie-traceability:dev": "pnpm --filter cookie-traceability run dev",
+    "cookie-traceability:build": "pnpm --filter cookie-traceability run build",
+    "cookie-traceability:prod": "pnpm --filter cookie-traceability run start"
+  },
+  "packageManager": "pnpm@9.1.4+sha256.30a1801ac4e723779efed13a21f4c39f9eb6c9fbb4ced101bce06b422593d7c9"
+}

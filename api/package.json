@@ -1,5 +1,5 @@
 {
-  "name": "@landgriffon/api",
+  "name": "api",
   "version": "0.2.0",
   "description": "API service for the LandGriffon platform",
   "author": "Vizzuality <hello@vizzuality.com> (https://vizzuality.com/)",
@@ -7,14 +7,14 @@
   "license": "MIT",
   "scripts": {
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "yarn typeorm schema:sync && nest start",
-    "start:watch": "yarn typeorm schema:sync && nest start --watch",
+    "start": "pnpm typeorm schema:sync && nest start",
+    "start:watch": "pnpm typeorm schema:sync && nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "yarn typeorm schema:sync && NODE_ENV=production, NODE_PATH=dist/src node dist/src/main",
+    "start:prod": "pnpm typeorm schema:sync && NODE_ENV=production, NODE_PATH=dist/src node dist/src/main",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/data-source.ts",
     "build": "rm -rf dist && tsc",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test:db-prepare": "yarn typeorm schema:drop && yarn typeorm schema:sync",
+    "test:db-prepare": "pnpm typeorm schema:drop && pnpm typeorm schema:sync",
     "test": "node --expose-gc ./node_modules/.bin/jest --config test/jest-config.json -i --logHeapUsage --forceExit",
     "test:watch": "jest --config test/jest-config.json --watch",
     "test:cov": "node --expose-gc ./node_modules/.bin/jest --config test/jest-config.json --coverage --forceExit",
@@ -22,9 +22,6 @@
     "test:integration": "node --expose-gc ./node_modules/.bin/jest --config test/jest-config.json --forceExit -i test/integration/",
     "test:unit": "node --expose-gc ./node_modules/.bin/jest --config test/jest-config.json --forceExit -i test/unit/",
     "test:e2e": "NODE_OPTIONS=\"--max-old-space-size=6144\" node --expose-gc ./node_modules/.bin/jest --config test/jest-config.json --logHeapUsage --forceExit -i test/e2e/"
-  },
-  "engines": {
-    "node": "^18.16"
   },
   "dependencies": {
     "@google-cloud/bigquery": "^7.5.0",

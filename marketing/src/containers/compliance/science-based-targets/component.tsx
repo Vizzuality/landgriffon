@@ -3,41 +3,7 @@ import FadeIn from 'components/fade';
 import Link from 'next/link';
 import Icon from 'components/icon';
 import Image from 'next/image';
-
-import NATURE_SVG from 'svgs/compliance/nature.svg?sprite';
-import GLOBE_SVG from 'svgs/compliance/globe.svg?sprite';
-import GOALS_SVG from 'svgs/compliance/goals.svg?sprite';
-import DOCUMENTS_SVG from 'svgs/compliance/documents.svg?sprite';
-import CHART_SVG from 'svgs/compliance/chart.svg?sprite';
-
-const constants = [
-  {
-    icon: NATURE_SVG,
-    title: 'Assess Impact on Nature: ',
-    text: 'Use LandGriffon’s methodology to appraise nature impacts against SBTN-aligned indicators.',
-  },
-  {
-    icon: GLOBE_SVG,
-    title: 'Prioritize High-Risk Areas: ',
-    text: 'Allocate resources based on environmental materiality screening.',
-  },
-  {
-    icon: GOALS_SVG,
-    title: 'Set Impactful Science-Based Targets: ',
-    text: 'Establish specific targets across freshwater, land, climate, and biodiversity.',
-  },
-  {
-    icon: DOCUMENTS_SVG,
-    title: 'Make Informed Interventions: ',
-    text: "Follow SBTN's Action Framework (AR3T) for positive impact.",
-  },
-  {
-    icon: CHART_SVG,
-    title: 'Track Progress:',
-    text: 'Report publicly on progress using LandGriffon’s streamlined reporting tools.',
-  },
-];
-
+import { TARGETS } from './constants';
 const ScienceBasedTargets: React.FC = () => {
   return (
     <section className="relative space-y-12 bg-blue-600 md:py-8 overflow-hidden">
@@ -71,7 +37,7 @@ const ScienceBasedTargets: React.FC = () => {
 
             <FadeIn>
               <ul className="flex flex-col space-y-5">
-                {constants.map(({ title, icon, text }) => (
+                {TARGETS.map(({ title, icon, text }) => (
                   <li key={title} className="space-x-4 flex items-start">
                     <span className="rounded-full bg-orange-500 p-2">
                       <Icon icon={icon} className="w-5 h-5 shrink-0" />
@@ -90,11 +56,12 @@ const ScienceBasedTargets: React.FC = () => {
       <FadeIn>
         <div className="w-screen min-h-[459px] h-auto relative aspect-auto">
           <Image
-            src="/images/compliance/forest.png"
+            src="/images/compliance/forest.jpg"
             alt="Forest"
             layout="fill"
             objectFit="cover"
             objectPosition="top"
+            draggable={false}
           />
         </div>
       </FadeIn>

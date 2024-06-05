@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 @-webkit-keyframes autofill {
-  0%,100% {
+  0%,
+  100% {
     color: #666;
     background: transparent;
   }
@@ -37,10 +38,10 @@
 
   input:-webkit-autofill,
   input:-webkit-autofill:focus {
-      transition: background-color 0s 60000s, color 0s 60000s;
+    transition: background-color 0s 60000s, color 0s 60000s;
   }
   input[data-autocompleted] {
-      background-color: transparent !important;
+    background-color: transparent !important;
   }
 }
 
@@ -62,13 +63,13 @@
 
 /* Overriding styles */
 @layer components {
-  div[data-testid="blog-card-item"] p > em {
+  div[data-testid='blog-card-item'] p > em {
     @apply not-italic;
   }
-  div[data-testid="blog-card-item"] p > strong {
+  div[data-testid='blog-card-item'] p > strong {
     @apply font-bold text-white;
   }
-  div[data-testid="blog-card-item"] p > a {
+  div[data-testid='blog-card-item'] p > a {
     @apply underline text-white;
   }
 }

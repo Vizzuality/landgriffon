@@ -56,6 +56,7 @@ const EUDRCompliance: React.FC = () => {
                             alt="ESA"
                             width={160}
                             height={58.07}
+                            draggable={false}
                           />
                         </a>
                       </li>
@@ -72,6 +73,7 @@ const EUDRCompliance: React.FC = () => {
                             alt="Wageningen University & Reseacrh"
                             width={228}
                             height={80}
+                            draggable={false}
                           />
                         </a>
                       </li>
@@ -88,6 +90,7 @@ const EUDRCompliance: React.FC = () => {
                             alt="GFW"
                             width={120}
                             height={122}
+                            draggable={false}
                           />
                         </a>
                       </li>
@@ -104,6 +107,7 @@ const EUDRCompliance: React.FC = () => {
                             alt="FAO"
                             width={120}
                             height={122.5}
+                            draggable={false}
                           />
                         </a>
                       </li>
@@ -121,6 +125,7 @@ const EUDRCompliance: React.FC = () => {
                             alt="World Conservation Monitoring Centre"
                             width={120}
                             height={122.5}
+                            draggable={false}
                           />
                         </a>
                       </li>
@@ -133,6 +138,7 @@ const EUDRCompliance: React.FC = () => {
                             alt="GLAD | Global Land Analysis & Discovery"
                             width={214}
                             height={49}
+                            draggable={false}
                           />
                         </a>
                       </li>
@@ -149,6 +155,7 @@ const EUDRCompliance: React.FC = () => {
                             alt="Forest data Partnership"
                             width={175}
                             height={49}
+                            draggable={false}
                           />
                         </a>
                       </li>
@@ -165,6 +172,7 @@ const EUDRCompliance: React.FC = () => {
                             alt="Forest data Partnership"
                             width={151}
                             height={68}
+                            draggable={false}
                           />
                         </a>
                       </li>

@@ -30,7 +30,7 @@ const CompliancePage: NextPage<PageProps> = () => {
           />
           <meta name="og:type" content="website" />
           <meta name="og:url" content="https://landgriffon.com/methodology" />
-          <meta name="og:image" content="https://landgriffon.com/images/og/OG-Methodology.png" />
+          <meta name="og:image" content="https://landgriffon.com/images/og/OG-LandGriffon.png" />
         </Head>
 
         <Compliance />

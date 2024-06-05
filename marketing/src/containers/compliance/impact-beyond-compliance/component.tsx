@@ -46,6 +46,7 @@ const ImpactBeyondCompliance: React.FC = () => {
             alt="Waves"
             layout="fill"
             className="absolute left-0 bottom-0 top-0"
+            draggable={false}
           />
         </div>
       </div>

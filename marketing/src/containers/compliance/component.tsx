@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 
 import Hero from 'containers/compliance/hero';
-import Video from 'containers/compliance/video';
 import ContactUs from 'containers/compliance/contact-us';
 import EUDRTool from 'containers/compliance/eudr-tool';
 
@@ -33,7 +32,6 @@ const Compliance: React.FC = () => {
   return (
     <>
       <Hero />
-      <Video />
       <EUDRCompliance />
       <EUDRTool />
       <ContactUs />

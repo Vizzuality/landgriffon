@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Wrapper from 'containers/wrapper';
 import FadeIn from 'components/fade';
 
-import { EUDRToolFeatures1, EUDRToolFeatures2 } from './constants';
+import { EUDRToolFeatures } from './constants';
 
 const Card = ({ index, title, description }) => (
   <div className="space-y-2">
@@ -28,7 +28,7 @@ const EUDRTool: React.FC = () => {
 
           <FadeIn>
             <div className="md:grid md:grid-cols-3 w-full md:gap-x-14 flex flex-col space-y-14 md:space-y-0">
-              {EUDRToolFeatures1.map((feature) => (
+              {EUDRToolFeatures[0].map((feature) => (
                 <Card key={feature.title} {...feature} />
               ))}
             </div>
@@ -36,20 +36,22 @@ const EUDRTool: React.FC = () => {
 
           <FadeIn>
             <div className="w-full space-y-4 md:py-16">
-              <div className="relative max-w-3xl">
+              <div className="relative lg:max-w-3xl md:max-w-2xl max-w-sm">
                 <Image
                   width={728}
                   height={410}
                   layout="responsive"
                   src="/images/compliance/eudr_tool.png"
                   alt="EUDR Tool"
+                  draggable={false}
                 />
-                <div className="md:absolute md:top-0 md:right-0 md:transform md:translate-x-1/2 md:translate-y-1/2">
+                <div className="absolute md:top-0 lg:right-0 md:right-20 right-28 -top-3  transform translate-x-1/2 translate-y-1/2">
                   <Image
                     width={443}
                     height={221}
                     src="/images/compliance/eudr_tool_country.png"
                     alt="EUDR Tool Countries view"
+                    draggable={false}
                   />
                 </div>
               </div>
@@ -58,7 +60,7 @@ const EUDRTool: React.FC = () => {
 
           <FadeIn>
             <div className="md:grid md:grid-cols-3 w-full md:gap-x-14 flex flex-col space-y-14 md:space-y-0">
-              {EUDRToolFeatures2.map((feature) => (
+              {EUDRToolFeatures[1].map((feature) => (
                 <Card key={feature.title} {...feature} />
               ))}
             </div>

@@ -75,7 +75,7 @@ export const Carousel: React.FC<CarouselProps> = ({
     <div className="w-full">
       <div
         role="presentation"
-        className="overflow-hidden"
+        className="overflow-hidden space-x-5"
         onMouseOver={() => {
           if (timer.current) clearInterval(timer.current);
           setPause(true);

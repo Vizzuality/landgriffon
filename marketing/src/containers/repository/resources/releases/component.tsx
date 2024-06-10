@@ -33,7 +33,7 @@ const DatasetReleases: React.FC = () => (
                       className="flex space-x-5 font-bold items-center"
                     >
                       <span className="underline whitespace-nowrap">Go to source</span>
-                      <Icon icon={ARROW_SVG} className="w-3 h-3 fil-current" />
+                      <Icon icon={ARROW_SVG} className="w-3 h-3 fill-black" />
                     </a>
                   </Link>
                 </li>
@@ -57,7 +57,7 @@ const DatasetReleases: React.FC = () => (
                       className="flex space-x-5 font-bold items-center"
                     >
                       <span className="underline whitespace-nowrap">Go to source</span>
-                      <Icon icon={ARROW_SVG} className="w-3 h-3 fil-current" />
+                      <Icon icon={ARROW_SVG} className="w-3 h-3 fill-black" />
                     </a>
                   </Link>
                 </li>

@@ -1,12 +1,18 @@
 import { FC, useState } from 'react';
-import FadeIn from 'components/fade';
 
-import Wrapper from 'containers/wrapper';
-import Carousel from 'components/carousel/component';
+import Image from 'next/image';
 import Link from 'next/link';
-import Icon from 'components/icon';
 
-import ARROW_SVG from 'svgs/ui/arrow-top-right.svg?sprite';
+import { motion } from 'framer-motion';
+
+import Carousel from 'components/carousel/component';
+import FadeIn from 'components/fade';
+import Icon from 'components/icon';
+import Wrapper from 'containers/wrapper';
+
+import cx from 'classnames';
+
+import ARROW_SVG from 'svgs/ui/arrow-right.svg?sprite';
 
 import { SLIDES } from './slides';
 
@@ -15,6 +21,23 @@ const DiscoverOurJourney: FC = () => {
   return (
     <section className="relative py-12 space-y-12 bg-blue-600 bg-cover md:space-y-64 md:py-36 overflow-hidden text-white">
       <Wrapper>
+        <Image
+          src="/images/repository/decoration.svg"
+          alt="Landgriffon"
+          width={79.61}
+          height={70}
+          priority
+        />
+        <motion.div
+          className="relative py-12 md:py-32"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.75, delay: 0.1 }}
+        >
+          <h2 className="text-4xl font-black uppercase md:text-6xl font-display">
+            DISCOVER MORE, READ OUR BLOGS
+          </h2>
+        </motion.div>
         <FadeIn>
           <div className="space-y-10 pb-20">
             <div className="space-y-11">
@@ -23,9 +46,9 @@ const DiscoverOurJourney: FC = () => {
                   Discover our journey
                 </h2>
                 <Link href="/contact">
-                  <a className="flex space-x-4 text-orange-500 font-semibold">
+                  <a className="flex space-x-4 text-orange-500 font-semibold items-center">
                     <span>Discover more about us</span>
-                    <Icon icon={ARROW_SVG} className="w-4 h-4 rotate-12" />
+                    <Icon icon={ARROW_SVG} className="w-4 h-4 fill-orange-500 -rotate-45" />
                   </a>
                 </Link>
               </div>
@@ -40,11 +63,29 @@ const DiscoverOurJourney: FC = () => {
                   autoplay={10000}
                   options={{
                     duration: 0,
-                    circular: true,
+                    circular: false,
+                    moveType: 'freeScroll',
                   }}
                 />
 
-                <div className="flex justify-center py-5 mt-10 space-x-5">
+                <div className="flex justify-center py-5 mt-10 space-x-5 items-center">
+                  <button
+                    type="button"
+                    aria-label="dot-element"
+                    onClick={() => {
+                      setSlide(slide - 1);
+                    }}
+                    disabled={slide === 0}
+                    className="relative text-orange-500"
+                  >
+                    <Icon
+                      icon={ARROW_SVG}
+                      className={cx({
+                        'w-6 h-6 rotate-180 font-bold fill-orange-500 stroke-2': true,
+                        'opacity-50': slide === 0,
+                      })}
+                    />
+                  </button>
                   {SLIDES.map((sl, i) => {
                     return (
                       <button
@@ -62,6 +103,23 @@ const DiscoverOurJourney: FC = () => {
                       </button>
                     );
                   })}
+                  <button
+                    type="button"
+                    aria-label="dot-element"
+                    onClick={() => {
+                      setSlide(slide + 1);
+                    }}
+                    disabled={slide === SLIDES.length - 1}
+                    className={cx({
+                      'w-6 h-6 rotate-180 font-bold fill-orange-500 stroke-2': true,
+                      'opacity-50': slide === SLIDES.length - 1,
+                    })}
+                  >
+                    <Icon
+                      icon={ARROW_SVG}
+                      className="w-6 h-6 font-bold fill-orange-500 stroke-2 rotate-180"
+                    />
+                  </button>
                 </div>
               </div>
             </div>

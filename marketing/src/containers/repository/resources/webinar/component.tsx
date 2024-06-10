@@ -31,8 +31,12 @@ const Webinar: React.FC = () => (
             ))}
             <li key="webinar" className="flex flex-col space-y-4 bg-orange-500 p-[35px]">
               <p className="font-light">Watch our webinar on demand to learn more</p>
-              <Link href="/webinar">
-                <a className="underline space-x-5 font-bold flex items-center">
+              <Link href="https://bit.ly/3GbWOMa">
+                <a
+                  className="underline space-x-5 font-bold flex items-center"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
                   <span>Join us</span>
                   <Icon icon={ARROW_SVG} className="w-14 h-10" />
                 </a>

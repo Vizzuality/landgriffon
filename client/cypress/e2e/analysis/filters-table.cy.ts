@@ -98,11 +98,11 @@ describe('Analysis filters', () => {
 
       $tableRows.first().find('button').contains('View detail').click();
 
-      $tableHeader.contains(waterQuality[0].attributes.name);
+      $tableHeader.contains(waterQuality[1].attributes.name);
 
       cy.url().should(
         'include',
-        `indicators=${waterQuality.map(({ id }) => id).join(',')}&detail=${waterQuality[0].id}`,
+        `indicators=${waterQuality.map(({ id }) => id).join(',')}&detail=${waterQuality[1].id}`,
       );
     });
   });

@@ -81,6 +81,41 @@
           }
       },
       {
+        "type": "indicators",
+        "id": "d5f945c9-8636-45a2-a7c9-67a1dc8e687a",
+        "attributes": {
+            "id": "d5f945c9-8636-45a2-a7c9-67a1dc8e687a",
+            "name": "Freshwater nutrient load assimilation volume",
+            "description": "The freshwater nutrient load assimilation volume indicator estimates the annual average water volume required to assimilate the nutrient load added by the raw material sourced.",
+            "category": "Water quality",
+            "status": "active",
+            "metadata": {
+                "name": "Freshwater nutrient load assimilation volume",
+                "units": "Mm3/yr",
+                "source": [
+                    "Mekonnen 2011",
+                    "Mekonnen 2012"
+                ],
+                "license": "CC BY 4.0",
+                "citation": [
+                    "Mekonnen, M.M. & Hoekstra, A.Y. (2011) The green, blue and grey water footprint of crops and derived crop products, Hydrology and Earth System Sciences, 15(5): 1577-1600.",
+                    "Mekonnen, M.M. & Hoekstra, A.Y. (2012) A global assessment of the water footprint of farm animal products, Ecosystems, 15(3): 401–415."
+                ],
+                "name_code": "NL",
+                "resolution": "",
+                "short_name": "Nutrient load",
+                "description": "The freshwater nutrient load assimilation volume indicator estimates the annual average water volume required to assimilate the nutrient load added by the raw material sourced.",
+                "indicator_type": "farm-level",
+                "interpretation": "The nutrient load indicator describes the average volume of freshwater required to absorb the nutrient load created by production of the raw material. It is intended to align with the Science Based Targets Network (SBTN) water quality target indicator (Science Based Targets Network 2023b).",
+                "date_of_content": "1996-2005",
+                "geographic_coverage": "Global coverage.",
+                "frequency_of_updates": "",
+                "impact_type_category": "Water quality"
+            },
+            "nameCode": "NL"
+        }
+      },
+      {
           "type": "indicators",
           "id": "a39394be-ad57-41bc-9c2c-be0949ec6193",
           "attributes": {
@@ -153,41 +188,6 @@
                   "impact_type_category": "Water quantity"
               },
               "nameCode": "UWU"
-          }
-      },
-      {
-          "type": "indicators",
-          "id": "d5f945c9-8636-45a2-a7c9-67a1dc8e687a",
-          "attributes": {
-              "id": "d5f945c9-8636-45a2-a7c9-67a1dc8e687a",
-              "name": "Freshwater nutrient load assimilation volume",
-              "description": "The freshwater nutrient load assimilation volume indicator estimates the annual average water volume required to assimilate the nutrient load added by the raw material sourced.",
-              "category": "Water quality",
-              "status": "active",
-              "metadata": {
-                  "name": "Freshwater nutrient load assimilation volume",
-                  "units": "Mm3/yr",
-                  "source": [
-                      "Mekonnen 2011",
-                      "Mekonnen 2012"
-                  ],
-                  "license": "CC BY 4.0",
-                  "citation": [
-                      "Mekonnen, M.M. & Hoekstra, A.Y. (2011) The green, blue and grey water footprint of crops and derived crop products, Hydrology and Earth System Sciences, 15(5): 1577-1600.",
-                      "Mekonnen, M.M. & Hoekstra, A.Y. (2012) A global assessment of the water footprint of farm animal products, Ecosystems, 15(3): 401–415."
-                  ],
-                  "name_code": "NL",
-                  "resolution": "",
-                  "short_name": "Nutrient load",
-                  "description": "The freshwater nutrient load assimilation volume indicator estimates the annual average water volume required to assimilate the nutrient load added by the raw material sourced.",
-                  "indicator_type": "farm-level",
-                  "interpretation": "The nutrient load indicator describes the average volume of freshwater required to absorb the nutrient load created by production of the raw material. It is intended to align with the Science Based Targets Network (SBTN) water quality target indicator (Science Based Targets Network 2023b).",
-                  "date_of_content": "1996-2005",
-                  "geographic_coverage": "Global coverage.",
-                  "frequency_of_updates": "",
-                  "impact_type_category": "Water quality"
-              },
-              "nameCode": "NL"
           }
       },
       {

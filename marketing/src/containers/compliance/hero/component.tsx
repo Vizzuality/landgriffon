@@ -2,7 +2,6 @@ import { FC } from 'react';
 import { useEffect, useRef, useCallback } from 'react';
 import { useInView } from 'react-intersection-observer';
 import Wrapper from 'containers/wrapper';
-import { Media } from 'components/media-query';
 import Image from 'next/image';
 import YouTube from 'react-youtube';
 import { motion } from 'framer-motion';

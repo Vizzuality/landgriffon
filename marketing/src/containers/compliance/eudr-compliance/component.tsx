@@ -41,7 +41,7 @@ const EUDRCompliance: React.FC = () => {
                     </a>{' '}
                     methodology from Forest Data Partnership and FAO, and verified using
                     high-resolution satellite imagery, our tool ensures accuracy and reliability in
-                    deforestation assessmen and decision-making..
+                    deforestation assessment and decision-making.
                   </p>
                   <div className="space-y-5">
                     <h4 className="text-xs">Base data from:</h4>
@@ -70,7 +70,7 @@ const EUDRCompliance: React.FC = () => {
                             layout="intrinsic"
                             priority
                             src="/images/logos/wur_logo.png"
-                            alt="Wageningen University & Reseacrh"
+                            alt="Wageningen University & Research"
                             width={228}
                             height={80}
                             draggable={false}

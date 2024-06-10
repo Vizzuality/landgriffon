@@ -33,7 +33,7 @@ const ImpactBeyondCompliance: React.FC = () => {
 
               <p>
                 Time to harness technology to develop holistic sustainability strategies and
-                confidently showcase your company&apos;s impactful contributions to a better world. 
+                confidently showcase your company&apos;s impactful contributions to a better world.
               </p>
             </div>
           </FadeIn>

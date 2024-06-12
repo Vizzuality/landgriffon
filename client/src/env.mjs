@@ -30,7 +30,7 @@ export const env = createEnv({
     // ? URL (including protocol) of the API
     NEXT_PUBLIC_API_URL: z.string().url(),
     // ? enables access to EUDR page
-    NEXT_PUBLIC_ENABLE_EUDR: castToBoolean.default(false),
+    NEXT_PUBLIC_ENABLE_EUDR: castToBoolean.default(true),
     NEXT_PUBLIC_PLANET_API_KEY: z.string().default('PLAK6679039df83f414faf798ba4ad4530db'),
     NEXT_PUBLIC_CARTO_FOREST_ACCESS_TOKEN: z
       .string()
@@ -54,7 +54,7 @@ export const env = createEnv({
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-    NEXT_PUBLIC_ENABLE_EUDR: true,
+    NEXT_PUBLIC_ENABLE_EUDR: process.env.NEXT_PUBLIC_ENABLE_EUDR,
     NEXT_PUBLIC_PLANET_API_KEY: process.env.NEXT_PUBLIC_PLANET_API_KEY,
     NEXT_PUBLIC_CARTO_FOREST_ACCESS_TOKEN: process.env.NEXT_PUBLIC_CARTO_FOREST_ACCESS_TOKEN,
     NEXT_PUBLIC_CARTO_DEFORESTATION_ACCESS_TOKEN:

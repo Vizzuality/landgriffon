@@ -51,7 +51,7 @@ $$
         material_h3_column_name varchar;
         h3_resolution integer;
         deforestation_h3_table_name varchar := 'h3_grid_deforestation_global'; --update with new deforestation table
-        deforestation_h3_column_name varchar := 'hansenLoss2020HaBuffered';
+        deforestation_h3_column_name varchar := 'hansenLossBuffered2021';
         sum float;
 
     BEGIN
@@ -86,7 +86,7 @@ $$
         material_h3_column_name varchar;
         h3_resolution integer;
         carbon_h3_table_name varchar := 'h3_grid_ghg_global';
-        carbon_h3_column_name varchar := 'forestGhg2020Buffered';
+        carbon_h3_column_name varchar := 'forestGhgBuffered2021';
         sum float;
 
     BEGIN

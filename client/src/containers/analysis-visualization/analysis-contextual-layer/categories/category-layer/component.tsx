@@ -45,7 +45,7 @@ const CategoryLayer = ({
               }}
             />
             {previewStatus === 'loading' && isPreviewActive ? (
-              <Loading />
+              <Loading className="h-4 w-4" />
             ) : (
               <TogglePreview
                 isPreviewActive={isPreviewActive}

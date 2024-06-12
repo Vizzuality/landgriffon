@@ -1,5 +1,5 @@
-import { createEnv } from '@t3-oss/env-nextjs';
-import { z } from 'zod';
+import {createEnv} from '@t3-oss/env-nextjs';
+import {z} from 'zod';
 
 const castToBoolean = z.preprocess((/** @type {string} */ val) => val === 'true', z.boolean());
 
@@ -54,11 +54,11 @@ export const env = createEnv({
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-    NEXT_PUBLIC_ENABLE_EUDR: process.env.NEXT_PUBLIC_ENABLE_EUDR,
+    NEXT_PUBLIC_ENABLE_EUDR: true,
     NEXT_PUBLIC_PLANET_API_KEY: process.env.NEXT_PUBLIC_PLANET_API_KEY,
     NEXT_PUBLIC_CARTO_FOREST_ACCESS_TOKEN: process.env.NEXT_PUBLIC_CARTO_FOREST_ACCESS_TOKEN,
     NEXT_PUBLIC_CARTO_DEFORESTATION_ACCESS_TOKEN:
-      process.env.NEXT_PUBLIC_CARTO_DEFORESTATION_ACCESS_TOKEN,
+    process.env.NEXT_PUBLIC_CARTO_DEFORESTATION_ACCESS_TOKEN,
     NEXT_PUBLIC_CARTO_RADD_ACCESS_TOKEN: process.env.NEXT_PUBLIC_CARTO_RADD_ACCESS_TOKEN,
     NEXT_PUBLIC_FILE_UPLOADER_MAX_SIZE: process.env.NEXT_PUBLIC_FILE_UPLOADER_MAX_SIZE,
   },

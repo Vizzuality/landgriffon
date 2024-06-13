@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 
 import classNames from 'classnames';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { XIcon } from '@heroicons/react/solid';
 import { FocusScope } from '@react-aria/focus';
 import { useOverlay, usePreventScroll, useModal, OverlayContainer } from '@react-aria/overlays';
@@ -32,7 +32,7 @@ export const Modal: React.FC<ModalProps> = ({
   usePreventScroll({ isDisabled: !open });
 
   return (
-    <AnimatePresence>
+    <>
       {open && (
         <OverlayContainer>
           <motion.div
@@ -101,7 +101,7 @@ export const Modal: React.FC<ModalProps> = ({
           </motion.div>
         </OverlayContainer>
       )}
-    </AnimatePresence>
+    </>
   );
 };
 

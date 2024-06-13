@@ -18,6 +18,7 @@ import { SLIDES } from './slides';
 
 const DiscoverOurJourney: FC = () => {
   const [slide, setSlide] = useState(0);
+
   return (
     <section className="relative py-12 space-y-12 bg-blue-600 bg-cover md:space-y-64 md:py-36 overflow-hidden text-white">
       <Wrapper>
@@ -46,25 +47,29 @@ const DiscoverOurJourney: FC = () => {
                   Discover our journey
                 </h2>
                 <Link href="/contact">
-                  <a className="flex space-x-4 text-orange-500 font-semibold items-center">
+                  <a
+                    className="flex space-x-4 text-orange-500 font-semibold items-center cursor-pointer"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <span>Discover more about us</span>
                     <Icon icon={ARROW_SVG} className="w-4 h-4 fill-orange-500 -rotate-45" />
                   </a>
                 </Link>
               </div>
 
-              <div>
+              <div className="w-full">
                 <Carousel
                   slide={slide}
                   slides={SLIDES}
                   onChange={(i) => {
                     setSlide(i);
                   }}
-                  autoplay={10000}
+                  autoplay={0}
                   options={{
                     duration: 0,
                     circular: false,
-                    moveType: 'freeScroll',
+                    align: 'prev',
                   }}
                 />
 
@@ -92,6 +97,7 @@ const DiscoverOurJourney: FC = () => {
                         key={sl.id}
                         type="button"
                         aria-label="dot-element"
+                        disabled={slide === i}
                         onClick={() => {
                           setSlide(i);
                         }}

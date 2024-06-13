@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 
 import type { CookiesProps } from './types';
@@ -7,7 +7,8 @@ import Button from 'components/button';
 
 export const CookieModal: React.FC<CookiesProps> = ({ open, onAccept, onReject }: CookiesProps) => {
   return (
-    <AnimatePresence>
+    // <AnimatePresence>
+    <>
       {open && (
         <div>
           <motion.div
@@ -56,7 +57,7 @@ export const CookieModal: React.FC<CookiesProps> = ({ open, onAccept, onReject }
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </>
   );
 };
 

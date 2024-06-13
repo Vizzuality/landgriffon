@@ -2,6 +2,8 @@ import React, { ReactElement, useEffect, useRef, useState, cloneElement } from '
 
 import Flicking, { ERROR_CODE, FlickingError } from '@egjs/react-flicking';
 
+import { Fade } from '@egjs/flicking-plugins';
+
 export interface CarouselProps {
   slide: number;
   slides: {
@@ -27,6 +29,7 @@ export const Carousel: React.FC<CarouselProps> = ({
   const slider = useRef(null);
   const timer = useRef(null);
   const [pause, setPause] = useState(false);
+  const plugings = new Fade();
 
   useEffect(() => {
     if (timer.current) clearInterval(timer.current);
@@ -98,7 +101,7 @@ export const Carousel: React.FC<CarouselProps> = ({
           onWillChange={({ index }) => {
             if (onChange) onChange(index);
           }}
-          {...options}
+          {...{ ...options, plugins: [plugings] }}
         >
           {slides.map((sl) => {
             return cloneElement(sl.content, {

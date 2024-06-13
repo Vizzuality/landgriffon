@@ -5,9 +5,18 @@ import FadeIn from 'components/fade';
 import Link from 'next/link';
 import Icon from 'components/icon';
 
+import { motion } from 'framer-motion';
+
 import ARROW_SVG from 'svgs/ui/arrow-right.svg?sprite';
 
 import { DATA } from './constants';
+
+const arrowMotion = {
+  initial: { x: 0 },
+  animate: { x: 5 },
+  hover: { x: 20 },
+  transition: { duration: 0.5, ease: 'easeInOut' },
+};
 
 const Webinar: React.FC = () => (
   <section className="relative bg-white">
@@ -31,15 +40,20 @@ const Webinar: React.FC = () => (
             ))}
             <li key="webinar" className="flex flex-col space-y-4 bg-orange-500 p-[35px]">
               <p className="font-light">Watch our webinar on demand to learn more</p>
-              <Link href="https://bit.ly/3GbWOMa">
-                <a
-                  className="underline space-x-5 font-bold flex items-center"
+              <Link href="https://bit.ly/3GbWOMa" passHref>
+                <motion.a
+                  whileHover="hover"
+                  initial="initial"
+                  animate="animate"
+                  className="underline space-x-5 font-bold flex items-center hover:font-black"
                   target="_blank"
                   rel="noreferrer noopener"
                 >
                   <span>Join us</span>
-                  <Icon icon={ARROW_SVG} className="w-14 h-10" />
-                </a>
+                  <motion.div variants={arrowMotion}>
+                    <Icon icon={ARROW_SVG} className="w-14 h-10" />
+                  </motion.div>
+                </motion.a>
               </Link>
             </li>
           </ul>

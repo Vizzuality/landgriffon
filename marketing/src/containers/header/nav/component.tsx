@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 
 import cx from 'classnames';
 import { useMediaMatch } from 'rooks';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 import lockScroll from 'react-lock-scroll';
 import Icon from 'components/icon/component';
@@ -21,7 +21,8 @@ const HeaderNav: React.FC<NavProps> = ({ open }: NavProps) => {
   lockScroll(!isLg && open);
 
   return (
-    <AnimatePresence>
+    // <AnimatePresence>
+    <>
       {(open || isLg) && (
         <motion.nav
           initial={{
@@ -189,7 +190,7 @@ const HeaderNav: React.FC<NavProps> = ({ open }: NavProps) => {
           </div>
         </motion.nav>
       )}
-    </AnimatePresence>
+    </>
   );
 };
 

@@ -5,17 +5,16 @@ import FadeIn from 'components/fade';
 import Link from 'next/link';
 import Icon from 'components/icon';
 
-import { motion } from 'framer-motion';
+import { Variants, motion } from 'framer-motion';
 
 import ARROW_SVG from 'svgs/ui/arrow-right.svg?sprite';
 
 import { DATA } from './constants';
 
-const arrowMotion = {
+const arrowMotion: Variants = {
   initial: { x: 0 },
   animate: { x: 5 },
   hover: { x: 20 },
-  transition: { duration: 0.5, ease: 'easeInOut' },
 };
 
 const Webinar: React.FC = () => (
@@ -50,7 +49,10 @@ const Webinar: React.FC = () => (
                   rel="noreferrer noopener"
                 >
                   <span>Join us</span>
-                  <motion.div variants={arrowMotion}>
+                  <motion.div
+                    variants={arrowMotion}
+                    transition={{ duration: 0.5, ease: 'easeInOut' }}
+                  >
                     <Icon icon={ARROW_SVG} className="w-14 h-10" />
                   </motion.div>
                 </motion.a>

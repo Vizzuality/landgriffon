@@ -6,7 +6,7 @@ on:
       - 'main'
       - 'staging'
       - 'test'
-      - 'benjerry'
+      - 'expo'
       - 'demo'
       - 'dev'
     paths:

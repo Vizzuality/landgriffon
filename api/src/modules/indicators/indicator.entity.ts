@@ -76,7 +76,7 @@ export class Indicator extends BaseEntity {
   @ApiProperty()
   status!: INDICATOR_STATUS;
 
-  @Column({ type: 'text', nullable: false })
+  @Column({ type: 'text', nullable: true })
   category: string;
 
   @Column({ type: 'jsonb', nullable: true })

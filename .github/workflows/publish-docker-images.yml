@@ -10,7 +10,7 @@ on:
       - 'main'
       - 'staging'
       - 'test'
-      - 'benjerry'
+      - 'expo'
       - 'gcp'
       - 'dev'
       - 'demo'

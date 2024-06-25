@@ -253,34 +253,34 @@ export class ImpactRepository {
     switch (impactDataDto.groupBy) {
       case GROUP_BY_VALUES.MATERIAL:
         selectQueryBuilder
-          .addSelect('material.id', 'identifier')
-          .groupBy('material.id');
+          .addSelect('material.name', 'name')
+          .groupBy('material.name');
         break;
       case GROUP_BY_VALUES.REGION:
         selectQueryBuilder
-          .addSelect('adminRegion.id', 'identifier')
-          .groupBy('adminRegion.id');
+          .addSelect('adminRegion.name', 'name')
+          .groupBy('adminRegion.name');
         break;
       case GROUP_BY_VALUES.T1_SUPPLIER:
         selectQueryBuilder
-          .addSelect('supplier.id', 'identifier')
+          .addSelect('supplier.name', 'name')
           .andWhere('supplier.name IS NOT NULL')
-          .groupBy('supplier.id');
+          .groupBy('supplier.name');
         break;
       case GROUP_BY_VALUES.PRODUCER:
         selectQueryBuilder
-          .addSelect('supplier.id', 'identifier')
+          .addSelect('supplier.name', 'name')
           .andWhere('supplier.name IS NOT NULL')
-          .groupBy('supplier.id');
+          .groupBy('supplier.name');
         break;
       case GROUP_BY_VALUES.BUSINESS_UNIT:
         selectQueryBuilder
-          .addSelect('businessUnit.id', 'identifier')
-          .groupBy('businessUnit.id');
+          .addSelect('businessUnit.name', 'name')
+          .groupBy('businessUnit.name');
         break;
       case GROUP_BY_VALUES.LOCATION_TYPE:
         selectQueryBuilder
-          .addSelect('sourcingLocation.locationType', 'identifier')
+          .addSelect('sourcingLocation.locationType', 'name')
           .groupBy('sourcingLocation.locationType');
         break;
       default:
@@ -292,7 +292,7 @@ export class ImpactRepository {
         `sourcingRecords.year, indicator.id, sourcingLocation.interventionType`,
       )
       .orderBy('year', 'ASC')
-      .addOrderBy('identifier');
+      .addOrderBy('name');
 
     return selectQueryBuilder;
   }

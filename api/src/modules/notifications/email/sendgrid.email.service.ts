@@ -11,8 +11,7 @@ import * as sgMail from '@sendgrid/mail';
 import * as config from 'config';
 import { MailDataRequired } from '@sendgrid/helpers/classes/mail';
 
-// Can't check rn, but this address might be authenticated in Sendgrid as it is used in the mkt site
-const SENDER_MAIL_ADDRESS: string = 'hello@landgriffon.com';
+const SENDER_MAIL_ADDRESS: string = 'no-reply@landgriffon.com';
 
 @Injectable()
 export class SendgridEmailService implements IEmailService {
@@ -29,18 +28,7 @@ export class SendgridEmailService implements IEmailService {
   }
 
   async sendMail(mail: SendMailDTO): Promise<any> {
-    const msg: MailDataRequired = {
-      ...mail,
-      from: SENDER_MAIL_ADDRESS,
-      trackingSettings: {
-        clickTracking: {
-          enable: false,
-        },
-        openTracking: {
-          enable: false,
-        },
-      },
-    };
+    const msg: MailDataRequired = { ...mail, from: SENDER_MAIL_ADDRESS };
     try {
       return sgMail.send(msg);
     } catch (e) {

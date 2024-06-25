@@ -31,9 +31,6 @@ export enum INDICATOR_NAME_CODES {
   ENL = 'ENL',
   NCE = 'NCE',
   FLIL = 'FLIL',
-  WW = 'WW',
-  WC = 'WC',
-  WGUWU = 'WGUWU',
 }
 
 export const indicatorResource: BaseServiceResource = {
@@ -79,7 +76,7 @@ export class Indicator extends BaseEntity {
   @ApiProperty()
   status!: INDICATOR_STATUS;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'text', nullable: false })
   category: string;
 
   @Column({ type: 'jsonb', nullable: true })

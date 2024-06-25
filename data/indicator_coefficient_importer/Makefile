@@ -1,3 +1,7 @@
-all:
-	@echo "Running indicator_coefficient_importer python script from Makefile..."
-	python indicator_coefficient_importer.py
+all: blue-water-indicator-coefficients grey-water-indicator-coefficients
+
+blue-water-indicator-coefficients:
+	python indicator_coefficient_importer.py data/bwfp_indicator_coefficients.csv WU 2005
+
+grey-water-indicator-coefficients:
+	python indicator_coefficient_importer.py data/gwfp_indicator_coefficients.csv NL 2005

@@ -2,7 +2,6 @@ import {
   Check,
   Column,
   Entity,
-  In,
   Index,
   JoinColumn,
   ManyToOne,
@@ -137,7 +136,6 @@ export class SourcingLocation extends TimestampedBaseEntity {
   material: Material;
 
   @ApiPropertyOptional()
-  @Index('sourcing_location_material_id_index')
   @Column()
   materialId: string;
 
@@ -149,7 +147,6 @@ export class SourcingLocation extends TimestampedBaseEntity {
   adminRegion: AdminRegion;
 
   @Column({ nullable: true })
-  @Index('sourcing_location_admin_region_id_index')
   @ApiPropertyOptional()
   adminRegionId: string;
 

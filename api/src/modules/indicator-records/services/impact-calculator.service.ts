@@ -22,15 +22,16 @@ import { IndicatorRecordCalculatedValuesDto } from 'modules/indicator-records/dt
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
-import { ImpactQueryBuilder } from 'modules/indicator-records/services/indicator-dependency-manager.service';
+import { H3DataService } from 'modules/h3-data/h3-data.service';
+import { IndicatorQueryDependencyManager } from 'modules/indicator-records/services/indicator-dependency-manager.service';
 import { CachedDataService } from 'modules/cached-data/cached-data.service';
 import {
   CACHED_DATA_TYPE,
   CachedData,
 } from 'modules/cached-data/cached-data.entity';
-import { ImportProgressEmitter } from 'modules/events/import-data-progress/import-progress.emitter';
-import { ImpactCalculationProgressTracker } from 'modules/impact/progress-tracker/impact-calculation.progress-tracker';
-import { ImportProgressTrackerFactory } from 'modules/events/import-data-progress/import-progress.tracker.factory';
+import { ImportProgressEmitter } from 'modules/events/import-data/import-progress.emitter';
+import { ImpactCalculationProgressTracker } from '../../impact/progress-tracker/impact-calculation.progress-tracker';
+import { ImportProgressTrackerFactory } from '../../events/import-data/import-progress.tracker.factory';
 
 /**
  * @description: This is PoC (Proof of Concept) for the updated LG methodology v0.1
@@ -50,7 +51,7 @@ export class ImpactCalculator {
     private readonly indicatorRecordRepository: IndicatorRecordRepository,
     private readonly materialToH3: MaterialsToH3sService,
     private readonly indicatorService: IndicatorsService,
-    private readonly dependencyManager: ImpactQueryBuilder,
+    private readonly dependencyManager: IndicatorQueryDependencyManager,
     private readonly cachedDataService: CachedDataService,
     private readonly dataSource: DataSource,
     private readonly importProgress: ImportProgressEmitter,
@@ -382,20 +383,6 @@ export class ImpactCalculator {
             (100 * rawData.production) || 0
         );
       },
-      [INDICATOR_NAME_CODES.WW]: () => {
-        return rawData[INDICATOR_NAME_CODES.WW] * tonnage || 0;
-      },
-      [INDICATOR_NAME_CODES.WC]: () => {
-        return rawData[INDICATOR_NAME_CODES.WC] * tonnage || 0;
-      },
-      [INDICATOR_NAME_CODES.WGUWU]: () => {
-        const waterWithdrawalValue: number =
-          rawData[INDICATOR_NAME_CODES.WW] * tonnage || 0;
-        return (
-          (rawData[INDICATOR_NAME_CODES.WGUWU] * waterWithdrawalValue) /
-            (100 * rawData.production) || 0
-        );
-      },
     };
 
     for (const [key, value] of Object.entries(calculations)) {
@@ -436,35 +423,39 @@ export class ImpactCalculator {
       //      indicator value calculation has not been refactored. It remains to be reworked
       const response: any = await this.dataSource.query(
         `
-          SELECT
-            -- TODO: Hack to retrieve 1 materialH3Id for each sourcingRecord. This should include a year fallback strategy in the stored procedures
-            --       used below
-            distinct
-          on (sr.id)
-            sr.id as "sourcingRecordId",
-            sr.tonnage,
-            sr.year,
-            slwithmaterialh3data.id as "sourcingLocationId",
-            slwithmaterialh3data."materialH3DataId",
-            ${params}
+        SELECT
+          -- TODO: Hack to retrieve 1 materialH3Id for each sourcingRecord. This should include a year fallback strategy in the stored procedures
+          --       used below
+          distinct on (sr.id)
+          sr.id as "sourcingRecordId",
+          sr.tonnage,
+          sr.year,
+          slwithmaterialh3data.id as "sourcingLocationId",
+          slwithmaterialh3data."materialH3DataId",
+          ${params}
 
-          FROM
-            sourcing_records sr
-            INNER JOIN
-            (
-            SELECT
-            sourcing_location.id, "scenarioInterventionId", "interventionType", mth."h3DataId" as "materialH3DataId", ${query}
-            FROM
-            sourcing_location
-            inner join
-            material_to_h3 mth
-            on
-            mth."materialId" = sourcing_location."materialId"
-            WHERE "scenarioInterventionId" IS NULL
-            AND "interventionType" IS NULL
-            and mth."type" = 'producer'
-            ) as slwithmaterialh3data
-          on sr."sourcingLocationId" = slwithmaterialh3data.id`,
+      FROM
+          sourcing_records sr
+          INNER JOIN
+              (
+                  SELECT
+                      sourcing_location.id,
+                      "scenarioInterventionId",
+                      "interventionType",
+                      mth."h3DataId" as "materialH3DataId",
+                      ${query}
+
+                  FROM
+                      sourcing_location
+                  inner join
+                    material_to_h3 mth
+                  on
+                    mth."materialId" = sourcing_location."materialId"
+                  WHERE "scenarioInterventionId" IS NULL
+                  AND "interventionType" IS NULL
+                  and mth."type" = 'producer'
+              ) as slwithmaterialh3data
+              on sr."sourcingLocationId" = slwithmaterialh3data.id`,
       );
       if (!response.length)
         this.logger.warn(

@@ -11,7 +11,7 @@ import {
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { AdminRegionOfProductionService } from 'modules/geo-coding/strategies/admin-region-of-production.service';
 import { GeoCodingProgressTracker } from 'modules/geo-coding/progress-tracker/geo-coding.progress-tracker';
-import { ImportProgressTrackerFactory } from '../events/import-data-progress/import-progress.tracker.factory';
+import { ImportProgressTrackerFactory } from '../events/import-data/import-progress.tracker.factory';
 
 interface locationInfo {
   locationAddressInput?: string;
@@ -93,7 +93,7 @@ export class GeoCodingService extends GeoCodingAbstractClass {
         progressTracker.trackProgress();
       } catch (e: any) {
         errors.push({
-          row: i + 5,
+          line: i + 5,
           error: e.message,
           type: 'geo-coding-error',
           sheet: 'sourcingData',

@@ -7,6 +7,7 @@ import { pickBy } from 'lodash-es';
 import { useAppSelector, useAppDispatch } from 'store/hooks';
 import {
   scenarios,
+  setComparisonEnabled,
   setCurrentScenario,
   setScenarioToCompare as setScenarioToCompareAction,
 } from 'store/features/analysis/scenarios';
@@ -63,6 +64,7 @@ const ScenariosComponent: React.FC<{ scrollref?: MutableRefObject<HTMLDivElement
       // TODO: deprecated, we'll keep only for retro-compatibility
       dispatch(setCurrentScenario(id));
       dispatch(setScenarioToCompareAction(null));
+      dispatch(setComparisonEnabled(false));
     },
     [dispatch, push, query],
   );

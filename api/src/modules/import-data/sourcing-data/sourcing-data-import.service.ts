@@ -68,9 +68,10 @@ export class SourcingDataImportService {
 
   async importSourcingData(filePath: string, taskId: string): Promise<any> {
     this.logger.log(`Starting import process`);
+    await this.fileService.isFilePresentInFs(filePath);
     try {
       const parsedXLSXDataset: SourcingRecordsSheets =
-        await this.fileService.transformToJsonInWorker(filePath, SHEETS_MAP);
+        await this.fileService.transformToJson(filePath, SHEETS_MAP);
 
       const { data: dtoMatchedData, validationErrors } =
         await this.excelValidator.validate(
@@ -165,7 +166,9 @@ export class SourcingDataImportService {
         await this.impactService.updateImpactView();
       } catch (err: any) {
         this.logger.error(err);
-        throw err;
+        throw new ServiceUnavailableException(
+          'Could not calculate Impact for current data. Please contact with the administrator',
+        );
       }
     } finally {
       await this.fileService.deleteDataFromFS(filePath);

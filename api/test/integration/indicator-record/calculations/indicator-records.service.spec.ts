@@ -247,9 +247,6 @@ describe('Impact Calculator Tests', () => {
         [INDICATOR_NAME_CODES.FLIL]: 0.3,
         [INDICATOR_NAME_CODES.ENL]: 0.1,
         [INDICATOR_NAME_CODES.GHG_FARM]: 0.2,
-        [INDICATOR_NAME_CODES.WW]: 0.3,
-        [INDICATOR_NAME_CODES.WC]: 0.4,
-        [INDICATOR_NAME_CODES.WGUWU]: 0.5,
       };
 
       //ACT

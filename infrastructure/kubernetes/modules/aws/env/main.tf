@@ -43,7 +43,7 @@ locals {
     for env in var.api_env_vars : env.name => env.value
   }
   api_env_vars_map = merge(local.default_api_env_vars_map, local.overlapping_api_env_vars_map)
-  api_env_vars = [
+  api_env_vars     = [
     for name, value in local.api_env_vars_map : {
       name  = name
       value = value
@@ -168,7 +168,7 @@ module "k8s_tiler" {
       value = "${module.k8s_api.api_service_name}.${var.environment}.svc.cluster.local"
     },
     {
-      name = "API_PORT"
+      name  = "API_PORT"
       // TODO: get port from api k8s service
       value = 3000
     },
@@ -224,7 +224,7 @@ module "k8s_data_import" {
   load_data = var.load_fresh_data
   arguments = var.data_import_arguments
 
-  env_vars = concat(var.data_import_env_vars, [
+  env_vars = [
     {
       name  = "API_POSTGRES_PORT"
       value = "5432"
@@ -237,11 +237,7 @@ module "k8s_data_import" {
       name  = "S3_COG_PATH"
       value = "processed/cogs"
     },
-    {
-      name : "DATA_BUCKET_NAME"
-      value : module.environment_bucket.instance-bucket-name
-    }
-  ])
+  ]
 
   secrets = [
     {
@@ -309,8 +305,8 @@ module "data-import-group" {
   max_size           = 2
   desired_size       = 1
   namespace          = var.environment
-  subnet_ids = [var.private_subnet_ids[0]]
-  labels = {
+  subnet_ids         = [var.private_subnet_ids[0]]
+  labels             = {
     type : "data-import-${var.environment}"
   }
 }
@@ -320,15 +316,6 @@ module "github_actions_frontend_secrets" {
   repo_name = var.repo_name
   branch    = var.repo_branch
   domain    = var.domain
-}
-
-
-module environment_bucket {
-  source      = "../s3"
-  bucket_name = var.environment
-  depends_on = [
-    module.k8s_namespace
-  ]
 }
 
 #module "data_import" {

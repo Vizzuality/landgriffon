@@ -49,7 +49,6 @@ import { Public } from 'decorators/public.decorator';
 import { ResetPasswordDto } from 'modules/authentication/dto/reset-password.dto';
 import { GetUser } from 'decorators/get-user.decorator';
 import { ScenariosService } from 'modules/scenarios/scenarios.service';
-import { TasksService } from 'modules/tasks/tasks.service';
 
 @ApiTags(userResource.className)
 @Controller(`/api/v1/users`)
@@ -59,7 +58,6 @@ export class UsersController {
   constructor(
     public readonly service: UsersService,
     private readonly scenarioService: ScenariosService,
-    private readonly taskService: TasksService,
     private readonly accessControl: AccessControl,
   ) {}
 
@@ -253,7 +251,6 @@ export class UsersController {
       userIdToDelete,
       requestingUserId,
     );
-    await this.taskService.updateTaskOwner(userIdToDelete, requestingUserId);
     return this.service.deleteUser(userIdToDelete);
   }
 }

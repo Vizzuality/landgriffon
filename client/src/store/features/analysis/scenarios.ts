@@ -7,6 +7,7 @@ import type { Scenario } from 'containers/scenarios/types';
 export type ScenarioComparisonMode = 'relative' | 'absolute';
 
 export type ScenariosState = {
+  isComparisonEnabled: boolean;
   comparisonMode: ScenarioComparisonMode;
   /**
    * The current scenario id
@@ -26,6 +27,7 @@ export type ScenariosState = {
 
 // Define the initial state using that type
 export const initialState: ScenariosState = {
+  isComparisonEnabled: false,
   comparisonMode: 'absolute',
   currentScenario: null,
   scenarioToCompare: null,
@@ -45,6 +47,13 @@ export const analysisScenariosSlice = createSlice({
     setCurrentScenario: (state, action: PayloadAction<ScenariosState['currentScenario']>) => ({
       ...state,
       currentScenario: action.payload,
+    }),
+    setComparisonEnabled: (
+      state,
+      action: PayloadAction<ScenariosState['isComparisonEnabled']>,
+    ) => ({
+      ...state,
+      isComparisonEnabled: action.payload,
     }),
     setScenarioToCompare: (state, action: PayloadAction<ScenariosState['scenarioToCompare']>) => ({
       ...state,
@@ -71,6 +80,7 @@ export const analysisScenariosSlice = createSlice({
 
 export const {
   setCurrentScenario,
+  setComparisonEnabled,
   setScenarioToCompare,
   setComparisonMode,
   setScenarioFilter,

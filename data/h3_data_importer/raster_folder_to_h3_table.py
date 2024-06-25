@@ -35,22 +35,13 @@ def check_srs(reference_raster: DatasetReader, raster: DatasetReader):
 
 def check_transform(reference_raster: DatasetReader, raster: DatasetReader):
     """Checks that raster has same transform as reference"""
-    # use the str representation since it is rounded and to 2 decimal places
-    # meaning that the discrepancy is not a rounding or floating point imprecision
-    if str(reference_raster.transform) != str(raster.transform):
+    if reference_raster.transform != raster.transform:
         message = (
-            f"Raster files have different Transform:\n{reference_raster.name}\n{reference_raster.transform}\n"
-            f"{raster.name}\n{raster.transform}"
+            f"Raster files have different Transform: {reference_raster.name} {reference_raster.transform} "
+            f"vs {raster.name} {raster.transform}"
         )
         log.error(message)
         raise ValueError(message)
-    # smaller discrepancies are allowed but warned
-    elif reference_raster.transform != raster.transform:
-        message = (
-            f"Raster files have different Transform:\n{reference_raster.name}\n{repr(reference_raster.transform)}\n"
-            f"{raster.name}\n{repr(raster.transform)}"
-        )
-        log.warning(message)
 
 
 def raster_to_h3(reference_raster: Path, h3_resolution: int, raster_file: Path) -> pd.DataFrame:
@@ -64,6 +55,7 @@ def raster_to_h3(reference_raster: Path, h3_resolution: int, raster_file: Path) 
         with rio.open(reference_raster) as ref:
             check_srs(ref, raster)
             check_transform(ref, raster)
+
         h3 = h3ronpy.raster.raster_to_dataframe(
             raster.read(1),
             transform=raster.transform,
@@ -260,11 +252,12 @@ def main(folder: Path, table: str, data_type: str, dataset: str, year: int, h3_r
     with multiprocessing.Pool(thread_count) as pool:
         h3s = pool.map(partial_raster_to_h3, raster_files)
     log.info(f"Joining H3 data of each raster into single dataframe for table {table}")
-    df: pd.DataFrame = h3s[0]
+    df = h3s[0]
     with click.progressbar(h3s[1:], label="Joining H3 dataframes") as pbar:
         for h3df in pbar:
-            df = df.join(h3df, how="outer")
+            df = df.join(h3df)
             del h3df
+
     # Part 2: Ingest h3 index into the database
     to_the_db(df, table, data_type, dataset, year, h3_res)
 

@@ -36,7 +36,7 @@ variable "domain" {
 }
 
 variable "private_subnet_ids" {
-  type = list(string)
+  type        = list(string)
   description = "IDs of the subnets used in the EKS cluster"
 }
 
@@ -80,8 +80,8 @@ variable "load_fresh_data" {
 }
 
 variable "data_import_arguments" {
-  type = list(string)
-  default = ["seed-data"]
+  type        = list(string)
+  default     = ["seed-data"]
   description = "Arguments to pass to the initial data import process"
 }
 
@@ -116,7 +116,7 @@ variable "api_env_vars" {
     value = string
   }))
   description = "Key-value pairs of env vars to make available to the api container"
-  default = []
+  default     = []
 }
 
 
@@ -127,7 +127,7 @@ variable "api_secrets" {
     secret_key  = string
   }))
   description = "List of secrets to make available to the api container"
-  default = []
+  default     = []
 }
 
 
@@ -137,14 +137,5 @@ variable "tiler_env_vars" {
     value = string
   }))
   description = "Key-value pairs of env vars to make available to the tiler container"
-  default = []
-}
-
-variable data_import_env_vars {
-  type = list(object({
-    name  = string
-    value = any
-  }))
-  description = "Key-value pairs of env vars to make available to the data import container"
-  default = []
+  default     = []
 }

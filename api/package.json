@@ -24,7 +24,7 @@
     "test:e2e": "NODE_OPTIONS=\"--max-old-space-size=6144\" node --expose-gc ./node_modules/.bin/jest --config test/jest-config.json --logHeapUsage --forceExit -i test/e2e/"
   },
   "engines": {
-    "node": "^22.11"
+    "node": "^18.16"
   },
   "dependencies": {
     "@google-cloud/bigquery": "^7.5.0",

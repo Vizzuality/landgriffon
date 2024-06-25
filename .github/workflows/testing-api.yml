@@ -40,10 +40,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Use Node.js 18.16
+        uses: actions/setup-node@v3
         with:
-          node-version-file: './api/.nvmrc'
+          node-version: '18.16'
 
       - name: Install API dependencies
         working-directory: api
@@ -88,10 +88,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Use Node.js 18.16
+        uses: actions/setup-node@v3
         with:
-          node-version-file: './api/.nvmrc'
+          node-version: '18.16'
 
       - name: Install API dependencies
         working-directory: api
@@ -114,10 +114,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Use Node.js 18.16
+        uses: actions/setup-node@v3
         with:
-          node-version-file: './api/.nvmrc'
+          node-version: '18.16'
 
       - name: Install API dependencies
         working-directory: api

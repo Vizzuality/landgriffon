@@ -5,7 +5,7 @@ import { AppBaseRepository } from 'utils/app-base.repository';
 import { SaveOptions } from 'typeorm/repository/SaveOptions';
 import { chunk } from 'lodash';
 import { AppConfig } from 'utils/app.config';
-import { ImportProgressTrackerFactory } from 'modules/events/import-data-progress/import-progress.tracker.factory';
+import { ImportProgressTrackerFactory } from 'modules/events/import-data/import-progress.tracker.factory';
 import { ImpactCalculationProgressTracker } from 'modules/impact/progress-tracker/impact-calculation.progress-tracker';
 
 const dbConfig: any = AppConfig.get('db');

@@ -14,3 +14,7 @@ infrastructure/kubernetes/vars/*
 !infrastructure/base/vars/terraform.tfvars
 !infrastructure/kubernetes/vars/terraform.tfvars
 /infrastructure/kubernetes/bastion_tunnel.sh
+
+# python land
+
+__pycache__/

@@ -12,13 +12,8 @@ import { ExcelImportJob } from 'modules/import-data/workers/import-data.producer
 import { TasksService } from 'modules/tasks/tasks.service';
 import { Task, TASK_STATUS, TASK_TYPE } from 'modules/tasks/task.entity';
 import { importQueueName } from 'modules/import-data/workers/import-queue.name';
-import { ImportProgressSocket } from 'modules/events/import-data-progress/import-progress.socket';
+import { ImportProgressSocket } from 'modules/events/import-data/import-progress.socket';
 import { ImportMailService } from 'modules/import-data/import-mail/import-mail.service';
-import { EventBus } from '@nestjs/cqrs';
-import {
-  IMPORT_DATA_EVENTS,
-  ImportDataEvent,
-} from '../../events/import-data-events/import-data.event-handler';
 
 @Processor(importQueueName)
 export class ImportDataConsumer {
@@ -29,7 +24,6 @@ export class ImportDataConsumer {
     public readonly tasksService: TasksService,
     public readonly importSocket: ImportProgressSocket,
     public readonly importMail: ImportMailService,
-    public readonly eventBus: EventBus,
   ) {}
 
   @OnQueueError()
@@ -39,13 +33,10 @@ export class ImportDataConsumer {
     );
   }
 
-  // TODO: we probably want to handle success and failures using CQRS
+  // TODO: Handle events finished and failed cases
 
   @OnQueueFailed()
   async onJobFailed(job: Job<ExcelImportJob>, err: any): Promise<void> {
-    if (this.isJobStalled(err)) {
-      return this.removeJob(job);
-    }
     const task: Task | undefined = await this.tasksService.updateImportTask({
       taskId: job.data.taskId,
       newStatus: TASK_STATUS.FAILED,
@@ -53,19 +44,10 @@ export class ImportDataConsumer {
       newErrors: err.validationErrors,
     });
     this.importSocket.emitImportFailureToSocket({ error: err });
-    this.eventBus.publish(
-      new ImportDataEvent(task.id, IMPORT_DATA_EVENTS.FAILED, {
-        error: { message: err.message, stack: err.stack },
-      }),
-    );
 
     this.logger.error(
       `Import Failed for file: ${job.data.xlsxFileData.filename} for task: ${task.id}: ${err}`,
     );
-
-    // TODO: If the error is not related to the file, we should not send an error report (as it will be empty), we should send a generic error message
-    //       Since we are registering api events for the import now, it might be useful to include the id of the event so that the client
-    //       can share it with the support team
 
     const errorReport: string = await this.tasksService.getTaskErrorReport(
       task.id,
@@ -90,12 +72,6 @@ export class ImportDataConsumer {
     });
 
     this.importSocket.emitImportCompleteToSocket({ status: 'completed' });
-    this.eventBus.publish(
-      new ImportDataEvent(task.id, IMPORT_DATA_EVENTS.SUCCEED, {
-        file: job.data.xlsxFileData.originalname,
-        userId: task.user.id,
-      }),
-    );
     await this.importMail.sendImportSuccessMail({
       email: task.user.email,
       fileName: job.data.xlsxFileData.originalname,
@@ -108,19 +84,6 @@ export class ImportDataConsumer {
 
   @Process('excel-import-job')
   async readImportDataJob(job: Job<ExcelImportJob>): Promise<void> {
-    this.eventBus.publish(
-      new ImportDataEvent(job.data.taskId, IMPORT_DATA_EVENTS.STARTED, {
-        file: job.data.xlsxFileData.originalname,
-      }),
-    );
-    return this.importDataService.processImportJob(job);
-  }
-
-  private isJobStalled(err: Error): boolean {
-    return err.message === 'job stalled more than allowable limit';
-  }
-
-  private async removeJob(job: Job<ExcelImportJob>): Promise<void> {
-    return job.remove();
+    await this.importDataService.processImportJob(job);
   }
 }

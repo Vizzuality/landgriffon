@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
+import { useRouter } from 'next/router';
 import { omit } from 'lodash-es';
-import { useSearchParams } from 'next/navigation';
 
 import { useIndicator } from '../indicators';
 
@@ -17,15 +17,14 @@ import { storeToQueryParams } from 'hooks/h3-data/utils';
 import type { LegendItem as LegendItemProp } from 'types';
 
 export const useImpactLayer = () => {
-  const searchParams = useSearchParams();
-  const compareScenarioId = searchParams.get('compareScenarioId');
-  const scenarioId = searchParams.get('scenarioId');
-  const isComparisonEnabled = Boolean(compareScenarioId);
-
   const dispatch = useAppDispatch();
   const filters = useAppSelector(analysisFilters);
+  const {
+    query: { scenarioId, compareScenarioId },
+  } = useRouter();
+  const isComparisonEnabled = !!compareScenarioId;
   const { comparisonMode } = useAppSelector(scenarios);
-  const colorKey = isComparisonEnabled ? 'compare' : 'impact';
+  const colorKey = !!compareScenarioId ? 'compare' : 'impact';
   const [syncedIndicators] = useSyncIndicators();
 
   const {
@@ -37,10 +36,11 @@ export const useImpactLayer = () => {
       storeToQueryParams({
         ...filters,
         indicators: syncedIndicators?.[0] ? [syncedIndicators?.[0]] : undefined,
-        currentScenario: scenarioId,
-        scenarioToCompare: compareScenarioId,
+        currentScenario: scenarioId as string,
+        scenarioToCompare: compareScenarioId as string,
+        isComparisonEnabled,
       }),
-    [compareScenarioId, filters, scenarioId, syncedIndicators],
+    [compareScenarioId, filters, isComparisonEnabled, scenarioId, syncedIndicators],
   );
 
   const { year } = params;
@@ -76,7 +76,7 @@ export const useImpactLayer = () => {
               legend: {
                 id: `impact-${indicator.id}-${isComparisonEnabled || 'compare'}`,
                 type: 'basic',
-                name: `${indicator?.metadata?.short_name} in ${year}`,
+                name: `${indicator.name} in ${year}`,
                 unit: data.metadata.unit,
                 min: !!data.metadata.quantiles.length && formatNumber(data.metadata.quantiles[0]),
                 items: data.metadata.quantiles

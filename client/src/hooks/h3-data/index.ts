@@ -39,7 +39,7 @@ export const useH3Data = <T = H3APIResponse>({
   const isImpact = id === 'impact';
 
   const filters = useAppSelector(analysisFilters);
-  const { currentScenario, scenarioToCompare } = useAppSelector(scenarios);
+  const { currentScenario, scenarioToCompare, isComparisonEnabled } = useAppSelector(scenarios);
 
   const impactParams = useMemo(
     () =>
@@ -47,10 +47,11 @@ export const useH3Data = <T = H3APIResponse>({
         ...filters,
         currentScenario,
         scenarioToCompare,
+        isComparisonEnabled,
         materialId,
         startYear: year,
       }),
-    [currentScenario, filters, materialId, scenarioToCompare, year],
+    [currentScenario, filters, isComparisonEnabled, materialId, scenarioToCompare, year],
   );
 
   const materialParams = useMemo(() => ({ materialId, year }), [materialId, year]);

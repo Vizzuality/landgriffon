@@ -1,7 +1,4 @@
-"""Script to delete dangling h3 tables that are no longer used.
-
-The delete criteria is if the table is referenced anywhere else.
-"""
+"""Dangling layer deleter/unlinker"""
 
 import logging
 
@@ -18,7 +15,7 @@ logging.basicConfig(level=logging.INFO)
 @click.option("--drop-contextuals", is_flag=True)
 @click.option("--dry-run", is_flag=True)
 def main(drop_contextuals: bool, dry_run: bool):
-    """Delete dangling h3 tables that are no longer used"""
+    """Deletes unlinked and dangling layers from the DB"""
     with psycopg.connect(get_connection_info()) as conn:
         with conn.cursor() as cursor:
             # find all the tables that start with h3_grid*

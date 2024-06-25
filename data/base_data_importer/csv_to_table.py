@@ -20,102 +20,60 @@ import csv
 import psycopg2
 from docopt import docopt
 import logging
-import boto3
-from dotenv import load_dotenv
 
 logging.basicConfig(level=logging.INFO)
-log = logging.getLogger("base_data_importer")
-load_dotenv('../../.env')
-
-db_host = os.getenv("API_POSTGRES_HOST")
-db_port = os.getenv("API_POSTGRES_PORT")
-db_user = os.getenv("API_POSTGRES_USERNAME")
-db_database = os.getenv("API_POSTGRES_DATABASE")
-db_password = os.getenv("API_POSTGRES_PASSWORD")
-aws_access_key_id = os.getenv("AWS_ACCESS_KEY_ID")
-aws_secret_access_key = os.getenv("AWS_SECRET_ACCESS_KEY")
-data_bucket_name = os.getenv("DATA_BUCKET_NAME")
-path = 'import/base_data'
 
 
-def load_csvs_into_tables(csv_file_list: list[dict]):
+def load_csvs_into_tables(csv_file_list):
     conn = psycopg2.connect(
-        host=db_host,
-        port=db_port,
-        database=db_database,
-        user=db_user,
-        password=db_password
+        host=os.getenv('API_POSTGRES_HOST'),
+        port=os.getenv('API_POSTGRES_PORT'),
+        database=os.getenv('API_POSTGRES_DATABASE'),
+        user=os.getenv('API_POSTGRES_USERNAME'),
+        password=os.getenv('API_POSTGRES_PASSWORD')
     )
-    log.info('Loading base data CSVs into Database...')
     cursor = conn.cursor()
     for csv_file in csv_file_list:
-        log.info(f"Truncating table {csv_file['table']}")
         cursor.execute("TRUNCATE TABLE \"public\".\"%s\" CASCADE" % (csv_file["table"]))
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        file_path = os.path.join(current_dir, csv_file["path"])
-        with open(file_path, 'r') as f:
+        with open(csv_file["path"], 'r') as f:
             try:
                 reader = csv.reader(f)
                 cols = []
-                log.info(f"Inserting data into table {csv_file['table']}")
                 for row in reader:
                     if not cols:
                         cols = ['"{}"'.format(cell) for cell in row]
                         psycopg_marks = ','.join(['%s' for s in cols])
                         insert_statement = "INSERT INTO \"public\".\"%s\" (%s) VALUES (%s)" % (
-                            csv_file["table"], ','.join(cols), psycopg_marks)
+                        csv_file["table"], ','.join(cols), psycopg_marks)
+                        # print(insert_statement)
                     else:
+                        # print(row)
                         cursor.execute(insert_statement, [cell if cell != '' else None for cell in row])
+                        print(cursor.query.decode())
             finally:
                 f.close()
                 conn.commit()
-                log.info(f"Data inserted into table {csv_file['table']}")
     cursor.close()
-    log.info('All CSVs loaded into Database')
 
 
-def download_base_data(files_to_download: list[str]) -> list[str]:
-    downloaded_files = []
-    log.info(f"Downloading files base data files...")
-    s3 = boto3.client('s3', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
-    try:
-        for file_name in files_to_download:
-            log.info(f"Downloading file: {file_name}")
-            s3.download_file(Bucket=data_bucket_name, Key=f"{path}/{file_name}", Filename=file_name)
-            if os.path.exists(file_name):
-                downloaded_files.append(file_name)
-            else:
-                raise Exception(f"Error downloading file: {file_name}")
-        return downloaded_files
-    except Exception as e:
-        log.error(f"Error downloading files: {e}")
-        raise Exception('There was some error downloading the files. Aborting import process')
-    finally:
-        if len(downloaded_files) != len(files_to_download):
-            log.info('Cleaning up downloaded files...')
-            for downloaded_file in downloaded_files:
-                os.remove(downloaded_file)
-                log.info(f"Deleted file: {downloaded_file}")
-        log.info('All files downloaded successfully')
-
-
-def main():
-    ## TODO: Add some point we might want to configure this, similarly as we do it with coefficients
-    ##       Adding the conf for target table and more, instead of relying on the file naming for everything
-    files_to_download = ['1.units.csv', '2.indicator.csv', '3.unit_conversion.csv', '4.material.csv']
-    downloaded_files = download_base_data(files_to_download)
-    config = [
+def main(folder, table):
+    csvs = [
         {
-            "path": f,
+            "path": os.path.join(folder, f),
             "file": f,
             "table": f.split('.')[1],
         }
-        for f in sorted(downloaded_files)
-        if os.path.splitext(f)[1] == '.csv'
+        for f in sorted(os.listdir(folder))
+        if os.path.splitext(f)[1] == '.csv' and (table is None or f.split('.')[1] == table)
     ]
-    load_csvs_into_tables(config)
-    log.info(f"Successfully imported following files: {downloaded_files}")
+    logging.info(f'Found {len(csvs)} CSVs')
+    load_csvs_into_tables(csvs)
+    logging.info('Done')
 
 
 if __name__ == "__main__":
-    main()
+    args = docopt(__doc__)
+    main(
+        args['<folder>'],
+        args['--table'],
+    )

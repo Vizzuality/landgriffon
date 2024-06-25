@@ -12,19 +12,10 @@ type IndicatorNameCodeToQuery = {
   [key in ImpactQueryPropertyName]?: ImpactPropertyToQueryFunction;
 };
 
-/**
- * @description: Dynamically builds the query for calculating the raw impact values. Based on which indicators are activated in the platform,
- * it gets all dependencies for each indicator, defined in the queryMap, and builds the stringified query that then will injected withint the main query.
- */
-
 @Injectable()
-export class ImpactQueryBuilder {
+export class IndicatorQueryDependencyManager {
   queryMap: typeof INDICATOR_NAME_CODE_TO_QUERY_MAP =
     INDICATOR_NAME_CODE_TO_QUERY_MAP;
-
-  /**
-   * @description: Builds the query for the intervention impact calculation
-   */
 
   buildQueryForIntervention(nameCodes: INDICATOR_NAME_CODES[]): string {
     const queries: ImpactQueryExpression[] = [];
@@ -37,14 +28,6 @@ export class ImpactQueryBuilder {
     }
     return [...new Set(queries)].join(', ');
   }
-
-  /**
-   * @description: Builds the query for the import impact calculation. Since for the main query whole columns will be used instead of specific value:
-   * i.e: All geoRegion and material Ids from sourcing locations, instead of specific Ids, we need to quote wrap the table plus column names so that can be
-   * injected into the main query.
-   *
-   * @returns: Object with the params and query string that will be injected into the main query.
-   */
 
   buildQueryForImport(nameCodes: INDICATOR_NAME_CODES[]): {
     params: string;

@@ -87,6 +87,9 @@ export class User extends BaseEntity {
   @Column('boolean', { name: 'is_deleted', default: false })
   isDeleted!: boolean;
 
+  @OneToMany(() => IndicatorCoefficient, (ic: IndicatorCoefficient) => ic.user)
+  indicatorCoefficients: IndicatorCoefficient[];
+
   @OneToMany(() => SourcingLocation, (sc: SourcingLocation) => sc.updatedBy)
   sourcingLocations: SourcingLocation[];
 

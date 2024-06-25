@@ -54,19 +54,16 @@ export class ImpactService {
 
     // Get full entity tree in cate ids are not passed, otherwise get trees based on
     // given ids and add children and parent ids to them to get full data for aggregations
-    const entitiesTree: ImpactTableEntityType[] =
+    const entities: ImpactTableEntityType[] =
       await this.baseService.getEntityTree(impactTableDto);
 
     this.baseService.getFlatListOfEntityIdsForLaterFiltering(
       impactTableDto,
-      entitiesTree,
+      entities,
     );
 
     let dataForImpactTable: ImpactTableData[] =
-      await this.baseService.getDataForImpactTable(
-        impactTableDto,
-        entitiesTree,
-      );
+      await this.baseService.getDataForImpactTable(impactTableDto, entities);
 
     if (impactTableDto.scenarioId) {
       dataForImpactTable =
@@ -77,7 +74,7 @@ export class ImpactService {
       impactTableDto,
       indicators,
       dataForImpactTable,
-      entitiesTree,
+      entities,
     );
 
     this.sortEntitiesByImpactOfYear(
@@ -237,7 +234,7 @@ export class ImpactService {
     // construct result impact Table
     const impactTable: ImpactTableDataByIndicator[] = [];
 
-    for (const [indicatorId, entityYearMap] of indicatorEntityMap.entries()) {
+    for (const [indicatorId, entityMap] of indicatorEntityMap.entries()) {
       const indicator: Indicator = auxIndicatorMap.get(
         indicatorId,
       ) as Indicator;
@@ -250,13 +247,18 @@ export class ImpactService {
       const yearSumMap: Map<number, number> = this.postProcessYearIndicatorData(
         rangeOfYears,
         lastYearWithData,
-        entityYearMap,
+        entityMap,
       );
 
-      impactTableDataByIndicator.rows = entityTree.map(
-        (entity: ImpactTableEntityType) =>
-          this.buildImpactTableRecursively(entity, entityYearMap, rangeOfYears),
-      );
+      // copy and populate tree skeleton for each indicator
+      const impactTableEntitySkeleton: ImpactTableRows[] =
+        this.buildImpactTableRowsSkeleton(entityTree);
+
+      for (const entity of impactTableEntitySkeleton) {
+        this.populateValuesRecursively(entity, entityMap, rangeOfYears);
+      }
+
+      impactTableDataByIndicator.rows = impactTableEntitySkeleton;
 
       impactTableDataByIndicator.yearSum.push(
         ...Array.from(yearSumMap).map(([year, sum]: [number, number]) => {
@@ -278,22 +280,22 @@ export class ImpactService {
 
   /**
    * This functions does 2 things
-   * - fill any missing years in the entities' yearMap, with the calculation based on previous years' data
+   * - fill any missing years in the entityies' yearMap, with the calculation based on previous years' data
    * - calculate the value sum for all years, across all entities
    * @param rangeOfYears
    * @param lastYearWithData
-   * @param entityYearMap
+   * @param entityMap
    * @private
    */
   private postProcessYearIndicatorData(
     rangeOfYears: number[],
     lastYearWithData: number,
-    entityYearMap: Map<string, Map<number, ImpactTableRowsValues>>,
+    entityMap: Map<string, Map<number, ImpactTableRowsValues>>,
   ): Map<number, number> {
-    //We also calculate the yearSum for each indicator
+    //We also calculate the yearsum for each indicator
     const yearSumMap: Map<number, number> = new Map();
 
-    for (const yearMap of entityYearMap.values()) {
+    for (const yearMap of entityMap.values()) {
       const auxYearValues: number[] = [];
 
       for (const [index, year] of rangeOfYears.entries()) {
@@ -310,7 +312,11 @@ export class ImpactService {
             lastYearsValue +
             (lastYearsValue * this.baseService.growthRate) / 100;
 
-          dataForYear = { year, value, isProjected };
+          dataForYear = {
+            year,
+            value,
+            isProjected,
+          };
           yearMap.set(year, dataForYear);
         }
 
@@ -326,56 +332,40 @@ export class ImpactService {
   }
 
   /**
-   * @description Constructs the Impact Table and populates its aggregated values recursively
-   * according to the given entity and its children
-   * @param entity contains the entity tree to that will be used to build the Impact Table
-   * @param entityYearMap contains the actual values data for all entities
+   * @description Recursive function that populates and returns
+   * aggregated data of parent entity and all its children
    */
-  private buildImpactTableRecursively(
-    entity: ImpactTableEntityType,
-    entityYearMap: Map<string, Map<number, ImpactTableRowsValues>>,
+  private populateValuesRecursively(
+    entity: ImpactTableRows,
+    entityMap: Map<string, Map<number, ImpactTableRowsValues>>,
     rangeOfYears: number[],
-  ): ImpactTableRows {
-    // construct the ImpactTableRow instance, and its children recursively
-    const impactTableRow: ImpactTableRows = {
-      name: entity.name || '',
-      values: rangeOfYears.map(
-        (year: number) =>
-          ({ year, value: 0, isProjected: false } as ImpactTableRowsValues),
-      ),
-      children:
-        entity.children?.length > 0
-          ? entity.children.map((childEntity: ImpactTableEntityType) =>
-              this.buildImpactTableRecursively(
-                childEntity,
-                entityYearMap,
-                rangeOfYears,
-              ),
-            )
-          : [],
-    };
+  ): ImpactTableRowsValues[] {
+    entity.values = [];
+    for (const year of rangeOfYears) {
+      const rowsValues: ImpactTableRowsValues = {
+        year: year,
+        value: 0,
+        isProjected: false,
+      };
+      entity.values.push(rowsValues);
+    }
 
-    // Prepare the values to be aggregated (self, if it exists, and children)
     const valuesToAggregate: ImpactTableRowsValues[][] = [];
     const selfData: Map<number, ImpactTableRowsValues> | undefined =
-      entityYearMap.get(entity.id);
-
+      entityMap.get(entity.name);
     if (selfData) {
       const sortedSelfData: ImpactTableRowsValues[] = Array.from(
         selfData.values(),
       ).sort(BaseImpactService.sortRowValueByYear);
       valuesToAggregate.push(sortedSelfData);
     }
-
-    for (const childEntity of impactTableRow.children) {
-      valuesToAggregate.push(childEntity.values);
-    }
-
-    // Populate the RowsValues with the aggregation of the entity and its children
-    for (const [
-      valueIndex,
-      entityRowValue,
-    ] of impactTableRow.values.entries()) {
+    entity.children.forEach((childEntity: ImpactTableRows) => {
+      valuesToAggregate.push(
+        // first aggregate data of child entity and then add returned value for parents aggregation
+        this.populateValuesRecursively(childEntity, entityMap, rangeOfYears),
+      );
+    });
+    for (const [valueIndex, entityRowValue] of entity.values.entries()) {
       for (const valueToAggregate of valuesToAggregate) {
         entityRowValue.value += valueToAggregate[valueIndex].value;
         entityRowValue.isProjected =
@@ -383,8 +373,22 @@ export class ImpactService {
           entityRowValue.isProjected;
       }
     }
+    return entity.values;
+  }
 
-    return impactTableRow;
+  private buildImpactTableRowsSkeleton(
+    entities: ImpactTableEntityType[],
+  ): ImpactTableRows[] {
+    return entities.map((item: ImpactTableEntityType) => {
+      return {
+        name: item.name || '',
+        children:
+          item.children?.length > 0
+            ? this.buildImpactTableRowsSkeleton(item.children)
+            : [],
+        values: [],
+      };
+    });
   }
 
   private static processImpactDataWithScenario(

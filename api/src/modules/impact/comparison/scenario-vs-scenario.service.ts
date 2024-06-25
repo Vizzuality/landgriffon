@@ -95,7 +95,12 @@ export class ScenarioVsScenarioImpactService {
       dto.sortingOrder,
     );
 
-    return BaseImpactService.paginateTable(impactTable, fetchSpecification);
+    const paginatedTable: any = BaseImpactService.paginateTable(
+      impactTable,
+      fetchSpecification,
+    );
+
+    return paginatedTable;
   }
 
   private buildImpactTable(
@@ -145,10 +150,15 @@ export class ScenarioVsScenarioImpactService {
         lastYearWithData,
       );
 
-      impactTableDataByIndicator.rows = entityTree.map(
-        (entity: ImpactTableEntityType) =>
-          this.buildImpactTableRecursively(entity, entityMap, rangeOfYears),
-      );
+      // copy and populate tree skeleton for each indicator
+      const impactTableEntitySkeleton: ScenarioVsScenarioImpactTableRows[] =
+        this.buildScenarioVsScenarioImpactTableRowsSkeleton(entityTree);
+
+      for (const entity of impactTableEntitySkeleton) {
+        this.populateValuesRecursively(entity, entityMap, rangeOfYears);
+      }
+
+      impactTableDataByIndicator.rows = impactTableEntitySkeleton;
 
       impactTableDataByIndicator.yearSum = this.calculateIndicatorSumByYear(
         entityMap,
@@ -169,48 +179,34 @@ export class ScenarioVsScenarioImpactService {
   }
 
   /**
-   * @description Constructs the Impact Table and populates its aggregated values recursively
-   * according to the given entity and its children
-   * @param entity contains the entity tree to that will be used to build the Impact Table
-   * @param entityYearMap contains the actual values data for all entities
+   * @description Recursive function that populates and returns
+   * aggregated data of parent entity and all its children
    */
-  private buildImpactTableRecursively(
-    entity: ImpactTableEntityType,
-    entityYearMap: Map<
+  private populateValuesRecursively(
+    entity: ScenarioVsScenarioImpactTableRows,
+    entityDataMap: Map<
       string,
       Map<number, ScenarioVsScenarioImpactTableRowsValues>
     >,
     rangeOfYears: number[],
-  ): ScenarioVsScenarioImpactTableRows {
-    const impactTableRow: ScenarioVsScenarioImpactTableRows = {
-      name: entity.name || '',
-      values: rangeOfYears.map(
-        (year: number) =>
-          ({
-            year,
-            baseScenarioValue: 0,
-            comparedScenarioValue: 0,
-            absoluteDifference: 0,
-            percentageDifference: 0,
-            isProjected: false,
-          } as ScenarioVsScenarioImpactTableRowsValues),
-      ),
-      children:
-        entity.children?.length > 0
-          ? entity.children.map((childEntity: ImpactTableEntityType) =>
-              this.buildImpactTableRecursively(
-                childEntity,
-                entityYearMap,
-                rangeOfYears,
-              ),
-            )
-          : [],
-    };
+  ): ScenarioVsScenarioImpactTableRowsValues[] {
+    entity.values = [];
+    for (const year of rangeOfYears) {
+      const rowsValues: ScenarioVsScenarioImpactTableRowsValues = {
+        year: year,
+        baseScenarioValue: 0,
+        comparedScenarioValue: 0,
+        absoluteDifference: 0,
+        percentageDifference: 0,
+        isProjected: false,
+      };
+      entity.values.push(rowsValues);
+    }
 
     const valuesToAggregate: ScenarioVsScenarioImpactTableRowsValues[][] = [];
     const selfData:
       | Map<number, ScenarioVsScenarioImpactTableRowsValues>
-      | undefined = entityYearMap.get(entity.id);
+      | undefined = entityDataMap.get(entity.name);
     if (selfData) {
       const sortedSelfData: ScenarioVsScenarioImpactTableRowsValues[] =
         Array.from(selfData.values()).sort(
@@ -219,14 +215,20 @@ export class ScenarioVsScenarioImpactService {
       valuesToAggregate.push(sortedSelfData);
     }
 
-    for (const childEntity of impactTableRow.children) {
-      valuesToAggregate.push(childEntity.values);
-    }
+    entity.children.forEach(
+      (childEntity: ScenarioVsScenarioImpactTableRows) => {
+        //first aggregate data of child entity and then add returned value for parents aggregation
+        const childValues: ScenarioVsScenarioImpactTableRowsValues[] =
+          this.populateValuesRecursively(
+            childEntity,
+            entityDataMap,
+            rangeOfYears,
+          );
+        valuesToAggregate.push(childValues);
+      },
+    );
 
-    for (const [
-      valueIndex,
-      entityRowValue,
-    ] of impactTableRow.values.entries()) {
+    for (const [valueIndex, entityRowValue] of entity.values.entries()) {
       for (const valueToAggregate of valuesToAggregate) {
         entityRowValue.baseScenarioValue +=
           valueToAggregate[valueIndex].baseScenarioValue;
@@ -255,7 +257,22 @@ export class ScenarioVsScenarioImpactService {
           : percentageDifference;
       }
     }
-    return impactTableRow;
+    return entity.values;
+  }
+
+  private buildScenarioVsScenarioImpactTableRowsSkeleton(
+    entities: ImpactTableEntityType[],
+  ): ScenarioVsScenarioImpactTableRows[] {
+    return entities.map((item: ImpactTableEntityType) => {
+      return {
+        name: item.name || '',
+        children:
+          item.children?.length > 0
+            ? this.buildScenarioVsScenarioImpactTableRowsSkeleton(item.children)
+            : [],
+        values: [],
+      };
+    });
   }
 
   private static processTwoScenariosData(

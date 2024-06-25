@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { dehydrate } from '@tanstack/react-query';
@@ -12,21 +13,17 @@ import Search from '@/components/search';
 import { useLasTask } from '@/hooks/tasks';
 
 const AdminDataPage: React.FC = () => {
-  const { data, isFetched: sourcingLocationsAreFetched } = useSourcingLocations({
+  const { data, isFetched } = useSourcingLocations({
     fields: 'updatedAt',
     'page[number]': 1,
     'page[size]': 1,
   });
-
   const { data: lastTask, isFetched: lastTaskIsFetched } = useLasTask();
 
-  const hasData = sourcingLocationsAreFetched && data?.meta?.totalItems > 0;
-
-  const showDataTable = hasData && lastTask?.status !== 'processing';
-  const showDataUploader =
-    ['processing', 'failed'].includes(lastTask?.status) ||
-    (!lastTask && lastTaskIsFetched) ||
-    !hasData;
+  const thereIsData = useMemo(
+    () => isFetched && data?.meta?.totalItems > 0,
+    [isFetched, data?.meta?.totalItems],
+  );
 
   return (
     <AdminLayout
@@ -44,8 +41,11 @@ const AdminDataPage: React.FC = () => {
       <Head>
         <title>Manage data | Landgriffon</title>
       </Head>
-      {showDataTable && <AdminDataTable />}
-      {showDataUploader && <AdminDataUploader />}
+
+      {thereIsData && lastTask?.status !== 'processing' && <AdminDataTable />}
+
+      {(['processing', 'failed'].includes(lastTask?.status) ||
+        (!lastTask && lastTaskIsFetched)) && <AdminDataUploader />}
     </AdminLayout>
   );
 };

@@ -9,8 +9,8 @@ PARALLELIZATION_FACTOR=8
 
 AWS_S3_BUCKET_URL=s3://landgriffon-raw-data
 
-WORKDIR_MAPSPAM_PROD=data/spam2020V1r0_global_production
-WORKDIR_MAPSPAM_HA=data/spam2020V1r0_global_harvested_area
+WORKDIR_MAPSPAM_PROD=data/mapspam_prod
+WORKDIR_MAPSPAM_HA=data/mapspam_ha
 WORKDIR_GLW3=data/glw3
 WORKDIR_WATER_FOOTPRINT=data/waterFootprint
 WORKDIR_AQUEDUCT=data/contextual/aqueduct
@@ -25,8 +25,6 @@ WORKDIR_LIVESTOCK_PROCESSED=data/livestock_processed
 WORKDIR_LIVESTOCK_GHG=data/livestock_ghg
 WORKDIR_DEFAULT_COMMODITY=data/default_commodity
 WORKDIR_EARTHSTAT=data/earthstat
-WORKDIR_CROPGRIDS=data/cropgrids
-WORKDIR_CROPLAND=data/cropland
 
 
 CHECKSUMS_PATH=data_checksums
@@ -46,7 +44,7 @@ all:
 	make crop indicators
 	make delete-h3-tables
 
-crop: convert-mapspam-crop-production convert-mapspam-crop-harvest  convert-cropland convert-cropgrids convert-glw3-livestock convert-livestock-processed convert-default-commodity convert-earthstat
+crop: convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock convert-livestock-processed convert-default-commodity convert-earthstat
 
 indicators: convert-aqueduct convert-deforestation convert-forestGHG convert-naturalCropConversion convert-nutrientLoadReduction convert-biodiversity convert-ghg-farm convert-ghg-farm-livestock
 
@@ -57,27 +55,25 @@ contextual-layers: convert-hdi-contextual \
 	convert-crop-flii-loss-by-human-landuse \
 	convert-crop-net-conversion-by-human-landuse
 
-
-
 ###################################
 #  Mapspam - commodity production #
 ###################################
 
 download-mapspam-crop-production:
 	mkdir -p $(WORKDIR_MAPSPAM_PROD)
-	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/mapspam/spam2020V1r0_global_production/ $(WORKDIR_MAPSPAM_PROD)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/mapspam/spam2010v2r0_global_prod $(WORKDIR_MAPSPAM_PROD)
 	cd $(WORKDIR_MAPSPAM_PROD) && sha256sum --check ../../$(CHECKSUMS_PATH)/mapspam_prod
 
 convert-mapspam-crop-production: download-mapspam-crop-production
-	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM_PROD) h3_grid_spam2010v2r0_global_prod production spam 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM_PROD) h3_grid_spam2010v2r0_global_prod production spam 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 download-mapspam-crop-harvest:
 	mkdir -p $(WORKDIR_MAPSPAM_HA)
-	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/mapspam/spam2020V1r0_global_harvested_area/ $(WORKDIR_MAPSPAM_HA)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/mapspam/spam2010v2r0_global_ha $(WORKDIR_MAPSPAM_HA)
 	cd $(WORKDIR_MAPSPAM_HA) && sha256sum --check ../../$(CHECKSUMS_PATH)/mapspam_ha
 
 convert-mapspam-crop-harvest: download-mapspam-crop-harvest
-	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM_HA) h3_grid_spam2020v1r0_global_ha harvest_area spam 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM_HA) h3_grid_spam2010v2r0_global_ha harvest_area spam 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 # ---------------------------------------------
 # EARTHSTAT - production and harvest
@@ -93,46 +89,6 @@ convert-earthstat: download-earthstat
 	python raster_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/production h3_grid_earthstat_global_prod production earthstat 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 	python raster_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/harvest h3_grid_earthstat_global_ha harvest_area earthstat 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
-# ---------------------------------------------
-# CROPGRIDS - production and harvest
-# ---------------------------------------------
-
-download-cropgrids:
-	mkdir -p $(WORKDIR_CROPGRIDS)/production $(WORKDIR_CROPGRIDS)/harvest
-	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/crop-grids/ $(WORKDIR_CROPGRIDS)
-	#cd $(WORKDIR_CROPGRIDS) && sha256sum --check ../../$(CHECKSUMS_PATH)/earthstat
-
-convert-cropgrids: download-cropgrids
-	python raster_folder_to_h3_table.py $(WORKDIR_CROPGRIDS)/crop-grids-production h3_grid_cropgrids_global_prod production cropgrids 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
-	python raster_folder_to_h3_table.py $(WORKDIR_CROPGRIDS)/crop-grids-harvest h3_grid_cropgrids_global_ha harvest_area cropgrids 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
-
-
-
-# ---------------------------------------------
-# CROP LAND
-# ---------------------------------------------
-
-download-cropland:
-	mkdir -p $(WORKDIR_CROPLAND)
-	aws s3 cp s3://landgriffon-raw-data/raw/CroplandPastureArea2000_Geotiff.zip $(WORKDIR_CROPLAND)/CroplandPastureArea2000_Geotiff.zip
-
-extract-cropland: download-cropland
-	unzip -q -j -o -u $(WORKDIR_CROPLAND)/CroplandPastureArea2000_Geotiff.zip CroplandPastureArea2000_Geotiff/Cropland2000_5m.tif -d $(WORKDIR_CROPLAND)/
-	mkdir -p $(WORKDIR_CROPLAND)/production
-	mkdir -p $(WORKDIR_CROPLAND)/harvest
-	mv 	$(WORKDIR_CROPLAND)/Cropland2000_5m.tif $(WORKDIR_CROPLAND)/harvest/es_Cropland2000_ha.tif
-    # global yield value of cropland from faostat
-	gdal_calc.py --quiet --calc "A * 9.127829341" --format GTiff --type Float32 \
-		-A $(WORKDIR_CROPLAND)/harvest/es_Cropland2000_ha.tif --A_band 1 \
-	 	--outfile $(WORKDIR_CROPLAND)/production/es_Cropland2000_prod.tif;
-
-	rm -f $(WORKDIR_CROPLAND)/CroplandPastureArea2000_Geotiff.zip
-
-convert-cropland: extract-cropland
-	python raster_folder_to_h3_table.py $(WORKDIR_CROPLAND)/production h3_grid_cropland_global_prod production cropland 2000 --h3-res=6
-	python raster_folder_to_h3_table.py $(WORKDIR_CROPLAND)/harvest h3_grid_cropland_global_ha harvest_area cropland 2000 --h3-res=6
-
-
 
 
 ###############################################################
@@ -140,10 +96,10 @@ convert-cropland: extract-cropland
 ###############################################################
 
 # DOWNLOAD PASTURE AND CROPLAND DATASET
-# The original file downloaded from https://s3.us-east-2.amazonaws.com/earthstatdata/CroplandPastureArea2000_Geotiff.zip is no longer available so we have moved it to our own bucket
+ #https://s3.us-east-2.amazonaws.com/earthstatdata/CroplandPastureArea2000_Geotiff.zip
 download-pasture:
 	mkdir -p $(WORKDIR_GLW3)/cattle/harvestArea $(WORKDIR_GLW3)/chickens/harvestArea $(WORKDIR_GLW3)/horses/harvestArea $(WORKDIR_GLW3)/goats/harvestArea $(WORKDIR_GLW3)/sheep/harvestArea $(WORKDIR_GLW3)/pasture/harvestArea $(WORKDIR_GLW3)/pigs/harvestArea
-	aws s3 cp s3://landgriffon-raw-data/raw/CroplandPastureArea2000_Geotiff.zip $(WORKDIR_GLW3)/pasture/harvestArea/CroplandPastureArea2000_Geotiff.zip
+	wget -q -O $(WORKDIR_GLW3)/pasture/harvestArea/CroplandPastureArea2000_Geotiff.zip https://s3.us-east-2.amazonaws.com/earthstatdata/CroplandPastureArea2000_Geotiff.zip
 
 #unzip
 #remove no data values
@@ -401,4 +357,4 @@ clean:
 	rm -rf data/*
 
 delete-h3-tables:
-	python delete_h3_tables.py
+	python delete_h3_tables.py --drop-contextuals

@@ -1,4 +1,4 @@
-import { Global, Logger, Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ApiEvent } from 'modules/api-events/api-event.entity';
@@ -8,18 +8,15 @@ import {
 } from 'modules/api-events/api-event.topic+kind.entity';
 import { ApiEventsController } from 'modules/api-events/api-events.controller';
 import { ApiEventsService } from 'modules/api-events/api-events.service';
-import { SourcingDataImportViewEntity } from './sourcing-data-import-view.entity';
 
 export const logger: Logger = new Logger('ApiEvents');
 
-@Global()
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       ApiEvent,
       LatestApiEventByTopicAndKind,
       FirstApiEventByTopicAndKind,
-      SourcingDataImportViewEntity,
     ]),
   ],
   providers: [ApiEventsService],

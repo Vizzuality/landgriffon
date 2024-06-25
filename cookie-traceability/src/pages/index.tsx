@@ -31,7 +31,7 @@ const Home: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-hero-pattern">
       <Head>
-        <title>LandGriffon | Cookie ingredient traceability</title>
+        <title>Landgriffon | Cookie ingredient traceability</title>
         <meta name="description" content="Where does my cookie from? Top 5 trade flow countries" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -70,35 +70,24 @@ const Home: React.FC = () => {
       </main>
 
       <footer className="px-4 space-y-5 text-center bg-gray-dark text-secondary py-14">
-        <p className="text-2xl font-extrabold leading-7 uppercase lg:text-7xl font-display">
+        <p className="text-2xl font-extrabold leading-7 uppercase xl:text-7xl font-display">
           Turn supply chain
           <br /> knowledge into
           <br /> sustainable action.
         </p>
-        <div className="max-w-md mx-auto lg:max-w-3xl lg:mx-auto">
-          <p className="text-sm xl:text-base">
-            Go beyond trade flows and locations. Discover the environmental impact of your supply
-            chain,{' '}
-            <span className="lg:[text-wrap:nowrap]">
-              on deforestation, water stress, land use change, GHG emissions and biodiversity.
-            </span>
-          </p>
-        </div>
         <a
           href="https://landgriffon.com"
-          title="LandGriffon website"
+          title="Landgriffon website"
           className="inline-block px-5 py-3 text-center border border-secondary"
-          target="_blank"
-          rel="noopener noreferrer"
         >
-          Go to LandGriffon
+          Go to Landgriffon
         </a>
         <p className="pt-10 text-lg">
           A{' '}
           <a href="https://vizzuality.com" className="font-semibold">
             vizzuality
           </a>{' '}
-          product.
+          product
         </p>
       </footer>
     </div>

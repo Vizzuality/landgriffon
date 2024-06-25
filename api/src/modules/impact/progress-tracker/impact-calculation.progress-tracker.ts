@@ -1,4 +1,4 @@
-import { ImportProgressEmitter } from 'modules/events/import-data-progress/import-progress.emitter';
+import { ImportProgressEmitter } from 'modules/events/import-data/import-progress.emitter';
 
 export class ImpactCalculationProgressTracker {
   totalRecords: number;

@@ -11,7 +11,7 @@ import { IndicatorsSheetValidator } from './validators/indicators.sheet-validato
 import { plainToInstance } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
 import { ValidationProgressTracker } from '../../progress-tracker/validation.progress-tracker';
-import { ImportProgressTrackerFactory } from 'modules/events/import-data-progress/import-progress.tracker.factory';
+import { ImportProgressTrackerFactory } from 'modules/events/import-data/import-progress.tracker.factory';
 import { ImportTaskError } from '../../../tasks/types/import-task-error.type';
 
 export type SourcingDataSheet = {

@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
 
 import { useAppSelector, useAppDispatch, useSyncIndicators } from 'store/hooks';
 import { analysisMap, setLayer } from 'store/features/analysis/map';
+import { scenarios } from 'store/features/analysis';
 import LegendTypeChoropleth from 'components/legend/types/choropleth';
 import LegendTypeComparative from 'components/legend/types/comparative';
 import LegendItem from 'components/legend/item';
@@ -13,9 +13,6 @@ import type { Legend } from 'types';
 const LAYER_ID = 'impact';
 
 const ImpactLayer = () => {
-  const searchParams = useSearchParams();
-  const isComparisonEnabled = Boolean(searchParams.get('compareScenarioId'));
-
   const dispatch = useAppDispatch();
   const [syncedIndicators] = useSyncIndicators();
 
@@ -42,6 +39,8 @@ const ImpactLayer = () => {
       })) || [],
     [layer.metadata?.legend.items],
   );
+
+  const { isComparisonEnabled } = useAppSelector(scenarios);
 
   const name = useMemo(() => {
     if (!layer.metadata?.legend?.name) return null;

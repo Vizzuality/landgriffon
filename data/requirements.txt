@@ -106,7 +106,7 @@ six==1.16.0
 snuggs==1.4.7
     # via rasterio
 tqdm==4.66.4
-typing-extensions==4.12.2
+typing-extensions==4.11.0
     # via
     #   psycopg
     #   psycopg-pool
@@ -116,18 +116,3 @@ urllib3==2.2.1
     # via
     #   botocore
     #   requests
-python-dotenv==1.0.1
-exceptiongroup==1.2.2
-iniconfig==2.0.0
-pluggy==1.5.0
-pytest==8.3.4
-pytest-mock==3.14.0
-tomli==2.2.1
-annotated-types==0.7.0
-pydantic==2.10.3
-pydantic-core==2.27.1
-pydantic-settings==2.6.1
-
-
-
-

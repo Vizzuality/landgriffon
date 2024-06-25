@@ -357,4 +357,4 @@ clean:
 	rm -rf data/*
 
 delete-h3-tables:
-	python delete_h3_tables.py
+	python delete_h3_tables.py --drop-contextuals

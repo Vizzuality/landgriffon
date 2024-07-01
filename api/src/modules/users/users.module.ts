@@ -9,6 +9,7 @@ import { Role } from 'modules/authorization/roles/role.entity';
 import { UserRepository } from 'modules/users/user.repository';
 import { AuthorizationModule } from 'modules/authorization/authorization.module';
 import { ScenariosModule } from 'modules/scenarios/scenarios.module';
+import { TasksModule } from 'modules/tasks/tasks.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ScenariosModule } from 'modules/scenarios/scenarios.module';
     forwardRef(() => AuthenticationModule),
     AuthorizationModule,
     ScenariosModule,
+    TasksModule,
   ],
   providers: [UsersService, UserCommand, UserRepository],
   controllers: [UsersController],

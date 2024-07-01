@@ -17,11 +17,8 @@ import {
   UpdateTaskDto,
 } from 'modules/tasks/dto/update-task.dto';
 import { GetReportsDto } from 'modules/tasks/dto/get-reports.dto';
-import {
-  ErrorRecord,
-  TaskReportService,
-} from 'modules/tasks/task-report.service';
-import { ImportTaskError } from './types/import-task-error.type';
+import { TaskReportService } from 'modules/tasks/task-report.service';
+import { ImportTaskError } from 'modules/tasks/types/import-task-error.type';
 
 @Injectable()
 export class TasksService extends AppBaseService<
@@ -151,6 +148,17 @@ export class TasksService extends AppBaseService<
     const { errors } = task;
     return this.reportService.createImportErrorReport(
       errors as ImportTaskError[],
+    );
+  }
+
+  async updateTaskOwner(oldUserId: string, newUserId: string): Promise<void> {
+    const tasks: Task[] = await this.taskRepository.find({
+      where: { userId: oldUserId },
+    });
+    if (!tasks.length) return;
+    await this.taskRepository.update(
+      { userId: oldUserId },
+      { userId: newUserId },
     );
   }
 }

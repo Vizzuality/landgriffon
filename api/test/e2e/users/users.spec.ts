@@ -17,6 +17,7 @@ import {
   createScenarioIntervention,
   createSourcingLocation,
   createSourcingRecord,
+  createTask,
   createUser,
 } from '../../entity-mocks';
 import { Scenario } from '../../../src/modules/scenarios/scenario.entity';
@@ -28,6 +29,7 @@ import {
 import { SourcingRecord } from '../../../src/modules/sourcing-records/sourcing-record.entity';
 import { PERMISSIONS } from 'modules/authorization/permissions/permissions.enum';
 import { JSONAPIUserData } from '../../../src/modules/users/user.entity';
+import { Task } from '../../../src/modules/tasks/task.entity';
 
 /**
  * Tests for the UsersModule.
@@ -466,6 +468,28 @@ describe('UsersModule (e2e)', () => {
 
       expect(scenariosOfNewUser).toHaveLength(2);
       expect(scenariosOfDeletedUser).toHaveLength(0);
+    });
+    test('A admin user should be able to delete a user, and task should be assigned to the deleting user', async () => {
+      const userToDelete = await createUser({ email: 'usertodelete@mail.com' });
+      const newAdminUser = await setupTestUser(testApplication, ROLES.ADMIN, {
+        email: 'newadmin2@test.com',
+      });
+      for (const _ of [1, 2, 3, 4, 5]) {
+        await createTask({ userId: userToDelete.id });
+      }
+      const response = await request(testApplication.getHttpServer())
+        .delete(`/api/v1/users/${userToDelete.id}`)
+        .set('Authorization', `Bearer ${newAdminUser.jwtToken}`);
+
+      expect(response.status).toEqual(200);
+      const tasks = await dataSource.getRepository(Task).find();
+      const taskOfDeletedUser = await dataSource
+        .getRepository(Task)
+        .find({ where: { userId: userToDelete.id } });
+      expect(taskOfDeletedUser).toHaveLength(0);
+      tasks.forEach((task: Task) =>
+        expect(task.userId).toEqual(newAdminUser.user.id),
+      );
     });
   });
 });

@@ -1,3 +1,5 @@
+"""Dangling layer deleter/unlinker"""
+
 import logging
 
 import click
@@ -13,6 +15,7 @@ logging.basicConfig(level=logging.INFO)
 @click.option("--drop-contextuals", is_flag=True)
 @click.option("--dry-run", is_flag=True)
 def main(drop_contextuals: bool, dry_run: bool):
+    """Deletes unlinked and dangling layers from the DB"""
     with psycopg.connect(get_connection_info()) as conn:
         with conn.cursor() as cursor:
             # find all the tables that start with h3_grid*
@@ -51,7 +54,7 @@ def main(drop_contextuals: bool, dry_run: bool):
                         """DELETE FROM contextual_layer
                     WHERE id = ANY(%s);
                     """,
-                        (list(ctx[0] for ctx in contextuals_to_drop),),
+                        ([ctx[0] for ctx in contextuals_to_drop],),
                     )
                     log.info(f"Deleted contextual layers {', '.join(str(ctx[0]) for ctx in contextuals_to_drop)}")
                 else:

@@ -22,7 +22,7 @@ const Webinar: React.FC = () => (
     <Wrapper>
       <FadeIn>
         <Intro
-          title="Webinar & Podcast"
+          title="Webinar"
           intro="In our 2023 webinar we delved into the release of our new global, open-access datasets that aim to revolutionize nature accounting."
         >
           <ul className="md:grid md:grid-cols-3 gap-16 flex flex-col">

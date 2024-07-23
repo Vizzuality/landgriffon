@@ -6,14 +6,14 @@ import DatasetReleases from './releases';
 import Podcast from './podcast';
 import Wrapper from 'containers/wrapper/component';
 
-type FilterType = 'all' | 'methodology' | 'dataset-releases' | 'webinar-and-podcasts' | 'blogs';
+type FilterType = 'all' | 'methodology' | 'dataset-releases' | 'webinar-and-podcasts'; // | 'blogs'
 
 const FILTERS: FilterType[] = [
   'all',
   'methodology',
   'dataset-releases',
   'webinar-and-podcasts',
-  'blogs',
+  // 'blogs',
 ];
 
 const FILTERS_DICTIONARY: Record<FilterType, string> = {
@@ -21,7 +21,7 @@ const FILTERS_DICTIONARY: Record<FilterType, string> = {
   methodology: 'Methodology',
   'dataset-releases': 'Dataset releases',
   'webinar-and-podcasts': 'Webinar & Podcast',
-  blogs: 'Blogs',
+  // blogs: 'Blogs',
 };
 
 const Resources: React.FC = () => {
@@ -37,9 +37,8 @@ const Resources: React.FC = () => {
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`${
-                  filter === f ? 'bg-green-500 text-white' : 'bg-gray-100 text-black'
-                } px-2.5 py-[5px]`}
+                className={`${filter === f ? 'bg-green-500 text-white' : 'bg-gray-100 text-black'
+                  } px-2.5 py-[5px]`}
               >
                 {FILTERS_DICTIONARY[f]}
               </button>
@@ -49,8 +48,13 @@ const Resources: React.FC = () => {
       </Wrapper>
       {(filter === 'all' || filter === 'methodology') && <Methodology />}
       {(filter === 'all' || filter === 'dataset-releases') && <DatasetReleases />}
-      {(filter === 'all' || filter === 'webinar-and-podcasts') && <Webinar />}
-      {(filter === 'all' || filter === 'blogs') && <Podcast />}
+      {(filter === 'all' || filter === 'webinar-and-podcasts') && (
+        <>
+          <Webinar />
+          <Podcast />
+        </>
+      )}
+      {/* {(filter === 'all' || filter === 'blogs') && <></>} */}
     </div>
   );
 };

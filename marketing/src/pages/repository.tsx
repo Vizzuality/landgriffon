@@ -18,14 +18,14 @@ const RepositoryPage: NextPage<PageProps> = () => {
           <meta name="viewport" content="width=device-width" />
           <meta
             name="description"
-            content="LandGriffon helps companies strategize the sustainable transformation of their supply chains by using technology, data and scientific-based analysis to manage environmental impacts.."
+            content="LandGriffon helps companies strategize the sustainable transformation of their supply chains by using technology, data and scientific-based analysis to manage environmental impacts."
           />
 
-          <meta name="og:title" content="Sustainable Supply Chain Solutions: How It Works." />
+          <meta name="og:title" content="Knowledge Repository | LandGriffon" />
 
           <meta
             name="og:description"
-            content="LandGriffon uses a unique methodology and world-renowned datasets to analyze supply chain impacts. Our open-source and open-science software ensures total transparency to align companies with nature standards and ESG regulations, such as SBTN and TNFD guidance."
+            content="At LandGriffon, we're dedicated to driving sustainability through science. Explore our repository for insights, methodologies, and datasets shaping our environmental impact assessment and resource management."
           />
           <meta name="og:type" content="website" />
           <meta name="og:url" content="https://landgriffon.com/repository" />

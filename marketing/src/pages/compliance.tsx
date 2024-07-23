@@ -22,11 +22,11 @@ const CompliancePage: NextPage<PageProps> = () => {
             content="LandGriffon helps companies strategize the sustainable transformation of their supply chains by using technology, data and scientific-based analysis to manage environmental impacts.."
           />
 
-          <meta name="og:title" content="Sustainable Supply Chain Solutions: How It Works." />
+          <meta name="og:title" content="EUDR and ESG Compliance with LandGriffon" />
 
           <meta
             name="og:description"
-            content="LandGriffon uses a unique methodology and world-renowned datasets to analyze supply chain impacts. Our open-source and open-science software ensures total transparency to align companies with nature standards and ESG regulations, such as SBTN and TNFD guidance."
+            content="Ensure EUDR compliance with LandGriffon. Our tool, built with Vizzuality and CARTO, leverages BigQuery and Google Earth Engine for accurate deforestation assessments. Align with ESRS, TNFD, SBTN, and other sustainability standards using transparent, repeatable, and auditable analyses."
           />
           <meta name="og:type" content="website" />
           <meta name="og:url" content="https://landgriffon.com/methodology" />

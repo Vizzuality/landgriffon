@@ -50,14 +50,14 @@ const Header: React.FC = () => {
         transition={{ duration: 0.25, bounce: 0 }}
         className="fixed top-0 left-0 z-50 flex items-center justify-between w-full font-semibold bg-white"
       >
-        <div className="px-4 lg:px-12 shrink-0">
+        <div className="px-4 lg:px-12 shrink-0 flex items-center">
           <Link href="/">
-            <a className="block w-[180px] h-[14px]">
+            <a className="block w-[323px] h-[80px] py-6">
               <Image
                 src="/images/logo.svg"
                 alt="Landgriffon"
-                width={180}
-                height={14}
+                width={323}
+                height={30}
                 priority
                 layout="responsive"
               />

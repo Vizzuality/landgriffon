@@ -9,6 +9,25 @@ import ARROW_SVG from 'svgs/ui/arrow-top-right.svg?sprite';
 
 import { DATASET_FOR_EUDR, LANDGRIFFON_ANALYSIS } from './constants';
 
+const renderDatasetElement = (dataset: { name: string; url: string }) => (
+  <li
+    key={dataset.name}
+    className="flex justify-between items-center bg-gray-100 p-[15px] space-x-2"
+  >
+    <span className="font-light">{dataset.name}</span>
+    <Link href={dataset.url}>
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex space-x-5 font-bold items-center"
+      >
+        <span className="underline whitespace-nowrap">Go to source</span>
+        <Icon icon={ARROW_SVG} className="w-3 h-3 fill-black" />
+      </a>
+    </Link>
+  </li>
+);
+
 const DatasetReleases: React.FC = () => (
   <section className="relative bg-white">
     <Wrapper>
@@ -19,49 +38,13 @@ const DatasetReleases: React.FC = () => (
         >
           <div className="space-y-6">
             <h4 className="font-bold">{DATASET_FOR_EUDR.title}</h4>
-            <ul className="space-y-[5px]">
-              {DATASET_FOR_EUDR.datasets.map((dataset) => (
-                <li
-                  key={dataset.name}
-                  className="flex justify-between items-center bg-gray-100 p-[15px] space-x-2"
-                >
-                  <span className="font-light">{dataset.name}</span>
-                  <Link href={dataset.url}>
-                    <a
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex space-x-5 font-bold items-center"
-                    >
-                      <span className="underline whitespace-nowrap">Go to source</span>
-                      <Icon icon={ARROW_SVG} className="w-3 h-3 fill-black" />
-                    </a>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <ul className="space-y-[5px]">{DATASET_FOR_EUDR.datasets.map(renderDatasetElement)}</ul>
           </div>
 
           <div className="space-y-6">
             <h4 className="font-bold">{LANDGRIFFON_ANALYSIS.title}</h4>
             <ul className="space-y-[5px]">
-              {LANDGRIFFON_ANALYSIS.datasets.map((dataset) => (
-                <li
-                  key={dataset.name}
-                  className="flex justify-between items-center bg-gray-100 p-[15px] space-x-2"
-                >
-                  <span className="font-light">{dataset.name}</span>
-                  <Link href={dataset.url}>
-                    <a
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex space-x-5 font-bold items-center"
-                    >
-                      <span className="underline whitespace-nowrap">Go to source</span>
-                      <Icon icon={ARROW_SVG} className="w-3 h-3 fill-black" />
-                    </a>
-                  </Link>
-                </li>
-              ))}
+              {LANDGRIFFON_ANALYSIS.datasets.map(renderDatasetElement)}
             </ul>
           </div>
           <div className="space-y-12">
@@ -73,7 +56,7 @@ const DatasetReleases: React.FC = () => (
               Access datasets via{' '}
               <Link href="https://beta.source.coop/repositories/vizzuality/lg-land-carbon-data/">
                 <a target="_blank" rel="noopener noreferrer" className="underline font-light">
-                  Source Cooperative. 
+                  Source Cooperative.
                 </a>
               </Link>
             </p>
@@ -107,7 +90,7 @@ const DatasetReleases: React.FC = () => (
               <Link href="https://www.esri.com/en-us/home">
                 <a target="_blank" rel="noopener noreferrer" className="underline font-light">
                   {' '}
-                  ESRI 
+                  ESRI
                 </a>
               </Link>{' '}
               and{' '}
@@ -119,6 +102,12 @@ const DatasetReleases: React.FC = () => (
               , among other credible industry sources, and tailored for companies to measure nature
               impacts and prioritize sustainability actions across agricultural supply chains.
             </p>
+            <ul>
+              {renderDatasetElement({
+                name: 'Global SBTN-aligned nature accounting datasets to go beyond emissions reductions in agricultural supply chains.',
+                url: 'https://beta.source.coop/repositories/vizzuality/lg-land-carbon-data/',
+              })}
+            </ul>
           </div>
         </Intro>
       </FadeIn>

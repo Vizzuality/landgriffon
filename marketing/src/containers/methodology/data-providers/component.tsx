@@ -2,7 +2,7 @@ import { FC, useState } from 'react';
 import cx from 'classnames';
 import Image from 'next/image';
 import FadeIn from 'components/fade';
-
+import Link from 'next/link';
 import Wrapper from 'containers/wrapper';
 import Carousel from 'components/carousel/component';
 
@@ -197,10 +197,17 @@ const DataProviders: FC = () => {
               <h2 className="text-6xl font-black uppercase font-display max-w-lg">
                 BUILT ON TRUSTED SCIENTIFIC DATA.
               </h2>
-              <p className="pb-3 text-2xl font-light">
+              <p className="text-2xl font-light">
                 Landgriffon is built on open-access data produced by leading researchers, NGOs, and
                 government programs such as Copernicus, making it easier for you to take advantage
                 of this scientific knowledge.
+              </p>
+              <p className="pb-3 text-2xl font-light">
+                You can access the datasets through our{' '}
+                <Link href="/repository" passHref>
+                  <a className="underline font-bold"> knowledge repository</a>
+                </Link>
+                .
               </p>
 
               <div>

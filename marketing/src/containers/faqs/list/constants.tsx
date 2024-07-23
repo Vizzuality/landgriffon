@@ -212,7 +212,11 @@ const FAQS = [
           You can view our complete methodology from{' '}
           <Link href="/methodology">our methodology</Link> page, by clicking on the pdf buttons at
           the top of the page. You can access the data that LandGriffon uses, for its core analysis
-          and EUDR tool from our <Link href="/repository">knowledge repository</Link>.
+          and EUDR tool from our{' '}
+          <Link href="/repository" passHref>
+            <a className="underline font-bold"> knowledge repository</a>
+          </Link>
+          .
         </p>
       </div>
     ),

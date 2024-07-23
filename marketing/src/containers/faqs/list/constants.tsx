@@ -202,6 +202,21 @@ const FAQS = [
       </div>
     ),
   },
+  {
+    id: 9,
+    group: 'supply-chain-data',
+    question: <>Where can I access the data that LandGriffon uses?</>,
+    answer: (
+      <div className="space-y-5">
+        <p>
+          You can view our complete methodology from{' '}
+          <Link href="/methodology">our methodology</Link> page, by clicking on the pdf buttons at
+          the top of the page. You can access the data that LandGriffon uses, for its core analysis
+          and EUDR tool from our <Link href="/repository">knowledge repository</Link>.
+        </p>
+      </div>
+    ),
+  },
 ];
 
 export default FAQS;

@@ -22,7 +22,7 @@ const Webinar: FC = () => (
       </div>
       <a
         href="https://bit.ly/3GbWOMa"
-        className="font-semibold block w-[195px] h-[82px] flex items-center hover:cursor-pointer justify-center border-2 border-white focus-visible:ring-0 focus-visible:outline-0"
+        className="font-semibold w-[195px] h-[82px] flex items-center hover:cursor-pointer justify-center border-2 border-white focus-visible:ring-0 focus-visible:outline-0"
       >
         Watch now
       </a>

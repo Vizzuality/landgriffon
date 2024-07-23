@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "@artsy/fresnel": "^3.5.0",
-    "@egjs/react-flicking": "^4.9.0",
+    "@egjs/flicking-plugins": "4.7.1",
+    "@egjs/react-flicking": "4.11.3",
     "@floating-ui/react-dom": "^0.7.0",
     "@heroicons/react": "1.0.6",
     "@hookform/resolvers": "2.8.8",
@@ -33,7 +34,7 @@
     "axios": "0.21.1",
     "classnames": "2.3.1",
     "d3-format": "^3.1.0",
-    "framer-motion": "6.3.11",
+    "framer-motion": "6",
     "next": "12.1.0",
     "next-compose-plugins": "^2.2.1",
     "next-optimized-images": "^2.6.2",

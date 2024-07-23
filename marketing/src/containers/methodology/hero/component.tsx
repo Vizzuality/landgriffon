@@ -46,7 +46,7 @@ const Hero: React.FC = () => {
               <h1 className="text-5xl font-black text-black uppercase font-display md:text-7xl">
                 Analyze impacts with world-renowned datasets.
               </h1>
-              <h2 className="text-2xl font-medium text-black font-display md:text-3xl">
+              <h2 className="text-3xl font-medium text-black font-display md:text-3xl">
                 Our open-source and open-science software ensures total transparency to align
                 companies with nature standards and ESG regulations, such as SBTN and TNFD guidance.
               </h2>

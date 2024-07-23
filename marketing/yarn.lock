@@ -306,65 +306,95 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@egjs/agent@npm:^2.2.1":
-  version: 2.4.2
-  resolution: "@egjs/agent@npm:2.4.2"
-  checksum: 6ceff64ebbc07e16fc226aa369286fff8fabd72e65aa95f1690a93cb66234d6fb5ff08ab8297cd2b753bd6e082cbf6766698c95f733596dee299b922556d8b7e
+"@cfcs/core@npm:^0.0.24":
+  version: 0.0.24
+  resolution: "@cfcs/core@npm:0.0.24"
+  dependencies:
+    "@egjs/component": ^3.0.4
+  checksum: 6e1873f0ce85d2a401f3938a5bc9ce396c49b1fdcac0a3b2369245be25d7a7522e98515b7b7157ad6f0ce7b4e0a996b47ed2d3b8c70a4531e57d83b6dedbafa9
   languageName: node
   linkType: hard
 
-"@egjs/axes@npm:^3.2.2":
-  version: 3.4.0
-  resolution: "@egjs/axes@npm:3.4.0"
+"@cfcs/core@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@cfcs/core@npm:0.1.0"
   dependencies:
+    "@egjs/component": ^3.0.4
+  checksum: 98e09a1788270f7f2c3921d7d099cbfe41ba3601398e60deb433eec3f67ccf692458eeecaa7261c868ff23ec046160e454680781c92155473b9077cdb4c608bc
+  languageName: node
+  linkType: hard
+
+"@egjs/agent@npm:^2.2.1":
+  version: 2.4.3
+  resolution: "@egjs/agent@npm:2.4.3"
+  checksum: 4f2654ba7a877bb9cd1019c86fa245efb3a4c5e07a24e0e2a0bf1724ee457d25a57960a39b26c5fcd1fb71e80d2e6e3ad53eba6ab1a6f2099568f050fb28ee29
+  languageName: node
+  linkType: hard
+
+"@egjs/axes@npm:^3.9.0":
+  version: 3.9.0
+  resolution: "@egjs/axes@npm:3.9.0"
+  dependencies:
+    "@cfcs/core": ^0.1.0
     "@egjs/agent": ^2.2.1
     "@egjs/component": ^3.0.1
-  checksum: e0c31d298b2137792dc255933211617c7036bc69d200b0abf74b9e3af44890e552b8601cbed8c664cc78558f6b02baa205d7c735ba84b829b192e8bde14f3e6c
+  checksum: 1a55e7b9909c2720ed841e28d1fc459e70a858b0004c878fea286db1d815ca890ea88a0a010a79e0ca0001eb5db09b4880d55077a18d02035ed75e3e42216849
   languageName: node
   linkType: hard
 
-"@egjs/component@npm:^3.0.1":
-  version: 3.0.2
-  resolution: "@egjs/component@npm:3.0.2"
-  checksum: 4fd8854192e52f47b5cec5bad4952448b0df3b36f65bc1adae0f933164877d33fc705e9533af27a02b6faa0a4fddcaf101cce7c8f156de6202ad174b1df61e81
+"@egjs/component@npm:^3.0.1, @egjs/component@npm:^3.0.2, @egjs/component@npm:^3.0.4":
+  version: 3.0.5
+  resolution: "@egjs/component@npm:3.0.5"
+  checksum: d2ca53cc86b82df0fac3f21045a05d70a542c1f6a061cf534c67b336830644d0fbef07e322fcbe5bd809f59504103319a2c6467af58a9f8009a81655c3fe366f
   languageName: node
   linkType: hard
 
-"@egjs/flicking@npm:~4.9.0":
-  version: 4.9.0
-  resolution: "@egjs/flicking@npm:4.9.0"
+"@egjs/flicking-plugins@npm:4.7.1":
+  version: 4.7.1
+  resolution: "@egjs/flicking-plugins@npm:4.7.1"
+  peerDependencies:
+    "@egjs/flicking": ^4.1.0
+  checksum: 3f94e5b62d00e6ca8664fa8610792bd217383d7a19b2b947c5099bbd1f9ac129cbd029590e86d4141dbec1aa6b75f9490dac0f2baff78f603341de63d4d4f246
+  languageName: node
+  linkType: hard
+
+"@egjs/flicking@npm:~4.11.3":
+  version: 4.11.3
+  resolution: "@egjs/flicking@npm:4.11.3"
   dependencies:
-    "@egjs/axes": ^3.2.2
+    "@egjs/axes": ^3.9.0
     "@egjs/component": ^3.0.1
-    "@egjs/imready": ^1.1.3
-    "@egjs/list-differ": ^1.0.0
-  checksum: 9f6b2d6f39ca1c896a173c3c5308c5a9d4459460d9e681295cbad0b174fd4496cedf0b74159f376f472e92f49a7e60101a3a1dda30bf47d2050dc40abd556d43
+    "@egjs/imready": ^1.3.1
+    "@egjs/list-differ": ^1.0.1
+  checksum: 57a083012f0074e7e8e2f903c87cfe1b287e54f43246dd75401dd06eb9bce314721897ab109a51654d6c57133681dde6ba0b6f9b58f8819e85635ee7c4330260
   languageName: node
   linkType: hard
 
-"@egjs/imready@npm:^1.1.3":
-  version: 1.3.0
-  resolution: "@egjs/imready@npm:1.3.0"
+"@egjs/imready@npm:^1.3.1":
+  version: 1.4.1
+  resolution: "@egjs/imready@npm:1.4.1"
   dependencies:
+    "@cfcs/core": ^0.0.24
     "@egjs/component": ^3.0.1
-  checksum: 207736c7586619f736413ac4da0ea3fdb4b8a83cf315d6911f4258b61769738e8ece37c7f661bc6a0f4464618b581af9b94001833ba743d06d9d120e8c3cdaf0
+  checksum: 719afe734c4346555ffb75a5a487242c02a26509cfda9cc77272c7ec878e5058fff68027ea64a70a460b3e9393164df8adb70cba9a008d13d2029e8932687df9
   languageName: node
   linkType: hard
 
-"@egjs/list-differ@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "@egjs/list-differ@npm:1.0.0"
-  checksum: d1827d134ddab12a024358367cb8a3b70d2ba0f286e5beb6ce2a6bbd021594f26b02c38b2d8b3d1dfd76bd7d1fcda54de3b40decaa9b4fc939230f6e7d531d0c
+"@egjs/list-differ@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@egjs/list-differ@npm:1.0.1"
+  checksum: 2c126c66d7753c1b86816192f265fa8a58fc45b62b739ebce9008202c2485dcc81d62a9e8d26ceb73efd1679140d39dd5ae3638d63e1ebaf5ca9d6bc824a16c7
   languageName: node
   linkType: hard
 
-"@egjs/react-flicking@npm:^4.9.0":
-  version: 4.9.0
-  resolution: "@egjs/react-flicking@npm:4.9.0"
+"@egjs/react-flicking@npm:4.11.3":
+  version: 4.11.3
+  resolution: "@egjs/react-flicking@npm:4.11.3"
   dependencies:
-    "@egjs/flicking": ~4.9.0
-    "@egjs/list-differ": ^1.0.0
-  checksum: 776d575213d7fd972671f52ee418bfebdb66b46c109a0cf369c4f7cbafd2a1ef3e5cd50812ccce301470e3ec2adcd7d6b219eb056d241cb65cce5f9fed07f9e0
+    "@egjs/component": ^3.0.2
+    "@egjs/flicking": ~4.11.3
+    "@egjs/list-differ": ^1.0.1
+  checksum: cdcdf08a380e586342fc6943a179cd5f9a4c7d29b00ee74615c3e57a50599b3c179d8356af521da10c596c2072da6f3107db05d2fb5360d7037d6acdc98455f6
   languageName: node
   linkType: hard
 
@@ -631,6 +661,71 @@ __metadata:
     "@jridgewell/resolve-uri": ^3.1.0
     "@jridgewell/sourcemap-codec": ^1.4.14
   checksum: 956a6f0f6fec060fb48c6bf1f5ec2064e13cd38c8be3873877d4b92b4a27ba58289a34071752671262a3e3c202abcc3fa2aac64d8447b4b0fa1ba3c9047f1c20
+  languageName: node
+  linkType: hard
+
+"@motionone/animation@npm:^10.12.0":
+  version: 10.18.0
+  resolution: "@motionone/animation@npm:10.18.0"
+  dependencies:
+    "@motionone/easing": ^10.18.0
+    "@motionone/types": ^10.17.1
+    "@motionone/utils": ^10.18.0
+    tslib: ^2.3.1
+  checksum: 841cb9f4843a89e5e4560b9f960f52cbe78afc86f87c769f71e9edb3aadd53fb87982b7e11914428f228b29fd580756be531369c2ffac06432550afa4e87d1c3
+  languageName: node
+  linkType: hard
+
+"@motionone/dom@npm:10.12.0":
+  version: 10.12.0
+  resolution: "@motionone/dom@npm:10.12.0"
+  dependencies:
+    "@motionone/animation": ^10.12.0
+    "@motionone/generators": ^10.12.0
+    "@motionone/types": ^10.12.0
+    "@motionone/utils": ^10.12.0
+    hey-listen: ^1.0.8
+    tslib: ^2.3.1
+  checksum: 123356f28e44362c4f081aae3df22e576f46bfcb07e01257b2ac64a115668448f29b8de67e4b6e692c5407cffb78ffe7cf9fa1bc064007482bab5dd23a69d380
+  languageName: node
+  linkType: hard
+
+"@motionone/easing@npm:^10.18.0":
+  version: 10.18.0
+  resolution: "@motionone/easing@npm:10.18.0"
+  dependencies:
+    "@motionone/utils": ^10.18.0
+    tslib: ^2.3.1
+  checksum: 6bd37f7a9d5a88f868cc0ad6e47d2ba8d9fefd7da84fccfea7ed77ec08c2e6d1e42df88dda462665102a5cf03f748231a1a077de7054b5a8ccb0fbf36f61b1e7
+  languageName: node
+  linkType: hard
+
+"@motionone/generators@npm:^10.12.0":
+  version: 10.18.0
+  resolution: "@motionone/generators@npm:10.18.0"
+  dependencies:
+    "@motionone/types": ^10.17.1
+    "@motionone/utils": ^10.18.0
+    tslib: ^2.3.1
+  checksum: 51a0e075681697b11d0771998cac8c76a745f00141502f81adb953896992b7f49478965e4afe696bc83361afaae8d2f1057d71c25b21035fe67258ff73764f1c
+  languageName: node
+  linkType: hard
+
+"@motionone/types@npm:^10.12.0, @motionone/types@npm:^10.17.1":
+  version: 10.17.1
+  resolution: "@motionone/types@npm:10.17.1"
+  checksum: 3fa74db64e371e61a7f7669d7d541d11c9a8dd871032d59c69041e3b2e07a67ad2ed8767cb9273bac90eed4e1f76efc1f14c8673c2e9a288f6070ee0fef64a25
+  languageName: node
+  linkType: hard
+
+"@motionone/utils@npm:^10.12.0, @motionone/utils@npm:^10.18.0":
+  version: 10.18.0
+  resolution: "@motionone/utils@npm:10.18.0"
+  dependencies:
+    "@motionone/types": ^10.17.1
+    hey-listen: ^1.0.8
+    tslib: ^2.3.1
+  checksum: a27f9afde693a0cbbbcb33962b12bbe40dd2cfa514b0732f3c7953c5ef4beed738e1e8172a2de89e3b9f74a253ef0a70d7f3efb730be97b77d7176a3ffacb67a
   languageName: node
   linkType: hard
 
@@ -2186,9 +2281,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001196, caniuse-lite@npm:^1.0.30001283, caniuse-lite@npm:^1.0.30001313":
-  version: 1.0.30001313
-  resolution: "caniuse-lite@npm:1.0.30001313"
-  checksum: 49f2dcd1fa493a09a5247dcf3a4da3b9df355131b1fc1fd08b67ae7683c300ed9b9eef6a5424b4ac7e5d1ff0e129d2a0b4adf2a6a5a04ab5c2c0b2c590e935be
+  version: 1.0.30001633
+  resolution: "caniuse-lite@npm:1.0.30001633"
+  checksum: 718607f5d335ed26a469b03aaf059aec3352d81d6a974888122310d76c29ff0820e9bf57f16a1eb65693f8cef405e3a18a6257591ee1e5642865a4cb1a27cd4c
   languageName: node
   linkType: hard
 
@@ -3602,11 +3697,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:6.3.11":
-  version: 6.3.11
-  resolution: "framer-motion@npm:6.3.11"
+"framer-motion@npm:6":
+  version: 6.5.1
+  resolution: "framer-motion@npm:6.5.1"
   dependencies:
     "@emotion/is-prop-valid": ^0.8.2
+    "@motionone/dom": 10.12.0
     framesync: 6.0.1
     hey-listen: ^1.0.8
     popmotion: 11.0.3
@@ -3618,7 +3714,7 @@ __metadata:
   dependenciesMeta:
     "@emotion/is-prop-valid":
       optional: true
-  checksum: 2333b296a109ec0ef86421453f66a92b63e07930a491102f1007bbe48f40594d8c51a96ca937f8f3f013ba658147049bf1fa9feebc44487b8e7617bb674fb254
+  checksum: 737959063137b4ccafe01e0ac0c9e5a9531bf3f729f62c34ca7a5d7955e6664f70affd22b044f7db51df41acb21d120a4f71a860e17a80c4db766ad66f2153a1
   languageName: node
   linkType: hard
 
@@ -4919,7 +5015,8 @@ __metadata:
   resolution: "landgriffon-marketing-v2@workspace:."
   dependencies:
     "@artsy/fresnel": ^3.5.0
-    "@egjs/react-flicking": ^4.9.0
+    "@egjs/flicking-plugins": 4.7.1
+    "@egjs/react-flicking": 4.11.3
     "@floating-ui/react-dom": ^0.7.0
     "@heroicons/react": 1.0.6
     "@hookform/resolvers": 2.8.8
@@ -4946,7 +5043,7 @@ __metadata:
     eslint-config-next: 12.0.2
     eslint-config-prettier: 8.3.0
     eslint-plugin-prettier: 3.4.0
-    framer-motion: 6.3.11
+    framer-motion: 6
     istanbul-reports: 3.0.0
     next: 12.1.0
     next-compose-plugins: ^2.2.1
@@ -7944,6 +8041,13 @@ __metadata:
   version: 2.3.1
   resolution: "tslib@npm:2.3.1"
   checksum: de17a98d4614481f7fcb5cd53ffc1aaf8654313be0291e1bfaee4b4bb31a20494b7d218ff2e15017883e8ea9626599b3b0e0229c18383ba9dce89da2adf15cb9
+  languageName: node
+  linkType: hard
+
+"tslib@npm:^2.3.1":
+  version: 2.6.3
+  resolution: "tslib@npm:2.6.3"
+  checksum: 74fce0e100f1ebd95b8995fbbd0e6c91bdd8f4c35c00d4da62e285a3363aaa534de40a80db30ecfd388ed7c313c42d930ee0eaf108e8114214b180eec3dbe6f5
   languageName: node
   linkType: hard
 

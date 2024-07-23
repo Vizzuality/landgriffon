@@ -49,13 +49,6 @@ export const TEAM = [
     linkedin: 'https://www.linkedin.com/in/alicia-arenzana-gil-de-muro-74673534/',
   },
   {
-    name: 'David Inga',
-    company: 'Vizzuality',
-    role: 'Engineering',
-    group: 'core',
-    linkedin: 'https://www.linkedin.com/in/davidsingal',
-  },
-  {
     name: 'Simão Rodrigues',
     company: 'Vizzuality',
     role: 'Engineering',

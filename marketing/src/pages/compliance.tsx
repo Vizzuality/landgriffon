@@ -14,12 +14,12 @@ const CompliancePage: NextPage<PageProps> = () => {
       <>
         <Head>
           {/* To - DO - check the specific title for compliance page */}
-          <title>How We Analyze Supply Chain Impacts For Sustainabilty | LandGriffon</title>
+          <title>EUDR and ESG Compliance with LandGriffon | LandGriffon</title>
           <link rel="icon" href="/favicon.ico" />
           <meta name="viewport" content="width=device-width" />
           <meta
             name="description"
-            content="LandGriffon helps companies strategize the sustainable transformation of their supply chains by using technology, data and scientific-based analysis to manage environmental impacts.."
+            content="Ensure EUDR compliance with LandGriffon. Our tool, built with Vizzuality and CARTO, leverages BigQuery and Google Earth Engine for accurate deforestation assessments. Align with ESRS, TNFD, SBTN, and other sustainability standards using transparent, repeatable, and auditable analyses."
           />
 
           <meta name="og:title" content="EUDR and ESG Compliance with LandGriffon" />

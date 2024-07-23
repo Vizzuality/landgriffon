@@ -13,12 +13,12 @@ const RepositoryPage: NextPage<PageProps> = () => {
     <ApplicationLayout>
       <>
         <Head>
-          <title>How We Analyze Supply Chain Impacts For Sustainabilty | LandGriffon</title>
+          <title>Knowledge Repository | LandGriffon</title>
           <link rel="icon" href="/favicon.ico" />
           <meta name="viewport" content="width=device-width" />
           <meta
             name="description"
-            content="LandGriffon helps companies strategize the sustainable transformation of their supply chains by using technology, data and scientific-based analysis to manage environmental impacts."
+            content="At LandGriffon, we're dedicated to driving sustainability through science. Explore our repository for insights, methodologies, and datasets shaping our environmental impact assessment and resource management."
           />
 
           <meta name="og:title" content="Knowledge Repository | LandGriffon" />

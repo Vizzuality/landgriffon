@@ -25,7 +25,7 @@ unzip-production:
 
 nodata-production: unzip-production
 	for file in $(WORKDIR_MAPSPAM)/spam2020V1r0_global_production/spam2020_v1r0_global_P_*.tif; do \
-		gdal_calc.py -A $$file --outfile $$file.tmp.tif --calc "A*(A!=nan) + 0*(A==nan)" --NoDataValue 0 ;\
+		gdal_calc.py -A $$file --outfile $$file.tmp.tif --calc "nan_to_num(A)" --NoDataValue none ;\
 		mv $$file.tmp.tif $$file;\
 	done
 
@@ -98,7 +98,7 @@ compute-mapspam-crop-production: nodata-production
 		-A $(WORKDIR_MAPSPAM)/spam2020V1r0_global_production/spam2020_v1r0_global_P_VEGE_A.tif \
 		-B $(WORKDIR_MAPSPAM)/spam2020V1r0_global_production/spam2020_v1r0_global_P_POTA_A.tif \
 		-C $(WORKDIR_MAPSPAM)/spam2020V1r0_global_production/spam2020_v1r0_global_P_OPUL_A.tif \
-		--outfile $(WORKDIR_MAPSPAM)/spam2020V1r0_global_production/spam2020_v1r0_global_P_vegepotaopul_A.tif
+		--outfile $(WORKDIR_MAPSPAM)/spam2020V1r0_global_production/spam2020_v1r0_global_P_VegePotaOpul_A.tif
 	gdal_calc.py  --calc "A+B+C+D+E+F+G" --format GTiff --type Float32 --hideNoData --NoDataValue 0 \
 		-A $(WORKDIR_MAPSPAM)/spam2020V1r0_global_production/spam2020_v1r0_global_P_OILP_A.tif \
 		-B $(WORKDIR_MAPSPAM)/spam2020V1r0_global_production/spam2020_v1r0_global_P_SOYB_A.tif \
@@ -107,9 +107,9 @@ compute-mapspam-crop-production: nodata-production
 		-E $(WORKDIR_MAPSPAM)/spam2020V1r0_global_production/spam2020_v1r0_global_P_SUNF_A.tif \
 		-F $(WORKDIR_MAPSPAM)/spam2020V1r0_global_production/spam2020_v1r0_global_P_CNUT_A.tif \
 		-G $(WORKDIR_MAPSPAM)/spam2020V1r0_global_production/spam2020_v1r0_global_P_RAPE_A.tif \
-		--outfile $(WORKDIR_MAPSPAM)/spam2020V1r0_global_production/spam2020_v1r0_global_P_oilpsoybgrouooilsunfcnutrape_A.tif
+		--outfile $(WORKDIR_MAPSPAM)/spam2020V1r0_global_production/spam2020_v1r0_global_P_OilpSoybGrouOoilSunfCnutRape_A.tif
 	for file in $(WORKDIR_MAPSPAM)/spam2020V1r0_global_production/spam2020_v1r0_global_P_*.tif; do \
-		gdal_translate -co COMPRESS=DEFLATE -co PREDICTOR=3 $$file $$file.tmp.tif;\
+		gdal_translate -a_nodata 0 -co COMPRESS=DEFLATE -co PREDICTOR=3 $$file $$file.tmp.tif;\
 		mv $$file.tmp.tif $$file;\
 	done
 
@@ -119,7 +119,7 @@ unzip-harvest:
 
 nodata-harvest: unzip-harvest
 	for file in $(WORKDIR_MAPSPAM)/spam2020V1r0_global_harvested_area/spam2020_v1r0_global_H_*.tif; do \
-		gdal_calc.py -A $$file --outfile $$file.tmp.tif --calc "A*(A!=nan) + 0*(A==nan)" --NoDataValue 0 ;\
+		gdal_calc.py -A $$file --outfile $$file.tmp.tif --calc "nan_to_num(A)"  --NoDataValue none;\
 		mv $$file.tmp.tif $$file;\
 	done
 
@@ -195,7 +195,7 @@ compute-mapspam-crop-harvest: nodata-harvest
 		-A $(WORKDIR_MAPSPAM)/spam2020V1r0_global_harvested_area/spam2020_v1r0_global_H_VEGE_A.tif --A_band 1 \
 		-B $(WORKDIR_MAPSPAM)/spam2020V1r0_global_harvested_area/spam2020_v1r0_global_H_POTA_A.tif --B_band 1 \
 		-C $(WORKDIR_MAPSPAM)/spam2020V1r0_global_harvested_area/spam2020_v1r0_global_H_OPUL_A.tif --C_band 1 \
-		--outfile $(WORKDIR_MAPSPAM)/spam2020V1r0_global_harvested_area/spam2020_v1r0_global_H_vegepotaopul_A.tif
+		--outfile $(WORKDIR_MAPSPAM)/spam2020V1r0_global_harvested_area/spam2020_v1r0_global_H_VegePotaOpul_A.tif
 	gdal_calc.py  --calc "A+B+C+D+E+F+G" --format GTiff --type Float32 --hideNoData --NoDataValue 0 \
 		-A $(WORKDIR_MAPSPAM)/spam2020V1r0_global_harvested_area/spam2020_v1r0_global_H_OILP_A.tif --A_band 1 \
 		-B $(WORKDIR_MAPSPAM)/spam2020V1r0_global_harvested_area/spam2020_v1r0_global_H_SOYB_A.tif --B_band 1 \
@@ -204,8 +204,8 @@ compute-mapspam-crop-harvest: nodata-harvest
 		-E $(WORKDIR_MAPSPAM)/spam2020V1r0_global_harvested_area/spam2020_v1r0_global_H_SUNF_A.tif --E_band 1 \
 		-F $(WORKDIR_MAPSPAM)/spam2020V1r0_global_harvested_area/spam2020_v1r0_global_H_CNUT_A.tif --F_band 1 \
 		-G $(WORKDIR_MAPSPAM)/spam2020V1r0_global_harvested_area/spam2020_v1r0_global_H_RAPE_A.tif --G_band 1 \
-		--outfile $(WORKDIR_MAPSPAM)/spam2020V1r0_global_harvested_area/spam2020_v1r0_global_H_oilpsoybgrouooilsunfcnutrape_A.tif
+		--outfile $(WORKDIR_MAPSPAM)/spam2020V1r0_global_harvested_area/spam2020_v1r0_global_H_OilpSoybGrouOoilSunfCnutRape_A.tif
 	for file in $(WORKDIR_MAPSPAM)/spam2020V1r0_global_harvested_area/spam2020_v1r0_global_H_*.tif; do \
-		gdal_translate -co COMPRESS=DEFLATE -co PREDICTOR=3 $$file $$file.tmp.tif;\
+		gdal_translate -a_nodata 0 -co COMPRESS=DEFLATE -co PREDICTOR=3 $$file $$file.tmp.tif;\
 		mv $$file.tmp.tif $$file;\
 	done

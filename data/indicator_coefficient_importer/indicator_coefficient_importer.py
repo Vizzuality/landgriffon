@@ -9,11 +9,15 @@ Postgres connection params read from environment:
  - API_POSTGRES_PASSWORD
  - API_POSTGRES_DATABASE
 """
-
+import json
 import logging
 import os
 from io import StringIO
 from pathlib import Path
+from dotenv import load_dotenv
+import boto3
+
+load_dotenv('../../.env')
 
 import click
 import pandas as pd
@@ -88,12 +92,23 @@ def copy_data_to_table(conn: connection, df: pd.DataFrame, indicator_id: str):
     log.info("Done!")
 
 
-@click.command()
-@click.argument("file", type=click.Path(exists=True, path_type=Path))
-@click.argument("indicator_code", type=str)
-@click.argument("year", type=int)
-def main(file: Path, indicator_code: str, year: int):
+# @click.command()
+# @click.argument("file", type=click.Path(exists=True, path_type=Path))
+# @click.argument("indicator_code", type=str)
+# @click.argument("year", type=int)
+def main():
     """Process and ingest csv data with per country data into indicator_coefficient table."""
+    aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
+    aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+
+    indicator_config = json.loads(os.getenv('INDICATOR_COEFFICIENT_CONFIG'))
+    files_to_download = [{"name": key, **value} for key, value in indicator_config.items()]
+    print(files_to_download)
+    s3 = boto3.client('s3', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
+    for file in files_to_download:
+        s3.download_file(Bucket='landgriffon-raw-data', Key=file['file'], Filename=file['file'].split('/')[-1])
+
+    return 'hey'
     data = load_data(file, year)
 
     conn = postgres_thread_pool.getconn()

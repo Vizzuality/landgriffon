@@ -1,4 +1,5 @@
 import {
+  BaseEntity,
   Check,
   Column,
   Entity,
@@ -6,14 +7,10 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 import { Indicator } from 'modules/indicators/indicator.entity';
 import { BaseServiceResource } from 'types/resource.interface';
-import { ApiProperty } from '@nestjs/swagger';
-import { TimestampedBaseEntity } from 'baseEntities/timestamped-base-entity';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
-import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
 import { H3Data } from 'modules/h3-data/h3-data.entity';
 
 export const indicatorRecordResource: BaseServiceResource = {
@@ -30,6 +27,7 @@ export const indicatorRecordResource: BaseServiceResource = {
     'indicatorId',
   ],
 };
+
 export enum INDICATOR_RECORD_STATUS {
   UNSTARTED = 'unstarted',
   STARTED = 'started',
@@ -40,31 +38,19 @@ export enum INDICATOR_RECORD_STATUS {
 @Entity()
 @Check(`value <> 'NaN'`)
 @Check(`scaler <> 'NaN'`)
-export class IndicatorRecord extends TimestampedBaseEntity {
-  @ApiProperty()
+export class IndicatorRecord extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ApiProperty()
   @Column({ type: 'float', nullable: true })
   value!: number;
 
-  @ApiProperty()
   @Column({
     type: 'enum',
     enum: INDICATOR_RECORD_STATUS,
     default: INDICATOR_RECORD_STATUS.UNSTARTED,
   })
   status!: INDICATOR_RECORD_STATUS;
-
-  @ApiProperty()
-  @Column({ nullable: true })
-  statusMsg?: string;
-
-  @UpdateDateColumn({
-    type: 'timestamptz',
-  })
-  statusTimestamp!: string;
 
   @ManyToOne(
     () => SourcingRecord,
@@ -85,16 +71,6 @@ export class IndicatorRecord extends TimestampedBaseEntity {
   indicator!: Indicator;
   @Column({ nullable: true })
   indicatorId: string;
-
-  @ManyToOne(
-    () => IndicatorCoefficient,
-    (indicatorCoefficient: IndicatorCoefficient) => indicatorCoefficient.id,
-    {
-      eager: false,
-    },
-  )
-  @JoinColumn({ name: 'indicatorCoefficientId' })
-  indicatorCoefficientId!: IndicatorCoefficient;
 
   // Scaler: Production total sum.
   @Column({ type: 'float', nullable: true })

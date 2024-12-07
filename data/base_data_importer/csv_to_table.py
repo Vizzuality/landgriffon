@@ -41,7 +41,9 @@ def load_csvs_into_tables(csv_file_list: list[dict]):
     for csv_file in csv_file_list:
         log.info(f"Truncating table {csv_file['table']}")
         cursor.execute("TRUNCATE TABLE \"public\".\"%s\" CASCADE" % (csv_file["table"]))
-        with open(csv_file["path"], 'r') as f:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(current_dir, csv_file["path"])
+        with open(file_path, 'r') as f:
             try:
                 reader = csv.reader(f)
                 cols = []

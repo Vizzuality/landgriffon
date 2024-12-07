@@ -9,7 +9,7 @@ terraform {
 
 data "terraform_remote_state" "core" {
   backend = "s3"
-  config  = {
+  config = {
     bucket = var.tf_state_bucket
     region = var.aws_region
     key    = "core.tfstate"
@@ -56,14 +56,14 @@ resource "github_actions_secret" "mapbox_api_token_secret" {
 module "aws_environment" {
   for_each = merge(var.aws_environments, {
     staging = merge({
-      load_fresh_data       = false
+      load_fresh_data = false
       data_import_arguments = ["seed-data"]
-      image_tag             = "staging"
+      image_tag       = "staging"
     }, lookup(var.aws_environments, "staging", {})),
     production = merge({
-      load_fresh_data       = false
+      load_fresh_data = false
       data_import_arguments = ["seed-data"]
-      image_tag             = "main"
+      image_tag       = "main"
     }, lookup(var.aws_environments, "production", {})),
   })
   source = "./modules/aws/env"
@@ -76,11 +76,11 @@ module "aws_environment" {
   allowed_account_id                 = var.allowed_account_id
   gmaps_api_key                      = var.gmaps_api_key
   sendgrid_api_key                   = var.sendgrid_api_key
-  eudr_credentials                   = jsonencode(var.eudr_credentials)
-  load_fresh_data                    = lookup(each.value, "load_fresh_data", false)
-  data_import_arguments              = lookup(each.value, "data_import_arguments", ["seed-data"])
-  image_tag                          = lookup(each.value, "image_tag", each.key)
-  repo_branch                        = lookup(each.value, "image_tag", each.key)
+  eudr_credentials = jsonencode(var.eudr_credentials)
+  load_fresh_data = lookup(each.value, "load_fresh_data", false)
+  data_import_arguments = lookup(each.value, "data_import_arguments", ["seed-data"])
+  image_tag = lookup(each.value, "image_tag", each.key)
+  repo_branch = lookup(each.value, "image_tag", each.key)
   private_subnet_ids                 = data.terraform_remote_state.core.outputs.private_subnet_ids
   repo_name                          = var.repo_name
   domain                             = var.domain
@@ -88,8 +88,9 @@ module "aws_environment" {
   client_container_registry_url      = data.terraform_remote_state.core.outputs.aws_client_container_registry_url
   tiler_container_registry_url       = data.terraform_remote_state.core.outputs.aws_tiler_container_registry_url
   data_import_container_registry_url = data.terraform_remote_state.core.outputs.aws_data_import_container_registry_url
-  api_env_vars                       = lookup(each.value, "api_env_vars", [])
-  api_secrets                        = lookup(each.value, "api_secrets", [])
+  data_import_env_vars = lookup(each.value, "data_import_env_vars", [])
+  api_env_vars = lookup(each.value, "api_env_vars", [])
+  api_secrets = lookup(each.value, "api_secrets", [])
   science_bucket_name                = data.terraform_remote_state.core.outputs.science_bucket_name
 
   providers = {
@@ -108,10 +109,10 @@ module "gcp_environment" {
   tf_state_bucket                    = var.tf_state_bucket
   allowed_account_id                 = var.allowed_account_id
   gmaps_api_key                      = var.gmaps_api_key
-  load_fresh_data                    = lookup(each.value, "load_fresh_data", false)
-  data_import_arguments              = lookup(each.value, "data_import_arguments", ["seed-data"])
-  image_tag                          = lookup(each.value, "image_tag", each.key)
-  repo_branch                        = lookup(each.value, "repo_branch", each.key)
+  load_fresh_data = lookup(each.value, "load_fresh_data", false)
+  data_import_arguments = lookup(each.value, "data_import_arguments", ["seed-data"])
+  image_tag = lookup(each.value, "image_tag", each.key)
+  repo_branch = lookup(each.value, "repo_branch", each.key)
   private_subnet_ids                 = data.terraform_remote_state.core.outputs.private_subnet_ids
   repo_name                          = var.repo_name
   domain                             = var.domain
@@ -119,8 +120,8 @@ module "gcp_environment" {
   client_container_registry_url      = data.terraform_remote_state.core.outputs.gcp_client_container_registry_url
   tiler_container_registry_url       = data.terraform_remote_state.core.outputs.gcp_tiler_container_registry_url
   data_import_container_registry_url = data.terraform_remote_state.core.outputs.gcp_data_import_container_registry_url
-  api_env_vars                       = lookup(each.value, "api_env_vars", [])
-  api_secrets                        = lookup(each.value, "api_secrets", [])
+  api_env_vars = lookup(each.value, "api_env_vars", [])
+  api_secrets = lookup(each.value, "api_secrets", [])
   science_bucket_name                = data.terraform_remote_state.core.outputs.science_bucket_name
   gcp_project                        = var.gcp_project_id
   gcp_region                         = var.gcp_region

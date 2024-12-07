@@ -105,9 +105,8 @@ def main():
         for f in sorted(downloaded_files)
         if os.path.splitext(f)[1] == '.csv'
     ]
-    print(config)
-
     load_csvs_into_tables(config)
+    log.info(f"Successfully imported following files: {downloaded_files}")
 
 
 if __name__ == "__main__":

@@ -3,5 +3,5 @@
 
 seed-data:
 	@echo "Starting seeding base data... "
-	python csv_to_table.py data
+	python csv_to_table.py
 

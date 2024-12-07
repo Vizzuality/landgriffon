@@ -4,15 +4,58 @@ on:
   push:
     paths:
       - 'data/**'
+      - '.github/workflows/testing-data-import.yml'
 
   workflow_dispatch:
+
+env:
+  NODE_ENV: test
+  DB_HOST: localhost
+  DB_USERNAME: landgriffon
+  DB_PASSWORD: landgriffon
+  DB_DATABASE: landgriffon
+  API_POSTGRES_HOST: localhost
+  API_POSTGRES_PORT: 5432
+  API_POSTGRES_USERNAME: landgriffon
+  API_POSTGRES_PASSWORD: landgriffon
+  API_POSTGRES_DATABASE: landgriffon
+  GMAPS_API_KEY: secretApiKey
 
 jobs:
   data-import-test:
     name: Data Import Tests
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: vizzuality/landgriffon-database:latest
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: landgriffon
+          POSTGRES_PASSWORD: landgriffon
+          POSTGRES_DB: landgriffon
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: './api/.nvmrc'
+
+      - name: Install API dependencies
+        working-directory: api
+        run: yarn install
+
+      - name: Prepare database
+        working-directory: api
+        run: yarn test:db-prepare
+
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3

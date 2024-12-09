@@ -35,13 +35,22 @@ def check_srs(reference_raster: DatasetReader, raster: DatasetReader):
 
 def check_transform(reference_raster: DatasetReader, raster: DatasetReader):
     """Checks that raster has same transform as reference"""
-    if reference_raster.transform != raster.transform:
+    # use the str representation since it is rounded and to 2 decimal places
+    # meaning that the discrepancy is not a rounding or floating point imprecision
+    if str(reference_raster.transform) != str(raster.transform):
         message = (
-            f"Raster files have different Transform: {reference_raster.name} {reference_raster.transform} "
-            f"vs {raster.name} {raster.transform}"
+            f"Raster files have different Transform:\n{reference_raster.name}\n{reference_raster.transform}\n"
+            f"{raster.name}\n{raster.transform}"
         )
         log.error(message)
         raise ValueError(message)
+    # smaller discrepancies are allowed but warned
+    elif reference_raster.transform != raster.transform:
+        message = (
+            f"Raster files have different Transform:\n{reference_raster.name}\n{repr(reference_raster.transform)}\n"
+            f"{raster.name}\n{repr(raster.transform)}"
+        )
+        log.warning(message)
 
 
 def raster_to_h3(reference_raster: Path, h3_resolution: int, raster_file: Path) -> pd.DataFrame:

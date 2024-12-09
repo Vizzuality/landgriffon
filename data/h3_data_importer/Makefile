@@ -9,8 +9,8 @@ PARALLELIZATION_FACTOR=8
 
 AWS_S3_BUCKET_URL=s3://landgriffon-raw-data
 
-WORKDIR_MAPSPAM_PROD=data/mapspam_prod
-WORKDIR_MAPSPAM_HA=data/mapspam_ha
+WORKDIR_MAPSPAM_PROD=data/spam2020V1r0_global_production
+WORKDIR_MAPSPAM_HA=data/spam2020V1r0_global_harvested_area
 WORKDIR_GLW3=data/glw3
 WORKDIR_WATER_FOOTPRINT=data/waterFootprint
 WORKDIR_AQUEDUCT=data/contextual/aqueduct
@@ -63,7 +63,7 @@ contextual-layers: convert-hdi-contextual \
 
 download-mapspam-crop-production:
 	mkdir -p $(WORKDIR_MAPSPAM_PROD)
-	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/mapspam/spam2010v2r0_global_prod $(WORKDIR_MAPSPAM_PROD)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/mapspam/spam2020V1r0_global_production/ $(WORKDIR_MAPSPAM_PROD)
 	cd $(WORKDIR_MAPSPAM_PROD) && sha256sum --check ../../$(CHECKSUMS_PATH)/mapspam_prod
 
 convert-mapspam-crop-production: download-mapspam-crop-production
@@ -71,7 +71,7 @@ convert-mapspam-crop-production: download-mapspam-crop-production
 
 download-mapspam-crop-harvest:
 	mkdir -p $(WORKDIR_MAPSPAM_HA)
-	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/mapspam/spam2010v2r0_global_ha $(WORKDIR_MAPSPAM_HA)
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/mapspam/spam2020V1r0_global_harvested_area/ $(WORKDIR_MAPSPAM_HA)
 	cd $(WORKDIR_MAPSPAM_HA) && sha256sum --check ../../$(CHECKSUMS_PATH)/mapspam_ha
 
 convert-mapspam-crop-harvest: download-mapspam-crop-harvest

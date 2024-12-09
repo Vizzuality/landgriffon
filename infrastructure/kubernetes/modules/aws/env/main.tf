@@ -237,6 +237,10 @@ module "k8s_data_import" {
       name  = "S3_COG_PATH"
       value = "processed/cogs"
     },
+    {
+      name : "DATA_BUCKET_NAME"
+      value : module.environment_bucket.instance-bucket-name
+    }
   ])
 
   secrets = [
@@ -316,6 +320,15 @@ module "github_actions_frontend_secrets" {
   repo_name = var.repo_name
   branch    = var.repo_branch
   domain    = var.domain
+}
+
+
+module environment_bucket {
+  source      = "../s3"
+  bucket_name = var.environment
+  depends_on = [
+    module.k8s_namespace
+  ]
 }
 
 #module "data_import" {

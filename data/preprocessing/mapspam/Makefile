@@ -1,9 +1,15 @@
-############################################
-# MapSPAM crop production and harvest area #
-############################################
 WORKDIR_MAPSPAM=data
 
-all: compute-mapspam-crop-harvest compute-mapspam-crop-production
+checksums_dir=../../../../h3_data_importer/data_checksums
+
+AWS_S3_BUCKET_URL=s3://landgriffon-raw-data
+
+include ../../../.env
+
+export AWS_ACCESS_KEY_ID
+export AWS_SECRET_ACCESS_KEY
+
+all: clean compute-mapspam-crop-harvest compute-mapspam-crop-production write_checksum
 
 
 # ZIPs obtained from https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/PRFF8V
@@ -209,3 +215,11 @@ compute-mapspam-crop-harvest: nodata-harvest
 		gdal_translate -a_nodata 0 -co COMPRESS=DEFLATE -co PREDICTOR=3 $$file $$file.tmp.tif;\
 		mv $$file.tmp.tif $$file;\
 	done
+
+
+write_checksum:
+	cd data/spam2020V1r0_global_harvested_area && sha256sum * > $(checksums_dir)/mapspam_ha
+	cd data/spam2020V1r0_global_production && sha256sum * > $(checksums_dir)/mapspam_prod
+
+clean:
+	rm -rf data/spam2020V1r0_global_harvested_area data/spam2020V1r0_global_production

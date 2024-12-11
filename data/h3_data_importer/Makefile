@@ -25,6 +25,7 @@ WORKDIR_LIVESTOCK_PROCESSED=data/livestock_processed
 WORKDIR_LIVESTOCK_GHG=data/livestock_ghg
 WORKDIR_DEFAULT_COMMODITY=data/default_commodity
 WORKDIR_EARTHSTAT=data/earthstat
+WORKDIR_EARTHSTAT=data/cropgrids
 
 
 CHECKSUMS_PATH=data_checksums
@@ -46,8 +47,6 @@ all:
 
 crop: convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock convert-livestock-processed convert-default-commodity convert-earthstat
 
-
-
 indicators: convert-aqueduct convert-deforestation convert-forestGHG convert-naturalCropConversion convert-nutrientLoadReduction convert-biodiversity convert-ghg-farm convert-ghg-farm-livestock
 
 contextual-layers: convert-hdi-contextual \
@@ -56,6 +55,8 @@ contextual-layers: convert-hdi-contextual \
 	convert-crop-bii-loss-by-human-landuse \
 	convert-crop-flii-loss-by-human-landuse \
 	convert-crop-net-conversion-by-human-landuse
+
+
 
 ###################################
 #  Mapspam - commodity production #
@@ -91,7 +92,17 @@ convert-earthstat: download-earthstat
 	python raster_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/production h3_grid_earthstat_global_prod production earthstat 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 	python raster_folder_to_h3_table.py $(WORKDIR_EARTHSTAT)/harvest h3_grid_earthstat_global_ha harvest_area earthstat 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
+# ---------------------------------------------
+# CROPGRIDS - production and harvest
+# ---------------------------------------------
+download-cropgrids:
+	mkdir -p $(WORKDIR_CROPGRIDS)/production $(WORKDIR_CROPGRIDS)/harvest
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/earthstat/ $(WORKDIR_CROPGRIDS)
+	cd $(WORKDIR_CROPGRIDS) && sha256sum --check ../../$(CHECKSUMS_PATH)/earthstat
 
+convert-cropgrids: download-cropgrids
+	python raster_folder_to_h3_table.py $(WORKDIR_CROPGRIDS)/production h3_grid_cropgrids_global_prod production cropgrids 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_CROPGRIDS)/harvest h3_grid_cropgrids_global_ha harvest_area cropgrids 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 ###############################################################
 #  Gridded Livestock of the World (GLW3) - pasture production #

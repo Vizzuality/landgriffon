@@ -26,6 +26,7 @@ WORKDIR_LIVESTOCK_GHG=data/livestock_ghg
 WORKDIR_DEFAULT_COMMODITY=data/default_commodity
 WORKDIR_EARTHSTAT=data/earthstat
 WORKDIR_CROPGRIDS=data/cropgrids
+WORKDIR_CROPLAND=data/cropland
 
 
 CHECKSUMS_PATH=data_checksums
@@ -104,6 +105,35 @@ download-cropgrids:
 convert-cropgrids: download-cropgrids
 	python raster_folder_to_h3_table.py $(WORKDIR_CROPGRIDS)/crop-grids-production h3_grid_cropgrids_global_prod production cropgrids 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 	python raster_folder_to_h3_table.py $(WORKDIR_CROPGRIDS)/crop-grids-harvest h3_grid_cropgrids_global_ha harvest_area cropgrids 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+
+
+
+# ---------------------------------------------
+# CROP LAND
+# ---------------------------------------------
+
+download-cropland:
+	mkdir -p $(WORKDIR_CROPLAND)
+	aws s3 cp s3://landgriffon-raw-data/raw/CroplandPastureArea2000_Geotiff.zip $(WORKDIR_CROPLAND)/CroplandPastureArea2000_Geotiff.zip
+
+extract-cropland: download-cropland
+	unzip -q -j -o -u $(WORKDIR_CROPLAND)/CroplandPastureArea2000_Geotiff.zip CroplandPastureArea2000_Geotiff/Cropland2000_5m.tif -d $(WORKDIR_CROPLAND)/
+	mkdir -p $(WORKDIR_CROPLAND)/production
+	mkdir -p $(WORKDIR_CROPLAND)/harvest
+	mv 	$(WORKDIR_CROPLAND)/Cropland2000_5m.tif $(WORKDIR_CROPLAND)/harvest/es_Cropland2000_ha.tif
+    # global yield value of cropland from faostat
+	gdal_calc.py --quiet --calc "A * 9.127829341" --format GTiff --type Float32 \
+		-A $(WORKDIR_CROPLAND)/harvest/es_Cropland2000_ha.tif --A_band 1 \
+	 	--outfile $(WORKDIR_CROPLAND)/production/es_Cropland2000_prod.tif;
+
+	rm -f $(WORKDIR_CROPLAND)/CroplandPastureArea2000_Geotiff.zip
+
+convert-cropland: extract-cropland
+	python raster_folder_to_h3_table.py $(WORKDIR_CROPLAND)/production h3_grid_cropland_global_prod production cropland 2000 --h3-res=6
+	python raster_folder_to_h3_table.py $(WORKDIR_CROPLAND)/harvest h3_grid_cropland_global_ha harvest_area cropland 2000 --h3-res=6
+
+
+
 
 ###############################################################
 #  Gridded Livestock of the World (GLW3) - pasture production #

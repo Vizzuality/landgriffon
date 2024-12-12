@@ -114,6 +114,10 @@ compute-mapspam-crop-production: nodata-production
 		-F $(WORKDIR_MAPSPAM)/spam2020V1r0_global_production/spam2020_v1r0_global_P_CNUT_A.tif \
 		-G $(WORKDIR_MAPSPAM)/spam2020V1r0_global_production/spam2020_v1r0_global_P_RAPE_A.tif \
 		--outfile $(WORKDIR_MAPSPAM)/spam2020V1r0_global_production/spam2020_v1r0_global_P_OilpSoybGrouOoilSunfCnutRape_A.tif
+	gdal_calc.py  --calc "A+B" --format GTiff --type Float32 --hideNoData --NoDataValue 0 \
+		-A $(WORKDIR_MAPSPAM)/spam2020V1r0_global_production/spam2020_v1r0_global_P_COFF_A.tif \
+		-B $(WORKDIR_MAPSPAM)/spam2020V1r0_global_production/spam2020_v1r0_global_P_RCOF_A.tif \
+		--outfile $(WORKDIR_MAPSPAM)/spam2020V1r0_global_production/spam2020_v1r0_global_P_CoffRcof_A.tif
 	for file in $(WORKDIR_MAPSPAM)/spam2020V1r0_global_production/spam2020_v1r0_global_P_*.tif; do \
 		gdal_translate -a_nodata 0 -co COMPRESS=DEFLATE -co PREDICTOR=3 $$file $$file.tmp.tif;\
 		mv $$file.tmp.tif $$file;\
@@ -211,6 +215,10 @@ compute-mapspam-crop-harvest: nodata-harvest
 		-F $(WORKDIR_MAPSPAM)/spam2020V1r0_global_harvested_area/spam2020_v1r0_global_H_CNUT_A.tif --F_band 1 \
 		-G $(WORKDIR_MAPSPAM)/spam2020V1r0_global_harvested_area/spam2020_v1r0_global_H_RAPE_A.tif --G_band 1 \
 		--outfile $(WORKDIR_MAPSPAM)/spam2020V1r0_global_harvested_area/spam2020_v1r0_global_H_OilpSoybGrouOoilSunfCnutRape_A.tif
+	gdal_calc.py  --calc "A+B" --format GTiff --type Float32 --hideNoData --NoDataValue 0 \
+		-A $(WORKDIR_MAPSPAM)/spam2020V1r0_global_harvested_area/spam2020_v1r0_global_H_COFF_A.tif \
+		-B $(WORKDIR_MAPSPAM)/spam2020V1r0_global_harvested_area/spam2020_v1r0_global_H_RCOF_A.tif \
+		--outfile $(WORKDIR_MAPSPAM)/spam2020V1r0_global_harvested_area/spam2020_v1r0_global_H_CoffRcof_A.tif
 	for file in $(WORKDIR_MAPSPAM)/spam2020V1r0_global_harvested_area/spam2020_v1r0_global_H_*.tif; do \
 		gdal_translate -a_nodata 0 -co COMPRESS=DEFLATE -co PREDICTOR=3 $$file $$file.tmp.tif;\
 		mv $$file.tmp.tif $$file;\

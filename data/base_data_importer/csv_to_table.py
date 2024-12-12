@@ -27,14 +27,24 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("base_data_importer")
 load_dotenv('../../.env')
 
+db_host = os.getenv("API_POSTGRES_HOST")
+db_port = os.getenv("API_POSTGRES_PORT")
+db_user = os.getenv("API_POSTGRES_USERNAME")
+db_database = os.getenv("API_POSTGRES_DATABASE")
+db_password = os.getenv("API_POSTGRES_PASSWORD")
+aws_access_key_id = os.getenv("AWS_ACCESS_KEY_ID")
+aws_secret_access_key = os.getenv("AWS_SECRET_ACCESS_KEY")
+data_bucket_name = os.getenv("DATA_BUCKET_NAME")
+path = 'import/base_data'
+
 
 def load_csvs_into_tables(csv_file_list: list[dict]):
     conn = psycopg2.connect(
-        host=os.getenv('API_POSTGRES_HOST'),
-        port=os.getenv('API_POSTGRES_PORT'),
-        database=os.getenv('API_POSTGRES_DATABASE'),
-        user=os.getenv('API_POSTGRES_USERNAME'),
-        password=os.getenv('API_POSTGRES_PASSWORD')
+        host=db_host,
+        port=db_port,
+        database=db_database,
+        user=db_user,
+        password=db_password
     )
     log.info('Loading base data CSVs into Database...')
     cursor = conn.cursor()
@@ -67,13 +77,11 @@ def load_csvs_into_tables(csv_file_list: list[dict]):
 def download_base_data(files_to_download: list[str]) -> list[str]:
     downloaded_files = []
     log.info(f"Downloading files base data files...")
-    aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
-    aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
     s3 = boto3.client('s3', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
     try:
         for file_name in files_to_download:
             log.info(f"Downloading file: {file_name}")
-            s3.download_file(Bucket='landgriffon-raw-data', Key=f'import/base_data/{file_name}', Filename=file_name)
+            s3.download_file(Bucket=data_bucket_name, Key=f"{path}/{file_name}", Filename=file_name)
             if os.path.exists(file_name):
                 downloaded_files.append(file_name)
             else:

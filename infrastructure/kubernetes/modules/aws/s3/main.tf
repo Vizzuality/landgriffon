@@ -42,10 +42,10 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid    = "AllowAllAuthenticatedUsersInAccount"
+        Sid    = "AllowAccessToRole"
         Effect = "Allow"
         Principal = {
-          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/eks-node-group-admin"
         }
         Action = "s3:*"
         Resource = [

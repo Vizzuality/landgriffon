@@ -25,7 +25,7 @@ WORKDIR_LIVESTOCK_PROCESSED=data/livestock_processed
 WORKDIR_LIVESTOCK_GHG=data/livestock_ghg
 WORKDIR_DEFAULT_COMMODITY=data/default_commodity
 WORKDIR_EARTHSTAT=data/earthstat
-WORKDIR_EARTHSTAT=data/cropgrids
+WORKDIR_CROPGRIDS=data/cropgrids
 
 
 CHECKSUMS_PATH=data_checksums
@@ -68,7 +68,7 @@ download-mapspam-crop-production:
 	cd $(WORKDIR_MAPSPAM_PROD) && sha256sum --check ../../$(CHECKSUMS_PATH)/mapspam_prod
 
 convert-mapspam-crop-production: download-mapspam-crop-production
-	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM_PROD) h3_grid_spam2010v2r0_global_prod production spam 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM_PROD) h3_grid_spam2010v2r0_global_prod production spam 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 download-mapspam-crop-harvest:
 	mkdir -p $(WORKDIR_MAPSPAM_HA)
@@ -76,7 +76,7 @@ download-mapspam-crop-harvest:
 	cd $(WORKDIR_MAPSPAM_HA) && sha256sum --check ../../$(CHECKSUMS_PATH)/mapspam_ha
 
 convert-mapspam-crop-harvest: download-mapspam-crop-harvest
-	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM_HA) h3_grid_spam2010v2r0_global_ha harvest_area spam 2010 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM_HA) h3_grid_spam2010v2r0_global_ha harvest_area spam 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 # ---------------------------------------------
 # EARTHSTAT - production and harvest
@@ -95,14 +95,15 @@ convert-earthstat: download-earthstat
 # ---------------------------------------------
 # CROPGRIDS - production and harvest
 # ---------------------------------------------
+
 download-cropgrids:
 	mkdir -p $(WORKDIR_CROPGRIDS)/production $(WORKDIR_CROPGRIDS)/harvest
-	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/earthstat/ $(WORKDIR_CROPGRIDS)
-	cd $(WORKDIR_CROPGRIDS) && sha256sum --check ../../$(CHECKSUMS_PATH)/earthstat
+	aws s3 sync $(AWS_S3_BUCKET_URL)/processed/crop-grids/ $(WORKDIR_CROPGRIDS)
+	#cd $(WORKDIR_CROPGRIDS) && sha256sum --check ../../$(CHECKSUMS_PATH)/earthstat
 
 convert-cropgrids: download-cropgrids
-	python raster_folder_to_h3_table.py $(WORKDIR_CROPGRIDS)/production h3_grid_cropgrids_global_prod production cropgrids 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
-	python raster_folder_to_h3_table.py $(WORKDIR_CROPGRIDS)/harvest h3_grid_cropgrids_global_ha harvest_area cropgrids 2000 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_CROPGRIDS)/crop-grids-production h3_grid_cropgrids_global_prod production cropgrids 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_CROPGRIDS)/crop-grids-harvest h3_grid_cropgrids_global_ha harvest_area cropgrids 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 ###############################################################
 #  Gridded Livestock of the World (GLW3) - pasture production #

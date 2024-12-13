@@ -23,7 +23,7 @@ import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.servic
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { H3DataService } from 'modules/h3-data/h3-data.service';
-import { IndicatorQueryDependencyManager } from 'modules/indicator-records/services/indicator-dependency-manager.service';
+import { ImpactQueryBuilder } from 'modules/indicator-records/services/indicator-dependency-manager.service';
 import { CachedDataService } from 'modules/cached-data/cached-data.service';
 import {
   CACHED_DATA_TYPE,
@@ -51,7 +51,7 @@ export class ImpactCalculator {
     private readonly indicatorRecordRepository: IndicatorRecordRepository,
     private readonly materialToH3: MaterialsToH3sService,
     private readonly indicatorService: IndicatorsService,
-    private readonly dependencyManager: IndicatorQueryDependencyManager,
+    private readonly dependencyManager: ImpactQueryBuilder,
     private readonly cachedDataService: CachedDataService,
     private readonly dataSource: DataSource,
     private readonly importProgress: ImportProgressEmitter,
@@ -383,6 +383,12 @@ export class ImpactCalculator {
             (100 * rawData.production) || 0
         );
       },
+      [INDICATOR_NAME_CODES.WW]: () => {
+        return rawData[INDICATOR_NAME_CODES.WW] * tonnage || 0;
+      },
+      [INDICATOR_NAME_CODES.WC]: () => {
+        return rawData[INDICATOR_NAME_CODES.WC] * tonnage || 0;
+      },
     };
 
     for (const [key, value] of Object.entries(calculations)) {
@@ -423,39 +429,35 @@ export class ImpactCalculator {
       //      indicator value calculation has not been refactored. It remains to be reworked
       const response: any = await this.dataSource.query(
         `
-        SELECT
-          -- TODO: Hack to retrieve 1 materialH3Id for each sourcingRecord. This should include a year fallback strategy in the stored procedures
-          --       used below
-          distinct on (sr.id)
-          sr.id as "sourcingRecordId",
-          sr.tonnage,
-          sr.year,
-          slwithmaterialh3data.id as "sourcingLocationId",
-          slwithmaterialh3data."materialH3DataId",
-          ${params}
+          SELECT
+            -- TODO: Hack to retrieve 1 materialH3Id for each sourcingRecord. This should include a year fallback strategy in the stored procedures
+            --       used below
+            distinct
+          on (sr.id)
+            sr.id as "sourcingRecordId",
+            sr.tonnage,
+            sr.year,
+            slwithmaterialh3data.id as "sourcingLocationId",
+            slwithmaterialh3data."materialH3DataId",
+            ${params}
 
-      FROM
-          sourcing_records sr
-          INNER JOIN
-              (
-                  SELECT
-                      sourcing_location.id,
-                      "scenarioInterventionId",
-                      "interventionType",
-                      mth."h3DataId" as "materialH3DataId",
-                      ${query}
-
-                  FROM
-                      sourcing_location
-                  inner join
-                    material_to_h3 mth
-                  on
-                    mth."materialId" = sourcing_location."materialId"
-                  WHERE "scenarioInterventionId" IS NULL
-                  AND "interventionType" IS NULL
-                  and mth."type" = 'producer'
-              ) as slwithmaterialh3data
-              on sr."sourcingLocationId" = slwithmaterialh3data.id`,
+          FROM
+            sourcing_records sr
+            INNER JOIN
+            (
+            SELECT
+            sourcing_location.id, "scenarioInterventionId", "interventionType", mth."h3DataId" as "materialH3DataId", ${query}
+            FROM
+            sourcing_location
+            inner join
+            material_to_h3 mth
+            on
+            mth."materialId" = sourcing_location."materialId"
+            WHERE "scenarioInterventionId" IS NULL
+            AND "interventionType" IS NULL
+            and mth."type" = 'producer'
+            ) as slwithmaterialh3data
+          on sr."sourcingLocationId" = slwithmaterialh3data.id`,
       );
       if (!response.length)
         this.logger.warn(

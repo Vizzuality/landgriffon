@@ -81,4 +81,20 @@ export class IndicatorCoefficientsDto {
   @IsNotEmpty()
   @IsNumber()
   [INDICATOR_NAME_CODES.GHG_FARM]: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Max(1000000)
+  @Min(0)
+  @IsNotEmpty()
+  @IsNumber()
+  [INDICATOR_NAME_CODES.WW]: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Max(1000000)
+  @Min(0)
+  @IsNotEmpty()
+  @IsNumber()
+  [INDICATOR_NAME_CODES.WC]: number;
 }

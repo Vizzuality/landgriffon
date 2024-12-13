@@ -22,7 +22,6 @@ import { IndicatorRecordCalculatedValuesDto } from 'modules/indicator-records/dt
 import { MaterialsToH3sService } from 'modules/materials/materials-to-h3s.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
-import { H3DataService } from 'modules/h3-data/h3-data.service';
 import { ImpactQueryBuilder } from 'modules/indicator-records/services/indicator-dependency-manager.service';
 import { CachedDataService } from 'modules/cached-data/cached-data.service';
 import {
@@ -30,8 +29,8 @@ import {
   CachedData,
 } from 'modules/cached-data/cached-data.entity';
 import { ImportProgressEmitter } from 'modules/events/import-data/import-progress.emitter';
-import { ImpactCalculationProgressTracker } from '../../impact/progress-tracker/impact-calculation.progress-tracker';
-import { ImportProgressTrackerFactory } from '../../events/import-data/import-progress.tracker.factory';
+import { ImpactCalculationProgressTracker } from 'modules/impact/progress-tracker/impact-calculation.progress-tracker';
+import { ImportProgressTrackerFactory } from 'modules/events/import-data/import-progress.tracker.factory';
 
 /**
  * @description: This is PoC (Proof of Concept) for the updated LG methodology v0.1

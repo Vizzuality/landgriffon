@@ -388,6 +388,14 @@ export class ImpactCalculator {
       [INDICATOR_NAME_CODES.WC]: () => {
         return rawData[INDICATOR_NAME_CODES.WC] * tonnage || 0;
       },
+      [INDICATOR_NAME_CODES.WGUWU]: () => {
+        const waterWithdrawalValue: number =
+          rawData[INDICATOR_NAME_CODES.WW] * tonnage || 0;
+        return (
+          (rawData[INDICATOR_NAME_CODES.WGUWU] * waterWithdrawalValue) /
+            (100 * rawData.production) || 0
+        );
+      },
     };
 
     for (const [key, value] of Object.entries(calculations)) {

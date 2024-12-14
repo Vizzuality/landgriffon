@@ -36,6 +36,10 @@ import { SourcingDataDbCleaner } from 'modules/import-data/sourcing-data/sourcin
     }),
     BullModule.registerQueue({
       name: importQueueName,
+      defaultJobOptions: {
+        removeOnComplete: true,
+        removeOnFail: true,
+      },
     }),
     BullModule.registerQueue({
       name: 'eudr',

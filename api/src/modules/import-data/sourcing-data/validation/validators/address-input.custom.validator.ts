@@ -35,7 +35,7 @@ export class LocationAddressInputValidator
       (!(args.object as SourcingDataExcelValidator).location_latitude_input ||
         !(args.object as SourcingDataExcelValidator).location_longitude_input)
     ) {
-      return typeof addressInput === 'string' && addressInput.length > 2;
+      return typeof addressInput === 'string' && addressInput.length > 1;
     } else {
       return true;
     }

@@ -97,4 +97,12 @@ export class IndicatorCoefficientsDto {
   @IsNotEmpty()
   @IsNumber()
   [INDICATOR_NAME_CODES.WC]: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Max(1000000)
+  @Min(0)
+  @IsNotEmpty()
+  @IsNumber()
+  [INDICATOR_NAME_CODES.WGUWU]: number;
 }

@@ -93,7 +93,7 @@ export class GeoCodingService extends GeoCodingAbstractClass {
         progressTracker.trackProgress();
       } catch (e: any) {
         errors.push({
-          line: i + 5,
+          row: i + 5,
           error: e.message,
           type: 'geo-coding-error',
           sheet: 'sourcingData',

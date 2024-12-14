@@ -25,6 +25,7 @@ export class QueryPropertyNamesType {
   [INDICATOR_NAME_CODES.GHG_FARM]: INDICATOR_NAME_CODES.GHG_FARM;
   [INDICATOR_NAME_CODES.WW]: INDICATOR_NAME_CODES.WW;
   [INDICATOR_NAME_CODES.WC]: INDICATOR_NAME_CODES.WC;
+  [INDICATOR_NAME_CODES.WGUWU]: INDICATOR_NAME_CODES.WGUWU;
 }
 
 export class QueryPropertyTypes {
@@ -42,6 +43,7 @@ export class QueryPropertyTypes {
   [INDICATOR_NAME_CODES.GHG_FARM]: number;
   [INDICATOR_NAME_CODES.WW]: number;
   [INDICATOR_NAME_CODES.WC]: number;
+  [INDICATOR_NAME_CODES.WGUWU]: number;
 }
 
 export const QueryPropertyNames: QueryPropertyNamesType = {
@@ -58,6 +60,7 @@ export const QueryPropertyNames: QueryPropertyNamesType = {
   [INDICATOR_NAME_CODES.GHG_FARM]: INDICATOR_NAME_CODES.GHG_FARM,
   [INDICATOR_NAME_CODES.WW]: INDICATOR_NAME_CODES.WW,
   [INDICATOR_NAME_CODES.WC]: INDICATOR_NAME_CODES.WC,
+  [INDICATOR_NAME_CODES.WGUWU]: INDICATOR_NAME_CODES.WGUWU,
 } as const;
 
 export type ImpactQueryPropertyName =
@@ -140,5 +143,11 @@ export const INDICATOR_NAME_CODE_TO_QUERY_MAP: {
   [INDICATOR_NAME_CODES.WC]: {
     [INDICATOR_NAME_CODES.WC]: () =>
       `${get_indicator_coefficient_impact}('${INDICATOR_NAME_CODES.WC}', $3, $2) as "${INDICATOR_NAME_CODES.WC}"`,
+  },
+  [INDICATOR_NAME_CODES.WGUWU]: {
+    [INDICATOR_NAME_CODES.WGUWU]: () =>
+      `${get_annual_commodity_weighted_impact_over_georegion}($1, '${INDICATOR_NAME_CODES.WGUWU}', $2, 'producer') as "${INDICATOR_NAME_CODES.WGUWU}"`,
+    [INDICATOR_NAME_CODES.WW]: () =>
+      `${get_indicator_coefficient_impact}('${INDICATOR_NAME_CODES.WW}', $3, $2) as "${INDICATOR_NAME_CODES.WU}"`,
   },
 };

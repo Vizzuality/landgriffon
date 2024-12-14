@@ -33,6 +33,7 @@ export enum INDICATOR_NAME_CODES {
   FLIL = 'FLIL',
   WW = 'WW',
   WC = 'WC',
+  WGUWU = 'WGUWU',
 }
 
 export const indicatorResource: BaseServiceResource = {

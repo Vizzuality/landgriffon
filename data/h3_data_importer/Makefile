@@ -46,7 +46,7 @@ all:
 	make crop indicators
 	make delete-h3-tables
 
-crop: convert-mapspam-crop-production convert-mapspam-crop-harvest convert-glw3-livestock convert-livestock-processed convert-default-commodity convert-earthstat
+crop: convert-mapspam-crop-production convert-mapspam-crop-harvest  convert-cropland convert-cropgrids convert-glw3-livestock convert-livestock-processed convert-default-commodity convert-earthstat
 
 indicators: convert-aqueduct convert-deforestation convert-forestGHG convert-naturalCropConversion convert-nutrientLoadReduction convert-biodiversity convert-ghg-farm convert-ghg-farm-livestock
 
@@ -77,7 +77,7 @@ download-mapspam-crop-harvest:
 	cd $(WORKDIR_MAPSPAM_HA) && sha256sum --check ../../$(CHECKSUMS_PATH)/mapspam_ha
 
 convert-mapspam-crop-harvest: download-mapspam-crop-harvest
-	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM_HA) h3_grid_spam2010v2r0_global_ha harvest_area spam 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
+	python raster_folder_to_h3_table.py $(WORKDIR_MAPSPAM_HA) h3_grid_spam2020v1r0_global_ha harvest_area spam 2020 --h3-res=6 --thread-count=$(PARALLELIZATION_FACTOR)
 
 # ---------------------------------------------
 # EARTHSTAT - production and harvest

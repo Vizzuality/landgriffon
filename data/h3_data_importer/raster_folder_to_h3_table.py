@@ -151,7 +151,6 @@ def update_for_material_indicator(cursor: psycopg.Cursor, dataset: str, column_n
     spam_id = f"spam_{column_name.split('PerTProduction')[0].lower()}"  # something like 'spam_ocerwhea'
     cursor.execute('select id from material where "datasetId" = %s', (spam_id,))
     material_ids = cursor.fetchall()
-    breakpoint()
     if not material_ids:
         log.warning(f"Material with 'datasetId' {spam_id} does not exists")
         raise ValueError(f"Material with 'datasetId' {spam_id} does not exists")

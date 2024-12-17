@@ -15,6 +15,8 @@ do-nothing:
 # ## Make Dataset
 seed-data: seed-source-data seed-gadm seed-h3-tables seed-contextual-layers seed-indicator-coefficients
 
+seed-starting-from-h3: seed-h3-tables seed-contextual-layers seed-indicator-coefficients
+
 seed-source-data:
 	@echo "Importing source data... "
 	cd ./base_data_importer && make -j 4

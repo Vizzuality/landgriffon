@@ -7,8 +7,18 @@ import {
 } from 'modules/geo-coding/geocoders/geocoder.interface';
 import { Cache } from 'cache-manager';
 import { GoogleMapsGeocoder } from 'modules/geo-coding/geocoders/google-maps.geocoder';
+import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 
 export const GEOCODING_CACHE_ENABLED: unique symbol = Symbol();
+
+export type LocationInfo = {
+  locationAddressInput?: string;
+  locationLatitude?: number;
+  locationLongitude?: number;
+  locationAdminRegionInput?: string;
+  locationCountryInput?: string;
+  locationType?: string;
+};
 
 export class CacheGeocoder implements GeocoderInterface {
   private logger: Logger = new Logger(CacheGeocoder.name);
@@ -66,5 +76,43 @@ export class CacheGeocoder implements GeocoderInterface {
     );
     await this.cacheManager.set(cacheKey, data);
     return data;
+  }
+
+  private async generateDbGeoCodeKey(
+    sourcingData: SourcingData,
+  ): Promise<string> {
+    const {
+      locationCountryInput,
+      locationType,
+      locationLatitude,
+      locationLongitude,
+      locationAddressInput,
+      locationAdminRegionInput,
+    } = sourcingData;
+    const locationInfo: LocationInfo = {
+      locationCountryInput,
+      locationType,
+      locationLongitude,
+      locationLatitude,
+      locationAddressInput,
+      locationAdminRegionInput,
+    };
+    return Object.values(locationInfo).join(':');
+  }
+
+  async getLocationFromCache(
+    sourcingData: SourcingData,
+  ): Promise<SourcingData | undefined> {
+    const cacheKey: string = await this.generateDbGeoCodeKey(sourcingData);
+    const cachedData: SourcingData | undefined = await this.cacheManager.get(
+      cacheKey,
+    );
+    return cachedData;
+  }
+
+  async setLocationInCache(sourcingData: SourcingData): Promise<SourcingData> {
+    const cacheKey: string = await this.generateDbGeoCodeKey(sourcingData);
+    await this.cacheManager.set(cacheKey, sourcingData);
+    return sourcingData;
   }
 }

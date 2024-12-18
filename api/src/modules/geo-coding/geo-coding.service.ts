@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { AggregationPointGeocodingStrategy } from 'modules/geo-coding/strategies/aggregation-point.geocoding.service';
 import { PointOfProductionGeocodingStrategy } from 'modules/geo-coding/strategies/point-of-production.geocoding.service';
 import { CountryOfProductionGeoCodingStrategy } from 'modules/geo-coding/strategies/country-of-production.geocoding.service';
@@ -11,7 +11,12 @@ import {
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { AdminRegionOfProductionService } from 'modules/geo-coding/strategies/admin-region-of-production.service';
 import { GeoCodingProgressTracker } from 'modules/geo-coding/progress-tracker/geo-coding.progress-tracker';
-import { ImportProgressTrackerFactory } from '../events/import-data/import-progress.tracker.factory';
+import { ImportProgressTrackerFactory } from 'modules/events/import-data/import-progress.tracker.factory';
+import {
+  Geocoder,
+  GeocoderInterface,
+} from 'modules/geo-coding/geocoders/geocoder.interface';
+import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 
 interface locationInfo {
   locationAddressInput?: string;
@@ -33,6 +38,7 @@ export class GeoCodingService extends GeoCodingAbstractClass {
     protected readonly unknownLocationService: UnknownLocationGeoCodingStrategy,
     protected readonly adminRegionOfProductionService: AdminRegionOfProductionService,
     protected readonly progressTrackerFactory: ImportProgressTrackerFactory,
+    @Inject(Geocoder) protected readonly geocoder: GeocoderInterface,
   ) {
     super();
   }
@@ -48,48 +54,60 @@ export class GeoCodingService extends GeoCodingAbstractClass {
     const totalLocations: number = sourcingData.length;
     const progressTracker: GeoCodingProgressTracker =
       this.progressTrackerFactory.createGeoCodingTracker({ totalLocations });
+
     for (let i: number = 0; i < totalLocations; i++) {
       const location: SourcingData = sourcingData[i];
       this.logger.debug(
         `Geocoding location: Country: ${location.locationCountryInput}, Address: ${location.locationAddressInput}, LAT: ${location.locationLatitude}, LONG: ${location.locationLongitude}`,
       );
+
       try {
-        if (location.locationType === LOCATION_TYPES.UNKNOWN) {
-          geoCodedSourcingData.push(
-            await this.geoCodeUnknownLocationType(location),
+        const cachedLocation: SourcingData | undefined =
+          await this.geocoder.getLocationFromCache(location);
+        if (cachedLocation) {
+          this.logger.log(
+            `Database cached location found for ${location}. Skipping geocoding`,
           );
-        }
-        if (location.locationType === LOCATION_TYPES.COUNTRY_OF_PRODUCTION) {
-          geoCodedSourcingData.push(
-            await this.geoCodeCountryOfProduction(location),
-          );
+          geoCodedSourcingData.push(cachedLocation);
+          progressTracker.trackProgress();
+          continue;
         }
 
-        if (
-          location.locationType === LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT
-        ) {
-          geoCodedSourcingData.push(
-            await this.geoCodeAggregationPoint(location),
-          );
+        let geoCodedLocation: SourcingData;
+
+        switch (location.locationType) {
+          case LOCATION_TYPES.UNKNOWN:
+            geoCodedLocation = await this.geoCodeUnknownLocationType(location);
+            break;
+          case LOCATION_TYPES.COUNTRY_OF_PRODUCTION:
+            geoCodedLocation = await this.geoCodeCountryOfProduction(location);
+            break;
+          case LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT:
+            geoCodedLocation = await this.geoCodeAggregationPoint(location);
+            break;
+          case LOCATION_TYPES.POINT_OF_PRODUCTION:
+            geoCodedLocation = await this.geoCodePointOfProduction(location);
+            break;
+          case LOCATION_TYPES.COUNTRY_OF_DELIVERY:
+            geoCodedLocation = await this.geoCodeCountryOfDeliveryLocationType(
+              location,
+            );
+            break;
+          case LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION:
+            geoCodedLocation =
+              await this.geoCodeAdminRegionOfProductionLocationType(location);
+            break;
+          default:
+            throw new GeoCodingError(
+              `Unsupported location type: ${location.locationType}`,
+            );
         }
-        if (location.locationType === LOCATION_TYPES.POINT_OF_PRODUCTION) {
-          geoCodedSourcingData.push(
-            await this.geoCodePointOfProduction(location),
-          );
-        }
-        if (location.locationType === LOCATION_TYPES.COUNTRY_OF_DELIVERY) {
-          geoCodedSourcingData.push(
-            await this.geoCodeCountryOfDeliveryLocationType(location),
-          );
-        }
-        if (
-          location.locationType ===
-          LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION
-        ) {
-          geoCodedSourcingData.push(
-            await this.geoCodeAdminRegionOfProductionLocationType(location),
-          );
-        }
+
+        await this.geocoder.setLocationInCache(geoCodedLocation);
+        this.logger.log(
+          `New Location ${location} successfully geocoded and saved to cache`,
+        );
+        geoCodedSourcingData.push(geoCodedLocation);
         progressTracker.trackProgress();
       } catch (e: any) {
         errors.push({

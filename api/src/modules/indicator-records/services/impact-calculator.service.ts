@@ -28,9 +28,9 @@ import {
   CACHED_DATA_TYPE,
   CachedData,
 } from 'modules/cached-data/cached-data.entity';
-import { ImportProgressEmitter } from 'modules/events/import-data/import-progress.emitter';
+import { ImportProgressEmitter } from 'modules/events/import-data-progress/import-progress.emitter';
 import { ImpactCalculationProgressTracker } from 'modules/impact/progress-tracker/impact-calculation.progress-tracker';
-import { ImportProgressTrackerFactory } from 'modules/events/import-data/import-progress.tracker.factory';
+import { ImportProgressTrackerFactory } from 'modules/events/import-data-progress/import-progress.tracker.factory';
 
 /**
  * @description: This is PoC (Proof of Concept) for the updated LG methodology v0.1

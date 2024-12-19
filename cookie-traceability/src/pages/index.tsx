@@ -70,15 +70,20 @@ const Home: React.FC = () => {
       </main>
 
       <footer className="px-4 space-y-5 text-center bg-gray-dark text-secondary py-14">
-        <p className="text-2xl font-extrabold leading-7 uppercase xl:text-7xl font-display">
+        <p className="text-2xl font-extrabold leading-7 uppercase lg:text-7xl font-display">
           Turn supply chain
           <br /> knowledge into
           <br /> sustainable action.
         </p>
-        <p>
-          Go beyond trade flows and locations. Discover the environmental impact of your supply
-          chain, on deforestation, water stress, land use change, GHG emissions and biodiversity.
-        </p>
+        <div className="max-w-md mx-auto lg:max-w-3xl lg:mx-auto">
+          <p className="text-sm xl:text-base">
+            Go beyond trade flows and locations. Discover the environmental impact of your supply
+            chain,{' '}
+            <span className="lg:[text-wrap:nowrap]">
+              on deforestation, water stress, land use change, GHG emissions and biodiversity.
+            </span>
+          </p>
+        </div>
         <a
           href="https://landgriffon.com"
           title="LandGriffon website"

@@ -138,7 +138,7 @@ export const INDICATOR_NAME_CODE_TO_QUERY_MAP: {
   },
   [INDICATOR_NAME_CODES.WW]: {
     [INDICATOR_NAME_CODES.WW]: () =>
-      `${get_indicator_coefficient_impact}('${INDICATOR_NAME_CODES.WW}', $3, $2) as "${INDICATOR_NAME_CODES.WU}"`,
+      `${get_indicator_coefficient_impact}('${INDICATOR_NAME_CODES.WW}', $3, $2) as "${INDICATOR_NAME_CODES.WW}"`,
   },
   [INDICATOR_NAME_CODES.WC]: {
     [INDICATOR_NAME_CODES.WC]: () =>

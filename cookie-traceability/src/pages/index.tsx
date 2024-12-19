@@ -31,7 +31,7 @@ const Home: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-hero-pattern">
       <Head>
-        <title>Landgriffon | Cookie ingredient traceability</title>
+        <title>LandGriffon | Cookie ingredient traceability</title>
         <meta name="description" content="Where does my cookie from? Top 5 trade flow countries" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -75,19 +75,25 @@ const Home: React.FC = () => {
           <br /> knowledge into
           <br /> sustainable action.
         </p>
+        <p>
+          Go beyond trade flows and locations. Discover the environmental impact of your supply
+          chain, on deforestation, water stress, land use change, GHG emissions and biodiversity.
+        </p>
         <a
           href="https://landgriffon.com"
-          title="Landgriffon website"
+          title="LandGriffon website"
           className="inline-block px-5 py-3 text-center border border-secondary"
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          Go to Landgriffon
+          Go to LandGriffon
         </a>
         <p className="pt-10 text-lg">
           A{' '}
           <a href="https://vizzuality.com" className="font-semibold">
             vizzuality
           </a>{' '}
-          product
+          product.
         </p>
       </footer>
     </div>

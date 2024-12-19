@@ -19,6 +19,7 @@ import { ImportProgressTrackerFactory } from 'modules/events/import-data-progres
     ImportProgressEmitter,
     ImportProgressTrackerFactory,
     ImportProgressSocket,
+    CqrsModule,
   ],
 })
 export class AppEventsModule {}

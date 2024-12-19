@@ -166,9 +166,7 @@ export class SourcingDataImportService {
         await this.impactService.updateImpactView();
       } catch (err: any) {
         this.logger.error(err);
-        throw new ServiceUnavailableException(
-          'Could not calculate Impact for current data. Please contact with the administrator',
-        );
+        throw err;
       }
     } finally {
       await this.fileService.deleteDataFromFS(filePath);

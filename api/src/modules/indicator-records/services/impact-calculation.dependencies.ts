@@ -148,6 +148,6 @@ export const INDICATOR_NAME_CODE_TO_QUERY_MAP: {
     [INDICATOR_NAME_CODES.WGUWU]: () =>
       `${get_annual_commodity_weighted_impact_over_georegion}($1, '${INDICATOR_NAME_CODES.WGUWU}', $2, 'producer') as "${INDICATOR_NAME_CODES.WGUWU}"`,
     [INDICATOR_NAME_CODES.WW]: () =>
-      `${get_indicator_coefficient_impact}('${INDICATOR_NAME_CODES.WW}', $3, $2) as "${INDICATOR_NAME_CODES.WU}"`,
+      `${get_indicator_coefficient_impact}('${INDICATOR_NAME_CODES.WW}', $3, $2) as "${INDICATOR_NAME_CODES.WW}"`,
   },
 };

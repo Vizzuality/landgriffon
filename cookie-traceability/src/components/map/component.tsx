@@ -3,7 +3,7 @@ import { useQueryClient, useQueries } from '@tanstack/react-query';
 import Flag from 'react-country-flag';
 import axios from 'axios';
 import DeckGL from '@deck.gl/react/typed';
-import { Map as ReactMapGl, Layer } from 'react-map-gl';
+import { Map as ReactMapGl, Layer, AttributionControl } from 'react-map-gl';
 import { ScatterplotLayer } from '@deck.gl/layers/typed';
 import numeral from 'numeral';
 import { flip, offset, useFloating } from '@floating-ui/react-dom';
@@ -241,9 +241,11 @@ const Map: React.FC<MapProps> = ({ ingredientId, currentTradeFlow }) => {
           projection="mercator"
           mapStyle={JSON.parse(JSON.stringify(mapStyle))}
           mapboxAccessToken={MAPBOX_TOKEN}
+          attributionControl={false}
         >
           <Layer {...highlightedCountriesLabels} />
           <Layer {...highlightedCountriesBoundaries} />
+          <AttributionControl customAttribution="resourcetrade.earth - 2022" />
         </ReactMapGl>
         {hoverInfo?.object && (
           <div

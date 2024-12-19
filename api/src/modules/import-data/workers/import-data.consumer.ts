@@ -54,7 +54,9 @@ export class ImportDataConsumer {
     });
     this.importSocket.emitImportFailureToSocket({ error: err });
     this.eventBus.publish(
-      new ImportDataEvent(task.id, IMPORT_DATA_EVENTS.FAILED, err),
+      new ImportDataEvent(task.id, IMPORT_DATA_EVENTS.FAILED, {
+        error: { message: err.message, stack: err.stack },
+      }),
     );
 
     this.logger.error(
@@ -62,6 +64,8 @@ export class ImportDataConsumer {
     );
 
     // TODO: If the error is not related to the file, we should not send an error report (as it will be empty), we should send a generic error message
+    //       Since we are registering api events for the import now, it might be useful to include the id of the event so that the client
+    //       can share it with the support team
 
     const errorReport: string = await this.tasksService.getTaskErrorReport(
       task.id,

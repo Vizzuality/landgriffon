@@ -24,9 +24,9 @@ export enum API_EVENT_KINDS {
   user__passwordResetTokenGenerated__v1alpha1 = 'user.passwordResetTokenGenerated/v1alpha1',
   user__passwordResetSucceeded__v1alpha1 = 'user.passwordResetSucceeded/v1alpha1',
   user__passwordResetFailed__v1alpha1 = 'user.passwordResetFailed/v1alpha1',
-  data__importStarted__v1alpha1 = 'data.importStarted/v1alpha1',
-  data__importFailed__v1alpha1 = 'data.importFailed/v1alpha1',
-  data__importSucceeded__v1alpha1 = 'data.importSucceeded/v1alpha1',
+  sourcing_data__importStarted__v1alpha1 = 'sourcing-data.importStarted/v1alpha1',
+  sourcing_data__importFailed__v1alpha1 = 'sourcing-data.importFailed/v1alpha1',
+  sourcing_data__importSucceeded__v1alpha1 = 'sourcing-data.importSucceeded/v1alpha1',
 }
 
 /**

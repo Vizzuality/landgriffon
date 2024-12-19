@@ -8,6 +8,7 @@ import {
 } from 'modules/api-events/api-event.topic+kind.entity';
 import { ApiEventsController } from 'modules/api-events/api-events.controller';
 import { ApiEventsService } from 'modules/api-events/api-events.service';
+import { SourcingDataImportViewEntity } from './sourcing-data-import-view.entity';
 
 export const logger: Logger = new Logger('ApiEvents');
 
@@ -18,6 +19,7 @@ export const logger: Logger = new Logger('ApiEvents');
       ApiEvent,
       LatestApiEventByTopicAndKind,
       FirstApiEventByTopicAndKind,
+      SourcingDataImportViewEntity,
     ]),
   ],
   providers: [ApiEventsService],

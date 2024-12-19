@@ -97,7 +97,7 @@ export class CacheGeocoder implements GeocoderInterface {
       locationAddressInput,
       locationAdminRegionInput,
     };
-    return Object.values(locationInfo).join(':');
+    return Object.values(locationInfo).join(':').toString();
   }
 
   async getLocationFromCache(

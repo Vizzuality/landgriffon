@@ -86,6 +86,9 @@ export class PointOfProductionGeocodingStrategy extends BaseStrategy {
       let adminRegionId: string;
       let adminRegion: AdminRegion;
       let geoRegion: GeoRegion;
+      // TODO: Why are we doing this? In case the admin region cannot be found, to then delete the created geoRegion?
+      //       probably a better idea to do this in a single transacion, but we should check how it will affect the whole process if we
+      //       we want to make the whole import transactional
       try {
         adminRegionId = (
           await this.adminRegionService.getClosestAdminRegionByCoordinates(

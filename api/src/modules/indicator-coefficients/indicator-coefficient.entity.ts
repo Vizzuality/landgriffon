@@ -2,6 +2,7 @@ import {
   BaseEntity,
   Column,
   Entity,
+  Index,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -31,17 +32,20 @@ export class IndicatorCoefficient extends BaseEntity {
   @Column({ type: 'int' })
   year!: number;
 
+  @Index()
   @ManyToOne(() => AdminRegion, (ar: AdminRegion) => ar.indicatorCoefficients, {
     nullable: true,
   })
   adminRegion: AdminRegion;
 
+  @Index()
   @ManyToOne(
     () => Indicator,
     (indicator: Indicator) => indicator.indicatorCoefficients,
   )
   indicator!: Indicator;
 
+  @Index()
   @ManyToOne(() => Material, (mat: Material) => mat.indicatorCoefficients)
   material!: Material;
 }

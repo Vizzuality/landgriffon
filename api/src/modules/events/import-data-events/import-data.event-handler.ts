@@ -4,9 +4,9 @@ import { ApiEventsService } from 'modules/api-events/api-events.service';
 import { Task } from 'modules/tasks/task.entity';
 
 export enum IMPORT_DATA_EVENTS {
-  started = API_EVENT_KINDS.data__importStarted__v1alpha1,
-  failed = API_EVENT_KINDS.data__importFailed__v1alpha1,
-  succeeded = API_EVENT_KINDS.data__importSucceeded__v1alpha1,
+  STARTED = API_EVENT_KINDS.data__importStarted__v1alpha1,
+  FAILED = API_EVENT_KINDS.data__importFailed__v1alpha1,
+  SUCCEED = API_EVENT_KINDS.data__importSucceeded__v1alpha1,
 }
 
 export class ImportDataEvent implements IEvent {

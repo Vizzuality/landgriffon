@@ -1,4 +1,4 @@
-import { Logger, Module } from '@nestjs/common';
+import { Global, Logger, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ApiEvent } from 'modules/api-events/api-event.entity';
@@ -11,6 +11,7 @@ import { ApiEventsService } from 'modules/api-events/api-events.service';
 
 export const logger: Logger = new Logger('ApiEvents');
 
+@Global()
 @Module({
   imports: [
     TypeOrmModule.forFeature([

@@ -25,6 +25,7 @@ import { ImportMailService } from 'modules/import-data/import-mail/import-mail.s
 import { NotificationsModule } from 'modules/notifications/notifications.module';
 import { ExcelValidatorService } from 'modules/import-data/sourcing-data/validation/excel-validator.service';
 import { SourcingDataDbCleaner } from 'modules/import-data/sourcing-data/sourcing-data.db-cleaner';
+import { ImportDataEventHandler } from '../events/import-data-events/import-data.event-handler';
 
 // TODO: Move EUDR related stuff to EUDR modules
 
@@ -67,6 +68,7 @@ import { SourcingDataDbCleaner } from 'modules/import-data/sourcing-data/sourcin
     ImportMailService,
     ExcelValidatorService,
     SourcingDataDbCleaner,
+    ImportDataEventHandler,
     {
       provide: 'FILE_UPLOAD_SIZE_LIMIT',
       useValue: config.get('fileUploads.sizeLimit'),

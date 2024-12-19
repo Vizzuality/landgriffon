@@ -37,7 +37,9 @@ export class ImportDataConsumer {
 
   @OnQueueFailed()
   async onJobFailed(job: Job<ExcelImportJob>, err: any): Promise<void> {
-    await job.remove();
+    if (this.isJobStalled(err)) {
+      return this.removeJob(job);
+    }
     const task: Task | undefined = await this.tasksService.updateImportTask({
       taskId: job.data.taskId,
       newStatus: TASK_STATUS.FAILED,
@@ -86,5 +88,13 @@ export class ImportDataConsumer {
   @Process('excel-import-job')
   async readImportDataJob(job: Job<ExcelImportJob>): Promise<void> {
     await this.importDataService.processImportJob(job);
+  }
+
+  private isJobStalled(err: Error): boolean {
+    return err.message === 'job stalled more than allowable limit';
+  }
+
+  private async removeJob(job: Job<ExcelImportJob>): Promise<void> {
+    return job.remove();
   }
 }

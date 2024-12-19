@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { BaseStrategy } from 'modules/geo-coding/strategies/base-strategy';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { GeoRegion } from '../../geo-regions/geo-region.entity';
+import { AdminRegion } from '../../admin-regions/admin-region.entity';
 
 @Injectable()
 export class UnknownLocationGeoCodingStrategy extends BaseStrategy {
@@ -27,10 +29,18 @@ export class UnknownLocationGeoCodingStrategy extends BaseStrategy {
       await this.adminRegionService.getAdminRegionAndGeoRegionIdsByAdminRegionName(
         sourcingData.locationCountryInput,
       );
+    const geoRegion: GeoRegion = await this.geoRegionService.getById(
+      geoRegionId,
+    );
+    const adminRegion: AdminRegion = await this.adminRegionService.getById(
+      adminRegionId,
+    );
     return {
       ...sourcingData,
       adminRegionId,
       geoRegionId,
+      adminRegion,
+      geoRegion,
     } as SourcingLocation;
   }
 }

@@ -74,7 +74,7 @@ services:
     container_name: landgriffon-redis-commander
     restart: always
     environment:
-      - REDIS_HOSTS=local:redis:6379
+      - REDIS_HOSTS=local:redis:6379:2
     ports:
       - '${REDIS_COMMANDER_PORT}:8081'
     depends_on:

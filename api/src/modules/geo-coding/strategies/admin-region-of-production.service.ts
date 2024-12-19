@@ -3,6 +3,7 @@ import { BaseStrategy } from 'modules/geo-coding/strategies/base-strategy';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
+import { GeoRegion } from '../../geo-regions/geo-region.entity';
 
 @Injectable()
 export class AdminRegionOfProductionService extends BaseStrategy {
@@ -59,10 +60,19 @@ export class AdminRegionOfProductionService extends BaseStrategy {
     const { id: adminRegionId, geoRegionId } =
       await this.adminRegionService.getAdminRegionById(location.id);
 
+    const geoRegion: GeoRegion = await this.geoRegionService.getById(
+      geoRegionId,
+    );
+    const adminRegion: AdminRegion = await this.adminRegionService.getById(
+      adminRegionId,
+    );
+
     return {
       ...sourcingData,
       adminRegionId,
       geoRegionId,
+      geoRegion,
+      adminRegion,
     };
   }
 }

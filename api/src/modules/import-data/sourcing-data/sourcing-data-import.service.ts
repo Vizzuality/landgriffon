@@ -130,15 +130,27 @@ export class SourcingDataImportService {
           errors,
         );
       }
-      const warnings: string[] = [];
-      geoCodedSourcingData.forEach((elem: SourcingData) => {
-        if (elem.locationWarning) warnings.push(elem.locationWarning);
-      });
-      warnings.length > 0 &&
-        (await this.tasksService.updateImportTask({
-          taskId,
-          newLogs: warnings,
-        }));
+
+      // error thrown here
+      try {
+        const warnings: string[] = [];
+        geoCodedSourcingData.forEach((elem: SourcingData) => {
+          try {
+            if (elem.locationWarning) warnings.push(elem.locationWarning);
+          } catch (error) {
+            console.error('Location warning error for element:', elem);
+            console.error('Error thrown', error);
+          }
+        });
+        warnings.length > 0 &&
+          (await this.tasksService.updateImportTask({
+            taskId,
+            newLogs: warnings,
+          }));
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
 
       const sourcingDataWithOrganizationalEntities: SourcingLocation[] =
         await this.relateSourcingDataWithOrganizationalEntities(

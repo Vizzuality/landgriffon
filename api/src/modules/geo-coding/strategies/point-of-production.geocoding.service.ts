@@ -3,10 +3,13 @@ import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.se
 import { BaseStrategy } from 'modules/geo-coding/strategies/base-strategy';
 import { GeocodeResponse } from 'modules/geo-coding/geocoders/geocoder.interface';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { GeoRegion } from '../../geo-regions/geo-region.entity';
+import { AdminRegion } from '../../admin-regions/admin-region.entity';
 
 @Injectable()
 export class PointOfProductionGeocodingStrategy extends BaseStrategy {
   logger: Logger = new Logger(PointOfProductionGeocodingStrategy.name);
+
   async geoCodePointOfProduction(sourcingData: SourcingData): Promise<any> {
     if (!sourcingData.locationCountryInput)
       throw new Error(
@@ -27,6 +30,8 @@ export class PointOfProductionGeocodingStrategy extends BaseStrategy {
           },
         });
       let adminRegionId: string;
+      let adminRegion: AdminRegion;
+      let geoRegion: GeoRegion;
 
       try {
         adminRegionId = (
@@ -38,6 +43,8 @@ export class PointOfProductionGeocodingStrategy extends BaseStrategy {
             sourcingData as SourcingLocation,
           )
         ).adminRegionId;
+        geoRegion = await this.geoRegionService.getById(geoRegionId);
+        adminRegion = await this.adminRegionService.getById(adminRegionId);
       } catch (e) {
         const existingSourcingLocation: SourcingLocation | null =
           await this.findExistingSourcingLocationByGeoRegionId(
@@ -53,6 +60,8 @@ export class PointOfProductionGeocodingStrategy extends BaseStrategy {
         ...sourcingData,
         adminRegionId,
         geoRegionId,
+        adminRegion,
+        geoRegion,
       };
     }
     if (
@@ -75,6 +84,8 @@ export class PointOfProductionGeocodingStrategy extends BaseStrategy {
           },
         });
       let adminRegionId: string;
+      let adminRegion: AdminRegion;
+      let geoRegion: GeoRegion;
       try {
         adminRegionId = (
           await this.adminRegionService.getClosestAdminRegionByCoordinates(
@@ -85,6 +96,8 @@ export class PointOfProductionGeocodingStrategy extends BaseStrategy {
             sourcingData as SourcingLocation,
           )
         ).adminRegionId;
+        geoRegion = await this.geoRegionService.getById(geoRegionId);
+        adminRegion = await this.adminRegionService.getById(adminRegionId);
       } catch (e) {
         await this.geoRegionService.remove(geoRegionId as unknown as string);
         throw e;
@@ -94,6 +107,8 @@ export class PointOfProductionGeocodingStrategy extends BaseStrategy {
         adminRegionId,
         geoRegionId,
         locationWarning: geoCodeResponseData.warning,
+        adminRegion,
+        geoRegion,
       };
     }
   }

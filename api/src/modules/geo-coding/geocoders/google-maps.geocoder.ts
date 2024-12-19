@@ -16,6 +16,7 @@ import {
   GeocoderInterface,
 } from 'modules/geo-coding/geocoders/geocoder.interface';
 import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
+import { SourcingData } from '../../import-data/sourcing-data/dto-processor.service';
 
 export class GoogleMapsGeocoder implements GeocoderInterface {
   private logger: Logger = new Logger(GoogleMapsGeocoder.name);
@@ -91,5 +92,15 @@ export class GoogleMapsGeocoder implements GeocoderInterface {
       );
     }
     return geocodeResponseData;
+  }
+
+  async getLocationFromCache(
+    sourcingData: SourcingData,
+  ): Promise<SourcingData | undefined> {
+    return sourcingData;
+  }
+
+  async setLocationInCache(sourcingData: SourcingData): Promise<SourcingData> {
+    return sourcingData;
   }
 }

@@ -4,6 +4,8 @@ import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.se
 import { GeocodeResponse } from 'modules/geo-coding/geocoders/geocoder.interface';
 import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { GeoRegion } from '../../geo-regions/geo-region.entity';
+import { AdminRegion } from '../../admin-regions/admin-region.entity';
 
 @Injectable()
 export class AggregationPointGeocodingStrategy extends BaseStrategy {
@@ -32,11 +34,15 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
             lat: sourcingData.locationLatitude,
           },
         });
+      const geoRegion: GeoRegion = await this.geoRegionService.getById(
+        geoRegionId,
+      );
 
       /**
        * Get closest AdminRegion given the same point
        */
       let adminRegionId: string;
+      let adminRegion: AdminRegion;
       try {
         adminRegionId = (
           await this.adminRegionService.getClosestAdminRegionByCoordinates(
@@ -47,6 +53,8 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
             sourcingData as SourcingLocation,
           )
         ).adminRegionId;
+
+        adminRegion = await this.adminRegionService.getById(adminRegionId);
       } catch (e) {
         /**
          * If no AdminRegion found, remove the GeoRegion
@@ -64,6 +72,8 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
         ...sourcingData,
         adminRegionId,
         geoRegionId,
+        geoRegion,
+        adminRegion,
       };
     }
     /**
@@ -101,10 +111,19 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
             },
             sourcingData as SourcingLocation,
           );
+
+        const geoRegion: GeoRegion = await this.geoRegionService.getById(
+          geoRegionId,
+        );
+        const adminRegion: AdminRegion = await this.adminRegionService.getById(
+          adminRegionId,
+        );
         return {
           ...sourcingData,
           adminRegionId,
           geoRegionId,
+          geoRegion,
+          adminRegion,
         };
       }
       if (
@@ -121,11 +140,20 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
             },
             sourcingData as SourcingLocation,
           );
+
+        const geoRegion: GeoRegion = await this.geoRegionService.getById(
+          geoRegionId,
+        );
+        const adminRegion: AdminRegion = await this.adminRegionService.getById(
+          adminRegionId,
+        );
         return {
           ...sourcingData,
           adminRegionId,
           geoRegionId,
           locationWarning: geocodedResponseData.warning,
+          adminRegion,
+          geoRegion,
         };
       } else {
         /**
@@ -141,6 +169,7 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
               lng: geocodedResponseData.data.results[0].geometry.location.lng,
             },
           });
+
         /**
          * Get closest AdminRegion given the same point
          */
@@ -155,11 +184,20 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
             sourcingData as SourcingLocation,
           );
 
+        const geoRegion: GeoRegion = await this.geoRegionService.getById(
+          geoRegionId,
+        );
+        const adminRegion: AdminRegion = await this.adminRegionService.getById(
+          adminRegionId,
+        );
+
         return {
           ...sourcingData,
           adminRegionId,
           geoRegionId,
           locationWarning: geocodedResponseData.warning,
+          adminRegion,
+          geoRegion,
         };
       }
     }

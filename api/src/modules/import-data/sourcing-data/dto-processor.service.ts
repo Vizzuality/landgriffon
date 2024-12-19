@@ -11,6 +11,8 @@ import { CreateIndicatorDto } from 'modules/indicators/dto/create.indicator.dto'
 import { replaceStringWhiteSpacesWithDash } from 'utils/transform-location-type.util';
 import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingDataSheet } from 'modules/import-data/sourcing-data/validation/excel-validator.service';
+import { GeoRegion } from '../../geo-regions/geo-region.entity';
+import { AdminRegion } from '../../admin-regions/admin-region.entity';
 
 /**
  * @debt: Define a more accurate DTO / Interface / Class for API-DB trades
@@ -20,6 +22,8 @@ export interface SourcingData extends CreateSourcingLocationDto {
   sourcingRecords: SourcingRecord[] | { year: number; tonnage: number }[];
   geoRegionId?: string;
   adminRegionId?: string;
+  geoRegion?: GeoRegion;
+  adminRegion?: AdminRegion;
 }
 
 export interface SourcingDataDTOs {

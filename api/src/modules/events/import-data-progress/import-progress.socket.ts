@@ -1,8 +1,9 @@
 import { Inject } from '@nestjs/common';
 import { IWebSocketServiceToken } from 'modules/notifications/websockets/websockets.module';
 import { IWebSocketService } from 'modules/notifications/websockets/websockets.service.interface';
-import { ImportProgressPayload } from 'modules/events/import-data/types';
+import { ImportProgressPayload } from 'modules/events/import-data-progress/types';
 
+// TODO: Use the same enum for websockets and api events
 export class ImportProgressSocket {
   importDataEventKind: Record<any, any> = {
     DATA_IMPORT_PROGRESS: 'DATA_IMPORT_PROGRESS',

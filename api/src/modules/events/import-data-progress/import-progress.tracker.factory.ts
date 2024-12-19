@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ImportProgressEmitter } from 'modules/events/import-data/import-progress.emitter';
+import { ImportProgressEmitter } from 'modules/events/import-data-progress/import-progress.emitter';
 import { GeoCodingProgressTracker } from 'modules/geo-coding/progress-tracker/geo-coding.progress-tracker';
 import { ImpactCalculationProgressTracker } from 'modules/impact/progress-tracker/impact-calculation.progress-tracker';
 import { ValidationProgressTracker } from 'modules/import-data/progress-tracker/validation.progress-tracker';

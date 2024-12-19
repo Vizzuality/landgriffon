@@ -11,7 +11,7 @@ import { BaseQueryBuilder } from 'utils/base.query-builder';
 import { SaveOptions } from 'typeorm/repository/SaveOptions';
 import { chunk } from 'lodash';
 import { SourcingDataImportProgressTracker } from 'modules/sourcing-locations/progress-tracker/sourcing-data.progress-tracker';
-import { ImportProgressTrackerFactory } from 'modules/events/import-data/import-progress.tracker.factory';
+import { ImportProgressTrackerFactory } from 'modules/events/import-data-progress/import-progress.tracker.factory';
 import { AppConfig } from 'utils/app.config';
 
 const dbConfig: any = AppConfig.get('db');

@@ -1,8 +1,8 @@
 import { Logger } from '@nestjs/common';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { ImportProgressUpdateEvent } from 'modules/events/import-data/import-progress.event';
-import { ImportProgressSocket } from 'modules/events/import-data/import-progress.socket';
-import { ImportProgressPayload } from 'modules/events/import-data/types';
+import { ImportProgressUpdateEvent } from 'modules/events/import-data-progress/import-progress.event';
+import { ImportProgressSocket } from 'modules/events/import-data-progress/import-progress.socket';
+import { ImportProgressPayload } from 'modules/events/import-data-progress/types';
 
 @EventsHandler(ImportProgressUpdateEvent)
 export class ImportProgressHandler

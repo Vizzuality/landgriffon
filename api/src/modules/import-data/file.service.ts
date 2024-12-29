@@ -3,10 +3,47 @@ import { access, unlink } from 'fs/promises';
 import * as XLSX from 'xlsx';
 import { WorkBook } from 'xlsx';
 import { difference } from 'lodash';
+import { Worker } from 'worker_threads';
 
 @Injectable()
 export class FileService<T extends Record<string, any[]>> {
   private readonly logger: Logger = new Logger(FileService.name);
+
+  async transformToJsonInWorker(filePath: string, sheetMap: any): Promise<T> {
+    await this.isFilePresentInFs(filePath);
+    this.logger.log(`Starting worker to parse ${filePath}...`);
+    try {
+      const parsedSheet: any = await new Promise((resolve, reject) => {
+        const worker: Worker = new Worker(
+          __dirname + '/workers/xlsx.worker.js',
+          {
+            workerData: { filePath, sheetMap },
+          },
+        );
+
+        worker.on('message', (data: T) => {
+          this.logger.warn(`Worker finished processing ${filePath}`);
+          resolve(data);
+        });
+
+        worker.on('error', (error: Error) => {
+          this.logger.error(`Worker failed processing ${filePath}: ${error}`);
+          reject(error);
+        });
+
+        worker.on('exit', (code: number) => {
+          if (code !== 0) {
+            this.logger.error(`Worker stopped with exit code ${code}`);
+            reject(new Error(`Worker stopped with exit code ${code}`));
+          }
+        });
+      });
+      return parsedSheet;
+    } catch (error) {
+      this.logger.error(error);
+      throw new Error(`XLSX file could not been parsed: ${error}`);
+    }
+  }
 
   async transformToJson(
     filePath: string,

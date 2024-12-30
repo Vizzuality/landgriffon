@@ -9,8 +9,6 @@ import { PointOfProductionGeocodingStrategy } from 'modules/geo-coding/strategie
 import { AdminRegionOfProductionService } from 'modules/geo-coding/strategies/admin-region-of-production.service';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
-import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
-import { Geocoder } from 'modules/geo-coding/geocoders/geocoder.interface';
 import { CacheGeocoder } from 'modules/geo-coding/geocoders/cache.geocoder';
 import { GoogleMapsGeocoder } from 'modules/geo-coding/geocoders/google-maps.geocoder';
 import * as redisStore from 'cache-manager-redis-store';
@@ -22,8 +20,6 @@ const geocodingCacheTTL: number = parseInt(
   `${geocodingCacheConfig.geocodingCacheTTL}`,
   10,
 );
-const geocodingCacheEnabled: boolean =
-  `${geocodingCacheConfig.enabled}`.toLowerCase() === 'true';
 
 @Module({
   imports: [
@@ -41,7 +37,7 @@ const geocodingCacheEnabled: boolean =
   providers: [
     GoogleMapsGeocoder,
     {
-      provide: Geocoder,
+      provide: CacheGeocoder,
       useClass: CacheGeocoder,
     },
     {
@@ -54,6 +50,6 @@ const geocodingCacheEnabled: boolean =
     PointOfProductionGeocodingStrategy,
     AdminRegionOfProductionService,
   ],
-  exports: [GeoCodingAbstractClass],
+  exports: [GeoCodingService],
 })
 export class GeoCodingModule {}

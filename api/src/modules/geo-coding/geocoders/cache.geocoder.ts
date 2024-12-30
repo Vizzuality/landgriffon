@@ -2,17 +2,16 @@ import { Inject, Logger } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import {
   GeocodeArgs,
-  GeocoderInterface,
   GeocodeResponse,
 } from 'modules/geo-coding/geocoders/geocoder.interface';
 import { Cache } from 'cache-manager';
 import { GoogleMapsGeocoder } from 'modules/geo-coding/geocoders/google-maps.geocoder';
 
-export class CacheGeocoder implements GeocoderInterface {
+export class CacheGeocoder {
   private logger: Logger = new Logger(CacheGeocoder.name);
 
   constructor(
-    @Inject(GoogleMapsGeocoder) private backendGeocoder: GeocoderInterface,
+    private backendGeocoder: GoogleMapsGeocoder,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 

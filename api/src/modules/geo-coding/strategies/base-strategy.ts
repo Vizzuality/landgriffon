@@ -1,17 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 import { GeoRegionsService } from 'modules/geo-regions/geo-regions.service';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
-import {
-  GeocodeResponse,
-  Geocoder,
-  GeocoderInterface,
-} from 'modules/geo-coding/geocoders/geocoder.interface';
+import { GeocodeResponse } from 'modules/geo-coding/geocoders/geocoder.interface';
 import { AddressComponent } from '@googlemaps/google-maps-services-js';
 import { GeocodeResult } from '@googlemaps/google-maps-services-js/dist/common';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
+import { CacheGeocoder } from 'modules/geo-coding/geocoders/cache.geocoder';
 
 /**
  * @note: Landgriffon Geocoding strategy doc:
@@ -21,7 +18,7 @@ import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 @Injectable()
 export abstract class BaseStrategy {
   constructor(
-    @Inject(Geocoder) protected readonly geocoder: GeocoderInterface,
+    protected readonly geocoder: CacheGeocoder,
     protected readonly adminRegionService: AdminRegionsService,
     protected readonly geoRegionService: GeoRegionsService,
     protected readonly sourcingLocationService: SourcingLocationsService,

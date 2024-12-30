@@ -9,7 +9,6 @@ import { Task } from 'modules/tasks/task.entity';
 import ApplicationManager, {
   TestApplication,
 } from '../../../utils/application-manager';
-import { User } from 'modules/users/user.entity';
 import { createUser } from '../../../entity-mocks';
 import { DataSource } from 'typeorm';
 import { clearTestDataFromDatabase } from '../../../utils/database-test-helper';

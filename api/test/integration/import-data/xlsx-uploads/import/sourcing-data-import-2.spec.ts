@@ -5,7 +5,7 @@ import {
   MockFileService,
   MockGeoCodingService,
 } from '../../../../utils/service-mocks';
-import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
+import { GeoCodingService } from '../../../../../src/modules/geo-coding/geo-coding.service';
 
 describe('Sourcing Data Correct Import (Integration Tests)', () => {
   let sourcingDataImportTestManager: SourcingDataImportTestManager;
@@ -16,7 +16,7 @@ describe('Sourcing Data Correct Import (Integration Tests)', () => {
       TestManager.buildCustomTestModule()
         .overrideProvider(FileService)
         .useClass(MockFileService)
-        .overrideProvider(GeoCodingAbstractClass)
+        .overrideProvider(GeoCodingService)
         .useClass(MockGeoCodingService),
     );
   });

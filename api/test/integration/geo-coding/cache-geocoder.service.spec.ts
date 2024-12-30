@@ -10,7 +10,6 @@ import { Cache } from 'cache-manager';
 import { AppModule } from 'app.module';
 import { CacheGeocoder } from 'modules/geo-coding/geocoders/cache.geocoder';
 import { GoogleMapsGeocoder } from 'modules/geo-coding/geocoders/google-maps.geocoder';
-import { Geocoder } from 'modules/geo-coding/geocoders/geocoder.interface';
 import { geocodeResponses } from './mocks/geo-coding.mock-response';
 import ApplicationManager, {
   TestApplication,
@@ -43,7 +42,7 @@ describe('GeoCoding Service (Integration Testing)', () => {
         .useClass(GoogleMapsGeocoderMock),
     );
 
-    cacheGeocoder = testApplication.get<CacheGeocoder>(Geocoder);
+    cacheGeocoder = testApplication.get<CacheGeocoder>(CacheGeocoder);
     cacheManager = testApplication.get<Cache>(CACHE_MANAGER);
   });
 

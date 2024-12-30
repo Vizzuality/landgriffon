@@ -11,13 +11,10 @@ import {
   GeocodeResponseData,
 } from '@googlemaps/google-maps-services-js/dist/geocode/geocode';
 import { inspect } from 'util';
-import {
-  GeocodeArgs,
-  GeocoderInterface,
-} from 'modules/geo-coding/geocoders/geocoder.interface';
+import { GeocodeArgs } from 'modules/geo-coding/geocoders/geocoder.interface';
 import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 
-export class GoogleMapsGeocoder implements GeocoderInterface {
+export class GoogleMapsGeocoder {
   private logger: Logger = new Logger(GoogleMapsGeocoder.name);
   private readonly client: ClientType;
   private readonly apiKey: string = config.get('geolocation.gmapsApiKey');

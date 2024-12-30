@@ -11,10 +11,7 @@ import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-loc
 import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { Geocoder } from 'modules/geo-coding/geocoders/geocoder.interface';
-import {
-  CacheGeocoder,
-  GEOCODING_CACHE_ENABLED,
-} from 'modules/geo-coding/geocoders/cache.geocoder';
+import { CacheGeocoder } from 'modules/geo-coding/geocoders/cache.geocoder';
 import { GoogleMapsGeocoder } from 'modules/geo-coding/geocoders/google-maps.geocoder';
 import * as redisStore from 'cache-manager-redis-store';
 import * as config from 'config';
@@ -42,17 +39,13 @@ const geocodingCacheEnabled: boolean =
     }),
   ],
   providers: [
-    {
-      provide: GEOCODING_CACHE_ENABLED,
-      useValue: geocodingCacheEnabled,
-    },
     GoogleMapsGeocoder,
     {
       provide: Geocoder,
       useClass: CacheGeocoder,
     },
     {
-      provide: GeoCodingAbstractClass,
+      provide: GeoCodingService,
       useClass: GeoCodingService,
     },
     UnknownLocationGeoCodingStrategy,

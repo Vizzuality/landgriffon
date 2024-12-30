@@ -45,6 +45,9 @@ export class FileService<T extends Record<string, any[]>> {
     }
   }
 
+  /**
+   * @deprecated
+   */
   async transformToJson(
     filePath: string,
     sheetsMap: Record<string, keyof T>,

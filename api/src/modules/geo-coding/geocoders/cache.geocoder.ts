@@ -8,22 +8,15 @@ import {
 import { Cache } from 'cache-manager';
 import { GoogleMapsGeocoder } from 'modules/geo-coding/geocoders/google-maps.geocoder';
 
-export const GEOCODING_CACHE_ENABLED: unique symbol = Symbol();
-
 export class CacheGeocoder implements GeocoderInterface {
   private logger: Logger = new Logger(CacheGeocoder.name);
 
   constructor(
-    @Inject(GEOCODING_CACHE_ENABLED) private geocacheEnabled: boolean,
     @Inject(GoogleMapsGeocoder) private backendGeocoder: GeocoderInterface,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async geocode(args: GeocodeArgs): Promise<GeocodeResponse> {
-    if (!this.geocacheEnabled) {
-      return this.backendGeocoder.geocode(args);
-    }
-
     const cacheKey: string = this.generateKeyFromRequest(args);
     const cachedData: GeocodeResponse | undefined = await this.cacheManager.get(
       cacheKey,
@@ -51,9 +44,6 @@ export class CacheGeocoder implements GeocoderInterface {
     lat: number;
     lng: number;
   }): Promise<GeocodeResponse> {
-    if (!this.geocacheEnabled) {
-      return this.backendGeocoder.reverseGeocode(coordinates);
-    }
     const cacheKey: string = this.generateKeyFromRequest(
       coordinates as GeocodeArgs,
     );

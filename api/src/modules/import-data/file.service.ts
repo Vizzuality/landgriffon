@@ -4,6 +4,7 @@ import * as XLSX from 'xlsx';
 import { WorkBook } from 'xlsx';
 import { difference } from 'lodash';
 import { Worker } from 'worker_threads';
+import * as path from 'path';
 
 @Injectable()
 export class FileService<T extends Record<string, any[]>> {
@@ -11,15 +12,18 @@ export class FileService<T extends Record<string, any[]>> {
 
   async transformToJsonInWorker(filePath: string, sheetMap: any): Promise<T> {
     await this.isFilePresentInFs(filePath);
+    const workerFile: string =
+      process.env.NODE_ENV === 'test'
+        ? path.resolve(__dirname, './workers/xlsx.worker.ts') // En tests usa el archivo TypeScript
+        : path.resolve(__dirname, './workers/xlsx.worker.js');
     this.logger.log(`Starting worker to parse ${filePath}...`);
     try {
       const parsedSheet: any = await new Promise((resolve, reject) => {
-        const worker: Worker = new Worker(
-          __dirname + '/workers/xlsx.worker.js',
-          {
-            workerData: { filePath, sheetMap },
-          },
-        );
+        const worker: Worker = new Worker(workerFile, {
+          workerData: { filePath, sheetMap },
+          execArgv:
+            process.env.NODE_ENV === 'test' ? ['-r', 'ts-node/register'] : [],
+        });
 
         worker.on('message', (data: T) => {
           this.logger.warn(`Worker finished processing ${filePath}`);

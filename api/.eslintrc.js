@@ -37,7 +37,7 @@ module.exports = {
         objectDestructuring: false,
         parameter: true,
         propertyDeclaration: true,
-        variableDeclaration: true,
+        variableDeclaration: false,
         variableDeclarationIgnoreFunction: true,
       },
     ],

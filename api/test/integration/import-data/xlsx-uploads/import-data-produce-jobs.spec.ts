@@ -74,9 +74,9 @@ describe('XLSX Upload Feature Job Producer Tests', () => {
     expect.assertions(2);
     try {
       await importDataService.loadXlsxFile(user.id, fileData);
-    } catch ({ message }) {
+    } catch (error: any) {
       const tasks: Task[] | undefined = await tasksRepository.find();
-      expect(message).toEqual(
+      expect(error.message).toEqual(
         'File: filename could not have been loaded. Please try again later or contact the administrator',
       );
       expect(tasks).toEqual([]);

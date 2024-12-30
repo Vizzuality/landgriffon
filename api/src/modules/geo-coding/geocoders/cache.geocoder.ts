@@ -11,12 +11,12 @@ export class CacheGeocoder {
   private logger: Logger = new Logger(CacheGeocoder.name);
 
   constructor(
-    private backendGeocoder: GoogleMapsGeocoder,
+    private googleMapsGeocoder: GoogleMapsGeocoder,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async geocode(args: GeocodeArgs): Promise<GeocodeResponse> {
-    const cacheKey: string = this.generateKeyFromRequest(args);
+    const cacheKey = this.generateKeyFromRequest(args);
     const cachedData: GeocodeResponse | undefined = await this.cacheManager.get(
       cacheKey,
     );
@@ -28,7 +28,7 @@ export class CacheGeocoder {
       return cachedData;
     }
 
-    const data: GeocodeResponse = await this.backendGeocoder.geocode(args);
+    const data: GeocodeResponse = await this.googleMapsGeocoder.geocode(args);
     this.logger.debug('Set cache for location ' + args.address + args.latlng);
     await this.cacheManager.set(cacheKey, data);
     return data;
@@ -50,7 +50,7 @@ export class CacheGeocoder {
       cacheKey,
     );
     if (cachedData) return cachedData;
-    const data: GeocodeResponse = await this.backendGeocoder.reverseGeocode(
+    const data: GeocodeResponse = await this.googleMapsGeocoder.reverseGeocode(
       coordinates,
     );
     await this.cacheManager.set(cacheKey, data);

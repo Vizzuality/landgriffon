@@ -1,69 +1,19 @@
-import { Inject, Logger } from '@nestjs/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Injectable } from '@nestjs/common';
+import { GoogleMapsGeocoder } from 'modules/geo-coding/geocoders/google-maps.geocoder';
 import {
   GeocodeArgs,
   GeocodeResponse,
 } from 'modules/geo-coding/geocoders/geocoder.interface';
-import { Cache } from 'cache-manager';
-import { GoogleMapsGeocoder } from 'modules/geo-coding/geocoders/google-maps.geocoder';
 import { GeocodeResult } from '@googlemaps/google-maps-services-js/dist/common';
-import { GeoCodingError } from '../errors/geo-coding.error';
+import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 import { AddressComponent } from '@googlemaps/google-maps-services-js';
 
-export class CacheGeocoder {
-  private logger: Logger = new Logger(CacheGeocoder.name);
-
-  constructor(
-    private googleMapsGeocoder: GoogleMapsGeocoder,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) {}
+@Injectable()
+export class GeocoderService {
+  constructor(private readonly googleMapsGeocoder: GoogleMapsGeocoder) {}
 
   async geocode(args: GeocodeArgs): Promise<GeocodeResponse> {
-    const cacheKey = this.generateKeyFromRequest(args);
-    const cachedData: GeocodeResponse | undefined = await this.cacheManager.get(
-      cacheKey,
-    );
-
-    if (cachedData) {
-      this.logger.debug(
-        `Cache hit for location ${args.address} ${args.latlng}  `,
-      );
-      return cachedData;
-    }
-
-    const data: GeocodeResponse = await this.googleMapsGeocoder.geocode(args);
-    this.logger.debug('Set cache for location ' + args.address + args.latlng);
-    await this.cacheManager.set(cacheKey, data);
-    return data;
-  }
-
-  // GeocodeRequest has type any since GeocodeRequest doesn't see property 'key'
-  generateKeyFromRequest(args: GeocodeArgs): string {
-    return Object.values(args).join(':');
-  }
-
-  async reverseGeocode(coordinates: {
-    lat: number;
-    lng: number;
-  }): Promise<GeocodeResponse> {
-    const cacheKey: string = this.generateKeyFromRequest(
-      coordinates as GeocodeArgs,
-    );
-    const cachedData: GeocodeResponse | undefined = await this.cacheManager.get(
-      cacheKey,
-    );
-    if (cachedData) return cachedData;
-    const data: GeocodeResponse = await this.googleMapsGeocoder.reverseGeocode(
-      coordinates,
-    );
-    await this.cacheManager.set(cacheKey, data);
-    return data;
-  }
-
-  async geoCodeByCountry(country: string): Promise<GeocodeResponse> {
-    return this.geocode({
-      address: `country ${country}`,
-    });
+    return this.googleMapsGeocoder.geocode(args);
   }
 
   /**

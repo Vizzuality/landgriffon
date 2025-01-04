@@ -17,7 +17,7 @@ import { AdminRegion } from '../../admin-regions/admin-region.entity';
 import { CreateSourcingRecordV2 } from '../../sourcing-records/dto/create.sourcing-record.dto';
 
 export class CreateSourcingLocationV2 {
-  locationType?: LOCATION_TYPES;
+  locationType: LOCATION_TYPES;
 
   @IsOptional()
   @IsString()
@@ -30,7 +30,7 @@ export class CreateSourcingLocationV2 {
   @IsOptional()
   @IsString()
   @MinLength(2)
-  locationCountryInput?: string;
+  locationCountryInput: string;
 
   @IsString()
   @IsOptional()
@@ -62,4 +62,6 @@ export class GeoCodedSourcingLocation extends CreateSourcingLocationV2 {
   geoRegion: GeoRegion;
 
   adminRegion: AdminRegion;
+
+  locationWarning?: string;
 }

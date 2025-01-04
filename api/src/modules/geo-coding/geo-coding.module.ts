@@ -13,6 +13,8 @@ import { CacheGeocoder } from 'modules/geo-coding/geocoders/cache.geocoder';
 import { GoogleMapsGeocoder } from 'modules/geo-coding/geocoders/google-maps.geocoder';
 import * as redisStore from 'cache-manager-redis-store';
 import * as config from 'config';
+import { CacheManager } from './cache.manager';
+import { GeocoderService } from './geocoders/geocoder.service';
 
 const geocodingCacheConfig: any = config.get('geocodingCache');
 
@@ -35,6 +37,9 @@ const geocodingCacheTTL: number = parseInt(
     }),
   ],
   providers: [
+    CacheManager,
+    GeocoderService,
+
     GoogleMapsGeocoder,
     {
       provide: CacheGeocoder,

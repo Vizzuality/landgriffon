@@ -15,3 +15,11 @@ export class CreateSourcingRecordDto {
   @ApiPropertyOptional()
   sourcingLocationsId?: string;
 }
+
+export class CreateSourcingRecordV2 {
+  @IsNumber()
+  tonnage!: number;
+
+  @IsNumber()
+  year!: number;
+}

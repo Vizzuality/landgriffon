@@ -7,14 +7,11 @@
     "password": "",
     "database": "landgriffon",
     "logging": [
-      "query",
       "error",
-      "schema",
       "info",
       "log"
     ]
   },
-
   "tiler": {
     "host": "localhost",
     "port": 4000

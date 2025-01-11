@@ -15,6 +15,7 @@ import * as redisStore from 'cache-manager-redis-store';
 import * as config from 'config';
 import { CacheManager } from './cache.manager';
 import { GeocoderService } from './geocoders/geocoder.service';
+import { GeoCodingServiceV2 } from './geo-coding.service-v2';
 
 const geocodingCacheConfig: any = config.get('geocodingCache');
 
@@ -49,12 +50,13 @@ const geocodingCacheTTL: number = parseInt(
       provide: GeoCodingService,
       useClass: GeoCodingService,
     },
+    GeoCodingServiceV2,
     UnknownLocationGeoCodingStrategy,
     CountryOfProductionGeoCodingStrategy,
     AggregationPointGeocodingStrategy,
     PointOfProductionGeocodingStrategy,
     AdminRegionOfProductionService,
   ],
-  exports: [GeoCodingService],
+  exports: [GeoCodingService, GeoCodingServiceV2],
 })
 export class GeoCodingModule {}

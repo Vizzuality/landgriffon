@@ -24,7 +24,7 @@ export class AggregationPointGeocodingStrategy implements IGeoCodingStrategy {
      * The user must specify a country, and either an address OR coordinates
      */
     if (this.hasBothAddressAndCoordinates(location))
-      throw new Error(
+      throw new GeoCodingError(
         `For ${location.locationCountryInput} coordinates ${location.locationLatitude} ,${location.locationLongitude} and address ${location.locationAddressInput} has been provided. Either and address or coordinates can be provided for a Aggregation Point Location Type`,
       );
 
@@ -135,7 +135,7 @@ export class AggregationPointGeocodingStrategy implements IGeoCodingStrategy {
         };
       }
     } else {
-      throw new Error(
+      throw new GeoCodingError(
         'Invalid input: locationInfo must include either coordinates or an address with a country',
       );
     }

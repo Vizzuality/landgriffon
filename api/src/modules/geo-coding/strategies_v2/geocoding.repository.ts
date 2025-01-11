@@ -1,4 +1,4 @@
-import { EntityManager } from 'typeorm';
+import { EntityManager, InsertResult } from 'typeorm';
 import {
   GeoCodedLocation,
   SourcingLocationInfo,
@@ -18,26 +18,37 @@ export class GeocodingRepository {
   async saveGeoRegionAsPoint(
     locationInfo: SourcingLocationInfo,
   ): Promise<GeoRegion> {
-    const geoRegionRepository = this.manager.getRepository(GeoRegion);
-    const result = await geoRegionRepository
-      .createQueryBuilder()
-      .insert()
-      .into(GeoRegion)
-      .values({
-        name: `Point of Production - ${locationInfo.locationLatitude}-${locationInfo.locationLongitude}`,
-        theGeom: () =>
-          `ST_GeomFromText('POINT(${locationInfo.locationLongitude} ${locationInfo.locationLatitude})', 4326)`,
-        h3Flat: () =>
-          `array(SELECT h3_geo_to_h3(ST_GeomFromText('POINT(${locationInfo.locationLongitude} ${locationInfo.locationLatitude})', 4326), 6))`,
-        h3FlatLength: () =>
-          `cardinality(array(SELECT h3_geo_to_h3(ST_GeomFromText('POINT(${locationInfo.locationLongitude} ${locationInfo.locationLatitude})', 4326), 6)))`,
-        h3Compact: () =>
-          `array(SELECT h3_compact(array(SELECT h3_geo_to_h3(ST_GeomFromText('POINT(${locationInfo.locationLongitude} ${locationInfo.locationLatitude})', 4326), 6))))`,
-      })
-      .orUpdate(['theGeom', 'h3Compact'], ['name'])
-      .execute();
+    let result: InsertResult;
+    try {
+      result = await this.manager
+        .createQueryBuilder()
+        .insert()
+        .into(GeoRegion)
+        .values({
+          name: () => `hashtext(:name)`,
+          theGeom: () => `ST_GeomFromText(:geom, 4326)`,
+          h3Flat: () => `array(SELECT h3_geo_to_h3(ST_GeomFromText(:geom), 6))`,
+          h3FlatLength: () =>
+            `cardinality(array(SELECT h3_geo_to_h3(ST_GeomFromText(:geom), 6)))`,
+          h3Compact: () =>
+            `array( SELECT (h3_compact(array(SELECT h3_geo_to_h3(ST_GeomFromText(:geom), 6)))))`,
+        })
+        .setParameter(
+          'name',
+          `Point of Production - ${locationInfo.locationLongitude}-${locationInfo.locationLatitude}`,
+        )
+        .setParameter(
+          'geom',
+          `POINT(${locationInfo.locationLongitude} ${locationInfo.locationLatitude})`,
+        )
+        .returning('*')
+        .execute();
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
 
-    return geoRegionRepository.findOneOrFail(result.raw[0].id);
+    return this.manager.findOneOrFail(GeoRegion, result.identifiers[0].id);
   }
 
   async validateAdminRegion(locationInfo: SourcingLocationInfo): Promise<void> {
@@ -48,7 +59,7 @@ export class GeocodingRepository {
                RIGHT JOIN geo_region g ON a."geoRegionId" = g.id
         WHERE ST_Intersects(
           ST_Buffer(ST_SetSRID(ST_POINT($1, $2), 4326)::geometry, 0.01),
-          g."theGeom"
+          st_setsrid(g."theGeom"::geometry, 4326)
               )
           AND a.id IS NOT NULL
           AND a."level" = 0
@@ -80,7 +91,7 @@ export class GeocodingRepository {
                RIGHT JOIN geo_region g ON a."geoRegionId" = g.id
         WHERE ST_Intersects(
           ST_SetSRID(ST_POINT($1, $2)::geometry, 4326),
-          g."theGeom"
+          ST_SetSRID(g."theGeom"::geometry, 4326)
               )
           AND a.id IS NOT NULL
         ORDER BY a.level DESC LIMIT 3
@@ -112,10 +123,10 @@ export class GeocodingRepository {
   async saveGeoRegionAsRadius(coordinates: {
     lat: number;
     lng: number;
-  }): Promise<GeoRegion> {
+  }): Promise<any> {
     const selectQuery = this.manager
       .createQueryBuilder()
-      .select(`hashtext(concat(:hashText, points.radius))`, 'name')
+      .select(`hashtext(concat($3::text, points.radius))`, 'name')
       .addSelect(`points.radius`, 'theGeom')
       .addSelect(`array(SELECT h3_polyfill(points.radius,6))`, 'h3Flat')
       .addSelect(
@@ -130,50 +141,63 @@ export class GeocodingRepository {
       )
       .from('points', 'points');
 
-    // Query principal para insertar o actualizar y retornar la entidad completa
-    const result = await this.manager.query(
-      `
-        WITH points AS (SELECT ST_BUFFER(ST_SetSRID(ST_POINT($1, $2), 4326)::geometry, 0.5) as radius)
-        INSERT
-        INTO geo_region (name, "theGeom", "h3Flat", "h3FlatLength", "h3Compact")
-        ${selectQuery.getSql()}
-        ON CONFLICT (name) DO
-        UPDATE
-          SET "theGeom" = excluded."theGeom",
-          "h3Compact" = excluded."h3Compact"
-          RETURNING *
-      `,
-      [
-        coordinates.lng, // $1
-        coordinates.lat, // $2
-        `${coordinates.lng}-${coordinates.lat}, radius - `, // :hashText
-      ],
-    );
+    try {
+      const result = await this.manager.query(
+        `
+          WITH points AS (SELECT ST_BUFFER(ST_SetSRID(ST_POINT($1, $2), 4326)::geometry, 0.5) as radius)
+          INSERT
+          INTO geo_region (name, "theGeom", "h3Flat", "h3FlatLength", "h3Compact")
+          ${selectQuery.getSql()}
+          RETURNING
+          *;
+        `,
+        [
+          coordinates.lng, // $1
+          coordinates.lat, // $2
+          `${coordinates.lng}-${coordinates.lat}, radius - `, // :hashText
+        ],
+      );
 
-    const geoRegion = await this.manager.findOneOrFail(GeoRegion, result[0].id);
-    return geoRegion;
+      const insertedGeoRegion = await this.manager.findOneOrFail(GeoRegion, {
+        where: { id: result[0].id },
+      });
+      return insertedGeoRegion;
+    } catch (error) {
+      console.error(
+        `Could not save GeoRegion as Radius with Coordinates: LAT: ${coordinates.lat}, LNG: ${coordinates.lng}`,
+      );
+      const a = 1;
+    }
   }
 
   async getAdminRegionAndGeoRegionByCoordinatesAndLevel(
     locationInfo: SourcingLocationInfo,
     level: number,
   ): Promise<GeoCodedLocation> {
-    const result = await this.manager.query(
-      `
+    let result: any;
+    try {
+      result = await this.manager.query(
+        `
     SELECT a.id AS "adminRegionId", g.id AS "geoRegionId"
     FROM admin_region a
     RIGHT JOIN geo_region g ON a."geoRegionId" = g.id
     WHERE ST_Intersects(
       ST_SetSRID($1::geometry, 4326),
-      g."theGeom"
+      st_setsrid(g."theGeom"::geometry, 4326)
     )
     AND a."level" = $2;
     `,
-      [
-        `POINT(${locationInfo.locationLongitude} ${locationInfo.locationLatitude})`,
-        level,
-      ],
-    );
+        [
+          `POINT(${locationInfo.locationLongitude} ${locationInfo.locationLatitude})`,
+          level,
+        ],
+      );
+    } catch (error) {
+      console.error(
+        `Could not retrieve an Admin Region with LEVEL ${level} and Coordinates: LAT: ${locationInfo.locationLatitude} LONG: ${locationInfo.locationLongitude}`,
+      );
+      const a = 1;
+    }
 
     if (!result.length) {
       console.error(
@@ -193,7 +217,7 @@ export class GeocodingRepository {
     });
 
     if (!adminRegion || !adminRegion.geoRegion) {
-      throw new NotFoundException(
+      throw new GeoCodingError(
         `Could not retrieve AdminRegion or its related GeoRegion with ID ${adminRegionId}`,
       );
     }
@@ -218,7 +242,7 @@ export class GeocodingRepository {
     const adminRegion: AdminRegion | null = await queryBuilder.getOne();
 
     if (!adminRegion || !adminRegion.geoRegion) {
-      throw new NotFoundException(
+      throw new GeoCodingError(
         `A Country level Admin Region with name ${countryName} could not be found`,
       );
     }

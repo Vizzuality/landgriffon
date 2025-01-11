@@ -6,6 +6,7 @@ import {
 } from '../geo-coding.service-v2';
 import { EntityManager } from 'typeorm';
 import { GeocodingRepository } from './geocoding.repository';
+import { GeoCodingError } from '../errors/geo-coding.error';
 
 export class CountryOfProductionGeoCodingStrategy
   implements IGeoCodingStrategy
@@ -24,7 +25,7 @@ export class CountryOfProductionGeoCodingStrategy
      * The user must specify a country
      */
     if (!locationInfo.locationCountryInput)
-      throw new Error(
+      throw new GeoCodingError(
         'A country where material is received needs to be provided for Country of Production Location Types',
       );
     if (locationInfo.locationAddressInput && locationInfo.locationLatitude)

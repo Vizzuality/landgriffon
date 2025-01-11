@@ -13,6 +13,7 @@ import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { AdminRegion } from 'modules/admin-regions/admin-region.entity';
 import { GeocoderService } from '../geocoders/geocoder.service';
 import { GeocodingRepository } from './geocoding.repository';
+import { GeoCodingError } from '../errors/geo-coding.error';
 
 export class PointOfProductionGeocodingStrategy implements IGeoCodingStrategy {
   geocodingRepository: GeocodingRepository;
@@ -31,7 +32,7 @@ export class PointOfProductionGeocodingStrategy implements IGeoCodingStrategy {
     locationInfo: SourcingLocationInfo,
   ): Promise<GeoCodedLocation> {
     if (!locationInfo.locationCountryInput)
-      throw new Error(
+      throw new GeoCodingError(
         'A country must be provided for Point of Production location type',
       );
     if (
@@ -39,7 +40,7 @@ export class PointOfProductionGeocodingStrategy implements IGeoCodingStrategy {
       locationInfo.locationLatitude &&
       locationInfo.locationLongitude
     )
-      throw new Error(
+      throw new GeoCodingError(
         `For ${locationInfo.locationCountryInput} coordinates ${locationInfo.locationLatitude} ,${locationInfo.locationLongitude} and address ${locationInfo.locationAddressInput} has been provided. Either and address or coordinates can be provided for a Point of Production Location Type`,
       );
 

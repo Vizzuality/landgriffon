@@ -103,7 +103,7 @@ export class SourcingLocation extends TimestampedBaseEntity {
   @ManyToOne(
     () => GeoRegion,
     (geoRegion: GeoRegion) => geoRegion.sourcingLocations,
-    { eager: true },
+    { cascade: ['insert', 'update'] },
   )
   @JoinColumn({ name: 'geoRegionId' })
   geoRegion: GeoRegion;

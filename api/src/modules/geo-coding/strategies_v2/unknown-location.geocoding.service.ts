@@ -6,6 +6,7 @@ import {
   SourcingLocationInfo,
 } from 'modules/geo-coding/geo-coding.service-v2';
 import { GeocodingRepository } from 'modules/geo-coding/strategies_v2/geocoding.repository';
+import { GeoCodingError } from '../errors/geo-coding.error';
 
 export class UnknownLocationGeoCodingStrategy implements IGeoCodingStrategy {
   manager: EntityManager;
@@ -23,11 +24,11 @@ export class UnknownLocationGeoCodingStrategy implements IGeoCodingStrategy {
      *
      */
     if (!location.locationCountryInput)
-      throw new Error(
+      throw new GeoCodingError(
         'A country where material is received needs to be provided for Unknown Location Types',
       );
     if (location.locationAddressInput || location.locationLatitude)
-      throw new Error(
+      throw new GeoCodingError(
         'Unknown Location type should not include an address or coordinates',
       );
     // Since the country received in sourcingData.locationCountryInput is served by the API, we can safely assume that we

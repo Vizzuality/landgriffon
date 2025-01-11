@@ -1,6 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { DataSource, EntityManager, QueryRunner } from 'typeorm';
-import { LOCATION_TYPES } from '../sourcing-locations/sourcing-location.entity';
+import {
+  DataSource,
+  EntityManager,
+  QueryFailedError,
+  QueryRunner,
+} from 'typeorm';
+import {
+  LOCATION_TYPES,
+  SourcingLocation,
+} from '../sourcing-locations/sourcing-location.entity';
 import { UnknownLocationGeoCodingStrategy } from './strategies_v2/unknown-location.geocoding.service';
 import { IGeoCodingStrategy } from './strategies_v2/geo-coding.strategy.interface';
 import { BaseStrategy } from './strategies_v2/base-strategy';
@@ -19,6 +27,8 @@ import { CountryOfProductionGeoCodingStrategy } from './strategies_v2/country-of
 import { GeocodingRepository } from './strategies_v2/geocoding.repository';
 import { AdminRegionOfProductionGeocodingStrategy } from './strategies_v2/admin-region-of-production.service';
 import { AggregationPointGeocodingStrategy } from './strategies_v2/aggregation-point.geocoding.service';
+import { SourcingData } from '../import-data/sourcing-data/dto-processor.service';
+import { GeoCodingError } from './errors/geo-coding.error';
 
 /**
  * @description: Custom repository for GeoCoding that handles all queries in a single transaction, due to changes in typeorm 0.2.x, not allowing
@@ -47,6 +57,7 @@ export class GeoCodingServiceV2 {
   manager: EntityManager;
   strategies: Record<LOCATION_TYPES, IGeoCodingStrategy>;
   logger: Logger = new Logger(GeoCodingServiceV2.name);
+  geocodingErrors: any[] = [];
 
   constructor(
     private readonly dataSource: DataSource,
@@ -54,31 +65,59 @@ export class GeoCodingServiceV2 {
     private readonly geocoder: GeocoderService,
   ) {}
 
-  async geocode(locations: CreateSourcingLocationV2[]): Promise<any> {
+  async geocode(locations: CreateSourcingLocationV2[]): Promise<{
+    geocodedSourcingLocations: GeoCodedSourcingLocation[];
+    geoCodingErrors: any[];
+  }> {
     this.queryRunner = this.dataSource.createQueryRunner();
     await this.queryRunner.connect();
     await this.queryRunner.startTransaction();
     this.manager = this.queryRunner.manager;
     this.loadStrategies(new GeocodingRepository(this.manager));
-    const geoCodedLocations: GeoCodedSourcingLocation[] = [];
+    const geocodedSourcingLocations: GeoCodedSourcingLocation[] = [];
     try {
-      for (const location of locations) {
-        const { adminRegion, geoRegion, locationWarning } =
-          await this.geocodeLocation(location);
-
-        geoCodedLocations.push({
-          ...location,
-          adminRegion,
-          geoRegion,
-          locationWarning,
-        });
+      for (let index = 0; index < locations.length; index++) {
+        const location = locations[index];
+        try {
+          const { adminRegion, geoRegion, locationWarning } =
+            await this.geocodeLocation(location);
+          await this.saveSourcingLocation({
+            ...location,
+            adminRegion,
+            geoRegion,
+            locationWarning,
+          });
+        } catch (e: any) {
+          this.logger.error(
+            `Error geocoding location ${JSON.stringify(location)}: ${
+              e.message
+            }`,
+            e.stack,
+          );
+          if (e instanceof GeoCodingError) {
+            this.accumulateGeocodingErrors(e, index);
+          }
+          if (e instanceof QueryFailedError) {
+            await this.queryRunner.rollbackTransaction();
+            await this.queryRunner.release();
+            throw e;
+          }
+        }
       }
       await this.queryRunner.commitTransaction();
-      await this.queryRunner.release();
-      return geoCodedLocations;
+      return {
+        geocodedSourcingLocations,
+        geoCodingErrors: this.geocodingErrors,
+      };
     } catch (e: any) {
-      this.logger.error(`Error geocoding locations: ${e.message}`, e.stack);
+      this.logger.error(
+        `Unexpected error during geocoding: ${e.message}`,
+        e.stack,
+      );
       await this.queryRunner.rollbackTransaction();
+      throw e;
+    } finally {
+      await this.queryRunner.release();
     }
   }
 
@@ -114,11 +153,18 @@ export class GeoCodingServiceV2 {
     location: CreateSourcingLocationV2,
   ): Promise<GeoCodedLocation> {
     const locationInfo = this.getLocationInfo(location);
+    this.logger.log(`Geocoding location: ${JSON.stringify(locationInfo)}`);
     const cachedLocation = await this.cacheManager.getFromCache(locationInfo);
     if (cachedLocation) {
+      this.logger.log(
+        `Location found in cache: Admin Region ${JSON.stringify(
+          cachedLocation.adminRegion.id,
+        )} and Geo Region ${JSON.stringify(cachedLocation.geoRegion.id)}`,
+      );
       return cachedLocation;
     }
     const strategy = this.strategies[locationInfo.locationType];
+    this.logger.log(`Cache not found. Geocoding location...`);
     const geocodedLocation: GeoCodedLocation = await strategy.geoCodeLocation(
       locationInfo,
     );
@@ -137,5 +183,24 @@ export class GeoCodingServiceV2 {
       locationCountryInput: location.locationCountryInput,
       locationType: location.locationType,
     };
+  }
+
+  private async saveSourcingLocation(
+    sourcingLocation: GeoCodedSourcingLocation,
+  ): Promise<SourcingLocation> {
+    return this.manager.save(SourcingLocation, sourcingLocation);
+  }
+
+  private accumulateGeocodingErrors(
+    error: GeoCodingError,
+    count: number,
+  ): void {
+    this.geocodingErrors.push({
+      row: count + 5,
+      error: error.message,
+      type: 'geo-coding-error',
+      sheet: 'sourcingData',
+      column: null,
+    });
   }
 }

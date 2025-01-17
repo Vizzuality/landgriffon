@@ -53,7 +53,7 @@ jobs:
           echo "##[set-output name=env_name_upper;]$mapped_name_upper"
         id: set_env
         env:
-          PILOT: ${{ secrets.PILOT }}
+          PILOT: ${{ vars.PILOT }}
 
   wait_for_tests:
     name: Wait for tests to finish running
@@ -150,6 +150,9 @@ jobs:
       id-token: 'write'
 
     steps:
+      - name: Debug IMAGE TAG
+        run: |
+          echo "IMAGE_TAG: ${{ needs.set_env_name.outputs.env_name }}"
       - name: Check out the repo
         uses: actions/checkout@v3
 

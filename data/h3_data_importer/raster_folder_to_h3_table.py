@@ -64,7 +64,6 @@ def raster_to_h3(reference_raster: Path, h3_resolution: int, raster_file: Path) 
         with rio.open(reference_raster) as ref:
             check_srs(ref, raster)
             check_transform(ref, raster)
-
         h3 = h3ronpy.raster.raster_to_dataframe(
             raster.read(1),
             transform=raster.transform,
@@ -261,12 +260,11 @@ def main(folder: Path, table: str, data_type: str, dataset: str, year: int, h3_r
     with multiprocessing.Pool(thread_count) as pool:
         h3s = pool.map(partial_raster_to_h3, raster_files)
     log.info(f"Joining H3 data of each raster into single dataframe for table {table}")
-    df = h3s[0]
+    df: pd.DataFrame = h3s[0]
     with click.progressbar(h3s[1:], label="Joining H3 dataframes") as pbar:
         for h3df in pbar:
-            df = df.join(h3df)
+            df = df.join(h3df, how="outer")
             del h3df
-
     # Part 2: Ingest h3 index into the database
     to_the_db(df, table, data_type, dataset, year, h3_res)
 

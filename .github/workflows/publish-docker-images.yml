@@ -14,6 +14,7 @@ on:
       - 'gcp'
       - 'dev'
       - 'demo'
+      - 'pilot'
     paths:
       - 'api/**'
       - 'client/**'
@@ -29,6 +30,31 @@ on:
         default: true
 
 jobs:
+  set_env_name:
+    name: Set Environment Name
+    runs-on: ubuntu-20.04
+    outputs:
+      env_name: ${{ steps.set_env.outputs.env_name }}
+      env_name_upper: ${{ steps.set_env.outputs.env_name_upper }}
+    steps:
+      - name: Set environment name
+        shell: bash
+        run: |
+          branch_name=$(echo "${GITHUB_REF#refs/heads/}")
+          secret_name=$(echo "$branch_name" | tr '[:lower:]' '[:upper:]')
+          mapped_name=${!secret_name}
+          if [ -z "$mapped_name" ]; then
+            echo "Warning: No secret found for branch '$branch_name'. Falling back to branch name."
+            mapped_name=$branch_name
+          fi
+          mapped_name_upper=$(echo "$mapped_name" | tr '[:lower:]' '[:upper:]')
+          echo "Environment name used: $mapped_name"
+          echo "##[set-output name=env_name;]$mapped_name"
+          echo "##[set-output name=env_name_upper;]$mapped_name_upper"
+        id: set_env
+        env:
+          PILOT: ${{ secrets.PILOT }}
+
   wait_for_tests:
     name: Wait for tests to finish running
     runs-on: ubuntu-20.04
@@ -60,7 +86,7 @@ jobs:
   push_api_to_registry:
     name: Push API Docker image to Docker Hub
     runs-on: ubuntu-20.04
-    needs: wait_for_tests
+    needs: [ set_env_name, wait_for_tests ]
 
     permissions:
       contents: 'read'
@@ -93,18 +119,11 @@ jobs:
       - name: Authorize Docker push
         run: gcloud auth configure-docker europe-west1-docker.pkg.dev
 
-      - name: Extract branch name
-        shell: bash
-        run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
-        id: extract_branch
-
       - name: Build API Docker image
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: api
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+          IMAGE_TAG: ${{ needs.set_env_name.outputs.env_name }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
           -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/api/main:${{ github.sha }} \
@@ -115,7 +134,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: api
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+          IMAGE_TAG: ${{ needs.set_env_name.outputs.env_name }}
         run: |
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/api/main:${{ github.sha }}
@@ -124,7 +143,7 @@ jobs:
   push_client_to_registry:
     name: Push Client Docker image to Docker Hub
     runs-on: ubuntu-20.04
-    needs: wait_for_tests
+    needs: [ set_env_name, wait_for_tests ]
 
     permissions:
       contents: 'read'
@@ -157,24 +176,17 @@ jobs:
       - name: Authorize Docker push
         run: gcloud auth configure-docker europe-west1-docker.pkg.dev
 
-      - name: Extract branch name
-        shell: bash
-        run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
-        id: extract_branch
-
       - name: Build Client Docker image
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: client
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+          IMAGE_TAG: ${{ needs.set_env_name.outputs.env_name }}
         run: |
           docker build \
-          --build-arg NEXTAUTH_URL=${{ secrets[format('NEXTAUTH_URL_{0}', steps.extract_branch.outputs.branch-upper )] }} \
-          --build-arg NEXTAUTH_SECRET=${{ secrets[format('NEXTAUTH_SECRET_{0}', steps.extract_branch.outputs.branch-upper )] }} \
+          --build-arg NEXTAUTH_URL=${{ secrets[format('NEXTAUTH_URL_{0}', needs.set_env_name.outputs.env_name_upper )] }} \
+          --build-arg NEXTAUTH_SECRET=${{ secrets[format('NEXTAUTH_SECRET_{0}', needs.set_env_name.outputs.env_name_upper )] }} \
           --build-arg NEXT_PUBLIC_MAPBOX_API_TOKEN=${{ secrets.NEXT_PUBLIC_MAPBOX_API_TOKEN }} \
-          --build-arg NEXT_PUBLIC_API_URL=${{ secrets[format('NEXT_PUBLIC_API_URL_{0}', steps.extract_branch.outputs.branch-upper )] }} \
+          --build-arg NEXT_PUBLIC_API_URL=${{ secrets[format('NEXTAUTH_URL_{0}', needs.set_env_name.outputs.env_name_upper )] }} \
           --build-arg CYPRESS_USERNAME=${{ secrets.CYPRESS_USERNAME }} \
           --build-arg CYPRESS_PASSWORD=${{ secrets.CYPRESS_PASSWORD }} \
           -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG  \
@@ -186,17 +198,16 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: client
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+          IMAGE_TAG: ${{ needs.set_env_name.outputs.env_name }}
         run: |
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/client/main:${{ github.sha }}
           docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/client/main:latest
 
-
   push_data_import_to_registry:
     name: Push Data Import Docker image to Docker Hub
     runs-on: ubuntu-20.04
-    needs: wait_for_tests
+    needs: [ set_env_name, wait_for_tests ]
 
     permissions:
       contents: 'read'
@@ -229,18 +240,11 @@ jobs:
       - name: Authorize Docker push
         run: gcloud auth configure-docker europe-west1-docker.pkg.dev
 
-      - name: Extract branch name
-        shell: bash
-        run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
-        id: extract_branch
-
       - name: Build Data Import Docker image
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: data_import
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+          IMAGE_TAG: ${{ needs.set_env_name.outputs.env_name }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG  \
           -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/data-import/main:${{ github.sha }} \
@@ -251,7 +255,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: data_import
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+          IMAGE_TAG: ${{ needs.set_env_name.outputs.env_name }}
         run: |
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/data-import/main:${{ github.sha }}
@@ -260,7 +264,7 @@ jobs:
   push_tiler_to_registry:
     name: Push Tiler Docker image to AWS and GCP
     runs-on: ubuntu-20.04
-    needs: wait_for_tests
+    needs: [ set_env_name, wait_for_tests ]
 
     permissions:
       contents: 'read'
@@ -293,18 +297,11 @@ jobs:
       - name: Authorize Docker push
         run: gcloud auth configure-docker europe-west1-docker.pkg.dev
 
-      - name: Extract branch name
-        shell: bash
-        run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=branch-upper;]$(echo ${GITHUB_REF#refs/heads/} | tr a-z A-Z )"
-        id: extract_branch
-
       - name: Build Tiler Docker image
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: tiler
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+          IMAGE_TAG: ${{ needs.set_env_name.outputs.env_name }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
           -t europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/tiler/main:${{ github.sha }} \
@@ -315,7 +312,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           ECR_REPOSITORY: tiler
-          IMAGE_TAG: ${{ steps.extract_branch.outputs.branch }}
+          IMAGE_TAG: ${{ needs.set_env_name.outputs.env_name }}
         run: |
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/tiler/main:${{ github.sha }}

@@ -48,7 +48,7 @@ jobs:
             mapped_name=$branch_name
           fi
           mapped_name_upper=$(echo "$mapped_name" | tr '[:lower:]' '[:upper:]')
-          echo "Environment name used: $mapped_name"
+          echo "Environment name found matching branch name: Using the environment name"
           echo "##[set-output name=env_name;]$mapped_name"
           echo "##[set-output name=env_name_upper;]$mapped_name_upper"
         id: set_env
@@ -150,9 +150,6 @@ jobs:
       id-token: 'write'
 
     steps:
-      - name: Debug IMAGE TAG
-        run: |
-          echo "IMAGE_TAG: ${{ needs.set_env_name.outputs.env_name }}"
       - name: Check out the repo
         uses: actions/checkout@v3
 

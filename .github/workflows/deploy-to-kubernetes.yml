@@ -36,12 +36,12 @@ jobs:
             mapped_name=$branch_name
           fi
           mapped_name_upper=$(echo "$mapped_name" | tr '[:lower:]' '[:upper:]')
-          echo "Environment name used: $mapped_name"
+          echo "Environment name found matching branch name: Using the environment name"
           echo "##[set-output name=env_name;]$mapped_name"
           echo "##[set-output name=env_name_upper;]$mapped_name_upper"
         id: set_env
         env:
-          PILOT: ${{ secrets.PILOT }}
+          PILOT: ${{ vars.PILOT }}
 
   wait_for_image_push:
     name: Wait for Docker images to be pushed

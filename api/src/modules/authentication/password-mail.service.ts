@@ -13,23 +13,50 @@ export class PasswordMailService {
 
   async sendUserActivationEmail(email: string, token: string): Promise<void> {
     const htmlContent: string = `
-    <h1>Welcome to Landgriffon!</h1>
-    <p>An account has been created for you by an administrator. As this is your first time logging in, we request you create a new password for your account.</p>
-    <br/>
-    <p>To get started, please click on the link below:</p>
-    <p><a href="${this.passwordActivationUrl}/${token}">Secure Password Setup Link</a></p>
-    <br/>
-    <p>This link will take you to our app where you can create your new password. For security reasons, this link will expire after 24 hours.</p>
-    <p>Please remember that a strong password includes a mix of letters, numbers, and special characters. Never share your password with anyone, even if they claim to be from Landgriffon.</p>
-    <p>Our team will never ask you for your password in an email, over the phone, or on any social media platform.</p>
-    <p>Thank you for choosing Landgriffon. We are committed to providing you with a secure and seamless experience.</p>
-    <br/>
-    <p>If you have any questions or need further assistance, please don't hesitate to contact us.</p>
-    <p>Best regards.</p>`;
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Welcome to Landgriffon</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+      <h1 style="color: #2c3e50;">Welcome to Landgriffon!</h1>
+
+      <p>Hi there,</p>
+
+      <p>An account has been created for you. To get started, please set it up by clicking the link below:</p>
+
+      <p>
+        <a href="${this.passwordActivationUrl}/${token}" style="background-color: #3498db; color: #ffffff; padding: 10px 15px; text-decoration: none; border-radius: 5px;">
+          Set Up Your Account
+        </a>
+      </p>
+
+      <p>This link will expire in 24 hours for security purposes.</p>
+
+      <p>To ensure a secure account, we recommend using a password with a mix of letters, numbers, and special characters.</p>
+
+      <p>If you didn't request this, please ignore this email.</p>
+
+      <p>For any assistance, feel free to reach out to our support team at
+        <a href="mailto:support@landgriffon.com">support@landgriffon.com</a>.
+      </p>
+
+      <p>Best regards,<br/>The Landgriffon Team</p>
+
+      <hr style="border: none; border-top: 1px solid #ccc;" />
+
+      <p style="font-size: 12px; color: #777;">
+        If you have received this email by mistake, please disregard it. You are receiving this email as part of your Landgriffon account registration.
+      </p>
+    </body>
+    </html>
+  `;
 
     await this.emailService.sendMail({
       to: email,
-      subject: 'Welcome to Landgriffon - Please Set Up Your Password',
+      subject: 'Welcome to Landgriffon - Set up your Account',
       html: htmlContent,
     });
   }

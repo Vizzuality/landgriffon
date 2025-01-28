@@ -144,7 +144,7 @@ export class BaseImpactService {
             treeOptions,
           )
         ).map((entity: LOCATION_TYPES) => {
-          return { name: entity, children: [] };
+          return { id: entity, name: entity, children: [] };
         });
 
       default:
@@ -413,34 +413,39 @@ export class BaseImpactService {
     // as using Math.max(...impactTable.map(...)) since the call stack will be exceeded because of no of arguments
     const yearsWithData: Set<number> = new Set();
 
-    const indicatorEntityMap: ImpactDataTableAuxMap<RowsValues> = new Map();
+    const indicatorEntityYearMap: ImpactDataTableAuxMap<RowsValues> = new Map();
 
     // Convert the flat structure on array to tree of Maps for easier access
     for (const impactTableData of dataForImpactTable) {
-      let entityMap: Map<string, Map<number, RowsValues>> | undefined =
-        indicatorEntityMap.get(impactTableData.indicatorId);
+      let indicatorEntityMap: Map<string, Map<number, RowsValues>> | undefined =
+        indicatorEntityYearMap.get(impactTableData.indicatorId);
 
-      if (!entityMap) {
-        entityMap = new Map();
-        indicatorEntityMap.set(impactTableData.indicatorId, entityMap);
+      if (!indicatorEntityMap) {
+        indicatorEntityMap = new Map();
+        indicatorEntityYearMap.set(
+          impactTableData.indicatorId,
+          indicatorEntityMap,
+        );
       }
 
-      let yearMap: Map<number, RowsValues> | undefined = entityMap.get(
-        impactTableData.name,
+      let entityYearMap: Map<number, RowsValues> | undefined =
+        indicatorEntityMap.get(impactTableData.identifier);
+      if (!entityYearMap) {
+        entityYearMap = new Map();
+        indicatorEntityMap.set(impactTableData.identifier, entityYearMap);
+      }
+
+      entityYearMap.set(
+        impactTableData.year,
+        dataToRowsValuesFunc(impactTableData),
       );
-      if (!yearMap) {
-        yearMap = new Map();
-        entityMap.set(impactTableData.name, yearMap);
-      }
-
-      yearMap.set(impactTableData.year, dataToRowsValuesFunc(impactTableData));
 
       yearsWithData.add(impactTableData.year);
     }
 
     const lastYearWithData: number = Math.max(...yearsWithData.values());
 
-    return [indicatorEntityMap, lastYearWithData];
+    return [indicatorEntityYearMap, lastYearWithData];
   }
 
   /**
@@ -498,12 +503,12 @@ export class BaseImpactService {
   }
 
   /**
-   * Small helper function to get the combined IndicatorId+EntityName+Year to facilitate pre processing of
+   * Small helper function to get the combined IndicatorId+EntityIdentifier+Year to facilitate pre processing of
    * Impact Table Data before building the impact table
    * @param data
    */
   static getImpactTableDataKey(data: ImpactTableData): string {
-    return data.indicatorId + '-' + data.name + '-' + data.year;
+    return data.indicatorId + '-' + data.identifier + '-' + data.year;
   }
 
   static sortRowValueByYear(
@@ -514,6 +519,9 @@ export class BaseImpactService {
   }
 }
 
+// Helper data structure that represents the aggregated data for each combination of Indicator, Entity and Year
+// Indicator -> N Entities -> N Years -> RowsValues (data that represents the actual impact)
+// Map<IndicatorId, Map<EntityIdentifier, Map<Year, RowsValues>>>
 export type ImpactDataTableAuxMap<T extends AnyImpactTableRowsValues> = Map<
   string,
   Map<string, Map<number, T>>

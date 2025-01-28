@@ -15,7 +15,7 @@ export class ImpactTableData {
   year: number;
   indicatorId: string;
   indicatorShortName: string;
-  name: string;
+  identifier: string;
   tonnes: string;
   impact: number;
   typeByIntervention: SOURCING_LOCATION_TYPE_BY_INTERVENTION | null;

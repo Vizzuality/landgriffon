@@ -180,10 +180,10 @@ export const newCoefficientsScenarioInterventionTable = {
         },
         {
           year: 2022,
-          value: 5872.282499999999,
+          value: expect.closeTo(5872.282500000001),
           comparedScenarioValue: 5408.68125,
-          absoluteDifference: -463.6012499999997,
-          percentageDifference: -8.219178082191776,
+          absoluteDifference: expect.closeTo(-463.6012499999997),
+          percentageDifference: expect.closeTo(-8.219178082191776),
           isProjected: true,
         },
         {

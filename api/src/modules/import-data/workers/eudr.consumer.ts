@@ -17,7 +17,7 @@ export interface EudrImportJob {
 
 @Processor('eudr')
 export class ImportDataConsumer {
-  logger: Logger = new Logger(ImportDataService.name);
+  logger: Logger = new Logger(ImportDataConsumer.name);
 
   constructor(
     public readonly importDataService: ImportDataService,

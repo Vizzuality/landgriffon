@@ -12,7 +12,7 @@ import { H3DataService } from 'modules/h3-data/h3-data.service';
 
 @Injectable()
 export class ContextualLayersService {
-  logger: Logger = new Logger();
+  logger: Logger = new Logger(ContextualLayersService.name);
 
   constructor(
     private readonly contextualLayerRepository: ContextualLayerRepository,

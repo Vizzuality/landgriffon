@@ -16,3 +16,4 @@ infrastructure/kubernetes/vars/*
 /infrastructure/kubernetes/bastion_tunnel.sh
 
 .vscode/
+.DS_Store

@@ -1,44 +1,28 @@
-FROM python:3.11-slim
+FROM python:3.11
 LABEL maintainer="hello@vizzuality.com"
 
-# Arguments for your user & paths (optional)
-ARG USER_NAME=landgriffon-tiler
-ARG APP_HOME=/opt/${USER_NAME}
+ENV NAME landgriffon-tiler
+ENV USER $NAME
+ENV APP_HOME /opt/$NAME
 
-# Create a non-root user
-RUN useradd --shell /bin/bash --create-home --home-dir ${APP_HOME} ${USER_NAME}
+ARG TILE_LANDGRIFFON_COG_FILENAME
+# @todo: The data should be retrieved from a S3 bucket in LG World
 
-# Switch to the application directory
-WORKDIR ${APP_HOME}
+RUN addgroup $USER && adduser --shell /bin/bash --disabled-password --ingroup $USER $USER
 
-# Install GDAL dev libs and build tools for Rasterio, then remove them when done
-# so the final image is smaller. We keep gdal-bin for runtime usage (if needed).
-RUN apt-get update \
- && apt-get install -y --no-install-recommends \
-    gdal-bin       \
-    libgdal-dev    \
-    build-essential \
- && rm -rf /var/lib/apt/lists/*
+WORKDIR $APP_HOME
+RUN chown $USER:$USER $APP_HOME
 
-# Copy requirements first for better cache usage
-COPY requirements.txt .
+COPY requirements.txt requirements.txt
 
-# Install Python dependencies (including Rasterio)
-RUN pip install --no-cache-dir --upgrade pip \
- && pip install --no-cache-dir -r requirements.txt \
- # Now remove dev packages if you only need gdal-bin at runtime (and the 
- # shared libraries that come with it). If you need dev packages in the container 
- # for other reasons, skip the following purge:
- && apt-get purge -y --auto-remove libgdal-dev build-essential \
- && rm -rf /var/lib/apt/lists/*
+RUN pip install --no-cache-dir -r ./requirements.txt
 
-# Copy your application
-COPY --chown=${USER_NAME}:${USER_NAME} app ./app
 
-# Switch to non-root user
-USER ${USER_NAME}
+COPY --chown=$USER:$USER app ./app
+
 
 EXPOSE 4000
+USER $USER
 
 # @todo Consider whether to use a shell script as entrypoint to allow for
 # different run modes (e.g. debug, dev, prod, etc.) via Docker commands

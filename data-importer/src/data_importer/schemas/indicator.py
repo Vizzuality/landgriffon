@@ -31,3 +31,7 @@ class Indicator(BaseModel):
     description: str
     metadata: JSON
     dataset_path: AnyUrl
+
+
+class Indicators(BaseModel):
+    root: list[Indicator]

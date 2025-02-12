@@ -32,4 +32,4 @@ class Material(BaseModel):
 
 
 class Materials:
-    materials: list[Material]
+    root: list[Material]

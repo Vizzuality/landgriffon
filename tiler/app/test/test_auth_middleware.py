@@ -1,8 +1,7 @@
 import os
 
-import pytest
 from unittest.mock import patch, Mock
-from starlette.testclient import TestClient
+from fastapi.testclient import TestClient
 
 from ..main import app
 from ..middlewares.s3_access import s3_presigned_access

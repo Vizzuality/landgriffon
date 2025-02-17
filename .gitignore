@@ -16,4 +16,8 @@ infrastructure/kubernetes/vars/*
 /infrastructure/kubernetes/bastion_tunnel.sh
 
 .vscode/
+.env.*
+*.env
 .DS_Store
+
+__pycache__

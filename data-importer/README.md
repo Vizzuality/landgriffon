@@ -1,6 +1,6 @@
 # Landgriffon data importing tool
 
-Proposed changes to boost speed and maintainability of the data management in Landgriffon.
+Changes to boost speed and maintainability of the data management in Landgriffon.
 
 ## Principles
 
@@ -21,6 +21,11 @@ because the configured app is the only source of truth.
 Materials are decoupled from specific datasets. The app does not care that the hsCode 102 is made with
 the sum of 3 SPAM rasters. If this information matters, then it must come from the data source, not from the app
 configuration.
+
+
+## Data import changes
+
+No more `make`. Everything is managed through a python command line application.
 
 Since data is organized in H3, it should be ingested in H3. Delegate the preprocessing to
 another tool or process. Final data sources must be tables as close a possible to final format (like parquet).

@@ -5,7 +5,6 @@ from pydantic import BaseModel
 from pydantic import RootModel
 
 type NameCode = str
-type JSON = dict[str:Any]
 
 
 class Indicator(BaseModel):

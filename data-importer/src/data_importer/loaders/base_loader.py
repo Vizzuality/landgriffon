@@ -7,11 +7,11 @@ import psycopg
 from psycopg import sql
 from pydantic import BaseModel
 
-from data_importer.config import settings
+from data_importer.config import Settings
 
 
-class Loader[T: type[BaseModel]]:
-    database_uri: str = settings.database_uri.unicode_string()
+class Loader[T: BaseModel]:
+    database_uri: str = Settings().database_uri.unicode_string()
 
     def __init__(self, schema: T, file_path: str):
         self.schema = schema
@@ -27,15 +27,14 @@ class Loader[T: type[BaseModel]]:
 
     def write_to_db(self, table: str):
         df = pl.DataFrame(self.data.model_dump(mode="json"))
-        with psycopg.connect(self.database_uri) as conn:
-            with conn.cursor() as cur:
-                self.log.info(f"Writing data to {table}")
-                with StringIO() as buffer:
-                    df.write_csv(buffer, include_header=False, null_value="NULL")
-                    buffer.seek(0)
-                    copy_query = sql.SQL(
-                        "COPY {} FROM STDIN DELIMITER ',' CSV NULL 'NULL';"
-                    ).format(sql.Identifier(table))
-                    self.log.info(f"adding {len(df)} rows to table `{table}`")
-                    # with cur.copy(copy_query) as copy:
-                    #     copy.write(buffer.read())
+        with psycopg.connect(self.database_uri) as conn, conn.cursor() as cur:
+            self.log.info(f"Writing data to {table}")
+            with StringIO() as buffer:
+                df.write_csv(buffer, include_header=False, null_value="NULL")
+                buffer.seek(0)
+                copy_query = sql.SQL("COPY {} FROM STDIN DELIMITER ',' CSV NULL 'NULL';").format(
+                    sql.Identifier(table)
+                )
+                self.log.info(f"adding {len(df)} rows to table `{table}`")
+                with cur.copy(copy_query) as copy:
+                    copy.write(buffer.read())

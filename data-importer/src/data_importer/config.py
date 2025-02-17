@@ -19,19 +19,17 @@ class Settings(BaseSettings):
     indicators_json: AnyUrl = (DEFAULT_FILES_DIR / "indicators.json").as_uri()
 
     # DB settings
-    api_postgres_host: str
-    api_postgres_port: int
-    api_postgres_username: str
-    api_postgres_password: SecretStr
-    api_postgres_database: str
+    api_postgres_host: str = "localhost"
+    api_postgres_port: int = 5432
+    api_postgres_username: str = "postgres"
+    api_postgres_password: SecretStr = SecretStr("")
+    api_postgres_database: str = "postgres"
 
     # Data access settings
-    aws_access_key_id: str
-    aws_secret_access_key: str
-    data_bucket_name: str
-    s3_bucket_name: str
-
-    indicator_coefficient_config: str
+    aws_access_key_id: str = ""
+    aws_secret_access_key: str = ""
+    data_bucket_name: str = ""
+    s3_bucket_name: str = ""
 
     @computed_field
     @property
@@ -44,6 +42,3 @@ class Settings(BaseSettings):
             port=self.api_postgres_port,
             path=self.api_postgres_database,
         )
-
-
-settings = Settings()

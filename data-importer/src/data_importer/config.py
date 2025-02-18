@@ -15,8 +15,8 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(extra="ignore", env_file="../.env")
 
     # Base import configurations
-    materials_json: AnyUrl = (DEFAULT_FILES_DIR / "materials.json").as_uri()
-    indicators_json: AnyUrl = (DEFAULT_FILES_DIR / "indicators.json").as_uri()
+    materials_json: AnyUrl = AnyUrl((DEFAULT_FILES_DIR / "materials.json").as_uri())
+    indicators_json: AnyUrl = AnyUrl((DEFAULT_FILES_DIR / "indicators.json").as_uri())
 
     # DB settings
     api_postgres_host: str = "localhost"
@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     data_bucket_name: str = ""
     s3_bucket_name: str = ""
 
-    @computed_field
+    @computed_field  # type: ignore
     @property
     def database_uri(self) -> PostgresDsn:
         return PostgresDsn.build(

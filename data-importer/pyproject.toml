@@ -19,9 +19,10 @@ lgimport = "data_importer.cli:cli"
 [dependency-groups]
 dev = [
     "data-importer",
- "notebook>=7.3.2",
- "pre-commit>=4.1.0",
- "ruff>=0.9.6",
+    "mypy>=1.15.0",
+    "notebook>=7.3.2",
+    "pre-commit>=4.1.0",
+    "ruff>=0.9.6",
 ]
 
 [build-system]

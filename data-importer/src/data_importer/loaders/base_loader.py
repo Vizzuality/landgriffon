@@ -1,16 +1,18 @@
 import logging
+import sys
 from io import StringIO
 
 import fsspec
 import polars as pl
 import psycopg
 from psycopg import sql
+from psycopg.errors import OperationalError
 from pydantic import BaseModel
 
 from data_importer.config import Settings
 
 
-class Loader[T: BaseModel]:
+class Loader[T: type[BaseModel]]:
     database_uri: str = Settings().database_uri.unicode_string()
 
     def __init__(self, schema: T, file_path: str):
@@ -20,6 +22,12 @@ class Loader[T: BaseModel]:
         self.log.info(f"Reading source file from: {self.file_path}")
         with fsspec.open(self.file_path) as f:
             self.data = self.schema.model_validate_json(f.read())
+        try:
+            with psycopg.connect(self.database_uri):
+                pass
+        except OperationalError as e:
+            self.log.exception(f"Failed to connect to db. {e}")
+            sys.exit(1)
 
     @property
     def log(self):

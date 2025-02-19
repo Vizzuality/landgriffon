@@ -5,12 +5,11 @@ import {
   IMPORT_DATA_EVENTS,
   ImportDataEvent,
 } from 'modules/events/import-data-events/import-data.event-handler';
-import { ExcelImportJob } from '../workers/import-data.producer';
 
 export class StartImportProcessingCommand {
   constructor(
     public readonly taskId: string,
-    public readonly xlsxFileData: { originalname: string },
+    public readonly xlsxFileData: Express.Multer.File,
   ) {}
 }
 
@@ -36,7 +35,7 @@ export class StartImportProcessingHandler
     );
 
     // Now do the actual heavy lifting here
-    await this.importDataService.processImportJob({ data: jobData } as any);
+    await this.importDataService.processImportJob(taskId, xlsxFileData);
 
     // Optionally publish a "Finished" event or let OnQueueCompleted handle that
   }

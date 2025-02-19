@@ -2,13 +2,13 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from titiler.core import TilerFactory
 from titiler.core.errors import DEFAULT_STATUS_CODES, add_exception_handlers
+from titiler.core.factory import TilerFactory
 from titiler.core.middleware import LoggerMiddleware, TotalTimeMiddleware
 
-from .config.config import get_settings
-from .middlewares.auth_middleware import AuthMiddleware
-from .middlewares.s3_access import s3_presigned_access
+from app.config.config import get_settings
+from app.middlewares.auth_middleware import AuthMiddleware
+from app.middlewares.s3_access import s3_presigned_access
 
 root_path = get_settings().root_path
 titiler_router_prefix = (

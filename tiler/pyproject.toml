@@ -1,29 +1,38 @@
 [project]
-name = "LandGriffon Tiler"
+name = "app"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.13, <3.14"
 version = "0.1.0"
-env = ["REQUIRE_AUTH=true",
-  "API_HOST=",
-  "API_PORT=3000",
-  "S3_BUCKET_NAME=mybucket",
-  "ROOT_PATH=",
-  "TITILER_PREFIX=/cog",
-  "TITILER_ROUTER_PREFIX=/cog"]
-
-[tool.pytest.ini_options]
-pythonpath = [
-  "."
+dependencies = [
+    "boto3>=1.36.23",
+    "httpx>=0.28.1",
+    "pydantic-settings>=2.7.1",
+    "titiler-core>=0.21.1",
+    "uvicorn>=0.34.0",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "app",
+    "pytest>=8.3.4",
+]
+
 
 [tool.ruff]
 line-length = 120
 select = [
-    "D1",   # pydocstyle errors
     "E",    # pycodestyle errors
     "W",    # pycodestyle warnings
     "F",    # flake8
     "C",    # flake8-comprehensions
     "B",    # flake8-bugbear
     "I",    # isort
+    "UP"    # pyupgrade
 ]
+
+[tool.uv.sources]
+app = { workspace = true }

@@ -33,7 +33,7 @@ cli = typer.Typer(pretty_exceptions_enable=False)
 @cli.callback()
 def main(banner: Annotated[bool, typer.Option(help="Show the splash banner in stdout")] = True):
     """LandGriffon data importer"""
-    if not banner:
+    if banner:
         print(BANNER)
     pass
 

@@ -4,7 +4,7 @@
     "description": "Animals; live",
     "name_code": "pasture",
     "parent": null,
-    "production_dataset_path": "s3://path/to/dataset.parquet",
+    "production_dataset_path": "s3://path/to/animals.parquet",
     "harvest_dataset_path": "s3://path/to/dataset.parquet",
     "metadata": null
   },

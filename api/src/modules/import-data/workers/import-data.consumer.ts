@@ -21,7 +21,7 @@ export class ImportDataConsumer {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly eventBus: EventBus,
-  ) {}
+  ) { }
 
   @OnQueueError()
   async onQueueError(error: Error): Promise<void> {
@@ -30,13 +30,12 @@ export class ImportDataConsumer {
     );
   }
 
-  // TODO: we probably want to handle success and failures using CQRS
-
   @OnQueueFailed()
   async onJobFailed(job: Job<ExcelImportJob>, err: any): Promise<void> {
     if (this.isJobStalled(err)) {
       return this.removeJob(job);
     }
+    
     // Delegate the failure logic to a command
     await this.commandBus.execute(
       new HandleImportFailedCommand(
@@ -57,8 +56,9 @@ export class ImportDataConsumer {
 
   @Process('excel-import-job')
   async readImportDataJob(job: Job<ExcelImportJob>): Promise<void> {
+    const { taskId, xlsxFileData } = job.data;
     // Delegate the processing logic to a command
-    await this.commandBus.execute(new StartImportProcessingCommand(job.data));
+    await this.commandBus.execute(new StartImportProcessingCommand(taskId, xlsxFileData));
   }
 
   private isJobStalled(err: Error): boolean {

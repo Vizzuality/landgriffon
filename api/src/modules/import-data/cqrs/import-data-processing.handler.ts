@@ -8,7 +8,10 @@ import {
 import { ExcelImportJob } from '../workers/import-data.producer';
 
 export class StartImportProcessingCommand {
-  constructor(public readonly jobData: ExcelImportJob) {}
+  constructor(
+    public readonly taskId: string,
+    public readonly xlsxFileData: { originalname: string },
+  ) {}
 }
 
 @CommandHandler(StartImportProcessingCommand)
@@ -23,12 +26,12 @@ export class StartImportProcessingHandler
   ) {}
 
   async execute(command: StartImportProcessingCommand): Promise<void> {
-    const { jobData } = command;
+    const { taskId, xlsxFileData } = command;
     // Optionally publish an event to mark the import as "Started"
     // this.eventBus.publish(...);
     this.eventBus.publish(
-      new ImportDataEvent(jobData.taskId, IMPORT_DATA_EVENTS.STARTED, {
-        file: jobData.xlsxFileData.originalname,
+      new ImportDataEvent(taskId, IMPORT_DATA_EVENTS.STARTED, {
+        file: xlsxFileData.originalname,
       }),
     );
 

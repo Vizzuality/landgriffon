@@ -38,6 +38,7 @@ def test_db_connection(conn):
     except Exception as e:
         pytest.fail(f"DB connection Error: {e}")
 
+## TODO: Even tho this test checks the current behavior, it should be refactored as the behavior is wrong
 
 def test_indicator_coefficient_has_any_link_to_material(conn):
     with conn.cursor() as cur:
@@ -50,6 +51,8 @@ def test_indicator_coefficient_has_any_link_to_material(conn):
         assert len(result) > 0, "The query result is empty"
 
 
+
+## TODO: This also depends on a fixed fixture, check new approaches
 def test_material_is_linked_in_indicator_coefficients(conn):
     with conn.cursor() as cur:
         cur.execute(

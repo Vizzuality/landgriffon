@@ -1,6 +1,9 @@
+from typing import Annotated
+
+import boto3
 from botocore.config import Config
 from fastapi.params import Query
-import boto3
+
 from ..config.config import get_settings
 
 s3 = boto3.client("s3", region_name="eu-west-3", config=Config(signature_version="s3v4"))
@@ -13,7 +16,9 @@ DATA_PATH_IN_S3 = "processed/cogs/"
 #         external resources i.e datasets that are publicly available
 
 
-def s3_presigned_access(url: str | None = Query(default=None, description="Optional dataset URL")) -> str:
+def s3_presigned_access(
+    url: Annotated[str | None, Query(description="Optional dataset URL")] = None,
+) -> str:
     """
     Generate a pre-signed URL for an Amazon S3 object.
 

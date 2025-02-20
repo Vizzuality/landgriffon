@@ -16,7 +16,7 @@ def override_s3_pressigned_access(url: str | None):
 app.dependency_overrides[s3_presigned_access] = override_s3_pressigned_access
 
 
-@patch("app.middlewares.auth_middleware.requests.get")
+@patch("app.middlewares.auth_middleware.httpx.get")
 def test_auth_failing_api_validation(mock_get):
     mock = Mock()
     mock.status_code = 401
@@ -25,7 +25,7 @@ def test_auth_failing_api_validation(mock_get):
     assert response.status_code == 401
 
 
-@patch("app.middlewares.auth_middleware.requests.get")
+@patch("app.middlewares.auth_middleware.httpx.get")
 def test_auth_correct_api_validation(mock_get):
     mock = Mock()
     mock.status_code = 200

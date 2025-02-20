@@ -14,9 +14,10 @@ def test_s3_access_no_default_cog():
 
 
 @patch("app.middlewares.s3_access.s3.generate_presigned_url")
-@patch("app.middlewares.s3_access.default_cog", return_value="fake_tiff.tif", autospec=True)
+@patch("app.middlewares.s3_access.get_settings().default_cog", autospec=True)
 def test_s3_access_with_default_cog(mock_generate_url, mock_settings):
     mock_generate_url.return_value = "fake_signed_url"
+    mock_settings.return_value = "fake_tiff.tif"
     try:
         result = s3_presigned_access(url=None)
     except Exception as ex:

@@ -1,19 +1,21 @@
 import { useEffect, useCallback, useMemo } from 'react';
 import { H3HexagonLayer } from '@deck.gl/geo-layers/typed';
+import { useQueryClient, UseQueryResult } from '@tanstack/react-query';
 
-import DeckLayer from 'components/map/layers/deck';
-import Map from 'components/map';
-import ZoomControl from 'components/map/controls/zoom';
-import LayerManager from 'components/map/layer-manager';
+import Map from '@/components/map';
+import DeckLayer from '@/components/map/layers/deck';
+import ZoomControl from '@/components/map/controls/zoom';
+import LayerManager from '@/components/map/layer-manager';
+import MapboxRasterLayer from '@/components/map/layers/maplibre/raster';
 import { useH3Data } from 'hooks/h3-data';
 import PageLoading from 'containers/page-loading';
 import { useYears } from 'hooks/years';
+import { CategoryWithLayers } from '@/hooks/layers/getContextualLayers';
 
 import type { H3HexagonLayerProps } from '@deck.gl/geo-layers/typed';
-import type { UseQueryResult } from '@tanstack/react-query';
 import type { Dispatch } from 'react';
 import type { Material, Layer } from 'types';
-import type { MapboxLayerProps } from 'components/map/layers/types';
+import type { MapboxLayerProps } from '@/components/map/layers/types';
 
 interface PreviewMapProps {
   selectedLayerId?: Layer['id'];
@@ -37,6 +39,14 @@ const PreviewMap = ({ selectedLayerId, selectedMaterialId, onStatusChange }: Pre
     },
   });
 
+  const queryClient = useQueryClient();
+  const contextualLayers = queryClient.getQueryData<CategoryWithLayers[]>(['contextual-layers']);
+  const selectedLayer = contextualLayers
+    ?.flatMap((category) => category.layers)
+    .find((layer) => layer.id === selectedLayerId);
+
+  const isCogLayer = !!selectedLayer?.tilerUrl;
+
   const { data, isFetching, status } = useH3Data({
     id: selectedLayerId,
     params: {
@@ -44,20 +54,39 @@ const PreviewMap = ({ selectedLayerId, selectedMaterialId, onStatusChange }: Pre
       year: materialYear,
     },
     options: {
-      enabled: !!selectedLayerId && (selectedLayerId !== 'material' || !!materialYear),
+      enabled:
+        !!selectedLayerId && (selectedLayerId !== 'material' || !!materialYear) && !isCogLayer,
       select: (response) => response.data,
-      staleTime: 10000,
       // having placeholder data makes the status always be success
       placeholderData: undefined,
     },
   });
 
+  const getLayerFetchingStatus = useCallback(() => {
+    if (isCogLayer) return 'success';
+    if (status === 'error') return status;
+    if (isFetching) return 'loading';
+
+    return status;
+  }, [isCogLayer, isFetching, status]);
+
   useEffect(() => {
-    onStatusChange?.(status);
-  }, [onStatusChange, status]);
+    onStatusChange?.(getLayerFetchingStatus());
+  }, [onStatusChange, getLayerFetchingStatus]);
 
   const PreviewLayer = useCallback(() => {
-    if (!data?.length) return null;
+    if (!data?.length && !selectedLayer?.tilerUrl) return null;
+
+    if (isCogLayer) {
+      return (
+        <MapboxRasterLayer
+          id={selectedLayer.id}
+          beforeId="custom-layers"
+          tilerUrl={selectedLayer.tilerUrl}
+          defaultTilerParams={selectedLayer.defaultTilerParams}
+        />
+      );
+    }
 
     return (
       <DeckLayer<MapboxLayerProps<H3HexagonLayerProps>>
@@ -69,7 +98,7 @@ const PreviewMap = ({ selectedLayerId, selectedMaterialId, onStatusChange }: Pre
         getLineColor={(d) => d.c}
       />
     );
-  }, [data]);
+  }, [data, isCogLayer, selectedLayer]);
 
   const layers = useMemo(() => [{ id: PREVIEW_LAYER_ID, layer: PreviewLayer }], [PreviewLayer]);
 

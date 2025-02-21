@@ -26,6 +26,9 @@ import { NotificationsModule } from 'modules/notifications/notifications.module'
 import { ExcelValidatorService } from 'modules/import-data/sourcing-data/validation/excel-validator.service';
 import { SourcingDataDbCleaner } from 'modules/import-data/sourcing-data/sourcing-data.db-cleaner';
 import { ImportDataEventHandler } from '../events/import-data-events/import-data.event-handler';
+import { HandleImportFailedHandler } from './cqrs/import-data-failed.handler';
+import { StartImportProcessingHandler } from './cqrs/import-data-processing.handler';
+import { HandleImportSuccessHandler } from './cqrs/import-data-success.handler';
 
 // TODO: Move EUDR related stuff to EUDR modules
 
@@ -69,6 +72,10 @@ import { ImportDataEventHandler } from '../events/import-data-events/import-data
     ExcelValidatorService,
     SourcingDataDbCleaner,
     ImportDataEventHandler,
+    HandleImportFailedHandler,
+    HandleImportSuccessHandler,
+    StartImportProcessingHandler,
+
     {
       provide: 'FILE_UPLOAD_SIZE_LIMIT',
       useValue: config.get('fileUploads.sizeLimit'),

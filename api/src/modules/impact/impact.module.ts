@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ImpactService } from 'modules/impact/impact.service';
 import { ImpactController } from 'modules/impact/impact.controller';
 import { IndicatorsModule } from 'modules/indicators/indicators.module';
@@ -17,18 +17,20 @@ import { BaseImpactService } from 'modules/impact/base-impact.service';
 import { ImpactRepository } from 'modules/impact/impact.repository';
 import { ImpactReportController } from 'modules/impact/impact-report.controller';
 import { ImpactReportsModule } from 'modules/impact/reports/impact-reports.module';
+import { ImportDataModule } from 'modules/import-data/import-data.module';
 
 @Module({
   imports: [
     IndicatorsModule,
     SourcingRecordsModule,
     BusinessUnitsModule,
-    AdminRegionsModule,
+    forwardRef(() => AdminRegionsModule),
     SuppliersModule,
     MaterialsModule,
-    SourcingLocationsModule,
+    forwardRef(() => SourcingLocationsModule),
     AuthorizationModule,
     ImpactReportsModule,
+    forwardRef(() => ImportDataModule),
   ],
   providers: [
     ImpactRepository,

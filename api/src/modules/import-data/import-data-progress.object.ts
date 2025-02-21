@@ -3,10 +3,10 @@ import {
   ImportProgressPayload,
   ImportProgressSequence,
   ImportProgressSteps,
-} from './types';
+} from 'modules/events/import-data-progress/types';
 
-export class ImportProgressUpdateEvent implements IEvent {
-  stepOrder: ImportProgressSequence = [
+export class ImportDataProgressObject implements IEvent {
+  static stepOrder: ImportProgressSequence = [
     'VALIDATING_DATA',
     'GEOCODING',
     'IMPORTING_DATA',
@@ -54,10 +54,12 @@ export class ImportProgressUpdateEvent implements IEvent {
 
   private setPreviousStepsAsCompleted(step: ImportProgressSteps): void {
     // Update all previous steps to 'completed' status and 100% progress
-    const currentStepIndex: number = this.stepOrder.indexOf(step);
+    const currentStepIndex: number =
+      ImportDataProgressObject.stepOrder.indexOf(step);
 
     for (let i: number = 0; i < currentStepIndex; i++) {
-      const previousStep: ImportProgressSteps = this.stepOrder[i];
+      const previousStep: ImportProgressSteps =
+        ImportDataProgressObject.stepOrder[i];
       this.payload[previousStep].status = 'completed';
       this.payload[previousStep].progress = 100;
     }

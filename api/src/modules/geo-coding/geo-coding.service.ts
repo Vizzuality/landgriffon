@@ -10,8 +10,7 @@ import {
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { AdminRegionOfProductionService } from 'modules/geo-coding/strategies/admin-region-of-production.service';
-import { GeoCodingProgressTracker } from 'modules/geo-coding/progress-tracker/geo-coding.progress-tracker';
-import { ImportProgressTrackerFactory } from '../events/import-data-progress/import-progress.tracker.factory';
+import { ImportDataProgressEmitter } from 'modules/import-data/cqrs/import-data-progress.emitter';
 
 interface locationInfo {
   locationAddressInput?: string;
@@ -32,7 +31,7 @@ export class GeoCodingService extends GeoCodingAbstractClass {
     protected readonly countryOfProductionService: CountryOfProductionGeoCodingStrategy,
     protected readonly unknownLocationService: UnknownLocationGeoCodingStrategy,
     protected readonly adminRegionOfProductionService: AdminRegionOfProductionService,
-    protected readonly progressTrackerFactory: ImportProgressTrackerFactory,
+    protected readonly importDataProgressEmitter: ImportDataProgressEmitter,
   ) {
     super();
   }
@@ -46,8 +45,7 @@ export class GeoCodingService extends GeoCodingAbstractClass {
     const geoCodedSourcingData: SourcingData[] = [];
     const errors: any[] = [];
     const totalLocations: number = sourcingData.length;
-    const progressTracker: GeoCodingProgressTracker =
-      this.progressTrackerFactory.createGeoCodingTracker({ totalLocations });
+    let locationsSoFar: number = 0;
     for (let i: number = 0; i < totalLocations; i++) {
       const location: SourcingData = sourcingData[i];
       this.logger.debug(
@@ -90,7 +88,11 @@ export class GeoCodingService extends GeoCodingAbstractClass {
             await this.geoCodeAdminRegionOfProductionLocationType(location),
           );
         }
-        progressTracker.trackProgress();
+
+        locationsSoFar++;
+        this.importDataProgressEmitter.emitGeocodingProgress(
+          (locationsSoFar / totalLocations) * 100,
+        );
       } catch (e: any) {
         errors.push({
           row: i + 5,
@@ -99,7 +101,11 @@ export class GeoCodingService extends GeoCodingAbstractClass {
           sheet: 'sourcingData',
           column: null,
         });
-        progressTracker.trackProgress();
+
+        locationsSoFar++;
+        this.importDataProgressEmitter.emitGeocodingProgress(
+          (locationsSoFar / totalLocations) * 100,
+        );
       }
     }
 

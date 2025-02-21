@@ -10,9 +10,8 @@ import { SourcingDataSheetValidator } from './validators/sourcing-data.sheet-val
 import { IndicatorsSheetValidator } from './validators/indicators.sheet-validator';
 import { plainToInstance } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
-import { ValidationProgressTracker } from '../../progress-tracker/validation.progress-tracker';
-import { ImportProgressTrackerFactory } from 'modules/events/import-data-progress/import-progress.tracker.factory';
-import { ImportTaskError } from '../../../tasks/types/import-task-error.type';
+import { ImportTaskError } from 'modules/tasks/types/import-task-error.type';
+import { ImportDataProgressEmitter } from 'modules/import-data/cqrs/import-data-progress.emitter';
 
 export type SourcingDataSheet = {
   materials: MaterialSheetValidator[];
@@ -49,13 +48,18 @@ export class ExcelValidatorService {
 
   constructor(
     private readonly dtoProcessor: SourcingRecordsDtoProcessorService,
-    private readonly importProgressTrackerFactory: ImportProgressTrackerFactory,
+    private readonly importDataProgressEmitter: ImportDataProgressEmitter,
   ) {}
 
   async validate(sheet: SourcingDataSheet): Promise<any> {
-    const progressTracker: ValidationProgressTracker =
-      this.getProgressTracker(sheet);
     const validationErrors: ImportTaskError[] = [];
+
+    let stepsSoFar: number = 0;
+    const totalSteps: number =
+      SHEET_NAMES.reduce(
+        (acc: number, sheetName: SheetName) => acc + sheet[sheetName].length,
+        0,
+      ) + 1;
 
     /*
      * Parse sourcing location rows and sourcing records from the sourcing data sheet
@@ -75,7 +79,11 @@ export class ExcelValidatorService {
         if (errors.length) {
           this.handleErrors(errors, index, sheetName, validationErrors);
         }
-        progressTracker.trackProgress();
+
+        stepsSoFar++;
+        this.importDataProgressEmitter.emitValidationProgress(
+          (stepsSoFar / totalSteps) * 100,
+        );
       }
     }
 
@@ -90,19 +98,6 @@ export class ExcelValidatorService {
 
   private setLineNumber(index: number, sheetName: SheetName): number {
     return sheetName === 'sourcingData' ? index + 5 : index + 2;
-  }
-
-  private getProgressTracker(
-    sheet: SourcingDataSheet,
-  ): ValidationProgressTracker {
-    const totalSteps: number =
-      SHEET_NAMES.reduce(
-        (acc: number, sheetName: SheetName) => acc + sheet[sheetName].length,
-        0,
-      ) + 1;
-    return this.importProgressTrackerFactory.createValidationProgressTracker({
-      totalSteps: totalSteps,
-    });
   }
 
   private handleErrors(

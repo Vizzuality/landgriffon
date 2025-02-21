@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { CacheModule } from '@nestjs/cache-manager';
 import { AdminRegionsModule } from 'modules/admin-regions/admin-regions.module';
 import { GeoRegionsModule } from 'modules/geo-regions/geo-regions.module';
@@ -18,6 +18,7 @@ import {
 import { GoogleMapsGeocoder } from 'modules/geo-coding/geocoders/google-maps.geocoder';
 import * as redisStore from 'cache-manager-redis-store';
 import * as config from 'config';
+import { ImportDataModule } from 'modules/import-data/import-data.module';
 
 const geocodingCacheConfig: any = config.get('geocodingCache');
 
@@ -40,6 +41,7 @@ const geocodingCacheEnabled: boolean =
       db: geocodingCacheConfig.database,
       ttl: geocodingCacheTTL,
     }),
+    forwardRef(() => ImportDataModule),
   ],
   providers: [
     {

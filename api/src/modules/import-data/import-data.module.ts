@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ImportDataController } from 'modules/import-data/import-data.controller';
 import { MaterialsModule } from 'modules/materials/materials.module';
 import { BusinessUnitsModule } from 'modules/business-units/business-units.module';
@@ -29,6 +29,9 @@ import { ImportDataEventHandler } from '../events/import-data-events/import-data
 import { HandleImportFailedHandler } from './cqrs/import-data-failed.handler';
 import { StartImportProcessingHandler } from './cqrs/import-data-processing.handler';
 import { HandleImportSuccessHandler } from './cqrs/import-data-success.handler';
+import { CacheModule } from '@nestjs/cache-manager';
+import { ImportDataProgressEmitter } from 'modules/import-data/cqrs/import-data-progress.emitter';
+import { AppEventsModule } from 'modules/events/app-events.module';
 
 // TODO: Move EUDR related stuff to EUDR modules
 
@@ -51,14 +54,16 @@ import { HandleImportSuccessHandler } from './cqrs/import-data-success.handler';
     MaterialsModule,
     BusinessUnitsModule,
     SuppliersModule,
-    SourcingLocationsModule,
-    GeoCodingModule,
+    forwardRef(() => SourcingLocationsModule),
+    forwardRef(() => GeoCodingModule),
     IndicatorRecordsModule,
     TasksModule,
     IndicatorsModule,
     ImpactModule,
     WebSocketsModule,
     NotificationsModule,
+    CacheModule.register(),
+    AppEventsModule,
   ],
   providers: [
     MulterConfigService,
@@ -76,6 +81,7 @@ import { HandleImportSuccessHandler } from './cqrs/import-data-success.handler';
     HandleImportSuccessHandler,
     StartImportProcessingHandler,
 
+    ImportDataProgressEmitter,
     {
       provide: 'FILE_UPLOAD_SIZE_LIMIT',
       useValue: config.get('fileUploads.sizeLimit'),
@@ -90,6 +96,6 @@ import { HandleImportSuccessHandler } from './cqrs/import-data-success.handler';
     },
   ],
   controllers: [ImportDataController],
-  exports: [ImportDataService, MulterConfigService],
+  exports: [ImportDataService, MulterConfigService, ImportDataProgressEmitter],
 })
 export class ImportDataModule {}

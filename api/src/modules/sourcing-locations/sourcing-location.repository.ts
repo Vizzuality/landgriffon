@@ -10,9 +10,8 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { BaseQueryBuilder } from 'utils/base.query-builder';
 import { SaveOptions } from 'typeorm/repository/SaveOptions';
 import { chunk } from 'lodash';
-import { SourcingDataImportProgressTracker } from 'modules/sourcing-locations/progress-tracker/sourcing-data.progress-tracker';
-import { ImportProgressTrackerFactory } from 'modules/events/import-data-progress/import-progress.tracker.factory';
 import { AppConfig } from 'utils/app.config';
+import { ImportDataProgressEmitter } from 'modules/import-data/cqrs/import-data-progress.emitter';
 
 const dbConfig: any = AppConfig.get('db');
 const batchChunkSize: number = parseInt(`${dbConfig.batchChunkSize}`, 10);
@@ -23,7 +22,7 @@ export class SourcingLocationRepository extends Repository<SourcingLocation> {
 
   constructor(
     protected dataSource: DataSource,
-    protected readonly trackerFactory: ImportProgressTrackerFactory,
+    protected readonly importDataProgressEmitter: ImportDataProgressEmitter,
   ) {
     super(SourcingLocation, dataSource.createEntityManager());
   }
@@ -60,11 +59,8 @@ export class SourcingLocationRepository extends Repository<SourcingLocation> {
     const result: SourcingLocation[][] = [];
     const totalEntities: number = entities.length;
     const totalChunks: number = Math.ceil(totalEntities / batchChunkSize);
-    const tracker: SourcingDataImportProgressTracker =
-      this.trackerFactory.createSourcingDataImportTracker({
-        totalRecords: entities.length,
-        totalChunks,
-      });
+    const progressPerChunk: number = (100 - 50) / totalChunks;
+    let progressSoFar: number = 0;
 
     try {
       for (const [index, dataChunk] of chunk(
@@ -79,7 +75,9 @@ export class SourcingLocationRepository extends Repository<SourcingLocation> {
         );
         const saved: SourcingLocation[] = await Promise.all(promises);
         result.push(saved);
-        tracker.trackProgress();
+
+        progressSoFar += progressPerChunk;
+        this.importDataProgressEmitter.emitImportProgress(progressSoFar);
       }
 
       // commit transaction if every chunk was saved successfully

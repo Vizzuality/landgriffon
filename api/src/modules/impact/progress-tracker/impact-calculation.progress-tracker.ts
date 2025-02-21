@@ -1,4 +1,4 @@
-import { ImportProgressEmitter } from 'modules/events/import-data-progress/import-progress.emitter';
+import { ImportDataProgressEmitter } from 'modules/import-data/cqrs/import-data-progress.emitter';
 
 export class ImpactCalculationProgressTracker {
   totalRecords: number;
@@ -7,7 +7,7 @@ export class ImpactCalculationProgressTracker {
   private interval: NodeJS.Timer | null = null;
 
   constructor(
-    private readonly importProgressEmitter: ImportProgressEmitter,
+    private readonly importDataProgressEmitter: ImportDataProgressEmitter,
     private readonly importTrackInfo: {
       totalRecords: number;
       totalChunks: number;
@@ -15,7 +15,6 @@ export class ImpactCalculationProgressTracker {
       estimatedTime?: number;
     },
   ) {
-    this.importProgressEmitter = importProgressEmitter;
     this.totalRecords = importTrackInfo.totalRecords;
     const startingPercentage: number = importTrackInfo.startingPercentage ?? 0;
     this.progress = startingPercentage;
@@ -26,9 +25,7 @@ export class ImpactCalculationProgressTracker {
   trackProgress(): void {
     this.progress += this.progressPerChunk;
 
-    this.importProgressEmitter.emitImpactCalculationProgress({
-      progress: this.getProgress(),
-    });
+    this.importDataProgressEmitter.emitImpactCalculationProgress(this.progress);
   }
 
   private getProgress(): number {
@@ -43,9 +40,9 @@ export class ImpactCalculationProgressTracker {
     this.interval = setInterval(() => {
       this.progress += progressIncrement;
       this.progress = Math.min(this.progress, maxProgress);
-      this.importProgressEmitter.emitImpactCalculationProgress({
-        progress: this.getProgress(),
-      });
+      this.importDataProgressEmitter.emitImpactCalculationProgress(
+        this.progress,
+      );
 
       if (this.progress >= maxProgress) {
         this.stopProgressInterval();

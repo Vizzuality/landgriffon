@@ -7,8 +7,9 @@ resource "kubernetes_job" "data_import" {
   }
 
   spec {
-    parallelism = 1
-    completions = 1
+    parallelism   = 1
+    completions   = 1
+    backoff_limit = 0
 
     ttl_seconds_after_finished = "86400"
 
@@ -27,7 +28,7 @@ resource "kubernetes_job" "data_import" {
                 match_expressions {
                   key      = "type"
                   operator = "In"
-                  values   = ["data-import-${var.namespace}"]
+                  values = ["data-import-${var.namespace}"]
                 }
               }
             }
@@ -38,7 +39,7 @@ resource "kubernetes_job" "data_import" {
           name = "regcred"
         }
 
-        restart_policy = "OnFailure"
+        restart_policy = "Never"
 
         container {
           image             = var.image

@@ -4,6 +4,7 @@ import {
   CalculationContext,
   IIndicatorCalculationStrategy,
 } from 'modules/indicator-records/strategies/indicator-calculation.strategy.interface';
+import { LandUseFootprintForProductionStrategy } from './land-use-footprint-for-production.strategy';
 
 /**
  * DF_SLUCStrategy implements the calculation for the DF_SLUC indicator.
@@ -20,12 +21,6 @@ export class DeforestationFootprintStrategy
 {
   // Unique indicator code for DF_SLUC
   indicatorCode: INDICATOR_NAME_CODES = INDICATOR_NAME_CODES.DF_SLUC;
-
-  // Additional dependencies required for DF_SLUC calculation
-  dependencies: string[] = ['DF_SLUC', 'production', 'harvest'];
-
-  // Query dependencies for DF_SLUC strategy
-  queryDependencies: string[] = ['DF_SLUC', 'production', 'harvest'];
 
   /**
    * Returns the query fragments needed to obtain the raw values for DF_SLUC.
@@ -59,10 +54,12 @@ export class DeforestationFootprintStrategy
     //.      value somehow
 
     // Compute LF value as (harvest / production) * tonnage, avoiding division by zero.
-    const lf =
-      production !== 0 && Number.isFinite(harvest / production)
-        ? (harvest / production) * tonnage
-        : 0;
+    // const lf =
+    //   production !== 0 && Number.isFinite(harvest / production)
+    //     ? (harvest / production) * tonnage
+    //     : 0;
+    const lf: number =
+      LandUseFootprintForProductionStrategy.calculateLF(context);
 
     // Compute pre-processed DF_SLUC value as raw DF_SLUC divided by production, if valid.
     const rawDF_SLUC = rawData[INDICATOR_NAME_CODES.DF_SLUC];

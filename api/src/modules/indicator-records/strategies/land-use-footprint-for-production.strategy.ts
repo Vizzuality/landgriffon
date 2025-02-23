@@ -19,12 +19,6 @@ export class LandUseFootprintForProductionStrategy
   // Unique indicator code for LF
   indicatorCode: INDICATOR_NAME_CODES = INDICATOR_NAME_CODES.LF;
 
-  // Additional dependencies required for LF calculation
-  dependencies: string[] = ['harvest', 'production'];
-
-  //
-  queryDependencies: string[] = ['harvest', 'production'];
-
   /**
    * Returns the query fragments needed to obtain the raw values for LF.
    */
@@ -46,7 +40,7 @@ export class LandUseFootprintForProductionStrategy
    * @param context - Calculation context containing rawData and tonnage.
    * @returns The calculated LF value.
    */
-  calculate(context: CalculationContext): number {
+  static calculateLF(context: CalculationContext): number {
     const { rawData, tonnage } = context;
     const production = rawData.production;
     const harvest = rawData.harvest;
@@ -57,5 +51,9 @@ export class LandUseFootprintForProductionStrategy
         : 0;
 
     return landPerTon * tonnage;
+  }
+
+  calculate(context: CalculationContext): number {
+    return LandUseFootprintForProductionStrategy.calculateLF(context);
   }
 }

@@ -87,5 +87,8 @@
     "baseUrl": "null",
     "credentials": null,
     "dataset": null
+  },
+  "flags": {
+    "useDistributedImpact": false
   }
 }

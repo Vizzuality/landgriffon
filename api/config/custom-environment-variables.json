@@ -78,5 +78,8 @@
     "baseUrl": "CARTO_BASE_URL",
     "credentials": "EUDR_CREDENTIALS",
     "dataset": "EUDR_DATASET"
+  },
+  "flags": {
+    "useDistributedImpact": "FLAGS_USE_DISTRIBUTED_IMPACT"
   }
 }

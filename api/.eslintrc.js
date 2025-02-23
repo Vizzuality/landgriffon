@@ -32,10 +32,10 @@ module.exports = {
       'error',
       {
         arrayDestructuring: false,
-        arrowParameter: true,
+        arrowParameter: false,
         memberVariableDeclaration: true,
         objectDestructuring: false,
-        parameter: true,
+        parameter: false,
         propertyDeclaration: true,
         variableDeclaration: false,
         variableDeclarationIgnoreFunction: true,

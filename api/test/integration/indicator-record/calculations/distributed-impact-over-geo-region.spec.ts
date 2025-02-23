@@ -12,6 +12,7 @@ import { IndicatorsService } from '../../../../src/modules/indicators/indicators
 import { ImpactQueryBuilder } from '../../../../src/modules/indicator-records/services/indicator-dependency-manager.service';
 import { CachedDataService } from '../../../../src/modules/cached-data/cached-data.service';
 import { ImportProgressTrackerFactory } from '../../../../src/modules/events/import-data-progress/import-progress.tracker.factory';
+import { TasksService } from '../../../../src/modules/tasks/tasks.service';
 
 const dummyProvider = { useValue: {} };
 
@@ -34,6 +35,17 @@ describe('ImpactCalculator.updateDistributedImpactOverGeoRegion', () => {
       providers: [
         ImpactCalculator,
         { provide: DataSource, useValue: dataSourceMock },
+        {
+          provide: TasksService,
+          useValue: {
+            taskRepository: {
+              findOneOrFail: () => ({
+                id: 1,
+              }),
+            },
+            updateImportTask: jest.fn(),
+          },
+        },
         { provide: IndicatorRecordRepository, ...dummyProvider },
         { provide: MaterialsToH3sService, ...dummyProvider },
         { provide: IndicatorsService, ...dummyProvider },

@@ -33,6 +33,7 @@ import { ImpactCalculationProgressTracker } from 'modules/impact/progress-tracke
 import { ImportProgressTrackerFactory } from 'modules/events/import-data-progress/import-progress.tracker.factory';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { AppConfig } from 'utils/app.config';
+import { TasksService } from '../../tasks/tasks.service';
 
 /**
  * @description: This is PoC (Proof of Concept) for the updated LG methodology v0.1
@@ -56,6 +57,7 @@ export class ImpactCalculator {
     private readonly cachedDataService: CachedDataService,
     private readonly dataSource: DataSource,
     private readonly importProgressTrackerFactory: ImportProgressTrackerFactory,
+    private readonly taskService: TasksService,
   ) {}
 
   async calculateImpactForAllSourcingRecords(
@@ -519,6 +521,13 @@ export class ImpactCalculator {
       SourcingRecordsWithIndicatorRawData[]
     > = new Map<string, SourcingRecordsWithIndicatorRawData[]>();
     const repository = this.dataSource.getRepository(SourcingLocation);
+    // For testing purposes, track locations with no production in task, will remove this later
+    const locationIdsWithNoProduction: string[] = [];
+    const { id } = await this.taskService.taskRepository.findOneOrFail({
+      order: {
+        updatedAt: 'DESC',
+      },
+    });
 
     // Group records by location where production is 0 or null
     // TODO: We must apply this when harvesting is 0 as well, but given the use of this approach is not straightforward, and how to apply the new values
@@ -527,9 +536,16 @@ export class ImpactCalculator {
       if (!record.production || record.production === 0) {
         if (!recordsPorLocation.has(record.sourcingLocationId)) {
           recordsPorLocation.set(record.sourcingLocationId, []);
+          locationIdsWithNoProduction.push(record.sourcingLocationId);
         }
         recordsPorLocation.get(record.sourcingLocationId)!.push(record);
       }
+    }
+    if (locationIdsWithNoProduction.length) {
+      await this.taskService.updateImportTask({
+        taskId: id,
+        newData: { locationsWithNoProduction: locationIdsWithNoProduction },
+      });
     }
     const dataArray = Array.from(recordsPorLocation.entries());
     const promises: Promise<any>[] = dataArray.map(async (elem) => {

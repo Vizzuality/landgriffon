@@ -11,7 +11,7 @@ export class AddUnweightedImpactOverGeoRegionProcedure1740209793910
     await queryRunner.query(`
       CREATE OR REPLACE FUNCTION get_annual_unweighted_impact_over_georegion(
     geo_region_id uuid,
-    shortName text
+    indicator_name_code text
      )
     RETURNS float AS
     $$
@@ -23,7 +23,7 @@ export class AddUnweightedImpactOverGeoRegionProcedure1740209793910
     BEGIN
 
       SELECT * INTO indicator_h3_table_name, indicator_h3_column_name, h3_resolution
-      FROM get_h3_table_column_for_indicators_by_name_code(shortName);
+      FROM get_h3_table_column_for_indicators_by_name_code(indicator_name_code);
 
 
       EXECUTE format(

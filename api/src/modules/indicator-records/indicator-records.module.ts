@@ -11,6 +11,7 @@ import { CachedDataModule } from 'modules/cached-data/cached-data.module';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
 import { ImpactQueryBuilder } from 'modules/indicator-records/services/indicator-dependency-manager.service';
 import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
+import { TasksModule } from '../tasks/tasks.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-r
     MaterialsModule,
     SourcingRecordsModule,
     CachedDataModule,
+    TasksModule,
   ],
   controllers: [IndicatorRecordsController],
   providers: [

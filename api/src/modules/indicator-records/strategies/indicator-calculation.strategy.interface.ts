@@ -1,6 +1,7 @@
 import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
 import { ImpactQueryExpression } from 'modules/indicator-records/services/impact-calculation.dependencies';
 import { SourcingRecordsWithIndicatorRawData } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
+import { LandUseFootprintForProductionStrategy } from './land-use-footprint-for-production.strategy';
 
 /**
  * Calculation context that will be passed to each strategy.
@@ -25,8 +26,6 @@ export interface IIndicatorCalculationStrategy {
    * Unique indicator code that identifies the strategy.
    */
   indicatorCode: INDICATOR_NAME_CODES;
-
-  queryDependencies: string[]; // TODO: type this, we might need another property for arithmetic dependencies
 
   /**
    * Returns one or more query fragments (as strings) required to obtain the raw value

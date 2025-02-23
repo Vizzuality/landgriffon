@@ -396,7 +396,7 @@ export class ImpactCalculator {
         return rawData.production > 0
           ? (rawData[INDICATOR_NAME_CODES.WGUWU] * waterWithdrawalValue) /
               (100 * rawData.production) || 0
-          : rawData.distributedImpact![INDICATOR_NAME_CODES.WGUWU] *
+          : (rawData.distributedImpact?.[INDICATOR_NAME_CODES.WGUWU] ?? 0) *
               (waterWithdrawalValue / 100) || 0;
       },
     };

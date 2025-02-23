@@ -31,6 +31,8 @@ import {
 import { ImportProgressEmitter } from 'modules/events/import-data-progress/import-progress.emitter';
 import { ImpactCalculationProgressTracker } from 'modules/impact/progress-tracker/impact-calculation.progress-tracker';
 import { ImportProgressTrackerFactory } from 'modules/events/import-data-progress/import-progress.tracker.factory';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { AppConfig } from 'utils/app.config';
 
 /**
  * @description: This is PoC (Proof of Concept) for the updated LG methodology v0.1
@@ -53,7 +55,6 @@ export class ImpactCalculator {
     private readonly dependencyManager: ImpactQueryBuilder,
     private readonly cachedDataService: CachedDataService,
     private readonly dataSource: DataSource,
-    private readonly importProgress: ImportProgressEmitter,
     private readonly importProgressTrackerFactory: ImportProgressTrackerFactory,
   ) {}
 
@@ -70,14 +71,6 @@ export class ImpactCalculator {
         startingPercentage: 0,
       });
 
-    // const interval: NodeJS.Timer = setInterval(() => {
-    //   progress += progressIncrement;
-    //   progress = Math.min(progress, 50);
-    //   this.importProgress.emitImpactCalculationProgress({ progress });
-    //   if (progress >= 50) {
-    //     clearInterval(interval);
-    //   }
-    // }, 1000);
     tracker.startProgressInterval(progressIncrement, 50);
     let rawData: SourcingRecordsWithIndicatorRawData[];
     try {
@@ -92,9 +85,20 @@ export class ImpactCalculator {
 
     const newImpactToBeSaved: IndicatorRecord[] = [];
 
-    rawData.forEach((data: SourcingRecordsWithIndicatorRawData) => {
+    const useDistributedImpact: boolean = AppConfig.getBoolean(
+      'flags.useDistributedImpact',
+      false,
+    );
+    if (useDistributedImpact) {
+      this.logger.warn('Calculating distributed impact over geo region');
+      rawData = await this.updateDistributedImpactOverGeoRegion(
+        rawData,
+        activeIndicators,
+      );
+    }
+    for (const data of rawData) {
       const indicatorValues: Map<INDICATOR_NAME_CODES, number> =
-        this.calculateIndicatorValues(data, data.tonnage);
+        await this.calculateIndicatorValues(data, data.tonnage);
 
       activeIndicators.forEach((indicator: Indicator) => {
         newImpactToBeSaved.push(
@@ -108,7 +112,7 @@ export class ImpactCalculator {
           }),
         );
       });
-    });
+    }
 
     await this.indicatorRecordRepository.saveChunks(newImpactToBeSaved);
   }
@@ -181,10 +185,8 @@ export class ImpactCalculator {
       calculatedIndicatorRecordValues =
         new IndicatorRecordCalculatedValuesDto();
 
-      calculatedIndicatorRecordValues.values = this.calculateIndicatorValues(
-        rawData,
-        sourcingData.tonnage,
-      );
+      calculatedIndicatorRecordValues.values =
+        await this.calculateIndicatorValues(rawData, sourcingData.tonnage);
     }
 
     indicatorsToCalculateImpactFor.forEach((indicator: Indicator) => {
@@ -313,10 +315,10 @@ export class ImpactCalculator {
     return !sourcingRecord || !sourcingRecord.indicatorRecords;
   }
 
-  private calculateIndicatorValues(
+  private async calculateIndicatorValues(
     rawData: SourcingRecordsWithIndicatorRawData,
     tonnage: number,
-  ): Map<INDICATOR_NAME_CODES, number> {
+  ): Promise<Map<INDICATOR_NAME_CODES, number>> {
     const map: Map<INDICATOR_NAME_CODES, number> = new Map();
     const landPerTon: number = Number.isFinite(
       rawData.harvest / rawData.production,
@@ -391,10 +393,11 @@ export class ImpactCalculator {
       [INDICATOR_NAME_CODES.WGUWU]: () => {
         const waterWithdrawalValue: number =
           rawData[INDICATOR_NAME_CODES.WW] * tonnage || 0;
-        return (
-          (rawData[INDICATOR_NAME_CODES.WGUWU] * waterWithdrawalValue) /
-            (100 * rawData.production) || 0
-        );
+        return rawData.production > 0
+          ? (rawData[INDICATOR_NAME_CODES.WGUWU] * waterWithdrawalValue) /
+              (100 * rawData.production) || 0
+          : rawData.distributedImpact![INDICATOR_NAME_CODES.WGUWU] *
+              (waterWithdrawalValue / 100) || 0;
       },
     };
 
@@ -480,5 +483,78 @@ export class ImpactCalculator {
         `Could net retrieve Indicator Raw data from Sourcing Locations: ${err}`,
       );
     }
+  }
+
+  async getDistributedImpactOverGeoRegion(
+    geoRegionId: string,
+    nameCode: INDICATOR_NAME_CODES,
+  ): Promise<number> {
+    const res: { distributed_impact: number }[] = await this.dataSource.query(
+      `select get_annual_unweighted_impact_over_georegion($1, $2) as distributed_impact`,
+      [geoRegionId, nameCode],
+    );
+
+    if (!res.length) {
+      throw new ServiceUnavailableException(
+        `Could not calculate production for the given location`,
+      );
+    }
+    return res[0].distributed_impact;
+  }
+
+  /**
+   * @description: This is a quick and dirty approach given the time constraints. I am making a huge assumption that usually we won't be missing production data
+   *               so that we compute the distributed impact only for those locations with missing production data.
+   *               Depending on how often this might happen, it would be better to compute it at DB level for all raw impact, but that would
+   *               add a lot of time complexity to the process.
+   */
+  async updateDistributedImpactOverGeoRegion(
+    data: SourcingRecordsWithIndicatorRawData[],
+    activeIndicators: Indicator[],
+  ): Promise<SourcingRecordsWithIndicatorRawData[]> {
+    // Map to group records by location. This is important as production/harvest is computed at location level, not record
+    // otherwise we would have to compute it for each record to get the same value redundantly
+    const recordsPorLocation: Map<
+      string,
+      SourcingRecordsWithIndicatorRawData[]
+    > = new Map<string, SourcingRecordsWithIndicatorRawData[]>();
+    const repository = this.dataSource.getRepository(SourcingLocation);
+
+    // Group records by location where production is 0 or null
+    // TODO: We must apply this when harvesting is 0 as well, but given the use of this approach is not straightforward, and how to apply the new values
+    //       might change based on the indicator, double check this.
+    for (const record of data) {
+      if (!record.production || record.production === 0) {
+        if (!recordsPorLocation.has(record.sourcingLocationId)) {
+          recordsPorLocation.set(record.sourcingLocationId, []);
+        }
+        recordsPorLocation.get(record.sourcingLocationId)!.push(record);
+      }
+    }
+    const dataArray = Array.from(recordsPorLocation.entries());
+    const promises: Promise<any>[] = dataArray.map(async (elem) => {
+      // For each location that has no production value, get its geo region
+      const [sourcingLocationId, records] = elem;
+      const { geoRegionId } = await repository.findOneOrFail({
+        where: { id: sourcingLocationId },
+      });
+      const distributedImpact: Record<INDICATOR_NAME_CODES, number> = {} as any;
+      // For each location that has no production value, compute the distributed impact for each active indicator
+      // at the time being, I don't know if all indicator will need a distributed impact in case of missing production, clarify this
+      for (const indicator of activeIndicators) {
+        distributedImpact[indicator.nameCode] =
+          await this.getDistributedImpactOverGeoRegion(
+            geoRegionId,
+            indicator.nameCode,
+          );
+      }
+      // Update the records with the distributed impact
+      records.forEach((record) => {
+        record.distributedImpact = distributedImpact;
+      });
+    });
+
+    await Promise.all(promises);
+    return data;
   }
 }

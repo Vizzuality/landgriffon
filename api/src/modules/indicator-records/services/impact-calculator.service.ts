@@ -81,9 +81,8 @@ export class ImpactCalculator {
     tracker.startProgressInterval(progressIncrement, 50);
     let rawData: SourcingRecordsWithIndicatorRawData[];
     try {
-      rawData = await this.getImpactRawDataForAllSourcingRecords(
-        activeIndicators,
-      );
+      rawData =
+        await this.getImpactRawDataForAllSourcingRecords(activeIndicators);
       tracker.stopProgressInterval();
     } catch (error: any) {
       tracker.stopProgressInterval();
@@ -392,7 +391,7 @@ export class ImpactCalculator {
         const waterWithdrawalValue: number =
           rawData[INDICATOR_NAME_CODES.WW] * tonnage || 0;
         return (
-          (rawData[INDICATOR_NAME_CODES.WGUWU] * waterWithdrawalValue) /
+          (rawData[INDICATOR_NAME_CODES.UWU] * waterWithdrawalValue) /
             (100 * rawData.production) || 0
         );
       },

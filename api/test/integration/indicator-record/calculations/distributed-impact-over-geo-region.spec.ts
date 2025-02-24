@@ -113,7 +113,7 @@ describe('ImpactCalculator.updateDistributedImpactOverGeoRegion', () => {
 
     // Define the indicators to use
     const activeIndicators = [
-      { nameCode: INDICATOR_NAME_CODES.WGUWU },
+      { nameCode: INDICATOR_NAME_CODES.ENL },
       { nameCode: INDICATOR_NAME_CODES.WU },
     ] as Indicator[];
 
@@ -141,8 +141,7 @@ describe('ImpactCalculator.updateDistributedImpactOverGeoRegion', () => {
     recordsWithDistributedImpact.forEach(
       (record: SourcingRecordsWithIndicatorRawData) => {
         expect(record.distributedImpact).toEqual({
-          [INDICATOR_NAME_CODES.WGUWU]: 42,
-          [INDICATOR_NAME_CODES.WU]: 42,
+          [INDICATOR_NAME_CODES.ENL]: 42,
         });
       },
     );

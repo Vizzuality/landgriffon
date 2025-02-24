@@ -35,6 +35,8 @@ import { InjectEntityManager } from '@nestjs/typeorm';
  * It is not included in the module
  */
 
+// TODO: Given that we will be adding a Impact Calculation (TBD) repository, this might be renamed to ImpactTableRepository or summin.
+
 @Injectable()
 export class ImpactRepository {
   constructor(

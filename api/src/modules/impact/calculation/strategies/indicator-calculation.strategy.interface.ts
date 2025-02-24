@@ -1,6 +1,7 @@
 import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
 import { ImpactQueryExpression } from 'modules/indicator-records/services/impact-calculation.dependencies';
 import { SourcingRecordsWithIndicatorRawData } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
+import { ImpactQueryFragment } from '../impact-calculation.query.builder';
 
 /**
  * Calculation context that will be passed to each strategy.

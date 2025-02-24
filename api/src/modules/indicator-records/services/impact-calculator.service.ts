@@ -398,7 +398,7 @@ export class ImpactCalculator {
         return rawData.production > 0
           ? (rawData[INDICATOR_NAME_CODES.WGUWU] * waterWithdrawalValue) /
               (100 * rawData.production) || 0
-          : (rawData.distributedImpact?.[INDICATOR_NAME_CODES.WGUWU] ?? 0) *
+          : (rawData.distributedImpact?.[INDICATOR_NAME_CODES.UWU] ?? 0) *
               (waterWithdrawalValue / 100) || 0;
       },
     };
@@ -524,6 +524,15 @@ export class ImpactCalculator {
     // For testing purposes, track locations with no production in task, will remove this later
     const locationIdsWithNoProduction: string[] = [];
 
+    const INDICATORS_TO_CALCULATE_DISTRIBUTED_IMPACT: INDICATOR_NAME_CODES[] = [
+      INDICATOR_NAME_CODES.UWU,
+      INDICATOR_NAME_CODES.ENL,
+    ];
+
+    const filteredIndicators = activeIndicators.filter((indicator: Indicator) =>
+      INDICATORS_TO_CALCULATE_DISTRIBUTED_IMPACT.includes(indicator.nameCode),
+    );
+
     // Group records by location where production is 0 or null
     // TODO: We must apply this when harvesting is 0 as well, but given the use of this approach is not straightforward, and how to apply the new values
     //       might change based on the indicator, double check this.
@@ -553,7 +562,7 @@ export class ImpactCalculator {
       const distributedImpact: Record<INDICATOR_NAME_CODES, number> = {} as any;
       // For each location that has no production value, compute the distributed impact for each active indicator
       // at the time being, I don't know if all indicator will need a distributed impact in case of missing production, clarify this
-      for (const indicator of activeIndicators) {
+      for (const indicator of filteredIndicators) {
         distributedImpact[indicator.nameCode] =
           await this.getDistributedImpactOverGeoRegion(
             geoRegionId,

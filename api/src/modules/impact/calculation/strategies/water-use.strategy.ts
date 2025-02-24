@@ -3,7 +3,7 @@ import { ImpactQueryExpression } from 'modules/indicator-records/services/impact
 import {
   CalculationContext,
   IIndicatorCalculationStrategy,
-} from 'modules/indicator-records/strategies/indicator-calculation.strategy.interface';
+} from 'modules/impact/calculation/strategies/indicator-calculation.strategy.interface';
 
 /**
  * WUIndicatorStrategy implements the calculation for the WU indicator.

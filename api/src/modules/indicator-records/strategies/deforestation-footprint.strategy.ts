@@ -4,7 +4,7 @@ import {
   CalculationContext,
   IIndicatorCalculationStrategy,
 } from 'modules/indicator-records/strategies/indicator-calculation.strategy.interface';
-import { LandUseFootprintForProductionStrategy } from './land-use-footprint-for-production.strategy';
+import { LandUseFootprintForProductionStrategy } from 'modules/indicator-records/strategies/land-use-footprint-for-production.strategy';
 
 /**
  * DF_SLUCStrategy implements the calculation for the DF_SLUC indicator.
@@ -62,7 +62,7 @@ export class DeforestationFootprintStrategy
       LandUseFootprintForProductionStrategy.calculateLF(context);
 
     // Compute pre-processed DF_SLUC value as raw DF_SLUC divided by production, if valid.
-    const rawDF_SLUC = rawData[INDICATOR_NAME_CODES.DF_SLUC];
+    const rawDF_SLUC = rawData[this.indicatorCode];
     const preProcessed =
       production !== 0 && Number.isFinite(rawDF_SLUC / production)
         ? rawDF_SLUC / production

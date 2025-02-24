@@ -47,7 +47,7 @@ export class GhgFarmManagementStrategy
     const { rawData, tonnage, production } = context;
 
     // Retrieve the raw GHG_FARM value from raw data.
-    const rawGHGFarm = rawData[INDICATOR_NAME_CODES.GHG_FARM];
+    const rawGHGFarm = rawData[this.indicatorCode];
 
     // Compute the normalized value (preProcessed) by dividing the raw value by production,
     // guarding against division by zero.

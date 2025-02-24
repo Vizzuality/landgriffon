@@ -52,7 +52,7 @@ export class ForestLandscapeIntegrityLossStrategy
     const lf = LandUseFootprintForProductionStrategy.calculateLF(context);
 
     // Get the raw FLIL value from the raw data.
-    const rawFLIL = rawData[INDICATOR_NAME_CODES.FLIL];
+    const rawFLIL = rawData[this.indicatorCode];
 
     // Compute the normalized impact as rawFLIL / production, guarding against division by zero.
     const normalizedImpact =

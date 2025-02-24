@@ -27,6 +27,12 @@ export interface IIndicatorCalculationStrategy {
   indicatorCode: INDICATOR_NAME_CODES;
 
   /**
+   * Dependencies between indicators. Some indicators might depend on the value of other indicators.
+   */
+
+  dependencies?: Record<string, INDICATOR_NAME_CODES>;
+
+  /**
    * Returns one or more query fragments (as strings) required to obtain the raw value
    * of the indicator from the database.
    */

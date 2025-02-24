@@ -49,7 +49,7 @@ export class GHGDeforestationStrategy implements IIndicatorCalculationStrategy {
     const lf = LandUseFootprintForProductionStrategy.calculateLF(context);
 
     // Get the raw GHG_DEF value from the raw data.
-    const rawGHG_DEF = rawData[INDICATOR_NAME_CODES.GHG_DEF_SLUC];
+    const rawGHG_DEF = rawData[this.indicatorCode];
 
     // Compute the pre-processed value as rawGHG_DEF / production, avoiding division by zero.
     const preProcessed =

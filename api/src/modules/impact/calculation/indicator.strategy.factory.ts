@@ -17,12 +17,14 @@ import { ExcessNutrientLoadStrategy } from 'modules/impact/calculation/strategie
 import { WaterWithdrawalsStrategy } from 'modules/impact/calculation/strategies/water-withdrawals.strategy';
 import { WaterConsumptionStrategy } from 'modules/impact/calculation/strategies/water-consumption.strategy';
 import { WaterGapToUnsustainableWaterUseStrategy } from 'modules/impact/calculation/strategies/water-gap-to-unsustainable-water-use.strategy';
+import { Injectable } from '@nestjs/common';
 
 /**
  * ImpactCalculationRegistry dynamically instantiates and returns strategy instances
  * based on the active indicators provided.
  */
-export class ImpactCalculationRegistry {
+@Injectable()
+export class IndicatorStrategyFactory {
   private strategyMap: Record<
     INDICATOR_NAME_CODES,
     new () => IIndicatorCalculationStrategy

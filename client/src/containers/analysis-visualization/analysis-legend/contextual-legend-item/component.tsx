@@ -8,8 +8,6 @@ import LegendTypeBasic from 'components/legend/types/basic';
 import LegendTypeCategorical from 'components/legend/types/categorical';
 import LegendTypeChoropleth from 'components/legend/types/choropleth';
 import LegendTypeGradient from 'components/legend/types/gradient';
-import { useContextualLayer } from 'hooks/layers/contextual';
-import useContextualLayers from 'hooks/layers/getContextualLayers';
 
 import type { Layer } from 'types';
 
@@ -19,9 +17,6 @@ interface ContextualLegendItemProps {
 
 const ContextualLegendItem = ({ layer }: ContextualLegendItemProps) => {
   const dispatch = useAppDispatch();
-
-  const { isFetching: areLayersLoading } = useContextualLayers();
-  const { isLoading: isLoadingData } = useContextualLayer(layer.id);
 
   const handleOpacity = useCallback(
     (opacity: number) => {
@@ -73,7 +68,6 @@ const ContextualLegendItem = ({ layer }: ContextualLegendItemProps) => {
       isActive={layer.active}
       onToggle={onToggleLayer}
       id={layer.id}
-      isLoading={areLayersLoading || isLoadingData}
       name={layer.metadata!.legend.name}
       info={{
         description: layer.metadata?.description,

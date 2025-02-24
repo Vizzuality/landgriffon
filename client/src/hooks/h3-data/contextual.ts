@@ -1,16 +1,16 @@
-import { useQuery, useQueries } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import chroma from 'chroma-js';
 
-import { DEFAULT_QUERY_OPTIONS, colorScaleByLegendType } from './utils';
+import { colorScaleByLegendType } from './utils';
 
 import { apiRawService } from 'services/api';
-import { analysisFilters, analysisMap } from 'store/features/analysis';
+import { analysisFilters } from 'store/features/analysis';
+import queryKeyStore, { type QueryKeys } from '@/lib/react-query/querykey-store';
 import { useAppSelector } from 'store/hooks';
+import { ErrorResponse, H3APIResponse, H3Item, Layer } from 'types';
 
-import type { ScenarioComparisonMode } from 'store/features/analysis/scenarios';
-import type { ContextualH3APIParams, ErrorResponse, H3APIResponse, H3Item, Layer } from 'types';
 import type { AxiosResponse } from 'axios';
-import type { UseQueryOptions, UseQueryResult, QueryFunction } from '@tanstack/react-query';
+import type { UseQueryOptions } from '@tanstack/react-query';
 
 const responseContextualParser = (response: AxiosResponse<H3APIResponse>): H3APIResponse => {
   const { data, metadata } = response.data;
@@ -37,7 +37,7 @@ const useH3ContextualData = <T = H3APIResponse>(
     H3APIResponse,
     ErrorResponse,
     T,
-    ['h3-data-contextual', typeof id, ContextualH3APIParams]
+    QueryKeys['h3data']['layer']['queryKey']
   >,
 ) => {
   const filters = useAppSelector(analysisFilters);
@@ -48,8 +48,8 @@ const useH3ContextualData = <T = H3APIResponse>(
     resolution: 4,
   };
 
-  const query = useQuery(
-    ['h3-data-contextual', id, params],
+  return useQuery(
+    queryKeyStore.h3data.layer(id, params).queryKey,
     () =>
       apiRawService
         .get<H3APIResponse>(`/contextual-layers/${id}/h3data`, {
@@ -58,84 +58,11 @@ const useH3ContextualData = <T = H3APIResponse>(
         // Adding color to the response
         .then((response) => responseContextualParser(response)),
     {
-      ...DEFAULT_QUERY_OPTIONS,
-      placeholderData: {
-        data: [],
-        metadata: {
-          name: null,
-          legend: {
-            unit: null,
-            items: [],
-          },
-        },
-      },
       ...options,
-      enabled: (options.enabled ?? true) && !!id && !!params.year,
+      staleTime: 60 * 1000 * 15,
+      enabled: (options.enabled ?? true) && !!id && !!startYear,
     },
   );
-
-  return query;
-};
-
-export const useAllContextualLayersData = <T = { layerId: Layer['id'] } & H3APIResponse>(
-  options?: Omit<
-    UseQueryOptions<
-      { layerId: Layer['id'] } & H3APIResponse,
-      ErrorResponse,
-      T,
-      [
-        'h3-data-contextual-all',
-        Layer['id'],
-        ContextualH3APIParams,
-        ScenarioComparisonMode | undefined,
-      ]
-    >,
-    'context' | 'queryKey' | 'queryFn'
-  >,
-) => {
-  const { layers } = useAppSelector(analysisMap);
-  const { startYear } = useAppSelector(analysisFilters);
-
-  const urlParams: Omit<ContextualH3APIParams, 'relative'> = {
-    year: startYear,
-    resolution: 4,
-  };
-
-  const queryList = Object.values(layers)
-    .filter((layer) => layer.isContextual)
-    .map((layer) => ({
-      queryKey: ['h3-data-contextual-all', layer.id, urlParams] as const,
-      queryFn: (({ queryKey: [, id, params] }) => {
-        return (
-          apiRawService
-            .get<H3APIResponse>(`/contextual-layers/${id}/h3data`, {
-              params,
-            })
-            // Adding color to the response
-            .then((response) => {
-              return responseContextualParser(response);
-            })
-            .then((response) => {
-              return { layerId: id, ...response };
-            })
-        );
-      }) as QueryFunction<
-        H3APIResponse & { layerId: Layer['id'] },
-        ['h3-data-contextual', Layer['id'], ContextualH3APIParams]
-      >,
-      keepPreviousData: true,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      staleTime: 10 * 60 * 1000, // 10 minutes
-      ...options,
-      enabled: (options?.enabled ?? true) && layer.active && !!layer.id && !!urlParams.year,
-    }));
-
-  const queries = useQueries({
-    queries: queryList,
-  }) as unknown[] as UseQueryResult<T, ErrorResponse>[];
-  return queries;
 };
 
 export default useH3ContextualData;

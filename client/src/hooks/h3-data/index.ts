@@ -7,6 +7,7 @@ import { storeToQueryParams } from './utils';
 
 import { useAppSelector } from 'store/hooks';
 import { analysisFilters, scenarios } from 'store/features/analysis';
+import { QueryKeys } from '@/lib/react-query/querykey-store';
 
 import type { UseQueryOptions } from '@tanstack/react-query';
 import type {
@@ -14,19 +15,13 @@ import type {
   MaterialH3APIParams,
   ImpactH3APIParams,
   Layer,
-  ContextualH3APIParams,
   ErrorResponse,
 } from 'types';
 
 interface UseH3DataProps<T> {
   id: Layer['id'];
   params?: Partial<MaterialH3APIParams & ImpactH3APIParams>;
-  options?: UseQueryOptions<
-    H3APIResponse,
-    ErrorResponse,
-    T
-    // ['h3-data-contextual', string, ContextualH3APIParams]
-  >;
+  options?: UseQueryOptions<H3APIResponse, ErrorResponse, T>;
 }
 
 export const useH3Data = <T = H3APIResponse>({
@@ -72,9 +67,10 @@ export const useH3Data = <T = H3APIResponse>({
         H3APIResponse,
         ErrorResponse,
         T,
-        ['h3-data-contextual', string, ContextualH3APIParams]
+        QueryKeys['h3data']['layer']['queryKey']
       >),
       enabled: enabled && isContextual,
+      keepPreviousData: false,
     }),
     [enabled, isContextual, options],
   );

@@ -3,7 +3,7 @@ import { H3HexagonLayer } from '@deck.gl/geo-layers/typed';
 
 import { useAppSelector } from 'store/hooks';
 import { analysisMap } from 'store/features/analysis';
-import { useAllContextualLayersData } from 'hooks/h3-data/contextual';
+import useH3ContextualData from 'hooks/h3-data/contextual';
 import DeckLayer from 'components/map/layers/deck';
 
 import type { MapboxLayerProps, LayerProps, LayerSettings } from 'components/map/layers/types';
@@ -24,18 +24,11 @@ export const ContextualDeckLayer = ({
   const { layerDeckGLProps, layers: layersMetadata } = useAppSelector(analysisMap);
   const _id = id.split('-layer')[0];
 
-  const contextualData = useAllContextualLayersData();
-  const data = useMemo(() => {
-    const contextualDataById = Object.fromEntries(
-      contextualData
-        .filter((d) => {
-          return d.isSuccess;
-        })
-        .map(({ data: { layerId, ...rest } }) => [layerId, rest]),
-    );
+  const { data } = useH3ContextualData(_id, {
+    select: (d) => d.data,
+    keepPreviousData: true,
+  });
 
-    return contextualDataById[_id]?.data || [];
-  }, [contextualData, _id]);
   const settings = useMemo(() => layerDeckGLProps[_id] || {}, [layerDeckGLProps, _id]);
 
   const metadata = useMemo(

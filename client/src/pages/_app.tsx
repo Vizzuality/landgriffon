@@ -1,11 +1,12 @@
 import Head from 'next/head';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
-import { QueryClient, QueryClientProvider, Hydrate } from '@tanstack/react-query';
+import { QueryClientProvider, Hydrate } from '@tanstack/react-query';
 import { SessionProvider } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useDebounce } from 'rooks';
 
+import getQueryClient from '@/lib/react-query';
 import initStore from 'store';
 import TitleTemplate from 'utils/titleTemplate';
 
@@ -67,16 +68,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     };
   }, [debouncedRouteChange, router.events]);
 
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            refetchOnWindowFocus: false,
-          },
-        },
-      }),
-  );
+  const [queryClient] = useState(getQueryClient());
   const getLayout = Component.Layout ?? ((page) => page);
 
   return (

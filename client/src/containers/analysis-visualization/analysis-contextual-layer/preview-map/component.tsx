@@ -1,6 +1,6 @@
 import { useEffect, useCallback, useMemo } from 'react';
 import { H3HexagonLayer } from '@deck.gl/geo-layers/typed';
-import { useQueryClient, UseQueryResult } from '@tanstack/react-query';
+import { UseQueryResult } from '@tanstack/react-query';
 
 import Map from '@/components/map';
 import DeckLayer from '@/components/map/layers/deck';
@@ -10,7 +10,7 @@ import MapboxRasterLayer from '@/components/map/layers/maplibre/raster';
 import { useH3Data } from 'hooks/h3-data';
 import PageLoading from 'containers/page-loading';
 import { useYears } from 'hooks/years';
-import { CategoryWithLayers } from '@/hooks/layers/getContextualLayers';
+import useContextualLayers from '@/hooks/layers/getContextualLayers';
 
 import type { H3HexagonLayerProps } from '@deck.gl/geo-layers/typed';
 import type { Dispatch } from 'react';
@@ -39,13 +39,14 @@ const PreviewMap = ({ selectedLayerId, selectedMaterialId, onStatusChange }: Pre
     },
   });
 
-  const queryClient = useQueryClient();
-  const contextualLayers = queryClient.getQueryData<CategoryWithLayers[]>(['contextual-layers']);
+  const { data: contextualLayers } = useContextualLayers();
+
+  // @debt given how useContextualLayers is implemented, we cannot parse the data during the query fetching
   const selectedLayer = contextualLayers
     ?.flatMap((category) => category.layers)
     .find((layer) => layer.id === selectedLayerId);
 
-  const isCogLayer = !!selectedLayer?.tilerUrl;
+  const isRasterLayer = !!selectedLayer?.tilerUrl;
 
   const { data, isFetching, status } = useH3Data({
     id: selectedLayerId,
@@ -55,7 +56,7 @@ const PreviewMap = ({ selectedLayerId, selectedMaterialId, onStatusChange }: Pre
     },
     options: {
       enabled:
-        !!selectedLayerId && (selectedLayerId !== 'material' || !!materialYear) && !isCogLayer,
+        !!selectedLayerId && (selectedLayerId !== 'material' || !!materialYear) && !isRasterLayer,
       select: (response) => response.data,
       // having placeholder data makes the status always be success
       placeholderData: undefined,
@@ -63,21 +64,21 @@ const PreviewMap = ({ selectedLayerId, selectedMaterialId, onStatusChange }: Pre
   });
 
   const getLayerFetchingStatus = useCallback(() => {
-    if (isCogLayer) return 'success';
+    if (isRasterLayer) return 'success';
     if (status === 'error') return status;
     if (isFetching) return 'loading';
 
     return status;
-  }, [isCogLayer, isFetching, status]);
+  }, [isRasterLayer, isFetching, status]);
 
   useEffect(() => {
     onStatusChange?.(getLayerFetchingStatus());
   }, [onStatusChange, getLayerFetchingStatus]);
 
   const PreviewLayer = useCallback(() => {
-    if (!data?.length && !selectedLayer?.tilerUrl) return null;
+    if ((!data?.length && !selectedLayer?.tilerUrl) || !selectedLayerId) return null;
 
-    if (isCogLayer) {
+    if (isRasterLayer) {
       return (
         <MapboxRasterLayer
           id={selectedLayer.id}
@@ -98,7 +99,7 @@ const PreviewMap = ({ selectedLayerId, selectedMaterialId, onStatusChange }: Pre
         getLineColor={(d) => d.c}
       />
     );
-  }, [data, isCogLayer, selectedLayer]);
+  }, [data, isRasterLayer, selectedLayer, selectedLayerId]);
 
   const layers = useMemo(() => [{ id: PREVIEW_LAYER_ID, layer: PreviewLayer }], [PreviewLayer]);
 

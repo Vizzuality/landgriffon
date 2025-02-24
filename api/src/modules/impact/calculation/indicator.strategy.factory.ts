@@ -1,8 +1,5 @@
 // Import the Indicator type and indicator codes
-import {
-  Indicator,
-  INDICATOR_NAME_CODES,
-} from 'modules/indicators/indicator.entity';
+import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
 import { IIndicatorCalculationStrategy } from 'modules/impact/calculation/strategies/indicator-calculation.strategy.interface';
 import { LandUseFootprintForProductionStrategy } from 'modules/impact/calculation/strategies/land-use-footprint-for-production.strategy';
 import { DeforestationFootprintStrategy } from 'modules/impact/calculation/strategies/deforestation-footprint.strategy';
@@ -47,16 +44,14 @@ export class IndicatorStrategyFactory {
   /**
    * Returns an array of strategy instances corresponding to the active indicators.
    *
-   * @param activeIndicators Array of active Indicator objects (each with a nameCode property)
+   * @param activeIndicatorNameCodes Array of active Indicator nameCodes
    * @returns Array of instantiated IIndicatorCalculationStrategy objects
    */
   public getStrategies(
-    activeIndicators: Indicator[],
+    activeIndicatorNameCodes: INDICATOR_NAME_CODES[],
   ): IIndicatorCalculationStrategy[] {
-    // Create a Set of active indicator codes for quick lookup
-    const activeCodes = new Set(
-      activeIndicators.map((ind: Indicator) => ind.nameCode),
-    );
+    // Create a unique set of nameCodes in case there are duplicates
+    const activeCodes = new Set(activeIndicatorNameCodes);
 
     const strategies: IIndicatorCalculationStrategy[] = [];
     // Loop over the mapping and instantiate the strategies for active codes

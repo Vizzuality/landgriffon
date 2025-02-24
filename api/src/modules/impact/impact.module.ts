@@ -17,6 +17,7 @@ import { BaseImpactService } from 'modules/impact/base-impact.service';
 import { ImpactRepository } from 'modules/impact/impact.repository';
 import { ImpactReportController } from 'modules/impact/impact-report.controller';
 import { ImpactReportsModule } from 'modules/impact/reports/impact-reports.module';
+import { ImpactCalculationModule } from 'modules/impact/calculation/impact-calculation.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ImpactReportsModule } from 'modules/impact/reports/impact-reports.modul
     SourcingLocationsModule,
     AuthorizationModule,
     ImpactReportsModule,
+    ImpactCalculationModule,
   ],
   providers: [
     ImpactRepository,

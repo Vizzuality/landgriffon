@@ -3,9 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { apiRawService } from 'services/api';
 import { setLayer } from 'store/features/analysis/map';
 import { useAppDispatch } from 'store/hooks';
+import queryKeyStore from '@/lib/react-query/querykey-store';
 
-import type { StringifiableRecord } from 'query-string';
 import type { UseQueryOptions } from '@tanstack/react-query';
+import type { StringifiableRecord } from 'query-string';
 import type { LayerMetadata } from 'types';
 
 export interface ContextualLayerApiResponse {
@@ -31,16 +32,13 @@ const useContextualLayers = (
 ) => {
   const dispatch = useAppDispatch();
   return useQuery(
-    ['contextual-layers'],
+    queryKeyStore.contextualLayers.categories.queryKey,
     () =>
       apiRawService
         .get<LayerCategoriesApiResponse>('/contextual-layers/categories')
         .then(({ data }) => data.data)
         .then((data) => data.filter((category) => category.layers.length > 0)),
     {
-      refetchOnMount: false,
-      refetchOnWindowFocus: true,
-      staleTime: 5 * 60 * 1000, // 5 minutes
       keepPreviousData: true,
       ...options,
       onSuccess: (data) => {

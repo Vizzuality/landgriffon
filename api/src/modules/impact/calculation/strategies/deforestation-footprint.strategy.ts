@@ -3,8 +3,8 @@ import { ImpactQueryExpression } from 'modules/indicator-records/services/impact
 import {
   CalculationContext,
   IIndicatorCalculationStrategy,
-} from 'modules/indicator-records/strategies/indicator-calculation.strategy.interface';
-import { LandUseFootprintForProductionStrategy } from 'modules/indicator-records/strategies/land-use-footprint-for-production.strategy';
+} from 'modules/impact/calculation/strategies/indicator-calculation.strategy.interface';
+import { LandUseFootprintForProductionStrategy } from 'modules/impact/calculation/strategies/land-use-footprint-for-production.strategy';
 
 /**
  * DF_SLUCStrategy implements the calculation for the DF_SLUC indicator.

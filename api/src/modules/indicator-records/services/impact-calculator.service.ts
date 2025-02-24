@@ -370,10 +370,11 @@ export class ImpactCalculator {
       [INDICATOR_NAME_CODES.UWU]: () => {
         const waterUseValue: number =
           rawData[INDICATOR_NAME_CODES.WU] * tonnage;
-        return (
-          (rawData[INDICATOR_NAME_CODES.UWU] * waterUseValue) /
-            (100 * rawData.production) || 0
-        );
+        return rawData.production > 0
+          ? (rawData[INDICATOR_NAME_CODES.UWU] * waterUseValue) /
+              (100 * rawData.production) || 0
+          : (rawData.distributedImpact?.[INDICATOR_NAME_CODES.UWU] ?? 0) *
+              (waterUseValue / 100) || 0;
       },
       [INDICATOR_NAME_CODES.NL]: () => {
         return rawData[INDICATOR_NAME_CODES.NL] * tonnage || 0;
@@ -381,10 +382,11 @@ export class ImpactCalculator {
       [INDICATOR_NAME_CODES.ENL]: () => {
         const nutrientLoad: number =
           rawData[INDICATOR_NAME_CODES.NL] * tonnage || 0;
-        return (
-          (rawData[INDICATOR_NAME_CODES.ENL] * nutrientLoad) /
-            (100 * rawData.production) || 0
-        );
+        return rawData.production > 0
+          ? (rawData[INDICATOR_NAME_CODES.ENL] * nutrientLoad) /
+              (100 * rawData.production) || 0
+          : (rawData.distributedImpact?.[INDICATOR_NAME_CODES.ENL] ?? 0) *
+              (nutrientLoad / 100) || 0;
       },
       [INDICATOR_NAME_CODES.WW]: () => {
         return rawData[INDICATOR_NAME_CODES.WW] * tonnage || 0;

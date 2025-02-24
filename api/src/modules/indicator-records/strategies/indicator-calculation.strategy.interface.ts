@@ -1,7 +1,6 @@
 import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
 import { ImpactQueryExpression } from 'modules/indicator-records/services/impact-calculation.dependencies';
 import { SourcingRecordsWithIndicatorRawData } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
-import { LandUseFootprintForProductionStrategy } from './land-use-footprint-for-production.strategy';
 
 /**
  * Calculation context that will be passed to each strategy.

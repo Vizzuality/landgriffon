@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
-import { ImpactQueryBuilder } from 'modules/impact/calculation/impact-calculation.query.builder';
+import { ImpactQueryBuilderV2 } from 'modules/impact/calculation/impact-calculation.query.builder';
 import { IIndicatorCalculationStrategy } from 'modules/impact/calculation/strategies/indicator-calculation.strategy.interface';
 
 // TODO: Following the plan to offload the impact calculation to a DB table and batch processing instead of
@@ -13,7 +13,7 @@ export class ImpactCalculationRepository {
 
   constructor(
     @InjectEntityManager() private readonly entityManager: EntityManager,
-    private readonly impactQueryBuilder: ImpactQueryBuilder,
+    private readonly impactQueryBuilder: ImpactQueryBuilderV2,
   ) {}
 
   async calculateRawImpact(

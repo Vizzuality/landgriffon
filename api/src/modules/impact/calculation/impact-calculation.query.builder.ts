@@ -18,15 +18,17 @@ export interface ImpactQueryFragment {
  * references the correct parameter number.
  */
 @Injectable()
-export class ImpactQueryBuilder {
+export class ImpactQueryBuilderV2 {
   /**
    * Mapping of parameter names to their respective placeholder numbers.
    * This single source of truth ensures consistency.
    */
-  private paramMapping: Record<string, number> = {
-    geoRegionId: 1,
-    materialId: 2,
-    adminRegionId: 3,
+
+  // TODO: due to how the query is run right now, we need to inject the table and column names as strings, but this will potentially change in the future
+  private paramMapping: Record<string, string> = {
+    $1: 'sourcing_location."geoRegionId"',
+    $2: 'sourcing_location."adminRegionId"',
+    $3: 'sourcing_location."materialId"',
   };
 
   /**
@@ -38,16 +40,15 @@ export class ImpactQueryBuilder {
    */
   private injectQueryParameters(query: string): string {
     let updatedQuery = query;
-    for (const key in this.paramMapping) {
-      const token = `{{${key}}}`;
+    for (const placeholder in this.paramMapping) {
       updatedQuery = updatedQuery
-        .split(token)
-        .join(`$${this.paramMapping[key]}`);
+        .split(placeholder)
+        .join(this.paramMapping[placeholder]);
     }
     return updatedQuery;
   }
 
-  private getSelectFields(indicatorNameCodes: INDICATOR_NAME_CODES[]): string {
+  getSelectFields(indicatorNameCodes: INDICATOR_NAME_CODES[]): string {
     return indicatorNameCodes.join(', ');
   }
 
@@ -79,13 +80,16 @@ export class ImpactQueryBuilder {
     const query = this.injectQueryParameters(uniqueQueries);
 
     // 5. Return the final query to be executed
-    return this.buildFinalQuery(selectFields, query);
+    return this.addDynamicParamsToQuery(selectFields, query);
   }
 
   // TODO: Following the plan to offload the impact calculation to a DB table and batch processing instead of doing it all at once and in memory,
   //       this method and the way keys are injected will change:
   //       i.e: If we decide to run it by location, query parameters will change to be UUIDs instead of table/column names.
-  private buildFinalQuery(selectFields: string, impactQueries: string): string {
+  private addDynamicParamsToQuery(
+    selectFields: string,
+    impactQueries: string,
+  ): string {
     return `
       SELECT DISTINCT ON (sr.id)
         sr.id as "sourcingRecordId",
@@ -111,7 +115,6 @@ export class ImpactQueryBuilder {
       ) as slwithmaterialh3data
       ON sr."sourcingLocationId" = slwithmaterialh3data.id;
     ;
-
     `;
   }
 }

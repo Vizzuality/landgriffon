@@ -523,11 +523,6 @@ export class ImpactCalculator {
     const repository = this.dataSource.getRepository(SourcingLocation);
     // For testing purposes, track locations with no production in task, will remove this later
     const locationIdsWithNoProduction: string[] = [];
-    const { id } = await this.taskService.taskRepository.findOneOrFail({
-      order: {
-        updatedAt: 'DESC',
-      },
-    });
 
     // Group records by location where production is 0 or null
     // TODO: We must apply this when harvesting is 0 as well, but given the use of this approach is not straightforward, and how to apply the new values
@@ -542,10 +537,11 @@ export class ImpactCalculator {
       }
     }
     if (locationIdsWithNoProduction.length) {
-      await this.taskService.updateImportTask({
-        taskId: id,
-        newData: { locationsWithNoProduction: locationIdsWithNoProduction },
-      });
+      this.logger.warn(
+        `Locations with no production: ${locationIdsWithNoProduction.join(
+          ', ',
+        )}`,
+      );
     }
     const dataArray = Array.from(recordsPorLocation.entries());
     const promises: Promise<any>[] = dataArray.map(async (elem) => {

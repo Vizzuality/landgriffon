@@ -6,38 +6,38 @@ import {
 } from 'modules/indicator-records/strategies/indicator-calculation.strategy.interface';
 
 /**
- * NLIndicatorStrategy implements the calculation for the NL indicator.
+ * WCIndicatorStrategy implements the calculation for the WC indicator.
  *
  * It defines:
- *   - Query dependency: to fetch the raw NL value using a stored procedure.
- *   - Arithmetic calculation: calculates the final NL value by simply multiplying the raw NL value by the tonnage.
+ *   - Query dependency: to fetch the raw WC value using a stored procedure.
+ *   - Arithmetic calculation: calculates the final WC value by multiplying the raw WC value by the tonnage.
  */
-export class NutrientLoadStrategy implements IIndicatorCalculationStrategy {
-  // Unique indicator code for NL
-  indicatorCode: INDICATOR_NAME_CODES = INDICATOR_NAME_CODES.NL;
+export class WaterConsumptionStrategy implements IIndicatorCalculationStrategy {
+  // Unique indicator code for WC
+  indicatorCode: INDICATOR_NAME_CODES = INDICATOR_NAME_CODES.WC;
 
   /**
-   * Returns the query fragment needed to obtain the raw value for NL.
+   * Returns the query fragment needed to obtain the raw value for WC.
    */
   getRawQueries(): ImpactQueryExpression[] {
     return [
-      // Query to obtain the raw NL value via the stored procedure,
+      // Query to obtain the raw WC value via the stored procedure,
       // using the internal indicatorCode for aliasing.
       `get_indicator_coefficient_impact('${this.indicatorCode}', $3, $2) as "${this.indicatorCode}"`,
     ];
   }
 
   /**
-   * Calculates the final NL indicator value using the provided calculation context.
+   * Calculates the final WC indicator value using the provided calculation context.
    * The calculation is based on:
-   *   - Final NL = raw NL value * tonnage
+   *   - Final WC = raw WC value * tonnage
    *
    * @param context - Calculation context containing rawData and tonnage.
-   * @returns The calculated NL value.
+   * @returns The calculated WC value.
    */
   calculate(context: CalculationContext): number {
     const { rawData, tonnage } = context;
-    const rawNL = rawData[this.indicatorCode];
-    return rawNL * tonnage || 0;
+    const rawWC = rawData[this.indicatorCode];
+    return rawWC * tonnage || 0;
   }
 }

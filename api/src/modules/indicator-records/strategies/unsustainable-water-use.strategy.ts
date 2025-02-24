@@ -22,6 +22,11 @@ export class UnsustainableWaterUseStrategy
   // Unique indicator code for UWU
   indicatorCode: INDICATOR_NAME_CODES = INDICATOR_NAME_CODES.UWU;
 
+  // To calculate the UWU value, we need the WU value.
+  dependencies: {
+    WW: INDICATOR_NAME_CODES.WU;
+  };
+
   /**
    * Returns the query fragments needed to obtain the raw values for UWU.
    */
@@ -33,7 +38,7 @@ export class UnsustainableWaterUseStrategy
       // Query to obtain the production value.
       `sum_material_over_georegion($1, $2, 'producer') as "production"`,
       // Query to obtain the WU value (used to calculate waterUseValue).
-      `get_indicator_coefficient_impact('${INDICATOR_NAME_CODES.WU}', $3, $2) as "${INDICATOR_NAME_CODES.WU}"`,
+      `get_indicator_coefficient_impact('${this.dependencies.WW}', $3, $2) as "${this.dependencies.WW}"`,
     ];
   }
 
@@ -51,10 +56,10 @@ export class UnsustainableWaterUseStrategy
     const { rawData, tonnage, production } = context;
 
     // Calculate waterUseValue using the raw WU value and tonnage.
-    const waterUseValue = rawData[INDICATOR_NAME_CODES.WU] * tonnage;
+    const waterUseValue = rawData[this.dependencies.WW] * tonnage;
 
     // Retrieve the raw UWU value.
-    const rawUWU = rawData[INDICATOR_NAME_CODES.UWU];
+    const rawUWU = rawData[this.indicatorCode];
 
     // Calculate UWU value, ensuring no division by zero.
     const finalUWU =

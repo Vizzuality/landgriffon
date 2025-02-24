@@ -37,7 +37,7 @@ export class WaterUseStrategy implements IIndicatorCalculationStrategy {
    */
   calculate(context: CalculationContext): number {
     const { rawData, tonnage } = context;
-    const rawWU = rawData[INDICATOR_NAME_CODES.WU];
+    const rawWU = rawData[this.indicatorCode];
     return rawWU * tonnage || 0;
   }
 }

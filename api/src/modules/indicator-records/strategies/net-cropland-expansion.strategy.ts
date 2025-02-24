@@ -52,7 +52,7 @@ export class NetCroplandExpansionStrategy
     const lf = LandUseFootprintForProductionStrategy.calculateLF(context);
 
     // Get the raw NCE value from the raw data.
-    const rawNCE = rawData[INDICATOR_NAME_CODES.NCE];
+    const rawNCE = rawData[this.indicatorCode];
 
     // Compute the normalized impact as rawNCE / production, avoiding division by zero.
     const normalizedImpact =

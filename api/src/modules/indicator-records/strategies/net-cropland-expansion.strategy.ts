@@ -4,7 +4,7 @@ import {
   CalculationContext,
   IIndicatorCalculationStrategy,
 } from 'modules/indicator-records/strategies/indicator-calculation.strategy.interface';
-import { LandUseFootprintForProductionStrategy } from './land-use-footprint-for-production.strategy';
+import { LandUseFootprintForProductionStrategy } from 'modules/indicator-records/strategies/land-use-footprint-for-production.strategy';
 
 /**
  * NCEIndicatorStrategy implements the calculation for the NCE indicator.
@@ -14,7 +14,9 @@ import { LandUseFootprintForProductionStrategy } from './land-use-footprint-for-
  *   - Arithmetic calculation: calculates a normalized value by dividing the raw NCE value by production,
  *     and then multiplies it by the LF value obtained via the static helper in the LF strategy.
  */
-export class NCEIndicatorStrategy implements IIndicatorCalculationStrategy {
+export class NetCroplandExpansionStrategy
+  implements IIndicatorCalculationStrategy
+{
   // Unique indicator code for NCE
   indicatorCode: INDICATOR_NAME_CODES = INDICATOR_NAME_CODES.NCE;
 

@@ -89,6 +89,7 @@
     "dataset": null
   },
   "flags": {
-    "useDistributedImpact": false
+    "useDistributedImpact": false,
+    "useNewImpactFlow": false
   }
 }

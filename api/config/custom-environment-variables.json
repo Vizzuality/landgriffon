@@ -80,6 +80,7 @@
     "dataset": "EUDR_DATASET"
   },
   "flags": {
-    "useDistributedImpact": "FLAGS_USE_DISTRIBUTED_IMPACT"
+    "useDistributedImpact": "FLAGS_USE_DISTRIBUTED_IMPACT",
+    "useNewImpactFlow": "FLAGS_USE_NEW_IMPACT_FLOW"
   }
 }

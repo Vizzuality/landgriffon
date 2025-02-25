@@ -1,0 +1,29 @@
+name: Client Unit Tests
+on:
+  push:
+    paths:
+      - '.github/workflows/testing-client-unit-tests.yml'
+      - 'package.json'
+      - 'client/**'
+  workflow_dispatch:
+defaults:
+  run:
+    working-directory: client
+jobs:
+  client-unit-tests:
+    name: Client Unit Tests
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Node setup
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: 'client/.nvmrc'
+
+      - name: Install dependendencies
+        run: corepack enable yarn && yarn install
+
+      - name: Run unit tests
+        run: yarn vitest

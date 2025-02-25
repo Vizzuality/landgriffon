@@ -3,6 +3,7 @@ import { ImpactQueryExpression } from 'modules/indicator-records/services/impact
 import {
   CalculationContext,
   IIndicatorCalculationStrategy,
+  IndicatorDependencies,
 } from 'modules/impact/calculation/strategies/indicator-calculation.strategy.interface';
 
 /**
@@ -24,8 +25,17 @@ export class UnsustainableWaterUseStrategy
 
   // To calculate the UWU value, we need the WU value.
   dependencies: {
-    WW: INDICATOR_NAME_CODES.WU;
+    [INDICATOR_NAME_CODES.WU]: INDICATOR_NAME_CODES.WU;
+  } = {
+    [INDICATOR_NAME_CODES.WU]: INDICATOR_NAME_CODES.WU,
   };
+
+  // constructor() {
+  //   this.indicatorCode = INDICATOR_NAME_CODES.UWU;
+  //   this.dependencies = {
+  //     [INDICATOR_NAME_CODES.WU]: INDICATOR_NAME_CODES.WU,
+  //   };
+  // }
 
   /**
    * Returns the query fragments needed to obtain the raw values for UWU.
@@ -38,7 +48,7 @@ export class UnsustainableWaterUseStrategy
       // Query to obtain the production value.
       `sum_material_over_georegion($1, $2, 'producer') as "production"`,
       // Query to obtain the WU value (used to calculate waterUseValue).
-      `get_indicator_coefficient_impact('${this.dependencies.WW}', $3, $2) as "${this.dependencies.WW}"`,
+      `get_indicator_coefficient_impact('${this.dependencies.WU}', $3, $2) as "${this.dependencies.WU}"`,
     ];
   }
 
@@ -56,7 +66,7 @@ export class UnsustainableWaterUseStrategy
     const { rawData, tonnage, production } = context;
 
     // Calculate waterUseValue using the raw WU value and tonnage.
-    const waterUseValue = rawData[this.dependencies.WW] * tonnage;
+    const waterUseValue = rawData[this.dependencies.WU] * tonnage;
 
     // Retrieve the raw UWU value.
     const rawUWU = rawData[this.indicatorCode];

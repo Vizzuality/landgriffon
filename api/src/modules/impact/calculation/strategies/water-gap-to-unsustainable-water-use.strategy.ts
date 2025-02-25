@@ -24,8 +24,8 @@ export class WaterGapToUnsustainableWaterUseStrategy
   indicatorCode: INDICATOR_NAME_CODES = INDICATOR_NAME_CODES.WGUWU;
 
   dependencies: {
-    WW: INDICATOR_NAME_CODES.WW;
-  };
+    [INDICATOR_NAME_CODES.WW]: INDICATOR_NAME_CODES.WW;
+  } = { [INDICATOR_NAME_CODES.WW]: INDICATOR_NAME_CODES.WW };
 
   /**
    * Returns the query fragments needed to obtain the raw values for WGUWU.

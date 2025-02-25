@@ -23,8 +23,8 @@ export class ExcessNutrientLoadStrategy
   indicatorCode: INDICATOR_NAME_CODES = INDICATOR_NAME_CODES.ENL;
 
   dependencies: {
-    NL: INDICATOR_NAME_CODES;
-  };
+    [INDICATOR_NAME_CODES.NL]: INDICATOR_NAME_CODES.NL;
+  } = { [INDICATOR_NAME_CODES.NL]: INDICATOR_NAME_CODES.NL };
 
   /**
    * Returns the query fragments needed to obtain the raw values for ENL.

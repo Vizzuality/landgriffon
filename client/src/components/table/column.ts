@@ -2,7 +2,7 @@ import type { ColumnMeta, RowData, ColumnDef } from '@tanstack/react-table';
 import type { HTMLAttributes } from 'react';
 import type { TableProps } from './component';
 
-declare module '@tanstack/table-core' {
+declare module '@tanstack/react-table' {
   interface TableMeta<TData extends RowData> {
     theme: TableProps<TData>['theme'];
   }

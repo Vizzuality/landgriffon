@@ -13,13 +13,13 @@ Create the file `.env.local`. You can see an example on LastPass.
 Install dependencies:
 
 ```bash
-yarn install
+pnpm install
 ```
 
 Run the development server:
 
 ```bash
-yarn dev
+pnpm dev
 ```
 
 ### Environmental variables
@@ -41,7 +41,7 @@ Additionally, and exclusively for testing purposes, you can set the following en
 Run the tests locally:
 
 ```bash
-yarn cypress:headless
+pnpm cypress:headless
 ```
 
 Run the tests in a Dockerfile:

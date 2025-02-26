@@ -3,7 +3,6 @@ on:
   push:
     paths:
       - '.github/workflows/testing-client-unit-tests.yml'
-      - 'package.json'
       - 'client/**'
   workflow_dispatch:
 defaults:
@@ -22,8 +21,12 @@ jobs:
         with:
           node-version-file: 'client/.nvmrc'
 
-      - name: Install dependendencies
-        run: corepack enable yarn && yarn install
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: 'client/package.json'
+
+      - name: Install dependencies
+        run: pnpm install
 
       - name: Run unit tests
-        run: yarn vitest
+        run: pnpm vitest

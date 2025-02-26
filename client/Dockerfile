@@ -23,23 +23,24 @@ RUN groupadd -g $GID $USER && adduser --uid $UID --gid $GID $USER
 
 WORKDIR $APP_HOME
 RUN chown $USER:$USER $APP_HOME
+RUN chown -R $USER /usr/local
 
 USER $USER
 
-COPY --chown=$USER:$USER .yarn ./.yarn
-COPY --chown=$USER:$USER package.json yarn.lock .yarnrc.yml ./
-RUN yarn install --immutable
+RUN  corepack enable pnpm
+COPY --chown=$USER:$USER package.json pnpm-lock.yaml ./
+RUN pnpm install
 
 # NextJS project folders
 COPY --chown=$USER:$USER src ./src
 COPY --chown=$USER:$USER public ./public
 
 # NextJS required files
-COPY --chown=$USER:$USER next.config.js local.d.ts \
+COPY --chown=$USER:$USER next.config.js  local.d.ts \
 	postcss.config.cjs tailwind.config.ts entrypoint.sh \
 	tsconfig.json .browserlistrc .eslintrc.cjs .prettierrc.cjs ./
 
-RUN yarn build
+RUN pnpm build
 
 EXPOSE 3000
 ENTRYPOINT ["./entrypoint.sh"]

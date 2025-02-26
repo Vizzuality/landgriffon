@@ -27,8 +27,8 @@ export class ImpactQueryBuilderV2 {
   // TODO: due to how the query is run right now, we need to inject the table and column names as strings, but this will potentially change in the future
   private paramMapping: Record<string, string> = {
     $1: 'sourcing_location."geoRegionId"',
-    $2: 'sourcing_location."adminRegionId"',
-    $3: 'sourcing_location."materialId"',
+    $2: 'sourcing_location."materialId"',
+    $3: 'sourcing_location."adminRegionId"',
   };
 
   /**
@@ -77,8 +77,8 @@ export class ImpactQueryBuilderV2 {
     //    as it's a corner case that breaks the pattern
     const selectFields = this.getSelectFields(
       strategies
-        .map((s) => s.indicatorCode)
-        .filter((code) => code !== INDICATOR_NAME_CODES.LF),
+        .filter((s) => s.indicatorCode !== INDICATOR_NAME_CODES.LF)
+        .map((s) => `"${s.indicatorCode}"` as INDICATOR_NAME_CODES),
     );
     // 4. Inject the query parameters into the unique queries
     const query = this.injectQueryParameters(uniqueQueries);
@@ -101,6 +101,8 @@ export class ImpactQueryBuilderV2 {
         sr.year,
         slwithmaterialh3data.id as "sourcingLocationId",
         slwithmaterialh3data."materialH3DataId",
+        "harvest",
+        "production",
         ${selectFields}
       FROM sourcing_records sr
       INNER JOIN (

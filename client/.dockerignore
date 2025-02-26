@@ -7,8 +7,5 @@ npm-debug.log
 README.md
 .next
 .git
-.yarn/*
-!.yarn/releases
-!.yarn/plugins
 .pnp.*
 *.tsbuildinfo

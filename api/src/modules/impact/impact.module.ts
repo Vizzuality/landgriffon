@@ -46,6 +46,7 @@ import { ImpactCalculationModule } from 'modules/impact/calculation/impact-calcu
     ImpactService,
     ActualVsScenarioImpactService,
     ScenarioVsScenarioImpactService,
+    ImpactCalculationModule,
   ],
 })
 export class ImpactModule {}

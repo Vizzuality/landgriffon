@@ -25,6 +25,7 @@ export class LandUseFootprintForProductionStrategy
 
   // TODO: For simplicity (maybe) I will add all queries for each indicator, as opposed to what happens in the previous approach. discuss with the team
   // TODO: Maybe it's a good idea to check that all stored procedure dependencies are present at app start
+
   getRawQueries(): ImpactQueryExpression[] {
     return [
       `sum_material_over_georegion($1, $2, 'harvest') as "harvest"`,

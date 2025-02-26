@@ -161,11 +161,10 @@ export class SourcingDataImportService {
       //       TBD: What to do when there is no H3 for a Material
 
       try {
-        // TODO: Forcing true for local testing
-        // const useNewImpactCalculationFlow = AppConfig.get(
-        //   'flags.useNewImpactFlow',
-        //   true,)
-        const useNewImpactCalculationFlow = true;
+        const useNewImpactCalculationFlow = AppConfig.get(
+          'flags.useNewImpactFlow',
+          true,
+        );
 
         if (useNewImpactCalculationFlow) {
           this.logger.warn('Using new impact calculation flow');

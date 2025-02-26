@@ -25,7 +25,11 @@ export class WaterGapToUnsustainableWaterUseStrategy
 
   dependencies: {
     [INDICATOR_NAME_CODES.WW]: INDICATOR_NAME_CODES.WW;
-  } = { [INDICATOR_NAME_CODES.WW]: INDICATOR_NAME_CODES.WW };
+    [INDICATOR_NAME_CODES.UWU]: INDICATOR_NAME_CODES.UWU;
+  } = {
+    [INDICATOR_NAME_CODES.WW]: INDICATOR_NAME_CODES.WW,
+    [INDICATOR_NAME_CODES.UWU]: INDICATOR_NAME_CODES.UWU,
+  };
 
   /**
    * Returns the query fragments needed to obtain the raw values for WGUWU.
@@ -34,7 +38,9 @@ export class WaterGapToUnsustainableWaterUseStrategy
     return [
       // Query to obtain the raw WGUWU value via its stored procedure,
       // using the internal indicator code for aliasing.
-      `get_annual_commodity_weighted_impact_over_georegion($1, '${this.indicatorCode}', $2, 'producer') as "${this.indicatorCode}"`,
+      // TODO: As of now, WGUWU uses as source the UWU indicator, this is very problematic code wise, and should be changed.
+      //        we should add an additional registry in h3 data with WGUWU id that points to the same table/column as UWU
+      `get_annual_commodity_weighted_impact_over_georegion($1, '${this.dependencies.UWU}', $2, 'producer') as "${this.indicatorCode}"`,
       // Query to obtain the raw WW value (used to calculate water withdrawal).
       `get_indicator_coefficient_impact('${this.dependencies.WW}', $3, $2) as "${this.dependencies.WW}"`,
       // Query to obtain the production value.

@@ -7,6 +7,7 @@ import { ImpactQueryFragment } from '../impact-calculation.query.builder';
  * Calculation context that will be passed to each strategy.
  * It includes raw data from the database, tonnage, and pre-calculated values such as production and landPerTon.
  */
+
 export interface CalculationContext {
   rawData: SourcingRecordsWithIndicatorRawData;
   tonnage: number;
@@ -14,6 +15,14 @@ export interface CalculationContext {
   landPerTon: number; // Pre-calculated value, e.g., rawData.harvest / rawData.production TODO: We need a cleaner naming NOW!
   // TODO: Probably here is where we need to add the unweighted impact
 }
+
+/**
+ * Defines a custom type to declare dependencies between indicators, referencing the nameCodes
+ */
+
+export type IndicatorDependencies = {
+  [key in keyof typeof INDICATOR_NAME_CODES]?: INDICATOR_NAME_CODES;
+};
 
 /**
  * Interface that all indicator calculation strategies must implement.
@@ -31,7 +40,7 @@ export interface IIndicatorCalculationStrategy {
    * Dependencies between indicators. Some indicators might depend on the value of other indicators.
    */
 
-  dependencies?: Record<string, INDICATOR_NAME_CODES>;
+  dependencies?: IndicatorDependencies;
 
   /**
    * Returns one or more query fragments (as strings) required to obtain the raw value

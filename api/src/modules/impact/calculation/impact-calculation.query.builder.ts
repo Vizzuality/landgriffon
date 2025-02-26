@@ -73,8 +73,12 @@ export class ImpactQueryBuilderV2 {
     const uniqueQueries = [...new Set(allQueries)].join(', ');
 
     // 3. Get the fields to add to the select statement
+    //    LF is computed internally, so it should not be included as selectable field. If we go to the batch approach, we could change this
+    //    as it's a corner case that breaks the pattern
     const selectFields = this.getSelectFields(
-      strategies.map((s) => s.indicatorCode),
+      strategies
+        .map((s) => s.indicatorCode)
+        .filter((code) => code !== INDICATOR_NAME_CODES.LF),
     );
     // 4. Inject the query parameters into the unique queries
     const query = this.injectQueryParameters(uniqueQueries);

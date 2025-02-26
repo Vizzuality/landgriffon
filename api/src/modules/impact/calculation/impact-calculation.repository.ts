@@ -3,6 +3,7 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { ImpactQueryBuilderV2 } from 'modules/impact/calculation/impact-calculation.query.builder';
 import { IIndicatorCalculationStrategy } from 'modules/impact/calculation/strategies/indicator-calculation.strategy.interface';
+import { SourcingRecordsWithIndicatorRawData } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 
 // TODO: Following the plan to offload the impact calculation to a DB table and batch processing instead of
 //       of running all at once and in memory, this repo will potentially be attached to this new entity
@@ -18,12 +19,10 @@ export class ImpactCalculationRepository {
 
   async calculateRawImpact(
     strategies: IIndicatorCalculationStrategy[],
-  ): Promise<any> {
+  ): Promise<SourcingRecordsWithIndicatorRawData[]> {
     const query = this.impactQueryBuilder.buildQuery(strategies);
     try {
-      // TODO: comment out for testing final query
-      return query;
-      // return await this.entityManager.query(query);
+      return await this.entityManager.query(query);
     } catch (e) {
       this.logger.error(e);
       throw e;

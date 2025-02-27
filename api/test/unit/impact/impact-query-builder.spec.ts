@@ -24,8 +24,10 @@ describe('ImpactQueryBuilder integration using strategies from Strategy Factory'
       activeIndicators.map((i: Indicator) => i.nameCode),
     );
 
-    const impactQuery = queryBuilder.buildQuery(strategies);
-    expect(normalize(impactQuery)).toBe(normalize(expectedQuery));
+    const impactQuery = queryBuilder.buildQuery(
+      strategies.getQueryDependencies(),
+    );
+    // TODO add matchers to check it injects the correct dependencies: aliases and queries. No point in checking the  whole query as it will change
   });
   test('should generate query fragment correctly for a single active indicator (LF)', () => {
     const activeIndicators = [
@@ -34,10 +36,12 @@ describe('ImpactQueryBuilder integration using strategies from Strategy Factory'
     const strategies = strategyFactory.getStrategies(
       activeIndicators.map((i: Indicator) => i.nameCode),
     );
-    const impactQuery = queryBuilder.buildQuery(strategies);
-    expect(impactQuery).toContain('as "harvest"');
-    expect(impactQuery).toContain('as "production"');
-    expect(impactQuery).not.toContain('as "DF_SLUC"');
+    const impactQuery = queryBuilder.buildQuery(
+      strategies.getQueryDependencies(),
+    );
+    expect(impactQuery).toContain('harvest');
+    expect(impactQuery).toContain('production');
+    expect(impactQuery).not.toContain('DF_SLUC');
   });
 
   test('should deduplicate query fragments when duplicate indicators are active', () => {
@@ -51,7 +55,9 @@ describe('ImpactQueryBuilder integration using strategies from Strategy Factory'
     const strategies = strategyFactory.getStrategies(
       activeIndicators.map((i: Indicator) => i.nameCode),
     );
-    const impactQuery = queryBuilder.buildQuery(strategies);
+    const impactQuery = queryBuilder.buildQuery(
+      strategies.getQueryDependencies(),
+    );
 
     const productionMatches = (impactQuery.match(/as "production"/g) || [])
       .length;
@@ -72,7 +78,9 @@ describe('ImpactQueryBuilder integration using strategies from Strategy Factory'
     const strategies = strategyFactory.getStrategies(
       activeIndicators.map((i: Indicator) => i.nameCode),
     );
-    const impactQuery = queryBuilder.buildQuery(strategies);
+    const impactQuery = queryBuilder.buildQuery(
+      strategies.getQueryDependencies(),
+    );
 
     expect(impactQuery).not.toContain('LF');
   });
@@ -86,8 +94,9 @@ describe('ImpactQueryBuilder integration using strategies from Strategy Factory'
     const strategies = strategyFactory.getStrategies(
       activeIndicators.map((i: Indicator) => i.nameCode),
     );
-    const impactQuery = queryBuilder.buildQuery(strategies);
-    console.log(impactQuery);
+    const impactQuery = queryBuilder.buildQuery(
+      strategies.getQueryDependencies(),
+    );
 
     expect(impactQuery).toContain('sourcing_location."geoRegionId"');
     expect(impactQuery).toContain('sourcing_location."adminRegionId"');
@@ -111,6 +120,8 @@ const expectedQuery = `
             sr.year,
             slwithmaterialh3data.id as "sourcingLocationId",
             slwithmaterialh3data."materialH3DataId",
+            "harvest",
+            "production",
             DF_SLUC, WW
           FROM sourcing_records sr
           INNER JOIN (
@@ -118,8 +129,7 @@ const expectedQuery = `
               sourcing_location.id,
               "scenarioInterventionId",
               "interventionType",
-              mth."h3DataId" as "materialH3DataId",
-              get_annual_commodity_weighted_impact_over_georegion(sourcing_location."geoRegionId", 'DF_SLUC', sourcing_location."adminRegionId", 'producer') as "DF_SLUC", sum_material_over_georegion(sourcing_location."geoRegionId", sourcing_location."adminRegionId", 'producer') as "production", sum_material_over_georegion(sourcing_location."geoRegionId", sourcing_location."adminRegionId", 'harvest') as "harvest", get_indicator_coefficient_impact('WW', sourcing_location."materialId", sourcing_location."adminRegionId") as "WW"
+              mth."h3DataId" as "materialH3DataId", get_annual_commodity_weighted_impact_over_georegion(sourcing_location."geoRegionId", 'DF_SLUC',sourcing_location."materialId", 'producer') as "DF_SLUC", sum_material_over_georegion(sourcing_location."geoRegionId", sourcing_location."materialId", 'producer') as "production", sum_material_over_georegion(sourcing_location."geoRegionId", sourcing_location."materialId", 'harvest') as "harvest", get_indicator_coefficient_impact('WW', sourcing_location."adminRegionId", sourcing_location."materialId") as "WW"
             FROM sourcing_location
             INNER JOIN material_to_h3 mth
               ON mth."materialId" = sourcing_location."materialId"

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ImpactCalculation } from 'modules/impact/calculation/impact.calculation';
+import { ImpactCalculatorV2 } from 'modules/impact/calculation/impact.calculator';
 import { IndicatorStrategyFactory } from 'modules/impact/calculation/indicator.strategy.factory';
 import { ImpactQueryBuilderV2 } from 'modules/impact/calculation/impact-calculation.query.builder';
 import { ImpactCalculationRepository } from 'modules/impact/calculation/impact-calculation.repository';
@@ -10,11 +10,11 @@ import { ImpactCalculationRepository } from 'modules/impact/calculation/impact-c
 
 @Module({
   providers: [
-    ImpactCalculation,
+    ImpactCalculatorV2,
     IndicatorStrategyFactory,
     ImpactQueryBuilderV2,
     ImpactCalculationRepository,
   ],
-  exports: [ImpactCalculation],
+  exports: [ImpactCalculatorV2],
 })
 export class ImpactCalculationModule {}

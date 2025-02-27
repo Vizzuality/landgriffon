@@ -15,6 +15,13 @@ import { WaterWithdrawalsStrategy } from 'modules/impact/calculation/strategies/
 import { WaterConsumptionStrategy } from 'modules/impact/calculation/strategies/water-consumption.strategy';
 import { WaterGapToUnsustainableWaterUseStrategy } from 'modules/impact/calculation/strategies/water-gap-to-unsustainable-water-use.strategy';
 import { Injectable } from '@nestjs/common';
+import { ImpactQueryExpression } from '../../indicator-records/services/impact-calculation.dependencies';
+import { ImpactQueryDependency } from './impact-calculation.query.builder';
+
+export type IndicatorStrategyMap = Map<
+  INDICATOR_NAME_CODES,
+  IIndicatorCalculationStrategy
+>;
 
 /**
  * ImpactCalculationRegistry dynamically instantiates and returns strategy instances
@@ -42,25 +49,53 @@ export class IndicatorStrategyFactory {
   };
 
   /**
-   * Returns an array of strategy instances corresponding to the active indicators.
+   * Returns a map of strategy instances corresponding to the active indicators.
    *
    * @param activeIndicatorNameCodes Array of active Indicator nameCodes
-   * @returns Array of instantiated IIndicatorCalculationStrategy objects
+   * @returns Map of instantiated IIndicatorCalculationStrategy objects
    */
   public getStrategies(
     activeIndicatorNameCodes: INDICATOR_NAME_CODES[],
-  ): IIndicatorCalculationStrategy[] {
+  ): IndicatorStrategyMap2 {
     // Create a unique set of nameCodes in case there are duplicates
     const activeCodes = new Set(activeIndicatorNameCodes);
 
-    const strategies: IIndicatorCalculationStrategy[] = [];
+    const strategyMap: IndicatorStrategyMap2 = new IndicatorStrategyMap2();
     // Loop over the mapping and instantiate the strategies for active codes
     for (const code in this.strategyMap) {
       if (activeCodes.has(code as INDICATOR_NAME_CODES)) {
         const StrategyClass = this.strategyMap[code as INDICATOR_NAME_CODES];
-        strategies.push(new StrategyClass());
+        strategyMap.set(code as INDICATOR_NAME_CODES, new StrategyClass());
       }
     }
-    return strategies;
+    return strategyMap;
+  }
+}
+
+export class IndicatorStrategyMap2 {
+  map: Map<INDICATOR_NAME_CODES, IIndicatorCalculationStrategy>;
+
+  constructor() {
+    this.map = new Map();
+  }
+
+  has(key: INDICATOR_NAME_CODES): boolean {
+    return this.map.has(key);
+  }
+
+  set(key: INDICATOR_NAME_CODES, val: IIndicatorCalculationStrategy): void {
+    this.map.set(key, val);
+  }
+
+  get(key: INDICATOR_NAME_CODES): IIndicatorCalculationStrategy {
+    return this.get(key);
+  }
+
+  getQueryDependencies(): ImpactQueryDependency[] {
+    const dependencies: ImpactQueryDependency[] = [];
+    this.map.forEach((s) => {
+      dependencies.push({ alias: s.indicatorCode, queries: s.getRawQueries() });
+    });
+    return dependencies;
   }
 }

@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { INDICATOR_NAME_CODES } from '../../indicators/indicator.entity';
-import { IIndicatorCalculationStrategy } from './strategies/indicator-calculation.strategy.interface';
+import { ImpactQueryExpression } from '../../indicator-records/services/impact-calculation.dependencies';
 
 /**
- * Represents a SQL fragment along with its alias.
- * Each fragment should use tokens (e.g. {{geoRegionId}}, {{materialId}}, etc.)
- * instead of hard-coded parameters.
+ * Represent the alias and query dependencies for a single indicator strategy.
  */
-export interface ImpactQueryFragment {
-  fragment: string;
-  alias: string;
+export interface ImpactQueryDependency {
+  queries: ImpactQueryExpression[];
+  alias: INDICATOR_NAME_CODES;
 }
 
 /**
@@ -58,27 +56,29 @@ export class ImpactQueryBuilderV2 {
    *   2. Replacing their tokens with the correct parameter placeholders.
    *   3. Deduplicating fragments by alias.
    *
-   * @param strategies - Array of active strategies (each with getRawQueries() returning ImpactQueryFragment[]).
    * @returns An object containing:
    *    - query: a string with all deduplicated SQL fragments separated by commas.
    *    - aliases: a string with all deduplicated column aliases (wrapped in quotes) separated by commas.
+   * @param queryDependencies
    */
-  buildQuery(strategies: IIndicatorCalculationStrategy[]): string {
+  buildQuery(queryDependencies: ImpactQueryDependency[]): string {
     // 1. Collect all queries for each strategy needed to be executed.
-    const allQueries: string[] = strategies.flatMap((strategy) =>
-      strategy.getRawQueries(),
-    );
+    const selects: INDICATOR_NAME_CODES[] = [];
+    const queries: string[][] = [];
+
+    queryDependencies.forEach((q) => {
+      selects.push(q.alias);
+      queries.push(q.queries);
+    });
 
     // 2. Generate a unique list of queries to remove redundancies. i.e: if two different strategies depend on the same indicator, we would have a repeating query
-    const uniqueQueries = [...new Set(allQueries)].join(', ');
+    const uniqueQueries = [...new Set(queries.flat())].join(', ');
 
     // 3. Get the fields to add to the select statement
     //    LF is computed internally, so it should not be included as selectable field. If we go to the batch approach, we could change this
     //    as it's a corner case that breaks the pattern
     const selectFields = this.getSelectFields(
-      strategies
-        .filter((s) => s.indicatorCode !== INDICATOR_NAME_CODES.LF)
-        .map((s) => `"${s.indicatorCode}"` as INDICATOR_NAME_CODES),
+      selects.filter((s) => s !== INDICATOR_NAME_CODES.LF),
     );
     // 4. Inject the query parameters into the unique queries
     const query = this.injectQueryParameters(uniqueQueries);

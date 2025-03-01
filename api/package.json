@@ -72,6 +72,7 @@
     "rimraf": "~3.0.2",
     "rxjs": "~7.6.0",
     "swagger-ui-express": "~4.6.0",
+    "tiny-types": "^1.23.0",
     "typeorm": "0.3.11",
     "uuid": "~9.0.0",
     "wellknown": "^0.5.0",

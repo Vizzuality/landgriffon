@@ -22,10 +22,14 @@ import {
   MaterialId,
 } from './queries/production-and-harvest.query';
 import { TinyTypeOf } from 'tiny-types';
+import { IndicatorId } from './queries/indicator-coefficient-impact.query';
+import { MaterialIndicatorToH3 } from '../../materials/material-indicator-to-h3.entity';
 
 export class MaterialH3DataSource extends H3DataSource {}
 
 export class IndicatorH3DataSource extends H3DataSource {}
+
+export class MaterialIndicatorH3DataSource extends H3DataSource {}
 
 // TODO: Idea: Since this goes by location, we could store all uncompacted h3 so that we avoid recalculating them for each store procedure that runs for a sinlge
 export class GeoRegionH3IndexList extends TinyTypeOf<string[]>() {}
@@ -98,6 +102,33 @@ export class ImpactCalculationRepository {
     if (!res) {
       throw new H3DataSourceNotFound(
         `No H3 Data found for material ${materialId.value} and type ${type}`,
+      );
+    }
+    return res;
+  }
+
+  async getMaterialIndicatorH3DataSource(
+    indicatorId: IndicatorId,
+    materialId: MaterialId,
+  ): Promise<MaterialIndicatorH3DataSource> {
+    const res = await this.dataSource
+      .createQueryBuilder(H3Data, 'h3')
+      .innerJoin(
+        MaterialIndicatorToH3,
+        'materialIndicatorH3',
+        'materialIndicatorH3.h3DataId = h3.id',
+      )
+      .select(['h3.h3tableName as tableName', 'h3.h3columnName as columnName'])
+      .innerJoin(Indicator, 'indicator', 'h3.indicatorId = indicator.id')
+      .where('indicator.id = :indicatorId', { indicatorId: indicatorId.value })
+      .andWhere('materialIndicatorH3.materialId = :materialId', {
+        materialId: materialId.value,
+      })
+      .getRawOne<MaterialH3DataSource>();
+
+    if (!res) {
+      throw new H3DataSourceNotFound(
+        `No Material+Indicator H3 Data found for material ${materialId.value} and indicator ${indicatorId.value}`,
       );
     }
     return res;

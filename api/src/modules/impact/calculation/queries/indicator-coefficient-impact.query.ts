@@ -15,6 +15,26 @@ interface IndicatorCoefficientImpactQueryParams {
 
 export class IndicatorCoefficientImpactValue extends TinyTypeOf<number>() {}
 
+/**
+ * Retrieves the indicator coefficient impact value for a given indicator, material, and administrative region.
+ *
+ * The logic is as follows:
+ * Given an `adminRegion`, which is the most precise administrative region detected for the location in question,
+ * a recursive query is performed to obtain the value.
+ *
+ * If the value is not found for the most precise `adminRegion`, it searches in the parent region, and so on,
+ * up to the highest level of the hierarchy.
+ *
+ * If no value is found, it falls back to the `adminRegion` with a null value, which represents the global value.
+ *
+ * @param {IndicatorCoefficientImpactQueryParams} params - The parameters for the query.
+ * @param {IndicatorId} params.indicatorId - The ID of the indicator.
+ * @param {MaterialId} params.materialId - The ID of the material.
+ * @param {AdminRegionId} params.adminRegionId - The ID of the administrative region.
+ * @returns {Promise<IndicatorCoefficientImpactValue>} - The indicator coefficient impact value.
+ * @throws {ImpactRawDataComputingError} - If no indicator coefficient impact value is found.
+ */
+
 export class IndicatorCoefficientImpactQuery {
   constructor(private readonly dataSource: DataSource) {}
 

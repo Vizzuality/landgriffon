@@ -29,6 +29,7 @@ import {
   INDICATOR_NAME_CODES,
 } from '../../../src/modules/indicators/indicator.entity';
 import { H3Data } from '../../../src/modules/h3-data/h3-data.entity';
+import { NotImplementedException } from '@nestjs/common';
 
 describe('ImpactCalculationRepository', () => {
   let testApplication: TestingModule;
@@ -107,5 +108,10 @@ describe('ImpactCalculationRepository', () => {
       tablename: h3DatSource.h3tableName,
       columnname: h3DatSource.h3columnName,
     });
+  });
+
+  // TODO: create entity mocks for MaterialIndicatorToH3 and test
+  test.skip('should return material to indicator h3 data source given their ids', async () => {
+    throw new NotImplementedException('Test not implemented');
   });
 });

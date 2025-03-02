@@ -13,6 +13,7 @@ import {
   GeoRegionH3IndexList,
   MaterialH3DataSource,
 } from '../impact-calculation.repository';
+import { IImpactQueryDependency } from './impact-query-dependency.interface';
 
 // •	sum_material_over_georegion
 // 	•	get_annual_commodity_weighted_impact_over_georegion

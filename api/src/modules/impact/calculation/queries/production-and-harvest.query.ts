@@ -61,6 +61,8 @@ export class ProductionOrHarvestQuery {
     params: SumH3GridOverGeoRegionParams,
   ): Promise<H3GridSumResult> {
     const { geoRegionH3IndexList, h3DataSource } = params;
+
+    // TODO: After testing and compary, probably use here WHERE h3.index = ANY($1) instead of INNER JOIN over known h3 indices
     const res = await this.dataSource.query(
       `
       SELECT SUM(h3grid."${h3DataSource.columnName}") AS total_sum

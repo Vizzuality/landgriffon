@@ -14,9 +14,12 @@ import { TinyTypeOf } from 'tiny-types';
 
 export class TotalWeightedImpact extends TinyTypeOf<number>() {}
 
+export class ImpactRawDataComputingError extends Error {}
+
 export class AnnualCommodityWeightedImpactQuery {
   constructor(private readonly dataSource: DataSource) {}
 
+  // TODO: This probably needs better naming, smth more related to ImpactRawData
   async getAnnualCommodityWeightedImpactOverGeoRegion(
     indicatorH3DataSouce: IndicatorH3DataSource,
     materialH3DataSource: MaterialH3DataSource,
@@ -34,6 +37,11 @@ export class AnnualCommodityWeightedImpactQuery {
       `,
         [geoRegionH3IndexList.value],
       );
+    if (!res.length) {
+      throw new ImpactRawDataComputingError(
+        `Could not compute Impact Raw Data trying to fetch from indicator h3 source: ${indicatorH3DataSouce.tableName}.${indicatorH3DataSouce.columnName} and material h3 source: ${materialH3DataSource.tableName}.${materialH3DataSource.columnName}`,
+      );
+    }
 
     return new TotalWeightedImpact(res[0].total_weighted_impact);
   }

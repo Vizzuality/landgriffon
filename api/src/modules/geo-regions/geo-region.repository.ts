@@ -36,6 +36,8 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
   async saveGeoRegionAsRadius(
     newGeoRegionValues: LocationGeoRegionDto,
   ): Promise<string> {
+    const { coordinates, radiusInMeters } = newGeoRegionValues;
+    const radiusToUse = radiusInMeters ?? 50000; // Default 50000 meters (50KM)
     const selectQuery: SelectQueryBuilder<any> = this.dataSource
       .createQueryBuilder()
       .select(`hashtext(concat($3::text, points.radius))`)
@@ -50,17 +52,21 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
       .from('points', 'points');
 
     const res: any = await this.query(
-      `WITH
-        points AS (SELECT ST_BUFFER(ST_SetSRID(ST_POINT($1,$2),4326)::geometry, 0.5) as radius)
-      INSERT INTO geo_region (name, "theGeom", "h3Flat", "h3FlatLength", "h3Compact")
-      ${selectQuery.getSql()}
-      ON CONFLICT (name) DO UPDATE
-          SET "theGeom" = excluded."theGeom", "h3Compact" = excluded."h3Compact"
+      `WITH points AS (SELECT ST_BUFFER(
+                                ST_SetSRID(ST_POINT($1, $2), 4326)::geography,
+                                ${radiusToUse}::float
+                              ) ::geometry AS radius)
+       INSERT
+       INTO geo_region (name, "theGeom", "h3Flat", "h3FlatLength", "h3Compact")
+       ${selectQuery.getSql()}
+       ON CONFLICT (name) DO
+      UPDATE
+        SET "theGeom" = excluded."theGeom", "h3Compact" = excluded."h3Compact"
         RETURNING id`,
       [
-        newGeoRegionValues.coordinates.lng,
-        newGeoRegionValues.coordinates.lat,
-        `${newGeoRegionValues.coordinates.lng}-${newGeoRegionValues.coordinates.lat}, radius - `,
+        coordinates.lng,
+        coordinates.lat,
+        `${coordinates.lng}-${coordinates.lat}, radius - `,
       ],
     );
 
@@ -118,12 +124,13 @@ export class GeoRegionRepository extends Repository<GeoRegion> {
     );
   }
 
+  // TODO: We need to update this, or remove the use of it, as it can clash with the custom radius logic
   async getGeomRadiusByHashedName(coordinates: {
     lat: number;
     lng: number;
   }): Promise<GeoRegion[]> {
     return this.query(
-      `SELECT * FROM geo_region where name = hashtext(concat($1::text, (SELECT ST_BUFFER(ST_SetSRID(ST_POINT($2,$3),4326)::geometry, 0.5))))::varchar `,
+      `SELECT * FROM geo_region where name = hashtext(concat($1::text, (SELECT ST_BUFFER(ST_SetSRID(ST_POINT($2,$3),4326)::geography, 50000::float)::geometry)))::varchar `,
       [
         `${coordinates.lng}-${coordinates.lat}, radius - `,
         coordinates.lng,

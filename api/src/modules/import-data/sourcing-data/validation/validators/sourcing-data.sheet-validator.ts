@@ -18,6 +18,7 @@ import { LocationLongitudeInputValidator } from 'modules/import-data/sourcing-da
 import { Type } from 'class-transformer';
 
 const MAX_INT32_VALUE: number = 2147483647;
+const MAX_RADIUS_KM = 1000;
 
 export class SourcingDataSheetValidator {
   @IsNotEmpty({
@@ -63,6 +64,17 @@ export class SourcingDataSheetValidator {
 
   @Validate(LocationLongitudeInputValidator)
   'location_longitude_input': number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  // TODO: Ideally, this should be validated in this stage. Due to our current data, location types that won't need a radius value, are coming with a 0 value. This should be fixed in the data.
+  //.      for now, we will validate those in the geocoding and when creating the location object. Another task to the refactoring bucket
+  // @Min(1, { message: 'Radius has to be greater than 0' })
+  // @Max(MAX_RADIUS_KM, {
+  //   message: `Radius cannot be greater than ${MAX_RADIUS_KM}`,
+  // })
+  'radius_km'?: number;
 
   @IsArray()
   @ValidateNested({ each: true })

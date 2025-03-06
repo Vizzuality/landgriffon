@@ -55,6 +55,7 @@ export const sourcingLocationResource: BaseServiceResource = {
 
 @Entity()
 @Check('(num_nonnulls("scenarioInterventionId","interventionType") in (0,2))')
+@Check(`"radiusKm" IS NULL OR ("radiusKm" >= 1 AND "radiusKm" <= 1000)`)
 export class SourcingLocation extends TimestampedBaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
@@ -99,6 +100,9 @@ export class SourcingLocation extends TimestampedBaseEntity {
   @ApiPropertyOptional()
   @Column({ type: 'text', nullable: true })
   locationWarning?: string;
+
+  @Column({ type: 'float', nullable: true })
+  radiusKm?: number;
 
   @ManyToOne(
     () => GeoRegion,

@@ -12,6 +12,10 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
   );
 
   async geoCodeAggregationPoint(sourcingData: SourcingData): Promise<any> {
+    const { radiusKm, locationWarning } = this.handleRadius(
+      sourcingData.radiusKm,
+    );
+    sourcingData.radiusKm = radiusKm;
     /**
      * The user must specify a country, and either an address OR coordinates
      */
@@ -27,6 +31,7 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
       const geoRegionId: string =
         await this.geoRegionService.saveGeoRegionAsRadius({
           name: sourcingData.locationCountryInput,
+          radiusInMeters: radiusKm * 1000,
           coordinates: {
             lng: sourcingData.locationLongitude,
             lat: sourcingData.locationLatitude,
@@ -64,6 +69,7 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
         ...sourcingData,
         adminRegionId,
         geoRegionId,
+        locationWarning: locationWarning,
       };
     }
     /**
@@ -105,6 +111,7 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
           ...sourcingData,
           adminRegionId,
           geoRegionId,
+          locationWarning: locationWarning,
         };
       }
       if (
@@ -125,7 +132,7 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
           ...sourcingData,
           adminRegionId,
           geoRegionId,
-          locationWarning: geocodedResponseData.warning,
+          locationWarning: locationWarning,
         };
       } else {
         /**
@@ -136,6 +143,7 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
         const geoRegionId: string =
           await this.geoRegionService.saveGeoRegionAsRadius({
             name: sourcingData.locationCountryInput,
+            radiusInMeters: radiusKm * 1000,
             coordinates: {
               lat: geocodedResponseData.data.results[0].geometry.location.lat,
               lng: geocodedResponseData.data.results[0].geometry.location.lng,
@@ -159,9 +167,50 @@ export class AggregationPointGeocodingStrategy extends BaseStrategy {
           ...sourcingData,
           adminRegionId,
           geoRegionId,
-          locationWarning: geocodedResponseData.warning,
+          locationWarning: locationWarning,
         };
       }
     }
+  }
+
+  /**
+   * @description Processes the custom radius for an aggregation point based on acceptance criteria.
+   *
+   * - Only applies to locations of type "aggregation point".
+   * - The accepted radius must be greater than 0 and less than or equal to 1000 kilometers.
+   * - If the radius is missing (null/undefined) or out of bounds, default to 50km (50000 meters).
+   * - When defaulting due to an invalid radius, a warning is provided.
+   *
+   * @todo: This is a quick workaround but should be validated properly in earlier stages. Since we plan to refactor the geocoding process, this will be addressed then.
+   */
+
+  handleRadius(radiusKm: SourcingData['radiusKm']): {
+    radiusKm: number;
+    locationWarning?: string;
+  } {
+    const DEFAULT_RADIUS_KM = 50;
+    const MIN_RADIUS = 1;
+    const MAX_RADIUS = 1000;
+
+    if (radiusKm === null || radiusKm === undefined) {
+      this.aggregationPointGeocodingLogger.warn(
+        'No radius provided. Defaulting to 50km buffer',
+      );
+      return { radiusKm: DEFAULT_RADIUS_KM };
+    }
+
+    if (radiusKm < MIN_RADIUS || radiusKm > MAX_RADIUS) {
+      this.aggregationPointGeocodingLogger.warn(
+        `Provided radius is out of bounds. Defaulting to 50km`,
+      );
+      return {
+        radiusKm: DEFAULT_RADIUS_KM,
+        locationWarning: 'Provided radius is out of bounds. Defaulting to 50km',
+      };
+    }
+    this.aggregationPointGeocodingLogger.log(
+      `Radius provided. Using ${radiusKm}km for buffer`,
+    );
+    return { radiusKm: radiusKm };
   }
 }

@@ -19,6 +19,8 @@ import { Type } from 'class-transformer';
 
 const MAX_INT32_VALUE: number = 2147483647;
 
+const MAX_RADIUS_KM = 1000;
+
 export class SourcingDataExcelValidator {
   @IsNotEmpty({
     message: 'Material hs code cannot be empty',
@@ -69,6 +71,15 @@ export class SourcingDataExcelValidator {
 
   @Validate(LocationLongitudeInputValidator)
   'location_longitude_input': number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(50, { message: 'Radius cannot be less than 50 km' })
+  @Max(MAX_RADIUS_KM, {
+    message: `Radius cannot be greater than ${MAX_RADIUS_KM}`,
+  })
+  'radius_km': number;
 
   @IsArray()
   @ValidateNested({ each: true })

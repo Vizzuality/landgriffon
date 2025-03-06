@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsEnum,
   IsNotEmpty,
@@ -13,6 +14,8 @@ import {
   LOCATION_ACCURACY,
   LOCATION_TYPES,
 } from 'modules/sourcing-locations/sourcing-location.entity';
+
+// TODO: Use this as the only validated DTO for creating sourcing locations. remove everything else
 
 export class CreateSourcingLocationDto {
   @IsString()
@@ -119,4 +122,6 @@ export class CreateSourcingLocationDto {
   @IsString()
   @IsOptional()
   adminRegionId?: string;
+
+  radiusKm?: number;
 }

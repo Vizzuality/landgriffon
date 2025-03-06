@@ -49,6 +49,7 @@ const SOURCING_LOCATION_SHEET_PROPERTIES: Array<string> = [
   'business_unit.path',
   't1_supplier.name',
   'producer.name',
+  'radius_km',
 ];
 
 /**
@@ -356,6 +357,10 @@ export class SourcingRecordsDtoProcessorService {
       sourcingLocationData.location_longitude_input === ''
         ? undefined
         : parseFloat(sourcingLocationData.location_longitude_input);
+    sourcingLocationDto.radiusKm = this.assignRadiusKMValueBasedOnLocationType(
+      sourcingLocationDto.locationType,
+      sourcingLocationData.radius_km,
+    );
     sourcingLocationDto.metadata = sourcingLocationData.metadata;
     sourcingLocationDto.sourcingLocationGroupId = !sourcingLocationGroupId
       ? undefined
@@ -382,5 +387,22 @@ export class SourcingRecordsDtoProcessorService {
     sourcingRecordDto.tonnage = sourcingRecordData.tonnage;
     sourcingRecordDto.year = sourcingRecordData.year;
     return sourcingRecordDto;
+  }
+
+  /**
+   *@description: Sets the value for the custom radius based on the location type:
+   *              if the location type is a production aggregation point, the radius is set to the value provided in the sheet, otherwise set to null
+   *              this is not ideal and introduces noise, but it's compliant with the current constraints
+   *
+   *              Validation wise, we agreed that for now we will not validate and reject if the value is not used. We will fallback to the default one in case this cannot be used
+   */
+
+  private assignRadiusKMValueBasedOnLocationType(
+    locationType: LOCATION_TYPES,
+    radiusKM: number,
+  ): number | undefined {
+    return locationType === LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT
+      ? radiusKM
+      : undefined;
   }
 }

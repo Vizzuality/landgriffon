@@ -4,9 +4,7 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { SourcingDataImportService } from 'modules/import-data/sourcing-data/sourcing-data-import.service';
-import {
-  ImportDataProducer
-} from 'modules/import-data/workers/import-data.producer';
+import { ImportDataProducer } from 'modules/import-data/workers/import-data.producer';
 import { Task } from 'modules/tasks/task.entity';
 import { TasksService } from 'modules/tasks/tasks.service';
 
@@ -18,7 +16,7 @@ export class ImportDataService {
     private readonly importDataProducer: ImportDataProducer,
     private readonly sourcingDataImportService: SourcingDataImportService,
     private readonly tasksService: TasksService,
-  ) { }
+  ) {}
 
   async loadXlsxFile(
     userId: string,
@@ -34,7 +32,8 @@ export class ImportDataService {
       return this.tasksService.serialize(task);
     } catch (error: any) {
       this.logger.error(
-        `Job for file: ${xlsxFileData.filename
+        `Job for file: ${
+          xlsxFileData.filename
         } sent by user: ${userId} could not been added to queue: ${error.toString()}`,
       );
 
@@ -45,7 +44,10 @@ export class ImportDataService {
     }
   }
 
-  async processImportJob(taskId: string, xlsxFileData: Express.Multer.File): Promise<void> {
+  async processImportJob(
+    taskId: string,
+    xlsxFileData: Express.Multer.File,
+  ): Promise<void> {
     await this.sourcingDataImportService.importSourcingData(
       xlsxFileData.path,
       taskId,

@@ -40,6 +40,7 @@ export class IndicatorsService extends AppBaseService<
       attributes: [
         'id',
         'name',
+        'shortName',
         'description',
         'category',
         'unit',

@@ -31,22 +31,22 @@ const IndicatorsMapFilter = () => {
       new Set(data?.map(({ category }) => category).filter(Boolean)),
     ).sort((a, b) => a.localeCompare(b));
 
-    const categoryGroups = categories.map((category) => {
+    return categories.map((category) => {
       const indicators = data?.filter((indicator) => indicator.category === category);
       const categoryOptions = indicators.map((indicator) => ({
-        label: indicator.metadata?.short_name,
+        label: indicator.shortName ?? indicator.name,
         value: indicator.id,
         disabled: indicator.status === 'inactive',
       }));
       return { label: category, value: category, options: categoryOptions };
     });
-
-    return categoryGroups;
   }, [data]);
 
   const indicatorName = useMemo(() => {
     const indicator = data?.find((indicator) => indicator.id === value);
-    return indicator?.metadata?.short_name;
+    if (!indicator) return '';
+
+    return indicator.shortName ?? indicator.name;
   }, [data, value]);
 
   const handleChange = useCallback(

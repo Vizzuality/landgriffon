@@ -101,7 +101,6 @@ export interface IndicatorMetadata {
   citation: string[];
   'name code': string;
   resolution: string;
-  short_name: string;
   description: string;
   'indicator type': Autocomplete<`${'landscape' | 'farm'}-level`>;
   'date of content': `${number}-${number}`;
@@ -112,6 +111,7 @@ export interface IndicatorMetadata {
 export interface Indicator {
   id: string;
   name: string;
+  shortName: string;
   nameCode: string;
   status: 'active' | 'inactive';
   type: 'indicators';
@@ -199,7 +199,6 @@ export type BusinessUnits = {
   name: string;
   children: BusinessUnits[];
   type: 'businessUnits';
-  id: string;
   attributes: BusinessUnitsAttributes;
   status: 'inactive' | 'active';
 };

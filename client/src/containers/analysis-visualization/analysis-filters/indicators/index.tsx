@@ -28,12 +28,12 @@ const IndicatorsFilter = () => {
   const options = useMemo<TreeSelectOption[]>(() => {
     const categories = Array.from(new Set(data?.map(({ category }) => category).filter(Boolean)));
 
-    const categoryGroups = categories.map((category) => {
+    return categories.map((category) => {
       const indicators = data?.filter((indicator) => indicator.category === category);
       const categoryOptions = indicators.map(
         (indicator) =>
           ({
-            label: indicator.metadata?.short_name,
+            label: indicator.shortName ?? indicator.name,
             value: indicator.id,
           }) satisfies TreeSelectOption<(typeof indicator)['id']>,
       );
@@ -44,8 +44,6 @@ const IndicatorsFilter = () => {
         children: categoryOptions,
       } satisfies HasParentProperty<TreeSelectOption<typeof category>>;
     });
-
-    return categoryGroups;
   }, [data]);
 
   const allNodes = useMemo(() => options?.flatMap((opt) => flattenTree(opt)), [options]);
@@ -92,8 +90,7 @@ const IndicatorsFilter = () => {
 
   const initialSelectedOptions = useMemo(() => {
     if (syncedIndicators && options?.length) {
-      const selectedOptions = allNodes.filter(({ value }) => syncedIndicators.includes(value));
-      return selectedOptions;
+      return allNodes.filter(({ value }) => syncedIndicators.includes(value));
     }
     return undefined;
   }, [syncedIndicators, options, allNodes]);

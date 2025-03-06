@@ -41,7 +41,7 @@ type IndicatorH3DataSourceMap = Map<
   IndicatorH3DataSource
 >;
 
-type SourcingLocationDependency = {
+export type SourcingLocationDependency = {
   sourcingLocationId: string;
   materialH3DataSourceMap: {
     production: MaterialH3DataSource;

@@ -34,7 +34,7 @@ interface H3GridSumResult {
 
 export class SumH3GridOverGeoRegionParams {
   geoRegionH3IndexList: GeoRegionH3IndexList;
-  h3DataSource: H3DataSource;
+  materialH3DataSource: MaterialH3DataSource;
 }
 
 export class H3DataSourceNotFound extends NotFoundException {
@@ -61,16 +61,16 @@ export class ProductionOrHarvestQuery {
   async sumH3GridOverGeoRegion(
     params: SumH3GridOverGeoRegionParams,
   ): Promise<H3GridSumResult> {
-    const { geoRegionH3IndexList, h3DataSource } = params;
+    const { geoRegionH3IndexList, materialH3DataSource } = params;
 
     // TODO: After testing and compary, probably use here WHERE h3.index = ANY($1) instead of INNER JOIN over known h3 indices
     const res = await this.dataSource.query(
       `
-      SELECT SUM(h3grid."${h3DataSource.columnName}") AS total_sum
+      SELECT SUM(h3grid."${materialH3DataSource.columnName}") AS total_sum
       FROM (
         SELECT unnest($1::h3index[]) AS h3index
       ) AS geo_region
-      INNER JOIN ${h3DataSource.tableName} h3grid
+      INNER JOIN ${materialH3DataSource.tableName} h3grid
       ON h3grid.h3index = geo_region.h3index;
   `,
       [geoRegionH3IndexList.value],
@@ -86,7 +86,7 @@ export class ProductionOrHarvestQuery {
   ): Promise<any> {
     const res = await this.sumH3GridOverGeoRegion({
       geoRegionH3IndexList,
-      h3DataSource: materialH3DataSource,
+      materialH3DataSource: materialH3DataSource,
     });
     return res;
   }

@@ -14,7 +14,6 @@
       "log"
     ]
   },
-
   "tiler": {
     "host": "localhost",
     "port": 4000
@@ -29,5 +28,9 @@
   "map": {
     "distributed": true
   },
-  "newMethodology": "false"
+  "newMethodology": "false",
+  "flags": {
+    "useDistributedImpact": true,
+    "useNewImpactFlow": true
+  }
 }

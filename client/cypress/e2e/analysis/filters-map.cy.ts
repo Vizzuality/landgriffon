@@ -29,7 +29,7 @@ describe('Analysis filters', () => {
       const firstIndicator = interception.response.body?.data[0];
       cy.get('[data-testid="select-indicators-filter"]').should(
         'contain',
-        firstIndicator?.attributes.metadata.short_name,
+        firstIndicator?.attributes.shortName,
       );
       cy.url().should('include', `indicators=${firstIndicator?.id}`);
     });
@@ -40,7 +40,7 @@ describe('Analysis filters', () => {
       const thirdIndicator = interception.response.body?.data[2];
       cy.get('[data-testid="select-indicators-filter"]')
         .type('{downarrow}{downarrow}{enter}')
-        .should('contain', thirdIndicator?.attributes.metadata.short_name);
+        .should('contain', thirdIndicator?.attributes.shortName);
       cy.url().should('include', `indicators=${thirdIndicator?.id}`);
     });
   });

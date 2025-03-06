@@ -9,6 +9,13 @@ import { SourcingRecordsWithIndicatorRawData } from '../../sourcing-records/dto/
 import { IndicatorRecord } from '../../indicator-records/indicator-record.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import {
+  ImpactPerLocationDependencyBuilder,
+  SourcingLocationDependency,
+} from 'modules/impact/calculation/impact-per-location.dependency.builder';
+import { ProductionOrHarvestQuery } from './queries/production-and-harvest.query';
+import { IndicatorCoefficientImpactQuery } from './queries/indicator-coefficient-impact.query';
+import { AnnualCommodityWeightedImpactQuery } from './queries/annual-commodity-weighted-impact.query';
 
 @Injectable()
 export class ImpactCalculatorV2 {
@@ -16,35 +23,22 @@ export class ImpactCalculatorV2 {
 
   constructor(
     private readonly strategyFactory: IndicatorStrategyFactory,
+    private readonly dependencyBuilder: ImpactPerLocationDependencyBuilder,
     private readonly calculationRepository: ImpactCalculationRepository,
     @InjectDataSource() private readonly dataSource: DataSource,
   ) {}
 
-  async calculateImpact(activeIndicators: Indicator[]): Promise<void> {
+  async calculateImpact(activeIndicators: Indicator[]): Promise<any> {
     const activeIndicatorNameCodes = activeIndicators.map(
       (indicator) => indicator.nameCode,
     );
     const strategyMap = this.strategyFactory.getStrategies(
       activeIndicatorNameCodes,
     );
-    this.logger.log('Calculating raw impact in DB...');
-    const res = await this.calculationRepository.calculateRawImpact(
-      strategyMap.getQueryDependencies(),
-    );
-    this.logger.log('Calculating impact for each record...');
-    // TODO: Check to run parallel inserts, make it transactional etc...
-    for (const rawData of res) {
-      const impactRecords = this.calculateImpactForRecord(
-        rawData,
-        activeIndicators,
-        strategyMap,
-      );
-      this.logger.log(
-        `Inserting ${impactRecords.length} records from a total of ${res.length}...`,
-      );
-      await this.calculationRepository.saveImpactRecords(impactRecords);
-    }
-    this.logger.log('Impact calculation finished.');
+    const sourcingLocationDependencies =
+      await this.dependencyBuilder.buildDependencyMap(activeIndicatorNameCodes);
+    // TODO: Following that we cache dependencies, we might want to also cache the raw values that are already calculated, for example production and harvest for same
+    //       material, or the results of other queries
   }
 
   private calculateImpactForRecord(
@@ -68,5 +62,37 @@ export class ImpactCalculatorV2 {
       records.push(indicatorRecord);
     }
     return records;
+  }
+
+  async goCalculatingStuff(locationDependency: SourcingLocationDependency[]) {
+    // TODO: We might want to also cache prod, harves, impact raw values if those are already calculated
+    const productionAndHarvestQuery = new ProductionOrHarvestQuery(
+      this.dataSource,
+    );
+    const indicatorCoefficientImpactQuery = new IndicatorCoefficientImpactQuery(
+      this.dataSource,
+    );
+
+    const materialWeightedImpact = new AnnualCommodityWeightedImpactQuery(
+      this.dataSource,
+    );
+    for (const location of locationDependency) {
+      const {
+        sourcingLocationId,
+        materialH3DataSourceMap,
+        geoRegionH3IndexList,
+        indicatorH3DataSourceDependencyMap,
+      } = location;
+      const production = await productionAndHarvestQuery.sumH3GridOverGeoRegion(
+        {
+          geoRegionH3IndexList,
+          materialH3DataSource: materialH3DataSourceMap.production,
+        },
+      );
+      const harvest = await productionAndHarvestQuery.sumH3GridOverGeoRegion({
+        geoRegionH3IndexList,
+        materialH3DataSource: materialH3DataSourceMap.harvest,
+      });
+    }
   }
 }

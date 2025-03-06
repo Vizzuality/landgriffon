@@ -1061,7 +1061,7 @@ const InterventionForm: React.FC<InterventionFormProps> = ({
                                 'text-gray-300': indicator.status === 'inactive',
                               })}
                             >
-                              {indicator?.metadata?.short_name}
+                              {indicator.shortName ?? indicator.name}
                             </label>
                             <Input
                               // @ts-expect-error not sure how to solve this dynamic typing

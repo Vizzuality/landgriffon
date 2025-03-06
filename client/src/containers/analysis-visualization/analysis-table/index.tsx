@@ -437,10 +437,10 @@ const AnalysisTable = () => {
         isSticky: 'left',
         size: 260,
         cell: ({ row: { original, depth } }) => {
-          const name =
-            isParentRow(original) &&
-            depth === 0 &&
-            indicators.find((i) => i.id === original.indicatorId)?.metadata?.short_name;
+          const isParentIndicator = isParentRow(original) && depth === 0;
+          const parentIndicator = isParentIndicator
+            ? indicators.find(({ id }) => id === original.indicatorId)
+            : null;
 
           return (
             <div className="flex gap-4 py-5">
@@ -452,8 +452,11 @@ const AnalysisTable = () => {
                   original.name
                 ) : (
                   <div className="block font-semibold">
-                    {name || original.name}
-                    {isParentRow(original) && depth === 0 && <> ({original.metadata.unit})</>}
+                    {isParentIndicator
+                      ? `${parentIndicator?.shortName ?? parentIndicator?.name} (${
+                          original.metadata.unit
+                        })`
+                      : original.name}
                   </div>
                 )}
 

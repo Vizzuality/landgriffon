@@ -24,13 +24,13 @@ const AdminTargetsPage: React.FC = () => {
   const { isLoading } = useTargets();
   const hasData = useMemo(() => indicators?.length > 0, [indicators]);
 
-  // TO-DO: temporal targets
+  // @todo: temporal targets
   const targets = useMemo<Target[]>(() => {
     if (indicators) {
       return indicators.map((indicator) => ({
         id: indicator.id,
-        name: indicator?.metadata?.short_name,
-        unit: indicator?.metadata?.units,
+        name: indicator.shortName ?? indicator.name,
+        unit: indicator.metadata?.units,
         indicatorId: indicator.id,
         baselineYear: 2020,
         baselineValue: 1,

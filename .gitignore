@@ -1,6 +1,7 @@
 .terraform/
 .terragrunt-cache/
 node_modules
+.yarn/
 /api/dist
 /api/coverage
 .env
@@ -16,6 +17,7 @@ infrastructure/kubernetes/vars/*
 /infrastructure/kubernetes/bastion_tunnel.sh
 
 .vscode/
+
 .env.*
 *.env
 .DS_Store

@@ -1,21 +1,38 @@
-# H3 Data Importer
+# H3 Data Importer <!-- omit from toc -->
 
-## H3 Raster Importer
+- [1. H3 Raster Importer](#1-h3-raster-importer)
+  - [1.1. Run](#11-run)
+  - [1.2. Develop](#12-develop)
+- [2. H3 Vector Importer](#2-h3-vector-importer)
+- [3. H3 CSV Importer](#3-h3-csv-importer)
+
+---
+
+## 1. H3 Raster Importer
 
 Download, convert, and import rasters into PGSQL H3 tables
 
-### Run
+### 1.1. Run
 
 Import raster data sources into the Landgriffon DB.
 
 From the root directory:
 
 1. Make sure your `.env` is set up with the `API_POSTGRES...` variables.
-2. `make start-api` - Make sure the LandGriffon DB is running.
-3. `cd data && ./data.sh seed-h3-tables` - Run the h3 tables import script.
+2. Make sure the LandGriffon DB is running:
+
+    ```sh
+    make start-api
+    ```
+
+3. Run the h3 tables import script:
+
+    ```sh
+    cd data && ./data.sh seed-h3-tables
+    ```
 
 Currently this will download the following data sources and create tables in the database
-<folder> <table> <dataType> <dataset> <year> [--h3-res=6] [--thread-count=4]
+`<folder> <table> <dataType> <dataset> <year> [--h3-res=6] [--thread-count=4]`
 
 | dataset                               | table                              | dataType | year | h3_res | columns                         |
 | ------------------------------------- | ---------------------------------- | -------- | ---- |
@@ -23,20 +40,20 @@ Currently this will download the following data sources and create tables in the
 
 Check the DB to see that the table(s) have been imported.
 
-### Develop
+### 1.2. Develop
 
-The main file for loading data is the `Makefile`. Within the makefile you will find rules for:
+The main file for loading data is the [`Makefile`](./Makefile). Within the makefile you will find rules for:
 
 - Creating a directory for each data source
 - Downloading the data
 - Unzipping the data
-- Running ./tiff_folder_to_h3_table.py to load the folder into the database
+- Running `tiff_folder_to_h3_table.py` (TODO: this file does not exist) to load the folder into the database
 
 To add additional raster data sources copy the makefile patterns to download, extract, and import additional datasets.
 
-The hard work is done by `raster_folder_to_h3_table.py`.
+The hard work is done by [`raster_folder_to_h3_table.py`](./raster_folder_to_h3_table.py).
 
-```
+```sh
 Usage: raster_folder_to_h3_table.py [OPTIONS] FOLDER TABLE {production|harvest
                                     _area|indicator|material_indicator}
                                     DATASET YEAR
@@ -56,17 +73,21 @@ Options:
   --help                  Show this message and exit.
 ```
 
-## H3 Vector Importer
+## 2. H3 Vector Importer
 
 Download, convert, and import vectors into PGSQL H3 tables
 
 This module is mainly used for importing contextual layers into the H3 tables.
 
-The contextual layer ingestion has its own rule *contextual-layers* in `data/h3_data_importer/Makefile` and **it is not set in the `all` rule**. This way the contextual layers ingestion can be done separately from the whole H3 ingestion. In the "master" makefile (`data/Makefile`) the `seed-contextual-layers` rule is set to run the contextual layers ingestion. In order to add new vector contextual layers to the system you need to add the new rule to the *contextual-layers* rules in the `data/h3_data_importer/Makefile`.
+The contextual layer ingestion has its own rule *contextual-layers* in [`h3_data_importer/Makefile`](../h3_data_importer/Makefile)
+and **it is not set in the `all` rule**. This way the contextual layers ingestion can be done separately from the whole H3
+ingestion. In the "master" [`Makefile`](../Makefile) the `seed-contextual-layers` rule is set to run the contextual
+layers ingestion. In order to add new vector contextual layers to the system you need to add the new rule to the
+*contextual-layers* rules in the [`h3_data_importer/Makefile`](../h3_data_importer/Makefile).
 
-The vector conversion and DB insertions are done in `vector_folder_to_h3_table.py`.
+The vector conversion and DB insertions are done in [`vector_folder_to_h3_table.py`](../h3_data_importer/vector_folder_to_h3_table.py).
 
-```
+```sh
 Reads a folder of vector files, converts to h3 and loads into a PG table
 
 All vector files in the folder must have identical projection, transform, etc.
@@ -91,13 +112,15 @@ Options:
     --h3-res=<res>    h3 resolution to use [default: 6].
 ```
 
-## H3 CSV Importer
+## 3. H3 CSV Importer
 
-Module to import table format data into H3 tables. Mainly used to import contextual layers that are at country level and in CSV format. The **CSV must have a column with the iso3 country codes**.
+Module to import table format data into H3 tables. Mainly used to import contextual layers that are at country level
+and in CSV format. The **CSV must have a column with the iso3 country codes**.
 
-The make rules for this module must be in `data/h3_data_importer/Makefile` and added to the `contextual-layers` rule as we do in H3 Vector Importer.
+The make rules for this module must be in [`h3_data_importer/Makefile`](../h3_data_importer/Makefile) and added to the
+`contextual-layers` rule as we do in H3 Vector Importer.
 
-```
+```sh
 The script converts the csv with country data to H3 grid cells using the already populated geo_region and admin_region
 tables to get the h3 hexes for each country. This way it only uses a sql join and avoid doing geo-spatial operations and
 querys.
@@ -118,3 +141,7 @@ Arguments:
     <year>            Year of the data used.
     <iso3_column>     Column with the country iso3 code.
 ```
+
+---
+
+[**↩️ GO TO `data/` DOC**](../README.md)

@@ -4,6 +4,8 @@
 - [2. API Documentation](#2-api-documentation)
 - [3. TODO](#3-todo)
 
+---
+
 Tiler uses [TiTiler](https://developmentseed.org/titiler/), a [FastAPI](https://fastapi.tiangolo.com/) microservice for
 serving tiled maps.
 

@@ -2,7 +2,7 @@
 
 [![Test Coverage](https://api.codeclimate.com/v1/badges/b46441bdb6b80f3b0094/test_coverage)](https://codeclimate.com/github/Vizzuality/landgriffon/test_coverage)
 
-Homepage: [vizzuality.github.io/landgriffon](https://vizzuality.github.io/landgriffon/)
+Homepage: [github.com/Vizzuality/landgriffon](https://github.com/Vizzuality/landgriffon)
 
 ---
 
@@ -10,6 +10,9 @@ Homepage: [vizzuality.github.io/landgriffon](https://vizzuality.github.io/landgr
 - [2. Architecture](#2-architecture)
 - [3. Folder Structure](#3-folder-structure)
 - [4. Environment variables](#4-environment-variables)
+	- [4.1. How to use environment variables in local development](#41-how-to-use-environment-variables-in-local-development)
+	- [4.2. Environment variables \& secrects in Github Actions](#42-environment-variables--secrects-in-github-actions)
+	- [4.3. Environment variables \& secrets in Terraform](#43-environment-variables--secrets-in-terraform)
 - [5. Services](#5-services)
 	- [5.1. API Service](#51-api-service)
 	- [5.2. Client Service](#52-client-service)
@@ -25,78 +28,109 @@ Homepage: [vizzuality.github.io/landgriffon](https://vizzuality.github.io/landgr
 	- [7.2. Data initialization](#72-data-initialization)
 	- [7.3. Configure environment variables](#73-configure-environment-variables)
 	- [7.4. Starting all the services](#74-starting-all-the-services)
-- [8. Development](#8-development)
+- [8. Local development](#8-local-development)
+	- [8.1. Using docker with debugging and hot reload](#81-using-docker-with-debugging-and-hot-reload)
+		- [8.1.1. Only frontend](#811-only-frontend)
+		- [8.1.2. Only backend](#812-only-backend)
+	- [8.2. Debugging with hot reload manually](#82-debugging-with-hot-reload-manually)
+		- [8.2.1. Only frontend](#821-only-frontend)
+		- [8.2.2. Only backend](#822-only-backend)
 - [9. Testing](#9-testing)
-	- [9.1. Unit testing](#91-unit-testing)
-	- [9.2. Integration testing](#92-integration-testing)
-	- [9.3. API testing (backend)](#93-api-testing-backend)
-	- [9.4. E2E testing (frontend)](#94-e2e-testing-frontend)
 - [10. CI/CD and Deployment](#10-cicd-and-deployment)
 	- [10.1. GitHub Actions](#101-github-actions)
-	- [10.2. Terraform](#102-terraform)
-- [11. Referenced documentation?](#11-referenced-documentation)
+		- [10.1.1. Testing workflows](#1011-testing-workflows)
+		- [10.1.2. Deployment Workflows](#1012-deployment-workflows)
+		- [10.1.4. Manual triggering](#1014-manual-triggering)
+	- [10.2. Pull request template](#102-pull-request-template)
+	- [10.3. Cloud infrastructure (Terraform)](#103-cloud-infrastructure-terraform)
+- [11. Additional documentation?](#11-additional-documentation)
 - [12. TODO: Documentation/application improvements](#12-todo-documentationapplication-improvements)
 
 ## 1. Project description
 
 Deforestation and water stress have a negative impact on agricultural supply chains, preventing agribusiness and food
-companies from becoming more sustainable. Advanced technology such as the Copernicus programme provides precise, timely
-and easily accessible data that improve environmental management and mitigate climate change effects.
+companies from becoming more sustainable. Advanced technology such as the [Copernicus programme](https://dataspace.copernicus.eu/)
+provides precise, timely and easily accessible data that improve environmental management and mitigate climate change effects.
 
-The EU-funded LAND GRIFFON project will develop digital decision-making instruments based on Copernicus data to observe,
-prognoses, analyse and follow environmental impacts on the entire agricultural supply chain. These innovative
+The EU-funded LAND GRIFFON project will develop digital decision-making instruments based on [Copernicus data](https://dataspace.copernicus.eu/)
+to observe, prognoses, analyse and follow environmental impacts on the entire agricultural supply chain. These innovative
 instruments will support agribusiness and food enterprises in becoming more sustainable and transparent.
 
 **Related Information**:
 
-- [Executive summary](https://bit.ly/3gIJq9n) with an overview of how LandGriffon functions.
+- [Executive summary](https://bit.ly/3gIJq9n) with an overview of how LandGriffon works.
+- [Full methodology](https://bit.ly/3ONp1MJ) with an in-depth description of every feature.
+
+> TODO: User Guide would also be useful as the [Full methodology](https://bit.ly/3ONp1MJ) document is not exactly a user
+guide, only explains how the indicators work and other related information, which does not exactly fit as a user guide.
 
 ## 2. Architecture
 
-This repository is a monorepo that contains all the microservices of the LandGriffon platform, with each microservice
-organized in a top-level folder.
+This repository is a [monorepo](https://monorepo.tools/#understanding-monorepos) containing all the microservices of the
+LandGriffon platform, each organized in a top-level folder.
 
-All services are packaged as Docker images, ensuring consistency and ease of deployment. For local development, the
-microservices are configured to run seamlessly using Docker Compose.
+All services are packaged as [Docker](https://www.docker.com/) images, ensuring consistency and ease of deployment.
+For local development, the microservices run seamlessly using [Docker Compose](https://docs.docker.com/compose/).
 
-In CI, testing, staging and production environments, microservices are orchestrated via Kubernetes.
+In CI, testing, staging, and production environments, the microservices are orchestrated via [Kubernetes](https://kubernetes.io/).
 
 > TODO: Add a diagram showing how all components relate to each other.
 
 ## 3. Folder Structure
 
-- `./` (**root**): Root folder with configuration, documentation, startup (Docker Compose) and environment variable files.
-  - `.editorconfig`: defines consistent formatting rules for different file types.
-  - `.gitignore`: excludes files from version control.
-  - `.pre-commit-config.yaml`: configures pre-commit hooks to automate code quality checks and formatting before commits.
-  - `.python-version`: specifies the Python version to use for the LandGriffon project.
-  - `CHANGELOG.md`: (TODO: outdated) track important changes made to LandGriffon over time.
-  - `docker-compose.yml`: (TODO: improve) Docker Compose file to start all services in local environment.
-  - `ENV_VARS.md`: Document explaining the environment variables needed by service in LandGriffon.
-  - `env.default`: Template with placeholders and default values for the environment variables needed for the several
-				  services of LandGriffon.
-  - `LICENSE`: License file.
-  - `Makefile`: Starting point for several processes. (deprecated?)
+- `.` (**root**): Root folder with configuration, documentation, startup ([Docker Compose](https://docs.docker.com/compose/))
+and environment variable files.
+  - [`.editorconfig`](./.editorconfig): defines consistent formatting rules for different file types.
+  - [`.gitignore`](./.gitignore): excludes files from version control.
+  - [`.pre-commit-config.yaml`](./.pre-commit-config.yaml): configures pre-commit hooks to automate code quality checks
+  and formatting before commits.
+  - [`.python-version`](./.python-version): specifies the Python version to use for the LandGriffon project.
+  - [`CHANGELOG.md`](./CHANGELOG.md): (TODO: outdated) track important changes made to LandGriffon over time.
+  - [`docker-compose.yml`](./docker-compose.yml): (TODO: improve) [Docker Compose](https://docs.docker.com/compose/) file
+  to start all services
+  in local environment.
+  - [`ENV_VARS.md`](./ENV_VARS.md): Document explaining the environment variables needed by service in LandGriffon.
+  - [`env.default`](./env.default): Template with placeholders and default values for the environment variables needed for
+  the several services of LandGriffon.
+  - [`LICENSE`](./LICENSE): License file.
+  - [`Makefile`](./Makefile): Starting point for several processes. (deprecated?)
   - `README.md`: this document.
-- `./.github/`: stores GitHub-specific configuration files for testing, publishing, building and deploying workflows.
+- [`.github/`](./.github): stores GitHub-specific configuration files for testing, publishing, building and deploying workflows.
 Also contains a pull request template.
-- `./api/`: contains the API service code.
-- `./client/`: contains the client (frontend) service code.
-- `./cookie-traceability/`: (TODO: deprecated? remove?)
-- `./data/`: contains the data and scripts needed to initialize the database.
-- `./database/`: contains a `Dockerfile` to build a custom Postgresql image.
-- `./infrastructure/`: Terraform files for automatic cloud provisioning.
-- `./landing/`: (TODO: deprecated? remove?)
-- `./marketing/`: current static site for LandGriffon
-- `./redis/`: contains a `Dockerfile` to build a custom Redis image.
-- `./tiler/`: necessary files to start up a Tiler service with [TiTiler](https://developmentseed.org/titiler/) including
-- a `Dockerfile`.
+- [`api/`](./api/): contains the API service code.
+- [`client/`](./client/): contains the client (frontend) service code.
+- `cookie-traceability/`: (TODO: deprecated? remove?)
+- [`data/`](./data/): contains the data and scripts needed to initialize the database.
+- [`database/`](./database/): contains a `Dockerfile` to build a custom Postgresql image.
+- [`infrastructure/`](./infrastructure/): Terraform files for automatic cloud provisioning.
+- `landing/`: (TODO: deprecated? remove?)
+- [`marketing/`](./marketing/): current static site for LandGriffon
+- [`redis/`](./redis/): contains a `Dockerfile` to build a custom Redis image.
+- [`tiler/`](./tiler/): necessary files to start up a Tiler service with [TiTiler](https://developmentseed.org/titiler/)
+including a `Dockerfile`.
 
 ## 4. Environment variables
 
 > TODO: Not all services are included in the [ENV_VARS.md](./ENV_VARS.md), only the API.
 
 You can find all the environment variables needed for every service in the [ENV_VARS.md](./ENV_VARS.md) file.
+
+### 4.1. How to use environment variables in local development
+
+> TODO: It would be nice to have this method in place.
+>
+> - Create a `.env` file at the root of the repository out of the [`env.default`](./env.default) template.
+> - Default values are already included.
+> - User-provided values need to go in the environment variables that do not have value. You can download these values
+from [LastPass](https://www.lastpass.com/). Choose the ones for local development.
+
+### 4.2. Environment variables & secrects in Github Actions
+
+> TODO: Explain how are they used
+
+### 4.3. Environment variables & secrets in Terraform
+
+> TODO: Explain how are they used
 
 ## 5. Services
 
@@ -115,24 +149,24 @@ The API provides endpoints that the frontend utilizes to retrieve all necessary 
 essential for Landgriffon's proper functionality. It ensures seamless communication between the frontend and backend,
 handling data processing, computations, and any required transformations to support the application's features effectively.
 
-Its contents are in the `./api` folder.
+Its contents are in the [`api/`](./api/) folder.
 
-More info in the [README.md](./api/README.md) file under the `./api` folder.
+More information its [README.md](./api/README.md) file.
 
 ### 5.2. Client Service
 
 Web frontend client for the API.
 
-Its contents, including a Dockerfile, are in the `./client` folder.
+Its contents, including a Dockerfile, are in the [`client/`](./client/) folder.
 
-More info in the [README.md](./client/README.md) file under the `./client` folder.
+More information its [README.md](./client/README.md) file.
 
 ### 5.3. Marketing site
 
 The marketing service serves as the current static site for LandGriffon.
 The live marketing site can be accessed at [landgriffon.com](https://landgriffon.com/).
 
-Its contents are in the `./marketing` folder.
+Its contents are in the [`marketing/`](./marketing/) folder.
 
 In the [Methodology](https://landgriffon.com/methodology) section of the marketing site, you'll find two key documents:
 one providing an overview of how LandGriffon works and another offering a detailed explanation of its features.
@@ -140,16 +174,16 @@ one providing an overview of how LandGriffon works and another offering a detail
 - [Executive summary](https://bit.ly/3gIJq9n) with an overview of how LandGriffon works.
 - [Full methodology](https://bit.ly/3ONp1MJ) with an in-depth description of every feature.
 
-More info in the specific [README.md](./marketing/README.md) file in the `./marketing` folder.
+More information in its [README.md](./marketing/README.md) file.
 
 ### 5.4. Tiler server (TiTiler)
 
 Tiler service that uses [TiTiler](https://developmentseed.org/titiler/), _"a modern dynamic tile server built on top of
 FastAPI and [Rasterio](https://rasterio.readthedocs.io/en/stable/)/[GDAL](https://gdal.org/en/stable/)"_.
 
-Its contents, including a `Dockerfile`, are in the `./tiler` folder.
+Its contents, including a [`Dockerfile`](./tiler/Dockerfile), are in the [`tiler/`](./tiler/) folder.
 
-More info in the specific [README.md](./tiler/README.md) file in the `./tiler` folder.
+More information in its [README.md](./tiler/README.md) file.
 
 ### 5.5. Database server (Postgresql)
 
@@ -159,7 +193,8 @@ v14 with two additional plugins:
 - [PostGIS](https://postgis.net/) v3.5.2
 - [PostgreSQL bindings for H3](https://github.com/bytesandbrains/h3-pg) v3.7.2
 
-The `Dockerfile` and the `entrypoint.sh` script are in the `./database` folder.
+The [`Dockerfile`](./database/Dockerfile) and the [`entrypoint.sh`](./database/entrypoint.sh) script are in the
+[`database/`](./database/) folder.
 
 More information in this [link](./api/README.md#31-database-setup).
 
@@ -169,8 +204,8 @@ Redis serves as both a message broker and a caching mechanism for certain precom
 disabled through configuration environment variables, Redis is essential for message broker functionality and cannot be
 turned off.
 
-More information about the use cases where Redis is needed in LandGriffon are explained in the following
-[README.md](./redis/README.md) file in the `./redis/` folder.
+More information about the use cases where Redis is needed in LandGriffon are explained in its
+[README.md](./redis/README.md) file.
 
 ## 6. Utilities
 
@@ -181,14 +216,14 @@ ensuring that the API has access to the necessary information for proper operati
 These scripts automate the data population process, facilitating a smooth setup and maintenance
 of the database while supporting the API’s functionality.
 
-Its contents are in the `./data` folder.
+Its contents are in the [`data/`](./data/) folder.
 
 More information about the data process used in LandGriffon are explained in the following
-[README.md](./data/README.md) file in the `./data/` folder.
+[README.md](./data/README.md) file.
 
 ### 6.2. Infrastructure package
 
-The code related to setting up the cloud infrastructure is located in the `./infrastructure` folder.
+The code related to setting up the cloud infrastructure is located in the [`infrastructure/`](./infrastructure/) folder.
 
 This setup adheres to the principle of [Infrastructure as Code](https://en.wikipedia.org/wiki/Infrastructure_as_code)
 (IaC), which allows for the management and provisioning of computing resources through machine-readable configuration
@@ -198,8 +233,8 @@ We utilize [Terraform](https://www.terraform.io/), a powerful IaC tool, to defin
 [AWS](https://aws.amazon.com/). Terraform enables us to create, update, and manage AWS resources efficiently and
 reliably, ensuring that our infrastructure is scalable and maintainable.
 
-For more details on how to deploy and manage the infrastructure, please refer to the
-[README.md](./infrastructure/README.md) file within the `./infrastructure` folder.
+For more details on how to deploy and manage the infrastructure, please refer to this
+[README.md](./infrastructure/README.md) file.
 
 ## 7. Start Up
 
@@ -208,7 +243,11 @@ and running the data seed process.
 
 > TODO: review if this is the real way of working.
 
-Once you already have the data imported, you just can start the whole system by running `docker compose up`.
+Once you already have the data imported, you just can start the whole system by running:
+
+```sh
+docker compose up
+```
 
 ### 7.1. System requirements
 
@@ -224,16 +263,16 @@ In order to run the application, it first needs to start a database and ingest t
 This is a time consuming process (a one time process for local development) that needs to be run separately, before
 starting the application.
 
-How to setup the database is explained in this [`README.md`](./database/README.md) file in the `./database/` folder.
+How to setup the database is explained in this [`README.md`](./database/README.md) file.
 
-Detailed process on how to import the data [`README.md`](./data/README.md) file under the `data/` folder.
+Also, for detailed information on how to import the data, read this [`README.md`](./data/README.md) file.
 
 ### 7.3. Configure environment variables
 
 > TODO: Explain:
 >
-> - [ ] what environment variables
-> - [ ] templates with default values suitable for local development
+> - [ ] which environment variables
+> - [ ] templates with default values suitable for local development (`env.default`)
 > - [ ] where to get values for the different environment variables with _"real"_ credentials for external services
 > (Geocoding, email, ...)
 > - [ ] explain where the _real_ credentials are stored _per environment_ (staging, production, ...)
@@ -242,48 +281,95 @@ Detailed process on how to import the data [`README.md`](./data/README.md) file 
 
 ### 7.4. Starting all the services
 
+> TODO: This should be ideal, not sure if it works with a proper configuration of the environment variables.
+
 After all the previous steps you just start the whole application:
 
 ```sh
 docker compose up
 ```
 
-## 8. Development
+## 8. Local development
 
-> TODO: Explain the different possibilities to start specific services for development
-> maybe with some environment variables we can tweak the ports exposed by the containers to be usable for debugging and
-> hot reloading inside the container.
+> TODO: Explain the different possibilities to start specific services for development maybe with some environment
+> variables we can tweak the ports exposed by the containers to be usable for debugging and hot reloading inside the container.
+
+### 8.1. Using docker with debugging and hot reload
+
+#### 8.1.1. Only frontend
+
+#### 8.1.2. Only backend
+
+### 8.2. Debugging with hot reload manually
+
+#### 8.2.1. Only frontend
+
+#### 8.2.2. Only backend
 
 ## 9. Testing
 
 > TODO: Explain the different ways of testing.
 >
-> SUGGESTION: In a monorepo setup and using some monorepo utilities (Turborepo, Nx, ...) we can test all the services at
-> the same time (frontend, backend, data?) with a single command from the root directory.
+> SUGGESTION: In a monorepo setup and using some monorepo utilities ([Turborepo](https://turbo.build/repo/docs),
+> [Nx](https://nx.dev/), ...) we can test all the services at the same time (frontend, backend, data?) with a single
+> command from the root directory, and take advantage of the caching features all this tools come with.
 
-### 9.1. Unit testing
+In LandGriffon we have the following types of tests:
 
-> TODO: Explain what unit testing is, how to do it in the backend, how to do it in the frontend.
+- **Unit tests**: verifies the correctness of individual code units in isolation.
+- **Integration tests**: individual components or modules are combined and tested as a group to ensure that they work
+together correctly.
+- **API tests**: validate the functionality of the API to ensure they correctly handle requests, deliver expected
+responses, and integrate seamlessly with other components.
+- **E2E tests**: simulate real user scenarios to validate that all components of an application work together as
+intended from start to finish.
 
-### 9.2. Integration testing
+For mor information on how to trigger testing in specific modules, refer to its corresponding documentation:
 
-> TODO: Explain what integration testing is, how to do it in the backend, how to do it in the frontend.
-
-### 9.3. API testing (backend)
-
-> TODO: Explain what integration testing is, how to do it.
-
-### 9.4. E2E testing (frontend)
-
-> TODO: Explain what unit testing is, how to do it. How to execute E2E testing from the root of the project.
+- [Testing the backend](./api/README.md)
+- [Testing the frontend](./client/README.md)
+- [Testing the data processing](./data/README.md)
 
 ## 10. CI/CD and Deployment
 
 ### 10.1. GitHub Actions
 
-> TODO: Explain the main options taken for the CI/CD pipeline
+This document provides an overview of the [GitHub Actions](https://github.com/features/actions) workflows used in the
+LandGriffon project.
 
-### 10.2. Terraform
+#### 10.1.1. Testing workflows
+
+- **`testing-api.yml`**: Runs tests for the API service, ensuring code quality and functionality.
+- **`testing-client.yml`**: Executes integration tests for the client application.
+- **`testing-client-unit-tests.yml`**: Runs unit tests specifically for the client components.
+- **`testing-data-import.yml`**: Validates data import functionality and integrity.
+- **`testing-tiler.yml`**: Tests the tiler service for geospatial data handling.
+
+#### 10.1.2. Deployment Workflows
+
+- **`deploy-to-kubernetes.yml`**: Deploys the application to a Kubernetes cluster, typically triggered on merge to
+main/specific branches.
+- **`publish-docker-images.yml`**: Builds and pushes Docker images to a container registry.
+- **`publish-marketing-site.yml`**: Builds and deploys the marketing website.
+- **`build-database-docker.yml`**: Builds a Docker image for the PostgreSQL database with required extensions.
+
+#### 10.1.4. Manual triggering
+
+To manually trigger a workflow:
+
+1. Navigate to the Actions tab in the repository
+2. Select the desired workflow
+3. Click `Run workflow`
+4. Select the branch and provide any required inputs
+
+### 10.2. Pull request template
+
+This GitHub pull request template provides a standardized format for contributors, requiring them to document changes
+with descriptions and testing instructions while enforcing quality standards through a pre-merge checklist. It ensures
+PRs include Jira ticket references, proper testing, CI validation, and code reviews, ultimately streamlining the review
+process and maintaining project quality standards.
+
+### 10.3. Cloud infrastructure (Terraform)
 
 > TODO: Explain the main options taken for the deployment in the cloud:
 >
@@ -291,15 +377,19 @@ docker compose up
 > - [ ] GCP provider options.
 > - [ ] GitHub Actions secrets.
 
-## 11. Referenced documentation?
+## 11. Additional documentation?
 
-> TODO: links to other markdown documents?
+- [Executive summary](https://bit.ly/3gIJq9n) with an overview of how LandGriffon works.
+- [Full methodology](https://bit.ly/3ONp1MJ) with an in-depth description of every feature.
+
+> TODO: User guide.
 
 ## 12. TODO: Documentation/application improvements
 
 - **Environment variables** needed for every service are, incomplete, outdated and dispersed over several files.
-- **The process to setup the environment variables** for local development needs some clarification and a way to _"do it
-without asking anyone"_ would be a nice thing to have. A template with default values, a guide on how to create a `.env`
-file and a reference to LastPass for the sensible values (passwords, users, secrets...) should be enough.
+- **The process to setup the environment variables** for local development needs some clarification and a way to
+_"do-it-without-asking-anyone"_ would be a nice thing to have. A template with default values, a guide on how to create
+a `.env` file and a reference to [LastPass](https://www.lastpass.com/) for the sensible values (passwords, users,
+secrets...) should be enough.
 - **Initial data setup** takes too much time so the possiblity to have a _"working relevant subset"_ of the data for
 just the minimum local development would also be nice to have.

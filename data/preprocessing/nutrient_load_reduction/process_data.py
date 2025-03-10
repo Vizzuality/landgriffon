@@ -8,9 +8,9 @@ Arguments:
     <input_folder>     Input folder containing the limiting nutrients shapefile
     <output_folder>    Output folder to export the required percentage reduction
 """
+import argparse
 import logging
 from pathlib import Path
-import argparse
 
 import geopandas as gpd
 
@@ -52,17 +52,19 @@ def calculate_perc_reduction(row):
     The global concentration thresholds values for Total N (0.70 mg-N/L) and Total P (0.046 mg-P/L)
     represent acceptable levels of algal growth.
 
+
+
     More information can be found on the LandGriffon v2.0 methodology
     """
-    if row["Cases_v2_1"] == 4 and row["TP_con_V2_"]:
-        return ((row["TP_con_V2_"] - 0.046) / row["TP_con_V2_"]) * 100
-    elif row["Cases_v2_1"] == 2 and row["TN_con_V2_"]:
-        return ((row["TN_con_V2_"] - 0.7) / row["TN_con_V2_"]) * 100
+    if row["limiting"] == "P-limited":
+        return ((row["tpc_raw"] - 0.046) / row["tpc_raw"]) * 100
+    elif row["limiting"] == "N-limited":
+        return ((row["tnc_raw"] - 0.7) / row["tnc_raw"]) * 100
     else:
         return 0
 
 
-def process_folder(input_folder, output_folder):
+def process_folder(input_folder, output_folder):  # noqa: D103
     vec_extensions = "gdb gpkg shp json geojson".split()
     input_path = Path(input_folder)
     output_path = Path(output_folder)
@@ -77,6 +79,7 @@ def process_folder(input_folder, output_folder):
         gdf = gpd.read_file(vectors[0])
         # Check and reproject to EPSG:4326
         gdf = check_and_reproject_to_4326(gdf)
+        breakpoint()
         # Calculate perc_reduction and add it as a new column
         gdf["perc_reduc"] = gdf.apply(calculate_perc_reduction, axis=1)
         # Save the processed data to a new shapefile
@@ -93,7 +96,7 @@ def process_folder(input_folder, output_folder):
         return
 
 
-def main():
+def main():  # noqa: D103
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Process limiting nutrients vector files.")
     parser.add_argument("input_folder", type=str, help="Path to the input folder containing vector files")

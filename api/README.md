@@ -1,7 +1,7 @@
 # LandGriffon API <!-- omit from toc -->
 
 - [1. Dependencies](#1-dependencies)
-- [2. Documentation](#2-documentation)
+- [2. API Documentation](#2-api-documentation)
 - [3. Installation](#3-installation)
 	- [3.1. Database setup](#31-database-setup)
 	- [3.2. Redis](#32-redis)
@@ -23,7 +23,7 @@
 - [PostgreSQL bindings for H3](https://github.com/bytesandbrains/h3-pg) v3.7.2 or greater
 - [Redis](https://redis.io/) v6 or greater
 
-## 2. Documentation
+## 2. API Documentation
 
 API documentation is done using [OpenAPI](https://swagger.io/docs/specification/about/) (formerly known as Swagger) and
 is available through the `/swagger` endpoint.

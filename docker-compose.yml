@@ -63,7 +63,7 @@ services:
     container_name: landgriffon-redis
     command: [ "redis-server" ]
     ports:
-      - "${API_REDIS_SERVICE_PORT}:6379"
+      - "${API_REDIS_SERVICE_PORT:-6379}:6379"
     restart: on-failure
 
     # Admin gui for redis
@@ -83,11 +83,12 @@ services:
     build:
       context: database
       args:
-        - PG_H3_VERSION=3.7.2
+        - PG_H3_VERSION=${PG_H3_VERSION:-3.7.2}
     container_name: landgriffon-postgresql
+    # TODO: usage of env_file and environment are redundant
     env_file: ${ENVFILE}
     ports:
-      - ${API_POSTGRES_PORT}:5432
+      - ${API_POSTGRES_PORT:-5432}:5432
     volumes:
       - landgriffon-postgresql:/var/lib/postgresql/data
     environment:

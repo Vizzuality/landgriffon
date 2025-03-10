@@ -6,8 +6,6 @@
 
 ---
 
-> TODO: update? improve?
-
 Project integrated into the [Horizon 2020 EU Research and Innovation Programme](https://research-and-innovation.ec.europa.eu/funding/funding-opportunities/funding-programmes-and-open-calls/horizon-2020_en).
 
 The goal of this grant is to design, develop, and validate tools that facilitate a more sustainable supply chain management.

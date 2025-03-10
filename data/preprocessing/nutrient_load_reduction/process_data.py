@@ -79,7 +79,6 @@ def process_folder(input_folder, output_folder):  # noqa: D103
         gdf = gpd.read_file(vectors[0])
         # Check and reproject to EPSG:4326
         gdf = check_and_reproject_to_4326(gdf)
-        breakpoint()
         # Calculate perc_reduction and add it as a new column
         gdf["perc_reduc"] = gdf.apply(calculate_perc_reduction, axis=1)
         # Save the processed data to a new shapefile

@@ -82,7 +82,7 @@ def process_folder(input_folder, output_folder):  # noqa: D103
         # Calculate perc_reduction and add it as a new column
         gdf["perc_reduc"] = gdf.apply(calculate_perc_reduction, axis=1)
         # Save the processed data to a new shapefile
-        gdf = gdf[["Cases_v2_1", "perc_reduc", "geometry"]]
+        gdf = gdf[["limiting", "perc_reduc", "geometry"]]
         output_file = output_path / "nutrient_load_reduction.shp"
         log.info(f"Saving preprocessed file to {output_file}")
         gdf.to_file(output_file)

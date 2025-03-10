@@ -1,12 +1,19 @@
-# Infrastructure
+# Infrastructure <!-- omit from toc -->
 
-## Dependencies
+- [1.1. Dependencies](#11-dependencies)
+- [1.2. Deploying new environments](#12-deploying-new-environments)
+	- [1.2.1. The "environments" variables](#121-the-environments-variables)
+	- [1.2.2. Handling production and staging](#122-handling-production-and-staging)
+
+---
+
+## 1.1. Dependencies
 
 - AWS
 - Terraform + Terragrunt
 - Kubectl
 
-## Deploying new environments
+## 1.2. Deploying new environments
 
 The infrastructure is deployed using Terraform, and set up in a way that makes it very easy to deploy new, independent
 copies of the app - environments. To do this, do the following:
@@ -19,7 +26,7 @@ copies of the app - environments. To do this, do the following:
   it and wait for Github Action to finish processing.
 - Apply the kubernetes project above once more. The deployments should succeed.
 
-### The "environments" variables
+### 1.2.1. The "environments" variables
 
 The `environments` variables can hold complex values that control many aspects of the deployment, so it's worth
 analyzing
@@ -28,17 +35,17 @@ way, with the first one controlling deployments to AWS, while the second one con
 
 ```terraform
 aws_environments = {
-	sample : {
-		api_env_vars : [
-			{
-				name : "ENV_VAR_NAME"
-				value : "some-value"
-			}
-		],
-		load_fresh_data : true,
-		data_import_arguments : ["seed-data"],
-		image_tag : "sample"
-	}
+  sample : {
+    api_env_vars : [
+      {
+        name : "ENV_VAR_NAME"
+        value : "some-value"
+      }
+    ],
+    load_fresh_data : true,
+    data_import_arguments : ["seed-data"],
+    image_tag : "sample"
+  }
 }
 ```
 
@@ -64,9 +71,13 @@ The `value` in the key-value pair is an object with a set of properties, all of 
 - `image_tag`: tag of the different docker images to pull from the container registry. Does not apply to the Redis
   image. Defaults to the same value as `key`.
 
-### Handling production and staging
+### 1.2.2. Handling production and staging
 
 The AWS production and staging environments are always deployed, even if they are not declared in the `environments`
 variable.
 However, if you'd like to customize their behavior (for example, reload fresh data), you can explicitly add them to the
 `environments` variable, and specify your custom values for each configuration, as you would for any other env.
+
+---
+
+[**↩️ GO TO ROOT DOC**](../README.md)

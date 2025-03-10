@@ -1,8 +1,13 @@
-# Landgriffon Tiler
+# Landgriffon Tiler <!-- omit from toc -->
 
-Tiler is a FastAPI microservice for serving tiled maps.
+- [1. Environment Variables](#1-environment-variables)
+- [2. API Documentation](#2-api-documentation)
+- [3. TODO](#3-todo)
 
-## Environment Variables
+Tiler uses [TiTiler](https://developmentseed.org/titiler/), a [FastAPI](https://fastapi.tiangolo.com/) microservice for
+serving tiled maps.
+
+## 1. Environment Variables
 
 Tiler requires the following environment variables to be set:
 
@@ -14,15 +19,17 @@ Tiler requires the following environment variables to be set:
 - `TITILER_PREFIX`: (optional) the prefix for Tiler service API endpoints (default is `cog`)
 - `TITILER_ROUTER_PREFIX`: (optional) the prefix for Tiler service router API endpoints (default is `cog`)
 
-
-## API Documentation
+## 2. API Documentation
 
 Once the Tiler service is running, the API documentation can be accessed at `http://localhost/tiler/docs`.
 
-
-## TODO
+## 3. TODO
 
 - Add more env vars that are required, for deployment and fine-tuning
 - Add more tests (there is a basic pipeline set up with a couple of test)
 - Investigate caching options to improve performance
 - Custom handle TiTiler errors
+
+---
+
+[**↩️ GO TO ROOT DOC**](../README.md)

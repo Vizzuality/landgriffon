@@ -17,9 +17,9 @@ process-limiting-nutrients: unzip-limiting-nutrient
 	python process_data.py data/sbtn_son_water_v1_1_shp data/nutrient_load_reduction
 
 zip-shapefile: process-limiting-nutrients
-	cd data/nutrient_load_reduction && zip -r nutrient_load_reduction.zip nutrient_load_reduction.*
+	zip -rj data/nutrient_load_reduction.zip data/nutrient_load_reduction/*
 
 write_checksum: zip-shapefile
-	cd data/nutrient_load_reduction && sha256sum nutrient_load_reduction.shp > $(checksums_dir)/nutrient_load_reduction
+	cd data/nutrient_load_reduction && sha256sum nutrient_load_reduction.* > $(checksums_dir)/nutrient_load_reduction
 
 # TODO: Upload resulting data manually!

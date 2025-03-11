@@ -11,27 +11,27 @@
         "type": "category",
         "items": [
             {
-                "value": 0,
+                "value": -1,
                 "label": "No Data",
                 "color": "#9c9c9c"
             },
             {
-                "value": 1,
+                "value": 0,
                 "label": "N-limited growth acceptable",
                 "color": "#d2ff73"
             },
             {
-                "value": 2,
+                "value": 1,
                 "label": "N-limited growth undesirable",
                 "color": "#3aa809"
             },
             {
-                "value": 3,
+                "value": 2,
                 "label": "P-limited growth acceptable",
                 "color": "#fea87c"
             },
             {
-                "value": 4,
+                "value": 3,
                 "label": "P-limited growth undersiable",
                 "color": "#a73800"
             }

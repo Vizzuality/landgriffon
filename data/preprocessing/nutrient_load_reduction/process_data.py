@@ -13,6 +13,7 @@ import logging
 from pathlib import Path
 
 import geopandas as gpd
+import pandas as pd
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("preprocessing_limiting_nutrients_file")
@@ -75,14 +76,18 @@ def process_folder(input_folder, output_folder):  # noqa: D103
         log.error(f"No vectors with extension {vec_extensions} found in {input_folder}")
         return
     if len(vectors) == 1:  # folder just contains one vector file
-        # Read the shapefile
         gdf = gpd.read_file(vectors[0])
-        # Check and reproject to EPSG:4326
         gdf = check_and_reproject_to_4326(gdf)
-        # Calculate perc_reduction and add it as a new column
         gdf["perc_reduc"] = gdf.apply(calculate_perc_reduction, axis=1)
-        # Save the processed data to a new shapefile
-        gdf = gdf[["limiting", "perc_reduc", "geometry"]]
+        # generate Periphyton Growth Potential  categorical values since the dataset original ones ("pgp_n")
+        # do not have a 1 to 1 relationship with pgp_label. Remember to write the mapping to metadata file!
+        #  {0: 'N-limited growth acceptable',
+        #   1: 'N-limited growth undesirable',
+        #   2: 'P-limited growth acceptable',
+        #   3: 'P-limited growth undesirable'}
+        gdf["pgp_label"] = pd.Categorical(gdf["pgp_label"])
+        gdf["pgp_label_codes"] = gdf["pgp_label"].cat.codes
+        gdf = gdf[["pgp_label_codes", "perc_reduc", "geometry"]]
         output_file = output_path / "nutrient_load_reduction.shp"
         log.info(f"Saving preprocessed file to {output_file}")
         gdf.to_file(output_file)

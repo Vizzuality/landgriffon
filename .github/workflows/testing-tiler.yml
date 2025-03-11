@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - 'tiler/**'
+      - '!tiler/README.md'
+      - '.github/workflows/testing-tiler.yml'
 
   workflow_dispatch:
 

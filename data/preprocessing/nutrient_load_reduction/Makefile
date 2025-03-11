@@ -19,8 +19,7 @@ process-limiting-nutrients: unzip-limiting-nutrient
 zip-shapefile: process-limiting-nutrients
 	cd data/nutrient_load_reduction && zip -r nutrient_load_reduction.zip nutrient_load_reduction.*
 
-upload_results: zip-shapefile
-	aws s3 cp data/nutrient_load_reduction/nutrient_load_reduction.zip ${AWS_S3_BUCKET_URL}/processed/nutrients_load_reduction/
-
-write_checksum: upload_results
+write_checksum: zip-shapefile
 	cd data/nutrient_load_reduction && sha256sum nutrient_load_reduction.shp > $(checksums_dir)/nutrient_load_reduction
+
+# TODO: Upload resulting data manually!

@@ -33,7 +33,7 @@ can also see our documentation [here](/docs).
 
 ## 2. Quick start
 
-Create the file `.env.local`. You can see an example on [LastPass](https://www.lastpass.com/).
+Create the file `.env.local`. You can see an example on the **shared secret storage**.
 
 Install dependencies:
 
@@ -49,7 +49,7 @@ yarn dev
 
 ## 3. Environment variables required
 
-Those environment variables are required to run the project. You can find them on [LastPass](https://www.lastpass.com/).
+Those environment variables are required to run the project. You can find them on the **shared secret storage**.
 
 ```sh
 SENDGRID_API_KEY_SUBSCRIPTION=

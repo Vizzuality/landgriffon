@@ -1,9 +1,9 @@
 # Environment variables <!-- omit from toc -->
 
 - [1. API (backend)](#1-api-backend)
- 	- [1.1. Database](#11-database)
- 	- [1.2. Geocoding cache config](#12-geocoding-cache-config)
- 	- [1.3. Asynchronous task handling config (message broker)](#13-asynchronous-task-handling-config-message-broker)
+	- [1.1. Database](#11-database)
+	- [1.2. Geocoding cache config](#12-geocoding-cache-config)
+	- [1.3. Asynchronous task handling config (message broker)](#13-asynchronous-task-handling-config-message-broker)
 - [2. Database (PostgreSQL)](#2-database-postgresql)
 - [3. Message broker \& cache (Redis)](#3-message-broker--cache-redis)
 - [4. Client (frontend)](#4-client-frontend)
@@ -19,7 +19,7 @@
 > - Indicate the type or possible values (boolean, number, integer, string, enumerated...)
 > - Indicate a brief explanation of what they are for.
 > - Indicate the default value, if any.
-> - If it is a sensible value, it must be provided via [LastPass](https://www.lastpass.com/).
+> - If it is a sensible value, it must be provided via the **shared secret storage**.
 
 ## 1. API (backend)
 

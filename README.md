@@ -122,7 +122,7 @@ You can find all the environment variables needed for every service in the [ENV_
 > - Create a `.env` file at the root of the repository out of the [`env.default`](./env.default) template.
 > - Default values are already included.
 > - User-provided values need to go in the environment variables that do not have value. You can download these values
-from [LastPass](https://www.lastpass.com/). Choose the ones for local development.
+from the **shared secret storage**. Choose the ones for local development.
 
 ### 4.2. Environment variables & secrects in Github Actions
 
@@ -389,7 +389,7 @@ process and maintaining project quality standards.
 - **Environment variables** needed for every service are, incomplete, outdated and dispersed over several files.
 - **The process to setup the environment variables** for local development needs some clarification and a way to
 _"do-it-without-asking-anyone"_ would be a nice thing to have. A template with default values, a guide on how to create
-a `.env` file and a reference to [LastPass](https://www.lastpass.com/) for the sensible values (passwords, users,
+a `.env` file and a reference to the **shared secret storage** for the sensible values (passwords, users,
 secrets...) should be enough.
 - **Initial data setup** takes too much time so the possiblity to have a _"working relevant subset"_ of the data for
 just the minimum local development would also be nice to have.

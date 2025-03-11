@@ -86,8 +86,8 @@ def process_folder(input_folder, output_folder):  # noqa: D103
         #   2: 'P-limited growth acceptable',
         #   3: 'P-limited growth undesirable'}
         gdf["pgp_label"] = pd.Categorical(gdf["pgp_label"])
-        gdf["pgp_label_codes"] = gdf["pgp_label"].cat.codes
-        gdf = gdf[["pgp_label_codes", "perc_reduc", "geometry"]]
+        gdf["pgp_code"] = gdf["pgp_label"].cat.codes
+        gdf = gdf[["pgp_code", "perc_reduc", "geometry"]]
         output_file = output_path / "nutrient_load_reduction.shp"
         log.info(f"Saving preprocessed file to {output_file}")
         gdf.to_file(output_file)

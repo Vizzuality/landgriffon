@@ -2,8 +2,10 @@ name: Client Unit Tests
 on:
   push:
     paths:
-      - '.github/workflows/testing-client-unit-tests.yml'
       - 'client/**'
+      - '!client/README.md'
+      - '!client/CHANGELOG.md'
+      - '.github/workflows/testing-client-unit-tests.yml'
   workflow_dispatch:
 defaults:
   run:

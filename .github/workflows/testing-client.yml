@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - 'client/**'
+      - '!client/README.md'
+      - '!client/CHANGELOG.md'
       - '.github/workflows/testing-client.yml'
 
   workflow_dispatch:

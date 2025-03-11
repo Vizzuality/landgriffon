@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'data/**'
+      - '!data/README.md'
       - '.github/workflows/testing-data-import.yml'
 
   workflow_dispatch:

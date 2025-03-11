@@ -57,9 +57,9 @@ def calculate_perc_reduction(row):
     More information can be found on the LandGriffon v2.0 methodology
     """
     if row["limiting"] == "P-limited":
-        return ((row["tpc_raw"] - 0.046) / row["tpc_raw"]) * 100
+        return max(0, ((row["tpc_raw"] - 0.046) / row["tpc_raw"]) * 100)
     elif row["limiting"] == "N-limited":
-        return ((row["tnc_raw"] - 0.7) / row["tnc_raw"]) * 100
+        return max(0, ((row["tnc_raw"] - 0.7) / row["tnc_raw"]) * 100)
     else:
         return 0
 

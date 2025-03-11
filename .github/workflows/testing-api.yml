@@ -4,6 +4,9 @@ on:
   push:
     paths:
       - 'api/**'
+      - '!api/README.md'
+      - '!api/CHANGELOG.md'
+      - '.github/workflows/testing-api.yml'
 
   workflow_dispatch:
 

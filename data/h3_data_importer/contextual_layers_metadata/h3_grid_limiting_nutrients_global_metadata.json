@@ -7,7 +7,7 @@
         "name": "Modeled limiting nutrients",
         "id": "",
         "unit": null,
-        "min": 0,
+        "min": -1,
         "type": "category",
         "items": [
             {

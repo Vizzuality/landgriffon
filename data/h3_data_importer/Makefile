@@ -324,7 +324,7 @@ convert-nutrientLoadReduction: extract-nutrient-load-reduction
 	@echo "Converting nutrient load reduction data... "
 	python vector_folder_to_h3_table.py $(WORKDIR_NUTRIENT_LOAD_REDUCTION) h3_grid_nutrient_load_global perc_reduc nutrient_load_reduction "Environmental datasets" 2023 --indicator=ENL --h3-res=6
 	@echo "Including contextual layer... "
-	python vector_folder_to_h3_table.py $(WORKDIR_NUTRIENT_LOAD_REDUCTION) h3_grid_limiting_nutrients_global pgp_label_codes limiting_nutrient "Environmental datasets" 2023
+	python vector_folder_to_h3_table.py $(WORKDIR_NUTRIENT_LOAD_REDUCTION) h3_grid_limiting_nutrients_global pgp_code limiting_nutrient "Environmental datasets" 2023
 
 #################################################
 # GHG FARM (GHG_FARM) - agriculture commodities #

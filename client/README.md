@@ -35,7 +35,7 @@ can also see our documentation [here](/docs) (TODO: this folder does not exist).
 
 ### 1.1. Quick start
 
-Create the file `.env.local`. You can see an example on [LastPass](https://www.lastpass.com/) (TODO: Where in LastPass?).
+Create the file `.env.local`. You can see an example on the **shared secret storage**.
 
 Install dependencies:
 

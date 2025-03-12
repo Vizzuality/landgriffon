@@ -11,6 +11,7 @@ from data_importer.config import Settings
 from data_importer.loaders.base_loader import BaseDataLoader
 from data_importer.schemas import Indicators
 from data_importer.schemas import Materials
+from data_importer.main import pipeline
 
 FORMAT = "%(name)s - %(message)s"
 logging.basicConfig(level="INFO", format=FORMAT, datefmt="[%X]", handlers=[RichHandler()])
@@ -43,11 +44,7 @@ def main(
 @cli.command()
 def run():
     """Run the data import"""
-    settings = Settings()
-    materials_loader = BaseDataLoader(Materials, str(settings.materials_json))
-    materials_loader.write_to_db("material")
-    indicators_loader = BaseDataLoader(Indicators, str(settings.indicators_json))
-    indicators_loader.write_to_db("indicator")
+    pipeline()
 
 
 @cli.command()

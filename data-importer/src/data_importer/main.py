@@ -12,3 +12,7 @@ def run_import_materials_definition():
 def run_import_indicator_definition():
     indicators_loader = BaseDataLoader(Indicators, str(settings.indicators_json))
     indicators_loader.write_to_db("indicator")
+
+def pipeline():
+    run_import_materials_definition()
+    run_import_indicator_definition()

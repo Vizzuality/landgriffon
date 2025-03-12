@@ -46,9 +46,9 @@ all:
 	make crop indicators
 	make delete-h3-tables
 
-crop: convert-mapspam-crop-production convert-mapspam-crop-harvest  convert-cropland convert-cropgrids convert-glw3-livestock convert-livestock-processed convert-default-commodity convert-earthstat
+crop: convert-mapspam-crop-production convert-mapspam-crop-harvest  convert-cropland convert-cropgrids convert-earthstat convert-glw3-livestock convert-livestock-processed convert-default-commodity
 
-indicators: convert-aqueduct convert-deforestation convert-forestGHG convert-naturalCropConversion convert-nutrientLoadReduction convert-biodiversity convert-ghg-farm convert-ghg-farm-livestock
+indicators: convert-wgswu-new convert-aqueduct convert-deforestation convert-forestGHG convert-naturalCropConversion convert-nutrientLoadReduction convert-biodiversity convert-ghg-farm convert-ghg-farm-livestock
 
 contextual-layers: convert-hdi-contextual \
 	convert-deforest-by-human-landuse \
@@ -307,6 +307,12 @@ convert-aqueduct: extract-aqueduct
 	@echo "Including contextual layer... "
 	python vector_folder_to_h3_table.py $(WORKDIR_AQUEDUCT) h3_grid_aqueduct_global bws_cat aqueduct "Environmental datasets" 2023
 
+############################################
+# Water Gap to sustainable water use - New #
+############################################
+convert-wgswu-new: extract-aqueduct
+	@echo "Converting water gap to sustainable water use data... "
+	python vector_folder_to_h3_table.py $(WORKDIR_AQUEDUCT) h3_grid_wgswu_global bws_raw BSW_raw "Environmental datasets" 2023 --indicator=WGSWU_NEW --h3-res=6
 
 ###############################
 # Excess nutrient load  (ENL) #

@@ -2,11 +2,15 @@
 src = ["h3_data_importer"]
 line-length = 120
 select = [
-    "D1",   # pydocstyle errors
     "E",    # pycodestyle errors
     "W",    # pycodestyle warnings
     "F",    # flake8
     "C",    # flake8-comprehensions
     "B",    # flake8-bugbear
     "I",    # isort
+]
+
+[tool.ruff.lint.per-file-ignores]
+"*.ipynb" = [
+    "B018", # Useless expression. Found in cells with something like `df.head()`, used in notebooks to display data
 ]

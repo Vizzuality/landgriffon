@@ -8,7 +8,7 @@ from rich.logging import RichHandler
 from rich.table import Table
 
 from data_importer.config import Settings
-from data_importer.loaders.base_loader import Loader
+from data_importer.loaders.base_loader import BaseDataLoader
 from data_importer.schemas import Indicators
 from data_importer.schemas import Materials
 
@@ -31,7 +31,9 @@ cli = typer.Typer(pretty_exceptions_enable=False)
 
 
 @cli.callback()
-def main(banner: Annotated[bool, typer.Option(help="Show the splash banner in stdout")] = True):
+def main(
+    banner: Annotated[bool, typer.Option(help="Show the banner in stdout")] = True,
+):
     """LandGriffon data importer"""
     if banner:
         print(BANNER)
@@ -42,9 +44,9 @@ def main(banner: Annotated[bool, typer.Option(help="Show the splash banner in st
 def run():
     """Run the data import"""
     settings = Settings()
-    materials_loader = Loader(Materials, str(settings.materials_json))
+    materials_loader = BaseDataLoader(Materials, str(settings.materials_json))
     materials_loader.write_to_db("material")
-    indicators_loader = Loader(Indicators, str(settings.indicators_json))
+    indicators_loader = BaseDataLoader(Indicators, str(settings.indicators_json))
     indicators_loader.write_to_db("indicator")
 
 

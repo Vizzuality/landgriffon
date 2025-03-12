@@ -42,3 +42,6 @@ class Settings(BaseSettings):
             port=self.api_postgres_port,
             path=self.api_postgres_database,
         )
+
+
+settings = Settings()

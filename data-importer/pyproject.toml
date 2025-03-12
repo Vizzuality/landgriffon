@@ -48,6 +48,7 @@ select = [
     "N",   # Naming conventions
     "I",   # isort
     "SIM", # flake8-simplify
+    "ISC", # implicit concatentaion: "a" "b" = "ab"
     "RUF",
 ]
 

@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from data_importer.config import Settings
 
 
-class Loader[T: type[BaseModel]]:
+class BaseDataLoader[T: type[BaseModel]]:
     database_uri: str = Settings().database_uri.unicode_string()
 
     def __init__(self, schema: T, file_path: str):

@@ -1,3 +1,7 @@
+"""
+Schemas for json files.
+"""
+
 from typing import Any
 
 from pydantic import AnyUrl

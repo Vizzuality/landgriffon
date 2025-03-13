@@ -1,0 +1,74 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+requires-python = ">=3.13"
+name = "data_preprocessing"
+readme = "README.md"
+dynamic = ["version"]
+dependencies = [
+    "kedro~=0.19.11",
+    "kedro-datasets[pandas-parquetdataset, geopandas-genericdataset]>=6.0",
+    "pandas>=2.2.3",
+]
+
+[project.scripts]
+"data-preprocessing" = "data_preprocessing.__main__:main"
+
+[project.entry-points."kedro.hooks"]
+
+[dependency-groups]
+docs = [
+    "sphinx>=8.2.3",
+]
+dev = [
+    "pytest>=8.3.5",
+    "pytest-cov>=6.0.0",
+    "pytest-mock>=3.14.0",
+    "ruff>=0.1.15",
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "data_preprocessing.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = false
+
+[tool.kedro]
+package_name = "data_preprocessing"
+project_name = "data-preprocessing"
+kedro_init_version = "0.19.11"
+tools = "['Linting', 'Testing', 'Custom Logging', 'Documentation', 'Data Structure']"
+source_dir = "src"
+
+[tool.pytest.ini_options]
+addopts = """
+--cov-report term-missing \
+--cov src/data_preprocessing -ra"""
+
+[tool.coverage.report]
+fail_under = 0
+show_missing = true
+exclude_lines = ["pragma: no cover", "raise NotImplementedError"]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff]
+line-length = 88
+show-fixes = true
+select = [
+    "F",   # Pyflakes
+    "W",   # pycodestyle
+    "E",   # pycodestyle
+    "I",   # isort
+    "UP",  # pyupgrade
+    "PL",  # Pylint
+    "T201", # Print Statement
+]
+ignore = ["E501"]  # Ruff format takes care of line-too-long
+
+[tool.kedro_telemetry]
+project_id = "6190a09064414e87beacfe35645ca07c"

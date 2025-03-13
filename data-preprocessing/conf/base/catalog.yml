@@ -5,10 +5,10 @@ gadm:
     where: "GID_3 = ''"
     columns: ["GID_0", "GID_1", "GID_2", "NAME_0", "NAME_1", "NAME_2"]
 
-preprocessed_geo_regions:
+geo_regions:
   type: pandas.ParquetDataset
   filepath: data/03_primary/geo_regions.parquet
 
-preprocessed_admin_regions:
+admin_regions:
   type: pandas.ParquetDataset
   filepath: data/03_primary/admin_regions.parquet

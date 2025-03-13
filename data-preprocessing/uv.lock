@@ -27,6 +27,26 @@ wheels = [
 ]
 
 [[package]]
+name = "arro3-core"
+version = "0.4.6"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8a/67/b5a5f06035972e4613dfe5433e4d11f6bd0f0a1665ad88fb70e4b5ed1ef5/arro3_core-0.4.6-cp313-cp313-macosx_10_12_x86_64.whl", hash = "sha256:ec9b1969858257bef233516a626b06596524121057523a2cc3412366d7f69309", size = 2305374 },
+    { url = "https://files.pythonhosted.org/packages/d5/03/81a30777c55a6eb080af669e28ac59872d1dcce0ea9cc44bca206ddc1daa/arro3_core-0.4.6-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:7365673fbec5a07d5dddf93304369555e3bef5679db9dde1031291d3d1a8a705", size = 2022986 },
+    { url = "https://files.pythonhosted.org/packages/15/cf/e3d31ee19a1e9b77f39e5dcc15c0f2d2dc0880009dd427a50760a5118a85/arro3_core-0.4.6-cp313-cp313-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:a1ad36deb9679b14e18f89f7baeab84a1b849705981a246c851a2eec1f51bc4e", size = 2486829 },
+    { url = "https://files.pythonhosted.org/packages/af/11/b314d459a37808e739f6fda7b43191e32903ace512104aa63d62dbd7c42b/arro3_core-0.4.6-cp313-cp313-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:a49b83ea12551439d849ccc96f389c04353ab7c11343fa2c83a775b59551a73c", size = 2405204 },
+    { url = "https://files.pythonhosted.org/packages/fe/a0/22bfe24742acfdd3b37cc68f4e0015e6d4e35e24d6b39fdcf08bc3f77295/arro3_core-0.4.6-cp313-cp313-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:6ecc1292ceb721e9fb6d50be16f556cc61db4050ec26f3d10f58d4b9a7cca50d", size = 3336385 },
+    { url = "https://files.pythonhosted.org/packages/ea/d4/4c35efcb9ae64ce224f82ccaf6e513aeedb6c43a1f0b0ba2f2cd81b98e40/arro3_core-0.4.6-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c07689409a5950794a724ce315e27e0ff7e5d21235a7bc84271601b96febbf07", size = 2407329 },
+    { url = "https://files.pythonhosted.org/packages/88/7e/3077a07587a8655c642c7c215dc98d0c5dc6e74c2ebf67fc756e2cc1a2ec/arro3_core-0.4.6-cp313-cp313-manylinux_2_24_aarch64.whl", hash = "sha256:d3d3938342949d05e079b8f8fcf26e0c77ed674a40df4eee40e20dcdef6da67e", size = 2166951 },
+    { url = "https://files.pythonhosted.org/packages/61/04/33797dae797045ae70230d4bc56fd65d10ff17357ac7067ea4fb7e3be712/arro3_core-0.4.6-cp313-cp313-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:eaf92f8418e670ab32dbb6decd5490d49cdac9ab763737dc63551dfb751d9ee3", size = 2584396 },
+    { url = "https://files.pythonhosted.org/packages/94/5e/b53ba2277e458f7f20e67879a7b2aef616dd5d80fd62376d6c8baef52d59/arro3_core-0.4.6-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:a0425774da6aea06ad8fef05778d9ac3c0e1c99bb0f5c3f466f70345aca05750", size = 2309280 },
+    { url = "https://files.pythonhosted.org/packages/72/0a/5e85d21d756c7e93cd0e91b477f0458a06e200938c9d50536f2528acc48a/arro3_core-0.4.6-cp313-cp313-musllinux_1_2_armv7l.whl", hash = "sha256:5d0f2efb57540222abd22a1929caf44975bee02d47595a6b8b77a3a20e1e2e47", size = 2747742 },
+    { url = "https://files.pythonhosted.org/packages/70/53/25884a19251a4b025443b30dd21b95162dfc326557cd518837f71de5655b/arro3_core-0.4.6-cp313-cp313-musllinux_1_2_i686.whl", hash = "sha256:e37fb193ac79eeb6aac3071264da7679e27eb817267681ef3c2774160f37fbb1", size = 2652235 },
+    { url = "https://files.pythonhosted.org/packages/5e/5c/267ef3c8c1ffa84e1e551a2868eb59b93321cc149199133e648249a7f3c3/arro3_core-0.4.6-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:d510c9fa65a473c2eb61bcae6b14fea90fbe23b242cdd51ba348eef24f2a8d0f", size = 2574505 },
+    { url = "https://files.pythonhosted.org/packages/16/01/4b6ea2bfebc0c3969ee1d67d25d4361ddac6c40f1b6a1ab93a5b92fa2b47/arro3_core-0.4.6-cp313-cp313-win_amd64.whl", hash = "sha256:e6fa834dcd30b140cdfd6b19975a01b2e36f506464e569ca4bf368e13f6550bb", size = 2460117 },
+]
+
+[[package]]
 name = "arrow"
 version = "1.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -229,6 +249,7 @@ wheels = [
 name = "data-preprocessing"
 source = { editable = "." }
 dependencies = [
+    { name = "h3ronpy" },
     { name = "kedro" },
     { name = "kedro-datasets", extra = ["geopandas-genericdataset", "pandas-parquetdataset"] },
     { name = "pandas" },
@@ -247,6 +268,7 @@ docs = [
 
 [package.metadata]
 requires-dist = [
+    { name = "h3ronpy", specifier = ">=0.22.0" },
     { name = "kedro", specifier = "~=0.19.11" },
     { name = "kedro-datasets", extras = ["geopandas-genericdataset", "pandas-parquetdataset"], specifier = ">=6.0" },
     { name = "pandas", specifier = ">=2.2.3" },
@@ -346,6 +368,22 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c0/89/37df0b71473153574a5cdef8f242de422a0f5d26d7a9e231e6f169b4ad14/gitpython-3.1.44.tar.gz", hash = "sha256:c87e30b26253bf5418b01b0660f818967f3c503193838337fe5e573331249269", size = 214196 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/1d/9a/4114a9057db2f1462d5c8f8390ab7383925fe1ac012eaa42402ad65c2963/GitPython-3.1.44-py3-none-any.whl", hash = "sha256:9e0e10cda9bed1ee64bc9a6de50e7e38a9c9943241cd7f585f6df3ed28011110", size = 207599 },
+]
+
+[[package]]
+name = "h3ronpy"
+version = "0.22.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "arro3-core" },
+    { name = "numpy" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/bc/68/eed436e94f06a370112844ff4986be9c9f27e65fa2def485da752877e564/h3ronpy-0.22.0-cp39-abi3-macosx_10_14_x86_64.whl", hash = "sha256:cc13f4257eac6d9cb700f0dd9af114449d9e96ce02ea59b296b9ae1757b4eff5", size = 3133709 },
+    { url = "https://files.pythonhosted.org/packages/0e/1e/764f3b4ca76a742b6ac48eab5eda16356845e09aaa1f63edb9d4c102e01e/h3ronpy-0.22.0-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:e307b611b4da164931e8cf10146fe31e21b1eddb9cb60865a5cba6bd53f05c26", size = 2863344 },
+    { url = "https://files.pythonhosted.org/packages/3e/aa/232dcb298ab10ca8def9f3857126411ecb8af8785bf1fb142cc1a16545b1/h3ronpy-0.22.0-cp39-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:eb63a78f78a2dff8cce95894401203f518977783bd056fd00e9ca4a8c043d4d8", size = 3089541 },
+    { url = "https://files.pythonhosted.org/packages/b6/08/b349ae3b7051b37155f40e09852193fc56f9aafe2edf6ef3e190eb329a2f/h3ronpy-0.22.0-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:57aa53e335027932f0965e222b255e8004ad121adbe0791f1518f894dc5ba6fa", size = 3415924 },
+    { url = "https://files.pythonhosted.org/packages/19/f3/d041c40ef8dc2ad416a0f5b3b15fa51ed3e1063dc2661e99082468ec9635/h3ronpy-0.22.0-cp39-abi3-win_amd64.whl", hash = "sha256:f161d9117491dd39b0f124b057aa152140412fee6c4b2bf814660c0b9c0f1804", size = 3299342 },
 ]
 
 [[package]]

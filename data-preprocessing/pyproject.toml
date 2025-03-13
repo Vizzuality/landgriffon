@@ -8,6 +8,7 @@ name = "data_preprocessing"
 readme = "README.md"
 dynamic = ["version"]
 dependencies = [
+    "h3ronpy>=0.22.0",
     "kedro~=0.19.11",
     "kedro-datasets[pandas-parquetdataset, geopandas-genericdataset]>=6.0",
     "pandas>=2.2.3",
@@ -19,9 +20,7 @@ dependencies = [
 [project.entry-points."kedro.hooks"]
 
 [dependency-groups]
-docs = [
-    "sphinx>=8.2.3",
-]
+docs = ["sphinx>=8.2.3"]
 dev = [
     "pytest>=8.3.5",
     "pytest-cov>=6.0.0",
@@ -30,7 +29,7 @@ dev = [
 ]
 
 [tool.setuptools.dynamic]
-version = {attr = "data_preprocessing.__version__"}
+version = { attr = "data_preprocessing.__version__" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -57,18 +56,25 @@ exclude_lines = ["pragma: no cover", "raise NotImplementedError"]
 docstring-code-format = true
 
 [tool.ruff]
-line-length = 88
-show-fixes = true
+line-length = 100
+src = ["src"]
+
+[tool.ruff.lint]
 select = [
-    "F",   # Pyflakes
-    "W",   # pycodestyle
-    "E",   # pycodestyle
-    "I",   # isort
     "UP",  # pyupgrade
-    "PL",  # Pylint
-    "T201", # Print Statement
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # flake8
+    "C",   # flake8-comprehensions
+    "B",   # flake8-bugbear
+    "N",   # Naming conventions
+    "I",   # isort
+    "SIM", # flake8-simplify
+    "RUF",
 ]
-ignore = ["E501"]  # Ruff format takes care of line-too-long
+ignore = [
+    "E501", # Ruff format takes care of line-too-long
+]
 
 [tool.kedro_telemetry]
-project_id = "6190a09064414e87beacfe35645ca07c"
+project_id = "e4f21d3f56424220baf54b4a1e4571a3"

@@ -3,3 +3,23 @@
 #
 # Documentation for this file format can be found in "Parameters"
 # Link: https://docs.kedro.org/en/0.19.11/configuration/parameters.html
+
+geo_region:
+  columns:
+    - id
+    - h3Compact
+    - theGeom
+    - isCreatedByUser
+
+admin_region:
+  columns:
+    - id
+    - parentId
+    - gadmId
+    - level
+    - name
+    - description
+    - status
+    - isoA3
+    - geoRegionId
+    - mpath

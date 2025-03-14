@@ -8,10 +8,10 @@ name = "data_preprocessing"
 readme = "README.md"
 dynamic = ["version"]
 dependencies = [
-    "h3ronpy>=0.22.0",
-    "kedro~=0.19.11",
-    "kedro-datasets[pandas-parquetdataset, geopandas-genericdataset]>=6.0",
-    "pandas>=2.2.3",
+  "h3ronpy>=0.22.0",
+  "kedro~=0.19.11",
+  "kedro-datasets[pandas-parquetdataset, geopandas-genericdataset]>=6.0",
+  "pandas>=2.2.3",
 ]
 
 [project.scripts]
@@ -22,11 +22,11 @@ dependencies = [
 [dependency-groups]
 docs = ["sphinx>=8.2.3"]
 dev = [
-    "ipython>=9.0.2",
-    "pytest>=8.3.5",
-    "pytest-cov>=6.0.0",
-    "pytest-mock>=3.14.0",
-    "ruff>=0.1.15",
+  "ipython>=9.0.2",
+  "pytest>=8.3.5",
+  "pytest-cov>=6.0.0",
+  "pytest-mock>=3.14.0",
+  "ruff>=0.1.15",
 ]
 
 [tool.setuptools.dynamic]
@@ -62,19 +62,19 @@ src = ["src"]
 
 [tool.ruff.lint]
 select = [
-    "UP",  # pyupgrade
-    "E",   # pycodestyle errors
-    "W",   # pycodestyle warnings
-    "F",   # flake8
-    "C",   # flake8-comprehensions
-    "B",   # flake8-bugbear
-    "N",   # Naming conventions
-    "I",   # isort
-    "SIM", # flake8-simplify
-    "RUF",
+  "UP", # pyupgrade
+  "E", # pycodestyle errors
+  "W", # pycodestyle warnings
+  "F", # flake8
+  "C", # flake8-comprehensions
+  "B", # flake8-bugbear
+  "N", # Naming conventions
+  "I", # isort
+  "SIM", # flake8-simplify
+  "RUF",
 ]
 ignore = [
-    "E501", # Ruff format takes care of line-too-long
+  "E501", # Ruff format takes care of line-too-long
 ]
 
 [tool.kedro_telemetry]

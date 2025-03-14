@@ -14,7 +14,7 @@ geo_region:
 admin_region:
   columns:
     - id
-    - parentId
+#    - parentId
     - gadmId
     - level
     - name
@@ -22,4 +22,4 @@ admin_region:
     - status
     - isoA3
     - geoRegionId
-    - mpath
+#    - mpath

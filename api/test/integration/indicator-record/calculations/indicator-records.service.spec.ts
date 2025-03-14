@@ -250,6 +250,7 @@ describe('Impact Calculator Tests', () => {
         [INDICATOR_NAME_CODES.WW]: 0.3,
         [INDICATOR_NAME_CODES.WC]: 0.4,
         [INDICATOR_NAME_CODES.WGUWU]: 0.5,
+        [INDICATOR_NAME_CODES.WGSWU_NEW]: 0.7,
       };
 
       //ACT

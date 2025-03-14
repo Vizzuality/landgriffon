@@ -26,6 +26,7 @@ export class QueryPropertyNamesType {
   [INDICATOR_NAME_CODES.WW]: INDICATOR_NAME_CODES.WW;
   [INDICATOR_NAME_CODES.WC]: INDICATOR_NAME_CODES.WC;
   [INDICATOR_NAME_CODES.WGUWU]: INDICATOR_NAME_CODES.WGUWU;
+  [INDICATOR_NAME_CODES.WGSWU_NEW]: INDICATOR_NAME_CODES.WGSWU_NEW;
 }
 
 export class QueryPropertyTypes {
@@ -44,6 +45,11 @@ export class QueryPropertyTypes {
   [INDICATOR_NAME_CODES.WW]: number;
   [INDICATOR_NAME_CODES.WC]: number;
   [INDICATOR_NAME_CODES.WGUWU]: number;
+  // TODO: The implementation of the new indicator breaks our current pattern of having a single query/value coming from the database.
+  //      This becomes quite problematic, but since we plan to refactor the whole impact calculation process, we can leave it as is for now.
+  [INDICATOR_NAME_CODES.WGSWU_NEW]: number;
+  BWS_IN_STRESSED_AREAS: number;
+  STRESSED_AREA_PORTION: number;
 }
 
 export const QueryPropertyNames: QueryPropertyNamesType = {
@@ -61,6 +67,7 @@ export const QueryPropertyNames: QueryPropertyNamesType = {
   [INDICATOR_NAME_CODES.WW]: INDICATOR_NAME_CODES.WW,
   [INDICATOR_NAME_CODES.WC]: INDICATOR_NAME_CODES.WC,
   [INDICATOR_NAME_CODES.WGUWU]: INDICATOR_NAME_CODES.WGUWU,
+  [INDICATOR_NAME_CODES.WGSWU_NEW]: INDICATOR_NAME_CODES.WGSWU_NEW,
 } as const;
 
 export type ImpactQueryPropertyName =
@@ -147,6 +154,12 @@ export const INDICATOR_NAME_CODE_TO_QUERY_MAP: {
   [INDICATOR_NAME_CODES.WGUWU]: {
     [INDICATOR_NAME_CODES.WGUWU]: () =>
       `${get_annual_commodity_weighted_impact_over_georegion}($1, '${INDICATOR_NAME_CODES.UWU}', $2, 'producer') as "${INDICATOR_NAME_CODES.WGUWU}"`,
+    [INDICATOR_NAME_CODES.WW]: () =>
+      `${get_indicator_coefficient_impact}('${INDICATOR_NAME_CODES.WW}', $3, $2) as "${INDICATOR_NAME_CODES.WW}"`,
+  },
+  [INDICATOR_NAME_CODES.WGSWU_NEW]: {
+    [INDICATOR_NAME_CODES.WGSWU_NEW]: () =>
+      `get_bws_in_stressed_areas($1, '${INDICATOR_NAME_CODES.WGSWU_NEW}', $2, 'producer') as "BWS_IN_STRESSED_AREAS", get_stressed_area_portion($1, '${INDICATOR_NAME_CODES.WGSWU_NEW}', $2, 'producer') as "STRESSED_AREA_PORTION"`,
     [INDICATOR_NAME_CODES.WW]: () =>
       `${get_indicator_coefficient_impact}('${INDICATOR_NAME_CODES.WW}', $3, $2) as "${INDICATOR_NAME_CODES.WW}"`,
   },

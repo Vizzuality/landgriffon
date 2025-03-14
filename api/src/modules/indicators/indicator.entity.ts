@@ -34,6 +34,7 @@ export enum INDICATOR_NAME_CODES {
   WW = 'WW',
   WC = 'WC',
   WGUWU = 'WGUWU',
+  WGSWU_NEW = 'WGSWU_NEW',
 }
 
 export const indicatorResource: BaseServiceResource = {

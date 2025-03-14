@@ -28,7 +28,6 @@ import {
   CACHED_DATA_TYPE,
   CachedData,
 } from 'modules/cached-data/cached-data.entity';
-import { ImportProgressEmitter } from 'modules/events/import-data-progress/import-progress.emitter';
 import { ImpactCalculationProgressTracker } from 'modules/impact/progress-tracker/impact-calculation.progress-tracker';
 import { ImportProgressTrackerFactory } from 'modules/events/import-data-progress/import-progress.tracker.factory';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
@@ -402,6 +401,19 @@ export class ImpactCalculator {
               (100 * rawData.production) || 0
           : (rawData.distributedImpact?.[INDICATOR_NAME_CODES.UWU] ?? 0) *
               (waterWithdrawalValue / 100) || 0;
+      },
+      [INDICATOR_NAME_CODES.WGSWU_NEW]: () => {
+        const bwsInStressedAreas: number = rawData.BWS_IN_STRESSED_AREAS;
+        const stressAreaPortion: number = rawData.STRESSED_AREA_PORTION;
+        const excessBws =
+          bwsInStressedAreas > 0.4
+            ? bwsInStressedAreas - 0.4 / bwsInStressedAreas
+            : 0;
+        const waterWithdrawalValue: number =
+          rawData[INDICATOR_NAME_CODES.WW] * tonnage || 0;
+        const WGSWU_NEW: number =
+          excessBws * stressAreaPortion * waterWithdrawalValue;
+        return WGSWU_NEW;
       },
     };
 

@@ -40,11 +40,7 @@ export interface IIndicatorCalculationStrategy {
 
   dependencies?: IndicatorDependencies;
 
-  /**
-   * Returns one or more query fragments (as strings) required to obtain the raw value
-   * of the indicator from the database.
-   */
-  getRawQueries(): ImpactQueryExpression[];
+  queryDependencies?: any;
 
   /**
    * Calculates the final value of the indicator using the provided calculation context.

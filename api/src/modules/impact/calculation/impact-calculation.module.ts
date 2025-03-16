@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ImpactCalculatorV2 } from 'modules/impact/calculation/impact.calculator';
 import { IndicatorStrategyFactory } from 'modules/impact/calculation/indicator.strategy.factory';
-import { ImpactQueryBuilderV2 } from 'modules/impact/calculation/impact-calculation.query.builder';
 import { ImpactCalculationRepository } from 'modules/impact/calculation/impact-calculation.repository';
 import { ImpactPerLocationDependencyBuilder } from 'modules/impact/calculation/impact-per-location.dependency.builder';
 
@@ -13,7 +12,6 @@ import { ImpactPerLocationDependencyBuilder } from 'modules/impact/calculation/i
   providers: [
     ImpactCalculatorV2,
     IndicatorStrategyFactory,
-    ImpactQueryBuilderV2,
     ImpactPerLocationDependencyBuilder,
     ImpactCalculationRepository,
   ],

@@ -15,8 +15,7 @@ import { WaterWithdrawalsStrategy } from 'modules/impact/calculation/strategies/
 import { WaterConsumptionStrategy } from 'modules/impact/calculation/strategies/water-consumption.strategy';
 import { WaterGapToUnsustainableWaterUseStrategy } from 'modules/impact/calculation/strategies/water-gap-to-unsustainable-water-use.strategy';
 import { Injectable } from '@nestjs/common';
-import { ImpactQueryExpression } from '../../indicator-records/services/impact-calculation.dependencies';
-import { ImpactQueryDependency } from './impact-calculation.query.builder';
+import { DataSource } from 'typeorm';
 
 export type IndicatorStrategyMap = Map<
   INDICATOR_NAME_CODES,
@@ -52,10 +51,12 @@ export class IndicatorStrategyFactory {
    * Returns a map of strategy instances corresponding to the active indicators.
    *
    * @param activeIndicatorNameCodes Array of active Indicator nameCodes
+   * @param dataSource
    * @returns Map of instantiated IIndicatorCalculationStrategy objects
    */
   public getStrategies(
     activeIndicatorNameCodes: INDICATOR_NAME_CODES[],
+    dataSource: DataSource,
   ): IndicatorStrategyMap2 {
     // Create a unique set of nameCodes in case there are duplicates
     const activeCodes = new Set(activeIndicatorNameCodes);
@@ -89,13 +90,5 @@ export class IndicatorStrategyMap2 {
 
   get(key: INDICATOR_NAME_CODES): IIndicatorCalculationStrategy {
     return this.get(key);
-  }
-
-  getQueryDependencies(): ImpactQueryDependency[] {
-    const dependencies: ImpactQueryDependency[] = [];
-    this.map.forEach((s) => {
-      dependencies.push({ alias: s.indicatorCode, queries: s.getRawQueries() });
-    });
-    return dependencies;
   }
 }

@@ -27,9 +27,7 @@ import {
   AnnualCommodityWeightedImpactQuery,
   TotalWeightedImpact,
 } from './queries/annual-commodity-weighted-impact.query';
-import { IndicatorCoefficient } from '../../indicator-coefficients/indicator-coefficient.entity';
 import { SourcingLocation } from '../../sourcing-locations/sourcing-location.entity';
-import { IndicatorDependencies } from './strategies/indicator-calculation.strategy.interface';
 
 @Injectable()
 export class ImpactCalculatorV2 {
@@ -48,6 +46,7 @@ export class ImpactCalculatorV2 {
     );
     const strategyMap = this.strategyFactory.getStrategies(
       activeIndicatorNameCodes,
+      this.dataSource,
     );
     const indicatorDependencies =
       await this.dependencyBuilder.buildIndicatorDependencies(
@@ -61,7 +60,7 @@ export class ImpactCalculatorV2 {
   }
 
   async goCalculatingStuff(
-    locationDependency: DependenciesToCalculateImpact[],
+    locationDependency: DependenciesToCalculateImpact,
   ): Promise<any> {
     // TODO: We might want to also cache prod, harves, impact raw values if those are already calculated
     const productionAndHarvestQuery = new ProductionOrHarvestQuery(
@@ -77,89 +76,94 @@ export class ImpactCalculatorV2 {
     const materialIndicatorWeightedImpact =
       new AnnualCommodityWeightedImpactQuery(this.dataSource);
 
-    const all = [];
+    const {
+      sourcingLocationId,
+      materialH3DataSourceMap,
+      geoRegionH3IndexList,
+      indicatorDependencies,
+      materialId,
+      adminRegionId,
+    } = locationDependency;
+    const production = await productionAndHarvestQuery.sumH3GridOverGeoRegion({
+      geoRegionH3IndexList,
+      materialH3DataSource: materialH3DataSourceMap.production,
+    });
+    const harvest = await productionAndHarvestQuery.sumH3GridOverGeoRegion({
+      geoRegionH3IndexList,
+      materialH3DataSource: materialH3DataSourceMap.harvest,
+    });
 
-    for (const location of locationDependency) {
-      const {
-        sourcingLocationId,
-        materialH3DataSourceMap,
-        geoRegionH3IndexList,
-        indicatorDependencies,
-        materialId,
-        adminRegionId,
-      } = location;
-      const production = await productionAndHarvestQuery.sumH3GridOverGeoRegion(
-        {
-          geoRegionH3IndexList,
-          materialH3DataSource: materialH3DataSourceMap.production,
-        },
-      );
-      const harvest = await productionAndHarvestQuery.sumH3GridOverGeoRegion({
-        geoRegionH3IndexList,
-        materialH3DataSource: materialH3DataSourceMap.harvest,
-      });
+    const coefficientIndicatorRawImpact = new Map<
+      INDICATOR_NAME_CODES,
+      IndicatorCoefficientImpactValue
+    >();
+    const spatialIndicatorRawImpact = new Map<
+      INDICATOR_NAME_CODES,
+      TotalWeightedImpact
+    >();
 
-      const coefficientIndicatorRawImpact = new Map<
-        INDICATOR_NAME_CODES,
-        IndicatorCoefficientImpactValue
-      >();
-      const spatialIndicatorRawImpact = new Map<
-        INDICATOR_NAME_CODES,
-        TotalWeightedImpact
-      >();
-
-      try {
-        for (const coefficientIndicator of indicatorDependencies.coefficient!) {
-          // TODO: LF does not need spatial or coefficient, only production and harvest.
-          //       Again, each indicator strategy should define its dependencies
-          if (coefficientIndicator.nameCode === INDICATOR_NAME_CODES.LF) {
-            continue;
-          }
-          const res =
-            await indicatorCoefficientImpactQuery.getIndicatorCoefficientImpact(
-              {
-                materialId: materialId,
-                adminRegionId: adminRegionId,
-                indicatorId: coefficientIndicator.id,
-              },
-            );
-          coefficientIndicatorRawImpact.set(coefficientIndicator.nameCode, res);
+    try {
+      for (const coefficientIndicator of indicatorDependencies.coefficient!) {
+        // TODO: LF does not need spatial or coefficient, only production and harvest.
+        //       Again, each indicator strategy should define its dependencies
+        if (coefficientIndicator.nameCode === INDICATOR_NAME_CODES.LF) {
+          continue;
         }
-        for (const nameCode of indicatorDependencies.spatial.keys()) {
-          const indicatorH3DataSource =
-            indicatorDependencies.spatial.get(nameCode)!;
-
-          // TODO: I need to know, based on the indicator, which query to use. I should be able to define the dependencies in each strategy
-          const materialImpact =
-            await materialWeightedImpact.getAnnualCommodityWeightedImpactOverGeoRegion(
-              indicatorH3DataSource,
-              materialH3DataSourceMap.production,
-              geoRegionH3IndexList,
-            );
-
-          // const materialIndicatorImpact =
-          //   await materialIndicatorWeightedImpact.getAnnualCommodityWeightedImpactOverGeoRegion(
-          //     indicatorH3DataSource,
-          //     materialH3DataSourceMap.production,
-          //     geoRegionH3IndexList,
-          //   );
-
-          spatialIndicatorRawImpact.set(nameCode, materialImpact);
-        }
-
-        all.push({
-          sourcingLocationId,
-          production,
-          harvest,
-          coefficientIndicatorRawImpact,
-          spatialIndicatorRawImpact,
-        });
-      } catch (e) {
-        this.logger.error(e);
-        const failingLocation = location;
-        throw e;
+        const res =
+          await indicatorCoefficientImpactQuery.getIndicatorCoefficientImpact({
+            materialId: materialId,
+            adminRegionId: adminRegionId,
+            indicatorId: coefficientIndicator.id,
+          });
+        coefficientIndicatorRawImpact.set(coefficientIndicator.nameCode, res);
       }
+      for (const nameCode of indicatorDependencies.spatial.keys()) {
+        const indicatorH3DataSource =
+          indicatorDependencies.spatial.get(nameCode)!;
+
+        // TODO: I need to know, based on the indicator, which query to use. I should be able to define the dependencies in each strategy
+        const materialImpact =
+          await materialWeightedImpact.getAnnualCommodityWeightedImpactOverGeoRegion(
+            indicatorH3DataSource,
+            materialH3DataSourceMap.production,
+            geoRegionH3IndexList,
+          );
+
+        // const materialIndicatorImpact =
+        //   await materialIndicatorWeightedImpact.getAnnualCommodityWeightedImpactOverGeoRegion(
+        //     indicatorH3DataSource,
+        //     materialH3DataSourceMap.production,
+        //     geoRegionH3IndexList,
+        //   );
+
+        spatialIndicatorRawImpact.set(nameCode, materialImpact);
+      }
+
+      const productionValue = production.total_sum;
+      const harvestValue = harvest.total_sum;
+      const allMap = {
+        ...coefficientIndicatorRawImpact,
+        ...spatialIndicatorRawImpact,
+      };
+      const combinedMap = new Map([
+        ...coefficientIndicatorRawImpact.entries(),
+        ...spatialIndicatorRawImpact.entries(),
+      ]);
+      const impacts = Object.fromEntries(
+        Array.from(combinedMap.entries()).map(([key, obj]) => [key, obj.value]),
+      );
+      const impactPerLocation = {
+        sourcingLocationId,
+        productionValue,
+        harvestValue,
+        ...impacts,
+      };
+    } catch (e) {
+      this.logger.error(e);
+      const failingLocation = location;
+      throw e;
     }
+
     return all;
   }
 
@@ -177,8 +181,10 @@ export class ImpactCalculatorV2 {
         skip: i,
         take: 1,
         select: ['id', 'materialId', 'geoRegionId', 'adminRegionId'],
+        relations: ['sourcingRecords'],
       });
       const location = locations[0];
+      const sourcingRecords = location.sourcingRecords;
       this.logger.log(`Processing location with id: ${location.id}`);
       const sourcingLocationDependencies =
         await this.dependencyBuilder.buildDependencyMap(
@@ -189,6 +195,16 @@ export class ImpactCalculatorV2 {
       const singleImpact = await this.goCalculatingStuff(
         sourcingLocationDependencies,
       );
+      const toSave = singleImpact[0];
+
+      const allStuff = {
+        ...toSave,
+        sourcingRecords: sourcingRecords.map((record) => ({
+          sourcingRecordId: record.id,
+          tonnage: record.tonnage,
+          year: record.year,
+        })),
+      };
 
       this.logger.log(`Impact calculated for location with id: ${location.id}`);
     }
@@ -196,27 +212,26 @@ export class ImpactCalculatorV2 {
     return 'done';
   }
 
-  // TODO: this should be the final step
-  // private calculateImpactForRecord(
-  //   rawData: SourcingRecordsWithIndicatorRawData,
-  //   indicators: Indicator[],
-  //   strategies: IndicatorStrategyMap2,
-  // ): IndicatorRecord[] {
-  //   const records: IndicatorRecord[] = [];
-  //   for (const indicator of indicators) {
-  //     const strategy = strategies.get(indicator.nameCode)!;
-  //     const indicatorRecord = new IndicatorRecord();
-  //     indicatorRecord.indicatorId = indicator.id;
-  //     indicatorRecord.sourcingRecordId = rawData.sourcingRecordId;
-  //     indicatorRecord.materialH3DataId = rawData.materialH3DataId;
-  //     indicatorRecord.value = strategy.calculate({
-  //       rawData,
-  //       tonnage: rawData.tonnage,
-  //       production: rawData.production,
-  //     });
-  //     indicatorRecord.scaler = rawData.production ?? null;
-  //     records.push(indicatorRecord);
-  //   }
-  //   return records;
-  // }
+  private calculateImpactForRecord(
+    rawData: SourcingRecordsWithIndicatorRawData,
+    indicators: Indicator[],
+    strategies: IndicatorStrategyMap2,
+  ): IndicatorRecord[] {
+    const records: IndicatorRecord[] = [];
+    for (const indicator of indicators) {
+      const strategy = strategies.get(indicator.nameCode)!;
+      const indicatorRecord = new IndicatorRecord();
+      indicatorRecord.indicatorId = indicator.id;
+      indicatorRecord.sourcingRecordId = rawData.sourcingRecordId;
+      indicatorRecord.materialH3DataId = rawData.materialH3DataId;
+      indicatorRecord.value = strategy.calculate({
+        rawData,
+        tonnage: rawData.tonnage,
+        production: rawData.production,
+      });
+      indicatorRecord.scaler = rawData.production ?? null;
+      records.push(indicatorRecord);
+    }
+    return records;
+  }
 }

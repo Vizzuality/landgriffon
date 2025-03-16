@@ -23,20 +23,6 @@ export class DeforestationFootprintStrategy
   indicatorCode: INDICATOR_NAME_CODES = INDICATOR_NAME_CODES.DF_SLUC;
 
   /**
-   * Returns the query fragments needed to obtain the raw values for DF_SLUC.
-   */
-  getRawQueries(): ImpactQueryExpression[] {
-    return [
-      // Query to obtain the raw DF_SLUC value using the stored procedure.
-      `get_annual_commodity_weighted_impact_over_georegion($1, '${this.indicatorCode}', $2, 'producer') as "${this.indicatorCode}"`,
-      // Query to obtain the production value.
-      `sum_material_over_georegion($1, $2, 'producer') as "production"`,
-      // Query to obtain the harvest value (required to compute LF).
-      `sum_material_over_georegion($1, $2, 'harvest') as "harvest"`,
-    ];
-  }
-
-  /**
    * Calculates the final DF_SLUC indicator value using the provided calculation context.
    * The calculation is based on:
    *   - LF = (harvest / production) * tonnage (computed if production is valid)

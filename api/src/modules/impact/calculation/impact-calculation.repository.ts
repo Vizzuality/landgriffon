@@ -1,12 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import {
-  ImpactQueryBuilderV2,
-  ImpactQueryDependency,
-} from 'modules/impact/calculation/impact-calculation.query.builder';
-import { SourcingRecordsWithIndicatorRawData } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
-import { IndicatorRecord } from '../../indicator-records/indicator-record.entity';
+
 import {
   Indicator,
   INDICATOR_NAME_CODES,
@@ -43,30 +38,7 @@ export class GetGeoRegionH3IndexListParams {
 export class ImpactCalculationRepository {
   logger: Logger = new Logger(ImpactCalculationRepository.name);
 
-  constructor(
-    @InjectDataSource() private readonly dataSource: DataSource,
-    private readonly impactQueryBuilder: ImpactQueryBuilderV2,
-  ) {}
-
-  async calculateRawImpact(
-    queryDependencies: ImpactQueryDependency[],
-  ): Promise<SourcingRecordsWithIndicatorRawData[]> {
-    const query = this.impactQueryBuilder.buildQuery(queryDependencies);
-    try {
-      const result: SourcingRecordsWithIndicatorRawData[] =
-        await this.dataSource.query(query);
-      return result;
-    } catch (e) {
-      this.logger.error(e);
-      throw e;
-    }
-  }
-
-  async saveImpactRecords(indicatorRecords: IndicatorRecord[]): Promise<void> {
-    await this.dataSource
-      .getRepository(IndicatorRecord)
-      .insert(indicatorRecords);
-  }
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
   async getIndicatorH3DataSource(
     nameCode: INDICATOR_NAME_CODES,

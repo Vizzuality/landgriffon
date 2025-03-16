@@ -7,6 +7,7 @@ import { GeoRegionId } from './production-and-harvest.query';
 import { INDICATOR_NAME_CODES } from '../../../indicators/indicator.entity';
 import { DataSource } from 'typeorm';
 import {
+  GeoRegionH3IndexList,
   IndicatorH3DataSource,
   MaterialH3DataSource,
 } from '../impact-calculation.repository';
@@ -23,10 +24,11 @@ export class AnnualCommodityWeightedImpactQuery {
   async getAnnualCommodityWeightedImpactOverGeoRegion(
     indicatorH3DataSouce: IndicatorH3DataSource,
     materialH3DataSource: MaterialH3DataSource,
-    geoRegionH3IndexList: GeoRegionId,
+    geoRegionH3IndexList: GeoRegionH3IndexList,
   ): Promise<TotalWeightedImpact> {
-    const res: { total_weighted_impact: number }[] =
-      await this.dataSource.query(
+    let res: { total_weighted_impact: number }[];
+    try {
+      res = await this.dataSource.query(
         `
       SELECT
       SUM(h3ind."${indicatorH3DataSouce.columnName}" * h3prod."${materialH3DataSource.columnName}") AS total_weighted_impact
@@ -37,12 +39,48 @@ export class AnnualCommodityWeightedImpactQuery {
       `,
         [geoRegionH3IndexList.value],
       );
-    if (!res.length) {
-      throw new ImpactRawDataComputingError(
-        `Could not compute Impact Raw Data trying to fetch from indicator h3 source: ${indicatorH3DataSouce.tableName}.${indicatorH3DataSouce.columnName} and material h3 source: ${materialH3DataSource.tableName}.${materialH3DataSource.columnName}`,
-      );
-    }
+      if (!res.length) {
+        throw new ImpactRawDataComputingError(
+          `Could not compute Impact Raw Data trying to fetch from indicator h3 source: ${indicatorH3DataSouce.tableName}.${indicatorH3DataSouce.columnName} and material h3 source: ${materialH3DataSource.tableName}.${materialH3DataSource.columnName}`,
+        );
+      }
+      const totalWeightedImpact = res[0].total_weighted_impact ?? 0;
 
-    return new TotalWeightedImpact(res[0].total_weighted_impact);
+      return new TotalWeightedImpact(totalWeightedImpact);
+    } catch (e) {
+      console.error(e);
+      const stop = true;
+      throw e;
+    }
   }
 }
+
+const getAnnualCommodityWeightedImpactOverGeoRegion = async (
+  dataSource: DataSource,
+  params: {
+    indicatorH3DataSouce: IndicatorH3DataSource;
+    materialH3DataSource: MaterialH3DataSource;
+    geoRegionH3IndexList: GeoRegionId;
+  },
+): Promise<TotalWeightedImpact> => {
+  const { indicatorH3DataSouce, materialH3DataSource, geoRegionH3IndexList } =
+    params;
+  const res: { total_weighted_impact: number }[] = await dataSource.query(
+    `
+      SELECT
+      SUM(h3ind."${indicatorH3DataSouce.columnName}" * h3prod."${materialH3DataSource.columnName}") AS total_weighted_impact
+      FROM ${indicatorH3DataSouce.tableName} h3ind
+      INNER JOIN ${materialH3DataSource.tableName} h3prod
+      ON h3prod.h3index = h3ind.h3index
+      WHERE h3ind.h3index = ANY($1);
+      `,
+    [geoRegionH3IndexList.value],
+  );
+  if (!res.length) {
+    throw new ImpactRawDataComputingError(
+      `Could not compute Impact Raw Data trying to fetch from indicator h3 source: ${indicatorH3DataSouce.tableName}.${indicatorH3DataSouce.columnName} and material h3 source: ${materialH3DataSource.tableName}.${materialH3DataSource.columnName}`,
+    );
+  }
+
+  return new TotalWeightedImpact(res[0].total_weighted_impact);
+};

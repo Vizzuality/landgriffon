@@ -13,8 +13,8 @@ import {
 } from '../../indicators/indicator.entity';
 import { H3Data, H3DataSource } from '../../h3-data/h3-data.entity';
 import {
-  MaterialToH3,
   MATERIAL_TO_H3_TYPE,
+  MaterialToH3,
 } from 'modules/materials/material-to-h3.entity';
 import {
   GeoRegionId,
@@ -71,10 +71,16 @@ export class ImpactCalculationRepository {
   async getIndicatorH3DataSource(
     nameCode: INDICATOR_NAME_CODES,
   ): Promise<IndicatorH3DataSource> {
+    if (nameCode === INDICATOR_NAME_CODES.WGUWU) {
+      nameCode = INDICATOR_NAME_CODES.UWU;
+    }
     const res = await this.dataSource
       .createQueryBuilder(H3Data, 'h3')
       .leftJoin(Indicator, 'indicator', 'h3.indicatorId = indicator.id')
-      .select(['h3.h3tableName as tableName', 'h3.h3columnName as columnName'])
+      .select([
+        'h3.h3tableName as "tableName"',
+        'h3.h3columnName as "columnName"',
+      ])
       .where('indicator."nameCode" = :nameCode', {
         nameCode,
       })
@@ -93,7 +99,10 @@ export class ImpactCalculationRepository {
     const res = await this.dataSource
       .createQueryBuilder(H3Data, 'h3')
       .leftJoin(MaterialToH3, 'materialh3', 'materialh3.h3DataId = h3.id')
-      .select(['h3.h3tableName as tableName', 'h3.h3columnName as columnName'])
+      .select([
+        'h3.h3tableName as "tableName"',
+        'h3.h3columnName as "columnName"',
+      ])
       .where('materialh3.materialId = :materialId', {
         materialId: materialId.value,
       })

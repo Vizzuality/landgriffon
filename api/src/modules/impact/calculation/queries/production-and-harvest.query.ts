@@ -28,7 +28,7 @@ export class MaterialId extends TinyTypeOf<string>() {}
 export class GeoRegionId extends TinyTypeOf<string>() {}
 
 // TODO: This probably needs better naming
-interface H3GridSumResult {
+export interface H3GridSumResult {
   total_sum: number;
 }
 

@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
-import { INDICATOR_NAME_CODES } from '../../indicators/indicator.entity';
+import { DataSource, In } from 'typeorm';
+import {
+  Indicator,
+  INDICATOR_NAME_CODES,
+} from '../../indicators/indicator.entity';
 import {
   GeoRegionH3IndexList,
   ImpactCalculationRepository,
@@ -14,6 +17,10 @@ import {
   MaterialId,
 } from './queries/production-and-harvest.query';
 import { MATERIAL_TO_H3_TYPE } from '../../materials/material-to-h3.entity';
+import {
+  AdminRegionId,
+  IndicatorId,
+} from './queries/indicator-coefficient-impact.query';
 
 /**
  * @description: Builds all dependencies to calculate all required impacts by location.
@@ -36,19 +43,31 @@ const SPATIAL_INDICATOR_NAME_CODES = [
   INDICATOR_NAME_CODES.WGUWU,
 ];
 
-type IndicatorH3DataSourceMap = Map<
+export type IndicatorH3DataSourceMap = Map<
   INDICATOR_NAME_CODES,
   IndicatorH3DataSource
 >;
 
-export type SourcingLocationDependency = {
+/**
+ * @description: All required data to calculate impact for a specific location. It needs to have the h3 list of the georegion, the h3 datasources for the material,
+ *              and the h3 datasource for all the indicators we need to calculate impact for.
+ */
+
+export type IndicatorDependency = {
+  spatial: IndicatorH3DataSourceMap;
+  coefficient: { nameCode: INDICATOR_NAME_CODES; id: IndicatorId }[];
+};
+
+export type DependenciesToCalculateImpact = {
   sourcingLocationId: string;
+  adminRegionId: AdminRegionId;
+  materialId: MaterialId;
   materialH3DataSourceMap: {
     production: MaterialH3DataSource;
     harvest: MaterialH3DataSource;
   };
+  indicatorDependencies: IndicatorDependency;
   geoRegionH3IndexList: GeoRegionH3IndexList;
-  indicatorH3DataSourceDependencyMap: IndicatorH3DataSourceMap;
 };
 
 @Injectable()
@@ -59,20 +78,11 @@ export class ImpactPerLocationDependencyBuilder {
   ) {}
 
   async buildDependencyMap(
-    activeIndicatorNamecodes: INDICATOR_NAME_CODES[],
-  ): Promise<SourcingLocationDependency[]> {
-    const spatialIndicators = activeIndicatorNamecodes.filter(
-      (indicatorNameCode) =>
-        SPATIAL_INDICATOR_NAME_CODES.includes(indicatorNameCode),
-    );
-    const indicatorH3DataSourceDependencyMap =
-      await this.getIndicatorH3DataSourceDependencies(spatialIndicators);
-
+    locations: SourcingLocation[],
+    indicatorDependencies: IndicatorDependency,
+  ): Promise<DependenciesToCalculateImpact[]> {
     // TODO: Might need to do in batches? The number of elements (right now max 40k, but can be bigger) might not be too much, but adding all dependencies
     //       specially the georegion h3 indices might be too much. We need to check this.
-    const sourcingLocations: SourcingLocation[] = await this.dataSource
-      .getRepository(SourcingLocation)
-      .find();
 
     const materialH3DataSourceMap = new Map<
       string,
@@ -83,8 +93,9 @@ export class ImpactPerLocationDependencyBuilder {
     >();
     const georegionH3IndexMap = new Map<string, GeoRegionH3IndexList>();
 
-    const sourcingLocationDependencies: SourcingLocationDependency[] = [];
-    for (const location of sourcingLocations) {
+    const sourcingLocationDependencies: DependenciesToCalculateImpact[] = [];
+    for (const location of locations) {
+      const adminRegionId = new AdminRegionId(location.adminRegionId);
       const materialId = new MaterialId(location.materialId);
       const geoRegionId = new GeoRegionId(location.geoRegionId);
       const materialH3DataSource = materialH3DataSourceMap.get(
@@ -110,11 +121,13 @@ export class ImpactPerLocationDependencyBuilder {
         georegionH3IndexMap.set(geoRegionId.value, h3Indices);
       }
 
-      const dependencies: SourcingLocationDependency = {
+      const dependencies: DependenciesToCalculateImpact = {
+        adminRegionId: adminRegionId,
         sourcingLocationId: location.id,
+        materialId: materialId,
         materialH3DataSourceMap: materialH3DataSourceMap.get(materialId.value)!,
         geoRegionH3IndexList: georegionH3IndexMap.get(geoRegionId.value)!,
-        indicatorH3DataSourceDependencyMap,
+        indicatorDependencies,
       };
       sourcingLocationDependencies.push(dependencies);
     }
@@ -125,7 +138,7 @@ export class ImpactPerLocationDependencyBuilder {
   //       We need to handle this gracefully. For now I will get the h3 datasource for the spatial indicators.
 
   //
-  async getIndicatorH3DataSourceDependencies(
+  async getSpatialIndicatorDataSources(
     spatialIndicatorNameCodes: INDICATOR_NAME_CODES[],
   ): Promise<IndicatorH3DataSourceMap> {
     const indicatorH3DataSourceMap = new Map<
@@ -138,5 +151,51 @@ export class ImpactPerLocationDependencyBuilder {
       indicatorH3DataSourceMap.set(indicatorNameCode, indicatorH3DataSource);
     }
     return indicatorH3DataSourceMap;
+  }
+
+  /**
+   * @desccription: Coefficient Indicators do not depend on spatial data so that they don't have a h3 datasource. It's a table lookup
+   *                For that, we need the material id, admin region id that comes with the location, and the ids for the coefficient indicators
+   *                If we agreee on removing the Indicator UUID, and use the nameCode as the ID as we should, this would not be required
+   */
+
+  async buildCoefficientIndicatorDependencies(
+    coefficientIndicatorNameCodes: INDICATOR_NAME_CODES[],
+  ): Promise<{ nameCode: INDICATOR_NAME_CODES; id: IndicatorId }[]> {
+    const coefficientIndicators = await this.dataSource
+      .getRepository(Indicator)
+      .find({ where: { nameCode: In(coefficientIndicatorNameCodes) } });
+
+    return coefficientIndicators.map((indicator) => ({
+      nameCode: indicator.nameCode,
+      id: new IndicatorId(indicator.id),
+    }));
+  }
+
+  async buildIndicatorDependencies(
+    activeIndicatorNameCodes: INDICATOR_NAME_CODES[],
+  ): Promise<IndicatorDependency> {
+    const spatialIndicators = activeIndicatorNameCodes.filter(
+      (indicatorNameCode) =>
+        SPATIAL_INDICATOR_NAME_CODES.includes(indicatorNameCode),
+    );
+
+    const coefficientIndicators = activeIndicatorNameCodes.filter(
+      (indicatorNameCode) =>
+        !SPATIAL_INDICATOR_NAME_CODES.includes(indicatorNameCode),
+    );
+
+    // We can do this just once, as they won't change for all locations, the datasources of the indicator will remain the same for all locations
+    // IMPORTANT: Below only the spatial indicators have a h3 datasource, the others use the indicator coefficient tables. We need to handle this
+    const indicatorH3DataSourceDependencyMap =
+      await this.getSpatialIndicatorDataSources(spatialIndicators);
+
+    const coefficientIndicatorsDependencies =
+      await this.buildCoefficientIndicatorDependencies(coefficientIndicators);
+
+    return {
+      spatial: indicatorH3DataSourceDependencyMap,
+      coefficient: coefficientIndicatorsDependencies,
+    };
   }
 }

@@ -4,6 +4,15 @@
 # Documentation for this file format can be found in "Parameters"
 # Link: https://docs.kedro.org/en/0.19.11/configuration/parameters.html
 
+adm0:
+  tolerance: 0.005  # 500 m
+
+adm1:
+  tolerance: 0.0001 # 10 m
+
+adm2:
+  tolerance: null
+
 geo_region:
   columns:
     - id
@@ -14,7 +23,7 @@ geo_region:
 admin_region:
   columns:
     - id
-#    - parentId
+    - parentId
     - gadmId
     - level
     - name
@@ -22,4 +31,4 @@ admin_region:
     - status
     - isoA3
     - geoRegionId
-#    - mpath
+    - mpath

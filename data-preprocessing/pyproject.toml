@@ -12,6 +12,7 @@ dependencies = [
   "kedro~=0.19.11",
   "kedro-datasets[pandas-parquetdataset, geopandas-genericdataset]>=6.0",
   "pandas>=2.2.3",
+  "polars>=1.25.2",
 ]
 
 [project.scripts]
@@ -22,7 +23,8 @@ dependencies = [
 [dependency-groups]
 docs = ["sphinx>=8.2.3"]
 dev = [
-  "ipython>=9.0.2",
+  "ipython<9.0.0",
+  "kedro-viz>=11.0.0",
   "pytest>=8.3.5",
   "pytest-cov>=6.0.0",
   "pytest-mock>=3.14.0",

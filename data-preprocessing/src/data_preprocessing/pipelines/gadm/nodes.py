@@ -43,19 +43,29 @@ def gadm_to_h3(gdf: gpd.GeoDataFrame, h3_resolution: int, tolerance: float | Non
     return pl.DataFrame(df)
 
 
-def join_gadm_levels(adm0: pl.DataFrame, adm1: pl.DataFrame, adm2: pl.DataFrame) -> pl.DataFrame:
-    df: pl.DataFrame = adm2.join(adm1, how="left").join(adm0, how="left")
+def join_gadm_levels(adm0: pl.LazyFrame, adm1: pl.LazyFrame, adm2: pl.LazyFrame) -> pl.LazyFrame:
+    """This func is heavily depending on the columns names of the dataframes so beware of any
+    changes to the data structure may be catastrophic for it.
+    """
+    # For some reason, admin level 0 layer doesn't follow the pattern of the other layers
+    adm0 = adm0.rename({"COUNTRY": "NAME_0"})
+    iso_to_country_map = dict(adm0.select("GID_0", "NAME_0").collect().iter_rows())
+    # admin 1 and 2 don't have any non-null NAME_0 so it causes casting issues in the join
+    adm1 = adm1.drop("NAME_0")
+    adm2 = adm2.drop("NAME_0")
+    df: pl.LazyFrame = adm2.join(
+        adm1, how="full", on=["GID_1", "GID_0", "NAME_1", "geometry", "h3Compact"], coalesce=True
+    ).join(adm0, how="full", on=["GID_0", "geometry", "h3Compact"], coalesce=True)
+    # fill in missing values in NAME_0 with the corresponding country name
+    df = df.with_columns(pl.col("NAME_0").fill_null(pl.col("GID_0").replace(iso_to_country_map)))
+    df = df.with_columns(pl.lit(str(uuid.uuid4())).alias("id"))
 
-    df = df.rename({"geometry": "theGeom"})
-    df = df.with_columns(pl.col("GID_0").alias("isoA3"))
-    df[["gadmId", "name", "level"]] = df.apply(_collapse_gid_and_name, axis=1, result_type="expand")
-    df["id"] = [str(uuid.uuid4()) for _ in range(len(df))]
-    df["isoA3"] = df["GID_0"]
     return df
 
 
 def reshape_to_geo_region_table(df: pl.DataFrame, params: dict) -> pd.DataFrame:
     df = df.with_columns(pl.lit(False).alias("isCreatedByUser"))
+    df = df.rename(params["column_map"])
     df = df.with_columns(params["columns"])
     return df
 

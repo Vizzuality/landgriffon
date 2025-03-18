@@ -14,6 +14,9 @@ adm2:
   tolerance: null
 
 geo_region:
+  column_map:
+    geometry: theGeom
+    GID_0: isoA3
   columns:
     - id
     - h3Compact
@@ -21,6 +24,8 @@ geo_region:
     - isCreatedByUser
 
 admin_region:
+  column_map:
+    GID_0: isoA3
   columns:
     - id
     - parentId

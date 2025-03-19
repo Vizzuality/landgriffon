@@ -58,8 +58,9 @@ def join_gadm_levels(adm0: pl.LazyFrame, adm1: pl.LazyFrame, adm2: pl.LazyFrame)
     ).join(adm0, how="full", on=["GID_0", "geometry", "h3Compact"], coalesce=True)
     # fill in missing values in NAME_0 with the corresponding country name
     df = df.with_columns(pl.col("NAME_0").fill_null(pl.col("GID_0").replace(iso_to_country_map)))
-    df = df.with_columns(pl.lit(str(uuid.uuid4())).alias("id"))
-
+    # add UUID column
+    df_len = df.select(pl.len()).collect().item()
+    df = df.with_columns(pl.Series(name="id", values=[str(uuid.uuid4()) for _ in range(df_len)]))
     return df
 
 

@@ -11,16 +11,18 @@ from h3ronpy.pandas.vector import geoseries_to_cells
 log = logging.getLogger(__name__)
 
 
-def _last_meaningful_gadm_level(gid_or_name: Literal["GID", "NAME"]) -> pl.Expr:
+def _last_meaningful_gadm_level(
+    gid_or_name: Literal["GID", "NAME"], remove_version: bool = True
+) -> pl.Expr:
     expr = (
-        pl.when(pl.col("GID_1").is_not_null())
-        .then(pl.col(f"{gid_or_name}_1"))
-        .when(pl.col("GID_2").is_not_null())
+        pl.when(pl.col("GID_2").is_not_null())
         .then(pl.col(f"{gid_or_name}_2"))
-        .when(pl.col("GID_3").is_not_null())
-        .then(pl.col(f"{gid_or_name}_3"))
+        .when(pl.col("GID_1").is_not_null())
+        .then(pl.col(f"{gid_or_name}_1"))
         .otherwise(pl.col(f"{gid_or_name}_0"))
     )
+    if remove_version:
+        expr = expr.str.replace(r"_\d?$", "")
     return expr
 
 
@@ -49,9 +51,10 @@ def join_gadm_levels(adm0: pl.LazyFrame, adm1: pl.LazyFrame, adm2: pl.LazyFrame)
     ).join(adm0, how="full", on=["GID_0", "geometry", "h3Compact"], coalesce=True)
     # fill in missing values in NAME_0 with the corresponding country name
     df = df.with_columns(pl.col("NAME_0").fill_null(pl.col("GID_0").replace(iso_to_country_map)))
-    # add UUID column
     df_len = df.select(pl.len()).collect().item()
-    df = df.with_columns(pl.Series(name="id", values=[str(uuid.uuid4()) for _ in range(df_len)]))
+    df = df.with_columns(
+        pl.Series(name="id", values=[str(uuid.uuid4()) for _ in range(df_len)])
+    )  # add UUID column
     df = df.with_columns(
         gadm_id=_last_meaningful_gadm_level("GID"), name=_last_meaningful_gadm_level("NAME")
     )

@@ -1,25 +1,25 @@
-import pandas as pd
+import polars as pl
 
-from data_preprocessing.pipelines.gadm.nodes import _collapse_gid_and_name
+from data_preprocessing.pipelines.gadm.nodes import _last_meaningful_gadm_level
 
 
-def test__collapse_gid_and_name():
-    data = pd.Series(
+def test_last_meaningful_gadm_level__w_gid_1_level():
+    df = pl.DataFrame(
         {
             "GID_0": "AFG",
             "GID_1": "AFG.1_1",
+            "GID_2": None,
             "NAME_0": "afga",
             "NAME_1": "foo",
+            "NAME_2": None,
         }
     )
-    gid, name, level = _collapse_gid_and_name(data)
-    assert gid == "AFG.1"
-    assert name == "foo"
-    assert level == 1
+    df = df.with_columns(test=_last_meaningful_gadm_level("GID"))
+    assert df.select("test").item() == "AFG.1"
 
 
-def test__collapse_gid_and_name_w_version():
-    data = pd.Series(
+def test__last_meaningful_gadm_level__w_gid_2_levels():
+    df = pl.DataFrame(
         {
             "GID_0": "AFG",
             "GID_1": "AFG.1",
@@ -29,7 +29,20 @@ def test__collapse_gid_and_name_w_version():
             "NAME_2": "bar",
         }
     )
-    gid, name, level = _collapse_gid_and_name(data, remove_version=False)
-    assert gid == "AFG.1.2_3"
-    assert name == "bar"
-    assert level == 2
+    df = df.with_columns(test=_last_meaningful_gadm_level("GID"))
+    assert df.select("test").item() == "AFG.1.2"
+
+
+def test_last_meaningful_gadm_level__w_name_1_level():
+    df = pl.DataFrame(
+        {
+            "GID_0": "AFG",
+            "GID_1": "AFG.1_1",
+            "GID_2": None,
+            "NAME_0": "afga",
+            "NAME_1": "foo",
+            "NAME_2": None,
+        }
+    )
+    df = df.with_columns(test=_last_meaningful_gadm_level("NAME"))
+    assert df.select("test").item() == "foo"

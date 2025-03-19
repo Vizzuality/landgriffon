@@ -1,6 +1,6 @@
 import logging
-import re
 import uuid
+from typing import Literal
 
 import geopandas as gpd
 import pandas as pd
@@ -11,26 +11,17 @@ from h3ronpy.pandas.vector import geoseries_to_cells
 log = logging.getLogger(__name__)
 
 
-def _collapse_gid_and_name(row: pd.Series, remove_version: bool = True) -> tuple[str, str, int]:
-    """Unify GIDs to the smallest non-null value"""
-    gadm_id = row["GID_0"]
-    name = row["NAME_0"]
-    level = 0
-    if row.get("GID_1") is not None:
-        gadm_id = row["GID_1"]
-        name = row["NAME_1"]
-        level = 1
-    if row.get("GID_2") is not None:
-        gadm_id = row["GID_2"]
-        name = row["NAME_2"]
-        level = 2
-    if row.get("GID_3") is not None:
-        gadm_id = row["GID_3"]
-        name = row["NAME_3"]
-        level = 3
-    if remove_version:
-        gadm_id = re.sub(r"_\d?$", "", gadm_id)
-    return gadm_id, name, level
+def _last_meaningful_gadm_level(gid_or_name: Literal["GID", "NAME"]) -> pl.Expr:
+    expr = (
+        pl.when(pl.col("GID_1").is_not_null())
+        .then(pl.col(f"{gid_or_name}_1"))
+        .when(pl.col("GID_2").is_not_null())
+        .then(pl.col(f"{gid_or_name}_2"))
+        .when(pl.col("GID_3").is_not_null())
+        .then(pl.col(f"{gid_or_name}_3"))
+        .otherwise(pl.col(f"{gid_or_name}_0"))
+    )
+    return expr
 
 
 def gadm_to_h3(gdf: gpd.GeoDataFrame, h3_resolution: int, tolerance: float | None) -> pl.DataFrame:
@@ -61,6 +52,9 @@ def join_gadm_levels(adm0: pl.LazyFrame, adm1: pl.LazyFrame, adm2: pl.LazyFrame)
     # add UUID column
     df_len = df.select(pl.len()).collect().item()
     df = df.with_columns(pl.Series(name="id", values=[str(uuid.uuid4()) for _ in range(df_len)]))
+    df = df.with_columns(
+        gadm_id=_last_meaningful_gadm_level("GID"), name=_last_meaningful_gadm_level("NAME")
+    )
     return df
 
 

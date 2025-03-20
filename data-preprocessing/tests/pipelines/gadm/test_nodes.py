@@ -1,10 +1,10 @@
 import polars as pl
 
-from data_preprocessing.pipelines.gadm.nodes import _last_non_null_gadm_level
+from data_preprocessing.pipelines.gadm.nodes import add_unified_columns
 
 
-def test_last_meaningful_gadm_level__w_gid_1_level():
-    df = pl.DataFrame(
+def test_add_unified_columns_level_1():
+    df = pl.LazyFrame(
         {
             "GID_0": "AFG",
             "GID_1": "AFG.1_1",
@@ -14,12 +14,14 @@ def test_last_meaningful_gadm_level__w_gid_1_level():
             "NAME_2": None,
         }
     )
-    df = df.with_columns(test=_last_non_null_gadm_level("GID"))
-    assert df.select("test").item() == "AFG.1"
+    df = add_unified_columns(df).collect()
+    assert df.select("gadm_id").item() == "AFG.1"
+    assert df.select("name").item() == "foo"
+    assert df.select("level").item() == 1
 
 
-def test__last_meaningful_gadm_level__w_gid_2_levels():
-    df = pl.DataFrame(
+def test_add_unified_columns_levels_2():
+    df = pl.LazyFrame(
         {
             "GID_0": "AFG",
             "GID_1": "AFG.1",
@@ -29,20 +31,24 @@ def test__last_meaningful_gadm_level__w_gid_2_levels():
             "NAME_2": "bar",
         }
     )
-    df = df.with_columns(test=_last_non_null_gadm_level("GID"))
-    assert df.select("test").item() == "AFG.1.2"
+    df = add_unified_columns(df).collect()
+    assert df.select("gadm_id").item() == "AFG.1.2"
+    assert df.select("name").item() == "bar"
+    assert df.select("level").item() == 2
 
 
-def test_last_meaningful_gadm_level__w_name_1_level():
-    df = pl.DataFrame(
+def test_add_unified_columns_level_0():
+    df = pl.LazyFrame(
         {
             "GID_0": "AFG",
-            "GID_1": "AFG.1_1",
+            "GID_1": None,
             "GID_2": None,
             "NAME_0": "afga",
-            "NAME_1": "foo",
+            "NAME_1": None,
             "NAME_2": None,
         }
     )
-    df = df.with_columns(test=_last_non_null_gadm_level("NAME"))
-    assert df.select("test").item() == "foo"
+    df = add_unified_columns(df).collect()
+    assert df.select("gadm_id").item() == "AFG"
+    assert df.select("name").item() == "afga"
+    assert df.select("level").item() == 0

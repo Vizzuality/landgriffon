@@ -43,9 +43,17 @@ gadm_adm2_h3:
     compression_level: 10
 
 geo_regions:
-  type: pandas.ParquetDataset
+  type: polars.LazyPolarsDataset
+  file_format: parquet
   filepath: data/03_primary/geo_regions.parquet
+  save_args:
+    compression: "zstd"
+    compression_level: 10
 
 admin_regions:
-  type: pandas.ParquetDataset
+  type: polars.LazyPolarsDataset
+  file_format: parquet
   filepath: data/03_primary/admin_regions.parquet
+  save_args:
+    compression: "zstd"
+    compression_level: 10

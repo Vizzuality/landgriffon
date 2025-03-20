@@ -3,7 +3,6 @@ import uuid
 from typing import Literal
 
 import geopandas as gpd
-import pandas as pd
 import polars as pl
 from h3ronpy import cells_to_string
 from h3ronpy.pandas.vector import geoseries_to_cells
@@ -11,8 +10,8 @@ from h3ronpy.pandas.vector import geoseries_to_cells
 log = logging.getLogger(__name__)
 
 
-def _last_meaningful_gadm_level(
-    gid_or_name: Literal["GID", "NAME"], remove_version: bool = True
+def _last_non_null_gadm_level(
+    gid_or_name: Literal["GID", "NAME"], strip_version: bool = True
 ) -> pl.Expr:
     expr = (
         pl.when(pl.col("GID_2").is_not_null())
@@ -21,9 +20,28 @@ def _last_meaningful_gadm_level(
         .then(pl.col(f"{gid_or_name}_1"))
         .otherwise(pl.col(f"{gid_or_name}_0"))
     )
-    if remove_version:
+    if strip_version:
+        # GADM has a version id appended to som GIDs in the form of `_X`
+        # where X is the version number
         expr = expr.str.replace(r"_\d?$", "")
     return expr
+
+
+def _get_gadm_level() -> pl.Expr:
+    return (
+        pl.when(pl.col("GID_2").is_not_null())
+        .then(2)
+        .when(pl.col("GID_1").is_not_null())
+        .then(1)
+        .otherwise(0)
+    )
+
+
+def _find_parent_id() -> pl.Expr:
+    """Given a table with columns id | GID_0 | GID_1 | GID_2
+    The immediate parent id is the first id of previous level
+    """
+    pl.when(pl.col("GID_2").is_not_null())
 
 
 def gadm_to_h3(gdf: gpd.GeoDataFrame, h3_resolution: int, tolerance: float | None) -> pl.DataFrame:
@@ -37,42 +55,50 @@ def gadm_to_h3(gdf: gpd.GeoDataFrame, h3_resolution: int, tolerance: float | Non
 
 
 def join_gadm_levels(adm0: pl.LazyFrame, adm1: pl.LazyFrame, adm2: pl.LazyFrame) -> pl.LazyFrame:
-    """This func is heavily depending on the columns names of the dataframes so beware of any
-    changes to the data structure may be catastrophic for it.
-    """
     # For some reason, admin level 0 layer doesn't follow the pattern of the other layers
     adm0 = adm0.rename({"COUNTRY": "NAME_0"})
-    iso_to_country_map = dict(adm0.select("GID_0", "NAME_0").collect().iter_rows())
-    # admin 1 and 2 don't have any non-null NAME_0 so it causes casting issues in the join
+    # admin 1 and 2 don't have any non-null NAME_0, it causes casting issues in the join
     adm1 = adm1.drop("NAME_0")
     adm2 = adm2.drop("NAME_0")
+
     df: pl.LazyFrame = adm2.join(
         adm1, how="full", on=["GID_1", "GID_0", "NAME_1", "geometry", "h3Compact"], coalesce=True
     ).join(adm0, how="full", on=["GID_0", "geometry", "h3Compact"], coalesce=True)
-    # fill in missing values in NAME_0 with the corresponding country name
-    df = df.with_columns(pl.col("NAME_0").fill_null(pl.col("GID_0").replace(iso_to_country_map)))
-    df_len = df.select(pl.len()).collect().item()
+    iso_to_country_map = dict(adm0.select("GID_0", "NAME_0").collect().iter_rows())
     df = df.with_columns(
-        pl.Series(name="id", values=[str(uuid.uuid4()) for _ in range(df_len)])
-    )  # add UUID column
-    df = df.with_columns(
-        gadm_id=_last_meaningful_gadm_level("GID"), name=_last_meaningful_gadm_level("NAME")
+        # fill in missing values in NAME_0 with the corresponding country name
+        pl.col("NAME_0").fill_null(pl.col("GID_0").replace(iso_to_country_map)),
     )
     return df
 
 
-def reshape_to_geo_region_table(df: pl.DataFrame, params: dict) -> pd.DataFrame:
+def add_unified_columns(df: pl.LazyFrame) -> pl.LazyFrame:
+    df_len = df.select(pl.len()).collect().item()
+    df = df.with_columns(
+        # add UUID column
+        pl.Series(name="id", values=[str(uuid.uuid4()) for _ in range(df_len)]),
+        gadm_id=_last_non_null_gadm_level("GID"),
+        name=_last_non_null_gadm_level("NAME"),
+        level=_get_gadm_level(),
+    )
+    return df
+
+
+def reshape_to_geo_region_table(df: pl.LazyFrame, params: dict) -> pl.LazyFrame:
     df = df.with_columns(pl.lit(False).alias("isCreatedByUser"))
     df = df.rename(params["column_map"])
     df = df.with_columns(params["columns"])
     return df
 
 
-def reshape_to_admin_region_table(df: pd.DataFrame, params: dict) -> pd.DataFrame:
-    df = df.rename(columns={"id": "geoRegionId"})
-    df["id"] = [str(uuid.uuid4()) for _ in range(len(df))]
+def reshape_to_admin_region_table(df: pl.LazyFrame, params: dict) -> pl.LazyFrame:
+    df = df.rename({"id": "geoRegionId"})
+    df_len = df.select(pl.len()).collect().item()
+    df = df.with_columns(
+        pl.Series(name="id", values=[str(uuid.uuid4()) for _ in range(df_len)])
+    )  # add UUID column
 
-    df["description"] = ""
-    df["status"] = "active"
-    df = df[params["columns"]]
+
+    df = df.rename(params["column_map"])
+    df = df.with_columns(params["columns"])
     return df

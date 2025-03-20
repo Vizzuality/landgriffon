@@ -43,7 +43,7 @@ gadm_adm2_h3:
     compression_level: 10
 
 geo_regions:
-  type: polars.LazyPolarsDataset
+  type: polars.EagerPolarsDataset
   file_format: parquet
   filepath: data/03_primary/geo_regions.parquet
   save_args:
@@ -51,7 +51,7 @@ geo_regions:
     compression_level: 10
 
 admin_regions:
-  type: polars.LazyPolarsDataset
+  type: polars.EagerPolarsDataset
   file_format: parquet
   filepath: data/03_primary/admin_regions.parquet
   save_args:

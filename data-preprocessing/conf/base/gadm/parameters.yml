@@ -15,25 +15,24 @@ adm2:
 
 geo_region:
   column_map:
-    geometry: theGeom
-    GID_0: isoA3
+    geometry: geom
+    GID_0: iso3
   columns:
     - id
-    - h3Compact
-    - theGeom
-    - isCreatedByUser
+    - h3_compact
+    - geom
+    - is_created_by_user
 
 admin_region:
   column_map:
-    GID_0: isoA3
+    GID_0: iso3
   columns:
     - id
-    - parentId
-    - gadmId
+    - parent_id
+    - gadm_id
     - level
     - name
-    - description
     - status
-    - isoA3
-    - geoRegionId
+    - iso3
+    - geo_region_id
     - mpath

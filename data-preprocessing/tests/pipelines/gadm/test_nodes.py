@@ -1,6 +1,7 @@
 import polars as pl
+from polars.testing import assert_series_equal
 
-from data_preprocessing.pipelines.gadm.nodes import add_unified_columns
+from data_preprocessing.pipelines.gadm.nodes import _get_parent_id, add_unified_columns
 
 
 def test_add_unified_columns_level_1():
@@ -52,3 +53,20 @@ def test_add_unified_columns_level_0():
     assert df.select("gadm_id").item() == "AFG"
     assert df.select("name").item() == "afga"
     assert df.select("level").item() == 0
+
+
+def test_parent_id_level_0():
+    df = pl.DataFrame(
+        {
+            "id": [1, 2, 3, 4, 5],
+            "GID_0": ["a", "a", "a", "b", "b"],
+            "GID_1": [None, "a.1", "a.1", None, "b.1"],
+            "GID_2": [None, None, "a.1.1", None, None],
+            "gadm_id": ["a", "a.1", "a.1.1", "b", "b.1"],
+            "level": [0, 1, 2, 0, 1],
+        }
+    )
+    assert_series_equal(
+        df.select(parent_id=_get_parent_id()).to_series(),
+        pl.Series("parent_id", [None, 1, 2, None, 4]),
+    )

@@ -1,6 +1,4 @@
 import logging
-import uuid
-from typing import Literal
 
 import geopandas as gpd
 import polars as pl
@@ -20,11 +18,17 @@ def _get_gadm_level() -> pl.Expr:
     )
 
 
-def _find_parent_id() -> pl.Expr:
-    """Given a table with columns id | GID_0 | GID_1 | GID_2
-    The immediate parent id is the first id of previous level
-    """
-    pl.when(pl.col("GID_2").is_not_null())
+def _get_parent_id() -> pl.Expr:
+    return (
+        pl.when(pl.col("level") > 0)
+        .then(
+            pl.col("gadm_id")
+            .str.replace(r"\.\d+$", "")
+            .replace(pl.col("gadm_id"), pl.col("id"))
+            .cast(pl.Int64)
+        )
+        .otherwise(None)
+    )
 
 
 def gadm_to_h3(gdf: gpd.GeoDataFrame, h3_resolution: int, tolerance: float | None) -> pl.DataFrame:
@@ -56,15 +60,13 @@ def join_gadm_levels(adm0: pl.LazyFrame, adm1: pl.LazyFrame, adm2: pl.LazyFrame)
 
 
 def add_unified_columns(df: pl.LazyFrame) -> pl.LazyFrame:
-    df_len = df.select(pl.len()).collect().item()
     df = df.with_columns(
-        # add UUID column
-        pl.Series(name="id", values=[str(uuid.uuid4()) for _ in range(df_len)]),
         # remove version suffix from GID like AFG.1_1 to AFG.1
         gadm_id=pl.coalesce(["GID_2", "GID_1", "GID_0"]).str.replace(r"_\d?$", ""),
         name=pl.coalesce(["NAME_2", "NAME_1", "NAME_0"]),
         level=_get_gadm_level(),
     )
+    df = df.with_row_index("id", offset=1)
     return df
 
 
@@ -77,12 +79,7 @@ def reshape_to_geo_region_table(df: pl.LazyFrame, params: dict) -> pl.LazyFrame:
 
 def reshape_to_admin_region_table(df: pl.LazyFrame, params: dict) -> pl.LazyFrame:
     df = df.rename({"id": "geoRegionId"})
-    df_len = df.select(pl.len()).collect().item()
-    df = df.with_columns(
-        pl.Series(name="id", values=[str(uuid.uuid4()) for _ in range(df_len)])
-    )  # add UUID column
-
-
+    df.with_columns(parent_id=_get_parent_id())
     df = df.rename(params["column_map"])
     df = df.with_columns(params["columns"])
     return df

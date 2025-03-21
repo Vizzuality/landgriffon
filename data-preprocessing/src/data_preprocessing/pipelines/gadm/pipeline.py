@@ -6,6 +6,7 @@ from data_preprocessing.pipelines.gadm.nodes import (
     gadm_to_h3,
     join_gadm_levels_and_clean,
     add_unified_columns,
+    special_cases,
 )
 
 
@@ -33,8 +34,13 @@ def create_pipeline(**kwargs) -> Pipeline:
                 "gadm_h3_all_levels",
             ),
             node(
-                add_unified_columns,
+                special_cases,
                 "gadm_h3_all_levels",
+                "gadm_h3_all_clean",
+            ),
+            node(
+                add_unified_columns,
+                "gadm_h3_all_clean",
                 "gadm_h3_all_uni",
             ),
             node(

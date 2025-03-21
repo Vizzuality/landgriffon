@@ -1,7 +1,11 @@
 import polars as pl
 from polars.testing import assert_series_equal
 
-from data_preprocessing.pipelines.gadm.nodes import _get_parent_id, add_unified_columns
+from data_preprocessing.pipelines.gadm.nodes import (
+    _materialized_path,
+    _parent_id_column,
+    add_unified_columns,
+)
 
 
 def test_add_unified_columns_level_1():
@@ -66,7 +70,22 @@ def test_parent_id_level_0():
             "level": [0, 1, 2, 1, 0, 1],
         }
     )
+    df = _parent_id_column(df)
     assert_series_equal(
-        df.select(parent_id=_get_parent_id()).to_series(),
+        df.select("parent_id").to_series(),
         pl.Series("parent_id", [None, 1, 2, 1, None, 5]),
+    )
+
+
+def test_materialized_path():
+    df = pl.DataFrame(
+        {
+            "id": [1, 2, 3, 4, 5, 6],
+            "gadm_id": ["a", "a.1", "a.1.1", "a.2", "b", "b.1"],
+            "parent_id": [None, 1, 2, 1, None, 5],
+        }
+    )
+    assert_series_equal(
+        _materialized_path(df).sort("id").select("mpath").to_series(),
+        pl.Series("mpath", ["1", "1.2", "1.2.3", "1.4", "5", "5.6"]),
     )

@@ -8,6 +8,7 @@ name = "data_preprocessing"
 readme = "README.md"
 dynamic = ["version"]
 dependencies = [
+  "duckdb>=1.2.1",
   "h3ronpy>=0.22.0",
   "kedro~=0.19.11",
   "kedro-datasets[pandas-parquetdataset, geopandas-genericdataset]>=6.0",

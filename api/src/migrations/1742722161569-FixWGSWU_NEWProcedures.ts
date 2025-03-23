@@ -1,10 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-// Fixes a wrong procedure call in the WGSWU_NEW computing procedures
-
-export class AddWGSWUNEWComputingProcedures1741936134816
-  implements MigrationInterface
-{
+export class FixWGSWU_NEWProcedures1742722161569 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Add the function to compute the BWS in stressed areas
     await queryRunner.query(`

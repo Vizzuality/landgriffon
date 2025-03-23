@@ -32,7 +32,12 @@ import { ImpactCalculationProgressTracker } from 'modules/impact/progress-tracke
 import { ImportProgressTrackerFactory } from 'modules/events/import-data-progress/import-progress.tracker.factory';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { AppConfig } from 'utils/app.config';
-import { TasksService } from '../../tasks/tasks.service';
+import { EventBus } from '@nestjs/cqrs';
+import {
+  IMPORT_DATA_EVENTS,
+  ImportDataEvent,
+} from '../../events/import-data-events/import-data.event-handler';
+import { v4 } from 'uuid';
 
 /**
  * @description: This is PoC (Proof of Concept) for the updated LG methodology v0.1
@@ -56,7 +61,7 @@ export class ImpactCalculator {
     private readonly cachedDataService: CachedDataService,
     private readonly dataSource: DataSource,
     private readonly importProgressTrackerFactory: ImportProgressTrackerFactory,
-    private readonly taskService: TasksService,
+    private readonly eventBus: EventBus,
   ) {}
 
   async calculateImpactForAllSourcingRecords(
@@ -588,6 +593,13 @@ export class ImpactCalculator {
         `Locations with no production: ${locationIdsWithNoProduction.join(
           ', ',
         )}`,
+      );
+      this.eventBus.publish(
+        new ImportDataEvent(v4(), IMPORT_DATA_EVENTS.PROCESSING, {
+          data: {
+            locationIdsWithNoProduction: [...locationIdsWithNoProduction],
+          },
+        }),
       );
     }
     const dataArray = Array.from(recordsPorLocation.entries());

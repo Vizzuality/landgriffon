@@ -7,6 +7,7 @@ export enum IMPORT_DATA_EVENTS {
   STARTED = API_EVENT_KINDS.sourcing_data__importStarted__v1alpha1,
   FAILED = API_EVENT_KINDS.sourcing_data__importFailed__v1alpha1,
   SUCCEED = API_EVENT_KINDS.sourcing_data__importSucceeded__v1alpha1,
+  PROCESSING = API_EVENT_KINDS.sourcing_data__importProcessing__v1alpha1,
 }
 
 export class ImportDataEvent implements IEvent {

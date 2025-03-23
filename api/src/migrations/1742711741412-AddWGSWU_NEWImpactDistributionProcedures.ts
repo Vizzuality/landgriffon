@@ -21,7 +21,7 @@ $$
 
         -- Get h3data table name, column
         SELECT * INTO aqueduct_h3_table_name, aqueduct_h3_column_name, h3_indicator_resolution
-        FROM get_h3_table_column_for_indicators(nameCode);
+        FROM get_h3_table_column_for_indicators_by_name_code(nameCode);
 
         -- Execute the average BWS in stressed areas
         EXECUTE format(
@@ -59,7 +59,7 @@ $$
 
         -- Get h3data table name, column
         SELECT * INTO aqueduct_h3_table_name, aqueduct_h3_column_name, h3_indicator_resolution
-        FROM get_h3_table_column_for_indicators(nameCode);
+        FROM get_h3_table_column_for_indicators_by_name_code(nameCode);
 
         -- Execute the stress area portion query
         EXECUTE format(

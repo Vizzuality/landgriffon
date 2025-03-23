@@ -27,6 +27,7 @@ export enum API_EVENT_KINDS {
   sourcing_data__importStarted__v1alpha1 = 'sourcing-data.importStarted/v1alpha1',
   sourcing_data__importFailed__v1alpha1 = 'sourcing-data.importFailed/v1alpha1',
   sourcing_data__importSucceeded__v1alpha1 = 'sourcing-data.importSucceeded/v1alpha1',
+  sourcing_data__importProcessing__v1alpha1 = 'sourcing-data.importProcessing/v1alpha1',
 }
 
 /**

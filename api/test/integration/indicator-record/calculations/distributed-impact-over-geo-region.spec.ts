@@ -13,6 +13,7 @@ import { ImpactQueryBuilder } from '../../../../src/modules/indicator-records/se
 import { CachedDataService } from '../../../../src/modules/cached-data/cached-data.service';
 import { ImportProgressTrackerFactory } from '../../../../src/modules/events/import-data-progress/import-progress.tracker.factory';
 import { TasksService } from '../../../../src/modules/tasks/tasks.service';
+import { CqrsModule } from '@nestjs/cqrs';
 
 const dummyProvider = { useValue: {} };
 
@@ -32,6 +33,7 @@ describe('ImpactCalculator.updateDistributedImpactOverGeoRegion', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
+      imports: [CqrsModule],
       providers: [
         ImpactCalculator,
         { provide: DataSource, useValue: dataSourceMock },

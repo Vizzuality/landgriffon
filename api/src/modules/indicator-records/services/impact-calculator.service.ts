@@ -518,6 +518,29 @@ export class ImpactCalculator {
     return res[0].distributed_impact;
   }
 
+  // TODO: Quick and dirty implementation. Needs to be removed when we refactor the impact calculation flow
+  //       Only applies for WGSWU_NEW when there is no production data for a specific location
+  //       ALSO: Since I am missing in the notebook how the weighted values for this indicator are computed, I am assuming
+  //       that the computation remains the same, I am just usins the values coming from this query
+  async getDistributedImpactForWGSWU_NEW(geoRegionId: string): Promise<{
+    BWS_IN_STRESSED_AREAS: number;
+    STRESSED_AREA_PORTION: number;
+  }> {
+    const nameCode = INDICATOR_NAME_CODES.WGSWU_NEW;
+    const res: {
+      BWS_IN_STRESSED_AREAS: number;
+      STRESSED_AREA_PORTION: number;
+    }[] = await this.dataSource.query(
+      `
+    select get_bws_in_stressed_areas_unweighted($1, $2) as "BWS_IN_STRESSED_AREAS",
+    get_stressed_area_portion_unweighted($1, $2) as "STRESSED_AREA_PORTION"
+    `,
+      [geoRegionId, nameCode],
+    );
+
+    return res[0];
+  }
+
   /**
    * @description: This is a quick and dirty approach given the time constraints. I am making a huge assumption that usually we won't be missing production data
    *               so that we compute the distributed impact only for those locations with missing production data.
@@ -541,6 +564,7 @@ export class ImpactCalculator {
     const INDICATORS_TO_CALCULATE_DISTRIBUTED_IMPACT: INDICATOR_NAME_CODES[] = [
       INDICATOR_NAME_CODES.UWU,
       INDICATOR_NAME_CODES.ENL,
+      INDICATOR_NAME_CODES.WGSWU_NEW,
     ];
 
     const filteredIndicators = activeIndicators.filter((indicator: Indicator) =>
@@ -574,9 +598,22 @@ export class ImpactCalculator {
         where: { id: sourcingLocationId },
       });
       const distributedImpact: Record<INDICATOR_NAME_CODES, number> = {} as any;
+      const WGSWU_NEW_distributedImpact = {
+        BWS_IN_STRESSED_AREAS: 0,
+        STRESSED_AREA_PORTION: 0,
+      };
       // For each location that has no production value, compute the distributed impact for each active indicator
       // at the time being, I don't know if all indicator will need a distributed impact in case of missing production, clarify this
       for (const indicator of filteredIndicators) {
+        // Since the approach for this indicator is so far unique based on our current pattern, we apply a different logic
+        if (indicator.nameCode === INDICATOR_NAME_CODES.WGSWU_NEW) {
+          const { BWS_IN_STRESSED_AREAS, STRESSED_AREA_PORTION } =
+            await this.getDistributedImpactForWGSWU_NEW(geoRegionId);
+          WGSWU_NEW_distributedImpact.BWS_IN_STRESSED_AREAS =
+            BWS_IN_STRESSED_AREAS;
+          WGSWU_NEW_distributedImpact.STRESSED_AREA_PORTION =
+            STRESSED_AREA_PORTION;
+        }
         distributedImpact[indicator.nameCode] =
           await this.getDistributedImpactOverGeoRegion(
             geoRegionId,
@@ -586,6 +623,10 @@ export class ImpactCalculator {
       // Update the records with the distributed impact
       records.forEach((record) => {
         record.distributedImpact = distributedImpact;
+        record.BWS_IN_STRESSED_AREAS =
+          WGSWU_NEW_distributedImpact.BWS_IN_STRESSED_AREAS;
+        record.STRESSED_AREA_PORTION =
+          WGSWU_NEW_distributedImpact.STRESSED_AREA_PORTION;
       });
     });
 

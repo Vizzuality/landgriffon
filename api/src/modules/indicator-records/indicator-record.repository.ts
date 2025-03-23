@@ -5,8 +5,8 @@ import { AppBaseRepository } from 'utils/app-base.repository';
 import { SaveOptions } from 'typeorm/repository/SaveOptions';
 import { chunk } from 'lodash';
 import { AppConfig } from 'utils/app.config';
-import { ImportProgressTrackerFactory } from 'modules/events/import-data-progress/import-progress.tracker.factory';
 import { ImpactCalculationProgressTracker } from 'modules/impact/progress-tracker/impact-calculation.progress-tracker';
+import { ImportDataProgressEmitter } from 'modules/import-data/cqrs/import-data-progress.emitter';
 
 const dbConfig: any = AppConfig.get('db');
 const batchChunkSize: number = parseInt(`${dbConfig.batchChunkSize}`, 10);
@@ -15,7 +15,7 @@ const batchChunkSize: number = parseInt(`${dbConfig.batchChunkSize}`, 10);
 export class IndicatorRecordRepository extends AppBaseRepository<IndicatorRecord> {
   constructor(
     protected dataSource: DataSource,
-    private readonly importProgressTrackerFactory: ImportProgressTrackerFactory,
+    protected importDataProgressEmitter: ImportDataProgressEmitter,
   ) {
     super(IndicatorRecord, dataSource.createEntityManager());
   }
@@ -33,7 +33,7 @@ export class IndicatorRecordRepository extends AppBaseRepository<IndicatorRecord
     const totalEntities: number = entities.length;
     const totalChunks: number = Math.ceil(totalEntities / batchChunkSize);
     const tracker: ImpactCalculationProgressTracker =
-      this.importProgressTrackerFactory.createImpactCalculationProgressTracker({
+      new ImpactCalculationProgressTracker(this.importDataProgressEmitter, {
         totalRecords: totalEntities,
         totalChunks: totalChunks,
         startingPercentage: 50,

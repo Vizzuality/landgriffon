@@ -9,6 +9,7 @@ import { BusinessUnitsModule } from 'modules/business-units/business-units.modul
 import { SuppliersModule } from 'modules/suppliers/suppliers.module';
 import { MaterialsModule } from 'modules/materials/materials.module';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
+import { ImportDataModule } from 'modules/import-data/import-data.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-
     forwardRef(() => BusinessUnitsModule),
     forwardRef(() => SuppliersModule),
     forwardRef(() => MaterialsModule),
+    forwardRef(() => ImportDataModule),
   ],
   controllers: [SourcingLocationsController],
   providers: [

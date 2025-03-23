@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { H3DataController } from 'modules/h3-data/h3-data.controller';
 import { H3DataService } from 'modules/h3-data/h3-data.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -24,10 +24,10 @@ import { AuthorizationModule } from 'modules/authorization/authorization.module'
     IndicatorsModule,
     UnitConversionsModule,
     SourcingRecordsModule,
-    AdminRegionsModule,
+    forwardRef(() => AdminRegionsModule),
     SuppliersModule,
     BusinessUnitsModule,
-    SourcingLocationsModule,
+    forwardRef(() => SourcingLocationsModule),
     AuthorizationModule,
   ],
   controllers: [H3DataController],

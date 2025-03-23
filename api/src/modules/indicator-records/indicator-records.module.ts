@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { IndicatorRecordsController } from 'modules/indicator-records/indicator-records.controller';
 import { IndicatorRecordsService } from 'modules/indicator-records/indicator-records.service';
@@ -12,6 +12,7 @@ import { ImpactCalculator } from 'modules/indicator-records/services/impact-calc
 import { ImpactQueryBuilder } from 'modules/indicator-records/services/indicator-dependency-manager.service';
 import { IndicatorRecordRepository } from 'modules/indicator-records/indicator-record.repository';
 import { TasksModule } from '../tasks/tasks.module';
+import { ImportDataModule } from 'modules/import-data/import-data.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { TasksModule } from '../tasks/tasks.module';
     SourcingRecordsModule,
     CachedDataModule,
     TasksModule,
+    forwardRef(() => ImportDataModule),
   ],
   controllers: [IndicatorRecordsController],
   providers: [

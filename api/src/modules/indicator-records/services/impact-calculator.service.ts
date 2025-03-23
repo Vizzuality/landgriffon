@@ -29,7 +29,7 @@ import {
   CachedData,
 } from 'modules/cached-data/cached-data.entity';
 import { ImpactCalculationProgressTracker } from 'modules/impact/progress-tracker/impact-calculation.progress-tracker';
-import { ImportProgressTrackerFactory } from 'modules/events/import-data-progress/import-progress.tracker.factory';
+import { ImportDataProgressEmitter } from 'modules/import-data/cqrs/import-data-progress.emitter';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { AppConfig } from 'utils/app.config';
 import { TasksService } from '../../tasks/tasks.service';
@@ -55,7 +55,7 @@ export class ImpactCalculator {
     private readonly dependencyManager: ImpactQueryBuilder,
     private readonly cachedDataService: CachedDataService,
     private readonly dataSource: DataSource,
-    private readonly importProgressTrackerFactory: ImportProgressTrackerFactory,
+    private readonly importDataProgressEmitter: ImportDataProgressEmitter,
     private readonly taskService: TasksService,
   ) {}
 
@@ -66,7 +66,7 @@ export class ImpactCalculator {
     const halfTime: number = totalEstimatedTime / 2; // La mitad del tiempo para esta tarea
     const progressIncrement: number = 50 / (halfTime / 1000); // Cálculo para incrementar al 50%
     const tracker: ImpactCalculationProgressTracker =
-      this.importProgressTrackerFactory.createImpactCalculationProgressTracker({
+      new ImpactCalculationProgressTracker(this.importDataProgressEmitter, {
         totalRecords: 1,
         totalChunks: 1,
         startingPercentage: 0,

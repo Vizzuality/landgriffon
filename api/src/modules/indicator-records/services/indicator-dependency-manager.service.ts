@@ -68,14 +68,34 @@ export class ImpactQueryBuilder {
         }
       }
     }
+
+    const builtParams = this.buildParams(params);
+
+    const queryWithInjectedParams = paramsToQueryInjector(
+      importQueryFields,
+      [...new Set(queries)].join(', '),
+    );
     return {
-      params: [...new Set(params)]
-        .map((param: string) => `"${param}"`)
-        .join(', '),
-      query: paramsToQueryInjector(
-        importQueryFields,
-        [...new Set(queries)].join(', '),
-      ),
+      params: builtParams,
+      query: queryWithInjectedParams,
     };
+  }
+
+  /**
+   * @todo: since the implementation of the new indicator breaks out our current pattern and there is no time to have it thought through, we can leave it as is for now.
+   *        refactoring to compute by location with no stored procedures should solve most of our problems.
+   *@description: Builds a string of unique params for the highest level select statement and conditionally overrides parameters so that highest level select can get the data from the subquery, for when raw data for a indicator now it does not
+   *              depend on a single query, but on multiple queries, meaning that we cannot use the nameCode as select param anymore in these cases
+   */
+  buildParams(paramList: string[]): string {
+    const uniqueParams = [...new Set(paramList)];
+    return uniqueParams
+      .flatMap((param: string) =>
+        param === INDICATOR_NAME_CODES.WGSWU_NEW
+          ? ['BWS_IN_STRESSED_AREAS', 'STRESSED_AREA_PORTION']
+          : param,
+      )
+      .map((param: string) => `"${param}"`)
+      .join(', ');
   }
 }

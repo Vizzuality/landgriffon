@@ -621,6 +621,20 @@ export class ImpactCalculator {
         if (indicator.nameCode === INDICATOR_NAME_CODES.WGSWU_NEW) {
           const { BWS_IN_STRESSED_AREAS, STRESSED_AREA_PORTION } =
             await this.getDistributedImpactForWGSWU_NEW(geoRegionId);
+          if (!BWS_IN_STRESSED_AREAS || !STRESSED_AREA_PORTION) {
+            this.logger.error(
+              `Could not calculate distributed impact for WGSWU_NEW for location ${geoRegionId}`,
+            );
+            this.eventBus.publish(
+              new ImportDataEvent(v4(), IMPORT_DATA_EVENTS.PROCESSING, {
+                data: {
+                  noValueForDistributedImpact: {
+                    WGSWU_NEW: { sourcingLocationId },
+                  },
+                },
+              }),
+            );
+          }
           WGSWU_NEW_distributedImpact.BWS_IN_STRESSED_AREAS =
             BWS_IN_STRESSED_AREAS;
           WGSWU_NEW_distributedImpact.STRESSED_AREA_PORTION =

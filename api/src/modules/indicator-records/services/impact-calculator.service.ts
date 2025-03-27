@@ -412,7 +412,7 @@ export class ImpactCalculator {
         const stressAreaPortion: number = rawData.STRESSED_AREA_PORTION;
         const excessBws =
           bwsInStressedAreas > 0.4
-            ? bwsInStressedAreas - 0.4 / bwsInStressedAreas
+            ? (bwsInStressedAreas - 0.4) / bwsInStressedAreas
             : 0;
         const waterWithdrawalValue: number =
           rawData[INDICATOR_NAME_CODES.WW] * tonnage || 0;

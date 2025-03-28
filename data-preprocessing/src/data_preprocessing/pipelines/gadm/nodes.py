@@ -32,9 +32,11 @@ def _parent_id_column(df: pl.DataFrame) -> pl.DataFrame:
 
 
 def _materialized_path(df: pl.DataFrame) -> pl.DataFrame:
-    """Use duckdb to compute the materialized path because it has RECURSIVE cte
-    and I failed with polars.
+    """Compute the materialized path with the form
+    parent_parent_id.parent_id.id
     """
+    # Use duckdb to compute the materialized path because it has RECURSIVE cte
+    #  and I failed with polars.
     mpath = duckdb.sql(
         """
         WITH RECURSIVE hierarchy AS (

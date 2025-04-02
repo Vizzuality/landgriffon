@@ -27,9 +27,9 @@ const getLegendScale = (legendInfo: LegendType) => {
   if (legendInfo?.type === 'range' || legendInfo?.type === 'category') {
     const threshold = legendInfo.items.map((item) => item.value);
     const rangeValues = legendInfo.items.map((item) => item.label);
-    const scale = scaleByLegendType(legendInfo?.type, threshold as number[], rangeValues);
-    return scale;
+    return scaleByLegendType(legendInfo?.type, threshold, rangeValues);
   }
+
   return (value: number) => {
     if (!value) return null;
     if (!Number.isNaN(value)) return formatNumber(Number(value));

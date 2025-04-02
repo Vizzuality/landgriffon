@@ -19,15 +19,13 @@ const responseContextualParser = (response: AxiosResponse<H3APIResponse>): H3API
   } = metadata;
   const threshold = items.map((item) => item.value);
   const colors = items.map((item) => chroma(item.color).rgb());
-
   const scale = colorScaleByLegendType(type, threshold, colors);
 
-  const h3DataWithColor: H3Item[] = data.map(
-    (d: H3Item): H3Item => ({
-      ...d,
-      c: scale(d.v as H3Item['v']),
-    }),
-  );
+  const h3DataWithColor: H3Item[] = data.map((d) => ({
+    ...d,
+    c: scale(d.v),
+  }));
+
   return { data: h3DataWithColor, metadata };
 };
 

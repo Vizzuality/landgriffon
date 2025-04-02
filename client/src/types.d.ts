@@ -31,7 +31,7 @@ export type APIpaginationRequest = {
 export type H3Item = {
   c: RGBColor;
   h: string;
-  v: number;
+  v: number | string;
 };
 
 export type H3Data = H3Item[];
@@ -50,14 +50,6 @@ export type MaterialH3APIParams = CommonH3APIParams & {
   materialId: string;
 };
 
-export type RiskH3APIParams = MaterialH3APIParams & {
-  indicatorId: string;
-};
-
-export type WaterH3APIParams = MaterialH3APIParams & {
-  indicatorId: string;
-};
-
 export type ImpactH3APIParams = CommonH3APIParams & {
   indicatorId: Indicator['id'];
   materialIds?: Material['id'][];
@@ -68,8 +60,6 @@ export type ImpactH3APIParams = CommonH3APIParams & {
   locationTypes?: string[];
   businessUnitIds?: BusinessUnits['id'][];
 };
-
-export type ContextualH3APIParams = CommonH3APIParams;
 
 export type ImpactTabularAPIParams = {
   groupBy: string;
@@ -214,12 +204,6 @@ type Metadata = {
   unit: string;
 };
 
-type AggregatedValues = Readonly<{
-  aggregatedValues: { year: number; value: number }[];
-  numberOfAggregatedEntities: number;
-  sort: 'DES' | 'ASC';
-}>;
-
 export type PaginationMetadata = {
   page?: number;
   size?: number;
@@ -348,9 +332,6 @@ export type Target = {
 };
 
 // Helper types
-
-export type ArrayElement<ArrayType extends readonly unknown[]> =
-  ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
 
 export type WithRequiredProperty<Type, Key extends keyof Type> = Type & {
   [Property in Key]-?: Type[Property];

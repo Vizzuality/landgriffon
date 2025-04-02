@@ -1,6 +1,5 @@
 import { scaleOrdinal, scaleThreshold } from 'd3-scale';
 
-import type { UseQueryResult } from '@tanstack/react-query';
 import type { ScaleOrdinal, ScaleThreshold } from 'd3-scale';
 import type { AnalysisFiltersState } from 'store/features/analysis/filters';
 import type { ScenariosState } from 'store/features/analysis/scenarios';
@@ -12,7 +11,6 @@ export type H3ImpactResponse = H3APIResponse & {
     unit: string;
   };
 };
-export type H3DataResponse = UseQueryResult<H3APIResponse, unknown>;
 
 type ScalesType = ScaleOrdinal<H3Item['v'], H3Item['c']> | ScaleThreshold<H3Item['v'], H3Item['c']>;
 
@@ -43,17 +41,17 @@ export const storeToQueryParams = ({
 
 export const scaleByLegendType = (
   type: Legend['type'],
-  threshold: number[],
+  threshold: Legend['items'][0]['value'][],
   rangeValues: string[],
-): ScaleOrdinal<number, string> | ScaleThreshold<number, string> => {
+) => {
   switch (type) {
     case 'category':
-      return scaleOrdinal<number, string>()
-        .domain(threshold as number[])
+      return scaleOrdinal<(typeof threshold)[number], (typeof rangeValues)[number]>()
+        .domain(threshold)
         .range(rangeValues);
     default:
-      return scaleThreshold<number, string>()
-        .domain(threshold as number[])
+      return scaleThreshold<(typeof threshold)[number], (typeof rangeValues)[number]>()
+        .domain(threshold)
         .range(rangeValues);
   }
 };

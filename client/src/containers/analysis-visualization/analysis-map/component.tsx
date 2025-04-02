@@ -70,7 +70,7 @@ const AnalysisMap = () => {
         data: {
           ...object,
           v: legendScales[metadata?.layerId]
-            ? legendScales[metadata?.layerId](object?.v)
+            ? legendScales[metadata?.layerId](Number(object?.v))
             : object?.v,
           coordinate,
           name: metadata?.name || metadata?.legend.name,

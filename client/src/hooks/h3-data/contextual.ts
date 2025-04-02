@@ -25,9 +25,10 @@ const responseContextualParser = (response: AxiosResponse<H3APIResponse>): H3API
   const h3DataWithColor: H3Item[] = data.map(
     (d: H3Item): H3Item => ({
       ...d,
-      c: scale(d.v as H3Item['v']),
+      c: scale(Number(d.v) as H3Item['v']),
     }),
   );
+
   return { data: h3DataWithColor, metadata };
 };
 

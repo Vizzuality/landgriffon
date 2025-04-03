@@ -26,6 +26,7 @@ docs = ["sphinx>=8.2.3"]
 dev = [
   "ipython<9.0.0",
   "kedro-viz>=11.0.0",
+  "marimo>=0.12.0",
   "pytest>=8.3.5",
   "pytest-cov>=6.0.0",
   "pytest-mock>=3.14.0",

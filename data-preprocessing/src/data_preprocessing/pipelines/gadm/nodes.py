@@ -21,8 +21,8 @@ def _get_gadm_level() -> pl.Expr:
 
 
 def _parent_id_column(df: pl.DataFrame) -> pl.DataFrame:
-    last_level = df.select(pl.col("level").unique().sort().last()).item()
-    gid_to_id = dict(df.filter(pl.col("level") < last_level).select("gadm_id", "id").iter_rows())
+    highest_level = df.select(pl.col("level").unique().sort().last()).item()
+    gid_to_id = dict(df.filter(pl.col("level") < highest_level).select("gadm_id", "id").iter_rows())
     return df.with_columns(
         parent_id=pl.when(pl.col("level") > 0)
         .then(pl.col("gadm_id").str.replace(r"\.\d+$", "").replace(gid_to_id))

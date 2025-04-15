@@ -13,6 +13,7 @@ export interface DistributedImpactQueryParams {
 
 export class DistributedImpactValue extends TinyTypeOf<number>() {}
 
+//replicates get_annual_unweighted_impact_over_georegion
 export class DistributedImpactQuery {
   constructor(private readonly dataSource: DataSource) {}
 

@@ -19,6 +19,11 @@ import {
 import { TinyTypeOf } from 'tiny-types';
 import { IndicatorId } from './queries/indicator-coefficient-impact.query';
 import { MaterialIndicatorToH3 } from '../../materials/material-indicator-to-h3.entity';
+import {
+  ImpactQueryBuilderV2,
+  ImpactQueryDependency,
+} from 'modules/impact/calculation/impact-calculation.query.builder';
+import { SourcingRecordsWithIndicatorRawData } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 
 export class MaterialH3DataSource extends H3DataSource {}
 
@@ -38,7 +43,10 @@ export class GetGeoRegionH3IndexListParams {
 export class ImpactCalculationRepository {
   logger: Logger = new Logger(ImpactCalculationRepository.name);
 
-  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
+  constructor(
+    @InjectDataSource() private readonly dataSource: DataSource,
+    private readonly impactQueryBuilder: ImpactQueryBuilderV2,
+  ) {}
 
   async getIndicatorH3DataSource(
     nameCode: INDICATOR_NAME_CODES,
@@ -132,5 +140,23 @@ export class ImpactCalculationRepository {
       throw new Error(`No h3 indices found for geo region ${geoRegionId}`);
     }
     return new GeoRegionH3IndexList(res.map((h3) => h3.h3index));
+  }
+
+  async calculateRawImpact(
+    queryDependencies: ImpactQueryDependency[],
+    sourceLocationId: string,
+  ): Promise<SourcingRecordsWithIndicatorRawData[]> {
+    const query = this.impactQueryBuilder.buildQuery(
+      queryDependencies,
+      sourceLocationId,
+    );
+    try {
+      const result: SourcingRecordsWithIndicatorRawData[] =
+        await this.dataSource.query(query);
+      return result;
+    } catch (e) {
+      this.logger.error(e);
+      throw e;
+    }
   }
 }

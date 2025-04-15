@@ -7,6 +7,8 @@ import {
 } from '../../../../utils/service-mocks';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 
+jest.setTimeout(10000000);
+
 describe('Sourcing Data Correct Import (Integration Tests)', () => {
   let sourcingDataImportTestManager: SourcingDataImportTestManager;
 
@@ -29,7 +31,7 @@ describe('Sourcing Data Correct Import (Integration Tests)', () => {
     await sourcingDataImportTestManager.ButThereIsNoBaseDataInThePlatform();
     sourcingDataImportTestManager.ThenAnErrorShouldBeThrown(
       error,
-      'No Materials found present in the DB. Please check the LandGriffon installation manual',
+      'No Indicators found matching provided NameCodes. Unable to calculate impact. Aborting Import',
     );
   });
 

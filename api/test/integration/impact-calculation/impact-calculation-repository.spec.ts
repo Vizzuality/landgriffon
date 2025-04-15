@@ -85,8 +85,8 @@ describe('ImpactCalculationRepository', () => {
       );
 
     expect(materialH3DataSource).toEqual({
-      tablename: h3DatSource.h3tableName,
-      columnname: h3DatSource.h3columnName,
+      tableName: h3DatSource.h3tableName,
+      columnName: h3DatSource.h3columnName,
     });
   });
   test('should return the h3 data source of an indicator given its name code', async () => {
@@ -105,8 +105,8 @@ describe('ImpactCalculationRepository', () => {
       );
 
     expect(indicatorH3DataSource).toEqual({
-      tablename: h3DatSource.h3tableName,
-      columnname: h3DatSource.h3columnName,
+      tableName: h3DatSource.h3tableName,
+      columnName: h3DatSource.h3columnName,
     });
   });
 

@@ -15,6 +15,7 @@ import { WaterWithdrawalsStrategy } from 'modules/impact/calculation/strategies/
 import { WaterConsumptionStrategy } from 'modules/impact/calculation/strategies/water-consumption.strategy';
 import { WaterGapToUnsustainableWaterUseStrategy } from 'modules/impact/calculation/strategies/water-gap-to-unsustainable-water-use.strategy';
 import { Injectable } from '@nestjs/common';
+import { ImpactQueryDependency } from './impact-calculation.query.builder';
 import { DataSource } from 'typeorm';
 
 export type IndicatorStrategyMap = Map<
@@ -45,6 +46,7 @@ export class IndicatorStrategyFactory {
     [INDICATOR_NAME_CODES.WW]: WaterWithdrawalsStrategy,
     [INDICATOR_NAME_CODES.WC]: WaterConsumptionStrategy,
     [INDICATOR_NAME_CODES.WGUWU]: WaterGapToUnsustainableWaterUseStrategy,
+    [INDICATOR_NAME_CODES.WGSWU_NEW]: WaterGapToUnsustainableWaterUseStrategy,
   };
 
   /**
@@ -88,7 +90,15 @@ export class IndicatorStrategyMap2 {
     this.map.set(key, val);
   }
 
-  get(key: INDICATOR_NAME_CODES): IIndicatorCalculationStrategy {
-    return this.get(key);
+  get(key: INDICATOR_NAME_CODES): IIndicatorCalculationStrategy | undefined {
+    return this.map.get(key);
+  }
+
+  getQueryDependencies(): ImpactQueryDependency[] {
+    const dependencies: ImpactQueryDependency[] = [];
+    this.map.forEach((s) => {
+      dependencies.push({ alias: s.indicatorCode, queries: s.getRawQueries() });
+    });
+    return dependencies;
   }
 }

@@ -4,23 +4,23 @@ import { DataSource, In } from 'typeorm';
 import {
   Indicator,
   INDICATOR_NAME_CODES,
-} from '../../indicators/indicator.entity';
+} from 'modules/indicators/indicator.entity';
 import {
   GeoRegionH3IndexList,
   ImpactCalculationRepository,
   IndicatorH3DataSource,
   MaterialH3DataSource,
-} from './impact-calculation.repository';
-import { SourcingLocation } from '../../sourcing-locations/sourcing-location.entity';
+} from 'modules/impact/calculation/impact-calculation.repository';
+import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import {
   GeoRegionId,
   MaterialId,
-} from './queries/production-and-harvest.query';
-import { MATERIAL_TO_H3_TYPE } from '../../materials/material-to-h3.entity';
+} from 'modules/impact/calculation/queries/production-and-harvest.query';
+import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import {
   AdminRegionId,
   IndicatorId,
-} from './queries/indicator-coefficient-impact.query';
+} from 'modules/impact/calculation/queries/indicator-coefficient-impact.query';
 
 /**
  * @description: Builds all dependencies to calculate all required impacts by location.
@@ -48,11 +48,19 @@ export type IndicatorH3DataSourceMap = Map<
   IndicatorH3DataSource
 >;
 
+type MaterialH3DataSourceMap = Map<
+  string,
+  {
+    production: MaterialH3DataSource;
+    harvest: MaterialH3DataSource;
+  }
+>;
+type GeoregionH3IndexMap = Map<string, GeoRegionH3IndexList>;
+
 /**
  * @description: All required data to calculate impact for a specific location. It needs to have the h3 list of the georegion, the h3 datasources for the material,
  *              and the h3 datasource for all the indicators we need to calculate impact for.
  */
-
 export type IndicatorDependency = {
   spatial: IndicatorH3DataSourceMap;
   coefficient: { nameCode: INDICATOR_NAME_CODES; id: IndicatorId }[];
@@ -77,6 +85,11 @@ export class ImpactPerLocationDependencyBuilder {
     private readonly impactRepo: ImpactCalculationRepository,
   ) {}
 
+  /**
+   * fetches the dependencies needed to calculate the impact for all sourcing locations
+   * this means the table/column names for the h3 data sources of materials and indicators,  anb the h3 indices for the georegions
+   * @param activeIndicatorNamecodes
+   */
   async buildDependencyMap(
     locations: SourcingLocation[],
     indicatorDependencies: IndicatorDependency,
@@ -84,24 +97,20 @@ export class ImpactPerLocationDependencyBuilder {
     // TODO: Might need to do in batches? The number of elements (right now max 40k, but can be bigger) might not be too much, but adding all dependencies
     //       specially the georegion h3 indices might be too much. We need to check this.
 
-    const materialH3DataSourceMap = new Map<
-      string,
-      {
-        production: MaterialH3DataSource;
-        harvest: MaterialH3DataSource;
-      }
-    >();
-    const georegionH3IndexMap = new Map<string, GeoRegionH3IndexList>();
+    const materialH3DataSourceMap: MaterialH3DataSourceMap = new Map();
+    const georegionH3IndexMap: GeoregionH3IndexMap = new Map();
 
     const sourcingLocationDependencies: DependenciesToCalculateImpact[] = [];
     for (const location of locations) {
       const adminRegionId = new AdminRegionId(location.adminRegionId);
       const materialId = new MaterialId(location.materialId);
       const geoRegionId = new GeoRegionId(location.geoRegionId);
+
       const materialH3DataSource = materialH3DataSourceMap.get(
         materialId.value,
       );
       if (!materialH3DataSource) {
+        // Possible to return both types? it would cut down the number of queries in half
         const production = await this.impactRepo.getMaterialH3DataSource(
           materialId,
           MATERIAL_TO_H3_TYPE.PRODUCER,

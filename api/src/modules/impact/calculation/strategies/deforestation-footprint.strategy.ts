@@ -36,6 +36,10 @@ export class DeforestationFootprintStrategy
     const { rawData, tonnage, production } = context;
     const harvest = rawData.harvest;
 
+    /**
+     * Returns the query fragments needed to obtain the raw values for DF_SLUC.
+     */
+
     // TODO: LF and PreProcessed (change name) are computed several times for each indicator. consider tradeoff between recalculating and passing the precomputed
     //.      value somehow
 
@@ -55,5 +59,16 @@ export class DeforestationFootprintStrategy
         : 0;
 
     return preProcessed * lf;
+  }
+
+  getRawQueries(): ImpactQueryExpression[] {
+    return [
+      // Query to obtain the raw DF_SLUC value using the stored procedure.
+      `get_annual_commodity_weighted_impact_over_georegion($1, '${this.indicatorCode}', $2, 'producer') as "${this.indicatorCode}"`,
+      // Query to obtain the production value.
+      `sum_material_over_georegion($1, $2, 'producer') as "production"`,
+      // Query to obtain the harvest value (required to compute LF).
+      `sum_material_over_georegion($1, $2, 'harvest') as "harvest"`,
+    ];
   }
 }

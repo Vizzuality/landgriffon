@@ -57,7 +57,7 @@ export class ProductionOrHarvestQuery {
    * @returns: The sum of the values of the matching h3 grid cells.
    * @param params
    */
-
+  // replicates sum_h3_grid_over_georegion
   async sumH3GridOverGeoRegion(
     params: SumH3GridOverGeoRegionParams,
   ): Promise<H3GridSumResult> {
@@ -68,7 +68,7 @@ export class ProductionOrHarvestQuery {
       `
       SELECT SUM(h3grid."${materialH3DataSource.columnName}") AS total_sum
       FROM (
-        SELECT unnest($1::h3index[]) AS h3index
+        SELECT unnest($1::h3index[]) AS h3index   /// unnest
       ) AS geo_region
       INNER JOIN ${materialH3DataSource.tableName} h3grid
       ON h3grid.h3index = geo_region.h3index;
@@ -79,6 +79,8 @@ export class ProductionOrHarvestQuery {
     return res[0];
   }
 
+  /*
+  // could be deleted?
   // TODO: this works for harvest as well, we need a better naming, plus it could be removed and use just the other method
   async getProductionOrHarvest(
     geoRegionH3IndexList: GeoRegionH3IndexList,
@@ -90,4 +92,6 @@ export class ProductionOrHarvestQuery {
     });
     return res;
   }
+
+   */
 }

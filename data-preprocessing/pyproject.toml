@@ -81,5 +81,9 @@ ignore = [
   "E501", # Ruff format takes care of line-too-long
 ]
 
+[tool.ruff.lint.per-file-ignores]
+# cookiecutter templated folder names are not valid python modules "{{ cookiecutter.something }}"
+"templates/*" = ["N999"]
+
 [tool.kedro_telemetry]
 project_id = "e4f21d3f56424220baf54b4a1e4571a3"

@@ -28,7 +28,6 @@ admin_region:
     GID_0: iso3
   columns:
     - id
-    - parent_id
     - gadm_id
     - level
     - name

@@ -18,7 +18,7 @@ uv sync
 ```
 
 
-## How to run your Kedro pipeline
+## How to run your Kedro pipelines
 
 You can run all the pipelines with:
 
@@ -30,6 +30,18 @@ or simply
 
 ```
 data-preprocessing
+```
+
+### Run a single pipeline
+
+```
+kedro run --pipeline <pipeline_name>
+```
+
+### Run a subset of pipelines or nodes with **tags**
+
+```
+kedro run --tags tag1 --tags tag2
 ```
 
 ## How to test

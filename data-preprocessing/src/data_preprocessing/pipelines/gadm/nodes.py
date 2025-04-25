@@ -141,3 +141,6 @@ def reshape_to_admin_region_table(df: pl.DataFrame, params: dict) -> pl.DataFram
     df = df.rename(params["column_map"])
     df = df.select(params["columns"])
     return df
+
+
+def ingest_admin_region(df: pl.LazyFrame) -> None: ...

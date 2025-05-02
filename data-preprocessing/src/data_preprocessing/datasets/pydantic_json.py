@@ -7,14 +7,14 @@ from kedro.io.core import AbstractVersionedDataset, Version, get_filepath_str, g
 from kedro.utils import load_obj
 from pydantic import BaseModel
 
+# TODO: get the package name from python.
 _DEFAULT_PACKAGE_NAME = "data_preprocessing"
 
 
 def load_pydantic_model(class_path: str) -> type[BaseModel]:
-    # mod_path, _, class_path = class_path.rpartition(".")
-    # if mod_path not in _DEFAULT_MODEL_MODULES:
-    #     raise ValueError(f"")
-    class_path = _DEFAULT_PACKAGE_NAME + "." + class_path
+    # Try to import from absolute path
+    if not class_path.startswith(_DEFAULT_PACKAGE_NAME):
+        class_path = _DEFAULT_PACKAGE_NAME + "." + class_path
     model_obj = load_obj(class_path)
     if not issubclass(model_obj, BaseModel):
         raise TypeError(
@@ -23,8 +23,13 @@ def load_pydantic_model(class_path: str) -> type[BaseModel]:
     return model_obj
 
 
-class PydanticJsonDataset(AbstractVersionedDataset[BaseModel, BaseModel]):
-    DEFAULT_SAVE_ARGS: ClassVar[dict[str, Any]] = {"indent": 2}
+class PydanticJsonDataset(AbstractVersionedDataset[dict[str, Any], dict[str, Any]]):
+    DEFAULT_SAVE_ARGS: ClassVar[dict[str, Any]] = {
+        "indent": 2,
+        # Use model aliases when serializeing. Mandatory here because of the camelCase names of the
+        # json files.
+        "by_alias": True,
+    }
     DEFAULT_FS_ARGS: ClassVar[dict[str, Any]] = {"open_args_save": {"mode": "w"}}
 
     def __init__(
@@ -70,7 +75,7 @@ class PydanticJsonDataset(AbstractVersionedDataset[BaseModel, BaseModel]):
             **(_fs_open_args_save or {}),
         }
 
-        # pydantic model loading
+        # model object loading
         self.model = load_pydantic_model(model)
 
     def _describe(self) -> dict[str, Any]:
@@ -84,15 +89,13 @@ class PydanticJsonDataset(AbstractVersionedDataset[BaseModel, BaseModel]):
 
     def save(self, data: dict) -> None:
         save_path = get_filepath_str(self._get_save_path(), self._protocol)
-
         with self._fs.open(save_path, **self._fs_open_args_save) as fs_file:
-            data = self.model.model_validate(data)
-            fs_file.write(data.model_dump_json(**self._save_args))
+            val_data = self.model.model_validate(data)
+            fs_file.write(val_data.model_dump_json(**self._save_args))
         self._invalidate_cache()
 
     def load(self) -> dict:
         load_path = get_filepath_str(self._get_load_path(), self._protocol)
-
         with self._fs.open(load_path, **self._fs_open_args_load) as fs_file:
             data = self.model.model_validate_json(fs_file.read())
             return data.model_dump()

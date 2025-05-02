@@ -1,2 +1,6 @@
-def print_info(data: dict) -> None:
-    print(data[0])
+import pandas as pd
+
+
+def to_table(data: list[dict]) -> pd.DataFrame:
+    df = pd.DataFrame.from_records(data)
+    return df

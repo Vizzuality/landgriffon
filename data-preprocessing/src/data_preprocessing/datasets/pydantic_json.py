@@ -23,7 +23,7 @@ def load_pydantic_model(class_path: str) -> type[BaseModel]:
     return model_obj
 
 
-class PydanticJsonDataset(AbstractVersionedDataset[dict[str, Any], dict[str, Any]]):
+class PydanticJsonDataset(AbstractVersionedDataset[Any, Any]):
     DEFAULT_SAVE_ARGS: ClassVar[dict[str, Any]] = {
         "indent": 2,
         # Use model aliases when serializeing. Mandatory here because of the camelCase names of the
@@ -87,14 +87,14 @@ class PydanticJsonDataset(AbstractVersionedDataset[dict[str, Any], dict[str, Any
             "model": self.model,
         }
 
-    def save(self, data: dict) -> None:
+    def save(self, data: Any) -> None:
         save_path = get_filepath_str(self._get_save_path(), self._protocol)
         with self._fs.open(save_path, **self._fs_open_args_save) as fs_file:
             val_data = self.model.model_validate(data)
             fs_file.write(val_data.model_dump_json(**self._save_args))
         self._invalidate_cache()
 
-    def load(self) -> dict:
+    def load(self) -> Any:
         load_path = get_filepath_str(self._get_load_path(), self._protocol)
         with self._fs.open(load_path, **self._fs_open_args_load) as fs_file:
             data = self.model.model_validate_json(fs_file.read())

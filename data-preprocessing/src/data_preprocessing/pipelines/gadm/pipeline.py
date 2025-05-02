@@ -1,13 +1,13 @@
-from kedro.pipeline import node, Pipeline, pipeline  # noqa
+from kedro.pipeline import Pipeline, node, pipeline
 
 from data_preprocessing.pipelines.gadm.nodes import (
-    reshape_to_geo_region_table,
-    reshape_to_admin_region_table,
-    gadm_to_h3,
-    join_gadm_levels_and_clean,
     add_unified_columns,
-    special_cases,
+    gadm_to_h3,
     ingest_admin_region,
+    join_gadm_levels_and_clean,
+    reshape_to_admin_region_table,
+    reshape_to_geo_region_table,
+    special_cases,
 )
 
 base_pipe = [
@@ -62,4 +62,4 @@ base_pipe = [
 
 
 def create_pipeline(**kwargs) -> Pipeline:
-    return pipeline(base_pipe, tags="core")
+    return pipeline(base_pipe, tags="core")  # type: ignore

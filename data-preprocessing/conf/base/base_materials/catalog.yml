@@ -2,3 +2,8 @@ materials:
   type: data_preprocessing.datasets.pydantic_json.PydanticJsonDataset
   model: data_preprocessing.models.material.Materials
   filepath: data/01_raw/material.json
+
+materials_db:
+  type: pandas.SQLTableDataset
+  credentials: db_credentials
+  table_name: material

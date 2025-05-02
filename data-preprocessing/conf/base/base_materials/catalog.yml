@@ -1,4 +1,4 @@
 materials:
   type: data_preprocessing.datasets.pydantic_json.PydanticJsonDataset
-  model: data_preprocessing.models.materials.Material
-  path: data/01_raw/materials.json
+  model: data_preprocessing.models.material.Materials
+  filepath: data/01_raw/material.json

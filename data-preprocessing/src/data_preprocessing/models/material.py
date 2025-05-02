@@ -6,7 +6,7 @@ from pydantic.alias_generators import to_camel
 type NameCode = str
 
 
-class Material(BaseModel):
+class MaterialItem(BaseModel):
     model_config = ConfigDict(
         # Remember it must use by_alias=True parameter when serialization to get camelCase json.
         alias_generator=to_camel,
@@ -22,10 +22,10 @@ class Material(BaseModel):
     earthstat_id: str | None
     mapspam_id: str | None
     status: Literal["active", "inactive"]
-    metadata: dict[str, Any]
-    dataset_id: str
+    metadata: dict[str, Any] | None
+    dataset_id: str | None
     mpath: str
 
 
 class Materials(RootModel):
-    root: list[Material]
+    root: list[MaterialItem]

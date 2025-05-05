@@ -12,5 +12,6 @@ def create_pipeline(**kwargs) -> Pipeline:
     return pipeline(
         [
             node(to_table, "materials", "materials_db"),
-        ]
+        ],
+        tags=["core", "ingest"],
     )  # type: ignore

@@ -7,14 +7,19 @@ This module manages all the transformation and loading of data from source to in
 
 Landgriffon is conceptualized around two main concepts: materials and indicators.
 
-A _material_ is any good that is geolocated and quantified in the application for users to represent a quantity of land
+- A _material_ is any good that is geolocated and quantified in the application for users to represent a quantity of land
 used to produce a unit or the quantity of mass units of the represented material. Landgriffon has a set of default materials.
 
-An _indicator_ is a measure that quantifies or can be related to an environmental impact. Those are used to
+- An _indicator_ is a measure that quantifies or can be related to an environmental impact. Those are used to
 
 ### Materials
 
-The data structures for material consists of
+Materials are defined in a _declaration_ file called `materials.json` that contains the list of materials that will
+be available to use in the app. This file must follow the schema found in `models/material.py`. ...TODO
+
+### Indicators
+
+...TODO
 
 ## Development
 
@@ -38,7 +43,7 @@ pytest
 
 To configure the coverage threshold, look at the `.coveragerc` file.
 
-### How to run your Kedro pipelines
+## Run pipelines
 
 You can run all the pipelines with:
 
@@ -63,3 +68,13 @@ kedro run --pipeline <pipeline_name>
 ```
 kedro run --tags tag1 --tags tag2
 ```
+
+## Tag system
+
+The pipeline slicing and selection is organized using with tags. There are two main blocks:
+
+- `preproc`: All the preprocessing nodes that take raw inputs from sources and output parquet tables in the final
+	shape and format ready to be copied into the database
+- `ingest`:  Nodes that take te parquet tables and ingest them into the database
+
+The `ingest` tag is the one used to only ingest the tables already processed so it is fast.

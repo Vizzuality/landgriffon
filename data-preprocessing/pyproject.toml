@@ -84,7 +84,7 @@ select = [
 ]
 ignore = [
   "E501", # Ruff format takes care of line-too-long
-  "RUF052"
+  "RUF052", # variables with "_" prefix are marked as unused. Not the pattern kedro follows
 ]
 
 [tool.ruff.lint.per-file-ignores]

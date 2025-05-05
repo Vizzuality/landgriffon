@@ -7,3 +7,5 @@ materials_db:
   type: pandas.SQLTableDataset
   credentials: db_credentials
   table_name: material
+  save_args:
+    if_exists: "replace"

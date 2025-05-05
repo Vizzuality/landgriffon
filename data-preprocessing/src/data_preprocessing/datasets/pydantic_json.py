@@ -7,7 +7,7 @@ from kedro.io.core import AbstractVersionedDataset, Version, get_filepath_str, g
 from kedro.utils import load_obj
 from pydantic import BaseModel
 
-# TODO: get the package name from python.
+# TODO: get the package name from package?.
 _DEFAULT_PACKAGE_NAME = "data_preprocessing"
 
 

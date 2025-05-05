@@ -56,7 +56,7 @@ base_pipe = [
         ingest_admin_region,
         "admin_regions",
         None,
-        tags="ingestion",
+        tags="ingest",
     ),
 ]
 

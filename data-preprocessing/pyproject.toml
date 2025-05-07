@@ -15,6 +15,7 @@ dependencies = [
   "pandas>=2.2.3",
   "polars>=1.25.2",
   "psycopg2-binary>=2.9.10",
+  "pydantic>=2.11.3",
   "rasterio>=1.4.3",
   "rioxarray>=0.19.0",
   "s3fs>=2025.3.2",

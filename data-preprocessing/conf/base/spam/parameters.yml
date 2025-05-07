@@ -1,0 +1,165 @@
+combinations_prod:
+  spam2020_v1r0_global_P_TemfGrouBanaTrof_A:
+    - spam2020_v1r0_global_P_TEMF_A
+    - spam2020_v1r0_global_P_GROU_A
+    - spam2020_v1r0_global_P_BANA_A
+    - spam2020_v1r0_global_P_TROF_A
+
+  spam2020_v1r0_global_P_CoffTeasRest_A:
+    - spam2020_v1r0_global_P_COFF_A
+    - spam2020_v1r0_global_P_TEAS_A
+    - spam2020_v1r0_global_P_REST_A
+
+  spam2020_v1r0_global_P_WheaOcerBarlMaizRiceSorgMill_A:
+    - spam2020_v1r0_global_P_WHEA_A
+    - spam2020_v1r0_global_P_OCER_A
+    - spam2020_v1r0_global_P_BARL_A
+    - spam2020_v1r0_global_P_MAIZ_A
+    - spam2020_v1r0_global_P_RICE_A
+    - spam2020_v1r0_global_P_SORG_A
+    - spam2020_v1r0_global_P_MILL_A
+
+  spam2020_v1r0_global_P_WheaOcerPotaOpul_A:
+    - spam2020_v1r0_global_P_WHEA_A
+    - spam2020_v1r0_global_P_OCER_A
+    - spam2020_v1r0_global_P_POTA_A
+    - spam2020_v1r0_global_P_OPUL_A
+
+  spam2020_v1r0_global_P_SoybGrouCnutOoilRapeSunfRestOcerSugb_A:
+    - spam2020_v1r0_global_P_SOYB_A
+    - spam2020_v1r0_global_P_GROU_A
+    - spam2020_v1r0_global_P_CNUT_A
+    - spam2020_v1r0_global_P_OOIL_A
+    - spam2020_v1r0_global_P_RAPE_A
+    - spam2020_v1r0_global_P_SUNF_A
+    - spam2020_v1r0_global_P_REST_A
+    - spam2020_v1r0_global_P_OCER_A
+    - spam2020_v1r0_global_P_SUGB_A
+
+  spam2020_v1r0_global_P_SoybGrouCnutOoilRapeSunfOcerSugb_A:
+    - spam2020_v1r0_global_P_SOYB_A
+    - spam2020_v1r0_global_P_GROU_A
+    - spam2020_v1r0_global_P_CNUT_A
+    - spam2020_v1r0_global_P_OOIL_A
+    - spam2020_v1r0_global_P_RAPE_A
+    - spam2020_v1r0_global_P_SUNF_A
+    - spam2020_v1r0_global_P_OCER_A
+    - spam2020_v1r0_global_P_SUGB_A
+
+  spam2020_v1r0_global_P_SugcSugb_A:
+    - spam2020_v1r0_global_P_SUGC_A
+    - spam2020_v1r0_global_P_SUGB_A
+
+  spam2020_v1r0_global_P_OcerWhea_A:
+    - spam2020_v1r0_global_P_OCER_A
+    - spam2020_v1r0_global_P_WHEA_A
+
+  spam2020_v1r0_global_P_VegeTemfTrof_A:
+    - spam2020_v1r0_global_P_VEGE_A
+    - spam2020_v1r0_global_P_TEMF_A
+    - spam2020_v1r0_global_P_TROF_A
+
+  spam2020_v1r0_global_P_TrofTemf_A:
+    - spam2020_v1r0_global_P_TROF_A
+    - spam2020_v1r0_global_P_TEMF_A
+
+  spam2020_v1r0_global_P_VegePotaOpul_A:
+    - spam2020_v1r0_global_P_VEGE_A
+    - spam2020_v1r0_global_P_POTA_A
+    - spam2020_v1r0_global_P_OPUL_A
+
+  spam2020_v1r0_global_P_OilpSoybGrouOoilSunfCnutRape_A:
+    - spam2020_v1r0_global_P_OILP_A
+    - spam2020_v1r0_global_P_SOYB_A
+    - spam2020_v1r0_global_P_GROU_A
+    - spam2020_v1r0_global_P_OOIL_A
+    - spam2020_v1r0_global_P_SUNF_A
+    - spam2020_v1r0_global_P_CNUT_A
+    - spam2020_v1r0_global_P_RAPE_A
+
+  spam2020_v1r0_global_P_CoffRcof_A:
+    - spam2020_v1r0_global_P_COFF_A
+    - spam2020_v1r0_global_P_RCOF_A
+
+combinations_ha:
+  spam2020_v1r0_global_H_TemfGrouBanaTrof_A:
+    - spam2020_v1r0_global_H_TEMF_A
+    - spam2020_v1r0_global_H_GROU_A
+    - spam2020_v1r0_global_H_BANA_A
+    - spam2020_v1r0_global_H_TROF_A
+
+  spam2020_v1r0_global_H_CoffTeasRest_A:
+    - spam2020_v1r0_global_H_COFF_A
+    - spam2020_v1r0_global_H_TEAS_A
+    - spam2020_v1r0_global_H_REST_A
+
+  spam2020_v1r0_global_H_WheaOcerBarlMaizRiceSorgMill_A:
+    - spam2020_v1r0_global_H_WHEA_A
+    - spam2020_v1r0_global_H_OCER_A
+    - spam2020_v1r0_global_H_BARL_A
+    - spam2020_v1r0_global_H_MAIZ_A
+    - spam2020_v1r0_global_H_RICE_A
+    - spam2020_v1r0_global_H_SORG_A
+    - spam2020_v1r0_global_H_MILL_A
+
+  spam2020_v1r0_global_H_WheaOcerPotaOpul_A:
+    - spam2020_v1r0_global_H_WHEA_A
+    - spam2020_v1r0_global_H_OCER_A
+    - spam2020_v1r0_global_H_POTA_A
+    - spam2020_v1r0_global_H_OPUL_A
+
+  spam2020_v1r0_global_H_SoybGrouCnutOoilRapeSunfRestOcerSugb_A:
+    - spam2020_v1r0_global_H_SOYB_A
+    - spam2020_v1r0_global_H_GROU_A
+    - spam2020_v1r0_global_H_CNUT_A
+    - spam2020_v1r0_global_H_OOIL_A
+    - spam2020_v1r0_global_H_RAPE_A
+    - spam2020_v1r0_global_H_SUNF_A
+    - spam2020_v1r0_global_H_REST_A
+    - spam2020_v1r0_global_H_OCER_A
+    - spam2020_v1r0_global_H_SUGB_A
+
+  spam2020_v1r0_global_H_SoybGrouCnutOoilRapeSunfOcerSugb_A:
+    - spam2020_v1r0_global_H_SOYB_A
+    - spam2020_v1r0_global_H_GROU_A
+    - spam2020_v1r0_global_H_CNUT_A
+    - spam2020_v1r0_global_H_OOIL_A
+    - spam2020_v1r0_global_H_RAPE_A
+    - spam2020_v1r0_global_H_SUNF_A
+    - spam2020_v1r0_global_H_OCER_A
+    - spam2020_v1r0_global_H_SUGB_A
+
+  spam2020_v1r0_global_H_SugcSugb_A:
+    - spam2020_v1r0_global_H_SUGC_A
+    - spam2020_v1r0_global_H_SUGB_A
+
+  spam2020_v1r0_global_H_OcerWhea_A:
+    - spam2020_v1r0_global_H_OCER_A
+    - spam2020_v1r0_global_H_WHEA_A
+
+  spam2020_v1r0_global_H_VegeTemfTrof_A:
+    - spam2020_v1r0_global_H_VEGE_A
+    - spam2020_v1r0_global_H_TEMF_A
+    - spam2020_v1r0_global_H_TROF_A
+
+  spam2020_v1r0_global_H_TrofTemf_A:
+    - spam2020_v1r0_global_H_TROF_A
+    - spam2020_v1r0_global_H_TEMF_A
+
+  spam2020_v1r0_global_H_VegePotaOpul_A:
+    - spam2020_v1r0_global_H_VEGE_A
+    - spam2020_v1r0_global_H_POTA_A
+    - spam2020_v1r0_global_H_OPUL_A
+
+  spam2020_v1r0_global_H_OilpSoybGrouOoilSunfCnutRape_A:
+    - spam2020_v1r0_global_H_OILP_A
+    - spam2020_v1r0_global_H_SOYB_A
+    - spam2020_v1r0_global_H_GROU_A
+    - spam2020_v1r0_global_H_OOIL_A
+    - spam2020_v1r0_global_H_SUNF_A
+    - spam2020_v1r0_global_H_CNUT_A
+    - spam2020_v1r0_global_H_RAPE_A
+
+  spam2020_v1r0_global_H_CoffRcof_A:
+    - spam2020_v1r0_global_H_COFF_A
+    - spam2020_v1r0_global_H_RCOF_A

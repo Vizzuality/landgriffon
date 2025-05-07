@@ -1,7 +1,7 @@
 materials:
   type: data_preprocessing.datasets.pydantic_json.PydanticJsonDataset
   model: data_preprocessing.models.material.Materials
-  filepath: data/01_raw/material.json
+  filepath: data/01_raw/materials.json
 
 materials_db:
   type: pandas.SQLTableDataset

@@ -4,31 +4,53 @@ spam_production:
   type: partitions.PartitionedDataset
   dataset:
     type: data_preprocessing.datasets.geotiff.GeoTIFFDataset
-  path: s3://landgriffon-raw-data/processed/mapspam/spam2020V1r0_global_production/
+  credentials: s3_credentials
+  path: s3://landgriffon-raw-data/raw/spam2020V1r0_global_production/
   filename_suffix: ".tif"
 
-spam_production#h3:
+spam_production_h3_parts:
   type: partitions.PartitionedDataset
-  path: data/03_primary/spam2020V1r0_global_production/
+  path: data/02_intermediate/spam/production
   dataset:
     type: polars.EagerPolarsDataset
     file_format: parquet
   filename_suffix: ".parquet"
+
+
+spam_production_h3:
+  type: polars.EagerPolarsDataset
+  filepath: s3://landgriffon-raw-data/processed/tables/spam/spam_prod.parquet
+  file_format: parquet
+  save_args:
+    compression: "zstd"
+    compression_level: 10
+  credentials: s3_credentials
 
 # ——————————— SPAM Ha ———————————
 
-spam_harvest:
+spam_ha:
   type: partitions.PartitionedDataset
   dataset:
     type: data_preprocessing.datasets.geotiff.GeoTIFFDataset
-  path: s3://landgriffon-raw-data/processed/mapspam/spam2020V1r0_global_harvest/
+  credentials: s3_credentials
+  path: s3://landgriffon-raw-data/raw/spam2020V1r0_global_harvested_area/
   filename_suffix: ".tif"
 
 
-spam_harvest#h3:
+spam_ha_h3_parts:
   type: partitions.PartitionedDataset
+  path: data/02_intermediate/spam/ha
   dataset:
     type: polars.EagerPolarsDataset
     file_format: parquet
-  path: data/03_primary/spam2020V1r0_global_harvest/
   filename_suffix: ".parquet"
+
+
+spam_ha_h3:
+  type: polars.EagerPolarsDataset
+  filepath: s3://landgriffon-raw-data/processed/tables/spam/spam_ha.parquet
+  file_format: parquet
+  save_args:
+    compression: "zstd"
+    compression_level: 10
+  credentials: s3_credentials

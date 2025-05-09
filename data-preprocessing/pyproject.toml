@@ -58,6 +58,7 @@ source_dir = "src"
 addopts = """
 --cov-report term-missing \
 --cov src/data_preprocessing -ra"""
+testpaths = ["tests"]
 
 [tool.coverage.report]
 fail_under = 0

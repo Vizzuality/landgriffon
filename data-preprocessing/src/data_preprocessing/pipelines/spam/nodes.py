@@ -3,7 +3,6 @@ from collections.abc import Callable
 
 import polars as pl
 from h3ronpy.raster import nearest_h3_resolution, raster_to_dataframe
-from kedro.io import DatasetError
 from xarray import DataArray
 
 type LazyPartitionedRasters = dict[str, Callable[[], DataArray]]
@@ -20,8 +19,8 @@ def _raster_to_h3(raster: DataArray, h3_res: int | None) -> pl.DataFrame:
     """
     nearest_res = nearest_h3_resolution(raster.rio.shape, raster.rio.transform())
     if h3_res != nearest_res:
-        raise DatasetError(
-            f"H3 resolution is not optimal: {h3_res=} vs {nearest_res=}.\nCheck raster resolution."
+        raise ValueError(
+            f"H3 resolution is not correct: {h3_res=} vs {nearest_res=}.\nCheck raster resolution."
         )
     table = raster_to_dataframe(
         raster.to_numpy()[0],

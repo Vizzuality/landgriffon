@@ -11,7 +11,11 @@ preprocessing_pipeline = pipeline(
     # TODO: Use namespaces to reuse pipeline instead of duplicating it for harvest and production
     [
         # Production
-        node(parts_to_h3_tables, "spam_production", "spam_production_h3_parts"),
+        node(
+            parts_to_h3_tables,
+            ["spam_production", "params:h3_resolution"],
+            "spam_production_h3_parts",
+        ),
         node(join_h3_table, "spam_production_h3_parts", "spam_production_h3_raw"),
         node(
             combinations,
@@ -19,7 +23,7 @@ preprocessing_pipeline = pipeline(
             "spam_production_h3",
         ),
         # Harvest
-        node(parts_to_h3_tables, "spam_ha", "spam_ha_h3_parts"),
+        node(parts_to_h3_tables, ["spam_ha", "params:h3_resolution"], "spam_ha_h3_parts"),
         node(join_h3_table, "spam_ha_h3_parts", "spam_ha_h3_raw"),
         node(combinations, ["spam_ha_h3_raw", "params:combinations_ha"], "spam_ha_h3"),
     ],

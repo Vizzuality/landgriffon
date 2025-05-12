@@ -1,5 +1,6 @@
 import {
   BaseEntity,
+  Check,
   Column,
   Entity,
   Index,
@@ -37,15 +38,15 @@ export class GeoRegion extends BaseEntity {
   @Column({ type: 'int', nullable: true })
   h3FlatLength?: number;
 
-  @Column({ type: 'text', unique: true, nullable: true })
+  @Column({ type: 'text', unique: false, nullable: true })
   @ApiPropertyOptional()
   name?: string;
 
   @Index({ spatial: true })
+  @Check('geo_region_valid_geom_check', `ST_IsValid("theGeom")`)
   @Column({
     type: 'geometry',
     srid: 4326,
-    nullable: true,
   })
   @ApiPropertyOptional()
   theGeom?: Geometry;

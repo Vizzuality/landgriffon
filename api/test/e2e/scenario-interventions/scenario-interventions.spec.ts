@@ -75,6 +75,7 @@ import ApplicationManager, {
 import { Test } from '@nestjs/testing';
 import { AppModule } from 'app.module';
 import { ImpactService } from '../../../src/modules/impact/impact.service';
+import { GeoCodingService } from '../../../src/modules/geo-coding/geo-coding.service';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -176,7 +177,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       Test.createTestingModule({
         imports: [AppModule],
       })
-        .overrideProvider(GeoCodingAbstractClass)
+        .overrideProvider(GeoCodingService)
         .useValue(geoCodingServiceMock),
     );
 

@@ -15,29 +15,31 @@ export class FileService<T extends Record<string, any[]>> {
     const { workerPath, execArgv } = getWorkerConfig('xlsx.worker');
     this.logger.log(`Starting worker to parse ${filePath}...`);
     try {
-      const parsedSheet: any = await new Promise((resolve, reject) => {
-        const worker: Worker = new Worker(workerPath, {
-          workerData: { filePath, sheetMap },
-          execArgv,
-        });
+      const parsedSheet: T = await new Promise(
+        (resolve: (value: T) => void, reject: (error: Error) => void) => {
+          const worker: Worker = new Worker(workerPath, {
+            workerData: { filePath, sheetMap },
+            execArgv,
+          });
 
-        worker.on('message', (data: T) => {
-          this.logger.warn(`Worker finished processing ${filePath}`);
-          resolve(data);
-        });
+          worker.on('message', (data: T) => {
+            this.logger.warn(`Worker finished processing ${filePath}`);
+            resolve(data);
+          });
 
-        worker.on('error', (error: Error) => {
-          this.logger.error(`Worker failed processing ${filePath}: ${error}`);
-          reject(error);
-        });
+          worker.on('error', (error: Error) => {
+            this.logger.error(`Worker failed processing ${filePath}: ${error}`);
+            reject(error);
+          });
 
-        worker.on('exit', (code: number) => {
-          if (code !== 0) {
-            this.logger.error(`Worker stopped with exit code ${code}`);
-            reject(new Error(`Worker stopped with exit code ${code}`));
-          }
-        });
-      });
+          worker.on('exit', (code: number) => {
+            if (code !== 0) {
+              this.logger.error(`Worker stopped with exit code ${code}`);
+              reject(new Error(`Worker stopped with exit code ${code}`));
+            }
+          });
+        },
+      );
       return parsedSheet;
     } catch (error) {
       this.logger.error(error);
@@ -45,6 +47,9 @@ export class FileService<T extends Record<string, any[]>> {
     }
   }
 
+  /**
+   * @deprecated
+   */
   async transformToJson(
     filePath: string,
     sheetsMap: Record<string, keyof T>,
@@ -52,9 +57,9 @@ export class FileService<T extends Record<string, any[]>> {
     try {
       const workBook: WorkBook = XLSX.readFile(filePath);
       return this.parseSheets(workBook, sheetsMap);
-    } catch ({ message }) {
-      this.logger.error(message);
-      throw new Error(`XLSX file could not been parsed: ${message}`);
+    } catch (error: any) {
+      this.logger.error(error.message);
+      throw new Error(`XLSX file could not been parsed: ${error.message}`);
     }
   }
 

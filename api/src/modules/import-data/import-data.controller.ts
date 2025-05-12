@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Post,
   UnauthorizedException,
   UploadedFile,
@@ -22,13 +23,18 @@ import { User } from 'modules/users/user.entity';
 import { ROLES } from 'modules/authorization/roles/roles.enum';
 import { RequiredRoles } from 'decorators/roles.decorator';
 import { RolesGuard } from 'guards/roles.guard';
+import { DataSource } from 'typeorm';
+import { Public } from 'decorators/public.decorator';
 
 @ApiTags('Import Data')
 @Controller(`/api/v1/import`)
 @UseGuards(RolesGuard)
 @ApiBearerAuth()
 export class ImportDataController {
-  constructor(public readonly importDataService: ImportDataService) {}
+  constructor(
+    public readonly importDataService: ImportDataService,
+    private readonly dataSource: DataSource,
+  ) {}
 
   @ApiConsumesXLSX()
   @ApiBadRequestResponse({
@@ -52,6 +58,55 @@ export class ImportDataController {
       xlsxFile,
     );
     return task;
+  }
+
+  @Public()
+  @Get('/test')
+  async test() {
+    const selectQuery = this.dataSource
+      .createQueryBuilder()
+      .select(`hashtext(concat($3::text, points.radius))`, 'name')
+      .addSelect(`points.radius`, 'theGeom')
+      .addSelect(`array(SELECT h3_polyfill(points.radius,6))`, 'h3Flat')
+      .addSelect(
+        `cardinality(array(SELECT h3_polyfill(points.radius,6)))`,
+        'h3FlatLength',
+      )
+      .addSelect(
+        `array(
+        SELECT h3_compact(array(SELECT h3_polyfill(points.radius,6)))
+      )`,
+        'h3Compact',
+      )
+      .from('points', 'points');
+
+    const coordinates = {
+      lng: 40.758896,
+      lat: -73.98513,
+    };
+
+    console.log(selectQuery.getSql());
+
+    const result = await this.dataSource.query(
+      `
+        WITH points AS (SELECT ST_BUFFER(ST_SetSRID(ST_POINT($1, $2), 4326)::geometry, 0.5) as radius)
+        INSERT
+        INTO geo_region (name, "theGeom", "h3Flat", "h3FlatLength", "h3Compact")
+        ${selectQuery.getSql()}
+        ON CONFLICT (name) DO
+        UPDATE
+          SET "theGeom" = excluded."theGeom",
+          "h3Compact" = excluded."h3Compact"
+          RETURNING *
+      `,
+      [
+        coordinates.lng, // $1
+        coordinates.lat, // $2
+        `${coordinates.lng}-${coordinates.lat}, radius - `, // :hashText
+      ],
+    );
+
+    return result[0];
   }
 
   // @ApiConsumesXLSX()

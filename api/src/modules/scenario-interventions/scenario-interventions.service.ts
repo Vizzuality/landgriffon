@@ -21,11 +21,11 @@ import {
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
-import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { InterventionBuilder } from 'modules/scenario-interventions/services/intervention-builder.service';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { InsertResult } from 'typeorm';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
+import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
 
 @Injectable()
 export class ScenarioInterventionsService extends AppBaseService<
@@ -44,7 +44,7 @@ export class ScenarioInterventionsService extends AppBaseService<
   constructor(
     protected readonly scenarioInterventionRepository: ScenarioInterventionRepository,
     protected readonly interventionBuilder: InterventionBuilder,
-    protected readonly geoCodingService: GeoCodingAbstractClass,
+    protected readonly geoCodingService: GeoCodingService,
     protected readonly sourcingLocationsService: SourcingLocationsService,
   ) {
     super(

@@ -24,7 +24,6 @@ import {
   createSourcingLocation,
   createSourcingRecord,
   createSupplier,
-  createTask,
 } from '../../../entity-mocks';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
 import { UnknownLocationGeoCodingStrategy } from 'modules/geo-coding/strategies/unknown-location.geocoding.service';
@@ -47,8 +46,7 @@ import { h3BasicFixture } from '../../../e2e/h3-data/mocks/h3-fixtures';
 import { SourcingDataImportService } from 'modules/import-data/sourcing-data/sourcing-data-import.service';
 import { FileService } from 'modules/import-data/file.service';
 import { createWorldToCalculateIndicatorRecords } from '../../../utils/indicator-records-preconditions';
-import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
-import { Material, MATERIALS_STATUS } from 'modules/materials/material.entity';
+import { Material } from 'modules/materials/material.entity';
 import { ScenarioIntervention } from 'modules/scenario-interventions/scenario-intervention.entity';
 import { SourcingRecordsWithIndicatorRawData } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
@@ -59,6 +57,7 @@ import ApplicationManager, {
   TestApplication,
 } from '../../../utils/application-manager';
 import { SourcingDataDbCleaner } from '../../../../src/modules/import-data/sourcing-data/sourcing-data.db-cleaner';
+import { GeoCodingService } from '../../../../src/modules/geo-coding/geo-coding.service';
 
 let tablesToDrop: string[] = [];
 
@@ -179,7 +178,7 @@ describe('Sourcing Data import', () => {
       })
         .overrideProvider(FileService)
         .useClass(MockFileService)
-        .overrideProvider(GeoCodingAbstractClass)
+        .overrideProvider(GeoCodingService)
         .useValue(geoCodingServiceMock)
         .overrideProvider(UnknownLocationGeoCodingStrategy)
         .useClass(UnknownLocationServiceMock),

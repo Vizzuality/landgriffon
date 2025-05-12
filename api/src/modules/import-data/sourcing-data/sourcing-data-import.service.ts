@@ -12,7 +12,6 @@ import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.se
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { Material } from 'modules/materials/material.entity';
 import { BusinessUnit } from 'modules/business-units/business-unit.entity';
-import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { TasksService } from 'modules/tasks/tasks.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
 import { Indicator } from 'modules/indicators/indicator.entity';
@@ -26,6 +25,9 @@ import { ExcelValidationError } from 'modules/import-data/sourcing-data/validati
 import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 import { SourcingDataDbCleaner } from 'modules/import-data/sourcing-data/sourcing-data.db-cleaner';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
+import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
+import { GeoCodingServiceV2 } from '../../geo-coding/geo-coding.service-v2';
+import { CreateSourcingLocationV2 } from '../../sourcing-locations/dto/create-sourcing-location-v2.dto';
 
 export interface SourcingRecordsSheets extends Record<string, any[]> {
   materials: Record<string, any>[];
@@ -57,7 +59,8 @@ export class SourcingDataImportService {
     protected readonly supplierService: SuppliersService,
     protected readonly sourcingLocationService: SourcingLocationsService,
     protected readonly fileService: FileService<SourcingRecordsSheets>,
-    protected readonly geoCodingService: GeoCodingAbstractClass,
+    protected readonly geoCodingService: GeoCodingService,
+    protected readonly geocoding: GeoCodingServiceV2,
     protected readonly tasksService: TasksService,
     protected readonly indicatorService: IndicatorsService,
     protected readonly impactService: ImpactService,
@@ -119,18 +122,26 @@ export class SourcingDataImportService {
         dtoMatchedData.suppliers,
       );
 
-      const { geoCodedSourcingData, errors } =
-        await this.geoCodingService.geoCodeLocations(
+      const sourcingDataWithOrganizationalEntities: SourcingLocation[] =
+        await this.relateSourcingDataWithOrganizationalEntities(
+          suppliers,
+          businessUnits,
+          materials,
           dtoMatchedData.sourcingData,
         );
-      if (errors.length) {
+
+      const { geocodedSourcingLocations, geoCodingErrors } =
+        await this.geocoding.geocode(
+          sourcingDataWithOrganizationalEntities as CreateSourcingLocationV2[],
+        );
+      if (geoCodingErrors.length) {
         throw new GeoCodingError(
           'Import failed. There are GeoCoding errors present in the file',
-          errors,
+          geoCodingErrors,
         );
       }
       const warnings: string[] = [];
-      geoCodedSourcingData.forEach((elem: SourcingData) => {
+      geocodedSourcingLocations.forEach((elem: CreateSourcingLocationV2) => {
         if (elem.locationWarning) warnings.push(elem.locationWarning);
       });
       warnings.length > 0 &&
@@ -138,18 +149,6 @@ export class SourcingDataImportService {
           taskId,
           newLogs: warnings,
         }));
-
-      const sourcingDataWithOrganizationalEntities: SourcingLocation[] =
-        await this.relateSourcingDataWithOrganizationalEntities(
-          suppliers,
-          businessUnits,
-          materials,
-          geoCodedSourcingData,
-        );
-
-      await this.sourcingLocationService.save(
-        sourcingDataWithOrganizationalEntities,
-      );
 
       this.logger.log('Generating Indicator Records...');
 

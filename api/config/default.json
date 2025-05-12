@@ -46,7 +46,7 @@
     "store": "redis",
     "host": "localhost",
     "port": 6379,
-    "database": 2,
+    "database": 3,
     "TTL": 86400
   },
   "db": {

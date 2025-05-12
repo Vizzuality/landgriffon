@@ -23,7 +23,7 @@ interface locationInfo {
 }
 
 @Injectable()
-export class GeoCodingService extends GeoCodingAbstractClass {
+export class GeoCodingService {
   protected readonly logger: Logger = new Logger(GeoCodingService.name);
 
   constructor(
@@ -33,9 +33,7 @@ export class GeoCodingService extends GeoCodingAbstractClass {
     protected readonly unknownLocationService: UnknownLocationGeoCodingStrategy,
     protected readonly adminRegionOfProductionService: AdminRegionOfProductionService,
     protected readonly progressTrackerFactory: ImportProgressTrackerFactory,
-  ) {
-    super();
-  }
+  ) {}
 
   async geoCodeLocations(
     sourcingData: SourcingData[],

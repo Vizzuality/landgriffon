@@ -9,15 +9,13 @@ import { PointOfProductionGeocodingStrategy } from 'modules/geo-coding/strategie
 import { AdminRegionOfProductionService } from 'modules/geo-coding/strategies/admin-region-of-production.service';
 import { SourcingLocationsModule } from 'modules/sourcing-locations/sourcing-locations.module';
 import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
-import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
-import { Geocoder } from 'modules/geo-coding/geocoders/geocoder.interface';
-import {
-  CacheGeocoder,
-  GEOCODING_CACHE_ENABLED,
-} from 'modules/geo-coding/geocoders/cache.geocoder';
+import { CacheGeocoder } from 'modules/geo-coding/geocoders/cache.geocoder';
 import { GoogleMapsGeocoder } from 'modules/geo-coding/geocoders/google-maps.geocoder';
 import * as redisStore from 'cache-manager-redis-store';
 import * as config from 'config';
+import { CacheManager } from './cache.manager';
+import { GeocoderService } from './geocoders/geocoder.service';
+import { GeoCodingServiceV2 } from './geo-coding.service-v2';
 
 const geocodingCacheConfig: any = config.get('geocodingCache');
 
@@ -25,8 +23,6 @@ const geocodingCacheTTL: number = parseInt(
   `${geocodingCacheConfig.geocodingCacheTTL}`,
   10,
 );
-const geocodingCacheEnabled: boolean =
-  `${geocodingCacheConfig.enabled}`.toLowerCase() === 'true';
 
 @Module({
   imports: [
@@ -42,25 +38,25 @@ const geocodingCacheEnabled: boolean =
     }),
   ],
   providers: [
-    {
-      provide: GEOCODING_CACHE_ENABLED,
-      useValue: geocodingCacheEnabled,
-    },
+    CacheManager,
+    GeocoderService,
+
     GoogleMapsGeocoder,
     {
-      provide: Geocoder,
+      provide: CacheGeocoder,
       useClass: CacheGeocoder,
     },
     {
-      provide: GeoCodingAbstractClass,
+      provide: GeoCodingService,
       useClass: GeoCodingService,
     },
+    GeoCodingServiceV2,
     UnknownLocationGeoCodingStrategy,
     CountryOfProductionGeoCodingStrategy,
     AggregationPointGeocodingStrategy,
     PointOfProductionGeocodingStrategy,
     AdminRegionOfProductionService,
   ],
-  exports: [GeoCodingAbstractClass],
+  exports: [GeoCodingService, GeoCodingServiceV2],
 })
 export class GeoCodingModule {}

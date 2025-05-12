@@ -10,7 +10,7 @@ type PartitionedDataFrames = dict[str, pl.DataFrame]
 type LazyPartitionedDataFrames = dict[str, Callable[[], pl.DataFrame]]
 
 
-def _raster_to_h3(raster: DataArray, h3_res: int | None) -> pl.DataFrame:
+def _raster_to_h3(raster: DataArray, h3_res: int) -> pl.DataFrame:
     """Convert a raster to h3 hexagons
     Args:
         raster: raster data.
@@ -33,7 +33,7 @@ def _raster_to_h3(raster: DataArray, h3_res: int | None) -> pl.DataFrame:
     return df
 
 
-def parts_to_h3_tables(parts: LazyPartitionedRasters, h3_res: int | None) -> PartitionedDataFrames:
+def parts_to_h3_tables(parts: LazyPartitionedRasters, h3_res: int) -> PartitionedDataFrames:
     """Iterates over the SPAMs in Partitioned dataset and processes them to H3s."""
     log = logging.getLogger(__name__)
     h3s = {}

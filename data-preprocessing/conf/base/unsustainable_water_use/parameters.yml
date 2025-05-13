@@ -1,0 +1,4 @@
+columns:
+  - bws_cat
+  - bws_raw
+  - geometry

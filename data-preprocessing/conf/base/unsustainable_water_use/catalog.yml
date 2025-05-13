@@ -1,0 +1,3 @@
+aqueduct:
+  type: geopandas.GenericDataset
+  filepath: s3://landgriffon-raw-data/raw/Aqueduct40_waterrisk/GDB/Aq40_Y2023D07M05.gdb

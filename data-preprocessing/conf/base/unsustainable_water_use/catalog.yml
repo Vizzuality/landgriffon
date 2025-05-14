@@ -2,7 +2,7 @@ aqueduct:
   type: geopandas.GenericDataset
   filepath: s3://landgriffon-raw-data/raw/Aqueduct40_waterrisk/GDB/Aq40_Y2023D07M05.gdb
 
-excess_withdrawals:
+excess_withdrawals_h3:
   type: polars.EagerPolarsDataset
   filepath: s3://landgriffon-raw-data/processed/unsustainable_water_use/excess_withdrawals.parquet
   file_format: parquet

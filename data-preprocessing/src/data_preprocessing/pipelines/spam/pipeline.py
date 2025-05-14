@@ -3,11 +3,11 @@ This is a boilerplate pipeline 'spam'
 generated using Kedro 0.19.12
 """
 
-from kedro.pipeline import node, Pipeline, pipeline  # noqa
+from kedro.pipeline import Pipeline, node, pipeline
 
-from data_preprocessing.pipelines.spam.nodes import parts_to_h3_tables, combinations, join_h3_table
+from data_preprocessing.pipelines.spam.nodes import combinations, join_h3_table, parts_to_h3_tables
 
-preprocessing_pipeline = pipeline(
+preprocessing_pipeline = pipeline(  # type: ignore
     # TODO: Use namespaces to reuse pipeline instead of duplicating it for harvest and production
     [
         # Production

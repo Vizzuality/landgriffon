@@ -1,4 +1,5 @@
 columns:
-  - bws_cat
-  - bws_raw
-  - geometry
+  stress_category: bws_cat
+  stress_value: bws_raw
+  geom: geometry
+  excess_withdrawals: perc_reduc

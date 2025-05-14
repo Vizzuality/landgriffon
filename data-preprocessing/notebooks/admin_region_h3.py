@@ -20,19 +20,19 @@ def _(mo):
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
 @app.cell
 def _():
-
     import geopandas as gpd
-    from h3ronpy.pandas.vector import geodataframe_to_cells, geoseries_to_cells
-    from h3ronpy.h3ronpyrs import ContainmentMode
-    from h3ronpy.vector import geometry_to_cells
     import numpy as np
-
     import pandas as pd
+    from h3ronpy.h3ronpyrs import ContainmentMode
+    from h3ronpy.pandas.vector import geodataframe_to_cells, geoseries_to_cells
+    from h3ronpy.vector import geometry_to_cells
+
     return (
         ContainmentMode,
         geodataframe_to_cells,
@@ -67,11 +67,16 @@ def _(df):
 def _(ContainmentMode, geometry_to_cells, np, pd):
     def over_border(row: pd.Series) -> float:
         geom = row["geometry"]
-        boundary_in = geometry_to_cells(geom, resolution=6, containment_mode=ContainmentMode.ContainsBoundary).to_numpy()
-        centroid_in = geometry_to_cells(geom, resolution=6, containment_mode=ContainmentMode.ContainsCentroid).to_numpy()
+        boundary_in = geometry_to_cells(
+            geom, resolution=6, containment_mode=ContainmentMode.ContainsBoundary
+        ).to_numpy()
+        centroid_in = geometry_to_cells(
+            geom, resolution=6, containment_mode=ContainmentMode.ContainsCentroid
+        ).to_numpy()
         if len(centroid_in) == 0:
             return 0
         return len(np.setdiff1d(centroid_in, boundary_in)) / len(centroid_in)
+
     return (over_border,)
 
 

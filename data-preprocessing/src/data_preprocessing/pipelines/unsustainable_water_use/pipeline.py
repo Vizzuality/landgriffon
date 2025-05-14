@@ -19,7 +19,7 @@ preprocessing_pipeline = pipeline(  # type: ignore
             excess_withdrawals,
             [
                 "aqueduct_h3",
-                "params:colums.stress_category",
+                "params:columns.stress_category",
                 "params:columns.stress_value",
                 "params:columns.excess_withdrawals",
             ],

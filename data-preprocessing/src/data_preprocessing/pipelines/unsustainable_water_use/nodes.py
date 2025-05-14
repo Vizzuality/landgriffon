@@ -17,13 +17,17 @@ class BWSCategory(IntEnum):
 
 
 def __required_percent_reduction_reference(stress_category: int, stress_value: float):
-    """Calculation of the required percentage of reduction.
+    """Reference equation from old codebase. Used as reference only and for testing.
+
+    >------- old docstring
+    Calculation of the required percentage of reduction.
 
     This reduction is calculated in all catchment which baseline water stress is above the
     threshold 0.4. More information can be found on the LandGriffon v2.0 methodology under the
     unsustainable water use indicator.
     NOTE: There are some cases where the basin is categorised as extremely high BWS (>80%) but
     the raw value is 9999.0. We consider in those cases that the bws raw value is equal to 0.8
+    ---------<
     """
     if stress_category > BWSCategory.MEDIUM_HIGH and stress_value != 9999:
         return ((stress_value - 0.4) / stress_value) * 100

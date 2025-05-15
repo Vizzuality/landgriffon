@@ -4,12 +4,12 @@ import {
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 
-export abstract class GeoCodingAbstractClass {
-  abstract geoCodeLocations(
+export interface GeoCodingAbstractClass {
+  geoCodeLocations(
     sourcingData: SourcingData[],
   ): Promise<{ geoCodedSourcingData: SourcingData[]; errors: any[] }>;
 
-  abstract geoCodeSourcingLocation(locationInfo: {
+  geoCodeSourcingLocation(locationInfo: {
     locationAdminRegionInput?: string;
     locationAddressInput?: string;
     locationLatitude?: number;

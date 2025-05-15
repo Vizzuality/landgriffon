@@ -66,13 +66,9 @@ export class MockFileService extends FileService<any> {
   }
 }
 
-export class MockGeoCodingService extends GeoCodingAbstractClass {
+export class MockGeoCodingService implements GeoCodingAbstractClass {
   logger: Logger = new Logger(MockGeoCodingService.name);
   dataSource: DataSource = new DataSource(typeOrmConfig);
-
-  constructor() {
-    super();
-  }
 
   async geoCodeLocations(
     sourcingData: SourcingData[],

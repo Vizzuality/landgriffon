@@ -21,6 +21,7 @@ import { HttpStatus } from '@nestjs/common';
 import { GeoCodingAbstractClass } from '../../../src/modules/geo-coding/geo-coding-abstract-class';
 import { ScenarioInterventionRepository } from '../../../src/modules/scenario-interventions/scenario-intervention.repository';
 import { createInterventionPreconditions } from '../../utils/scenario-interventions-preconditions';
+import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
 
 describe('Interventions E2E Tests (Location Types)', () => {
   let jwtToken: string;
@@ -32,7 +33,7 @@ describe('Interventions E2E Tests (Location Types)', () => {
       Test.createTestingModule({
         imports: [AppModule],
       })
-        .overrideProvider(GeoCodingAbstractClass)
+        .overrideProvider(GeoCodingService)
         .useValue({
           geoCodeSourcingLocation: () => ({
             adminRegionId: uuidv4(),

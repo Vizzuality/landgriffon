@@ -25,21 +25,19 @@ describe('GeoRegions - IntegrationTests', () => {
     await clearEntityTables(dataSource, [GeoRegion]);
   });
 
+  const fakeGeoRegionInfo: LocationGeoRegionDto = {
+    coordinates: {
+      lat: 1.2345,
+      lng: 6.789,
+    },
+  };
+
   test(
     'Given there is a previously existing geoRegion ' +
-      'When I try to find a Radius geom by hashing its coordinates' +
-      'Then I should get the existing one',
+    'When I try to find a Radius geom by hashing its coordinates' +
+    'Then I should get the existing one',
     async () => {
-      const fakeGeoRegionInfo: LocationGeoRegionDto = {
-        coordinates: {
-          lat: 1.2345,
-          lng: 6.789,
-        },
-      };
-
-      const geoRegionId = await geoRegionRepository.saveGeoRegionAsPoint(
-        fakeGeoRegionInfo,
-      );
+      const geoRegionId = await geoRegionRepository.saveGeoRegionAsPoint(fakeGeoRegionInfo);
 
       const foundGeoRegion = await geoRegionRepository.getGeomPointByHashedName(
         fakeGeoRegionInfo.coordinates,
@@ -52,24 +50,14 @@ describe('GeoRegions - IntegrationTests', () => {
 
   test(
     'Given there is a previously existing geoRegion ' +
-      'When I try to find a Point geom by hashing its coordinates' +
-      'Then I should get the existing one',
+    'When I try to find a Point geom by hashing its coordinates' +
+    'Then I should get the existing one',
     async () => {
-      const fakeGeoRegionInfo: LocationGeoRegionDto = {
-        coordinates: {
-          lat: 1.2345,
-          lng: 6.789,
-        },
-      };
+      const geoRegionId = await geoRegionRepository.saveGeoRegionAsRadius(fakeGeoRegionInfo);
 
-      const geoRegionId = await geoRegionRepository.saveGeoRegionAsRadius(
-        fakeGeoRegionInfo,
+      const foundGeoRegion = await geoRegionRepository.getGeomRadiusByHashedName(
+        fakeGeoRegionInfo.coordinates,
       );
-
-      const foundGeoRegion =
-        await geoRegionRepository.getGeomRadiusByHashedName(
-          fakeGeoRegionInfo.coordinates,
-        );
 
       expect(foundGeoRegion).toHaveLength(1);
       expect(foundGeoRegion[0].id).toEqual(geoRegionId);

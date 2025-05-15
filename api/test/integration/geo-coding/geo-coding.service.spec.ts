@@ -17,6 +17,7 @@ import { UnknownLocationGeoCodingStrategy } from 'modules/geo-coding/strategies/
 import ApplicationManager, {
   TestApplication,
 } from '../../utils/application-manager';
+import { cast } from '../../utils/type-utils';
 
 // TODO: Re-organize properly tests. Handle all use cases
 
@@ -51,301 +52,234 @@ describe('GeoCoding Service (Integration Testing)', () => {
   });
 
   afterEach(async () => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
+
     await geoRegionRepository.delete({});
     await adminRegionRepository.delete({});
   });
 
+  const adminRegionIdMock = 'ddb17f37-4e6a-4494-95c8-26ed830317df'
+  const geoRegionIdMock = 'ddb17f37-4e6a-4494-95c8-26ed830317df'
+
+  const invalidCountryName = 'Asgard';
+
+  const adminRegionAndGeoRegionMock = {
+    adminRegionId: adminRegionIdMock,
+    geoRegionId: geoRegionIdMock
+  };
+
   describe('Unknown Location type tests', () => {
     test('When a unknown location type without country is sent, proper error message must be received', async () => {
-      jest
-        .spyOn(
-          adminRegionService,
-          'getAdminRegionAndGeoRegionIdsByAdminRegionName',
-        )
-        .mockResolvedValue({
-          adminRegionId: 'ddb17f37-4e6a-4494-95c8-26ed830317df',
-          geoRegionId: 'ddb17f37-4e6a-4494-95c8-26ed830317df',
-        });
-      jest
-        .spyOn(sourcingLocationService, 'save')
-        .mockResolvedValue([] as unknown as SourcingLocation[]);
-      jest
-        .spyOn(unknownLocationService, 'geoCodeByCountry')
-        .mockResolvedValue(geocodeResponses[4] as GeocodeResponseData);
-      const sourcingData = {
-        locationCountryInput: null,
-      } as unknown as SourcingData;
+      jest.spyOn(adminRegionService, 'getAdminRegionAndGeoRegionIdsByAdminRegionName')
+        .mockResolvedValueOnce(adminRegionAndGeoRegionMock);
 
-      expect.assertions(1);
-      try {
-        await geoCodingService.geoCodeUnknownLocationType(sourcingData);
-      } catch ({ message }) {
-        expect(message).toEqual(
-          'A country where material is received needs to be provided for Unknown Location Types',
-        );
-      }
+      jest.spyOn(sourcingLocationService, 'save')
+        .mockResolvedValueOnce([] as unknown as SourcingLocation[]);
+
+      jest.spyOn(unknownLocationService, 'geoCodeByCountry')
+        .mockResolvedValueOnce(geocodeResponses[4] as GeocodeResponseData);
+
+      const sourcingData = cast<SourcingData>({ locationCountryInput: null });
+
+      expect(geoCodingService.geoCodeUnknownLocationType(sourcingData))
+        .rejects.toThrowError('A country where material is received needs to be provided for Unknown Location Types');
     });
 
-    test('When a unknown location type with coordinates or address is sent, proper error message must be received', async () => {
-      jest
-        .spyOn(
-          adminRegionService,
-          'getAdminRegionAndGeoRegionIdsByAdminRegionName',
-        )
-        .mockResolvedValue({
-          adminRegionId: 'ddb17f37-4e6a-4494-95c8-26ed830317df',
-          geoRegionId: 'ddb17f37-4e6a-4494-95c8-26ed830317df',
-        });
+    test('When a unknown location type with coordinates is sent, proper error message must be received', async () => {
+      jest.spyOn(adminRegionService, 'getAdminRegionAndGeoRegionIdsByAdminRegionName')
+        .mockResolvedValueOnce(adminRegionAndGeoRegionMock);
+
       jest
         .spyOn(sourcingLocationService, 'save')
-        .mockResolvedValue([] as unknown as SourcingLocation[]);
+        .mockResolvedValueOnce(cast<SourcingLocation[]>([]));
+
       jest
         .spyOn(unknownLocationService, 'geoCodeByCountry')
-        .mockResolvedValue(geocodeResponses[4] as GeocodeResponseData);
-      const sourcingDataWithCoordinates = {
-        locationCountryInput: 'Asgard',
+        .mockResolvedValueOnce(geocodeResponses[4] as GeocodeResponseData);
+
+      const sourcingDataWithCoordinates = cast<SourcingData>({
+        locationCountryInput: invalidCountryName,
         locationLongitude: 78.96288,
         locationLatitude: 20.593684,
-      } as unknown as SourcingData;
+      });
 
-      const sourcingDataWithAddress = {
-        locationCountryInput: 'Asgard',
+      expect(geoCodingService.geoCodeUnknownLocationType(sourcingDataWithCoordinates))
+        .rejects.toThrowError('Unknown Location type should not include an address or coordinates');
+    });
+
+    test('When a unknown location type with address is sent, proper error message must be received', async () => {
+      jest.spyOn(adminRegionService, 'getAdminRegionAndGeoRegionIdsByAdminRegionName')
+        .mockImplementationOnce(() => { throw new Error(`An Admin Region with name ${invalidCountryName} could not been found`); });
+
+      const sourcingDataWithAddress = cast<SourcingData>({
+        locationCountryInput: invalidCountryName,
         locationAddress: 'Valhalla, 3',
-      } as unknown as SourcingData;
+      });
 
-      expect.assertions(1);
-      try {
-        await geoCodingService.geoCodeUnknownLocationType(
-          sourcingDataWithCoordinates,
-        );
-      } catch ({ message }) {
-        expect(message).toEqual(
-          'Unknown Location type should not include an address or coordinates',
-        );
-      }
-
-      expect.assertions(1);
-      try {
-        await geoCodingService.geoCodeUnknownLocationType(
-          sourcingDataWithAddress,
-        );
-      } catch ({ message }) {
-        expect(message).toEqual(
-          'Unknown Location type should not include an address or coordinates',
-        );
-      }
+      expect(geoCodingService.geoCodeUnknownLocationType(sourcingDataWithAddress))
+        .rejects.toThrowError(`An Admin Region with name ${sourcingDataWithAddress.locationCountryInput} could not been found`);
     });
 
     test('When a unknown location types with coordinates is sent, then a sourcingLocation should be returned with Admin and GeoRegion IDs found in the DB', async () => {
-      jest
-        .spyOn(
-          adminRegionService,
-          'getAdminRegionAndGeoRegionIdsByAdminRegionName',
-        )
-        .mockResolvedValue({
-          adminRegionId: 'ddb17f37-4e6a-4494-95c8-26ed830317df',
-          geoRegionId: 'ddb17f37-4e6a-4494-95c8-26ed830317df',
-        });
+      jest.spyOn(adminRegionService, 'getAdminRegionAndGeoRegionIdsByAdminRegionName')
+        .mockResolvedValueOnce(adminRegionAndGeoRegionMock);
+
       jest
         .spyOn(sourcingLocationService, 'save')
-        .mockResolvedValue([] as unknown as SourcingLocation[]);
+        .mockResolvedValueOnce(cast<SourcingLocation[]>([]));
+
       jest
         .spyOn(unknownLocationService, 'geoCodeByCountry')
-        .mockResolvedValue(geocodeResponses[4] as GeocodeResponseData);
-      const sourcingData = {
-        locationCountryInput: 'Asgard',
-      } as unknown as SourcingData;
-      const res: any = await geoCodingService.geoCodeUnknownLocationType(
-        sourcingData,
-      );
+        .mockResolvedValueOnce(geocodeResponses[4] as GeocodeResponseData);
 
-      expect(res.locationCountryInput).toEqual(
-        sourcingData.locationCountryInput,
-      );
-      expect(res.geoRegionId).toEqual('ddb17f37-4e6a-4494-95c8-26ed830317df');
-      expect(res.adminRegionId).toEqual('ddb17f37-4e6a-4494-95c8-26ed830317df');
+      const sourcingData = cast<SourcingData>({ locationCountryInput: invalidCountryName });
+      const res = await geoCodingService.geoCodeUnknownLocationType(sourcingData);
+
+      expect(res.locationCountryInput).toEqual(sourcingData.locationCountryInput);
+      expect(res.geoRegionId).toEqual(geoRegionIdMock);
+      expect(res.adminRegionId).toEqual(adminRegionIdMock);
     });
   });
 
   describe('Aggregation Point Location ', () => {
     test('When a location is sent to the service, and has both address and coordinates, then an error should be shown ', async () => {
-      const sourcingData = {
+      const sourcingData = cast<SourcingData>({
         locationAddressInput: true,
         locationLatitude: true,
-      } as unknown as SourcingData;
-      expect.assertions(1);
-      try {
-        await geoCodingService.geoCodeAggregationPoint(sourcingData);
-      } catch ({ message }) {
-        expect(message).toEqual(
-          expect.stringContaining(
-            'Either and address or coordinates can be provided for a Aggregation Point Location Type',
-          ),
-        );
-      }
+      });
+
+      expect(geoCodingService.geoCodeAggregationPoint(sourcingData))
+        .rejects.toThrowError('Either and address or coordinates can be provided for a Aggregation Point Location Type');
     });
 
     test('When a location is sent to the service, and its address geocode response is a country, then a error should be shown', async () => {
       jest
         .spyOn(aggregationPointService, 'geoCodeByAddress')
-        .mockResolvedValue({
+        .mockResolvedValueOnce({
           data: geocodeResponses[2] as GeocodeResponseData,
           warning: undefined,
         });
-      const sourcingData = {
+
+      const sourcingData = cast<SourcingData>({
         locationAddressInput: true,
         locationCountryInput: true,
-      } as unknown as SourcingData;
-      expect.assertions(1);
-      try {
-        await geoCodingService.geoCodeAggregationPoint(sourcingData);
-      } catch ({ message }) {
-        expect(message).toEqual(
-          expect.stringContaining(
-            'is a country, should be an address within a country',
-          ),
-        );
-      }
+      });
+
+      expect(geoCodingService.geoCodeAggregationPoint(sourcingData))
+        .rejects.toThrowError('is a country, should be an address within a country');
     });
+
     test('When a location is sent to the service, and its address geocode is an admin-level 1, then a sourcing location should be returned with these admin and geo region ids', async () => {
-      const fakeIds = {
-        adminRegionId: 'ddb17f37-4e6a-4494-95c8-26ed830317df',
-        geoRegionId: 'ddb17f37-4e6a-4494-95c8-26ed830317df',
-      };
       jest
         .spyOn(aggregationPointService, 'geoCodeByAddress')
-        .mockResolvedValue({
+        .mockResolvedValueOnce({
           data: geocodeResponses[0] as GeocodeResponseData,
           warning: undefined,
         });
+
       jest
         .spyOn(adminRegionService, 'getAdminRegionIdByCoordinatesAndLevel')
-        .mockResolvedValue(fakeIds);
+        .mockResolvedValueOnce(adminRegionAndGeoRegionMock);
 
-      const sourcingData = {
-        locationAddressInput: true,
-        locationCountryInput: true,
-      } as unknown as SourcingData;
-      const res: any = await geoCodingService.geoCodeAggregationPoint(
-        sourcingData,
-      );
-      expect(
-        adminRegionService.getAdminRegionIdByCoordinatesAndLevel,
-      ).toHaveBeenCalled();
-      expect(res.geoRegionId).toEqual(fakeIds.geoRegionId);
-      expect(res.adminRegionId).toEqual(fakeIds.adminRegionId);
+      const sourcingData = cast<SourcingData>({
+        locationAddressInput: "fakeLocationAddressInput",
+        locationCountryInput: "fakeLocationCountryInput",
+      });
+
+      const res = await geoCodingService.geoCodeAggregationPoint(sourcingData);
+
+      expect(adminRegionService.getAdminRegionIdByCoordinatesAndLevel).toHaveBeenCalledTimes(1);
+      expect(res.geoRegionId).toEqual(geoRegionIdMock);
+      expect(res.adminRegionId).toEqual(adminRegionIdMock);
     });
 
     test('When Aggregation point location with coordinates is sent to service, geo-region radius should be saved and a sourcing location returned with admin and geo-region ids', async () => {
       jest
         .spyOn(adminRegionService, 'getClosestAdminRegionByCoordinates')
-        .mockResolvedValue({
-          adminRegionId: '18711f09-e810-40a2-b662-fdd1d6e9b0b9',
-        } as any);
+        .mockResolvedValueOnce({ adminRegionId: adminRegionIdMock } as any);
+
       jest
         .spyOn(aggregationPointService, 'geoCodeByCountry')
-        .mockResolvedValue(geocodeResponses[3] as GeocodeResponseData);
-      const sourcingData = {
-        locationCountryInput: true,
+        .mockResolvedValueOnce(geocodeResponses[3] as GeocodeResponseData);
+
+      const sourcingData = cast<SourcingData>({
+        locationCountryInput: "fakeLocationCountryInput",
         locationLongitude: 78.96288,
         locationLatitude: 20.593684,
-      } as unknown as SourcingData;
+      });
 
-      const sourcingLocation: any =
-        await geoCodingService.geoCodeAggregationPoint(sourcingData);
+      const sourcingLocation = await geoCodingService.geoCodeAggregationPoint(sourcingData);
       const geoRegion = await geoRegionRepository.find({});
 
       expect(sourcingLocation.geoRegionId).toEqual(geoRegion[0].id);
-      expect(sourcingLocation.adminRegionId).toEqual(
-        '18711f09-e810-40a2-b662-fdd1d6e9b0b9',
-      );
-      console.log(geoRegion[0].theGeom);
+      expect(sourcingLocation.adminRegionId).toEqual(adminRegionIdMock);
       expect(geoRegion[0].isCreatedByUser).toEqual(true);
       expect(geoRegion[0].h3FlatLength).toEqual(216);
     });
   });
+
   describe('Country of Production Location Types', () => {
     test('When I send a location and it has no country, then a error should be shown', async () => {
-      const sourcingData = {
-        locationCountryInput: null,
-      } as unknown as SourcingData;
-      expect.assertions(1);
-      try {
-        await geoCodingService.geoCodeCountryOfProduction(sourcingData);
-      } catch ({ message }) {
-        expect(message).toEqual(
-          'A country where material is received needs to be provided for Country of Production Location Types',
-        );
-      }
+      const sourcingData = cast<SourcingData>({ locationCountryInput: null });
+
+      expect(geoCodingService.geoCodeCountryOfProduction(sourcingData))
+        .rejects.toThrowError('A country where material is received needs to be provided for Country of Production Location Types');
     });
+
     test('When I send a location and it has both address and coordinates, then a error should be shown', async () => {
-      const sourcingData = {
-        locationCountryInput: true,
-        locationAddressInput: true,
-        locationLatitude: true,
-      } as unknown as SourcingData;
-      expect.assertions(1);
-      try {
-        await geoCodingService.geoCodeCountryOfProduction(sourcingData);
-      } catch ({ message }) {
-        expect(message).toEqual(
-          'Country of Production Location type must include either an address or coordinates',
-        );
-      }
+      const sourcingData = cast<SourcingData>({
+        locationCountryInput: "fakeLocationCountryInput",
+        locationAddressInput: "fakeLocationAddressInput",
+        locationLatitude: 1,
+        locationLongitude: 1,
+      });
+
+      expect(geoCodingService.geoCodeCountryOfProduction(sourcingData))
+        .rejects.toThrowError('Country of Production Location type must include either an address or coordinates');
     });
   });
+
   describe('Point of Production Location Types', () => {
     test('When I send a location and it has no country, then a error should be shown', async () => {
-      const sourcingData = {
-        locationCountryInput: null,
-      } as unknown as SourcingData;
-      expect.assertions(1);
-      try {
-        await geoCodingService.geoCodePointOfProduction(sourcingData);
-      } catch ({ message }) {
-        expect(message).toEqual(
-          'A country must be provided for Point of Production location type',
-        );
-      }
+      const sourcingData = cast<SourcingData>({ locationCountryInput: null });
+
+      expect(geoCodingService.geoCodePointOfProduction(sourcingData))
+        .rejects.toThrowError('A country must be provided for Point of Production location type');
     });
+
     test('When I send a location and it has both address and coordinates, then a error should be shown', async () => {
-      const sourcingData = {
-        locationCountryInput: true,
-        locationAddressInput: true,
-        locationLatitude: true,
-      } as unknown as SourcingData;
-      expect.assertions(1);
-      try {
-        await geoCodingService.geoCodePointOfProduction(sourcingData);
-      } catch ({ message }) {
-        expect(message).toEqual(
-          `For ${sourcingData.locationCountryInput} coordinates ${sourcingData.locationLatitude} ,${sourcingData.locationLongitude} and address ${sourcingData.locationAddressInput} has been provided. Either and address or coordinates can be provided for a Point of Production Location Type`,
-        );
-      }
+      const sourcingData = cast<SourcingData>({
+        locationCountryInput: "fakeLocationCountryInput",
+        locationAddressInput: "fakeLocationAddressInput",
+        locationLatitude: 1,
+        locationLongitude: 1,
+      });
+
+      expect(geoCodingService.geoCodePointOfProduction(sourcingData))
+        .rejects.toThrowError(`For ${sourcingData.locationCountryInput} coordinates ${sourcingData.locationLatitude} ,${sourcingData.locationLongitude} and address ${sourcingData.locationAddressInput} has been provided. Either and address or coordinates can be provided for a Point of Production Location Type`);
     });
+
     test('When Point of production location with coordinates is sent, geo-region point should be saved and a sourcing location returned with admin and geo-region ids', async () => {
       jest
         .spyOn(adminRegionService, 'getClosestAdminRegionByCoordinates')
-        .mockResolvedValue({
-          adminRegionId: '18711f09-e810-40a2-b662-fdd1d6e9b0b9',
-        } as any);
+        .mockResolvedValueOnce({ adminRegionId: adminRegionIdMock } as any);
+
       jest
         .spyOn(pointOfProductionService, 'geoCodeByCountry')
-        .mockResolvedValue(geocodeResponses[3] as GeocodeResponseData);
-      const sourcingData = {
-        locationCountryInput: true,
+        .mockResolvedValueOnce(geocodeResponses[3] as GeocodeResponseData);
+
+      const sourcingData = cast<SourcingData>({
+        locationCountryInput: "fakeLocationCountryInput",
         locationLongitude: 78.96288,
         locationLatitude: 20.593684,
-      } as unknown as SourcingData;
+      });
 
-      const sourcingLocation: any =
-        await geoCodingService.geoCodePointOfProduction(sourcingData);
+      const sourcingLocation = await geoCodingService.geoCodePointOfProduction(sourcingData);
       const geoRegion = await geoRegionRepository.find({});
 
       expect(sourcingLocation.geoRegionId).toEqual(geoRegion[0].id);
-      expect(sourcingLocation.adminRegionId).toEqual(
-        '18711f09-e810-40a2-b662-fdd1d6e9b0b9',
-      );
+      expect(sourcingLocation.adminRegionId).toEqual(adminRegionIdMock);
       expect(geoRegion[0].theGeom).toEqual({
         coordinates: [78.96288, 20.593684],
         type: 'Point',
@@ -359,18 +293,20 @@ describe('GeoCoding Service (Integration Testing)', () => {
     test('When invalid Point of production location with coordinates is sent, geo-region point should not be saved', async () => {
       jest
         .spyOn(adminRegionService, 'getClosestAdminRegionByCoordinates')
-        .mockRejectedValue({});
+        .mockRejectedValueOnce({});
+
       jest
         .spyOn(pointOfProductionService, 'geoCodeByCountry')
-        .mockResolvedValue(geocodeResponses[3] as GeocodeResponseData);
-      const sourcingData = {
-        locationCountryInput: true,
+        .mockResolvedValueOnce(geocodeResponses[3] as GeocodeResponseData);
+
+      const sourcingData = cast<SourcingData>({
+        locationCountryInput: "",
         locationLongitude: 1,
         locationLatitude: 1,
-      } as unknown as SourcingData;
-      try {
-        await geoCodingService.geoCodePointOfProduction(sourcingData);
-      } catch (e) {}
+      });
+
+      expect(geoCodingService.geoCodePointOfProduction(sourcingData))
+        .rejects.toThrowError('A country must be provided for Point of Production location type');
 
       const geoRegion = await geoRegionRepository.find({});
       expect(geoRegion.length).toEqual(0);

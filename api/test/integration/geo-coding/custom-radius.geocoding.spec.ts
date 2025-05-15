@@ -18,14 +18,14 @@ import { v4 } from 'uuid';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
 
 describe('Custom Radius Geo Coding', () => {
-  let geoCodingService: GeoCodingService;
+  let geoCodingService: GeoCodingAbstractClass;
   let testingModule: TestApplication;
   let dataSource: DataSource;
   let adminRegionService: AdminRegionsService;
   beforeAll(async () => {
     testingModule = await ApplicationManager.init();
-    geoCodingService = testingModule.get<GeoCodingService>(
-      GeoCodingAbstractClass,
+    geoCodingService = testingModule.get<GeoCodingAbstractClass>(
+      GeoCodingService,
     );
     adminRegionService =
       testingModule.get<AdminRegionsService>(AdminRegionsService);

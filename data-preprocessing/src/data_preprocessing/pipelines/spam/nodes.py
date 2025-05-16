@@ -52,7 +52,7 @@ def join_h3_table(tables: LazyPartitionedDataFrames) -> pl.DataFrame:
     first = tables.popitem()
     main_df = first[1]().rename({"value": first[0]})
     for name, df in tables.items():
-        main_df = main_df.join(df().rename({"value": name}), on="cell", how="outer", coalesce=True)
+        main_df = main_df.join(df().rename({"value": name}), on="cell", how="full", coalesce=True)
     return main_df
 
 

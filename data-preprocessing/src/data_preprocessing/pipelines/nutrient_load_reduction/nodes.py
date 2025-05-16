@@ -6,7 +6,7 @@ N_THRESHOLD = 0.7
 
 def __calculate_perc_reduction_reference(row) -> float:
     """
-    Old code's equation implementation. Used as reference for ther updated version one.
+    Old code's equation implementation. Used as reference for _load_reduction_percentage.
 
     >-------------------
     Calculation of the required Load Reduction.

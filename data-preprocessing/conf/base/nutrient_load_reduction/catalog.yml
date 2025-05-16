@@ -1,0 +1,4 @@
+sbtn_son_water:
+  type: geopandas.GenericDataset
+  filepath: s3://landgriffon-raw-data/raw/sbtn_son_water_v1_1_shp/sbtn_son_water_v1_1.shp
+  credentials: s3_credentials

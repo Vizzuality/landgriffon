@@ -1,4 +1,19 @@
 sbtn_son_water:
   type: geopandas.GenericDataset
-  filepath: s3://landgriffon-raw-data/raw/sbtn_son_water_v1_1_shp/sbtn_son_water_v1_1.shp
+  filepath: s3://landgriffon-raw-data/raw/sbtn_son_water_v1_1_shp.zip
   credentials: s3_credentials
+  load_args:
+    columns:
+      - pgp_label
+      - limiting
+      - tpc_raw
+      - tnc_raw
+
+
+nutrient_load_reduction_h3:
+  type: polars.EagerPolarsDataset
+  filepath: data/03_primary/nutrient_load_reduction/nutrient_load_reduction.parquet
+  file_format: parquet
+  save_args:
+    compression: "zstd"
+    compression_level: 10

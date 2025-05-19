@@ -1,4 +1,6 @@
 import polars as pl
+from geopandas import GeoDataFrame
+from h3ronpy.pandas.vector import geodataframe_to_cells
 
 P_THRESHOLD = 0.046
 N_THRESHOLD = 0.7
@@ -39,4 +41,17 @@ def _load_reduction_percentage(
             pl.when(limiting_factor_col == "N-limited").then(n_limiting_reduction).otherwise(0)
         )
         .clip(0)
+    )
+
+
+def geo_to_h3(gdf: GeoDataFrame, h3_resolution: int) -> pl.DataFrame:
+    df = geodataframe_to_cells(gdf, resolution=h3_resolution, compact=False)
+    return pl.DataFrame(df)
+
+
+def load_reduction(df: pl.DataFrame, cols: dict[str, str]) -> pl.DataFrame:
+    return df.with_columns(
+        _load_reduction_percentage(
+            cols["limiting_factor_col"], cols["total_p_col"], cols["total_n_col"]
+        ).alias(cols["load_reduction_col"])
     )

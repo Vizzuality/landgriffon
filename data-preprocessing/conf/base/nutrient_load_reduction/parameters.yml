@@ -1,0 +1,5 @@
+columns:
+  limiting_factor_col: limiting
+  total_p_col: tpc_raw
+  total_n_col: tnc_raw
+  load_reduction_col: load_reduction

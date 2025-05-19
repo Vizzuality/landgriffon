@@ -1,139 +1,98 @@
-import { GeocodeResponse } from 'modules/geo-coding/geocoders/geocoder.interface';
 import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
-import { IGeoCodingStrategy } from './geo-coding.strategy.interface';
-import { GeocoderService } from '../geocoders/geocoder.service';
-import { GeocodingRepository } from './geocoding.repository';
 import {
   GeoCodedLocation,
   SourcingLocationInfo,
 } from '../geo-coding.service-v2';
+import { CacheGeocoder } from '../geocoders/cache.geocoder';
+import { IGeoCodingStrategy } from './geo-coding.strategy.interface';
+import { GeocodingRepository } from './geocoding.repository';
 
 export class AggregationPointGeocodingStrategy implements IGeoCodingStrategy {
-  geoCodingRepo: GeocodingRepository;
-  geocoder: GeocoderService;
+  constructor(
+    private geoCodingRepo: GeocodingRepository,
+    private geocoder: CacheGeocoder
+  ) { }
 
-  constructor(geoCodingRepo: GeocodingRepository, geocoder: GeocoderService) {
-    this.geoCodingRepo = geoCodingRepo;
-    this.geocoder = geocoder;
-  }
+  async geoCodeLocation(location: SourcingLocationInfo,): Promise<GeoCodedLocation> {
+    const {
+      locationAddressInput,
+      locationCountryInput,
+      locationLatitude,
+      locationLongitude
+    } = location;
 
-  async geoCodeLocation(
-    location: SourcingLocationInfo,
-  ): Promise<GeoCodedLocation> {
     /**
      * The user must specify a country, and either an address OR coordinates
      */
-    if (this.hasBothAddressAndCoordinates(location))
+    if (this.hasBothAddressAndCoordinates(location)) {
       throw new GeoCodingError(
-        `For ${location.locationCountryInput} coordinates ${location.locationLatitude} ,${location.locationLongitude} and address ${location.locationAddressInput} has been provided. Either and address or coordinates can be provided for a Aggregation Point Location Type`,
+        `For ${locationCountryInput} coordinates ${locationLatitude} ,${locationLongitude} and address ${locationAddressInput} has been provided. Either and address or coordinates can be provided for a Aggregation Point Location Type`,
       );
+    }
 
     /**
      * If coordinates, create a new geo-region: a 50KM radius around the given point
      */
-    if (location.locationLatitude && location.locationLongitude) {
-      const geoRegion = await this.geoCodingRepo.saveGeoRegionAsRadius({
-        lat: location.locationLatitude,
-        lng: location.locationLongitude,
-      });
+    if (locationLatitude && locationLongitude) {
+      // Do the two of them at the same time
+      const [geoRegion, adminRegion] = await Promise.all([
+        await this.geoCodingRepo.saveGeoRegionAsRadius({ locationLatitude, locationLongitude }),
+        await this.geoCodingRepo.getClosestAdminRegionByCoordinates(location)
+      ]);
 
-      const adminRegion =
-        await this.geoCodingRepo.getClosestAdminRegionByCoordinates(location);
-
-      return {
-        adminRegion,
-        geoRegion,
-      };
+      return { adminRegion, geoRegion };
     }
     /**
      * if address, geocode the address
      */
-    if (location.locationAddressInput) {
-      const geocodedResponseData: {
-        data: GeocodeResponse;
-        warning: string | undefined;
-      } = await this.geocoder.geoCodeByAddress(
-        location.locationAddressInput,
-        location.locationCountryInput,
-      );
+    if (locationAddressInput) {
+      const result = await this.geocoder.geoCodeByAddress(locationAddressInput, locationCountryInput);
+
+      const { types, geometry } = result.data.results[0];
+      const locationLatitude = geometry.location.lat;
+      const locationLongitude = geometry.location.lng;
+      const latLon = { locationLongitude, locationLatitude };
+      const sourceLocationInfo: SourcingLocationInfo = { ...location, ...latLon };
 
       /**
        * if given address is country type, raise and exception. it should be an address within a country
        */
-      if (this.isAddressACountry(geocodedResponseData.data.results[0].types))
-        throw new GeoCodingError(
-          `${location.locationAddressInput} is a country, should be an address within a country
-          `,
-        );
+      if (this.isAddressACountry(types)) {
+        throw new GeoCodingError(`${locationAddressInput} is a country, should be an address within a country`);
+      }
+
       /**
        * if address is a level 1 admin-area, intersect the geocoding resultant coordinates to confirm which admin-area belongs to
        */
-      if (
-        this.isAddressAdminLevel1(geocodedResponseData.data.results[0].types)
-      ) {
-        const adminRegionLevel = 1;
-        const { adminRegion, geoRegion } =
-          await this.geoCodingRepo.getAdminRegionAndGeoRegionByCoordinatesAndLevel(
-            {
-              ...location,
-              locationLongitude:
-                geocodedResponseData?.data.results[0]?.geometry.location.lng,
-              locationLatitude:
-                geocodedResponseData?.data.results[0]?.geometry.location.lat,
-            },
-            adminRegionLevel,
-          );
-        return {
-          adminRegion,
-          geoRegion,
-        };
-      }
-      if (
-        this.isAddressAdminLevel2(geocodedResponseData.data.results[0].types)
-      ) {
-        const adminRegionLevel = 2;
-        const { adminRegion, geoRegion } =
-          await this.geoCodingRepo.getAdminRegionAndGeoRegionByCoordinatesAndLevel(
-            {
-              ...location,
-              locationLongitude:
-                geocodedResponseData?.data.results[0]?.geometry.location.lng,
-              locationLatitude:
-                geocodedResponseData?.data.results[0]?.geometry.location.lat,
-            },
-            adminRegionLevel,
-          );
-        return {
-          adminRegion,
-          geoRegion,
-        };
-      } else {
-        /**
-         * Else, follow the same logics as coordinates
-         * If it's neither AdminRegion Level 1 nor Level 2, should be a GADM Level 0, which we can look it up in the db
-         * by its name
-         */
-        const geoRegion = await this.geoCodingRepo.saveGeoRegionAsRadius({
-          lat: geocodedResponseData.data.results[0].geometry.location.lat,
-          lng: geocodedResponseData.data.results[0].geometry.location.lng,
-        });
-        /**
-         * Get closest AdminRegion given the same point
-         */
-        const adminRegion =
-          await this.geoCodingRepo.getClosestAdminRegionByCoordinates({
-            ...location,
-            locationLongitude:
-              geocodedResponseData?.data?.results[0]?.geometry.location.lng,
-            locationLatitude:
-              geocodedResponseData?.data?.results[0]?.geometry.location.lat,
-          });
+      let adminRegionLevel: 1 | 2 | null = null;
+      if (this.isAddressAdminLevel1(types)) adminRegionLevel = 1;
+      if (this.isAddressAdminLevel2(types)) adminRegionLevel = 2;
 
-        return {
-          adminRegion,
-          geoRegion,
-        };
+      if (adminRegionLevel != null) {
+        const { adminRegion, geoRegion } =
+          await this.geoCodingRepo.getAdminRegionAndGeoRegionByCoordinatesAndLevel(
+            sourceLocationInfo,
+            adminRegionLevel,
+          );
+
+        return { adminRegion, geoRegion };
       }
+
+      /**
+       * Else, follow the same logics as coordinates
+       * If it's neither AdminRegion Level 1 nor Level 2,
+       * should be a GADM Level 0, which we can look it up in the db
+       * by its name
+       *
+       * Get closest AdminRegion given the same point
+       */
+      const [geoRegion, adminRegion] = await Promise.all([
+        this.geoCodingRepo.saveGeoRegionAsRadius(latLon),
+        this.geoCodingRepo.getClosestAdminRegionByCoordinates(sourceLocationInfo)
+      ]);
+
+      return { adminRegion, geoRegion };
+
     } else {
       throw new GeoCodingError(
         'Invalid input: locationInfo must include either coordinates or an address with a country',

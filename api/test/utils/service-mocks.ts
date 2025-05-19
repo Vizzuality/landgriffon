@@ -11,7 +11,7 @@ import {
   IEUDRAlertsRepository,
 } from 'modules/eudr-alerts/eudr.repositoty.interface';
 import { FileService } from '../../src/modules/import-data/file.service';
-import { GeoCodingAbstractClass } from '../../src/modules/geo-coding/geo-coding-abstract-class';
+import { GeoCodingInterface } from '../../src/modules/geo-coding/geo-coding-interface';
 import {
   LOCATION_TYPES,
   SourcingLocation,
@@ -66,7 +66,7 @@ export class MockFileService extends FileService<any> {
   }
 }
 
-export class MockGeoCodingService implements GeoCodingAbstractClass {
+export class MockGeoCodingService implements GeoCodingInterface {
   logger: Logger = new Logger(MockGeoCodingService.name);
   dataSource: DataSource = new DataSource(typeOrmConfig);
 

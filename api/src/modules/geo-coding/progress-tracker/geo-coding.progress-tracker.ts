@@ -5,7 +5,7 @@ export class GeoCodingProgressTracker {
   processedLocations: number = 0;
 
   constructor(
-    public readonly importProgressEmitter: ImportProgressEmitter,
+    private readonly importProgressEmitter: ImportProgressEmitter,
     trackingOptions: {
       totalLocations: number;
     },

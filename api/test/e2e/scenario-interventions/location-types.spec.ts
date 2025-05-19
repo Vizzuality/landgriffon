@@ -18,7 +18,7 @@ import { setupTestUser } from '../../utils/userAuth';
 import { clearTestDataFromDatabase } from '../../utils/database-test-helper';
 import { createIndicator } from '../../entity-mocks';
 import { HttpStatus } from '@nestjs/common';
-import { GeoCodingAbstractClass } from '../../../src/modules/geo-coding/geo-coding-abstract-class';
+import { GeoCodingInterface } from '../../../src/modules/geo-coding/geo-coding-interface';
 import { ScenarioInterventionRepository } from '../../../src/modules/scenario-interventions/scenario-intervention.repository';
 import { createInterventionPreconditions } from '../../utils/scenario-interventions-preconditions';
 import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
@@ -63,8 +63,8 @@ describe('Interventions E2E Tests (Location Types)', () => {
   describe('Admin Region of Production', () => {
     test(
       'When I want to create a Intervention with Admin Region of Production Location type' +
-        'But I dont provide a admin regions AND/OR a country' +
-        'Then I should get an error',
+      'But I dont provide a admin regions AND/OR a country' +
+      'Then I should get an error',
       async () => {
         await createIndicator({
           name: INDICATOR_NAME_CODES.UWU,
@@ -106,8 +106,8 @@ describe('Interventions E2E Tests (Location Types)', () => {
 
     test(
       'When I want to create a Intervention with Admin Region of Production Location type' +
-        'And I provide correct Location Info' +
-        'Then I should be able to create the intervention',
+      'And I provide correct Location Info' +
+      'Then I should be able to create the intervention',
       async () => {
         const preconditions = await createInterventionPreconditions(dataSource);
 

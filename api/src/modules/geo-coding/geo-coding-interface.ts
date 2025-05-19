@@ -4,7 +4,7 @@ import {
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 
-export interface GeoCodingAbstractClass {
+export interface GeoCodingInterface {
   geoCodeLocations(
     sourcingData: SourcingData[],
   ): Promise<{ geoCodedSourcingData: SourcingData[]; errors: any[] }>;

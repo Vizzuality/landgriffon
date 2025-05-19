@@ -55,7 +55,7 @@ describe('GeoCoding Service (Integration Testing)', () => {
   });
 
   test('Geocoder should use cache', async () => {
-    const cacheKey: string = cacheGeocoder.generateKeyFromRequest({
+    const cacheKey: string = cacheGeocoder.makeCacheKey({
       address: 'Spain',
     });
     const cachedDataBefore: GeocodeResponse | undefined =

@@ -1,46 +1,43 @@
-import { NotFoundException } from '@nestjs/common';
-import { IGeoCodingStrategy } from './geo-coding.strategy.interface';
+import { GeoCodingError } from '../errors/geo-coding.error';
 import {
   GeoCodedLocation,
   SourcingLocationInfo,
 } from '../geo-coding.service-v2';
-import { EntityManager } from 'typeorm';
+import { IGeoCodingStrategy } from './geo-coding.strategy.interface';
 import { GeocodingRepository } from './geocoding.repository';
-import { GeoCodingError } from '../errors/geo-coding.error';
 
-export class CountryOfProductionGeoCodingStrategy
-  implements IGeoCodingStrategy
-{
-  manager: EntityManager;
-  repo: GeocodingRepository;
+export class CountryOfProductionGeoCodingStrategy implements IGeoCodingStrategy {
+  constructor(private geocodingRepository: GeocodingRepository) { }
 
-  constructor(geocodingRepository: GeocodingRepository) {
-    this.repo = geocodingRepository;
+  async geoCodeLocation(locationInfo: SourcingLocationInfo): Promise<GeoCodedLocation> {
+    this.validateLocation(locationInfo);
+    // Since the country received in sourcingData.locationCountryInput is served by the API, we can safely assume that
+    // we can get the adminRegion and geoRegion by the AdminRegion name and avoid calling the geocoder
+    const {
+      adminRegion,
+      geoRegion
+    } = await this.geocodingRepository.getCountryAdminRegionAndGeoRegionByCountryName(locationInfo.locationCountryInput);
+
+    return { adminRegion, geoRegion };
   }
 
-  async geoCodeLocation(
-    locationInfo: SourcingLocationInfo,
-  ): Promise<GeoCodedLocation> {
+  private validateLocation(location: SourcingLocationInfo): void {
+    const {
+      locationCountryInput,
+      locationAddressInput,
+      locationLatitude
+    } = location;
+
     /**
-     * The user must specify a country
+     *   The user must specify a country, but address and coordinates should be empty
+     *
      */
-    if (!locationInfo.locationCountryInput)
-      throw new GeoCodingError(
-        'A country where material is received needs to be provided for Country of Production Location Types',
-      );
-    if (locationInfo.locationAddressInput && locationInfo.locationLatitude)
-      throw new Error(
-        'Country of Production Location type must include either an address or coordinates',
-      );
+    if (!locationCountryInput) {
+      throw new GeoCodingError('A country where material is received needs to be provided for Unknown Location Types');
+    }
 
-    const { adminRegion, geoRegion } =
-      await this.repo.getCountryAdminRegionAndGeoRegionByCountryName(
-        locationInfo.locationCountryInput,
-      );
-
-    return {
-      adminRegion,
-      geoRegion,
-    };
+    if (locationAddressInput || locationLatitude) {
+      throw new GeoCodingError('Unknown Location type should not include an address or coordinates');
+    }
   }
 }

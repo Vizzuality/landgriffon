@@ -1,5 +1,5 @@
 import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
-import { GeoCodingAbstractClass } from '../../../src/modules/geo-coding/geo-coding-abstract-class';
+import { GeoCodingInterface } from '../../../src/modules/geo-coding/geo-coding-interface';
 import {
   LOCATION_TYPES,
   SourcingLocation,
@@ -16,27 +16,29 @@ import { GeoRegion } from '../../../src/modules/geo-regions/geo-region.entity';
 import { DataSource } from 'typeorm';
 import { v4 } from 'uuid';
 import { AdminRegionsService } from 'modules/admin-regions/admin-regions.service';
+import { GeoCodingServiceV2 } from 'modules/geo-coding/geo-coding.service-v2';
 
 describe('Custom Radius Geo Coding', () => {
-  let geoCodingService: GeoCodingAbstractClass;
+  let geoCodingService: GeoCodingInterface;
   let testingModule: TestApplication;
   let dataSource: DataSource;
   let adminRegionService: AdminRegionsService;
+
   beforeAll(async () => {
     testingModule = await ApplicationManager.init();
-    geoCodingService = testingModule.get<GeoCodingAbstractClass>(
-      GeoCodingService,
-    );
-    adminRegionService =
-      testingModule.get<AdminRegionsService>(AdminRegionsService);
+    geoCodingService = testingModule.get<GeoCodingInterface>( GeoCodingService );
+    adminRegionService = testingModule.get<AdminRegionsService>(AdminRegionsService);
     dataSource = testingModule.get<DataSource>(DataSource);
+
     jest
       .spyOn(adminRegionService, 'getClosestAdminRegionByCoordinates')
       .mockResolvedValue({ adminRegionId: v4() });
   });
+
   beforeEach(async () => {
     await clearEntityTables(dataSource, [SourcingLocation, GeoRegion]);
   });
+
   afterAll(async () => {
     jest.clearAllMocks();
     await clearTestDataFromDatabase(dataSource);

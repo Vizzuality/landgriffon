@@ -80,6 +80,7 @@ services:
       - redis
 
   postgresql:
+    platform: linux/amd64
     build:
       context: database
       args:

@@ -13,9 +13,10 @@ import { CacheGeocoder } from 'modules/geo-coding/geocoders/cache.geocoder';
 import { GoogleMapsGeocoder } from 'modules/geo-coding/geocoders/google-maps.geocoder';
 import * as redisStore from 'cache-manager-redis-store';
 import * as config from 'config';
-import { CacheManager } from './cache.manager';
+import { GeoLocationCacheService, GEO_CACHE_TTL } from './cache.manager';
 import { GeocoderService } from './geocoders/geocoder.service';
 import { GeoCodingServiceV2 } from './geo-coding.service-v2';
+import { GeocodingRepository } from './strategies_v2/geocoding.repository';
 
 const geocodingCacheConfig: any = config.get('geocodingCache');
 
@@ -38,9 +39,9 @@ const geocodingCacheTTL: number = parseInt(
     }),
   ],
   providers: [
-    CacheManager,
+    GeoLocationCacheService,
+    { provide: GEO_CACHE_TTL, useValue: 6_000 },
     GeocoderService,
-
     GoogleMapsGeocoder,
     {
       provide: CacheGeocoder,
@@ -57,6 +58,9 @@ const geocodingCacheTTL: number = parseInt(
     PointOfProductionGeocodingStrategy,
     AdminRegionOfProductionService,
   ],
-  exports: [GeoCodingService, GeoCodingServiceV2],
+  exports: [
+    GeoCodingService,
+    GeoCodingServiceV2
+  ],
 })
-export class GeoCodingModule {}
+export class GeoCodingModule { }

@@ -35,6 +35,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       if (`${config.get('auth.requireUserAuth')}`.toLowerCase() === 'false') {
         return null;
       }
+      
       throw err || new UnauthorizedException();
     }
 

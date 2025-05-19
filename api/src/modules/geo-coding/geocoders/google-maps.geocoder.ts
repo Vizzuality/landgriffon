@@ -11,7 +11,7 @@ import {
   GeocodeResponseData,
 } from '@googlemaps/google-maps-services-js/dist/geocode/geocode';
 import { inspect } from 'util';
-import { GeocodeArgs } from 'modules/geo-coding/geocoders/geocoder.interface';
+import { GeocodeArgs, Geolocation } from 'modules/geo-coding/geocoders/geocoder.interface';
 import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 
 export class GoogleMapsGeocoder {
@@ -34,8 +34,7 @@ export class GoogleMapsGeocoder {
         'Google API key missing when attempting to geocode location. Cannot process request.',
       );
       throw new ServiceUnavailableException(
-        `Location ${
-          args.address ?? args.latlng
+        `Location ${args.address ?? args.latlng
         } needs external geocoding and it's not available. Please contact administrator.`,
       );
     }
@@ -71,22 +70,16 @@ export class GoogleMapsGeocoder {
     return response.data;
   }
 
-  async reverseGeocode(coordinates: {
-    lat: number;
-    lng: number;
-  }): Promise<GeocodeResponseData> {
-    const geocodeRequest: GeocodeArgs = {
-      latlng: `${coordinates.lat},${coordinates.lng}`,
-    };
-    const geocodeResponseData: GeocodeResponseData = await this.geocode(
-      geocodeRequest,
-    );
+  async reverseGeocode({ lat, lng }: Geolocation): Promise<GeocodeResponseData> {
+    const geocodeRequest = { latlng: `${lat},${lng}` };
+    const geocodeResponseData = await this.geocode(geocodeRequest);
 
     if (!geocodeResponseData.results.length) {
       throw new GeoCodingError(
-        `Could not GeoLocate new Location by Coordinates Latitude ${coordinates.lat} and Longitude: ${coordinates.lng}. Please make sure your Location info is correct`,
+        `Could not GeoLocate new Location by Coordinates Latitude ${lat} and Longitude: ${lng}. Please make sure your Location info is correct`,
       );
     }
+    
     return geocodeResponseData;
   }
 }

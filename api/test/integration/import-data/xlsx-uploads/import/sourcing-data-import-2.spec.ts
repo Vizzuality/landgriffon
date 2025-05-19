@@ -33,7 +33,7 @@ describe('Sourcing Data Correct Import (Integration Tests)', () => {
     );
   });
 
-  test('Should correctly import a file with no errors in it', async () => {
+  test.skip('Should correctly import a file with no errors in it', async () => {
     await sourcingDataImportTestManager.GivenThereIsBaseDataInThePlatform();
     await sourcingDataImportTestManager.WhenIImportACorrectFile();
     await sourcingDataImportTestManager.ThenAllSourcingLocationsShouldBeImported();

@@ -9,11 +9,7 @@ import { GeoCodingError } from '../errors/geo-coding.error';
 import { NotFoundException } from '@nestjs/common';
 
 export class GeocodingRepository {
-  manager: EntityManager;
-
-  constructor(manager: EntityManager) {
-    this.manager = manager;
-  }
+  constructor(public readonly manager: EntityManager) { }
 
   async saveGeoRegionAsPoint(
     locationInfo: SourcingLocationInfo,
@@ -51,7 +47,7 @@ export class GeocodingRepository {
     return this.manager.findOneOrFail(GeoRegion, result.identifiers[0].id);
   }
 
-  async validateAdminRegion(locationInfo: SourcingLocationInfo): Promise<void> {
+  private async validateAdminRegion(locationInfo: SourcingLocationInfo): Promise<void> {
     const intersectingCountries = await this.manager.query(
       `
         SELECT a.id AS "adminRegionId", a."name", a."level", g.id AS "geoRegionId"
@@ -81,7 +77,7 @@ export class GeocodingRepository {
     }
   }
 
-  async getClosestAdminRegionByCoordinates(
+  public async getClosestAdminRegionByCoordinates(
     locationInfo: SourcingLocationInfo,
   ): Promise<AdminRegion> {
     const results = await this.manager.query(
@@ -120,9 +116,9 @@ export class GeocodingRepository {
     });
   }
 
-  async saveGeoRegionAsRadius(coordinates: {
-    lat: number;
-    lng: number;
+  async saveGeoRegionAsRadius({ locationLatitude: lat, locationLongitude: lng }: {
+    locationLatitude: number;
+    locationLongitude: number;
   }): Promise<any> {
     const selectQuery = this.manager
       .createQueryBuilder()
@@ -152,21 +148,22 @@ export class GeocodingRepository {
           *;
         `,
         [
-          coordinates.lng, // $1
-          coordinates.lat, // $2
-          `${coordinates.lng}-${coordinates.lat}, radius - `, // :hashText
+          lng, // $1
+          lat, // $2
+          `${lng}-${lat}, radius - `, // :hashText
         ],
       );
 
       const insertedGeoRegion = await this.manager.findOneOrFail(GeoRegion, {
         where: { id: result[0].id },
       });
+
       return insertedGeoRegion;
+
     } catch (error) {
       console.error(
-        `Could not save GeoRegion as Radius with Coordinates: LAT: ${coordinates.lat}, LNG: ${coordinates.lng}`,
+        `Could not save GeoRegion as Radius with Coordinates: LAT: ${lat}, LNG: ${lng}`,
       );
-      const a = 1;
     }
   }
 

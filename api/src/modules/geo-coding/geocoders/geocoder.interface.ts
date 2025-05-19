@@ -7,16 +7,24 @@ export interface GeocodeArgs {
   latlng?: string;
 }
 
+export interface Geolocation {
+  lat: number;
+  lng: number;
+}
+
+export type CacheKey = GeocodeArgs | Geolocation;
+
 // TODO: remove this google type dependency.
 export interface GeocodeResponse {
   results: GeocodeResult[];
 }
 
-export interface GeocoderInterface {
-  geocode(args: GeocodeArgs): Promise<GeocodeResponse>;
+// TODO: remove this or abstract geocoding from provider?
+// export interface GeocoderInterface {
+//   geocode(args: GeocodeArgs): Promise<GeocodeResponse>;
 
-  reverseGeocode(coordinates: {
-    lat: number;
-    lng: number;
-  }): Promise<GeocodeResponse>;
-}
+//   reverseGeocode(coordinates: {
+//     lat: number;
+//     lng: number;
+//   }): Promise<GeocodeResponse>;
+// }

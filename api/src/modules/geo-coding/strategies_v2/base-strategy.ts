@@ -22,12 +22,10 @@ export abstract class BaseStrategy {
     protected readonly adminRegionService: AdminRegionsService,
     protected readonly geoRegionService: GeoRegionsService,
     protected readonly sourcingLocationService: SourcingLocationsService,
-  ) {}
+  ) { }
 
   async geoCodeByCountry(country: string): Promise<GeocodeResponse> {
-    return this.geocoder.geocode({
-      address: `country ${country}`,
-    });
+    return this.geocoder.geocode({ address: `country ${country}` });
   }
 
   /**
@@ -36,39 +34,33 @@ export abstract class BaseStrategy {
    * geographical components, so in order to take most accurate result it takes the
    * one with most elements.
    */
-  async geoCodeByAddress(
-    locationAddress: string,
-    locationCountry: string,
-  ): Promise<{
-    data: GeocodeResponse;
-    warning: string | undefined;
-  }> {
+  async geoCodeByAddress(address: string, country: string): Promise<{ data: GeocodeResponse; warning?: string }> {
     let warning: string | undefined;
-    const geocodeResponseData: GeocodeResponse = await this.geocoder.geocode({
-      address: `${locationAddress}, ${locationCountry}`,
-    });
-    this.validateGeoCodeResponse(
-      geocodeResponseData,
-      locationAddress,
-      locationCountry,
-    );
+    const query = `${address}, ${country}`;
+    const data = await this.geocoder.geocode({ address: query });
 
-    if (geocodeResponseData.results.length > 1) {
+    this.validateGeoCodeResponse(data, country, address);
+
+    if (data.results.length > 1) {
       // Take the most accurate location within the response, and add a warning
-      geocodeResponseData.results = [
-        geocodeResponseData.results.reduce(
-          (prev: GeocodeResult, current: GeocodeResult) => {
-            return prev.address_components.length >
-              current.address_components.length
-              ? prev
-              : current;
-          },
-        ),
-      ];
-      warning = `${locationAddress},${locationCountry} is ambiguous, taking most accurate interpretation.`;
+      const best = this.selectMostPrecise(data.results);
+      data.results = [best];
+      warning = `${query} is ambiguous, taking most accurate interpretation.`;
     }
 
-    return { data: geocodeResponseData, warning };
+    return { data: data, warning };
+  }
+
+  /**
+   * Selects the result with the most detailed address (most components).
+   */
+  private selectMostPrecise(results: GeocodeResult[]): GeocodeResult {
+    return results.reduce(
+      (prev, curr) =>
+        curr.address_components.length > prev.address_components.length
+          ? curr
+          : prev,
+    );
   }
 
   isAddressACountry(locationTypes: string[]): boolean {
@@ -93,33 +85,36 @@ export abstract class BaseStrategy {
     throw new Error(`Could not find ISO2 code`);
   }
 
-  getCountryNameFromGeocodeResult(geocodeResult: GeocodeResult): string {
-    const country: AddressComponent | undefined =
-      geocodeResult.address_components.find((address: any) =>
-        address.types.includes('country'),
-      );
+  // TODO: same as file:///./../geocoders/geocoder.service.ts `extractCountry`
+  getCountryNameFromGeocodeResult(result: GeocodeResult): string {
+    const country = result.address_components.find(
+      (component: AddressComponent) => component.types.some((t) => t === 'country'));
     if (country) return country.long_name;
     throw new Error(`Could not get country`);
   }
 
   /**
+   * TODO: Same as `ensureSameCountry` from file:///./../geocoders/geocoder.service.ts
+   *
    ** @description Validate Geocode response.
    * When address is outside provided country, Geocoding will return
    * several results, one for country and one for address. In case of
    * several countries in result set, raise an error.
    */
   validateGeoCodeResponse(
-    geoCodedResponse: GeocodeResponse,
-    address: string,
+    response: GeocodeResponse,
     country: string,
+    addressQuery: string,
   ): void {
     const countrySet: Set<string> = new Set();
-    geoCodedResponse.results.forEach((result: GeocodeResult) => {
+
+    response.results.forEach((result: GeocodeResult) => {
       countrySet.add(this.getCountryNameFromGeocodeResult(result));
     });
+
     if (countrySet.size > 1) {
       throw new GeoCodingError(
-        `Address outside provided country: ${address}, ${country}`,
+        `Address outside provided country: ${addressQuery}, ${country}`,
       );
     }
   }
@@ -130,9 +125,7 @@ export abstract class BaseStrategy {
     );
   }
 
-  async findExistingSourcingLocationByGeoRegionId(
-    geoRegionId: string,
-  ): Promise<SourcingLocation | null> {
+  async findExistingSourcingLocationByGeoRegionId(geoRegionId: string): Promise<SourcingLocation | null> {
     return this.sourcingLocationService.findByGeoRegionId(geoRegionId);
   }
 }

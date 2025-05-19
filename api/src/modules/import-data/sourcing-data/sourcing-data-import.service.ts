@@ -3,29 +3,28 @@ import {
   Logger,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { MaterialsService } from 'modules/materials/materials.service';
+import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
-import { SuppliersService } from 'modules/suppliers/suppliers.service';
-import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
+import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
+import { ImpactService } from 'modules/impact/impact.service';
 import { FileService } from 'modules/import-data/file.service';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
-import { Supplier } from 'modules/suppliers/supplier.entity';
-import { Material } from 'modules/materials/material.entity';
-import { BusinessUnit } from 'modules/business-units/business-unit.entity';
-import { TasksService } from 'modules/tasks/tasks.service';
-import { IndicatorsService } from 'modules/indicators/indicators.service';
-import { Indicator } from 'modules/indicators/indicator.entity';
-import { ImpactService } from 'modules/impact/impact.service';
-import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
+import { SourcingDataDbCleaner } from 'modules/import-data/sourcing-data/sourcing-data.db-cleaner';
 import {
   ExcelValidatorService,
   SourcingDataSheet,
 } from 'modules/import-data/sourcing-data/validation/excel-validator.service';
 import { ExcelValidationError } from 'modules/import-data/sourcing-data/validation/validators/excel-validation.error';
-import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
-import { SourcingDataDbCleaner } from 'modules/import-data/sourcing-data/sourcing-data.db-cleaner';
+import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
+import { Indicator } from 'modules/indicators/indicator.entity';
+import { IndicatorsService } from 'modules/indicators/indicators.service';
+import { Material } from 'modules/materials/material.entity';
+import { MaterialsService } from 'modules/materials/materials.service';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
+import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
+import { Supplier } from 'modules/suppliers/supplier.entity';
+import { SuppliersService } from 'modules/suppliers/suppliers.service';
+import { TasksService } from 'modules/tasks/tasks.service';
 import { GeoCodingServiceV2 } from '../../geo-coding/geo-coding.service-v2';
 import { CreateSourcingLocationV2 } from '../../sourcing-locations/dto/create-sourcing-location-v2.dto';
 
@@ -59,7 +58,6 @@ export class SourcingDataImportService {
     protected readonly supplierService: SuppliersService,
     protected readonly sourcingLocationService: SourcingLocationsService,
     protected readonly fileService: FileService<SourcingRecordsSheets>,
-    protected readonly geoCodingService: GeoCodingService,
     protected readonly geocoding: GeoCodingServiceV2,
     protected readonly tasksService: TasksService,
     protected readonly indicatorService: IndicatorsService,

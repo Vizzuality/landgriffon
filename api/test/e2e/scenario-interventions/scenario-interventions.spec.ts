@@ -43,7 +43,7 @@ import {
   createInterventionPreconditionsWithMultipleYearRecords,
   ScenarioInterventionPreconditions,
 } from '../../utils/scenario-interventions-preconditions';
-import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
+import { GeoCodingInterface } from 'modules/geo-coding/geo-coding-interface';
 import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
 import { DataSource, In } from 'typeorm';
 import { range } from 'lodash';
@@ -504,7 +504,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
     test(
       'When I create a scenario intervention of type Change of supplier with provided coefficients, ' +
-        'then correct Indicator records with scaler should be saved',
+      'then correct Indicator records with scaler should be saved',
       async () => {
         jest
           .spyOn(
@@ -793,8 +793,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
     test(
       'When I create a new Intervention, But I dont supply any suppliers, business units and admin regions for filtering' +
-        'Then the API should filter all available suppliers, business units and admin regions matching the material filter' +
-        'And the Intervention should be created successfully',
+      'Then the API should filter all available suppliers, business units and admin regions matching the material filter' +
+      'And the Intervention should be created successfully',
       async () => {
         const preconditions: ScenarioInterventionPreconditions =
           await createInterventionPreconditions(dataSource);
@@ -873,8 +873,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
     test(
       'When I create a new Intervention, But the replaced material has descendant materials ' +
-        'Then the API should add material descendants to filters ' +
-        'And the Intervention should be created successfully',
+      'Then the API should add material descendants to filters ' +
+      'And the Intervention should be created successfully',
       async () => {
         const preconditions: ScenarioInterventionPreconditions =
           await createInterventionPreconditions(dataSource);
@@ -1518,9 +1518,9 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
     test(
       'When I create an Intervention, But I receive as filters only Parent Element Ids' +
-        'Then the created Interventions should only have as replaced' +
-        'Those Elements that has been received as filters' +
-        'Regardless being present in Sourcing Locations or not',
+      'Then the created Interventions should only have as replaced' +
+      'Those Elements that has been received as filters' +
+      'Regardless being present in Sourcing Locations or not',
       async () => {
         // ARRANGE
 
@@ -1686,8 +1686,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
     test(
       'When I create a new Intervention' +
-        'And I dont select any Element to filter (AR, BR, SUP...)' +
-        'Then I should not see any element as replaced by the interventions',
+      'And I dont select any Element to filter (AR, BR, SUP...)' +
+      'Then I should not see any element as replaced by the interventions',
       async () => {
         await indicatorRepository.findAndCount();
         for (const num of range(1, 20)) {
@@ -1928,7 +1928,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
     test(
       'When I create a new Intervention to switch to a new Material ' +
-        'Then said Intervention should retrieve the new Material and the new Admin Region',
+      'Then said Intervention should retrieve the new Material and the new Admin Region',
       async () => {
         // ARRANGE
 
@@ -2129,7 +2129,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
     test(
       'When I create a new Intervention to switch to a new Material Or new Supplier' +
-        'Then the Locations Canceled by said intervention should have the same locationType as the new location of the intervention',
+      'Then the Locations Canceled by said intervention should have the same locationType as the new location of the intervention',
       async () => {
         // ARRANGE
 
@@ -2359,8 +2359,8 @@ describe('ScenarioInterventionsModule (e2e)', () => {
   });
   test(
     'When I create a new Intervention using coordinates as new location info, ' +
-      'And I GET the new Intervention once its created' +
-      'Then the created information should have this information',
+    'And I GET the new Intervention once its created' +
+    'Then the created information should have this information',
     async () => {
       const preconditions = await createInterventionPreconditions(dataSource);
       const geoRegion: GeoRegion = await createGeoRegion();

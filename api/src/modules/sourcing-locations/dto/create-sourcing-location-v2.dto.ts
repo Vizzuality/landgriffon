@@ -56,6 +56,8 @@ export class CreateSourcingLocationV2 {
   sourcingLocationGroupId?: string;
 
   sourcingRecords: CreateSourcingRecordV2[];
+
+  radiusKm?: number;
 }
 
 export class GeoCodedSourcingLocation extends CreateSourcingLocationV2 {

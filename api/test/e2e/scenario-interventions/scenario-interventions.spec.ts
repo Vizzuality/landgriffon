@@ -43,7 +43,6 @@ import {
   createInterventionPreconditionsWithMultipleYearRecords,
   ScenarioInterventionPreconditions,
 } from '../../utils/scenario-interventions-preconditions';
-import { GeoCodingInterface } from 'modules/geo-coding/geo-coding-interface';
 import { ScenarioRepository } from 'modules/scenarios/scenario.repository';
 import { DataSource, In } from 'typeorm';
 import { range } from 'lodash';
@@ -75,7 +74,7 @@ import ApplicationManager, {
 import { Test } from '@nestjs/testing';
 import { AppModule } from 'app.module';
 import { ImpactService } from '../../../src/modules/impact/impact.service';
-import { GeoCodingService } from '../../../src/modules/geo-coding/geo-coding.service';
+import { GeoCodingServiceV2 } from 'modules/geo-coding/geo-coding.service-v2';
 
 const expectedJSONAPIAttributes: string[] = [
   'title',
@@ -177,7 +176,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
       Test.createTestingModule({
         imports: [AppModule],
       })
-        .overrideProvider(GeoCodingService)
+        .overrideProvider(GeoCodingServiceV2)
         .useValue(geoCodingServiceMock),
     );
 
@@ -285,8 +284,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
 
       expect(response.status).toBe(HttpStatus.CREATED);
 
-      const allInterventions: [ScenarioIntervention[], number] =
-        await scenarioInterventionRepository.findAndCount();
+      const allInterventions = await scenarioInterventionRepository.findAndCount();
       expect(allInterventions[1]).toEqual(1);
       expect(typeof allInterventions[0][0].id).toBe('string');
 

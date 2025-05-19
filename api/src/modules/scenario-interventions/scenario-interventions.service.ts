@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { AppInfoDTO } from 'dto/info.dto';
-import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
+import { GeoCodingServiceV2 } from 'modules/geo-coding/geo-coding.service-v2';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
 import { UpdateScenarioInterventionDto } from 'modules/scenario-interventions/dto/update.scenario-intervention.dto';
@@ -44,7 +44,7 @@ export class ScenarioInterventionsService extends AppBaseService<
   constructor(
     protected readonly scenarioInterventionRepository: ScenarioInterventionRepository,
     protected readonly interventionBuilder: InterventionBuilder,
-    protected readonly geoCodingService: GeoCodingService,
+    protected readonly geoCodingServiceV2: GeoCodingServiceV2,
     protected readonly sourcingLocationsService: SourcingLocationsService,
   ) {
     super(
@@ -363,7 +363,7 @@ export class ScenarioInterventionsService extends AppBaseService<
     }
   > {
     if (dto.type !== SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY) {
-      return this.geoCodingService.geoCodeSourcingLocation({
+      return this.geoCodingServiceV2.geoCodeSourcingLocation({
         locationAdminRegionInput: dto.newLocationAdminRegionInput,
         locationLongitude: dto.newLocationLongitude,
         locationLatitude: dto.newLocationLatitude,

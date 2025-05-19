@@ -38,6 +38,11 @@ export class GeoCodedLocation {
   locationWarning?: string;
 }
 
+export interface GeoCodeResult {
+  geocodedSourcingLocations: GeoCodedSourcingLocation[];
+  geoCodingErrors: ErrorRecord[];
+}
+
 interface ErrorRecord {
   row: number;
   error: string;
@@ -46,20 +51,18 @@ interface ErrorRecord {
   column: string | null;
 }
 
-export interface GeoCodeResult {
-  geocodedSourcingLocations: GeoCodedSourcingLocation[];
-  geoCodingErrors: ErrorRecord[];
-}
-
 @Injectable()
 export class GeoCodingServiceV2 {
+  private readonly geocodingRepository: GeocodingRepository;
   private readonly logger = new Logger(GeoCodingServiceV2.name);
 
   constructor(
     private readonly dataSource: DataSource,
     private readonly cache: GeoLocationCacheService,
     private readonly geocoder: CacheGeocoder,
-  ) { }
+  ) {
+    this.geocodingRepository = new GeocodingRepository(this.dataSource.manager);
+  }
 
   /**
    * Geocode a batch of sourcing locations in a single transaction.
@@ -111,15 +114,39 @@ export class GeoCodingServiceV2 {
   }
 
   /** Instantiate and map each LOCATION_TYPES to its strategy */
-  private initializeStrategies(repo: GeocodingRepository): Record<LOCATION_TYPES, IGeoCodingStrategy> {
+  private initializeStrategies(geocodingRepository: GeocodingRepository): Record<LOCATION_TYPES, IGeoCodingStrategy> {
     return {
-      [LOCATION_TYPES.UNKNOWN]: new UnknownLocationGeoCodingStrategy(repo, this.geocoder),
-      [LOCATION_TYPES.POINT_OF_PRODUCTION]: new PointOfProductionGeocodingStrategy(repo, this.geocoder),
-      [LOCATION_TYPES.COUNTRY_OF_PRODUCTION]: new CountryOfProductionGeoCodingStrategy(repo,),
-      [LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT]: new AggregationPointGeocodingStrategy(repo, this.geocoder),
-      [LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION]: new AdminRegionOfProductionGeocodingStrategy(repo),
-      [LOCATION_TYPES.COUNTRY_OF_DELIVERY]: new UnknownLocationGeoCodingStrategy(repo, this.geocoder),
+      [LOCATION_TYPES.UNKNOWN]: new UnknownLocationGeoCodingStrategy(geocodingRepository, this.geocoder),
+      [LOCATION_TYPES.POINT_OF_PRODUCTION]: new PointOfProductionGeocodingStrategy(geocodingRepository, this.geocoder),
+      [LOCATION_TYPES.COUNTRY_OF_PRODUCTION]: new CountryOfProductionGeoCodingStrategy(geocodingRepository),
+      [LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT]: new AggregationPointGeocodingStrategy(geocodingRepository, this.geocoder),
+      [LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION]: new AdminRegionOfProductionGeocodingStrategy(geocodingRepository),
+      [LOCATION_TYPES.COUNTRY_OF_DELIVERY]: new UnknownLocationGeoCodingStrategy(geocodingRepository, this.geocoder),
     };
+  }
+
+  private getStrategy(locationType: LOCATION_TYPES): IGeoCodingStrategy {
+    switch (locationType) {
+      case LOCATION_TYPES.UNKNOWN:
+        return new UnknownLocationGeoCodingStrategy(this.geocodingRepository, this.geocoder);
+      case LOCATION_TYPES.POINT_OF_PRODUCTION:
+        return new PointOfProductionGeocodingStrategy(this.geocodingRepository, this.geocoder);
+      case LOCATION_TYPES.PRODUCTION_AGGREGATION_POINT:
+        return new AggregationPointGeocodingStrategy(this.geocodingRepository, this.geocoder);
+      case LOCATION_TYPES.COUNTRY_OF_PRODUCTION:
+        return new CountryOfProductionGeoCodingStrategy(this.geocodingRepository);
+      case LOCATION_TYPES.COUNTRY_OF_DELIVERY:
+        return new UnknownLocationGeoCodingStrategy(this.geocodingRepository, this.geocoder);
+      case LOCATION_TYPES.ADMINISTRATIVE_REGION_OF_PRODUCTION:
+        return new AdminRegionOfProductionGeocodingStrategy(this.geocodingRepository);
+      default:
+        throw new Error(`Unknown location type ${locationType}`);
+    }
+  }
+
+  public async geoCodeSourcingLocation(locationInfo: SourcingLocationInfo): Promise<SourcingLocation> {
+    const strategy = this.getStrategy(locationInfo.locationType);
+    return await strategy.geoCodeLocation(locationInfo) as SourcingLocation;
   }
 
   /**
@@ -156,20 +183,5 @@ export class GeoCodingServiceV2 {
     // 3) Save to cache for next time
     await this.cache.set(locationInfo, geoData);
     return geoData;
-  }
-
-  // TODO: GEOCODEING: This method can be improved in performance by initializing just the strategy needed.
-  public async geocodeSourcingLocation(locationInfo: SourcingLocationInfo) {
-    const repository = new GeocodingRepository(this.dataSource.manager);
-    const strategies = this.initializeStrategies(repository);
-
-    try {
-      const geoData = await this.lookupOrFetchGeo(locationInfo, strategies);
-      const saved = await this.dataSource.manager.save(SourcingLocation, { ...location, ...geoData });
-
-    } catch (err: any) {
-      this.logger.error(`Error: ${err.message}`, err.stack);
-      throw new GeoCodingError(err.message);
-    }
   }
 }

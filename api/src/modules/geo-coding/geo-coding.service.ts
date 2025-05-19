@@ -12,7 +12,7 @@ import {
 import { ImportProgressTrackerFactory } from '../events/import-data-progress/import-progress.tracker.factory';
 import { GeoCodingInterface } from './geo-coding-interface';
 
-interface LocationInfo {
+interface SourcingLocationInfo {
   locationAddressInput?: string;
   locationLatitude?: number;
   locationLongitude?: number;
@@ -89,7 +89,7 @@ export class GeoCodingService implements GeoCodingInterface {
     return { geoCodedSourcingData, errors };
   }
 
-  async geoCodeSourcingLocation(locationInfo: LocationInfo): Promise<SourcingLocation> {
+  async geoCodeSourcingLocation(locationInfo: SourcingLocationInfo): Promise<SourcingLocation> {
     switch (locationInfo.locationType) {
       case LOCATION_TYPES.UNKNOWN:
         return await this.geoCodeUnknownLocationType(locationInfo as SourcingData) as SourcingLocation;

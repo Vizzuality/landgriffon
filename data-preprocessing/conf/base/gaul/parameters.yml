@@ -1,1 +1,3 @@
-tolerance: 0.001  # ~100m at equator
+gaul.h3_resolution: "${globals:h3_resolution}"
+
+gaul.tolerance: 0.001  # ~100m at equator

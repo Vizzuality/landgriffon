@@ -1,24 +1,24 @@
-gadm_adm0:
+gadm.adm0:
   type: geopandas.GenericDataset
   filepath: data/01_raw/gadm_410-levels.gpkg
   load_args:
     layer: "ADM_0"
 
-gadm_adm1:
+gadm.adm1:
   type: geopandas.GenericDataset
   filepath: data/01_raw/gadm_410-levels.gpkg
   load_args:
     layer: "ADM_1"
     columns: [ "GID_0", "GID_1", "NAME_0", "NAME_1" ]
 
-gadm_adm2:
+gadm.adm2:
   type: geopandas.GenericDataset
   filepath: data/01_raw/gadm_410-levels.gpkg
   load_args:
     layer: "ADM_2"
     columns: [ "GID_0", "GID_1", "GID_2", "NAME_0", "NAME_1", "NAME_2" ]
 
-gadm_adm0_h3:
+gadm.adm0_h3:
   type: polars.LazyPolarsDataset
   file_format: parquet
   filepath: data/02_intermediate/gadm_adm0_h3.parquet
@@ -26,7 +26,7 @@ gadm_adm0_h3:
     compression: "zstd"
     compression_level: 10
 
-gadm_adm1_h3:
+gadm.adm1_h3:
   type: polars.LazyPolarsDataset
   file_format: parquet
   filepath: data/02_intermediate/gadm_adm1_h3.parquet
@@ -34,7 +34,7 @@ gadm_adm1_h3:
     compression: "zstd"
     compression_level: 10
 
-gadm_adm2_h3:
+gadm.adm2_h3:
   type: polars.LazyPolarsDataset
   file_format: parquet
   filepath: data/02_intermediate/gadm_adm2_h3.parquet
@@ -42,7 +42,7 @@ gadm_adm2_h3:
     compression: "zstd"
     compression_level: 10
 
-geo_regions:
+gadm.geo_regions:
   type: polars.EagerPolarsDataset
   file_format: parquet
   filepath: data/03_primary/geo_regions.parquet
@@ -50,7 +50,7 @@ geo_regions:
     compression: "zstd"
     compression_level: 10
 
-admin_regions:
+gadm.admin_regions:
   type: polars.EagerPolarsDataset
   file_format: parquet
   filepath: data/03_primary/admin_regions.parquet

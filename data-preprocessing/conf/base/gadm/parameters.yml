@@ -1,19 +1,15 @@
-# This is a boilerplate parameters config generated for pipeline 'gadm'
-# using Kedro 0.19.11.
-#
-# Documentation for this file format can be found in "Parameters"
-# Link: https://docs.kedro.org/en/0.19.11/configuration/parameters.html
+gadm.h3_resolution: "${globals:h3_resolution}"
 
-adm0:
+gadm.adm0:
   tolerance: 0.005  # 500 m
 
-adm1:
+gadm.adm1:
   tolerance: 0.0001 # 10 m
 
-adm2:
+gadm.adm2:
   tolerance: null
 
-geo_region:
+gadm.geo_region:
   column_map:
     geometry: geom
     GID_0: iso3
@@ -23,7 +19,7 @@ geo_region:
     - geom
     - is_created_by_user
 
-admin_region:
+gadm.admin_region:
   column_map:
     GID_0: iso3
   columns:

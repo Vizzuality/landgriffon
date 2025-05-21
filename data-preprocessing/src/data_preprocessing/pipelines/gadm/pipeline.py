@@ -10,56 +10,63 @@ from data_preprocessing.pipelines.gadm.nodes import (
     special_cases,
 )
 
-base_pipe = [
-    node(
-        gadm_to_h3,
-        ["gadm_adm0", "params:h3_resolution", "params:adm0.tolerance"],
-        "gadm_adm0_h3",
-    ),
-    node(
-        gadm_to_h3,
-        ["gadm_adm1", "params:h3_resolution", "params:adm1.tolerance"],
-        "gadm_adm1_h3",
-    ),
-    node(
-        gadm_to_h3,
-        ["gadm_adm2", "params:h3_resolution", "params:adm2.tolerance"],
-        "gadm_adm2_h3",
-    ),
-    node(
-        join_gadm_levels_and_clean,
-        ["gadm_adm0_h3", "gadm_adm1_h3", "gadm_adm2_h3"],
-        "gadm_h3_all_levels",
-    ),
-    node(
-        special_cases,
-        "gadm_h3_all_levels",
-        "gadm_h3_all_clean",
-    ),
-    node(
-        add_unified_columns,
-        "gadm_h3_all_clean",
-        "gadm_h3_all_uni",
-    ),
-    node(
-        reshape_to_geo_region_table,
-        ["gadm_h3_all_uni", "params:geo_region"],
-        "geo_regions",
-    ),
-    node(
-        reshape_to_admin_region_table,
-        ["gadm_h3_all_uni", "params:admin_region"],
-        "admin_regions",
-    ),
-    # ====== INGESTION =======
-    node(
-        ingest_admin_region,
-        "admin_regions",
-        None,
-        tags="ingest",
-    ),
-]
+preprocessing_pipeline = pipeline(
+    [
+        node(
+            gadm_to_h3,
+            ["adm0", "params:h3_resolution", "params:adm0.tolerance"],
+            "adm0_h3",
+        ),
+        node(
+            gadm_to_h3,
+            ["adm1", "params:h3_resolution", "params:adm1.tolerance"],
+            "adm1_h3",
+        ),
+        node(
+            gadm_to_h3,
+            ["adm2", "params:h3_resolution", "params:adm2.tolerance"],
+            "adm2_h3",
+        ),
+        node(
+            join_gadm_levels_and_clean,
+            ["adm0_h3", "adm1_h3", "adm2_h3"],
+            "h3_all_levels",
+        ),
+        node(
+            special_cases,
+            "h3_all_levels",
+            "h3_all_clean",
+        ),
+        node(
+            add_unified_columns,
+            "h3_all_clean",
+            "h3_all_uni",
+        ),
+        node(
+            reshape_to_geo_region_table,
+            ["h3_all_uni", "params:geo_region"],
+            "geo_regions",
+        ),
+        node(
+            reshape_to_admin_region_table,
+            ["h3_all_uni", "params:admin_region"],
+            "admin_regions",
+        ),
+    ],
+    tags="preprocessing",
+)
+
+ingestion_pipeline = pipeline(
+    [
+        node(
+            ingest_admin_region,
+            "admin_regions",
+            None,
+        ),
+    ],
+    tags="ingestion",
+)
 
 
 def create_pipeline(**kwargs) -> Pipeline:
-    return pipeline(base_pipe, tags="core")  # type: ignore
+    return pipeline(preprocessing_pipeline + ingestion_pipeline, tags="core", namespace="gadm")  # type: ignore

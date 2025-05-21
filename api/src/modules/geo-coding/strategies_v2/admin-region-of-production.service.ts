@@ -25,7 +25,7 @@ export class AdminRegionOfProductionGeocodingStrategy implements IGeoCodingStrat
       geoRegion
     } = await this.geocodingRepository.getCountryAdminRegionAndGeoRegionByCountryName(locationCountryInput);
 
-    const adminRegionRepository = this.geocodingRepository.manager.getTreeRepository(AdminRegion);
+    const adminRegionRepository = this.geocodingRepository.getTreeRepository(AdminRegion);
     const descendants = await adminRegionRepository.manager.getTreeRepository(AdminRegion).findDescendants(parentAdminRegion);
 
     const location = descendants.find(({ name }) => name === locationAdminRegionInput);

@@ -76,12 +76,13 @@ export class GeoLocationCacheService {
       locationType,
     } = locationInfo;
 
+    // Make sure the values are in order
     const raw = [
-      locationAddressInput,
-      locationLatitude,
-      locationLongitude,
-      locationAdminRegionInput,
-      locationCountryInput,
+      locationAddressInput.trim(),
+      ("" + locationLatitude).trim(),
+      ("" + locationLongitude).trim(),
+      locationAdminRegionInput.trim(),
+      locationCountryInput.trim(),
       locationType,
     ].join('|');
 

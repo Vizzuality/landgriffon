@@ -16,7 +16,7 @@ export class PointOfProductionGeocodingStrategy implements IGeoCodingStrategy {
   constructor(private geocodingRepository: GeocodingRepository, private geoCoder: CacheGeocoder) { }
 
   async geoCodeLocation(
-    locationInfo: SourcingLocationInfo,
+    locationInfo: SourcingLocationInfo
   ): Promise<GeoCodedLocation> {
     const {
       locationCountryInput,

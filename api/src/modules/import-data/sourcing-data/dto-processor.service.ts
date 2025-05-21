@@ -13,6 +13,7 @@ import { LOCATION_TYPES } from 'modules/sourcing-locations/sourcing-location.ent
 import { SourcingDataSheet } from 'modules/import-data/sourcing-data/validation/excel-validator.service';
 import { AdminRegion } from '../../admin-regions/admin-region.entity';
 import { GeoRegion } from 'modules/geo-regions/geo-region.entity';
+import { CreateSourcingLocationV2 } from 'modules/sourcing-locations/dto/create-sourcing-location-v2.dto';
 
 /**
  * @debt: Define a more accurate DTO / Interface / Class for API-DB trades
@@ -22,6 +23,12 @@ export interface SourcingData extends CreateSourcingLocationDto {
   sourcingRecords: SourcingRecord[] | { year: number; tonnage: number }[];
   adminRegion?: AdminRegion;
   geoRegion?: GeoRegion;
+  geoRegionId?: string;
+  adminRegionId?: string;
+}
+
+export interface SourcingDataV2 extends CreateSourcingLocationV2 {
+  sourcingRecords: SourcingRecord[] | { year: number; tonnage: number }[];
   geoRegionId?: string;
   adminRegionId?: string;
 }

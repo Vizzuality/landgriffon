@@ -3,29 +3,29 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { AppInfoDTO } from 'dto/info.dto';
-import { GeoCodingServiceV2 } from 'modules/geo-coding/geo-coding.service-v2';
-import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
-import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
-import { UpdateScenarioInterventionDto } from 'modules/scenario-interventions/dto/update.scenario-intervention.dto';
+import {
+  AppBaseService,
+  JSONAPISerializerConfig,
+} from 'utils/app-base.service';
 import {
   SCENARIO_INTERVENTION_TYPE,
   ScenarioIntervention,
   scenarioResource,
 } from 'modules/scenario-interventions/scenario-intervention.entity';
+import { AppInfoDTO } from 'dto/info.dto';
 import { ScenarioInterventionRepository } from 'modules/scenario-interventions/scenario-intervention.repository';
-import { InterventionBuilder } from 'modules/scenario-interventions/services/intervention-builder.service';
+import { CreateScenarioInterventionDto } from 'modules/scenario-interventions/dto/create.scenario-intervention.dto';
+import { UpdateScenarioInterventionDto } from 'modules/scenario-interventions/dto/update.scenario-intervention.dto';
 import {
   SOURCING_LOCATION_TYPE_BY_INTERVENTION,
   SourcingLocation,
 } from 'modules/sourcing-locations/sourcing-location.entity';
 import { SourcingLocationsService } from 'modules/sourcing-locations/sourcing-locations.service';
+import { InterventionBuilder } from 'modules/scenario-interventions/services/intervention-builder.service';
 import { SourcingRecord } from 'modules/sourcing-records/sourcing-record.entity';
 import { InsertResult } from 'typeorm';
-import {
-  AppBaseService,
-  JSONAPISerializerConfig,
-} from 'utils/app-base.service';
+import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
+import { GeoCodingService } from 'modules/geo-coding/geo-coding.service';
 
 @Injectable()
 export class ScenarioInterventionsService extends AppBaseService<
@@ -44,7 +44,7 @@ export class ScenarioInterventionsService extends AppBaseService<
   constructor(
     protected readonly scenarioInterventionRepository: ScenarioInterventionRepository,
     protected readonly interventionBuilder: InterventionBuilder,
-    protected readonly geoCodingServiceV2: GeoCodingServiceV2,
+    protected readonly geoCodingService: GeoCodingService,
     protected readonly sourcingLocationsService: SourcingLocationsService,
   ) {
     super(
@@ -357,13 +357,13 @@ export class ScenarioInterventionsService extends AppBaseService<
   ): Promise<
     | SourcingLocation
     | {
-      adminRegionId: string;
-      geoRegionId: string;
-      locationWarning: string;
-    }
+        adminRegionId: string;
+        geoRegionId: string;
+        locationWarning: string;
+      }
   > {
     if (dto.type !== SCENARIO_INTERVENTION_TYPE.CHANGE_PRODUCTION_EFFICIENCY) {
-      return this.geoCodingServiceV2.geoCodeSourcingLocation({
+      return this.geoCodingService.geoCodeSourcingLocation({
         locationAdminRegionInput: dto.newLocationAdminRegionInput,
         locationLongitude: dto.newLocationLongitude,
         locationLatitude: dto.newLocationLatitude,

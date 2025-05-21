@@ -1,22 +1,27 @@
-import { EntityManager, InsertResult } from 'typeorm';
+import { NotFoundException } from '@nestjs/common';
+import { EntityManager, EntityTarget, InsertResult, ObjectLiteral, TreeRepository } from 'typeorm';
+import { AdminRegion } from '../../admin-regions/admin-region.entity';
+import { GeoRegion } from '../../geo-regions/geo-region.entity';
+import { GeoCodingError } from '../errors/geo-coding.error';
 import {
   GeoCodedLocation,
   SourcingLocationInfo,
 } from '../geo-coding.service-v2';
-import { GeoRegion } from '../../geo-regions/geo-region.entity';
-import { AdminRegion } from '../../admin-regions/admin-region.entity';
-import { GeoCodingError } from '../errors/geo-coding.error';
-import { NotFoundException } from '@nestjs/common';
 
 export class GeocodingRepository {
-  constructor(public readonly manager: EntityManager) { }
 
-  async saveGeoRegionAsPoint(
+  constructor(private readonly entityManager: EntityManager) { }
+
+  public getTreeRepository<Entity extends ObjectLiteral>(target: EntityTarget<Entity>): TreeRepository<Entity> {
+    return this.entityManager.getTreeRepository(target);
+  }
+
+  public async saveGeoRegionAsPoint(
     locationInfo: SourcingLocationInfo,
   ): Promise<GeoRegion> {
     let result: InsertResult;
     try {
-      result = await this.manager
+      result = await this.entityManager
         .createQueryBuilder()
         .insert()
         .into(GeoRegion)
@@ -44,43 +49,13 @@ export class GeocodingRepository {
       throw e;
     }
 
-    return this.manager.findOneOrFail(GeoRegion, result.identifiers[0].id);
-  }
-
-  private async validateAdminRegion(locationInfo: SourcingLocationInfo): Promise<void> {
-    const intersectingCountries = await this.manager.query(
-      `
-        SELECT a.id AS "adminRegionId", a."name", a."level", g.id AS "geoRegionId"
-        FROM admin_region a
-               RIGHT JOIN geo_region g ON a."geoRegionId" = g.id
-        WHERE ST_Intersects(
-          ST_Buffer(ST_SetSRID(ST_POINT($1, $2), 4326)::geometry, 0.01),
-          st_setsrid(g."theGeom"::geometry, 4326)
-              )
-          AND a.id IS NOT NULL
-          AND a."level" = 0
-      `,
-      [locationInfo.locationLongitude, locationInfo.locationLatitude],
-    );
-
-    if (
-      !intersectingCountries.some(
-        (intersectingCountry: AdminRegion) =>
-          intersectingCountry.name === locationInfo.locationCountryInput,
-      )
-    ) {
-      throw new GeoCodingError(
-        locationInfo.locationAddressInput
-          ? `Address ${locationInfo.locationAddressInput} is not inside ${locationInfo.locationCountryInput}`
-          : `Coordinates ${locationInfo.locationLatitude}, ${locationInfo.locationLongitude} are not inside ${locationInfo.locationCountryInput}`,
-      );
-    }
+    return this.entityManager.findOneOrFail(GeoRegion, result.identifiers[0].id);
   }
 
   public async getClosestAdminRegionByCoordinates(
     locationInfo: SourcingLocationInfo,
   ): Promise<AdminRegion> {
-    const results = await this.manager.query(
+    const results = await this.entityManager.query(
       `
         SELECT a.id AS "adminRegionId", a."name", a."level", g."name" AS "geoRegionName", g.id AS "geoRegionId"
         FROM admin_region a
@@ -111,16 +86,16 @@ export class GeocodingRepository {
 
     await this.validateAdminRegion(locationInfo);
 
-    return this.manager.getRepository(AdminRegion).findOneOrFail({
+    return this.entityManager.getRepository(AdminRegion).findOneOrFail({
       where: { id: highestLevelRegion.adminRegionId },
     });
   }
 
-  async saveGeoRegionAsRadius({ locationLatitude: lat, locationLongitude: lng }: {
+  public async saveGeoRegionAsRadius({ locationLatitude: lat, locationLongitude: lng }: {
     locationLatitude: number;
     locationLongitude: number;
-  }): Promise<any> {
-    const selectQuery = this.manager
+  }): Promise<GeoRegion | undefined> {
+    const selectQuery = this.entityManager
       .createQueryBuilder()
       .select(`hashtext(concat($3::text, points.radius))`, 'name')
       .addSelect(`points.radius`, 'theGeom')
@@ -137,8 +112,10 @@ export class GeocodingRepository {
       )
       .from('points', 'points');
 
+    let insertedGeoRegion: GeoRegion | undefined = undefined;
+
     try {
-      const result = await this.manager.query(
+      const result = await this.entityManager.query(
         `
           WITH points AS (SELECT ST_BUFFER(ST_SetSRID(ST_POINT($1, $2), 4326)::geometry, 0.5) as radius)
           INSERT
@@ -154,26 +131,26 @@ export class GeocodingRepository {
         ],
       );
 
-      const insertedGeoRegion = await this.manager.findOneOrFail(GeoRegion, {
+      insertedGeoRegion = await this.entityManager.findOneOrFail(GeoRegion, {
         where: { id: result[0].id },
       });
-
-      return insertedGeoRegion;
 
     } catch (error) {
       console.error(
         `Could not save GeoRegion as Radius with Coordinates: LAT: ${lat}, LNG: ${lng}`,
       );
     }
+
+    return insertedGeoRegion;
   }
 
-  async getAdminRegionAndGeoRegionByCoordinatesAndLevel(
+  public async getAdminRegionAndGeoRegionByCoordinatesAndLevel(
     locationInfo: SourcingLocationInfo,
     level: number,
   ): Promise<GeoCodedLocation> {
     let result: any;
     try {
-      result = await this.manager.query(
+      result = await this.entityManager.query(
         `
     SELECT a.id AS "adminRegionId", g.id AS "geoRegionId"
     FROM admin_region a
@@ -208,7 +185,7 @@ export class GeocodingRepository {
     const adminRegionId = result[0].adminRegionId;
     await this.validateAdminRegion(locationInfo);
 
-    const adminRegion = await this.manager.getRepository(AdminRegion).findOne({
+    const adminRegion = await this.entityManager.getRepository(AdminRegion).findOne({
       where: { id: adminRegionId },
       relations: ['geoRegion'],
     });
@@ -225,10 +202,10 @@ export class GeocodingRepository {
     };
   }
 
-  async getCountryAdminRegionAndGeoRegionByCountryName(
+  public async getCountryAdminRegionAndGeoRegionByCountryName(
     countryName: string,
   ): Promise<GeoCodedLocation> {
-    const queryBuilder = this.manager
+    const queryBuilder = this.entityManager
       .createQueryBuilder(AdminRegion, 'adminRegion')
       .innerJoinAndSelect('adminRegion.geoRegion', 'geoRegion')
       .where('adminRegion.name = :countryName', {
@@ -248,5 +225,35 @@ export class GeocodingRepository {
       adminRegion,
       geoRegion: adminRegion.geoRegion,
     };
+  }
+
+  private async validateAdminRegion(locationInfo: SourcingLocationInfo): Promise<void> {
+    const intersectingCountries = await this.entityManager.query(
+      `
+        SELECT a.id AS "adminRegionId", a."name", a."level", g.id AS "geoRegionId"
+        FROM admin_region a
+               RIGHT JOIN geo_region g ON a."geoRegionId" = g.id
+        WHERE ST_Intersects(
+          ST_Buffer(ST_SetSRID(ST_POINT($1, $2), 4326)::geometry, 0.01),
+          st_setsrid(g."theGeom"::geometry, 4326)
+              )
+          AND a.id IS NOT NULL
+          AND a."level" = 0
+      `,
+      [locationInfo.locationLongitude, locationInfo.locationLatitude],
+    );
+
+    if (
+      !intersectingCountries.some(
+        (intersectingCountry: AdminRegion) =>
+          intersectingCountry.name === locationInfo.locationCountryInput,
+      )
+    ) {
+      throw new GeoCodingError(
+        locationInfo.locationAddressInput
+          ? `Address ${locationInfo.locationAddressInput} is not inside ${locationInfo.locationCountryInput}`
+          : `Coordinates ${locationInfo.locationLatitude}, ${locationInfo.locationLongitude} are not inside ${locationInfo.locationCountryInput}`,
+      );
+    }
   }
 }

@@ -6,14 +6,19 @@ import {
 import { CacheGeocoder } from '../geocoders/cache.geocoder';
 import { IGeoCodingStrategy } from './geo-coding.strategy.interface';
 import { GeocodingRepository } from './geocoding.repository';
+import { Logger } from '@nestjs/common';
 
 export class AggregationPointGeocodingStrategy implements IGeoCodingStrategy {
+  aggregationPointGeocodingLogger: Logger = new Logger(
+    AggregationPointGeocodingStrategy.name,
+  );
+
   constructor(
     private geoCodingRepo: GeocodingRepository,
     private geocoder: CacheGeocoder
   ) { }
 
-  async geoCodeLocation(location: SourcingLocationInfo,): Promise<GeoCodedLocation> {
+  async geoCodeLocation(location: SourcingLocationInfo): Promise<GeoCodedLocation> {
     const {
       locationAddressInput,
       locationCountryInput,
@@ -35,10 +40,13 @@ export class AggregationPointGeocodingStrategy implements IGeoCodingStrategy {
      */
     if (locationLatitude && locationLongitude) {
       // Do the two of them at the same time
-      const [geoRegion, adminRegion] = await Promise.all([
-        await this.geoCodingRepo.saveGeoRegionAsRadius({ locationLatitude, locationLongitude }),
-        await this.geoCodingRepo.getClosestAdminRegionByCoordinates(location)
-      ]);
+      // const [geoRegion, adminRegion] = await Promise.all([
+      //   await this.geoCodingRepo.saveGeoRegionAsRadius({ locationLatitude, locationLongitude }),
+      //   await this.geoCodingRepo.getClosestAdminRegionByCoordinates(location)
+      // ]);
+
+      const geoRegion = await this.geoCodingRepo.saveGeoRegionAsRadius({ locationLatitude, locationLongitude });
+      const adminRegion = await this.geoCodingRepo.getClosestAdminRegionByCoordinates(location);
 
       return { adminRegion, geoRegion };
     }
@@ -116,5 +124,45 @@ export class AggregationPointGeocodingStrategy implements IGeoCodingStrategy {
 
   isAddressAdminLevel2(locationTypes: string[]): boolean {
     return locationTypes.includes('administrative_area_level_2');
+  }
+  /**
+   * @description Processes the custom radius for an aggregation point based on acceptance criteria.
+   *
+   * - Only applies to locations of type "aggregation point".
+   * - The accepted radius must be greater than 0 and less than or equal to 1000 kilometers.
+   * - If the radius is missing (null/undefined) or out of bounds, default to 50km (50000 meters).
+   * - When defaulting due to an invalid radius, a warning is provided.
+   *
+   * @todo: This is a quick workaround but should be validated properly in earlier stages. Since we plan to refactor the geocoding process, this will be addressed then.
+   */
+
+  handleRadius(radiusKm: SourcingLocationInfo['radiusKm']): {
+    radiusKm: number;
+    locationWarning?: string;
+  } {
+    const DEFAULT_RADIUS_KM = 50;
+    const MIN_RADIUS = 1;
+    const MAX_RADIUS = 1000;
+
+    if (radiusKm === null || radiusKm === undefined) {
+      this.aggregationPointGeocodingLogger.warn(
+        'No radius provided. Defaulting to 50km buffer',
+      );
+      return { radiusKm: DEFAULT_RADIUS_KM };
+    }
+
+    if (radiusKm < MIN_RADIUS || radiusKm > MAX_RADIUS) {
+      this.aggregationPointGeocodingLogger.warn(
+        `Provided radius is out of bounds. Defaulting to 50km`,
+      );
+      return {
+        radiusKm: DEFAULT_RADIUS_KM,
+        locationWarning: 'Provided radius is out of bounds. Defaulting to 50km',
+      };
+    }
+    this.aggregationPointGeocodingLogger.log(
+      `Radius provided. Using ${radiusKm}km for buffer`,
+    );
+    return { radiusKm };
   }
 }

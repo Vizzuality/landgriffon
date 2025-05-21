@@ -9,7 +9,7 @@ import { GeoCodingError } from '../errors/geo-coding.error';
 import { CacheGeocoder } from '../geocoders/cache.geocoder';
 
 export class UnknownLocationGeoCodingStrategy implements IGeoCodingStrategy {
-  constructor(private geocodingRepository: GeocodingRepository, private geoCoder: CacheGeocoder) { }
+  constructor(private geocodingRepository: GeocodingRepository) { }
 
   async geoCodeLocation(location: SourcingLocationInfo): Promise<GeoCodedLocation> {
     this.validateLocation(location);

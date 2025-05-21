@@ -7,7 +7,8 @@ import { IGeoCodingStrategy } from './geo-coding.strategy.interface';
 import { GeocodingRepository } from './geocoding.repository';
 
 export class CountryOfProductionGeoCodingStrategy implements IGeoCodingStrategy {
-  constructor(private geocodingRepository: GeocodingRepository) { }
+
+  constructor(private geocodingRepository: GeocodingRepository) {}
 
   async geoCodeLocation(locationInfo: SourcingLocationInfo): Promise<GeoCodedLocation> {
     this.validateLocation(locationInfo);

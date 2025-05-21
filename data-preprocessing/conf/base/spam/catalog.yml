@@ -1,6 +1,6 @@
 # ——————————— SPAM Prod ———————————
 
-spam_production:
+spam.production:
   type: partitions.PartitionedDataset
   dataset:
     type: data_preprocessing.datasets.geotiff.GeoTIFFDataset
@@ -8,7 +8,7 @@ spam_production:
   path: s3://landgriffon-raw-data/raw/spam2020V1r0_global_production/
   filename_suffix: ".tif"
 
-spam_production_h3_parts:
+spam.production_h3_parts:
   type: partitions.PartitionedDataset
   path: data/02_intermediate/spam/production
   dataset:
@@ -17,7 +17,7 @@ spam_production_h3_parts:
   filename_suffix: ".parquet"
 
 
-spam_production_h3:
+spam.production_h3:
   type: polars.EagerPolarsDataset
   filepath: s3://landgriffon-raw-data/processed/tables/spam/spam_prod.parquet
   file_format: parquet
@@ -28,7 +28,7 @@ spam_production_h3:
 
 # ——————————— SPAM Ha ———————————
 
-spam_ha:
+spam.harvest:
   type: partitions.PartitionedDataset
   dataset:
     type: data_preprocessing.datasets.geotiff.GeoTIFFDataset
@@ -37,7 +37,7 @@ spam_ha:
   filename_suffix: ".tif"
 
 
-spam_ha_h3_parts:
+spam.ha_h3_parts:
   type: partitions.PartitionedDataset
   path: data/02_intermediate/spam/ha
   dataset:
@@ -46,7 +46,7 @@ spam_ha_h3_parts:
   filename_suffix: ".parquet"
 
 
-spam_ha_h3:
+spam.ha_h3:
   type: polars.EagerPolarsDataset
   filepath: s3://landgriffon-raw-data/processed/tables/spam/spam_ha.parquet
   file_format: parquet

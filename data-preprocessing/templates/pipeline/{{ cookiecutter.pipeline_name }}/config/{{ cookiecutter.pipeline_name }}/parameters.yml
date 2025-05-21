@@ -1,0 +1,1 @@
+{{ cookiecutter.pipeline_name }}.h3_resolution: "${globals:h3_resolution}"

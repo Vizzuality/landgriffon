@@ -10,17 +10,19 @@ from data_preprocessing.pipelines.nutrient_load_reduction.nodes import geo_to_h3
 
 preprocessing_pipeline = pipeline(
     [
-        node(geo_to_h3, ["sbtn_son_water", "params:h3_resolution"], "h3_raw"),
-        node(load_reduction, ["h3_raw", "params:columns"], "nutrient_load_reduction_h3"),
+        node(geo_to_h3, ["raw", "params:h3_resolution"], "h3_raw"),
+        node(load_reduction, ["h3_raw", "params:columns"], "h3_table"),
     ],
-    tags="preproc",
+    tags="preprocessing",
 )
 
 ingestion_pipeline = pipeline(
     [],
-    tags="ingest",
+    tags="ingestion",
 )
 
 
 def create_pipeline(**kwargs) -> Pipeline:
-    return pipeline([preprocessing_pipeline, ingestion_pipeline])
+    return pipeline(
+        [preprocessing_pipeline, ingestion_pipeline], namespace="nutrient_load_reduction"
+    )

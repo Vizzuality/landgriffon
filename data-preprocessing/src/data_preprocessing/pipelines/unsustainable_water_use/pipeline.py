@@ -13,7 +13,7 @@ from data_preprocessing.pipelines.unsustainable_water_use.nodes import (
 
 preprocessing_pipeline = pipeline(  # type: ignore
     [
-        node(filter_columns, ["aqueduct", "params:columns"], "aqueduct_filtered"),
+        node(filter_columns, ["raw", "params:columns"], "aqueduct_filtered"),
         node(geo_to_h3, ["aqueduct_filtered", "params:h3_resolution"], "aqueduct_h3"),
         node(
             excess_withdrawals,
@@ -23,16 +23,18 @@ preprocessing_pipeline = pipeline(  # type: ignore
                 "params:columns.stress_value",
                 "params:columns.excess_withdrawals",
             ],
-            "excess_withdrawals_h3",
+            "h3_table",
         ),
     ],
-    tags="preproc",
+    tags="preprocessing",
 )
 
 ingestion_pipeline = pipeline(  # type: ignore
-    [], tags="ingest"
+    [], tags="ingestion"
 )
 
 
 def create_pipeline(**kwargs) -> Pipeline:
-    return pipeline([preprocessing_pipeline, ingestion_pipeline])  # type: ignore
+    return pipeline(
+        [preprocessing_pipeline, ingestion_pipeline], namespace="unsustainable_water_use"
+    )  # type: ignore

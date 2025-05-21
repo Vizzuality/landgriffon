@@ -1,4 +1,5 @@
-columns:
+unsustainable_water_use.h3_resolution: "${globals:h3_resolution}"
+unsustainable_water_use.columns:
   stress_category: bws_cat
   stress_value: bws_raw
   geom: geometry

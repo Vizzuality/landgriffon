@@ -1,4 +1,4 @@
-sbtn_son_water:
+nutrient_load_reduction.raw:
   type: geopandas.GenericDataset
   filepath: s3://landgriffon-raw-data/raw/sbtn_son_water_v1_1_shp.zip
   credentials: s3_credentials
@@ -10,7 +10,7 @@ sbtn_son_water:
       - tnc_raw
 
 
-nutrient_load_reduction_h3:
+nutrient_load_reduction.h3_table:
   type: polars.EagerPolarsDataset
   filepath: data/03_primary/nutrient_load_reduction/nutrient_load_reduction.parquet
   file_format: parquet

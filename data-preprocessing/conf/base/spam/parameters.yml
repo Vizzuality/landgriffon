@@ -1,4 +1,6 @@
-combinations_prod:
+spam.h3_resolution: "${globals:h3_resolution}"
+
+spam.combinations_prod:
   spam2020_v1r0_global_P_TemfGrouBanaTrof_A:
     - spam2020_v1r0_global_P_TEMF_A
     - spam2020_v1r0_global_P_GROU_A
@@ -81,7 +83,7 @@ combinations_prod:
     - spam2020_v1r0_global_P_COFF_A
     - spam2020_v1r0_global_P_RCOF_A
 
-combinations_ha:
+spam.combinations_ha:
   spam2020_v1r0_global_H_TemfGrouBanaTrof_A:
     - spam2020_v1r0_global_H_TEMF_A
     - spam2020_v1r0_global_H_GROU_A

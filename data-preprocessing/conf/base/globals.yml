@@ -1,1 +1,2 @@
 h3_resolution: 6
+raster_resolution: 0.0833333333  # resolution closest to SPAM, used to resample all the rasters.

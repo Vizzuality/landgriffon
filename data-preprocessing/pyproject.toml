@@ -9,6 +9,7 @@ readme = "README.md"
 dynamic = ["version"]
 dependencies = [
     "duckdb>=1.2.1",
+    "gcsfs>=2025.5.0.post1",
     "h3ronpy>=0.22.0",
     "kedro~=0.19.11",
     "kedro-datasets[pandas-parquetdataset, geopandas-genericdataset]>=6.0",

@@ -2,35 +2,13 @@ import logging
 from collections.abc import Callable
 
 import polars as pl
-from h3ronpy.raster import nearest_h3_resolution, raster_to_dataframe
 from xarray import DataArray
+
+from data_preprocessing.generic.nodes import raster_to_h3
 
 type LazyPartitionedRasters = dict[str, Callable[[], DataArray]]
 type PartitionedDataFrames = dict[str, pl.DataFrame]
 type LazyPartitionedDataFrames = dict[str, Callable[[], pl.DataFrame]]
-
-
-def _raster_to_h3(raster: DataArray, h3_res: int) -> pl.DataFrame:
-    """Convert a raster to h3 hexagons
-    Args:
-        raster: raster data.
-    Returns:
-        DataFrame of h3 hexagons with the sampled values.
-    """
-    nearest_res = nearest_h3_resolution(raster.rio.shape, raster.rio.transform())
-    if h3_res != nearest_res:
-        raise ValueError(
-            f"H3 resolution is not correct: {h3_res=} vs {nearest_res=}.\nCheck raster resolution."
-        )
-    table = raster_to_dataframe(
-        raster.to_numpy()[0],
-        raster.rio.transform(),
-        h3_resolution=h3_res,
-        nodata_value=raster.rio.nodata,
-        compact=False,
-    )
-    df = pl.DataFrame(pl.from_arrow(table))  # force type to DataFrame
-    return df
 
 
 def parts_to_h3_tables(parts: LazyPartitionedRasters, h3_res: int) -> PartitionedDataFrames:
@@ -42,7 +20,7 @@ def parts_to_h3_tables(parts: LazyPartitionedRasters, h3_res: int) -> Partitione
             log.info("Downloading %s...", name)
             data = ds()
             log.info("Processing %s...", name)
-            h3s[name] = _raster_to_h3(data, h3_res)
+            h3s[name] = raster_to_h3(data, h3_res)
     return h3s
 
 

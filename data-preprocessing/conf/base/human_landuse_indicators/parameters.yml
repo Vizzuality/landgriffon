@@ -1,0 +1,15 @@
+deforestation_by_human_lu.h3_resolution: "${globals:h3_resolution}"
+deforestation_by_human_lu.raster_resolution: "${globals:raster_resolution}"
+deforestation_by_human_lu.resampling_method: "average"
+
+forest_ghg_emissions.h3_resolution: "${globals:h3_resolution}"
+forest_ghg_emissions.raster_resolution: "${globals:raster_resolution}"
+forest_ghg_emissions.resampling_method: "average"
+
+natural_crop_conversion.h3_resolution: "${globals:h3_resolution}"
+natural_crop_conversion.raster_resolution: "${globals:raster_resolution}"
+natural_crop_conversion.resampling_method: "average"
+
+biodiversity_loss.h3_resolution: "${globals:h3_resolution}"
+biodiversity_loss.raster_resolution: "${globals:raster_resolution}"
+biodiversity_loss.resampling_method: "average"

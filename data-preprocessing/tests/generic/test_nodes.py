@@ -1,22 +1,9 @@
 import numpy as np
 import polars as pl
 import pytest
-import rasterio
-import xarray as xr
 from polars.testing import assert_frame_equal
 
 from data_preprocessing.generic.nodes import raster_to_h3, resample_raster
-
-
-@pytest.fixture
-def dummy_raster() -> xr.DataArray:
-    w, h = 2, 2
-    data = np.ones((1, w, h))
-    transform = rasterio.transform.from_origin(0, 0, 0.08, 0.08)
-    raster = xr.DataArray(data, dims=("band", "y", "x"))
-    raster = raster.rio.write_crs("EPSG:4326")
-    raster = raster.rio.write_transform(transform)
-    return raster
 
 
 def test_resample_raster(dummy_raster):
@@ -56,7 +43,6 @@ def test_raster_to_h3(dummy_raster):
     )
 
 
-def test_raster_to_h3_bad_res_raises(dummy_raster):
-    with pytest.raises(ValueError) as exc_info:
-        raster_to_h3(dummy_raster, h3_resolution=10)
-        assert "H3 resolution is not correct" in str(exc_info.value)
+def test_raster_to_h3_bad_res_raises(dummy_raster, caplog):
+    raster_to_h3(dummy_raster, h3_resolution=10)
+    assert "H3 resolution mismatch" in caplog.text

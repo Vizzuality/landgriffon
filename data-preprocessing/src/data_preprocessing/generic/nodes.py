@@ -44,8 +44,10 @@ def raster_to_h3(raster: DataArray, h3_resolution: int) -> pl.DataFrame:
     """
     nearest_res = nearest_h3_resolution(raster.rio.shape, raster.rio.transform())
     if h3_resolution != nearest_res:
-        raise ValueError(
-            f"H3 resolution is not correct: {h3_resolution=} vs {nearest_res=}.\nCheck raster resolution."
+        logger = logging.getLogger(__name__)
+        logger.warning(
+            f"H3 resolution mismatch: Provided h3 resolution {h3_resolution} differs from computed nearest "
+            f"h3 resolution {nearest_res}.\nCheck raster resolution is correct."
         )
     table = raster_to_dataframe(
         raster.to_numpy()[0],

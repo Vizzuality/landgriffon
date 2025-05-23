@@ -3,7 +3,6 @@ from the Kedro defaults. For further information, including these default values
 https://docs.kedro.org/en/stable/kedro_project_setup/settings.html."""
 
 from kedro.config import OmegaConfigLoader
-from kedro.io import KedroDataCatalog
 
 CONFIG_LOADER_CLASS = OmegaConfigLoader
 # Keyword arguments to pass to the `CONFIG_LOADER_CLASS` constructor.
@@ -12,4 +11,4 @@ CONFIG_LOADER_ARGS = {
     "default_run_env": "local",
 }
 
-DATA_CATALOG_CLASS = KedroDataCatalog
+# DATA_CATALOG_CLASS = KedroDataCatalog

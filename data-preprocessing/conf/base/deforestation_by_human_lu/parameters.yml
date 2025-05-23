@@ -1,3 +1,0 @@
-deforestation_by_human_lu.h3_resolution: "${globals:h3_resolution}"
-deforestation_by_human_lu.raster_resolution: "${globals:raster_resolution}"
-deforestation_by_human_lu.resampling_method: "average"

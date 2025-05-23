@@ -1,0 +1,57 @@
+deforestation_by_human_lu.raw:
+  filepath: "gs://landgriffon-gee-bucket/landscape_indicators_20231023/deforest_by_human_lu_50km_1000m.tif"
+  type: data_preprocessing.datasets.geotiff.GeoTIFFDataset
+
+
+deforestation_by_human_lu.h3_table:
+  filepath: data/03_primary/deforestation_by_human_lu.parquet
+  type: polars.EagerPolarsDataset
+  file_format: parquet
+  save_args:
+    compression: "zstd"
+    compression_level: 10
+  credentials: s3_credentials
+
+forest_ghg_emissions.raw:
+  filepath: "gs://landgriffon-gee-bucket/landscape_indicators_20231023/deforest_carbon_by_human_lu_50km_1000m.tif"
+  type: data_preprocessing.datasets.geotiff.GeoTIFFDataset
+
+
+forest_ghg_emissions.h3_table:
+  filepath: data/03_primary/forest_ghg_emissions.parquet
+  type: polars.EagerPolarsDataset
+  file_format: parquet
+  save_args:
+    compression: "zstd"
+    compression_level: 10
+  credentials: s3_credentials
+
+
+natural_crop_conversion.raw:
+  filepath: "gs://landgriffon-gee-bucket/landscape_indicators_20231023/natural_crop_net_conversion_by_human_lu_50km_1000m.tif"
+  type: data_preprocessing.datasets.geotiff.GeoTIFFDataset
+
+
+natural_crop_conversion.h3_table:
+  filepath: data/03_primary/natural_crop_conversion.parquet
+  type: polars.EagerPolarsDataset
+  file_format: parquet
+  save_args:
+    compression: "zstd"
+    compression_level: 10
+  credentials: s3_credentials
+
+
+biodiversity_loss.raw:
+  filepath: "gs://landgriffon-gee-bucket/landscape_indicators_20231023/natural_crop_flii_loss_by_human_lu_50km_1000m.tif"
+  type: data_preprocessing.datasets.geotiff.GeoTIFFDataset
+
+
+biodiversity_loss.h3_table:
+  filepath: data/03_primary/biodiversity_loss.parquet
+  type: polars.EagerPolarsDataset
+  file_format: parquet
+  save_args:
+    compression: "zstd"
+    compression_level: 10
+  credentials: s3_credentials

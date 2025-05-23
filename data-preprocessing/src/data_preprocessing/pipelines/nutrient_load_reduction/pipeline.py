@@ -3,8 +3,7 @@ This is a boilerplate pipeline 'nutrient_load_reduction'
 generated using Kedro 0.19.12
 """
 
-from kedro.pipeline import node, Pipeline, modular_pipeline  # noqa
-from kedro.pipeline.modular_pipeline import pipeline
+from kedro.pipeline import node, Pipeline, pipeline  # noqa
 
 from data_preprocessing.pipelines.nutrient_load_reduction.nodes import geo_to_h3, load_reduction
 

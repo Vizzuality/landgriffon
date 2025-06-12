@@ -1,7 +1,9 @@
-# deforestation_by_human_lu pipeline
+# Human landuse indicators pipeline
 
+Pipeline to manage the human landuse
 
 ## Datasets
+
 
 ## Configuration
 

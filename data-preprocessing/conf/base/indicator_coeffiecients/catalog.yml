@@ -1,9 +1,0 @@
-indicator_coefficients.bwfp_raw:
-  type: polars.EagerPolarsDataset
-  file_format: csv
-  credentials: s3_credentials
-
-indicator_coefficient.bwfp_raw:
-  type: polars.EagerPolarsDataset
-  file_format: csv
-  credentials: s3_credentials

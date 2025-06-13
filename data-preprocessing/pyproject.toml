@@ -98,3 +98,7 @@ ignore = [
 
 [tool.kedro_telemetry]
 project_id = "e4f21d3f56424220baf54b4a1e4571a3"
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"

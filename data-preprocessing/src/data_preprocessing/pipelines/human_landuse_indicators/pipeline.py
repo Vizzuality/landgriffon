@@ -5,7 +5,7 @@ generated using Kedro 0.19.12
 
 from kedro.pipeline import node, Pipeline, pipeline  # noqa
 
-from data_preprocessing.generic.pipeline import raster_pipeline
+from data_preprocessing.common.pipeline import raster_pipeline
 
 
 ingestion_pipeline = pipeline([], tags="ingestion")

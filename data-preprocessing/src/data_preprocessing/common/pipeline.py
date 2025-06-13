@@ -1,6 +1,6 @@
 from kedro.pipeline import node, pipeline
 
-from data_preprocessing.generic.nodes import raster_to_h3, resample_raster
+from data_preprocessing.common.nodes import raster_to_h3, resample_raster
 
 raster_pipeline = pipeline(
     [

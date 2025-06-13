@@ -13,5 +13,5 @@ ingestion_pipeline = pipeline([], tags="ingestion")
 
 def create_pipeline(**kwargs) -> Pipeline:
     return pipeline(
-        [preprocessing_pipeline, ingestion_pipeline], namespace="indicator_coeffiecients"
+        [preprocessing_pipeline, ingestion_pipeline], namespace="indicator_coefficients"
     )

@@ -50,13 +50,16 @@ const EUDRCompliance: React.FC = () => {
                       <li className="flex items-center justify-center">
                         <a href="https://www.esa.int/" target="_blank" rel="noopener noreferrer">
                           <Image
-                            layout="intrinsic"
                             priority
                             src="/images/logos/ESA_logo.png"
                             alt="ESA"
                             width={160}
                             height={58.07}
                             draggable={false}
+                            style={{
+                              maxWidth: '100%',
+                              height: 'auto',
+                            }}
                           />
                         </a>
                       </li>
@@ -67,13 +70,16 @@ const EUDRCompliance: React.FC = () => {
                           rel="noopener noreferrer"
                         >
                           <Image
-                            layout="intrinsic"
                             priority
                             src="/images/logos/wur_logo.png"
                             alt="Wageningen University & Research"
                             width={228}
                             height={80}
                             draggable={false}
+                            style={{
+                              maxWidth: '100%',
+                              height: 'auto',
+                            }}
                           />
                         </a>
                       </li>
@@ -84,13 +90,16 @@ const EUDRCompliance: React.FC = () => {
                           rel="noopener noreferrer"
                         >
                           <Image
-                            layout="intrinsic"
                             priority
                             src="/images/logos/gfw.png"
                             alt="GFW"
                             width={120}
                             height={122}
                             draggable={false}
+                            style={{
+                              maxWidth: '100%',
+                              height: 'auto',
+                            }}
                           />
                         </a>
                       </li>
@@ -101,13 +110,16 @@ const EUDRCompliance: React.FC = () => {
                           rel="noopener noreferrer"
                         >
                           <Image
-                            layout="intrinsic"
                             priority
                             src="/images/logos/FAO.png"
                             alt="FAO"
                             width={120}
                             height={122.5}
                             draggable={false}
+                            style={{
+                              maxWidth: '100%',
+                              height: 'auto',
+                            }}
                           />
                         </a>
                       </li>
@@ -119,26 +131,32 @@ const EUDRCompliance: React.FC = () => {
                           rel="noopener noreferrer"
                         >
                           <Image
-                            layout="intrinsic"
                             priority
                             src="/images/logos/WCMC_logo.png"
                             alt="World Conservation Monitoring Centre"
                             width={120}
                             height={122.5}
                             draggable={false}
+                            style={{
+                              maxWidth: '100%',
+                              height: 'auto',
+                            }}
                           />
                         </a>
                       </li>
                       <li className="flex items-center justify-center">
                         <a href="https://glad.umd.edu/" target="_blank" rel="noopener noreferrer">
                           <Image
-                            layout="intrinsic"
                             priority
                             src="/images/logos/GLAD_logo.png"
                             alt="GLAD | Global Land Analysis & Discovery"
                             width={214}
                             height={49}
                             draggable={false}
+                            style={{
+                              maxWidth: '100%',
+                              height: 'auto',
+                            }}
                           />
                         </a>
                       </li>
@@ -149,13 +167,16 @@ const EUDRCompliance: React.FC = () => {
                           rel="noopener noreferrer"
                         >
                           <Image
-                            layout="intrinsic"
                             priority
                             src="/images/logos/Forest_Data_Partnership_logo.png"
                             alt="Forest data Partnership"
                             width={175}
                             height={49}
                             draggable={false}
+                            style={{
+                              maxWidth: '100%',
+                              height: 'auto',
+                            }}
                           />
                         </a>
                       </li>
@@ -166,13 +187,16 @@ const EUDRCompliance: React.FC = () => {
                           rel="noopener noreferrer"
                         >
                           <Image
-                            layout="intrinsic"
                             priority
                             src="/images/logos/JRC_logo.png"
                             alt="Forest data Partnership"
                             width={151}
                             height={68}
                             draggable={false}
+                            style={{
+                              maxWidth: '100%',
+                              height: 'auto',
+                            }}
                           />
                         </a>
                       </li>

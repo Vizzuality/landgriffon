@@ -17,17 +17,19 @@ const Footer: React.FC = () => {
         <nav className="py-12 md:py-32">
           <ul className="flex flex-col">
             <li>
-              <Link href="/about">
-                <a className="text-5xl font-black uppercase font-display md:text-7xl lg:text-9xl">
-                  About us
-                </a>
+              <Link
+                href="/about"
+                className="text-5xl font-black uppercase font-display md:text-7xl lg:text-9xl"
+              >
+                About us
               </Link>
             </li>
             <li>
-              <Link href="/contact">
-                <a className="text-5xl font-black uppercase font-display md:text-7xl lg:text-9xl">
-                  Contact us
-                </a>
+              <Link
+                href="/contact"
+                className="text-5xl font-black uppercase font-display md:text-7xl lg:text-9xl"
+              >
+                Contact us
               </Link>
             </li>
             <li>
@@ -43,7 +45,6 @@ const Footer: React.FC = () => {
           </ul>
         </nav>
       </Wrapper>
-
       <Wrapper>
         <div className="pb-6 space-y-5 md:flex md:justify-between md:pb-32 md:space-y-0">
           <ul className="flex items-center justify-start space-x-10">
@@ -81,11 +82,19 @@ const Footer: React.FC = () => {
             </li>
           </ul>
           <div>
-            <Image width={299} height={48} alt="EU" src="/images/footer/eu_logo.png" />
+            <Image
+              width={299}
+              height={48}
+              alt="EU"
+              src="/images/footer/eu_logo.png"
+              style={{
+                maxWidth: '100%',
+                height: 'auto',
+              }}
+            />
           </div>
         </div>
       </Wrapper>
-
       <div className="border-t border-black py-2.5">
         <Wrapper>
           <div className="flex space-x-5">

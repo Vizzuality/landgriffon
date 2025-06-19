@@ -22,12 +22,15 @@ const SLIDES = [
                 rel="noopener noreferrer"
               >
                 <Image
-                  layout="intrinsic"
                   priority
                   src="/images/logos/gfw.png"
                   alt="GFW"
                   width={88}
                   height={88}
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                  }}
                 />
               </a>
             </li>
@@ -39,12 +42,15 @@ const SLIDES = [
                 rel="noopener noreferrer"
               >
                 <Image
-                  layout="intrinsic"
                   priority
                   src="/images/logos/copernicus_logo.png"
                   alt="copernicus"
                   width={191}
                   height={68}
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                  }}
                 />
               </a>
             </li>
@@ -64,12 +70,15 @@ const SLIDES = [
             <li className="flex items-center justify-center">
               <a href="http://www.earthstat.org/" target="_blank" rel="noopener noreferrer">
                 <Image
-                  layout="intrinsic"
                   priority
                   src="/images/logos/earthstat.png"
                   alt="earthstat"
                   width={228}
                   height={56}
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                  }}
                 />
               </a>
             </li>
@@ -77,12 +86,15 @@ const SLIDES = [
             <li className="flex items-center justify-center">
               <a href="https://www.mapspam.info/" target="_blank" rel="noopener noreferrer">
                 <Image
-                  layout="intrinsic"
                   priority
                   src="/images/logos/mapspam.png"
                   alt="mapspam"
                   width={88}
                   height={88}
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                  }}
                 />
               </a>
             </li>
@@ -90,12 +102,15 @@ const SLIDES = [
             <li className="flex items-center justify-center">
               <a href="https://www.fao.org/faostat/en/" target="_blank" rel="noopener noreferrer">
                 <Image
-                  layout="intrinsic"
                   priority
                   src="/images/logos/FAO.png"
                   alt="FAO"
                   width={88}
                   height={88}
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                  }}
                 />
               </a>
             </li>
@@ -119,11 +134,14 @@ const SLIDES = [
                 rel="noopener noreferrer"
               >
                 <Image
-                  layout="intrinsic"
                   src="/images/logos/WWF.png"
                   alt="WWF"
                   width={85}
                   height={90}
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                  }}
                 />
               </a>
             </li>
@@ -135,11 +153,14 @@ const SLIDES = [
                 rel="noopener noreferrer"
               >
                 <Image
-                  layout="intrinsic"
                   src="/images/logos/IBAT.png"
                   alt="IBAT"
                   width={97}
                   height={35}
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                  }}
                 />
               </a>
             </li>
@@ -159,11 +180,14 @@ const SLIDES = [
             <li className="flex items-center justify-center">
               <a href="https://www.wri.org/aqueduct" target="_blank" rel="noopener noreferrer">
                 <Image
-                  layout="intrinsic"
                   src="/images/logos/aqueduct.png"
                   alt="aqueduct"
                   width={228}
                   height={56}
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                  }}
                 />
               </a>
             </li>
@@ -171,11 +195,14 @@ const SLIDES = [
             <li className="flex items-center justify-center">
               <a href="https://waterfootprint.org/en/" target="_blank" rel="noopener noreferrer">
                 <Image
-                  layout="intrinsic"
                   src="/images/logos/water-footprint-network.png"
                   alt="water-footprint-network"
                   width={191}
                   height={68}
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                  }}
                 />
               </a>
             </li>

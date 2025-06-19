@@ -105,9 +105,10 @@ const Hero: React.FC = () => {
             <div className="justify-center hidden w-full h-full xl:flex xl:visible">
               <div className="relative w-full h-full">
                 <Image
-                  layout="fill"
                   src="/images/methodology/methodology_front.svg"
                   alt="methodology cover book"
+                  fill
+                  sizes="100vw"
                 />
               </div>
             </div>

@@ -44,106 +44,100 @@ const HeaderNav: React.FC<NavProps> = ({ open }: NavProps) => {
           <ul className="flex flex-col space-y-5 lg:flex-row lg:space-y-0 lg:space-x-14">
             {!isLg && (
               <li>
-                <Link href="/">
-                  <a
-                    className={cx({
-                      'relative block font-light text-2xl lg:text-base py-1 lg:py-7 mx-5 lg:mx-0 px-5 lg:px-0':
-                        true,
-                      'hover:after:absolute hover:after:top-0 hover:after:left-0 hover:after:h-full hover:after:w-2 lg:hover:after:h-1 lg:hover:after:w-full hover:after:bg-green-500':
-                        true,
-                      'text-green-500': pathname === '/',
-                      'after:content-[""] after:absolute after:top-0 after:left-0 after:h-full after:w-2 lg:after:h-1 lg:after:w-full after:bg-green-500':
-                        pathname === '/',
-                    })}
-                  >
-                    Home
-                  </a>
+                <Link
+                  href="/"
+                  className={cx({
+                    'relative block font-light text-2xl lg:text-base py-1 lg:py-7 mx-5 lg:mx-0 px-5 lg:px-0':
+                      true,
+                    'hover:after:absolute hover:after:top-0 hover:after:left-0 hover:after:h-full hover:after:w-2 lg:hover:after:h-1 lg:hover:after:w-full hover:after:bg-green-500':
+                      true,
+                    'text-green-500': pathname === '/',
+                    'after:content-[""] after:absolute after:top-0 after:left-0 after:h-full after:w-2 lg:after:h-1 lg:after:w-full after:bg-green-500':
+                      pathname === '/',
+                  })}
+                >
+                  Home
                 </Link>
               </li>
             )}
             <li>
-              <Link href="/the-service">
-                <a
-                  className={cx({
-                    'relative block font-light text-2xl lg:text-base py-1 lg:py-7 mx-5 lg:mx-0 px-5 lg:px-0':
-                      true,
-                    'hover:after:absolute hover:after:top-0 hover:after:left-0 hover:after:h-full hover:after:w-2 lg:hover:after:h-1 lg:hover:after:w-full hover:after:bg-green-500':
-                      true,
-                    'text-green-500': pathname === '/the-service',
-                    'after:content-[""] after:absolute after:top-0 after:left-0 after:h-full after:w-2 lg:after:h-1 lg:after:w-full after:bg-green-500':
-                      pathname === '/the-service',
-                  })}
-                >
-                  The Service
-                </a>
+              <Link
+                href="/the-service"
+                className={cx({
+                  'relative block font-light text-2xl lg:text-base py-1 lg:py-7 mx-5 lg:mx-0 px-5 lg:px-0':
+                    true,
+                  'hover:after:absolute hover:after:top-0 hover:after:left-0 hover:after:h-full hover:after:w-2 lg:hover:after:h-1 lg:hover:after:w-full hover:after:bg-green-500':
+                    true,
+                  'text-green-500': pathname === '/the-service',
+                  'after:content-[""] after:absolute after:top-0 after:left-0 after:h-full after:w-2 lg:after:h-1 lg:after:w-full after:bg-green-500':
+                    pathname === '/the-service',
+                })}
+              >
+                The Service
               </Link>
             </li>
             <li>
-              <Link href="/methodology">
-                <a
-                  className={cx({
-                    'relative block font-light text-2xl lg:text-base py-1 lg:py-7 mx-5 lg:mx-0 px-5 lg:px-0':
-                      true,
-                    'hover:after:absolute hover:after:top-0 hover:after:left-0 hover:after:h-full hover:after:w-2 lg:hover:after:h-1 lg:hover:after:w-full hover:after:bg-green-500':
-                      true,
-                    'text-green-500': pathname === '/methodology',
-                    'after:content-[""] after:absolute after:top-0 after:left-0 after:h-full after:w-2 lg:after:h-1 lg:after:w-full after:bg-green-500':
-                      pathname === '/methodology',
-                  })}
-                >
-                  Methodology
-                </a>
+              <Link
+                href="/methodology"
+                className={cx({
+                  'relative block font-light text-2xl lg:text-base py-1 lg:py-7 mx-5 lg:mx-0 px-5 lg:px-0':
+                    true,
+                  'hover:after:absolute hover:after:top-0 hover:after:left-0 hover:after:h-full hover:after:w-2 lg:hover:after:h-1 lg:hover:after:w-full hover:after:bg-green-500':
+                    true,
+                  'text-green-500': pathname === '/methodology',
+                  'after:content-[""] after:absolute after:top-0 after:left-0 after:h-full after:w-2 lg:after:h-1 lg:after:w-full after:bg-green-500':
+                    pathname === '/methodology',
+                })}
+              >
+                Methodology
               </Link>
             </li>
             <li>
-              <Link href="/compliance">
-                <a
-                  className={cx({
-                    'relative block font-light text-2xl lg:text-base py-1 lg:py-7 mx-5 lg:mx-0 px-5 lg:px-0':
-                      true,
-                    'hover:after:absolute hover:after:top-0 hover:after:left-0 hover:after:h-full hover:after:w-2 lg:hover:after:h-1 lg:hover:after:w-full hover:after:bg-green-500':
-                      true,
-                    'text-green-500': pathname === '/compliance',
-                    'after:content-[""] after:absolute after:top-0 after:left-0 after:h-full after:w-2 lg:after:h-1 lg:after:w-full after:bg-green-500':
-                      pathname === '/compliance',
-                  })}
-                >
-                  Compliance
-                </a>
+              <Link
+                href="/compliance"
+                className={cx({
+                  'relative block font-light text-2xl lg:text-base py-1 lg:py-7 mx-5 lg:mx-0 px-5 lg:px-0':
+                    true,
+                  'hover:after:absolute hover:after:top-0 hover:after:left-0 hover:after:h-full hover:after:w-2 lg:hover:after:h-1 lg:hover:after:w-full hover:after:bg-green-500':
+                    true,
+                  'text-green-500': pathname === '/compliance',
+                  'after:content-[""] after:absolute after:top-0 after:left-0 after:h-full after:w-2 lg:after:h-1 lg:after:w-full after:bg-green-500':
+                    pathname === '/compliance',
+                })}
+              >
+                Compliance
               </Link>
             </li>
             <li>
-              <Link href="/about">
-                <a
-                  className={cx({
-                    'relative block font-light text-2xl lg:text-base py-1 lg:py-7 mx-5 lg:mx-0 px-5 lg:px-0':
-                      true,
-                    'hover:after:absolute hover:after:top-0 hover:after:left-0 hover:after:h-full hover:after:w-2 lg:hover:after:h-1 lg:hover:after:w-full hover:after:bg-green-500':
-                      true,
-                    'text-green-500': pathname === '/about',
-                    'after:content-[""] after:absolute after:top-0 after:left-0 after:h-full after:w-2 lg:after:h-1 lg:after:w-full after:bg-green-500':
-                      pathname === '/about',
-                  })}
-                >
-                  About
-                </a>
+              <Link
+                href="/about"
+                className={cx({
+                  'relative block font-light text-2xl lg:text-base py-1 lg:py-7 mx-5 lg:mx-0 px-5 lg:px-0':
+                    true,
+                  'hover:after:absolute hover:after:top-0 hover:after:left-0 hover:after:h-full hover:after:w-2 lg:hover:after:h-1 lg:hover:after:w-full hover:after:bg-green-500':
+                    true,
+                  'text-green-500': pathname === '/about',
+                  'after:content-[""] after:absolute after:top-0 after:left-0 after:h-full after:w-2 lg:after:h-1 lg:after:w-full after:bg-green-500':
+                    pathname === '/about',
+                })}
+              >
+                About
               </Link>
             </li>
             <li>
-              <Link href="/faq">
-                <a
-                  className={cx({
-                    'relative block font-light text-2xl lg:text-base py-1 lg:py-7 mx-5 lg:mx-0 px-5 lg:px-0':
-                      true,
-                    'hover:after:absolute hover:after:top-0 hover:after:left-0 hover:after:h-full hover:after:w-2 lg:hover:after:h-1 lg:hover:after:w-full hover:after:bg-green-500':
-                      true,
-                    'text-green-500': pathname === '/faq',
-                    'after:content-[""] after:absolute after:top-0 after:left-0 after:h-full after:w-2 lg:after:h-1 lg:after:w-full after:bg-green-500':
-                      pathname === '/faq',
-                  })}
-                >
-                  FAQ
-                </a>
+              <Link
+                href="/faq"
+                className={cx({
+                  'relative block font-light text-2xl lg:text-base py-1 lg:py-7 mx-5 lg:mx-0 px-5 lg:px-0':
+                    true,
+                  'hover:after:absolute hover:after:top-0 hover:after:left-0 hover:after:h-full hover:after:w-2 lg:hover:after:h-1 lg:hover:after:w-full hover:after:bg-green-500':
+                    true,
+                  'text-green-500': pathname === '/faq',
+                  'after:content-[""] after:absolute after:top-0 after:left-0 after:h-full after:w-2 lg:after:h-1 lg:after:w-full after:bg-green-500':
+                    pathname === '/faq',
+                })}
+              >
+                FAQ
               </Link>
             </li>
             <li>
@@ -161,13 +155,15 @@ const HeaderNav: React.FC<NavProps> = ({ open }: NavProps) => {
             </li>
           </ul>
           <div className="mt-4 lg:mt-0">
-            <Link href="/contact">
-              <a className="group flex items-center justify-center w-36 text-base text-center text-white bg-green-500 hover:bg-green-300 lg:mx-0 py-7">
-                <span>Contact</span>
-                <div className="flex justify-end transition-all duration-300 w-0 group-hover:w-7">
-                  <Icon icon={ARROW_RIGHT_SVG} className="w-4 h-3 fill-white" />
-                </div>
-              </a>
+            <Link
+              href="/contact"
+              className="group flex items-center justify-center w-36 text-base text-center text-white bg-green-500 hover:bg-green-300 lg:mx-0 py-7"
+              passHref
+            >
+              <span>Contact</span>
+              <div className="flex justify-end transition-all duration-300 w-0 group-hover:w-7">
+                <Icon icon={ARROW_RIGHT_SVG} className="w-4 h-3 fill-white" />
+              </div>
             </Link>
           </div>
         </motion.nav>

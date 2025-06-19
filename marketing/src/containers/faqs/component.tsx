@@ -28,8 +28,8 @@ const FAQs: React.FC = () => {
 
                 <p className="text-xl font-light">
                   Please{' '}
-                  <Link href="/contact">
-                    <a className="underline">contact us</a>
+                  <Link href="/contact" className="underline">
+                    contact us
                   </Link>
                   . We will gladly answer you as soon as we can!
                 </p>

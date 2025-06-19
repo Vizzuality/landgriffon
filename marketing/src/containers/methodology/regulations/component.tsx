@@ -33,11 +33,14 @@ const Regulations: React.FC = () => {
                           rel="noreferrer noopener"
                         >
                           <Image
-                            layout="intrinsic"
                             src="/images/methodology/regulations/SBTN.png"
                             alt="SBTN"
                             width={180}
                             height={100}
+                            style={{
+                              maxWidth: '100%',
+                              height: 'auto',
+                            }}
                           />
                         </a>
                       </div>
@@ -54,11 +57,14 @@ const Regulations: React.FC = () => {
                       <div>
                         <a href="https://tnfd.global/" target="_blank" rel="noreferrer noopener">
                           <Image
-                            layout="intrinsic"
                             src="/images/methodology/regulations/tnfd_logo.png"
                             alt="TNFD"
                             width={355}
                             height={100}
+                            style={{
+                              maxWidth: '100%',
+                              height: 'auto',
+                            }}
                           />
                         </a>
                       </div>
@@ -84,61 +90,79 @@ const Regulations: React.FC = () => {
                   <div className="flex space-x-2 justify-start">
                     <div>
                       <Image
-                        layout="intrinsic"
                         src="/images/methodology/regulations/SDG_06.png"
                         alt="SDG 06"
                         width={136}
                         height={136}
+                        style={{
+                          maxWidth: '100%',
+                          height: 'auto',
+                        }}
                       />
                     </div>
 
                     <div>
                       <Image
-                        layout="intrinsic"
                         src="/images/methodology/regulations/SDG_08.png"
                         alt="SDG 08"
                         width={136}
                         height={136}
+                        style={{
+                          maxWidth: '100%',
+                          height: 'auto',
+                        }}
                       />
                     </div>
 
                     <div>
                       <Image
-                        layout="intrinsic"
                         src="/images/methodology/regulations/SDG_12.png"
                         alt="SDG 12"
                         width={136}
                         height={136}
+                        style={{
+                          maxWidth: '100%',
+                          height: 'auto',
+                        }}
                       />
                     </div>
 
                     <div>
                       <Image
-                        layout="intrinsic"
                         src="/images/methodology/regulations/SDG_13.png"
                         alt="SDG 13"
                         width={136}
                         height={136}
+                        style={{
+                          maxWidth: '100%',
+                          height: 'auto',
+                        }}
                       />
                     </div>
 
                     <div>
                       <Image
-                        layout="intrinsic"
                         src="/images/methodology/regulations/SDG_14.png"
                         alt="SDG 14"
                         width={136}
                         height={136}
+                        style={{
+                          maxWidth: '100%',
+                          height: 'auto',
+                        }}
                       />
                     </div>
 
                     <div>
                       <Image
-                        layout="intrinsic"
                         src="/images/methodology/regulations/SDG_15.png"
                         alt="SDG 15"
                         width={136}
                         height={136}
+                        style={{
+                          maxWidth: '100%',
+                          height: 'auto',
+                        }}
                       />
                     </div>
                   </div>
@@ -146,8 +170,8 @@ const Regulations: React.FC = () => {
                   <p>
                     Want to know more about how we can help you align with emerging nature standards
                     and regulations?{' '}
-                    <Link href="/contact">
-                      <a className="underline font-bold">Contact us</a>
+                    <Link href="/contact" className="underline font-bold">
+                      Contact us
                     </Link>
                   </p>
                 </div>

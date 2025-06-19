@@ -47,20 +47,34 @@ export const EUDRModal: React.FC = () => {
               width={200}
               height={45}
               alt="LandGriffon by Vizz logo"
+              style={{
+                maxWidth: '100%',
+                height: 'auto',
+              }}
             />
           </div>
           <div>
-            <Image src="/images/carto-logo.svg" width={80} height={31} alt="Carto logo" />
+            <Image
+              src="/images/carto-logo.svg"
+              width={80}
+              height={31}
+              alt="Carto logo"
+              style={{
+                maxWidth: '100%',
+                height: 'auto',
+              }}
+            />
           </div>
         </div>
         <div className="lg:flex justify-between items-end space-y-4">
           <div className="space-y-4">
             <div className="text-xl lg:text-2xl">Find out how it will work for you.</div>
           </div>
-          <Link href="/contact">
-            <a className="font-semibold w-[195px] h-[82px] flex items-center hover:cursor-pointer justify-center border-2 border-white focus-visible:ring-0 focus-visible:outline-0">
-              Contact us now
-            </a>
+          <Link
+            href="/contact"
+            className="font-semibold w-[195px] h-[82px] flex items-center hover:cursor-pointer justify-center border-2 border-white focus-visible:ring-0 focus-visible:outline-0"
+          >
+            Contact us now
           </Link>
         </div>
       </div>

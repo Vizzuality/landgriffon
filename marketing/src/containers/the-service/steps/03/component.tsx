@@ -29,14 +29,14 @@ const Step03: React.FC = () => {
             procurement data, we build a centralized picture of what environmental impacts are
             linked to your supply chain and where.
           </p>
-          <Link href="/methodology">
-            <a className="inline-block py-8 font-semibold text-center text-white bg-black border border-black px-14 hover:bg-black/75">
-              Learn more about the LandGriffon methodology
-            </a>
+          <Link
+            href="/methodology"
+            className="inline-block py-8 font-semibold text-center text-white bg-black border border-black px-14 hover:bg-black/75"
+          >
+            Learn more about the LandGriffon methodology
           </Link>
         </div>
       </div>
-
       <div className="w-full space-y-20">
         <div className="space-y-10">
           <h4 className="text-2xl border-b border-black pb-2.5">

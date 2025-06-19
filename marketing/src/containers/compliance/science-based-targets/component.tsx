@@ -27,10 +27,12 @@ const ScienceBasedTargets: React.FC = () => {
                   Contact us now and elevate your nature impact assessment.
                 </p>
 
-                <Link href="/contact">
-                  <a className="px-7 py-5 border-2 border-white inline-block leading-8 hover:bg-white/10 font-semibold">
-                    <span>Contact us now</span>
-                  </a>
+                <Link
+                  href="/contact"
+                  className="px-7 py-5 border-2 border-white inline-block leading-8 hover:bg-white/10 font-semibold"
+                  passHref
+                >
+                  <span>Contact us now</span>
                 </Link>
               </div>
             </FadeIn>
@@ -58,10 +60,13 @@ const ScienceBasedTargets: React.FC = () => {
           <Image
             src="/images/compliance/forest.jpg"
             alt="Forest"
-            layout="fill"
-            objectFit="cover"
-            objectPosition="top"
             draggable={false}
+            fill
+            sizes="100vw"
+            style={{
+              objectFit: 'cover',
+              objectPosition: 'top',
+            }}
           />
         </div>
       </FadeIn>

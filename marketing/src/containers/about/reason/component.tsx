@@ -55,7 +55,6 @@ const Rason: React.FC = () => {
           </FadeIn>
         </div>
       </Wrapper>
-
       <Wrapper>
         <div className="space-y-10 text-white md:space-y-20">
           <FadeIn>
@@ -99,44 +98,56 @@ const Rason: React.FC = () => {
                 <li>
                   <a href="https://www.un.org/" target="_blank" rel="noreferrer noopener">
                     <Image
-                      layout="intrinsic"
                       src="/images/logos/UN_logo.png"
                       alt="UN"
                       width={338}
                       height={338}
+                      style={{
+                        maxWidth: '100%',
+                        height: 'auto',
+                      }}
                     />
                   </a>
                 </li>
                 <li>
                   <a href="https://www.nasa.gov/" target="_blank" rel="noreferrer noopener">
                     <Image
-                      layout="intrinsic"
                       src="/images/logos/nasa_logo.png"
                       alt="NASA"
                       width={338}
                       height={338}
+                      style={{
+                        maxWidth: '100%',
+                        height: 'auto',
+                      }}
                     />
                   </a>
                 </li>
                 <li>
                   <a href="https://www.google.com/" target="_blank" rel="noreferrer noopener">
                     <Image
-                      layout="intrinsic"
                       src="/images/logos/Google_logo.png"
                       alt="Google"
                       width={338}
                       height={338}
+                      style={{
+                        maxWidth: '100%',
+                        height: 'auto',
+                      }}
                     />
                   </a>
                 </li>
                 <li>
                   <a href="https://www.wri.org/" target="_blank" rel="noreferrer noopener">
                     <Image
-                      layout="intrinsic"
                       src="/images/logos/WRI_logo.png"
                       alt="WRI"
                       width={338}
                       height={338}
+                      style={{
+                        maxWidth: '100%',
+                        height: 'auto',
+                      }}
                     />
                   </a>
                 </li>
@@ -145,7 +156,6 @@ const Rason: React.FC = () => {
           </FadeIn>
         </div>
       </Wrapper>
-
       <div>
         <div className="pt-12 border-t md:pt-32 md:-mt-32 border-white/10">
           <Wrapper>

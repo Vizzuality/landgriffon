@@ -101,11 +101,13 @@ const Testimonials: React.FC = () => {
               </div>
 
               <div className="mt-5 md:mt-40">
-                <Link href="/about">
-                  <a className="flex items-center space-x-5 font-semibold text-orange-500">
-                    <span>Know more about us</span>
-                    <Icon icon={ARROW_RIGHT_SVG} className="w-12 h-12 fill-orange-500" />
-                  </a>
+                <Link
+                  href="/about"
+                  className="flex items-center space-x-5 font-semibold text-orange-500"
+                  passHref
+                >
+                  <span>Know more about us</span>
+                  <Icon icon={ARROW_RIGHT_SVG} className="w-12 h-12 fill-orange-500" />
                 </Link>
               </div>
             </FadeIn>

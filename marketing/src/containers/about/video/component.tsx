@@ -22,11 +22,15 @@ const Video: React.FC = () => {
     <section ref={ref} className="relative max-h-screen bg-white">
       <Media lessThan="sm">
         <Image
-          layout="responsive"
           src="/images/about/video/tractorimage.jpg"
           alt="Video tractor image"
           width={375}
           height={211}
+          sizes="100vw"
+          style={{
+            width: '100%',
+            height: 'auto',
+          }}
         />
       </Media>
       <Media greaterThanOrEqual="md">

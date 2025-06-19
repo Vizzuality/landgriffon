@@ -44,9 +44,10 @@ const ImpactBeyondCompliance: React.FC = () => {
           <Image
             src="/images/compliance/waves.png"
             alt="Waves"
-            layout="fill"
             className="absolute left-0 bottom-0 top-0"
             draggable={false}
+            fill
+            sizes="100vw"
           />
         </div>
       </div>

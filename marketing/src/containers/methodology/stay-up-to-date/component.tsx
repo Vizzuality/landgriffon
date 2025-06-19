@@ -133,8 +133,11 @@ const StayUpToDate: FC = () => {
                         />
                         <label className="font-light" htmlFor="accept-terms">
                           I agree with LandGriffon&apos;s{' '}
-                          <Link href="/privacy-policy">
-                            <a className="font-semibold text-black underline">Privacy Policy</a>
+                          <Link
+                            href="/privacy-policy"
+                            className="font-semibold text-black underline"
+                          >
+                            Privacy Policy
                           </Link>{' '}
                           and to receive methodology updates by email.
                         </label>
@@ -164,7 +167,6 @@ const StayUpToDate: FC = () => {
           </div>
         </Wrapper>
       </div>
-
       <div className="flex flex-col justify-end overflow-hidden relative z-10 aspect-[1440/580] -mt-80">
         <video src="/videos/earth.mp4" className="w-full aspect-auto" loop muted />
       </div>

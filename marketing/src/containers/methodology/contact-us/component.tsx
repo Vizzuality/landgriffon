@@ -48,10 +48,8 @@ const ContactUs: FC = () => {
           <div className="flex items-end py-8 border-t border-black/10">
             <p className="font-light text-xl">
               If you have any feedback or if we can be of help:{' '}
-              <Link href="/contact">
-                <a className="underline font-bold">
-                  <span>Contact us now</span>
-                </a>
+              <Link href="/contact" className="underline font-bold" passHref>
+                <span>Contact us now</span>
               </Link>
             </p>
           </div>

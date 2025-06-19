@@ -68,14 +68,15 @@ const Features: React.FC = () => {
             <li>
               <FadeIn className="space-y-5 md:pr-10 md:space-y-10">
                 <div className="relative w-full pb-[100%]">
-                  <Link href="/contact?topic=contact">
-                    <a className="absolute top-0 left-0 flex flex-col items-center justify-center w-full h-full p-5 space-y-10 bg-orange-500 rounded-full">
-                      <h3 className="text-3xl font-medium text-center font-display">
-                        Want to <br /> know more?
-                      </h3>
-
-                      <div className="underline cursor-pointer">Get in touch</div>
-                    </a>
+                  <Link
+                    href="/contact?topic=contact"
+                    className="absolute top-0 left-0 flex flex-col items-center justify-center w-full h-full p-5 space-y-10 bg-orange-500 rounded-full"
+                    passHref
+                  >
+                    <h3 className="text-3xl font-medium text-center font-display">
+                      Want to <br /> know more?
+                    </h3>
+                    <div className="underline cursor-pointer">Get in touch</div>
                   </Link>
                 </div>
               </FadeIn>

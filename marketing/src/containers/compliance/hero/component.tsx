@@ -57,10 +57,13 @@ const Video: FC = () => {
         <Image
           alt="field"
           src="/images/compliance/hero_1.jpg"
-          layout="fill"
-          objectPosition="top"
           className="object-cover"
           draggable={false}
+          fill
+          sizes="100vw"
+          style={{
+            objectPosition: 'top',
+          }}
         />
       </div>
     </section>

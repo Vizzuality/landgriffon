@@ -1,4 +1,4 @@
-FROM node:16.19-bullseye
+FROM node:24.2.0-bullseye
 LABEL maintainer="hello@vizzuality.com"
 
 ARG SENDGRID_API_KEY_SUBSCRIPTION

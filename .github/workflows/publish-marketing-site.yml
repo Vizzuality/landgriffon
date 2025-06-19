@@ -28,7 +28,7 @@ on:
 jobs:
   push_marketing_to_registry:
     name: Push Marketing site Docker image to Google Container Registry
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     permissions:
       contents: 'read'

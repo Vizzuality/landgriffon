@@ -80,8 +80,8 @@ const FAQS = [
           We want to ensure that we provide the best possible service for your business. That’s why
           we offer a pilot version of LandGriffon so you can get a sense of its capabilities and fit
           your needs.{' '}
-          <Link href="/contact">
-            <a className="underline">Get in touch</a>
+          <Link href="/contact" className="underline">
+            Get in touch
           </Link>{' '}
           to discuss what possibilities there are.
         </p>

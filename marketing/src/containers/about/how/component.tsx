@@ -25,11 +25,13 @@ const How: React.FC = () => {
             </p>
           </FadeIn>
           <FadeIn>
-            <Link href="/methodology">
-              <a className="text-xl text-orange-500 inline-flex justify-center items-center space-x-2.5">
-                <span>Learn how it works</span>
-                <Icon icon={ARROW_TOP_RIGHT_SVG} className="w-3 h-3" />
-              </a>
+            <Link
+              href="/methodology"
+              className="text-xl text-orange-500 inline-flex justify-center items-center space-x-2.5"
+              passHref
+            >
+              <span>Learn how it works</span>
+              <Icon icon={ARROW_TOP_RIGHT_SVG} className="w-3 h-3" />
             </Link>
           </FadeIn>
         </div>

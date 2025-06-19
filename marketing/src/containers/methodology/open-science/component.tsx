@@ -45,10 +45,11 @@ const OpenScience: React.FC = () => {
                     </a>
                   </div>
 
-                  <Link href="/methodology">
-                    <a className="px-5 py-4 font-semibold text-white bg-transparent border-2 border-white hover:bg-white/10">
-                      Open-science methodology
-                    </a>
+                  <Link
+                    href="/methodology"
+                    className="px-5 py-4 font-semibold text-white bg-transparent border-2 border-white hover:bg-white/10"
+                  >
+                    Open-science methodology
                   </Link>
                 </div>
               </FadeIn>
@@ -63,7 +64,11 @@ const OpenScience: React.FC = () => {
                 src="/images/methodology/open-science/screen_02.png"
                 width={1000}
                 height={615.86}
-                layout="responsive"
+                sizes="100vw"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                }}
               />
             </div>
           </div>

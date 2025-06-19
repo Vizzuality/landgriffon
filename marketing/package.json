@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@artsy/fresnel": "^3.5.0",
-    "@egjs/react-flicking": "^4.9.0",
+    "@egjs/react-flicking": "4.13.0",
     "@floating-ui/react-dom": "^0.7.0",
     "@heroicons/react": "1.0.6",
     "@hookform/resolvers": "2.8.8",
@@ -30,16 +30,16 @@
     "@tailwindcss/line-clamp": "0.4.0",
     "@tailwindcss/typography": "0.5.0",
     "autoprefixer": "10.2.5",
-    "axios": "0.21.1",
+    "axios": "1.8.2",
     "classnames": "2.3.1",
     "d3-format": "^3.1.0",
     "framer-motion": "6.3.11",
-    "next": "12.1.0",
+    "next": "14.2.30",
     "next-compose-plugins": "^2.2.1",
     "next-optimized-images": "^2.6.2",
-    "postcss": "8.3.6",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
+    "postcss": "8.4.31",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "react-hook-form": "7.27.1",
     "react-intersection-observer": "^9.2.2",
     "react-lock-scroll": "^0.1.8",
@@ -50,7 +50,7 @@
     "react-use-scroll-direction": "^0.1.0",
     "react-youtube": "^10.1.0",
     "rooks": "5.10.0",
-    "sharp": "0.29.3",
+    "sharp": "0.32.6",
     "tailwindcss": "3.3.3",
     "yup": "0.32.11"
   },
@@ -61,7 +61,7 @@
     "@typescript-eslint/eslint-plugin": "5.13.0",
     "@typescript-eslint/parser": "5.13.0",
     "eslint": "7.23.0",
-    "eslint-config-next": "12.0.2",
+    "eslint-config-next": "14.2.30",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-prettier": "3.4.0",
     "istanbul-reports": "3.0.0",
@@ -70,7 +70,7 @@
     "prettier": "2.3.1",
     "start-server-and-test": "1.14.0",
     "svg-sprite-loader": "6.0.11",
-    "typescript": "4.4.4"
+    "typescript": "v4.5.2"
   },
   "packageManager": "yarn@3.2.1"
 }

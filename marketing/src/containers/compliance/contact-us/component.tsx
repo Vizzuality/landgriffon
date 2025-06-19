@@ -12,10 +12,12 @@ const ContactUs: FC = () => {
             Interested in how LandGriffon can help you with EUDR compliance?
           </h2>
 
-          <Link href="/contact">
-            <a className="px-7 py-5 border-2 border-black inline-block leading-8 hover:bg-black/10">
-              <span>Contact us now</span>
-            </a>
+          <Link
+            href="/contact"
+            className="px-7 py-5 border-2 border-black inline-block leading-8 hover:bg-black/10"
+            passHref
+          >
+            <span>Contact us now</span>
           </Link>
         </div>
       </Wrapper>

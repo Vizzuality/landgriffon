@@ -20,7 +20,11 @@ const SLIDES = [
           width="936"
           height="442"
           alt="Traceability"
-          layout="responsive"
+          sizes="100vw"
+          style={{
+            width: '100%',
+            height: 'auto',
+          }}
         />
       </div>
     ),
@@ -42,7 +46,11 @@ const SLIDES = [
           width="936"
           height="442"
           alt="Confidence"
-          layout="responsive"
+          sizes="100vw"
+          style={{
+            width: '100%',
+            height: 'auto',
+          }}
         />
       </div>
     ),
@@ -64,7 +72,11 @@ const SLIDES = [
           width="936"
           height="442"
           alt="Strategize"
-          layout="responsive"
+          sizes="100vw"
+          style={{
+            width: '100%',
+            height: 'auto',
+          }}
         />
       </div>
     ),

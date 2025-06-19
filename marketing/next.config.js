@@ -9,6 +9,7 @@ const nextConfig = {
   eslint: {
     dirs: ['src'],
   },
+  poweredByHeader: false,
 };
 
 module.exports = withPlugins(

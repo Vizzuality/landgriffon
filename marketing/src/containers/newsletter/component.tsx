@@ -121,8 +121,8 @@ const NewsLetter: React.FC = () => {
                 />
                 <label className="font-light" htmlFor="terms">
                   I agree with LandGriffon’s{' '}
-                  <Link href="/privacy-policy">
-                    <a className="font-semibold text-black underline">Privacy Policy</a>
+                  <Link href="/privacy-policy" className="font-semibold text-black underline">
+                    Privacy Policy
                   </Link>{' '}
                   and to receive the LandGriffon email newsletter.
                 </label>

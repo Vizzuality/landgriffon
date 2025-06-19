@@ -16,10 +16,13 @@ import 'styles/flicking.css';
 
 const queryClient = new QueryClient();
 
-const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => (
+const MyApp: React.FC<AppProps> = ({
+  Component,
+  pageProps,
+}: AppProps<{ dehydratedState: unknown }>) => (
   <ReduxProvider store={store}>
     <QueryClientProvider client={queryClient}>
-      <Hydrate state={pageProps.dehydratedState}>
+      <Hydrate state={pageProps?.dehydratedState}>
         <OverlayProvider>
           <MediaContextProvider>
             <SSRProvider>

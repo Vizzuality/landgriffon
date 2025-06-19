@@ -42,7 +42,11 @@ const AppScreens: React.FC = () => {
                 src="/images/service/example/01.png"
                 width={1005}
                 height={714}
-                layout="responsive"
+                sizes="100vw"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                }}
               />
             </div>
 
@@ -78,7 +82,11 @@ const AppScreens: React.FC = () => {
                 src="/images/service/example/02.png"
                 width={1005}
                 height={714}
-                layout="responsive"
+                sizes="100vw"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                }}
               />
             </motion.div>
             <div className="w-[calc(33.33%_-_40px)] opacity-30">
@@ -88,7 +96,11 @@ const AppScreens: React.FC = () => {
                 src="/images/service/example/03.png"
                 width={1005}
                 height={714}
-                layout="responsive"
+                sizes="100vw"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                }}
               />
             </div>
             <div className="w-[calc(33.33%_-_40px)] opacity-20">
@@ -98,7 +110,11 @@ const AppScreens: React.FC = () => {
                 src="/images/service/example/04.png"
                 width={1005}
                 height={714}
-                layout="responsive"
+                sizes="100vw"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                }}
               />
             </div>
             <div className="w-[calc(33.33%_-_40px)] opacity-20">
@@ -108,7 +124,11 @@ const AppScreens: React.FC = () => {
                 src="/images/service/example/05.png"
                 width={1005}
                 height={714}
-                layout="responsive"
+                sizes="100vw"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                }}
               />
             </div>
           </div>

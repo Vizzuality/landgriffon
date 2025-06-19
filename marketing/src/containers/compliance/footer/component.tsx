@@ -12,10 +12,12 @@ const ContactUs: FC = () => {
             Drive positive impact with your supply chain.
           </h2>
 
-          <Link href="/contact">
-            <a className="px-7 py-5 border-2 border-black inline-block leading-8">
-              <span>Contact us now</span>
-            </a>
+          <Link
+            href="/contact"
+            className="px-7 py-5 border-2 border-black inline-block leading-8"
+            passHref
+          >
+            <span>Contact us now</span>
           </Link>
         </div>
       </Wrapper>

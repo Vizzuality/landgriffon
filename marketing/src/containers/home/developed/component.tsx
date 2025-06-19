@@ -39,11 +39,14 @@ const Developed: React.FC = () => {
               <div>
                 <a href="https://www.google.com/" target="_blank" rel="noreferrer noopener">
                   <Image
-                    layout="intrinsic"
                     src="/images/logos/google_color.png"
                     alt="Google"
                     width={145.66}
                     height={84}
+                    style={{
+                      maxWidth: '100%',
+                      height: 'auto',
+                    }}
                   />
                 </a>
               </div>
@@ -51,11 +54,14 @@ const Developed: React.FC = () => {
               <div>
                 <a href="https://www.mars.com/" target="_blank" rel="noreferrer noopener">
                   <Image
-                    layout="intrinsic"
                     src="/images/logos/Mars.png"
                     alt="Mars"
                     width={111.69}
                     height={33}
+                    style={{
+                      maxWidth: '100%',
+                      height: 'auto',
+                    }}
                   />
                 </a>
               </div>
@@ -66,88 +72,112 @@ const Developed: React.FC = () => {
                   rel="noreferrer noopener"
                 >
                   <Image
-                    layout="intrinsic"
                     src="/images/logos/Microsoft.png"
                     alt="Microsoft"
                     width={168.59}
                     height={36}
+                    style={{
+                      maxWidth: '100%',
+                      height: 'auto',
+                    }}
                   />
                 </a>
               </div>
               <div>
                 <a href="https://www.wri.org/" target="_blank" rel="noreferrer noopener">
                   <Image
-                    layout="intrinsic"
                     src="/images/logos/WRI.png"
                     alt="WRI"
                     width={157.12}
                     height={61}
+                    style={{
+                      maxWidth: '100%',
+                      height: 'auto',
+                    }}
                   />
                 </a>
               </div>
               <div>
                 <a href="https://www.worldwildlife.org/" target="_blank" rel="noreferrer noopener">
                   <Image
-                    layout="intrinsic"
                     src="/images/logos/WWF.png"
                     alt="WWD"
                     width={90}
                     height={97}
+                    style={{
+                      maxWidth: '100%',
+                      height: 'auto',
+                    }}
                   />
                 </a>
               </div>
               <div>
                 <a href="https://www.nasa.gov/" target="_blank" rel="noreferrer noopener">
                   <Image
-                    layout="intrinsic"
                     src="/images/logos/NASA_color.png"
                     alt="NASA"
                     width={104.86}
                     height={97}
+                    style={{
+                      maxWidth: '100%',
+                      height: 'auto',
+                    }}
                   />
                 </a>
               </div>
               <div>
                 <a href="https://www.esa.int/" target="_blank" rel="noreferrer noopener">
                   <Image
-                    layout="intrinsic"
                     src="/images/logos/ESA_logo.png"
                     alt="ESA"
                     width={145.6}
                     height={64}
+                    style={{
+                      maxWidth: '100%',
+                      height: 'auto',
+                    }}
                   />
                 </a>
               </div>
               <div>
                 <a href="https://www.tetrapak.com/" target="_blank" rel="noreferrer noopener">
                   <Image
-                    layout="intrinsic"
                     src="/images/logos/tetrapak-logo.png"
                     alt="Tetrapak"
                     width={100}
                     height={100}
+                    style={{
+                      maxWidth: '100%',
+                      height: 'auto',
+                    }}
                   />
                 </a>
               </div>
               <div>
                 <a href="https://www.unilever.com/" target="_blank" rel="noreferrer noopener">
                   <Image
-                    layout="intrinsic"
                     src="/images/logos/logo-unilever.png"
                     alt="Unilever"
                     width={75}
                     height={80}
+                    style={{
+                      maxWidth: '100%',
+                      height: 'auto',
+                    }}
                   />
                 </a>
               </div>
               <div>
                 <a href="https://www.fao.org/home/es" target="_blank" rel="noreferrer noopener">
                   <Image
-                    layout="intrinsic"
                     src="/images/logos/FAO.png"
                     alt="FAO"
                     width={89}
                     height={90}
+                    style={{
+                      maxWidth: '100%',
+                      height: 'auto',
+                    }}
                   />
                 </a>
               </div>

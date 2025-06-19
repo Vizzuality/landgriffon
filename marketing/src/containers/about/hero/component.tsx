@@ -20,10 +20,11 @@ const Hero: React.FC = () => {
                 We are on a mission to make supply chains more sustainable.
               </h1>
 
-              <Link href="/contact?topic=demo">
-                <a className="inline-block py-5 font-semibold text-black border-2 border-black px-9">
-                  Set up a free call now
-                </a>
+              <Link
+                href="/contact?topic=demo"
+                className="inline-block py-5 font-semibold text-black border-2 border-black px-9"
+              >
+                Set up a free call now
               </Link>
             </div>
 
@@ -36,7 +37,6 @@ const Hero: React.FC = () => {
                     width={1212 / 2}
                     height={850 / 2}
                     alt="About 01"
-                    layout="fixed"
                   />
                 </div>
                 <div>
@@ -46,7 +46,6 @@ const Hero: React.FC = () => {
                     width={972 / 2}
                     height={666 / 2}
                     alt="About 02"
-                    layout="fixed"
                   />
                 </div>
                 <div className="absolute hidden m-0 -translate-x-5 bottom-28 lg:block right-full">
@@ -56,7 +55,6 @@ const Hero: React.FC = () => {
                     width={360 / 2}
                     height={498 / 2}
                     alt="About 03"
-                    layout="fixed"
                   />
                 </div>
               </div>

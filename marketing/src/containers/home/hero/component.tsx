@@ -36,7 +36,7 @@ const Hero: React.FC = () => {
             </div>
           </motion.div>
 
-          <Link passHref href="/contact?topic=demo">
+          <Link passHref href="/contact?topic=demo" legacyBehavior>
             <motion.a
               className="inline-block py-5 font-semibold text-white border-2 border-white px-9"
               initial={{ opacity: 0, y: 20 }}

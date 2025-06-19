@@ -41,15 +41,12 @@ const Step02: React.FC = () => {
             </b>
           </p>
 
-          <Link href="/methodology">
-            <a className="flex items-center space-x-5">
-              <span className="font-semibold underline">Find out how our sourcing model works</span>
-              <Icon icon={ARROW_RIGHT_SVG} className="w-12 h-12" />
-            </a>
+          <Link href="/methodology" className="flex items-center space-x-5" passHref>
+            <span className="font-semibold underline">Find out how our sourcing model works</span>
+            <Icon icon={ARROW_RIGHT_SVG} className="w-12 h-12" />
           </Link>
         </div>
       </div>
-
       <div className="w-full space-y-20">
         <div className="space-y-10">
           <h4 className="text-2xl border-b border-black pb-2.5">Import data into LandGriffon:</h4>
@@ -75,10 +72,14 @@ const Step02: React.FC = () => {
             <Image
               width={1960}
               height={886}
-              layout="responsive"
               src="/images/service/steps/step_2.png"
               className="block w-full"
               alt="Data"
+              sizes="100vw"
+              style={{
+                width: '100%',
+                height: 'auto',
+              }}
             />
           </div>
         </div>

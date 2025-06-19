@@ -9,7 +9,7 @@ export interface CarouselProps {
     content?: ReactElement;
   }[];
   autoplay?: boolean | number;
-  options?: Record<string, any>;
+  options?: Record<string, unknown>;
   onChange?: (slide: number) => void;
 }
 

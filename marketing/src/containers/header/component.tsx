@@ -51,17 +51,19 @@ const Header: React.FC = () => {
         className="fixed top-0 left-0 z-50 flex items-center justify-between w-full font-semibold bg-white"
       >
         <div className="px-4 lg:px-12 shrink-0">
-          <Link href="/">
-            <a className="block w-[180px] h-[14px]">
-              <Image
-                src="/images/logo.svg"
-                alt="Landgriffon"
-                width={180}
-                height={14}
-                priority
-                layout="responsive"
-              />
-            </a>
+          <Link href="/" className="block w-[180px] h-[14px]" passHref>
+            <Image
+              src="/images/logo.svg"
+              alt="Landgriffon"
+              width={180}
+              height={14}
+              priority
+              sizes="100vw"
+              style={{
+                width: '100%',
+                height: 'auto',
+              }}
+            />
           </Link>
         </div>
 

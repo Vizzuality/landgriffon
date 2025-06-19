@@ -40,10 +40,14 @@ const EUDRTool: React.FC = () => {
                 <Image
                   width={728}
                   height={410}
-                  layout="responsive"
                   src="/images/compliance/eudr_tool.png"
                   alt="EUDR Tool"
                   draggable={false}
+                  sizes="100vw"
+                  style={{
+                    width: '100%',
+                    height: 'auto',
+                  }}
                 />
                 <div className="absolute md:top-0 lg:right-0 md:right-20 right-28 -top-3  transform translate-x-1/2 translate-y-1/2">
                   <Image
@@ -52,6 +56,10 @@ const EUDRTool: React.FC = () => {
                     src="/images/compliance/eudr_tool_country.png"
                     alt="EUDR Tool Countries view"
                     draggable={false}
+                    style={{
+                      maxWidth: '100%',
+                      height: 'auto',
+                    }}
                   />
                 </div>
               </div>

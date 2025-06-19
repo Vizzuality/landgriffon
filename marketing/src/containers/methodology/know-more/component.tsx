@@ -16,10 +16,11 @@ const KnowMore: React.FC = () => {
             </h3>
           </div>
 
-          <Link href="/contact?topic=demo">
-            <a className="inline-block py-5 font-semibold text-black border-2 border-black px-9">
-              Set up a free call now
-            </a>
+          <Link
+            href="/contact?topic=demo"
+            className="inline-block py-5 font-semibold text-black border-2 border-black px-9"
+          >
+            Set up a free call now
           </Link>
         </FadeIn>
       </Wrapper>

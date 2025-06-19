@@ -270,8 +270,8 @@ const Contact: React.FC = () => {
 
                     <label className="font-light" htmlFor="terms">
                       I agree with the LandGriffon&apos;s{' '}
-                      <Link href="/privacy-policy">
-                        <a className="font-semibold text-black underline">Privacy Policy</a>
+                      <Link href="/privacy-policy" className="font-semibold text-black underline">
+                        Privacy Policy
                       </Link>{' '}
                     </label>
                   </div>

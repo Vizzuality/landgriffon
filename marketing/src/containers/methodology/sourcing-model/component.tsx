@@ -61,10 +61,14 @@ const SourcingModel: React.FC = () => {
                     <Image
                       width={443}
                       height={208}
-                      layout="responsive"
                       src="/images/methodology/sourcing/sourcing_1.png"
                       className="block w-full"
                       alt="Aggregation point"
+                      sizes="100vw"
+                      style={{
+                        width: '100%',
+                        height: 'auto',
+                      }}
                     />
                   </div>
                 </div>
@@ -81,10 +85,14 @@ const SourcingModel: React.FC = () => {
                     <Image
                       width={443}
                       height={208}
-                      layout="responsive"
                       src="/images/methodology/sourcing/sourcing_2.png"
                       className="block w-full"
                       alt="Producer country or jurisdiction image"
+                      sizes="100vw"
+                      style={{
+                        width: '100%',
+                        height: 'auto',
+                      }}
                     />
                   </div>
                 </div>
@@ -101,10 +109,14 @@ const SourcingModel: React.FC = () => {
                       <Image
                         width={207}
                         height={208}
-                        layout="responsive"
                         src="/images/methodology/sourcing/sourcing_3.png"
                         className="block w-full"
                         alt="Delivery country image"
+                        sizes="100vw"
+                        style={{
+                          width: '100%',
+                          height: 'auto',
+                        }}
                       />
                     </div>
 
@@ -112,10 +124,14 @@ const SourcingModel: React.FC = () => {
                       <Image
                         width={207}
                         height={208}
-                        layout="responsive"
                         src="/images/methodology/sourcing/sourcing_4.png"
                         className="block w-full"
                         alt="Delivery country image"
+                        sizes="100vw"
+                        style={{
+                          width: '100%',
+                          height: 'auto',
+                        }}
                       />
                     </div>
                   </div>

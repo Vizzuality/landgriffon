@@ -4,7 +4,7 @@ from collections.abc import Callable
 import polars as pl
 from xarray import DataArray
 
-from data_preprocessing.generic.nodes import raster_to_h3
+from data_preprocessing.common.nodes import raster_to_h3
 
 type LazyPartitionedRasters = dict[str, Callable[[], DataArray]]
 type PartitionedDataFrames = dict[str, pl.DataFrame]

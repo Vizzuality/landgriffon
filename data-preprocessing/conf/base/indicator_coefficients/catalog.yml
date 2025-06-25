@@ -71,20 +71,7 @@ indicator_coefficients.yeld#parquet:
 # ----------
 # SQL tables
 # ----------
-# Used to obtain the relationships that the final `indicator_coefficient` table needs
-# The use of ibis table is because we can query and serialize lazily loading only the
-# necessary portions of data.
 
-indicator_coefficients.material:
-  type: ibis.TableDataset
-  table_name: "material"
-  connection:
-    backend: postgres
-    user: ${oc.env:POSTGRES_USERNAME}
-    password: ${oc.env:POSTGRES_PASSWORD}
-    host: ${oc.env:POSTGRES_HOST}
-    port: ${oc.env:POSTGRES_PORT}
-    database: ${oc.env:POSTGRES_DATABASE}
 
 
 indicator_coefficients.admin_region:

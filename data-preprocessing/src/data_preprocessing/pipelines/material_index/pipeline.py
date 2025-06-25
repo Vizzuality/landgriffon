@@ -11,7 +11,7 @@ from data_preprocessing.pipelines.material_index.nodes import to_table
 def create_pipeline(**kwargs) -> Pipeline:
     return pipeline(
         [
-            node(to_table, "materials", "materials_db"),
+            node(to_table, "materials", "materials_db@pandas"),
         ],
         tags=["core", "ingestion"],
         namespace="material_index",

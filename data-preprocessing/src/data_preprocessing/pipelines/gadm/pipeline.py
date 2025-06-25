@@ -3,7 +3,6 @@ from kedro.pipeline import Pipeline, node, pipeline
 from data_preprocessing.pipelines.gadm.nodes import (
     add_unified_columns,
     gadm_to_h3,
-    ingest_admin_region,
     join_gadm_levels_and_clean,
     reshape_to_admin_region_table,
     reshape_to_geo_region_table,
@@ -45,12 +44,12 @@ preprocessing_pipeline = pipeline(
         node(
             reshape_to_geo_region_table,
             ["h3_all_uni", "params:geo_region"],
-            "geo_regions",
+            "geo_region",
         ),
         node(
             reshape_to_admin_region_table,
             ["h3_all_uni", "params:admin_region"],
-            "admin_regions",
+            "admin_region",
         ),
     ],
     tags="preprocessing",
@@ -59,9 +58,9 @@ preprocessing_pipeline = pipeline(
 ingestion_pipeline = pipeline(
     [
         node(
-            ingest_admin_region,
-            "admin_regions",
-            None,
+            lambda x: x.to_pandas(),
+            "admin_region",
+            "admin_region_db",
         ),
     ],
     tags="ingestion",
@@ -69,4 +68,9 @@ ingestion_pipeline = pipeline(
 
 
 def create_pipeline(**kwargs) -> Pipeline:
-    return pipeline(preprocessing_pipeline + ingestion_pipeline, tags="core", namespace="gadm")  # type: ignore
+    return pipeline(
+        preprocessing_pipeline + ingestion_pipeline,
+        tags="core",
+        namespace="gadm",
+        outputs={"admin_region_db": "admin_region_db@pandas"},
+    )  # type: ignore

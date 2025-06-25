@@ -26,5 +26,7 @@ ingestion_pipeline = pipeline(
 
 def create_pipeline(**kwargs) -> Pipeline:
     return pipeline(
-        [preprocessing_pipeline, ingestion_pipeline], namespace="indicator_coefficients"
+        [preprocessing_pipeline, ingestion_pipeline],
+        namespace="indicator_coefficients",
+        inputs={"material": "materials_db@ibis", "admin_region": "admin_region_db@ibis"},
     )

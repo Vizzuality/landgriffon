@@ -42,7 +42,7 @@ gadm.adm2_h3:
     compression: "zstd"
     compression_level: 10
 
-gadm.geo_regions:
+gadm.geo_region:
   type: polars.EagerPolarsDataset
   file_format: parquet
   filepath: data/03_primary/geo_regions.parquet
@@ -50,10 +50,37 @@ gadm.geo_regions:
     compression: "zstd"
     compression_level: 10
 
-gadm.admin_regions:
+gadm.admin_region:
   type: polars.EagerPolarsDataset
   file_format: parquet
   filepath: data/03_primary/admin_regions.parquet
   save_args:
     compression: "zstd"
     compression_level: 10
+
+# -------------
+# SQL tables
+# -------------
+# Here we use transcoding:
+# https://docs.kedro.org/en/0.19.14/data/data_catalog_yaml_examples.html#how-to-use-transcoding
+# to write use pandas and read with Ibis because it is lazy and doesn't load all the table data.
+# Also don't use the namespace because this datasets must be used out of this pipeline.
+
+admin_region_db@pandas:
+  type: data_preprocessing.datasets.sql.SQLTableDataset
+  credentials: db_credentials
+  table_name: "admin_region"
+  save_args:
+    if_exists: "append"
+
+
+admin_region_db@ibis:
+  type: ibis.TableDataset
+  table_name: "material"
+  connection:
+    backend: postgres
+    user: ${oc.env:POSTGRES_USERNAME}
+    password: ${oc.env:POSTGRES_PASSWORD}
+    host: ${oc.env:POSTGRES_HOST}
+    port: ${oc.env:POSTGRES_PORT}
+    database: ${oc.env:POSTGRES_DATABASE}

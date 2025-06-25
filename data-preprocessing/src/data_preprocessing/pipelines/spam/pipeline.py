@@ -8,9 +8,8 @@ from kedro.pipeline import Pipeline, node, pipeline
 from data_preprocessing.pipelines.spam.nodes import combinations, join_h3_table, parts_to_h3_tables
 
 preprocessing_pipeline = pipeline(  # type: ignore
-    # TODO: Use namespaces to reuse pipeline instead of duplicating it for harvest and production
     [
-        # Production
+        # ---- Production ----
         node(
             parts_to_h3_tables,
             ["production", "params:h3_resolution"],
@@ -22,7 +21,7 @@ preprocessing_pipeline = pipeline(  # type: ignore
             ["production_h3_raw", "params:combinations_prod"],
             "production_h3",
         ),
-        # Harvest
+        # ---- Harvest ----
         node(parts_to_h3_tables, ["harvest", "params:h3_resolution"], "ha_h3_parts"),
         node(join_h3_table, "ha_h3_parts", "ha_h3_raw"),
         node(combinations, ["ha_h3_raw", "params:combinations_ha"], "ha_h3"),

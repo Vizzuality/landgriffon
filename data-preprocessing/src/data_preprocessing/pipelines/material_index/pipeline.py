@@ -5,7 +5,7 @@ generated using Kedro 0.19.12
 
 from kedro.pipeline import node, Pipeline, pipeline  # noqa
 
-from data_preprocessing.pipelines.base_materials.nodes import to_table
+from data_preprocessing.pipelines.material_index.nodes import to_table
 
 
 def create_pipeline(**kwargs) -> Pipeline:
@@ -13,5 +13,6 @@ def create_pipeline(**kwargs) -> Pipeline:
         [
             node(to_table, "materials", "materials_db"),
         ],
-        tags=["core", "ingest"],
+        tags=["core", "ingestion"],
+        namespace="material_index",
     )  # type: ignore

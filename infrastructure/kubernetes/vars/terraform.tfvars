@@ -8,8 +8,6 @@ kube_proxy_addon_version = "v1.27.1-eksbuild.1"
 
 aws_environments = {
   dev : {},
-  test : {},
-  expo : {},
   demo : {},
 }
 

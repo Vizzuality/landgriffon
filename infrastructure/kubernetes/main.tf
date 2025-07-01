@@ -55,11 +55,11 @@ resource "github_actions_secret" "mapbox_api_token_secret" {
 
 module "aws_environment" {
   for_each = merge(var.aws_environments, {
-    staging = merge({
-      load_fresh_data = false
-      data_import_arguments = ["seed-data"]
-      image_tag       = "staging"
-    }, lookup(var.aws_environments, "staging", {})),
+    # staging = merge({
+    #   load_fresh_data = false
+    #   data_import_arguments = ["seed-data"]
+    #   image_tag       = "staging"
+    # }, lookup(var.aws_environments, "staging", {})),
     production = merge({
       load_fresh_data = false
       data_import_arguments = ["seed-data"]

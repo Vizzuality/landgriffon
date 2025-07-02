@@ -35,17 +35,17 @@ way, with the first one controlling deployments to AWS, while the second one con
 
 ```terraform
 aws_environments = {
-  sample : {
-    api_env_vars : [
-      {
-        name : "ENV_VAR_NAME"
-        value : "some-value"
-      }
-    ],
-    load_fresh_data : true,
-    data_import_arguments : ["seed-data"],
-    image_tag : "sample"
-  }
+	sample : {
+		api_env_vars : [
+			{
+				name : "ENV_VAR_NAME"
+				value : "some-value"
+			}
+		],
+		load_fresh_data : true,
+		data_import_arguments : ["seed-data"],
+		image_tag : "sample"
+	}
 }
 ```
 
@@ -73,9 +73,9 @@ The `value` in the key-value pair is an object with a set of properties, all of 
 
 ### 1.2.2. Handling production and staging
 
-The AWS production and staging environments are always deployed, even if they are not declared in the `environments`
-variable.
-However, if you'd like to customize their behavior (for example, reload fresh data), you can explicitly add them to the
+The AWS production and staging environments deploy on a different manner. Please refer to
+`infrastructure/kubernetes/main.tf` on the `aws_environments` module for more details.
+However, you can still customize their behavior (for example, reload fresh data), you can explicitly add them to the
 `environments` variable, and specify your custom values for each configuration, as you would for any other env.
 
 ---

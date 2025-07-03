@@ -60,11 +60,11 @@ module "aws_environment" {
     #   data_import_arguments = ["seed-data"]
     #   image_tag       = "staging"
     # }, lookup(var.aws_environments, "staging", {})),
-    production = merge({
-      load_fresh_data = false
-      data_import_arguments = ["seed-data"]
-      image_tag       = "main"
-    }, lookup(var.aws_environments, "production", {})),
+    # production = merge({
+    #   load_fresh_data = false
+    #   data_import_arguments = ["seed-data"]
+    #   image_tag       = "main"
+    # }, lookup(var.aws_environments, "production", {})),
   })
   source = "./modules/aws/env"
 

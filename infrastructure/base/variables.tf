@@ -129,7 +129,7 @@ variable "default_node_group_desired_size" {
 
 variable "data_node_group_instance_types" {
   type    = string
-  default = "c5a.xlarge"
+  default = "c5a.large"
 }
 
 variable "data_node_group_min_size" {

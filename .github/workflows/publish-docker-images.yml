@@ -57,7 +57,7 @@ jobs:
 
   wait_for_tests:
     name: Wait for tests to finish running
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Wait for API E2E tests to run
         if: ${{ github.event.inputs.waitForTest == 'true' }}
@@ -85,7 +85,7 @@ jobs:
 
   push_api_to_registry:
     name: Push API Docker image to Docker Hub
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: [ set_env_name, wait_for_tests ]
 
     permissions:
@@ -142,7 +142,7 @@ jobs:
 
   push_client_to_registry:
     name: Push Client Docker image to Docker Hub
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: [ set_env_name, wait_for_tests ]
 
     permissions:
@@ -206,7 +206,7 @@ jobs:
 
   push_data_import_to_registry:
     name: Push Data Import Docker image to Docker Hub
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: [ set_env_name, wait_for_tests ]
 
     permissions:
@@ -263,7 +263,7 @@ jobs:
 
   push_tiler_to_registry:
     name: Push Tiler Docker image to AWS and GCP
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: [ set_env_name, wait_for_tests ]
 
     permissions:

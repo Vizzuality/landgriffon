@@ -45,7 +45,7 @@ jobs:
 
   wait_for_image_push:
     name: Wait for Docker images to be pushed
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Wait for API image to be pushed to Docker Hub
         uses: fountainhead/action-wait-for-check@v1.2.0

@@ -63,7 +63,7 @@ jobs:
 
   deploy_images_to_kubernetes:
     name: Deploy updated Docker image to Kubernetes
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: [ set_env_name, wait_for_image_push ]
     steps:
       - name: Check out the repo

@@ -49,8 +49,8 @@ jobs:
           fi
           mapped_name_upper=$(echo "$mapped_name" | tr '[:lower:]' '[:upper:]')
           echo "Environment name found matching branch name: Using the environment name"
-          echo "##[set-output name=env_name;]$mapped_name"
-          echo "##[set-output name=env_name_upper;]$mapped_name_upper"
+          echo "env_name=$mapped_name" >> $GITHUB_OUTPUT
+          echo "env_name_upper=$mapped_name_upper" >> $GITHUB_OUTPUT
         id: set_env
         env:
           PILOT: ${{ vars.PILOT }}

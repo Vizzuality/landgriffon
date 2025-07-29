@@ -23,8 +23,10 @@ const Webinar: FC = () => (
         </p>
       </div>
       <a
-        href="https://bit.ly/3uxNHTp"
-        className="font-semibold block w-[195px] h-[82px] flex items-center hover:cursor-pointer justify-center border-2 border-white"
+        href="https://source.coop/repositories/vizzuality/lg-land-carbon-data/description"
+        rel="noopener noreferrer"
+        target="_blank"
+        className="font-semibold w-[195px] h-[82px] flex items-center hover:cursor-pointer justify-center border-2 border-white"
       >
         Download data
       </a>

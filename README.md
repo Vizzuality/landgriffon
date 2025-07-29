@@ -56,10 +56,10 @@ instruments will support agribusiness and food enterprises in becoming more sust
 
 **Related Information**:
 
-- [Executive summary](https://bit.ly/3gIJq9n) with an overview of how LandGriffon works.
-- [Full methodology](https://bit.ly/3ONp1MJ) with an in-depth description of every feature.
+- [Executive summary](https://landgriffon.com/docs/LG_Methodology_Executive_Summary.pdf) with an overview of how LandGriffon works.
+- [Full methodology](https://landgriffon.com/docs/LG_Methodology_Technical_Note.pdf) with an in-depth description of every feature.
 
-> TODO: User Guide would also be useful as the [Full methodology](https://bit.ly/3ONp1MJ) document is not exactly a user
+> TODO: User Guide would also be useful as the [Full methodology](https://landgriffon.com/docs/LG_Methodology_Technical_Note.pdf) document is not exactly a user
 guide, only explains how the indicators work and other related information, which does not exactly fit as a user guide.
 
 ## 2. Architecture
@@ -169,8 +169,8 @@ Its contents are in the [`marketing/`](./marketing/) folder.
 In the [Methodology](https://landgriffon.com/methodology) section of the marketing site, you'll find two key documents:
 one providing an overview of how LandGriffon works and another offering a detailed explanation of its features.
 
-- [Executive summary](https://bit.ly/3gIJq9n) with an overview of how LandGriffon works.
-- [Full methodology](https://bit.ly/3ONp1MJ) with an in-depth description of every feature.
+- [Executive summary](https://landgriffon.com/docs/LG_Methodology_Executive_Summary.pdf) with an overview of how LandGriffon works.
+- [Full methodology](https://landgriffon.com/docs/LG_Methodology_Technical_Note.pdf) with an in-depth description of every feature.
 
 More information in its [README.md](./marketing/README.md) file.
 
@@ -377,8 +377,8 @@ process and maintaining project quality standards.
 
 ## 11. Additional documentation?
 
-- [Executive summary](https://bit.ly/3gIJq9n) with an overview of how LandGriffon works.
-- [Full methodology](https://bit.ly/3ONp1MJ) with an in-depth description of every feature.
+- [Executive summary](https://landgriffon.com/docs/LG_Methodology_Executive_Summary.pdf) with an overview of how LandGriffon works.
+- [Full methodology](https://landgriffon.com/docs/LG_Methodology_Technical_Note.pdf) with an in-depth description of every feature.
 
 > TODO: User guide.
 

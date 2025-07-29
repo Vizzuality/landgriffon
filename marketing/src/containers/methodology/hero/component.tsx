@@ -53,7 +53,7 @@ const Hero: React.FC = () => {
 
               <div className="flex flex-col space-y-6 sm:flex-row sm:space-y-0 sm:space-x-6 xl:justify-between">
                 <a
-                  href="https://bit.ly/3ONp1MJ"
+                  href="https://landgriffon.com/docs/LG_Methodology_Technical_Note.pdf"
                   rel="noreferrer noopener"
                   target="_blank"
                   className="flex-1 p-5 border-2 border-black group hover:bg-orange-500"
@@ -77,7 +77,7 @@ const Hero: React.FC = () => {
                   </div>
                 </a>
                 <a
-                  href="https://bit.ly/3gIJq9n"
+                  href="https://landgriffon.com/docs/LG_Methodology_Executive_Summary.pdf"
                   rel="noreferrer noopener"
                   target="_blank"
                   className="flex-1 p-5 border-2 border-black group hover:bg-orange-500"

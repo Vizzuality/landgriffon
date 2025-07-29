@@ -21,8 +21,10 @@ const Webinar: FC = () => (
         <div className="tex-lg md:text-xl lg:text-2xl">Watch our webinar on demand.</div>
       </div>
       <a
-        href="https://bit.ly/3GbWOMa"
-        className="font-semibold block w-[195px] h-[82px] flex items-center hover:cursor-pointer justify-center border-2 border-white focus-visible:ring-0 focus-visible:outline-0"
+        href="https://us02web.zoom.us/rec/share/WMf4vjy3vnTtxdcIAOWrlk4dpC7DZv95YyNgcbfivA6jc1oekLQPOKY-OYXhCYjP.-nyfRc-BK_vPcmq0?startTime=1700575208000%20Passcode:%20Y9p+u7CV"
+        rel="noopener noreferrer"
+        target="_blank"
+        className="font-semibold w-[195px] h-[82px] flex items-center hover:cursor-pointer justify-center border-2 border-white focus-visible:ring-0 focus-visible:outline-0"
       >
         Watch now
       </a>

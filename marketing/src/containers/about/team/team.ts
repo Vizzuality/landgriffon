@@ -49,19 +49,6 @@ export const TEAM = [
     linkedin: 'https://www.linkedin.com/in/alicia-arenzana-gil-de-muro-74673534/',
   },
   {
-    name: 'David Inga',
-    company: 'Vizzuality',
-    role: 'Engineering',
-    group: 'core',
-    linkedin: 'https://www.linkedin.com/in/davidsingal',
-  },
-  {
-    name: 'Simão Rodrigues',
-    company: 'Vizzuality',
-    role: 'Engineering',
-    group: 'support',
-  },
-  {
     name: 'María Luena',
     company: 'Vizzuality',
     role: 'Engineering',
@@ -81,13 +68,6 @@ export const TEAM = [
     role: 'Engineering',
     group: 'core',
     linkedin: 'https://www.linkedin.com/in/alex-larranaga',
-  },
-  {
-    name: 'Yulia Belyakova',
-    company: 'Vizzuality',
-    role: 'Engineering',
-    group: 'core',
-    linkedin: 'https://www.linkedin.com/in/yulia-belyakova/',
   },
   {
     name: 'Andrea Rota',
@@ -148,7 +128,7 @@ export const TEAM = [
     company: 'Vizzuality',
     role: 'Business',
     group: 'support',
-    linkedin: 'http://www.linkedin.com/in/ane-lizariturry-apollonio',
+    linkedin: 'https://www.linkedin.com/in/ane-lizariturry-apollonio',
   },
   {
     name: 'Susana Romao',

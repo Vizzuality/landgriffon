@@ -1,37 +1,71 @@
-import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
-import { ImpactQueryExpression } from 'modules/indicator-records/services/impact-calculation.dependencies';
+import {
+  Indicator,
+  INDICATOR_NAME_CODES,
+} from 'modules/indicators/indicator.entity';
+import {
+  ImpactCalculationRepository,
+  IndicatorId,
+} from 'modules/impact/calculation/impact-calculation.repository';
 import {
   CalculationContext,
-  IIndicatorCalculationStrategy,
+  IndicatorCalculationStrategy,
+  PreCalculationContext,
+  PreCalculationResult,
 } from 'modules/impact/calculation/strategies/indicator-calculation.strategy.interface';
 
-/**
- * GHG_FarmIndicatorStrategy implements the calculation for the GHG_FARM indicator.
- *
- * It defines:
- *   - Query dependencies: to fetch the raw GHG_FARM value via a stored procedure,
- *     along with production (and optionally harvest).
- *   - Arithmetic calculation: normalizes the raw GHG_FARM value by dividing it by production,
- *     then multiplies by the tonnage.
- */
-export class GhgFarmManagementStrategy
-  implements IIndicatorCalculationStrategy
-{
-  // Unique indicator code for GHG_FARM
+export class GhgFarmManagementStrategy extends IndicatorCalculationStrategy {
   indicatorCode: INDICATOR_NAME_CODES = INDICATOR_NAME_CODES.GHG_FARM;
+  executionPriority: number = 0; // has no dependencies, set to 0 to execute earlier
 
-  /**
-   * Returns the query fragments needed to obtain the raw values for GHG_FARM.
-   */
-  getRawQueries(): ImpactQueryExpression[] {
-    return [
-      // Query to obtain the raw GHG_FARM value via the stored procedure.
-      `get_annual_commodity_weighted_material_impact_over_georegion($1, '${this.indicatorCode}', $2, 'producer') as "${this.indicatorCode}"`,
-      // Query to obtain the production value.
-      `sum_material_over_georegion($1, $2, 'producer') as "production"`,
-      // (Optional) Query to obtain the harvest value, if needed for consistency.
-      `sum_material_over_georegion($1, $2, 'harvest') as "harvest"`,
-    ];
+  constructor(
+    indicator: Indicator,
+    calculationRepository: ImpactCalculationRepository,
+  ) {
+    super(indicator, calculationRepository);
+  }
+
+  async preCalculate(
+    context: PreCalculationContext,
+  ): Promise<PreCalculationResult> {
+    const { materialId, geoRegionId } = context;
+
+    const indicatorH3DataSource =
+      await this.calculationRepository.getIndicatorH3DataSource(
+        this.indicatorCode,
+      );
+
+    // Get required arguments for calculations (h3 index, h3 data sources...)
+    const geoRegionH3IndexList =
+      await this.calculationRepository.getGeoRegionH3IndexList({
+        geoRegionId,
+      });
+
+    // This indicator uses the MaterialIndicator H3 data instead of Material H3 data as the base for the production value
+    const materialIndicatorH3DataSource =
+      await this.calculationRepository.getMaterialIndicatorH3DataSource(
+        new IndicatorId(this.indicator.id),
+        materialId,
+      );
+
+    const production = await this.calculationRepository.sumH3GridOverGeoRegion({
+      geoRegionH3IndexList,
+      materialH3DataSource: materialIndicatorH3DataSource,
+    });
+
+    //Calculate the raw base value
+    const rawGHGFarm =
+      await this.calculationRepository.getAnnualCommodityWeightedImpactOverGeoRegion(
+        indicatorH3DataSource,
+        materialIndicatorH3DataSource,
+        geoRegionH3IndexList,
+      );
+
+    return {
+      calculatedValues: {
+        rawBaseValue: rawGHGFarm,
+        production: production,
+      },
+    };
   }
 
   /**
@@ -43,17 +77,17 @@ export class GhgFarmManagementStrategy
    * @param context - Calculation context containing rawData, tonnage, production, etc.
    * @returns The calculated GHG_FARM value.
    */
-  calculate(context: CalculationContext): number {
-    const { rawData, tonnage, production } = context;
-
-    // Retrieve the raw GHG_FARM value from raw data.
-    const rawGHGFarm = rawData[this.indicatorCode];
+  async calculate(context: CalculationContext): Promise<number> {
+    const { tonnage, preCalculationValues } = context;
+    const production = preCalculationValues.calculatedValues.production;
+    const rawGHGFarm = preCalculationValues.calculatedValues.rawBaseValue;
 
     // Compute the normalized value (preProcessed) by dividing the raw value by production,
     // guarding against division by zero.
     const preProcessed =
-      production !== 0 && Number.isFinite(rawGHGFarm / production)
-        ? rawGHGFarm / production
+      production.value !== 0 &&
+      Number.isFinite(rawGHGFarm.value / production.value)
+        ? rawGHGFarm.value / production.value
         : 0;
 
     return preProcessed * tonnage || 0;

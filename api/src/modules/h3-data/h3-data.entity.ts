@@ -13,6 +13,7 @@ import { MaterialToH3 } from 'modules/materials/material-to-h3.entity';
 import { IndicatorRecord } from 'modules/indicator-records/indicator-record.entity';
 import { ContextualLayer } from 'modules/contextual-layers/contextual-layer.entity';
 import { MaterialIndicatorToH3 } from 'modules/materials/material-indicator-to-h3.entity';
+import { H3DataId } from 'modules/impact/calculation/impact-calculation.repository';
 
 /**
  * @note: Interface props are marked as 'h' and 'v' because that is what the DB returns when querying a h3 maps
@@ -41,6 +42,7 @@ export enum LAYER_TYPES {
 }
 
 export class H3DataSource {
+  id: H3DataId;
   tableName: string;
   columnName: string;
 }

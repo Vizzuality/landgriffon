@@ -1,5 +1,10 @@
 import { DataSource } from 'typeorm';
-import { ImpactCalculationRepository } from '../../../src/modules/impact/calculation/impact-calculation.repository';
+import {
+  GeoRegionId,
+  H3DataId,
+  ImpactCalculationRepository,
+  MaterialId,
+} from '../../../src/modules/impact/calculation/impact-calculation.repository';
 import { Test } from '@nestjs/testing';
 import {
   createGeoRegion,
@@ -8,10 +13,6 @@ import {
   createMaterial,
   createMaterialToH3,
 } from '../../entity-mocks';
-import {
-  GeoRegionId,
-  MaterialId,
-} from '../../../src/modules/impact/calculation/queries/production-and-harvest.query';
 import { ImpactCalculationModule } from '../../../src/modules/impact/calculation/impact-calculation.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from '../../../src/typeorm.config';
@@ -85,6 +86,7 @@ describe('ImpactCalculationRepository', () => {
       );
 
     expect(materialH3DataSource).toEqual({
+      id: new H3DataId(h3DatSource.id),
       tableName: h3DatSource.h3tableName,
       columnName: h3DatSource.h3columnName,
     });
@@ -105,6 +107,7 @@ describe('ImpactCalculationRepository', () => {
       );
 
     expect(indicatorH3DataSource).toEqual({
+      id: new H3DataId(h3DatSource.id),
       tableName: h3DatSource.h3tableName,
       columnName: h3DatSource.h3columnName,
     });

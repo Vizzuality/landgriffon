@@ -1,6 +1,6 @@
 import {
   IndicatorStrategyFactory,
-  IndicatorStrategyMap2,
+  IndicatorStrategyMap,
 } from 'modules/impact/calculation/indicator.strategy.factory';
 import { DeforestationFootprintStrategy } from 'modules/impact/calculation/strategies/deforestation-footprint.strategy';
 import { GHGDeforestationStrategy } from 'modules/impact/calculation/strategies/ghg-deforestation.strategy';
@@ -19,15 +19,16 @@ import { ExcessNutrientLoadStrategy } from '../../../src/modules/impact/calculat
 import { WaterWithdrawalsStrategy } from '../../../src/modules/impact/calculation/strategies/water-withdrawals.strategy';
 import { WaterConsumptionStrategy } from '../../../src/modules/impact/calculation/strategies/water-consumption.strategy';
 import { WaterGapToUnsustainableWaterUseStrategy } from '../../../src/modules/impact/calculation/strategies/water-gap-to-unsustainable-water-use.strategy';
-import { IIndicatorCalculationStrategy } from '../../../src/modules/impact/calculation/strategies/indicator-calculation.strategy.interface';
 import { DataSource } from 'typeorm';
+import { ImpactCalculationRepository } from 'modules/impact/calculation/impact-calculation.repository';
 
 describe('IndicatorStrategyFactory', () => {
   let strategyFactory: IndicatorStrategyFactory;
   const datasource: DataSource = {} as DataSource; // Mocked data source for testing
+  const calculationRepository = {} as ImpactCalculationRepository; // Mocked repository for testing
 
   beforeEach(() => {
-    strategyFactory = new IndicatorStrategyFactory();
+    strategyFactory = new IndicatorStrategyFactory(calculationRepository);
   });
 
   test('should generate functional strategies based on active indicators', () => {
@@ -36,10 +37,7 @@ describe('IndicatorStrategyFactory', () => {
       activeIndicators.push({ nameCode } as Indicator);
     }
 
-    const strategies = strategyFactory.getStrategies(
-      activeIndicators.map((i: Indicator) => i.nameCode),
-      datasource,
-    );
+    const strategies = strategyFactory.getStrategies(activeIndicators);
 
     expect(Array.from(strategies.map.keys())).toHaveLength(
       Object.values(INDICATOR_NAME_CODES).length,
@@ -66,10 +64,9 @@ describe('IndicatorStrategyFactory', () => {
       [INDICATOR_NAME_CODES.WGUWU]: WaterGapToUnsustainableWaterUseStrategy,
     };
     for (const [key, ExpectedClass] of Object.entries(STRATEGY_MAP)) {
-      const strategy = strategyFactory.getStrategies(
-        [key as INDICATOR_NAME_CODES],
-        datasource,
-      );
+      const strategy = strategyFactory.getStrategies([
+        { nameCode: key as INDICATOR_NAME_CODES, id: key } as Indicator,
+      ]);
       expect(Array.from(strategy.map.keys())).toHaveLength(1);
       expect(strategy.map.get(key as INDICATOR_NAME_CODES)).toBeInstanceOf(
         ExpectedClass,
@@ -84,10 +81,8 @@ describe('IndicatorStrategyFactory', () => {
       { nameCode: INDICATOR_NAME_CODES.WU },
     ] as Indicator[];
 
-    const strategies: IndicatorStrategyMap2 = strategyFactory.getStrategies(
-      activeIndicators.map((i: Indicator) => i.nameCode),
-      datasource,
-    );
+    const strategies: IndicatorStrategyMap =
+      strategyFactory.getStrategies(activeIndicators);
 
     expect(Array.from(strategies.map.keys())).toHaveLength(2);
     expect(strategies.map.get(INDICATOR_NAME_CODES.LF)).toBeInstanceOf(

@@ -1,10 +1,20 @@
-import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
-import { ImpactQueryExpression } from 'modules/indicator-records/services/impact-calculation.dependencies';
+import {
+  Indicator,
+  INDICATOR_NAME_CODES,
+} from 'modules/indicators/indicator.entity';
+import {
+  DistributedImpactValue,
+  ImpactCalculationRepository,
+  TotalWeightedImpact,
+} from 'modules/impact/calculation/impact-calculation.repository';
 import {
   CalculationContext,
-  IIndicatorCalculationStrategy,
-  IndicatorDependencies,
+  IndicatorCalculationStrategy,
+  PreCalculationContext,
+  PreCalculationResult,
 } from 'modules/impact/calculation/strategies/indicator-calculation.strategy.interface';
+import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
+import { AppConfig } from 'utils/app.config';
 
 /**
  * UWUIndicatorStrategy implements the calculation for the UWU indicator.
@@ -17,39 +27,73 @@ import {
  *       2. Final UWU = (raw UWU value * waterUseValue) / (100 * production),
  *          with safeguards against division by zero.
  */
-export class UnsustainableWaterUseStrategy
-  implements IIndicatorCalculationStrategy
-{
-  // Unique indicator code for UWU
+export class UnsustainableWaterUseStrategy extends IndicatorCalculationStrategy {
   indicatorCode: INDICATOR_NAME_CODES = INDICATOR_NAME_CODES.UWU;
+  executionPriority: number = 1; //depends on WU, set to 1 to execute later
+  useDistributedImpact: boolean;
 
-  // To calculate the UWU value, we need the WU value.
-  dependencies: {
-    [INDICATOR_NAME_CODES.WU]: INDICATOR_NAME_CODES.WU;
-  } = {
-    [INDICATOR_NAME_CODES.WU]: INDICATOR_NAME_CODES.WU,
-  };
+  constructor(
+    indicator: Indicator,
+    calculationRepository: ImpactCalculationRepository,
+  ) {
+    // this indicator has a dependency on WU, set the priority to 1 to be executed later
+    super(indicator, calculationRepository);
+    this.useDistributedImpact = AppConfig.getBoolean(
+      'flags.useDistributedImpact',
+      false,
+    );
+  }
 
-  // constructor() {
-  //   this.indicatorCode = INDICATOR_NAME_CODES.UWU;
-  //   this.dependencies = {
-  //     [INDICATOR_NAME_CODES.WU]: INDICATOR_NAME_CODES.WU,
-  //   };
-  // }
+  async preCalculate(
+    context: PreCalculationContext,
+  ): Promise<PreCalculationResult> {
+    const { materialId, geoRegionId } = context;
 
-  /**
-   * Returns the query fragments needed to obtain the raw values for UWU.
-   */
-  getRawQueries(): ImpactQueryExpression[] {
-    return [
-      // Query to obtain the raw UWU value via the stored procedure,
-      // using the internal indicatorCode for aliasing.
-      `get_annual_commodity_weighted_impact_over_georegion($1, '${this.indicatorCode}', $2, 'producer') as "${this.indicatorCode}"`,
-      // Query to obtain the production value.
-      `sum_material_over_georegion($1, $2, 'producer') as "production"`,
-      // Query to obtain the WU value (used to calculate waterUseValue).
-      `get_indicator_coefficient_impact('${this.dependencies.WU}', $3, $2) as "${this.dependencies.WU}"`,
-    ];
+    const indicatorH3DataSource =
+      await this.calculationRepository.getIndicatorH3DataSource(
+        this.indicatorCode,
+      );
+
+    // Get required arguments for calculations (h3 index, h3 data sources...)
+    const geoRegionH3IndexList =
+      await this.calculationRepository.getGeoRegionH3IndexList({
+        geoRegionId,
+      });
+    const productionH3DataSource =
+      await this.calculationRepository.getMaterialH3DataSource(
+        materialId,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
+
+    const production = await this.calculationRepository.sumH3GridOverGeoRegion({
+      geoRegionH3IndexList,
+      materialH3DataSource: productionH3DataSource,
+    });
+
+    // calculate the raw base value IF production > 0, otherwise calculate the distributed value is the app flag is set
+    let rawUWU: TotalWeightedImpact | DistributedImpactValue;
+    if (production.value > 0) {
+      rawUWU =
+        await this.calculationRepository.getAnnualCommodityWeightedImpactOverGeoRegion(
+          indicatorH3DataSource,
+          productionH3DataSource,
+          geoRegionH3IndexList,
+        );
+    } else {
+      rawUWU = this.useDistributedImpact
+        ? await this.calculationRepository.getDistributedImpactOverGeoRegion(
+            indicatorH3DataSource,
+            geoRegionH3IndexList,
+          )
+        : new DistributedImpactValue(0);
+    }
+
+    return {
+      calculatedValues: {
+        rawBaseValue: rawUWU,
+        production: production,
+      },
+    };
   }
 
   /**
@@ -62,21 +106,24 @@ export class UnsustainableWaterUseStrategy
    * @param context - Calculation context containing rawData, tonnage, production, etc.
    * @returns The calculated UWU value.
    */
-  calculate(context: CalculationContext): number {
-    const { rawData, tonnage, production } = context;
+  async calculate(context: CalculationContext): Promise<number> {
+    const { calculatedImpacts, preCalculationValues } = context;
+    const production = preCalculationValues.calculatedValues.production;
+    const rawUWU = preCalculationValues.calculatedValues.rawBaseValue;
 
-    // Calculate waterUseValue using the raw WU value and tonnage.
-    const waterUseValue = rawData[this.dependencies.WU] * tonnage;
-
-    // Retrieve the raw UWU value.
-    const rawUWU = rawData[this.indicatorCode];
+    // Grab the raw WU value from the calculated impacts so far
+    const calculatedWU = calculatedImpacts.get(INDICATOR_NAME_CODES.WU);
+    if (!calculatedWU) {
+      throw new Error(
+        `Missing calculated impact for ${INDICATOR_NAME_CODES.WU} when calculating ${this.indicatorCode}`,
+      );
+    }
 
     // Calculate UWU value, ensuring no division by zero.
     const finalUWU =
-      production !== 0 &&
-      Number.isFinite((rawUWU * waterUseValue) / (100 * production))
-        ? (rawUWU * waterUseValue) / (100 * production)
-        : 0;
+      production.value > 0
+        ? (rawUWU.value * calculatedWU) / (100 * production.value) || 0
+        : rawUWU.value * (calculatedWU / 100) || 0;
 
     return finalUWU;
   }

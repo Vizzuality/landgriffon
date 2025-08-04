@@ -19,6 +19,8 @@ import { ScenarioInterventionRepository } from 'modules/scenario-interventions/s
 import { AuthorizationModule } from 'modules/authorization/authorization.module';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { ImpactModule } from 'modules/impact/impact.module';
+import { ImpactCalculationModule } from 'modules/impact/calculation/impact-calculation.module';
+import { IndicatorsModule } from 'modules/indicators/indicators.module';
 
 @Module({
   imports: [
@@ -32,6 +34,8 @@ import { ImpactModule } from 'modules/impact/impact.module';
     AdminRegionsModule,
     SuppliersModule,
     AuthorizationModule,
+    ImpactCalculationModule,
+    IndicatorsModule,
   ],
   controllers: [ScenarioInterventionsController],
   providers: [

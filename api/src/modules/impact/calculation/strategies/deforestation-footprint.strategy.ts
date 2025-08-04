@@ -1,26 +1,66 @@
-import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
-import { ImpactQueryExpression } from 'modules/indicator-records/services/impact-calculation.dependencies';
+import {
+  Indicator,
+  INDICATOR_NAME_CODES,
+} from 'modules/indicators/indicator.entity';
 import {
   CalculationContext,
-  IIndicatorCalculationStrategy,
+  IndicatorCalculationStrategy,
+  PreCalculationContext,
+  PreCalculationResult,
 } from 'modules/impact/calculation/strategies/indicator-calculation.strategy.interface';
-import { LandUseFootprintForProductionStrategy } from 'modules/impact/calculation/strategies/land-use-footprint-for-production.strategy';
+import { ImpactCalculationRepository } from 'modules/impact/calculation/impact-calculation.repository';
+import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 
-/**
- * DF_SLUCStrategy implements the calculation for the DF_SLUC indicator.
- *
- * It defines:
- *   - Query dependencies: to fetch the raw DF_SLUC value, along with production and harvest raw values.
- *   - Arithmetic calculation: first, it computes a pre-processed value by dividing the raw DF_SLUC value by production (if valid).
- *     Then it computes the LF value as (harvest / production) * tonnage.
- *     Finally, the DF_SLUC value is calculated as:
- *         DF_SLUC = preProcessed * LF.
- */
-export class DeforestationFootprintStrategy
-  implements IIndicatorCalculationStrategy
-{
-  // Unique indicator code for DF_SLUC
+export class DeforestationFootprintStrategy extends IndicatorCalculationStrategy {
   indicatorCode: INDICATOR_NAME_CODES = INDICATOR_NAME_CODES.DF_SLUC;
+  executionPriority: number = 1; // depends on LF, set to 1 to be executed later
+
+  constructor(
+    indicator: Indicator,
+    calculationRepository: ImpactCalculationRepository,
+  ) {
+    super(indicator, calculationRepository);
+  }
+
+  async preCalculate(
+    context: PreCalculationContext,
+  ): Promise<PreCalculationResult> {
+    const { geoRegionId, materialId } = context;
+
+    const indicatorH3DataSource =
+      await this.calculationRepository.getIndicatorH3DataSource(
+        this.indicatorCode,
+      );
+
+    // Get required arguments for calculations (h3 index, h3 data sources...)
+    const geoRegionH3IndexList =
+      await this.calculationRepository.getGeoRegionH3IndexList({
+        geoRegionId,
+      });
+    const productionH3DataSource =
+      await this.calculationRepository.getMaterialH3DataSource(
+        materialId,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
+
+    const production = await this.calculationRepository.sumH3GridOverGeoRegion({
+      geoRegionH3IndexList,
+      materialH3DataSource: productionH3DataSource,
+    });
+    const rawDF_SLUC =
+      await this.calculationRepository.getAnnualCommodityWeightedImpactOverGeoRegion(
+        indicatorH3DataSource,
+        productionH3DataSource,
+        geoRegionH3IndexList,
+      );
+
+    return {
+      calculatedValues: {
+        rawBaseValue: rawDF_SLUC,
+        production: production,
+      },
+    };
+  }
 
   /**
    * Calculates the final DF_SLUC indicator value using the provided calculation context.
@@ -32,43 +72,26 @@ export class DeforestationFootprintStrategy
    * @param context - Calculation context containing rawData, tonnage, production, etc.
    * @returns The calculated DF_SLUC value.
    */
-  calculate(context: CalculationContext): number {
-    const { rawData, tonnage, production } = context;
-    const harvest = rawData.harvest;
+  async calculate(context: CalculationContext): Promise<number> {
+    const { calculatedImpacts, preCalculationValues } = context;
+    const production = preCalculationValues.calculatedValues.production;
+    const rawDF_SLUC = preCalculationValues.calculatedValues.rawBaseValue;
 
-    /**
-     * Returns the query fragments needed to obtain the raw values for DF_SLUC.
-     */
-
-    // TODO: LF and PreProcessed (change name) are computed several times for each indicator. consider tradeoff between recalculating and passing the precomputed
-    //.      value somehow
-
-    // Compute LF value as (harvest / production) * tonnage, avoiding division by zero.
-    // const lf =
-    //   production !== 0 && Number.isFinite(harvest / production)
-    //     ? (harvest / production) * tonnage
-    //     : 0;
-    const lf: number =
-      LandUseFootprintForProductionStrategy.calculateLF(context);
+    // Grab the raw LF value from the calculated impacts so far
+    const calculatedLF = calculatedImpacts.get(INDICATOR_NAME_CODES.LF);
+    if (!calculatedLF) {
+      throw new Error(
+        `Missing calculated impact for ${INDICATOR_NAME_CODES.LF} when calculating ${this.indicatorCode}`,
+      );
+    }
 
     // Compute pre-processed DF_SLUC value as raw DF_SLUC divided by production, if valid.
-    const rawDF_SLUC = rawData[this.indicatorCode];
     const preProcessed =
-      production !== 0 && Number.isFinite(rawDF_SLUC / production)
-        ? rawDF_SLUC / production
+      production.value !== 0 &&
+      Number.isFinite(rawDF_SLUC.value / production.value)
+        ? rawDF_SLUC.value / production.value
         : 0;
 
-    return preProcessed * lf;
-  }
-
-  getRawQueries(): ImpactQueryExpression[] {
-    return [
-      // Query to obtain the raw DF_SLUC value using the stored procedure.
-      `get_annual_commodity_weighted_impact_over_georegion($1, '${this.indicatorCode}', $2, 'producer') as "${this.indicatorCode}"`,
-      // Query to obtain the production value.
-      `sum_material_over_georegion($1, $2, 'producer') as "production"`,
-      // Query to obtain the harvest value (required to compute LF).
-      `sum_material_over_georegion($1, $2, 'harvest') as "harvest"`,
-    ];
+    return preProcessed * calculatedLF;
   }
 }

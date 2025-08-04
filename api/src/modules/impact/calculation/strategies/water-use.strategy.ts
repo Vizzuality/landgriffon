@@ -1,30 +1,46 @@
-import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
-import { ImpactQueryExpression } from 'modules/indicator-records/services/impact-calculation.dependencies';
+import {
+  Indicator,
+  INDICATOR_NAME_CODES,
+} from 'modules/indicators/indicator.entity';
+import {
+  ImpactCalculationRepository,
+  IndicatorId,
+} from 'modules/impact/calculation/impact-calculation.repository';
 import {
   CalculationContext,
-  IIndicatorCalculationStrategy,
+  IndicatorCalculationStrategy,
+  PreCalculationContext,
+  PreCalculationResult,
 } from 'modules/impact/calculation/strategies/indicator-calculation.strategy.interface';
 
-/**
- * WUIndicatorStrategy implements the calculation for the WU indicator.
- *
- * It defines:
- *   - Query dependency: to fetch the raw WU value using a stored procedure.
- *   - Arithmetic calculation: calculates the final WU value by multiplying the raw WU value by the tonnage.
- */
-export class WaterUseStrategy implements IIndicatorCalculationStrategy {
-  // Unique indicator code for WU
+export class WaterUseStrategy extends IndicatorCalculationStrategy {
   indicatorCode: INDICATOR_NAME_CODES = INDICATOR_NAME_CODES.WU;
+  executionPriority: number = 0; //no dependencies, set to 0 to execute earlier
 
-  /**
-   * Returns the query fragment needed to obtain the raw value for WU.
-   */
-  getRawQueries(): ImpactQueryExpression[] {
-    return [
-      // Query to obtain the raw WU value via the stored procedure,
-      // using the internal indicator code for aliasing.
-      `get_indicator_coefficient_impact('${this.indicatorCode}', $3, $2) as "${this.indicatorCode}"`,
-    ];
+  constructor(
+    indicator: Indicator,
+    calculationRepository: ImpactCalculationRepository,
+  ) {
+    super(indicator, calculationRepository);
+  }
+
+  async preCalculate(
+    context: PreCalculationContext,
+  ): Promise<PreCalculationResult> {
+    const { materialId, adminRegionId } = context;
+
+    // calculate raw base value
+    const rawWU =
+      await this.calculationRepository.getIndicatorCoefficientImpact({
+        adminRegionId,
+        materialId,
+        indicatorId: new IndicatorId(this.indicator.id),
+      });
+    return {
+      calculatedValues: {
+        rawBaseValue: rawWU,
+      },
+    };
   }
 
   /**
@@ -35,9 +51,11 @@ export class WaterUseStrategy implements IIndicatorCalculationStrategy {
    * @param context - Calculation context containing rawData and tonnage.
    * @returns The calculated WU value.
    */
-  calculate(context: CalculationContext): number {
-    const { rawData, tonnage } = context;
-    const rawWU = rawData[this.indicatorCode];
-    return rawWU * tonnage || 0;
+  async calculate(context: CalculationContext): Promise<number> {
+    const { tonnage, preCalculationValues } = context;
+
+    const rawWU = preCalculationValues.calculatedValues.rawBaseValue;
+
+    return rawWU.value * tonnage || 0;
   }
 }

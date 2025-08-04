@@ -5,6 +5,7 @@ import {
   createAdminRegion,
   createBusinessUnit,
   createGeoRegion,
+  createIndicatorCoefficient,
   createMaterial,
   createMaterialToH3,
   createSourcingLocation,
@@ -52,10 +53,13 @@ import { GeoRegionRepository } from 'modules/geo-regions/geo-region.repository';
 import { MaterialRepository } from 'modules/materials/material.repository';
 import { CachedDataRepository } from 'modules/cached-data/cached-data.repository';
 import { DataSource, Repository } from 'typeorm';
-import { ImpactCalculatorV2 } from 'modules/impact/calculation/impact.calculator';
 import { SourcingLocationRepository } from 'modules/sourcing-locations/sourcing-location.repository';
 import { createWorldToCalculateImpactOfAllIndicators } from '../../utils/impact-calculation-preconditions';
+import { MaterialIndicatorToH3 } from 'modules/materials/material-indicator-to-h3.entity';
+import { IndicatorCoefficient } from 'modules/indicator-coefficients/indicator-coefficient.entity';
+import { ImpactCalculatorV2 } from 'modules/impact/calculation/impact.calculator';
 
+jest.setTimeout(10000000);
 describe('Impact Calculator Tests', () => {
   let dataSource: DataSource;
   let indicatorRecordRepository: IndicatorRecordRepository;
@@ -69,12 +73,16 @@ describe('Impact Calculator Tests', () => {
   let materialRepository: MaterialRepository;
   let cachedDataRepository: CachedDataRepository;
   let sourcingLocationsRepository: SourcingLocationRepository;
-  const repositories: Set<Repository<any>> = new Set();
+  let materialIndicatorToH3Service: Repository<MaterialIndicatorToH3>;
+  let indicatorCoefficientRepository: Repository<IndicatorCoefficient>;
 
   let impactCalculatorV2: ImpactCalculatorV2;
   let materialsToH3sService: MaterialsToH3sService;
+  let matRepo: Repository<MaterialIndicatorToH3>;
 
   const deleteBetweenEach = async (): Promise<void> => {
+    await materialIndicatorToH3Service.delete({});
+    await indicatorCoefficientRepository.delete({});
     await indicatorRecordRepository.delete({});
     await indicatorRepository.delete({});
     await sourcingRecordRepository.delete({});
@@ -82,6 +90,8 @@ describe('Impact Calculator Tests', () => {
     await supplierRepository.delete({});
     await businessUnitRepository.delete({});
     await materialsToH3sService.delete({});
+
+    await matRepo.delete({});
     await h3DataRepository.delete({});
     await geoRegionRepository.delete({});
     await materialRepository.delete({});
@@ -99,46 +109,40 @@ describe('Impact Calculator Tests', () => {
     indicatorRecordRepository = testingModule.get<IndicatorRecordRepository>(
       IndicatorRecordRepository,
     );
-    repositories.add(indicatorRecordRepository);
     indicatorRepository =
       testingModule.get<IndicatorRepository>(IndicatorRepository);
-    repositories.add(indicatorRepository);
     h3DataRepository = testingModule.get<H3DataRepository>(H3DataRepository);
-    repositories.add(h3DataRepository);
     sourcingRecordRepository = testingModule.get<SourcingRecordRepository>(
       SourcingRecordRepository,
     );
-    repositories.add(sourcingRecordRepository);
     sourcingLocationsRepository = testingModule.get<SourcingLocationRepository>(
       SourcingLocationRepository,
     );
-    repositories.add(sourcingLocationsRepository);
     adminRegionRepository = testingModule.get<AdminRegionRepository>(
       AdminRegionRepository,
     );
-    repositories.add(adminRegionRepository);
     businessUnitRepository = testingModule.get<BusinessUnitRepository>(
       BusinessUnitRepository,
     );
-    repositories.add(businessUnitRepository);
     supplierRepository =
       testingModule.get<SupplierRepository>(SupplierRepository);
-    repositories.add(supplierRepository);
     geoRegionRepository =
       testingModule.get<GeoRegionRepository>(GeoRegionRepository);
-    repositories.add(geoRegionRepository);
     materialRepository =
       testingModule.get<MaterialRepository>(MaterialRepository);
-    repositories.add(materialRepository);
     cachedDataRepository =
       testingModule.get<CachedDataRepository>(CachedDataRepository);
-    repositories.add(cachedDataRepository);
+    materialIndicatorToH3Service =
+      dataSource.getRepository<MaterialIndicatorToH3>(MaterialIndicatorToH3);
+    indicatorCoefficientRepository =
+      dataSource.getRepository<IndicatorCoefficient>(IndicatorCoefficient);
 
     impactCalculatorV2 =
       testingModule.get<ImpactCalculatorV2>(ImpactCalculatorV2);
     materialsToH3sService = testingModule.get<MaterialsToH3sService>(
       MaterialsToH3sService,
     );
+    matRepo = dataSource.getRepository(MaterialIndicatorToH3);
 
     await deleteBetweenEach();
   });
@@ -162,11 +166,27 @@ describe('Impact Calculator Tests', () => {
     return clearTestDataFromDatabase(dataSource);
   });
 
+  async function createMaterialIndicatorsToH3(
+    materialId: string,
+    h3DataId: string,
+    indicatorId: string,
+  ): Promise<void> {
+    const materialIndicatorToH3 = new MaterialIndicatorToH3();
+    materialIndicatorToH3.materialId = materialId;
+    materialIndicatorToH3.indicatorId = indicatorId;
+    materialIndicatorToH3.h3DataId = h3DataId;
+
+    await matRepo.save(materialIndicatorToH3);
+  }
+
   describe('Impact createIndicatorRecordsBySourcingRecords', () => {
     // This test doesn't make sense for new methodology, since all the Indicators in DTO are optional
     test('When creating all indicators records for all indicators, it should create the indicator records properly', async () => {
       //ARRANGE;
       const indicatorPreconditions = await createPreconditions();
+      const indicators: Indicator[] = [
+        ...indicatorPreconditions.indicatorMap.values(),
+      ];
 
       const h3Material1 = await h3DataMock(dataSource, {
         h3TableName: 'fakeMaterial1Table2002',
@@ -201,8 +221,63 @@ describe('Impact Calculator Tests', () => {
         MATERIAL_TO_H3_TYPE.HARVEST,
       );
 
+      const [ghgFarmIndicator] = indicators
+        .filter(
+          (elem: Indicator) => elem.nameCode === INDICATOR_NAME_CODES.GHG_FARM,
+        )
+        .map((indicator: Indicator) => indicator.id);
+      const h3MaterialIndicator1 = await h3DataMock(dataSource, {
+        h3TableName: 'fakeMaterialIndicator1Table2002',
+        h3ColumnName: 'fakeMaterialIndicatorColumn2002',
+        additionalH3Data: h3MaterialExampleDataFixture,
+        year: 2002,
+        indicatorId: ghgFarmIndicator,
+      });
+      const h3MaterialIndicator2 = await h3DataMock(dataSource, {
+        h3TableName: 'fakeMaterialIndicator2Table2002',
+        h3ColumnName: 'fakeMaterialIndicatorColumn2002',
+        additionalH3Data: h3MaterialExampleDataFixture,
+        year: 2002,
+        indicatorId: ghgFarmIndicator,
+      });
+
+      await createMaterialIndicatorsToH3(
+        indicatorPreconditions.material1.id,
+        h3MaterialIndicator1.id,
+        ghgFarmIndicator,
+      );
+      await createMaterialIndicatorsToH3(
+        indicatorPreconditions.material2.id,
+        h3MaterialIndicator2.id,
+        ghgFarmIndicator,
+      );
+      const indicatorCoefficientNameCodes = [
+        INDICATOR_NAME_CODES.WW,
+        INDICATOR_NAME_CODES.WC,
+        INDICATOR_NAME_CODES.WU,
+        INDICATOR_NAME_CODES.NL,
+      ];
+      const indicatorWithCoefficients = indicators.filter((ind: Indicator) =>
+        indicatorCoefficientNameCodes.includes(ind.nameCode),
+      );
+      for (const indicator of indicatorWithCoefficients) {
+        await createIndicatorCoefficient({
+          adminRegion: indicatorPreconditions.adminRegion1.id,
+          material: indicatorPreconditions.material1.id,
+          indicator,
+          value: 1.5,
+        });
+
+        await createIndicatorCoefficient({
+          adminRegion: indicatorPreconditions.adminRegion2.id,
+          material: indicatorPreconditions.material2.id,
+          indicator,
+          value: 3,
+        });
+      }
+
       //ACT
-      await impactCalculatorV2.calculateImpact([
+      await impactCalculatorV2.calculateImpactForAllLocations([
         ...indicatorPreconditions.indicatorMap.values(),
       ]);
 
@@ -217,16 +292,16 @@ describe('Impact Calculator Tests', () => {
           [INDICATOR_NAME_CODES.DF_SLUC]: [161.49068322981367, 1610],
           [INDICATOR_NAME_CODES.LF]: [1000, 1610],
           [INDICATOR_NAME_CODES.GHG_DEF_SLUC]: [161.49068322981367, 1610],
-          [INDICATOR_NAME_CODES.UWU]: [0, 1610],
-          [INDICATOR_NAME_CODES.WW]: [0, 1610],
-          [INDICATOR_NAME_CODES.WC]: [0, 1610],
-          [INDICATOR_NAME_CODES.WGUWU]: [0, 1610],
-          [INDICATOR_NAME_CODES.NL]: [0, 1610],
-          [INDICATOR_NAME_CODES.ENL]: [0, 1610],
+          [INDICATOR_NAME_CODES.UWU]: [2.422360248447205, 1610],
+          [INDICATOR_NAME_CODES.WW]: [1500, 1610],
+          [INDICATOR_NAME_CODES.WC]: [1500, 1610],
+          [INDICATOR_NAME_CODES.WGUWU]: [2.422360248447205, 1610],
+          [INDICATOR_NAME_CODES.NL]: [1500, 1610],
+          [INDICATOR_NAME_CODES.ENL]: [2.422360248447205, 1610],
           [INDICATOR_NAME_CODES.NCE]: [161.49068322981367, 1610],
           [INDICATOR_NAME_CODES.FLIL]: [161.49068322981367, 1610],
-          [INDICATOR_NAME_CODES.GHG_FARM]: [0, 1610],
-          [INDICATOR_NAME_CODES.WU]: [0, 1610],
+          [INDICATOR_NAME_CODES.GHG_FARM]: [161.49068322981367, 1610],
+          [INDICATOR_NAME_CODES.WU]: [1500, 1610],
           [INDICATOR_NAME_CODES.WGSWU_NEW]: [0, 1610],
         };
 
@@ -235,16 +310,16 @@ describe('Impact Calculator Tests', () => {
           [INDICATOR_NAME_CODES.DF_SLUC]: [80.74534161490683, 1610],
           [INDICATOR_NAME_CODES.LF]: [500, 1610],
           [INDICATOR_NAME_CODES.GHG_DEF_SLUC]: [80.74534161490683, 1610],
-          [INDICATOR_NAME_CODES.UWU]: [0, 1610],
-          [INDICATOR_NAME_CODES.WW]: [0, 1610],
-          [INDICATOR_NAME_CODES.WC]: [0, 1610],
-          [INDICATOR_NAME_CODES.WGUWU]: [0, 1610],
-          [INDICATOR_NAME_CODES.NL]: [0, 1610],
-          [INDICATOR_NAME_CODES.ENL]: [0, 1610],
+          [INDICATOR_NAME_CODES.UWU]: [2.422360248447205, 1610],
+          [INDICATOR_NAME_CODES.WW]: [1500, 1610],
+          [INDICATOR_NAME_CODES.WC]: [1500, 1610],
+          [INDICATOR_NAME_CODES.WGUWU]: [2.422360248447205, 1610],
+          [INDICATOR_NAME_CODES.NL]: [1500, 1610],
+          [INDICATOR_NAME_CODES.ENL]: [2.422360248447205, 1610],
           [INDICATOR_NAME_CODES.NCE]: [80.74534161490683, 1610],
           [INDICATOR_NAME_CODES.FLIL]: [80.74534161490683, 1610],
-          [INDICATOR_NAME_CODES.GHG_FARM]: [0, 1610],
-          [INDICATOR_NAME_CODES.WU]: [0, 1610],
+          [INDICATOR_NAME_CODES.GHG_FARM]: [80.74534161490683, 1610],
+          [INDICATOR_NAME_CODES.WU]: [1500, 1610],
           [INDICATOR_NAME_CODES.WGSWU_NEW]: [0, 1610],
         };
 

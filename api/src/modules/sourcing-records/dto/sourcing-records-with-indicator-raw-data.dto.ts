@@ -6,10 +6,10 @@ import { QueryPropertyTypes } from 'modules/indicator-records/services/impact-ca
 import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
 
 export class SourcingRecordsWithIndicatorRawData extends QueryPropertyTypes {
+  sourcingLocationId: string;
   sourcingRecordId: string;
   tonnage: number;
   year: number;
   materialH3DataId: string;
-  sourcingLocationId: string;
   distributedImpact?: Record<INDICATOR_NAME_CODES, number>;
 }

@@ -1,43 +1,88 @@
-import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
-import { ImpactQueryExpression } from 'modules/indicator-records/services/impact-calculation.dependencies';
+import {
+  Indicator,
+  INDICATOR_NAME_CODES,
+} from 'modules/indicators/indicator.entity';
+import {
+  DistributedImpactValue,
+  ImpactCalculationRepository,
+  TotalWeightedImpact,
+} from 'modules/impact/calculation/impact-calculation.repository';
 import {
   CalculationContext,
-  IIndicatorCalculationStrategy,
+  IndicatorCalculationStrategy,
+  PreCalculationContext,
+  PreCalculationResult,
 } from 'modules/impact/calculation/strategies/indicator-calculation.strategy.interface';
+import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
+import { AppConfig } from 'utils/app.config';
 
-/**
- * ENLIndicatorStrategy implements the calculation for the ENL indicator.
- *
- * It defines:
- *   - Query dependencies: to fetch the raw ENL value via a stored procedure,
- *     the production value, and the NL value (used to calculate nutrient load).
- *   - Arithmetic calculation:
- *       1. nutrientLoad = (raw NL value * tonnage)
- *       2. Final ENL = (raw ENL value * nutrientLoad) / (100 * production)
- *          (with safeguards against division by zero)
- */
-export class ExcessNutrientLoadStrategy
-  implements IIndicatorCalculationStrategy
-{
-  // Unique indicator code for ENL
+export class ExcessNutrientLoadStrategy extends IndicatorCalculationStrategy {
   indicatorCode: INDICATOR_NAME_CODES = INDICATOR_NAME_CODES.ENL;
+  executionPriority: number = 1; //depends on NL, set to 1 to be executed later
+  useDistributedImpact: boolean;
 
-  dependencies: {
-    [INDICATOR_NAME_CODES.NL]: INDICATOR_NAME_CODES.NL;
-  } = { [INDICATOR_NAME_CODES.NL]: INDICATOR_NAME_CODES.NL };
+  constructor(
+    indicator: Indicator,
+    calculationRepository: ImpactCalculationRepository,
+  ) {
+    // this indicator has a dependency on NL, set the priority to 1 to be executed later
+    super(indicator, calculationRepository);
+    this.useDistributedImpact = AppConfig.getBoolean(
+      'flags.useDistributedImpact',
+      false,
+    );
+  }
 
-  /**
-   * Returns the query fragments needed to obtain the raw values for ENL.
-   */
-  getRawQueries(): ImpactQueryExpression[] {
-    return [
-      // Query to obtain the raw ENL value using the stored procedure.
-      `get_annual_commodity_weighted_impact_over_georegion($1, '${this.indicatorCode}', $2, 'producer') as "${this.indicatorCode}"`,
-      // Query to obtain the production value.
-      `sum_material_over_georegion($1, $2, 'producer') as "production"`,
-      // Query to obtain the NL value, which is used to calculate nutrient load.
-      `get_indicator_coefficient_impact('${this.dependencies.NL}', $3, $2) as "${this.dependencies.NL}"`,
-    ];
+  async preCalculate(
+    context: PreCalculationContext,
+  ): Promise<PreCalculationResult> {
+    const { materialId, geoRegionId } = context;
+
+    const indicatorH3DataSource =
+      await this.calculationRepository.getIndicatorH3DataSource(
+        this.indicatorCode,
+      );
+
+    // Get required arguments for calculations (h3 index, h3 data sources...)
+    const geoRegionH3IndexList =
+      await this.calculationRepository.getGeoRegionH3IndexList({
+        geoRegionId,
+      });
+    const productionH3DataSource =
+      await this.calculationRepository.getMaterialH3DataSource(
+        materialId,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
+
+    const production = await this.calculationRepository.sumH3GridOverGeoRegion({
+      geoRegionH3IndexList,
+      materialH3DataSource: productionH3DataSource,
+    });
+
+    // calculate the raw base value IF production > 0, otherwise calculate the distributed value is the app flag is set
+    let rawENL: TotalWeightedImpact | DistributedImpactValue;
+    if (production.value > 0) {
+      rawENL =
+        await this.calculationRepository.getAnnualCommodityWeightedImpactOverGeoRegion(
+          indicatorH3DataSource,
+          productionH3DataSource,
+          geoRegionH3IndexList,
+        );
+    } else {
+      rawENL = this.useDistributedImpact
+        ? await this.calculationRepository.getDistributedImpactOverGeoRegion(
+            indicatorH3DataSource,
+            geoRegionH3IndexList,
+          )
+        : new DistributedImpactValue(0);
+    }
+
+    return {
+      calculatedValues: {
+        rawBaseValue: rawENL,
+        production: production,
+      },
+    };
   }
 
   /**
@@ -50,22 +95,21 @@ export class ExcessNutrientLoadStrategy
    * @param context - Calculation context containing rawData, tonnage, production, etc.
    * @returns The calculated ENL value.
    */
-  calculate(context: CalculationContext): number {
-    const { rawData, tonnage, production } = context;
+  async calculate(context: CalculationContext): Promise<number> {
+    const { calculatedImpacts, preCalculationValues } = context;
+    const production = preCalculationValues.calculatedValues.production;
+    const rawENL = preCalculationValues.calculatedValues.rawBaseValue;
 
-    // Calculate nutrient load using the NL value multiplied by tonnage.
-    const nutrientLoad = rawData[this.dependencies.NL] * tonnage;
+    // Grab the raw NL value from the calculated impacts so far
+    const calculatedNL = calculatedImpacts.get(INDICATOR_NAME_CODES.NL);
+    if (!calculatedNL) {
+      throw new Error(
+        `Missing calculated impact for ${INDICATOR_NAME_CODES.NL} when calculating ${this.indicatorCode}`,
+      );
+    }
 
-    // Retrieve the raw ENL value.
-    const rawENL = rawData[this.indicatorCode];
-
-    // Calculate final ENL, guarding against division by zero.
-    const finalENL =
-      production !== 0 &&
-      Number.isFinite((rawENL * nutrientLoad) / (100 * production))
-        ? (rawENL * nutrientLoad) / (100 * production)
-        : 0;
-
-    return finalENL;
+    return production.value > 0
+      ? (rawENL.value * calculatedNL) / (100 * production.value) || 0
+      : rawENL.value * (calculatedNL / 100) || 0;
   }
 }

@@ -4,14 +4,11 @@
     "host": "localhost",
     "port": 5432,
     "username": "landgriffon",
-    "password": "",
+    "password": "landgriffon",
     "database": "landgriffon",
     "logging": [
-      "query",
       "error",
-      "schema",
-      "info",
-      "log"
+      "info"
     ]
   },
   "tiler": {

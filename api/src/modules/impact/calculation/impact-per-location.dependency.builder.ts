@@ -6,21 +6,17 @@ import {
   INDICATOR_NAME_CODES,
 } from 'modules/indicators/indicator.entity';
 import {
+  AdminRegionId,
   GeoRegionH3IndexList,
+  GeoRegionId,
   ImpactCalculationRepository,
   IndicatorH3DataSource,
+  IndicatorId,
   MaterialH3DataSource,
+  MaterialId,
 } from 'modules/impact/calculation/impact-calculation.repository';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
-import {
-  GeoRegionId,
-  MaterialId,
-} from 'modules/impact/calculation/queries/production-and-harvest.query';
 import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
-import {
-  AdminRegionId,
-  IndicatorId,
-} from 'modules/impact/calculation/queries/indicator-coefficient-impact.query';
 
 /**
  * @description: Builds all dependencies to calculate all required impacts by location.

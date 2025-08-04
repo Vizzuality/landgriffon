@@ -1,36 +1,65 @@
-import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
-import { ImpactQueryExpression } from 'modules/indicator-records/services/impact-calculation.dependencies';
 import {
-  CalculationContext,
-  IIndicatorCalculationStrategy,
+  Indicator,
+  INDICATOR_NAME_CODES,
+} from 'modules/indicators/indicator.entity';
+import { CalculationContext } from 'modules/impact/calculation/strategies/indicator-calculation.strategy.interface';
+import {
+  H3GridSum,
+  ImpactCalculationRepository,
+} from 'modules/impact/calculation/impact-calculation.repository';
+import {
+  IndicatorCalculationStrategy,
+  PreCalculationContext,
+  PreCalculationResult,
 } from 'modules/impact/calculation/strategies/indicator-calculation.strategy.interface';
+import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 
-/**
- * LandUseFootprintForProductionStrategy implements the calculation for the LF indicator.
- *
- * It defines:
- *   - Query dependencies: to fetch "harvest" and "production" raw values.
- *   - Arithmetic calculation: calculates landPerTon = harvest / production (if finite)
- *     and then LF = landPerTon * tonnage.
- */
-export class LandUseFootprintForProductionStrategy
-  implements IIndicatorCalculationStrategy
-{
-  // Unique indicator code for LF
+export class LandUseFootprintForProductionStrategy extends IndicatorCalculationStrategy {
   indicatorCode: INDICATOR_NAME_CODES = INDICATOR_NAME_CODES.LF;
+  executionPriority: number = 0; // has no dependencies, set to 0 to execute earlier
 
-  /**
-   * Returns the query fragments needed to obtain the raw values for LF.
-   */
+  constructor(
+    indicator: Indicator,
+    calculationRepository: ImpactCalculationRepository,
+  ) {
+    super(indicator, calculationRepository);
+  }
 
-  // TODO: For simplicity (maybe) I will add all queries for each indicator, as opposed to what happens in the previous approach. discuss with the team
-  // TODO: Maybe it's a good idea to check that all stored procedure dependencies are present at app start
+  async preCalculate(
+    context: PreCalculationContext,
+  ): Promise<PreCalculationResult> {
+    const { materialId, geoRegionId } = context;
 
-  getRawQueries(): ImpactQueryExpression[] {
-    return [
-      `sum_material_over_georegion($1, $2, 'harvest') as "harvest"`,
-      `sum_material_over_georegion($1, $2, 'producer') as "production"`,
-    ];
+    const geoRegionH3IndexList =
+      await this.calculationRepository.getGeoRegionH3IndexList({
+        geoRegionId,
+      });
+    const productionH3DataSource =
+      await this.calculationRepository.getMaterialH3DataSource(
+        materialId,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
+    const harvestH3DataSource =
+      await this.calculationRepository.getMaterialH3DataSource(
+        materialId,
+        MATERIAL_TO_H3_TYPE.HARVEST,
+      );
+
+    const production = await this.calculationRepository.sumH3GridOverGeoRegion({
+      geoRegionH3IndexList,
+      materialH3DataSource: productionH3DataSource,
+    });
+    const harvest = await this.calculationRepository.sumH3GridOverGeoRegion({
+      geoRegionH3IndexList,
+      materialH3DataSource: harvestH3DataSource,
+    });
+
+    return {
+      calculatedValues: {
+        production,
+        harvest,
+      },
+    };
   }
 
   /**
@@ -41,20 +70,17 @@ export class LandUseFootprintForProductionStrategy
    * @param context - Calculation context containing rawData and tonnage.
    * @returns The calculated LF value.
    */
-  static calculateLF(context: CalculationContext): number {
-    const { rawData, tonnage } = context;
-    const production = rawData.production;
-    const harvest = rawData.harvest;
+  async calculate(context: CalculationContext): Promise<number> {
+    const { tonnage, preCalculationValues } = context;
+    const production = preCalculationValues.calculatedValues.production;
+    const harvest: H3GridSum = preCalculationValues.calculatedValues.harvest;
 
     const landPerTon =
-      production !== 0 && Number.isFinite(harvest / production)
-        ? harvest / production
+      production.value !== 0 &&
+      Number.isFinite(harvest.value / production.value)
+        ? harvest.value / production.value
         : 0;
 
     return landPerTon * tonnage;
-  }
-
-  calculate(context: CalculationContext): number {
-    return LandUseFootprintForProductionStrategy.calculateLF(context);
   }
 }

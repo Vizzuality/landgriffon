@@ -53,6 +53,5 @@ export class NestWebsocketsService implements IWebSocketService, OnGatewayInit {
   emit(event: EVENT_KINDS, payload: any): void {
     const socketPayload: SocketPayload = { kind: event, data: payload };
     this.server.emit(event, socketPayload);
-    this.logger.debug(`Payload: ${payload} emitted to Socket`);
   }
 }

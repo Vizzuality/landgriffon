@@ -21,7 +21,7 @@ export class ImportDataConsumer {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly eventBus: EventBus,
-  ) { }
+  ) {}
 
   @OnQueueError()
   async onQueueError(error: Error): Promise<void> {
@@ -35,7 +35,7 @@ export class ImportDataConsumer {
     if (this.isJobStalled(err)) {
       return this.removeJob(job);
     }
-    
+
     // Delegate the failure logic to a command
     await this.commandBus.execute(
       new HandleImportFailedCommand(
@@ -58,7 +58,9 @@ export class ImportDataConsumer {
   async readImportDataJob(job: Job<ExcelImportJob>): Promise<void> {
     const { taskId, xlsxFileData } = job.data;
     // Delegate the processing logic to a command
-    await this.commandBus.execute(new StartImportProcessingCommand(taskId, xlsxFileData));
+    await this.commandBus.execute(
+      new StartImportProcessingCommand(taskId, xlsxFileData),
+    );
   }
 
   private isJobStalled(err: Error): boolean {

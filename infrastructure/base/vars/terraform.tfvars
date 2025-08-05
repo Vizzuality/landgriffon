@@ -8,9 +8,9 @@ gcp_project_id = "landgriffon"
 gcp_region     = "europe-west1"
 gcp_zone       = "europe-west1-b"
 
-ebs_csi_addon_version           = "v1.19.0-eksbuild.1"
-coredns_addon_version           = "v1.10.1-eksbuild.1"
-eks_cluster_version             = "1.27"
+ebs_csi_addon_version = "v1.45.0-eksbuild.2"
+coredns_addon_version = "v1.11.4-eksbuild.2"
+eks_cluster_version   = "1.32"
 
 marketing_site_tag                           = "dev"
 marketing_site_google_analytics              = "G-2C4TNVYL2H"

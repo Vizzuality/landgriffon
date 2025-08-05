@@ -176,7 +176,7 @@ export class ImpactCalculator {
           );
       } else {
         rawData.production =
-          sourcingData.sourcingRecord!.indicatorRecords[0].scaler;
+          sourcingData.sourcingRecord!.indicatorRecords[0].scaler || 0;
       }
     } else {
       rawData = await this.getImpactRawDataPerSourcingRecordCached(

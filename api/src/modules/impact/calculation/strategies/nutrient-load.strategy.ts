@@ -1,8 +1,16 @@
-import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
-import { ImpactQueryExpression } from 'modules/indicator-records/services/impact-calculation.dependencies';
+import {
+  Indicator,
+  INDICATOR_NAME_CODES,
+} from 'modules/indicators/indicator.entity';
+import {
+  ImpactCalculationRepository,
+  IndicatorId,
+} from 'modules/impact/calculation/impact-calculation.repository';
 import {
   CalculationContext,
-  IIndicatorCalculationStrategy,
+  IndicatorCalculationStrategy,
+  PreCalculationContext,
+  PreCalculationResult,
 } from 'modules/impact/calculation/strategies/indicator-calculation.strategy.interface';
 
 /**
@@ -12,19 +20,34 @@ import {
  *   - Query dependency: to fetch the raw NL value using a stored procedure.
  *   - Arithmetic calculation: calculates the final NL value by simply multiplying the raw NL value by the tonnage.
  */
-export class NutrientLoadStrategy implements IIndicatorCalculationStrategy {
-  // Unique indicator code for NL
+export class NutrientLoadStrategy extends IndicatorCalculationStrategy {
   indicatorCode: INDICATOR_NAME_CODES = INDICATOR_NAME_CODES.NL;
+  executionPriority: number = 0; //no dependencies, set to 0 to execute earlier
 
-  /**
-   * Returns the query fragment needed to obtain the raw value for NL.
-   */
-  getRawQueries(): ImpactQueryExpression[] {
-    return [
-      // Query to obtain the raw NL value via the stored procedure,
-      // using the internal indicatorCode for aliasing.
-      `get_indicator_coefficient_impact('${this.indicatorCode}', $3, $2) as "${this.indicatorCode}"`,
-    ];
+  constructor(
+    indicator: Indicator,
+    calculationRepository: ImpactCalculationRepository,
+  ) {
+    super(indicator, calculationRepository);
+  }
+
+  async preCalculate(
+    context: PreCalculationContext,
+  ): Promise<PreCalculationResult> {
+    const { materialId, adminRegionId } = context;
+
+    // calculate raw base value
+    const rawNL =
+      await this.calculationRepository.getIndicatorCoefficientImpact({
+        adminRegionId,
+        materialId,
+        indicatorId: new IndicatorId(this.indicator.id),
+      });
+    return {
+      calculatedValues: {
+        rawBaseValue: rawNL,
+      },
+    };
   }
 
   /**
@@ -35,9 +58,10 @@ export class NutrientLoadStrategy implements IIndicatorCalculationStrategy {
    * @param context - Calculation context containing rawData and tonnage.
    * @returns The calculated NL value.
    */
-  calculate(context: CalculationContext): number {
-    const { rawData, tonnage } = context;
-    const rawNL = rawData[this.indicatorCode];
-    return rawNL * tonnage || 0;
+  async calculate(context: CalculationContext): Promise<number> {
+    const { tonnage, preCalculationValues } = context;
+    const rawNL = preCalculationValues.calculatedValues.rawBaseValue;
+
+    return rawNL.value * tonnage || 0;
   }
 }

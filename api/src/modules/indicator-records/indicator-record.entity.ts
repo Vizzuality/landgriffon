@@ -74,7 +74,7 @@ export class IndicatorRecord extends BaseEntity {
 
   // Scaler: Production total sum.
   @Column({ type: 'float', nullable: true })
-  scaler: number;
+  scaler: number | null;
 
   @ManyToOne(() => H3Data, (h3Data: H3Data) => h3Data.indicatorRecords)
   @JoinColumn({ name: 'materialH3DataId' })

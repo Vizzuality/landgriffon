@@ -17,6 +17,13 @@ import { IndicatorCoefficientsDto } from 'modules/indicator-coefficients/dto/ind
 import { NewSupplierLocationIntervention } from 'modules/scenario-interventions/strategies/new-supplier-location.intervention.strategy';
 import { ChangeProductionEfficiencyIntervention } from 'modules/scenario-interventions/strategies/change-production-efficiency.intervention.strategy';
 import { ImpactCalculator } from 'modules/indicator-records/services/impact-calculator.service';
+import { AppConfig } from 'utils/app.config';
+import { ImpactCalculatorV2 } from 'modules/impact/calculation/impact.calculator';
+import {
+  Indicator,
+  INDICATOR_STATUS,
+} from 'modules/indicators/indicator.entity';
+import { IndicatorsService } from 'modules/indicators/indicators.service';
 
 /**
  * @description: This service consumes a previously created Intervention instance and takes care of building the full entity
@@ -34,6 +41,8 @@ export class InterventionBuilder {
     protected readonly newSupplierLocationIntervention: NewSupplierLocationIntervention,
     protected readonly changeProductionEfficiencyIntervention: ChangeProductionEfficiencyIntervention,
     protected readonly impactCalculator: ImpactCalculator,
+    protected readonly impactCalculatorV2: ImpactCalculatorV2,
+    protected readonly indicatorsService: IndicatorsService,
   ) {}
 
   async addDescendantsEntitiesForFiltering(
@@ -188,22 +197,39 @@ export class InterventionBuilder {
     newIndicatorCoefficients: IndicatorCoefficientsDto | undefined,
     newScenarioIntervention: ScenarioIntervention,
   ): Promise<ScenarioIntervention> {
-    for (const sourcingLocation of newSourcingLocations) {
-      for await (const sourcingRecord of sourcingLocation.sourcingRecords) {
-        const sourcingData: any = {
-          sourcingRecordId: sourcingRecord.id,
-          tonnage: sourcingRecord.tonnage,
-          geoRegionId: sourcingLocation.geoRegionId,
-          materialId: sourcingLocation.materialId,
-          adminRegionId: sourcingLocation.adminRegionId,
-          year: sourcingRecord.year,
-          sourcingRecord: sourcingRecord,
-        };
-        sourcingRecord.indicatorRecords =
-          await this.impactCalculator.createIndicatorRecordsBySourcingRecords(
-            sourcingData,
-            newIndicatorCoefficients as unknown as IndicatorCoefficientsDto,
-          );
+    const useNewImpactCalculationFlow = AppConfig.get(
+      'flags.useNewImpactFlow',
+      'true',
+    );
+    if (useNewImpactCalculationFlow === 'true') {
+      const indicators: Indicator[] =
+        await this.indicatorsService.findAllIndicators({
+          status: INDICATOR_STATUS.ACTIVE,
+        });
+
+      await this.impactCalculatorV2.calculateImpactForInterventionLocations(
+        indicators,
+        newSourcingLocations,
+        newIndicatorCoefficients,
+      );
+    } else {
+      for (const sourcingLocation of newSourcingLocations) {
+        for await (const sourcingRecord of sourcingLocation.sourcingRecords) {
+          const sourcingData: any = {
+            sourcingRecordId: sourcingRecord.id,
+            tonnage: sourcingRecord.tonnage,
+            geoRegionId: sourcingLocation.geoRegionId,
+            materialId: sourcingLocation.materialId,
+            adminRegionId: sourcingLocation.adminRegionId,
+            year: sourcingRecord.year,
+            sourcingRecord: sourcingRecord,
+          };
+          sourcingRecord.indicatorRecords =
+            await this.impactCalculator.createIndicatorRecordsBySourcingRecords(
+              sourcingData,
+              newIndicatorCoefficients as unknown as IndicatorCoefficientsDto,
+            );
+        }
       }
     }
 

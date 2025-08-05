@@ -1,26 +1,36 @@
-import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
-import { ImpactQueryExpression } from 'modules/indicator-records/services/impact-calculation.dependencies';
-import { SourcingRecordsWithIndicatorRawData } from 'modules/sourcing-records/dto/sourcing-records-with-indicator-raw-data.dto';
+import {
+  Indicator,
+  INDICATOR_NAME_CODES,
+} from 'modules/indicators/indicator.entity';
+import {
+  AdminRegionId,
+  DistributedImpactValue,
+  GeoRegionId,
+  H3GridSum,
+  ImpactCalculationRepository,
+  MaterialId,
+  TotalWeightedImpact,
+} from 'modules/impact/calculation/impact-calculation.repository';
 
-/**
- * Calculation context that will be passed to each strategy.
- * It includes raw data from the database, tonnage, and pre-calculated values such as production and landPerTon.
- */
-
-export interface CalculationContext {
-  rawData: SourcingRecordsWithIndicatorRawData;
-  tonnage: number;
-  production: number; // Can be derived from rawData
-  // TODO: Probably here is where we need to add the unweighted impact
+export interface PreCalculationContext {
+  geoRegionId: GeoRegionId;
+  materialId: MaterialId;
+  adminRegionId: AdminRegionId;
 }
 
-/**
- * Defines a custom type to declare dependencies between indicators, referencing the nameCodes
- */
-
-export type IndicatorDependencies = {
-  [key in keyof typeof INDICATOR_NAME_CODES]?: INDICATOR_NAME_CODES;
+// Almost all strategies will use a production value and a rawBaseValue,
+// but some strategies might need some other one-off values (like WGSWU_NEW)
+export type PreCalculationResult = {
+  calculatedValues: {
+    [key: string]: DistributedImpactValue | TotalWeightedImpact | H3GridSum;
+  };
 };
+
+export interface CalculationContext {
+  tonnage: number;
+  preCalculationValues: PreCalculationResult;
+  calculatedImpacts: Map<INDICATOR_NAME_CODES, number>;
+}
 
 /**
  * Interface that all indicator calculation strategies must implement.
@@ -28,29 +38,36 @@ export type IndicatorDependencies = {
  *   1. The query or queries needed to obtain the raw value of the indicator from the database.
  *   2. The formula to calculate the final indicator value using the provided calculation context.
  */
-export interface IIndicatorCalculationStrategy {
+export abstract class IndicatorCalculationStrategy {
   /**
    * Unique indicator code that identifies the strategy.
    */
   indicatorCode: INDICATOR_NAME_CODES;
 
+  // Priority is used to determine the order of execution for the strategies. Strategies with no dependencies, will have
+  // lower priority,which will be executed first (e.g. LF). While strategies with dependencies will have higher priority.
+  public abstract readonly executionPriority: number;
+
+  constructor(
+    public readonly indicator: Indicator,
+    protected readonly calculationRepository: ImpactCalculationRepository,
+  ) {}
+
   /**
-   * Dependencies between indicators. Some indicators might depend on the value of other indicators.
+   * Fetches all the necessary data to calculate the values that will be used in the final calculation of the indicator.
+   * (geoRegion's H3 index list, H3 Data sources, calculating rawValues, etc.)
+   * @param context
    */
-
-  dependencies?: IndicatorDependencies;
-
-  queryDependencies?: any;
-  /**
-   * Returns one or more query fragments (as strings) required to obtain the raw value
-   * of the indicator from the database.
-   */
-  getRawQueries(): ImpactQueryExpression[];
+  abstract preCalculate(
+    context: PreCalculationContext,
+  ): Promise<PreCalculationResult>;
 
   /**
-   * Calculates the final value of the indicator using the provided calculation context.
+   * Calculates the final value of the indicator using the provided calculation context (which includes
+   * values calculated in the preCalculate method, as well as final impact values of other indicators that
+   * were calculated first).
    * @param context - Context containing the raw data, tonnage, and other pre-calculated values needed.
    * @returns The final value of the indicator.
    */
-  calculate(context: CalculationContext): number;
+  abstract calculate(context: CalculationContext): Promise<number>;
 }

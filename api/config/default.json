@@ -37,13 +37,21 @@
   "queue": {
     "enabled": true,
     "host": "localhost",
-    "port": 6379,
+    "port": 6378,
     "database": 1,
     "importQueueName": "excel-import"
   },
   "geocodingCache": {
     "enabled": true,
     "store": "redis",
+    "host": "localhost",
+    "port": 6379,
+    "database": 2,
+    "TTL": 86400
+  },
+  "calculationCache": {
+    "enabled": true,
+    "store": "memory",
     "host": "localhost",
     "port": 6379,
     "database": 2,

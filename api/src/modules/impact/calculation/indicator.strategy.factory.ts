@@ -1,8 +1,13 @@
 // Import the Indicator type and indicator codes
-import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
-import { IIndicatorCalculationStrategy } from 'modules/impact/calculation/strategies/indicator-calculation.strategy.interface';
-import { LandUseFootprintForProductionStrategy } from 'modules/impact/calculation/strategies/land-use-footprint-for-production.strategy';
+import {
+  Indicator,
+  INDICATOR_NAME_CODES,
+} from 'modules/indicators/indicator.entity';
+import { Injectable } from '@nestjs/common';
+import { IndicatorCalculationStrategy } from 'modules/impact/calculation/strategies/indicator-calculation.strategy.interface';
+import { ImpactCalculationRepository } from 'modules/impact/calculation/impact-calculation.repository';
 import { DeforestationFootprintStrategy } from 'modules/impact/calculation/strategies/deforestation-footprint.strategy';
+import { LandUseFootprintForProductionStrategy } from 'modules/impact/calculation/strategies/land-use-footprint-for-production.strategy';
 import { GHGDeforestationStrategy } from 'modules/impact/calculation/strategies/ghg-deforestation.strategy';
 import { NetCroplandExpansionStrategy } from 'modules/impact/calculation/strategies/net-cropland-expansion.strategy';
 import { ForestLandscapeIntegrityLossStrategy } from 'modules/impact/calculation/strategies/forest-landscape-integrity-loss.strategy';
@@ -14,14 +19,7 @@ import { ExcessNutrientLoadStrategy } from 'modules/impact/calculation/strategie
 import { WaterWithdrawalsStrategy } from 'modules/impact/calculation/strategies/water-withdrawals.strategy';
 import { WaterConsumptionStrategy } from 'modules/impact/calculation/strategies/water-consumption.strategy';
 import { WaterGapToUnsustainableWaterUseStrategy } from 'modules/impact/calculation/strategies/water-gap-to-unsustainable-water-use.strategy';
-import { Injectable } from '@nestjs/common';
-import { ImpactQueryDependency } from './impact-calculation.query.builder';
-import { DataSource } from 'typeorm';
-
-export type IndicatorStrategyMap = Map<
-  INDICATOR_NAME_CODES,
-  IIndicatorCalculationStrategy
->;
+import { WaterGapToSustainableWaterUseNewStrategy } from 'modules/impact/calculation/strategies/water-gap-to-sustainable-water-use-new.strategy';
 
 /**
  * ImpactCalculationRegistry dynamically instantiates and returns strategy instances
@@ -29,9 +27,16 @@ export type IndicatorStrategyMap = Map<
  */
 @Injectable()
 export class IndicatorStrategyFactory {
+  constructor(
+    private readonly calculationRepository: ImpactCalculationRepository,
+  ) {}
+
   private strategyMap: Record<
     INDICATOR_NAME_CODES,
-    new () => IIndicatorCalculationStrategy
+    new (
+      indicator: Indicator,
+      calculationRepository: ImpactCalculationRepository,
+    ) => IndicatorCalculationStrategy
   > = {
     [INDICATOR_NAME_CODES.LF]: LandUseFootprintForProductionStrategy,
     [INDICATOR_NAME_CODES.DF_SLUC]: DeforestationFootprintStrategy,
@@ -46,37 +51,37 @@ export class IndicatorStrategyFactory {
     [INDICATOR_NAME_CODES.WW]: WaterWithdrawalsStrategy,
     [INDICATOR_NAME_CODES.WC]: WaterConsumptionStrategy,
     [INDICATOR_NAME_CODES.WGUWU]: WaterGapToUnsustainableWaterUseStrategy,
-    [INDICATOR_NAME_CODES.WGSWU_NEW]: WaterGapToUnsustainableWaterUseStrategy,
+    [INDICATOR_NAME_CODES.WGSWU_NEW]: WaterGapToSustainableWaterUseNewStrategy,
   };
 
   /**
    * Returns a map of strategy instances corresponding to the active indicators.
    *
-   * @param activeIndicatorNameCodes Array of active Indicator nameCodes
-   * @param dataSource
+   * @param activeIndicators Array of active Indicators
    * @returns Map of instantiated IIndicatorCalculationStrategy objects
    */
-  public getStrategies(
-    activeIndicatorNameCodes: INDICATOR_NAME_CODES[],
-    dataSource: DataSource,
-  ): IndicatorStrategyMap2 {
-    // Create a unique set of nameCodes in case there are duplicates
-    const activeCodes = new Set(activeIndicatorNameCodes);
+  public getStrategies(activeIndicators: Indicator[]): IndicatorStrategyMap {
+    const strategyMap: IndicatorStrategyMap = new IndicatorStrategyMap();
+    // TODO: right now, for simplicity, it is assumed that indicators that are a dependency of other indicators will
+    // also be present in the list of active indicators. This might not always be the case, and in the future we should adapt
+    // the logic to include this indicator dependencies in the calculation process, but *not save them* in the database.
 
-    const strategyMap: IndicatorStrategyMap2 = new IndicatorStrategyMap2();
-    // Loop over the mapping and instantiate the strategies for active codes
-    for (const code in this.strategyMap) {
-      if (activeCodes.has(code as INDICATOR_NAME_CODES)) {
-        const StrategyClass = this.strategyMap[code as INDICATOR_NAME_CODES];
-        strategyMap.set(code as INDICATOR_NAME_CODES, new StrategyClass());
+    for (const activeIndicator of activeIndicators) {
+      const strategyClass = this.strategyMap[activeIndicator.nameCode];
+      if (strategyClass) {
+        strategyMap.set(
+          activeIndicator.nameCode,
+          new strategyClass(activeIndicator, this.calculationRepository),
+        );
       }
     }
+
     return strategyMap;
   }
 }
 
-export class IndicatorStrategyMap2 {
-  map: Map<INDICATOR_NAME_CODES, IIndicatorCalculationStrategy>;
+export class IndicatorStrategyMap {
+  map: Map<INDICATOR_NAME_CODES, IndicatorCalculationStrategy>;
 
   constructor() {
     this.map = new Map();
@@ -86,19 +91,19 @@ export class IndicatorStrategyMap2 {
     return this.map.has(key);
   }
 
-  set(key: INDICATOR_NAME_CODES, val: IIndicatorCalculationStrategy): void {
+  set(key: INDICATOR_NAME_CODES, val: IndicatorCalculationStrategy): void {
     this.map.set(key, val);
   }
 
-  get(key: INDICATOR_NAME_CODES): IIndicatorCalculationStrategy | undefined {
+  get(key: INDICATOR_NAME_CODES): IndicatorCalculationStrategy | undefined {
     return this.map.get(key);
   }
 
-  getQueryDependencies(): ImpactQueryDependency[] {
-    const dependencies: ImpactQueryDependency[] = [];
-    this.map.forEach((s) => {
-      dependencies.push({ alias: s.indicatorCode, queries: s.getRawQueries() });
-    });
-    return dependencies;
+  // Returns the list of strategies in the map, sorted by priority. Smaller Values are more prioritary.
+  getSortedStrategies(): IndicatorCalculationStrategy[] {
+    const sortedStrategies = Array.from(this.map.values()).sort(
+      (a, b) => a.executionPriority - b.executionPriority,
+    );
+    return sortedStrategies;
   }
 }

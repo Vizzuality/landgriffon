@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  ServiceUnavailableException,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
@@ -11,7 +7,6 @@ import { FileService } from 'modules/import-data/file.service';
 import { SourcingData } from 'modules/import-data/sourcing-data/dto-processor.service';
 import { Supplier } from 'modules/suppliers/supplier.entity';
 import { Material } from 'modules/materials/material.entity';
-import { BusinessUnit } from 'modules/business-units/business-unit.entity';
 import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-class';
 import { TasksService } from 'modules/tasks/tasks.service';
 import { IndicatorsService } from 'modules/indicators/indicators.service';
@@ -23,11 +18,10 @@ import {
   SourcingDataSheet,
 } from 'modules/import-data/sourcing-data/validation/excel-validator.service';
 import { ExcelValidationError } from 'modules/import-data/sourcing-data/validation/validators/excel-validation.error';
-import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 import { SourcingDataDbCleaner } from 'modules/import-data/sourcing-data/sourcing-data.db-cleaner';
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { AppConfig } from '../../../utils/app.config';
-import { ImpactCalculatorV2 } from '../../impact/calculation/impact.calculator';
+import { ImpactCalculatorV2 } from 'modules/impact/calculation/impact.calculator';
 
 export interface SourcingRecordsSheets extends Record<string, any[]> {
   materials: Record<string, any>[];
@@ -66,7 +60,7 @@ export class SourcingDataImportService {
     protected readonly impactCalculator: ImpactCalculator,
     protected readonly excelValidator: ExcelValidatorService,
     protected readonly dbCleaner: SourcingDataDbCleaner,
-    protected readonly impact: ImpactCalculatorV2,
+    protected readonly impactCalculatorV2: ImpactCalculatorV2,
   ) {}
 
   async importSourcingData(filePath: string, taskId: string): Promise<any> {
@@ -168,7 +162,9 @@ export class SourcingDataImportService {
 
         if (useNewImpactCalculationFlow) {
           this.logger.warn('Using new impact calculation flow');
-          await this.impact.calculateImpact(activeIndicators);
+          await this.impactCalculatorV2.calculateImpactForAllLocations(
+            activeIndicators,
+          );
         } else {
           await this.impactCalculator.calculateImpactForAllSourcingRecords(
             activeIndicators,

@@ -1,35 +1,67 @@
-import { INDICATOR_NAME_CODES } from 'modules/indicators/indicator.entity';
-import { ImpactQueryExpression } from 'modules/indicator-records/services/impact-calculation.dependencies';
+import {
+  Indicator,
+  INDICATOR_NAME_CODES,
+} from 'modules/indicators/indicator.entity';
+import { ImpactCalculationRepository } from 'modules/impact/calculation/impact-calculation.repository';
+import { MATERIAL_TO_H3_TYPE } from 'modules/materials/material-to-h3.entity';
 import {
   CalculationContext,
-  IIndicatorCalculationStrategy,
+  IndicatorCalculationStrategy,
+  PreCalculationContext,
+  PreCalculationResult,
 } from 'modules/impact/calculation/strategies/indicator-calculation.strategy.interface';
-import { LandUseFootprintForProductionStrategy } from 'modules/impact/calculation/strategies/land-use-footprint-for-production.strategy';
 
-/**
- * GHGDeforestationStrategy implements the calculation for the GHG_DEF indicator.
- *
- * It defines:
- *   - Query dependencies: to fetch the raw GHG_DEF value, along with production and harvest raw values.
- *   - Arithmetic calculation: calculates a pre-processed value by dividing the raw GHG_DEF value by production (if valid),
- *     then multiplies it by the LF value obtained from the static helper in the LF strategy.
- */
-export class GHGDeforestationStrategy implements IIndicatorCalculationStrategy {
-  // Unique indicator code for GHG_DEF
+export class GHGDeforestationStrategy extends IndicatorCalculationStrategy {
   indicatorCode: INDICATOR_NAME_CODES = INDICATOR_NAME_CODES.GHG_DEF_SLUC;
+  executionPriority: number = 1; //depends on LF, set to 1 to be executed later
 
-  /**
-   * Returns the query fragments needed to obtain the raw values for GHG_DEF.
-   */
-  getRawQueries(): ImpactQueryExpression[] {
-    return [
-      // Query to obtain the raw GHG_DEF value via the stored procedure.
-      `get_annual_commodity_weighted_impact_over_georegion($1, '${this.indicatorCode}', $2, 'producer') as "${this.indicatorCode}"`,
-      // Query to obtain the production value.
-      `sum_material_over_georegion($1, $2, 'producer') as "production"`,
-      // Query to obtain the harvest value (needed for LF calculation).
-      `sum_material_over_georegion($1, $2, 'harvest') as "harvest"`,
-    ];
+  constructor(
+    indicator: Indicator,
+    calculationRepository: ImpactCalculationRepository,
+  ) {
+    // Priority 1 because this indicator has a dependency on LF, which will be calculated first
+    super(indicator, calculationRepository);
+  }
+
+  async preCalculate(
+    context: PreCalculationContext,
+  ): Promise<PreCalculationResult> {
+    const { materialId, geoRegionId } = context;
+
+    const indicatorH3DataSource =
+      await this.calculationRepository.getIndicatorH3DataSource(
+        this.indicatorCode,
+      );
+
+    // Get required arguments for calculations (h3 index, h3 data sources...)
+    const geoRegionH3IndexList =
+      await this.calculationRepository.getGeoRegionH3IndexList({
+        geoRegionId,
+      });
+    const productionH3DataSource =
+      await this.calculationRepository.getMaterialH3DataSource(
+        materialId,
+        MATERIAL_TO_H3_TYPE.PRODUCER,
+      );
+
+    const production = await this.calculationRepository.sumH3GridOverGeoRegion({
+      geoRegionH3IndexList,
+      materialH3DataSource: productionH3DataSource,
+    });
+
+    const rawGHG_DEF =
+      await this.calculationRepository.getAnnualCommodityWeightedImpactOverGeoRegion(
+        indicatorH3DataSource,
+        productionH3DataSource,
+        geoRegionH3IndexList,
+      );
+
+    return {
+      calculatedValues: {
+        rawBaseValue: rawGHG_DEF,
+        production: production,
+      },
+    };
   }
 
   /**
@@ -42,21 +74,26 @@ export class GHGDeforestationStrategy implements IIndicatorCalculationStrategy {
    * @param context - Calculation context containing rawData, tonnage, production, etc.
    * @returns The calculated GHG_DEF value.
    */
-  calculate(context: CalculationContext): number {
-    const { rawData, production } = context;
+  async calculate(context: CalculationContext): Promise<number> {
+    const { calculatedImpacts, preCalculationValues } = context;
+    const production = preCalculationValues.calculatedValues.production;
+    const rawGHG_DEF = preCalculationValues.calculatedValues.rawBaseValue;
 
-    // Use the static helper from LF strategy to calculate LF.
-    const lf = LandUseFootprintForProductionStrategy.calculateLF(context);
-
-    // Get the raw GHG_DEF value from the raw data.
-    const rawGHG_DEF = rawData[this.indicatorCode];
+    // Grab the raw NL value from the calculated impacts so far
+    const calculatedLF = calculatedImpacts.get(INDICATOR_NAME_CODES.LF);
+    if (!calculatedLF) {
+      throw new Error(
+        `Missing calculated impact for ${INDICATOR_NAME_CODES.LF} when calculating ${this.indicatorCode}`,
+      );
+    }
 
     // Compute the pre-processed value as rawGHG_DEF / production, avoiding division by zero.
     const preProcessed =
-      production !== 0 && Number.isFinite(rawGHG_DEF / production)
-        ? rawGHG_DEF / production
+      production.value !== 0 &&
+      Number.isFinite(rawGHG_DEF.value / production.value)
+        ? rawGHG_DEF.value / production.value
         : 0;
 
-    return preProcessed * lf;
+    return preProcessed * calculatedLF;
   }
 }

@@ -39,11 +39,11 @@ terraform {
       version = "4.51.0"
     }
   }
-  required_version = "~> 1.3.2"
+  required_version = "~> 1.6.0"
 }
 
 provider "aws" {
-  region              = "eu-west-3"
+  region = "eu-west-3"
   allowed_account_ids = [var.allowed_account_id]
 }
 
@@ -67,11 +67,11 @@ provider "kubernetes" {
 provider "helm" {
   alias = "aws_helm"
   kubernetes {
-    host                   = "${data.aws_eks_cluster.cluster.endpoint}:4433"
+    host = "${data.aws_eks_cluster.cluster.endpoint}:4433"
     cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
     exec {
       api_version = "client.authentication.k8s.io/v1beta1"
-      args        = [
+      args = [
         "eks",
         "get-token",
         "--cluster-name",
@@ -87,8 +87,8 @@ data "google_client_config" "default" {}
 provider "helm" {
   alias = "gcp_helm"
   kubernetes {
-    host                   = "https://${data.google_container_cluster.cluster.endpoint}"
-    token                  = data.google_client_config.default.access_token
+    host  = "https://${data.google_container_cluster.cluster.endpoint}"
+    token = data.google_client_config.default.access_token
     cluster_ca_certificate = base64decode(data.google_container_cluster.cluster.master_auth[0].cluster_ca_certificate)
   }
 }
@@ -101,11 +101,11 @@ provider "github" {
 provider "kubectl" {
   alias = "aws_kubectl"
 
-  host                   = "${data.aws_eks_cluster.cluster.endpoint}:4433"
+  host = "${data.aws_eks_cluster.cluster.endpoint}:4433"
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"
-    args        = [
+    args = [
       "eks",
       "get-token",
       "--cluster-name",
@@ -119,8 +119,8 @@ provider "kubectl" {
   alias = "gcp_kubectl"
 
   kubernetes {
-    host                   = data.google_container_cluster.cluster.endpoint
-    token                  = data.google_client_config.default.access_token
+    host  = data.google_container_cluster.cluster.endpoint
+    token = data.google_client_config.default.access_token
     cluster_ca_certificate = base64decode(data.google_container_cluster.cluster.master_auth[0].cluster_ca_certificate)
 
   }

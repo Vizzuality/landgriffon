@@ -37,7 +37,7 @@
   "queue": {
     "enabled": true,
     "host": "localhost",
-    "port": 6378,
+    "port": 6379,
     "database": 1,
     "importQueueName": "excel-import"
   },

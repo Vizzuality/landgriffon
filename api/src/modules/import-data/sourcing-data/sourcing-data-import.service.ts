@@ -1,4 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { MaterialsService } from 'modules/materials/materials.service';
 import { BusinessUnitsService } from 'modules/business-units/business-units.service';
 import { SuppliersService } from 'modules/suppliers/suppliers.service';
@@ -22,6 +26,8 @@ import { SourcingDataDbCleaner } from 'modules/import-data/sourcing-data/sourcin
 import { SourcingLocation } from 'modules/sourcing-locations/sourcing-location.entity';
 import { AppConfig } from '../../../utils/app.config';
 import { ImpactCalculatorV2 } from 'modules/impact/calculation/impact.calculator';
+import { BusinessUnit } from 'modules/business-units/business-unit.entity';
+import { GeoCodingError } from 'modules/geo-coding/errors/geo-coding.error';
 
 export interface SourcingRecordsSheets extends Record<string, any[]> {
   materials: Record<string, any>[];

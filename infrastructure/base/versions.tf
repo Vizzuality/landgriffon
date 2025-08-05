@@ -16,11 +16,11 @@ terraform {
       version = "5.17.0"
     }
   }
-  required_version = "~> 1.3.2"
+  required_version = "~> 1.6.0"
 }
 
 provider "aws" {
-  region              = var.aws_region
+  region = var.aws_region
   allowed_account_ids = [var.allowed_account_id]
 }
 

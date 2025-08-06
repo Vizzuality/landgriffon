@@ -19,20 +19,29 @@ import { Cache } from 'cache-manager';
 import * as crypto from 'crypto';
 
 export class MaterialH3DataSource extends H3DataSource {}
+
 export class IndicatorH3DataSource extends H3DataSource {}
+
 export class MaterialIndicatorH3DataSource extends H3DataSource {}
 
 export class H3GridSum extends TinyTypeOf<number>() {}
+
 export class GeoRegionH3IndexList extends TinyTypeOf<string[]>() {}
+
 export class IndicatorCoefficientImpactValue extends TinyTypeOf<number>() {}
+
 export class TotalWeightedImpact extends TinyTypeOf<number>() {}
 
 export class DistributedImpactValue extends TinyTypeOf<number>() {}
 
 export class H3DataId extends TinyTypeOf<string>() {}
+
 export class MaterialId extends TinyTypeOf<string>() {}
+
 export class GeoRegionId extends TinyTypeOf<string>() {}
+
 export class IndicatorId extends TinyTypeOf<string>() {}
+
 export class AdminRegionId extends TinyTypeOf<string>() {}
 
 interface IndicatorCoefficientImpactQueryParams {
@@ -50,6 +59,7 @@ export class GetGeoRegionH3IndexListParams {
   geoRegionId: GeoRegionId;
   resolution?: number;
 }
+
 export interface DistributedImpactQueryParams {
   indicatorNameCode: INDICATOR_NAME_CODES;
   geoRegionH3IndexList: GeoRegionH3IndexList;
@@ -452,7 +462,7 @@ export class ImpactCalculationRepository {
       WHERE h3ind.h3index = ANY($1)
         AND (h3ind."${indicatorH3DataSource.columnName}" > 0.4 AND h3ind."${indicatorH3DataSource.columnName}" < 9999);
       `,
-        [geoRegionH3IndexList],
+        [geoRegionH3IndexList.value],
       );
     if (!res.length) {
       throw new ImpactRawDataComputingError(
@@ -495,7 +505,7 @@ export class ImpactCalculationRepository {
       FROM ${indicatorH3DataSource.tableName} h3ind
       WHERE h3ind.h3index = ANY($1)
       `,
-        [geoRegionH3IndexList],
+        [geoRegionH3IndexList.value],
       );
     if (!res.length) {
       throw new ImpactRawDataComputingError(

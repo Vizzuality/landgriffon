@@ -71,6 +71,7 @@ export class ImpactCalculatorV2 {
     const sortedStrategies = strategyMap.getSortedStrategies();
 
     for (const location of locations) {
+      /////// TODO The following block is a temporal workaround
       // Need to get the material's Production H3 data source and value to be set in the corresponding indicator records
       // IMPORTANT : this mirrors the original approach, which is incorrect to begin with, as some indicators depend on the
       // associated Material Indicator H3 data source, instead of the Material H3 Data source.
@@ -90,6 +91,7 @@ export class ImpactCalculatorV2 {
           geoRegionH3IndexList,
           materialH3DataSource: productionH3DataSource,
         });
+      //////
 
       // Precalculate all the values for each strategy, that are dependent on the location, and not for each sourcing record
       const preCalculationResults: Map<
@@ -161,7 +163,7 @@ export class ImpactCalculatorV2 {
     const sortedStrategies = strategyMap.getSortedStrategies();
 
     for (const location of locations) {
-      // IMPORTANT:  SEE ABOVE on the calculateImpacts function
+      // IMPORTANT:  TODO SEE ABOVE on the calculateImpacts function
       const productionH3DataSource =
         await this.calculationRepository.getMaterialH3DataSource(
           new MaterialId(location.materialId),
@@ -172,6 +174,7 @@ export class ImpactCalculatorV2 {
           geoRegionId: new GeoRegionId(location.geoRegionId),
         });
       let productionValue: H3GridSum;
+      /////
 
       if (providedCoefficients) {
         /////// If the user provided coefficients, calculations will be done with these values instead of the normal flow
@@ -207,11 +210,13 @@ export class ImpactCalculatorV2 {
         }
       } else {
         ////// Calculate all the values for each strategy normally
+        ///////// IMPORTANT:  TODO SEE ABOVE on the calculateImpacts function
         productionValue =
           await this.calculationRepository.sumH3GridOverGeoRegion({
             geoRegionH3IndexList,
             materialH3DataSource: productionH3DataSource,
           });
+        /////////
 
         // Precalculate all the values for each strategy, that are dependent on the location, and not for each sourcing record
         const preCalculationResults: Map<

@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { IndicatorStrategyFactory } from 'modules/impact/calculation/indicator.strategy.factory';
 import { ImpactPerLocationDependencyBuilder } from 'modules/impact/calculation/impact-per-location.dependency.builder';
-import { ImpactQueryBuilderV2 } from 'modules/impact/calculation/impact-calculation.query.builder';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
 import * as config from 'config';
@@ -39,7 +38,6 @@ const calculationCacheTTL: number = parseInt(
     IndicatorStrategyFactory,
     ImpactPerLocationDependencyBuilder,
     ImpactCalculationRepository,
-    ImpactQueryBuilderV2,
   ],
   exports: [ImpactCalculatorV2],
 })

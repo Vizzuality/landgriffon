@@ -13,7 +13,6 @@ import {
 } from 'modules/materials/material-to-h3.entity';
 import { TinyTypeOf } from 'tiny-types';
 import { MaterialIndicatorToH3 } from 'modules/materials/material-indicator-to-h3.entity';
-import { ImpactQueryBuilderV2 } from 'modules/impact/calculation/impact-calculation.query.builder';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import * as crypto from 'crypto';
@@ -71,7 +70,6 @@ export class ImpactCalculationRepository {
   constructor(
     @InjectDataSource() private readonly dataSource: DataSource,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    private readonly impactQueryBuilder: ImpactQueryBuilderV2,
   ) {}
 
   hashKey(...params: any[]): string {

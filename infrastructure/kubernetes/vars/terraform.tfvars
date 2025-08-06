@@ -3,8 +3,8 @@ environment              = "dev"
 allowed_account_id       = "622152552144"
 domain                   = "landgriffon.com"
 repo_name                = "landgriffon"
-vpc_cni_addon_version    = "v1.12.6-eksbuild.2"
-kube_proxy_addon_version = "v1.27.1-eksbuild.1"
+vpc_cni_addon_version    = "v1.20.0-eksbuild.1"
+kube_proxy_addon_version = "v1.32.6-eksbuild.2"
 
 aws_environments = {
   dev : {},

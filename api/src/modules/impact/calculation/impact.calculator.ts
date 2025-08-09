@@ -50,22 +50,37 @@ export class ImpactCalculatorV2 {
   async calculateImpactForAllLocations(
     activeIndicators: Indicator[],
   ): Promise<any> {
-    const sourcingLocations: SourcingLocation[] = await this.dataSource
-      .getRepository(SourcingLocation)
-      .find({
-        relations: ['sourcingRecords'],
-      });
+    const repo = this.dataSource.getRepository(SourcingLocation);
+    const runner = this.dataSource.createQueryRunner();
+    await runner.connect();
 
-    await this.calculateImpacts(activeIndicators, sourcingLocations);
+    try {
+      const stream = await runner.manager
+        .createQueryBuilder(SourcingLocation, 'sl')
+        .select('sl.id', 'id')
+        .orderBy('sl.id', 'ASC') // Ensure order is consisten. We might use this also for resuming, retrying, etc.
+        .stream();
+
+      for await (const location of stream as AsyncIterable<{ id: string }>) {
+        const sourcingLocation: SourcingLocation = await repo.findOneOrFail({
+          where: { id: location.id },
+          relations: ['sourcingRecords'],
+        });
+        await this.calculateImpacts(activeIndicators, [sourcingLocation]);
+      }
+    } catch (e: any) {
+      this.logger.error(
+        `Error while calculating impacts for all locations: ${e.message}`,
+      );
+      throw e; // Re-throw the error to be handled by the caller
+    }
   }
 
   async calculateImpacts(
     activeIndicators: Indicator[],
     locations: SourcingLocation[],
   ): Promise<any> {
-    this.logger.log(
-      `Starting to process impact for a total of: ${locations.length} locations`,
-    );
+    this.logger.log(`Processing impact for location ID: ${locations[0].id}`);
     // Get the strategies sorted by priority
     const strategyMap = this.strategyFactory.getStrategies(activeIndicators);
     const sortedStrategies = strategyMap.getSortedStrategies();
@@ -81,6 +96,9 @@ export class ImpactCalculatorV2 {
           new MaterialId(location.materialId),
           MATERIAL_TO_H3_TYPE.PRODUCER,
         );
+
+      // TODO: We might use a key using the location info (country + address/coordinates/whatever) to avoid calculating H3 indexes if they are already calculated for
+      //       the same location. We could also cache other opeations as well
       const geoRegionH3IndexList =
         await this.calculationRepository.getGeoRegionH3IndexList({
           geoRegionId: new GeoRegionId(location.geoRegionId),
@@ -141,10 +159,6 @@ export class ImpactCalculatorV2 {
         `Impacts calculated for location with id: ${location.id}`,
       );
     }
-
-    this.logger.log(
-      `Finished processing impact for ${locations.length} locations`,
-    );
     return 'done';
   }
 

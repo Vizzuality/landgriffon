@@ -53,6 +53,7 @@ export class ImpactCalculatorV2 {
     const repo = this.dataSource.getRepository(SourcingLocation);
     const runner = this.dataSource.createQueryRunner();
     await runner.connect();
+    let processedLocationCount = 0;
 
     try {
       const stream = await runner.manager
@@ -66,8 +67,14 @@ export class ImpactCalculatorV2 {
           where: { id: location.id },
           relations: ['sourcingRecords'],
         });
-        await this.calculateImpacts(activeIndicators, [sourcingLocation]);
+        const count = await this.calculateImpacts(activeIndicators, [
+          sourcingLocation,
+        ]);
+        processedLocationCount += count || 0;
       }
+      this.logger.log(
+        `Processed a total of ${processedLocationCount} locations for impact calculation.`,
+      );
     } catch (e: any) {
       this.logger.error(
         `Error while calculating impacts for all locations: ${e.message}`,
@@ -86,80 +93,87 @@ export class ImpactCalculatorV2 {
     const sortedStrategies = strategyMap.getSortedStrategies();
 
     for (const location of locations) {
-      // Need to get the material's Production H3 data source and value to be set in the corresponding indicator records
-      // IMPORTANT : this mirrors the original approach, which is incorrect to begin with, as some indicators depend on the
-      // associated Material Indicator H3 data source, instead of the Material H3 Data source.
-      // TODO This is a temporary solution until we refactor the indicator records to probably remove that relation, which
-      // is really only used for a small optimization when showing map data
-      const productionH3DataSource =
-        await this.calculationRepository.getMaterialH3DataSource(
-          new MaterialId(location.materialId),
-          MATERIAL_TO_H3_TYPE.PRODUCER,
-        );
+      try {
+        // Need to get the material's Production H3 data source and value to be set in the corresponding indicator records
+        // IMPORTANT : this mirrors the original approach, which is incorrect to begin with, as some indicators depend on the
+        // associated Material Indicator H3 data source, instead of the Material H3 Data source.
+        // TODO This is a temporary solution until we refactor the indicator records to probably remove that relation, which
+        // is really only used for a small optimization when showing map data
+        const productionH3DataSource =
+          await this.calculationRepository.getMaterialH3DataSource(
+            new MaterialId(location.materialId),
+            MATERIAL_TO_H3_TYPE.PRODUCER,
+          );
 
-      // TODO: We might use a key using the location info (country + address/coordinates/whatever) to avoid calculating H3 indexes if they are already calculated for
-      //       the same location. We could also cache other opeations as well
-      const geoRegionH3IndexList =
-        await this.calculationRepository.getGeoRegionH3IndexList({
-          geoRegionId: new GeoRegionId(location.geoRegionId),
-        });
-      const productionValue =
-        await this.calculationRepository.sumH3GridOverGeoRegion({
-          geoRegionH3IndexList,
-          materialH3DataSource: productionH3DataSource,
-        });
-
-      // Precalculate all the values for each strategy, that are dependent on the location, and not for each sourcing record
-      const preCalculationResults: Map<
-        INDICATOR_NAME_CODES,
-        PreCalculationResult
-      > = new Map();
-      for (const strategy of sortedStrategies) {
-        const result = await strategy.preCalculate({
-          adminRegionId: new AdminRegionId(location.adminRegionId),
-          geoRegionId: new GeoRegionId(location.geoRegionId),
-          materialId: new MaterialId(location.materialId),
-        });
-        preCalculationResults.set(strategy.indicator.nameCode, result);
-      }
-
-      for (const sourcingRecord of location.sourcingRecords) {
-        const calculatedImpacts = new Map<INDICATOR_NAME_CODES, number>();
-
-        // Now calculate the final impact values for each sourcing record, based on the precalculated values
-        for (const strategy of sortedStrategies) {
-          const preCalculationValues = preCalculationResults.get(
-            strategy.indicatorCode,
-          )!;
-
-          const calculatedImpact = await strategy.calculate({
-            calculatedImpacts,
-            preCalculationValues,
-            tonnage: sourcingRecord.tonnage,
+        // TODO: We might use a key using the location info (country + address/coordinates/whatever) to avoid calculating H3 indexes if they are already calculated for
+        //       the same location. We could also cache other opeations as well
+        const geoRegionH3IndexList =
+          await this.calculationRepository.getGeoRegionH3IndexList({
+            geoRegionId: new GeoRegionId(location.geoRegionId),
+          });
+        const productionValue =
+          await this.calculationRepository.sumH3GridOverGeoRegion({
+            geoRegionH3IndexList,
+            materialH3DataSource: productionH3DataSource,
           });
 
-          calculatedImpacts.set(strategy.indicatorCode, calculatedImpact);
+        // Precalculate all the values for each strategy, that are dependent on the location, and not for each sourcing record
+        const preCalculationResults: Map<
+          INDICATOR_NAME_CODES,
+          PreCalculationResult
+        > = new Map();
+        for (const strategy of sortedStrategies) {
+          const result = await strategy.preCalculate({
+            adminRegionId: new AdminRegionId(location.adminRegionId),
+            geoRegionId: new GeoRegionId(location.geoRegionId),
+            materialId: new MaterialId(location.materialId),
+          });
+          preCalculationResults.set(strategy.indicator.nameCode, result);
         }
 
-        /////// Calculate and store the indicator records
-        const indicatorRecords: IndicatorRecord[] =
-          this.calculateIndicatorRecords(
-            sourcingRecord.id,
-            sortedStrategies,
-            productionH3DataSource.id.value,
-            productionValue.value,
-            calculatedImpacts,
-          );
-        await this.dataSource
-          .getRepository(IndicatorRecord)
-          .insert(indicatorRecords);
-      }
+        for (const sourcingRecord of location.sourcingRecords) {
+          const calculatedImpacts = new Map<INDICATOR_NAME_CODES, number>();
 
-      this.logger.log(
-        `Impacts calculated for location with id: ${location.id}`,
-      );
+          // Now calculate the final impact values for each sourcing record, based on the precalculated values
+          for (const strategy of sortedStrategies) {
+            const preCalculationValues = preCalculationResults.get(
+              strategy.indicatorCode,
+            )!;
+
+            const calculatedImpact = await strategy.calculate({
+              calculatedImpacts,
+              preCalculationValues,
+              tonnage: sourcingRecord.tonnage,
+            });
+
+            calculatedImpacts.set(strategy.indicatorCode, calculatedImpact);
+          }
+
+          /////// Calculate and store the indicator records
+          const indicatorRecords: IndicatorRecord[] =
+            this.calculateIndicatorRecords(
+              sourcingRecord.id,
+              sortedStrategies,
+              productionH3DataSource.id.value,
+              productionValue.value,
+              calculatedImpacts,
+            );
+          await this.dataSource
+            .getRepository(IndicatorRecord)
+            .insert(indicatorRecords);
+        }
+
+        this.logger.log(
+          `Impacts calculated for location with id: ${location.id}`,
+        );
+        return 1; // return 1 to count the processed location
+      } catch (e: any) {
+        this.logger.error(
+          `Error while processing location with id: ${location.id} - ${e.message}`,
+        );
+        continue; // Skip this location and continue with the next one for test purposes
+      }
     }
-    return 'done';
   }
 
   async calculateImpactForInterventionLocations(

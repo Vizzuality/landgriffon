@@ -420,7 +420,7 @@ export class ImpactCalculationRepository {
       FROM ${indicatorH3DataSource.tableName} h3ind
       WHERE h3ind.h3index = ANY($1);
       `,
-        [geoRegionH3IndexList],
+        [geoRegionH3IndexList.value],
       );
     if (!res.length) {
       throw new ImpactRawDataComputingError(

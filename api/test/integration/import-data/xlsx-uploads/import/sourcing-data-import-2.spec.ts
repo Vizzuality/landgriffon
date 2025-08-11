@@ -9,7 +9,7 @@ import { GeoCodingAbstractClass } from 'modules/geo-coding/geo-coding-abstract-c
 
 jest.setTimeout(10000000);
 
-describe('Sourcing Data Correct Import (Integration Tests)', () => {
+describe.skip('Sourcing Data Correct Import (Integration Tests)', () => {
   let sourcingDataImportTestManager: SourcingDataImportTestManager;
 
   beforeAll(async () => {

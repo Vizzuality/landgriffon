@@ -83,82 +83,76 @@ export class SourcingDataImportService {
         throw new ExcelValidationError('Validation Errors', validationErrors);
       }
 
-      //TODO: Implement transactional import. Move geocoding to first step
+      await this.dbCleaner.cleanDataBeforeImport();
 
-      // await this.dbCleaner.cleanDataBeforeImport();
-      //
-      // const materials: Material[] =
-      //   await this.materialService.findAllUnpaginated();
-      // if (!materials.length) {
-      //   throw new ServiceUnavailableException(
-      //     'No Materials found present in the DB. Please check the LandGriffon installation manual',
-      //   );
-      // }
+      const materials: Material[] =
+        await this.materialService.findAllUnpaginated();
+      if (!materials.length) {
+        throw new ServiceUnavailableException(
+          'No Materials found present in the DB. Please check the LandGriffon installation manual',
+        );
+      }
       this.logger.log('Activating Indicators...');
       const activeIndicators: Indicator[] =
         await this.indicatorService.activateIndicators(
           dtoMatchedData.indicators,
         );
-      // this.logger.log('Activating Materials...');
-      // const activeMaterials: Material[] =
-      //   await this.materialService.activateMaterials(dtoMatchedData.materials);
-      //
-      // await this.tasksService.updateImportTask({
-      //   taskId,
-      //   newLogs: [
-      //     `Activated indicators: ${activeIndicators
-      //       .map((i: Indicator) => i.name)
-      //       .join(', ')}`,
-      //     `Activated materials: ${activeMaterials
-      //       .map((i: Material) => i.hsCodeId)
-      //       .join(', ')}`,
-      //   ],
-      // });
-      //
-      // const businessUnits: BusinessUnit[] =
-      //   await this.businessUnitService.createTree(dtoMatchedData.businessUnits);
-      //
-      // const suppliers: Supplier[] = await this.supplierService.createTree(
-      //   dtoMatchedData.suppliers,
-      // );
-      //
-      // const { geoCodedSourcingData, errors } =
-      //   await this.geoCodingService.geoCodeLocations(
-      //     dtoMatchedData.sourcingData,
-      //   );
-      // if (errors.length) {
-      //   throw new GeoCodingError(
-      //     'Import failed. There are GeoCoding errors present in the file',
-      //     errors,
-      //   );
-      // }
-      // const warnings: string[] = [];
-      // geoCodedSourcingData.forEach((elem: SourcingData) => {
-      //   if (elem.locationWarning) warnings.push(elem.locationWarning);
-      // });
-      // warnings.length > 0 &&
-      //   (await this.tasksService.updateImportTask({
-      //     taskId,
-      //     newLogs: warnings,
-      //   }));
-      //
-      // const sourcingDataWithOrganizationalEntities: SourcingLocation[] =
-      //   await this.relateSourcingDataWithOrganizationalEntities(
-      //     suppliers,
-      //     businessUnits,
-      //     materials,
-      //     geoCodedSourcingData,
-      //   );
-      //
-      // await this.sourcingLocationService.save(
-      //   sourcingDataWithOrganizationalEntities,
-      // );
+      this.logger.log('Activating Materials...');
+      const activeMaterials: Material[] =
+        await this.materialService.activateMaterials(dtoMatchedData.materials);
+
+      await this.tasksService.updateImportTask({
+        taskId,
+        newLogs: [
+          `Activated indicators: ${activeIndicators
+            .map((i: Indicator) => i.name)
+            .join(', ')}`,
+          `Activated materials: ${activeMaterials
+            .map((i: Material) => i.hsCodeId)
+            .join(', ')}`,
+        ],
+      });
+
+      const businessUnits: BusinessUnit[] =
+        await this.businessUnitService.createTree(dtoMatchedData.businessUnits);
+
+      const suppliers: Supplier[] = await this.supplierService.createTree(
+        dtoMatchedData.suppliers,
+      );
+
+      const { geoCodedSourcingData, errors } =
+        await this.geoCodingService.geoCodeLocations(
+          dtoMatchedData.sourcingData,
+        );
+      if (errors.length) {
+        throw new GeoCodingError(
+          'Import failed. There are GeoCoding errors present in the file',
+          errors,
+        );
+      }
+      const warnings: string[] = [];
+      geoCodedSourcingData.forEach((elem: SourcingData) => {
+        if (elem.locationWarning) warnings.push(elem.locationWarning);
+      });
+      warnings.length > 0 &&
+        (await this.tasksService.updateImportTask({
+          taskId,
+          newLogs: warnings,
+        }));
+
+      const sourcingDataWithOrganizationalEntities: SourcingLocation[] =
+        await this.relateSourcingDataWithOrganizationalEntities(
+          suppliers,
+          businessUnits,
+          materials,
+          geoCodedSourcingData,
+        );
+
+      await this.sourcingLocationService.save(
+        sourcingDataWithOrganizationalEntities,
+      );
 
       this.logger.log('Generating Indicator Records...');
-
-      // TODO: Current approach calculates Impact for all Sourcing Records present in the DB
-      //       Getting H3 data for calculations is done within DB so we need to improve the error handling
-      //       TBD: What to do when there is no H3 for a Material
 
       try {
         this.logger.warn('Using new impact calculation flow');

@@ -79,7 +79,7 @@ export class DeforestationFootprintStrategy extends IndicatorCalculationStrategy
 
     // Grab the raw LF value from the calculated impacts so far
     const calculatedLF = calculatedImpacts.get(INDICATOR_NAME_CODES.LF);
-    if (!calculatedLF) {
+    if (calculatedLF === undefined || calculatedLF === null) {
       throw new Error(
         `Missing calculated impact for ${INDICATOR_NAME_CODES.LF} when calculating ${this.indicatorCode}`,
       );

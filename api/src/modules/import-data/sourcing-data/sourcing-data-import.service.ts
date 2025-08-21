@@ -155,13 +155,13 @@ export class SourcingDataImportService {
       this.logger.log('Generating Indicator Records...');
 
       try {
-        await this.impactCalculator.calculateImpactForAllSourcingRecords(
+        // await this.impactCalculator.calculateImpactForAllSourcingRecords(
+        // activeIndicators,
+        //);
+        this.logger.warn('Using new impact calculation flow');
+        await this.impactCalculatorV2.calculateImpactForAllLocations(
           activeIndicators,
         );
-        // this.logger.warn('Using new impact calculation flow');
-        // await this.impactCalculatorV2.calculateImpactForAllLocations(
-        //   activeIndicators,
-        // );
         this.logger.log('Indicator Records generated');
         await this.impactService.updateImpactView();
       } catch (err: any) {

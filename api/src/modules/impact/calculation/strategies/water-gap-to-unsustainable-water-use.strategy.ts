@@ -103,7 +103,11 @@ export class WaterGapToUnsustainableWaterUseStrategy extends IndicatorCalculatio
 
     // Grab the raw WW value from the calculated impacts so far
     const calculatedWW = calculatedImpacts.get(INDICATOR_NAME_CODES.WW);
-    if (!calculatedWW) {
+    if (
+      calculatedWW === undefined ||
+      calculatedWW === null ||
+      isNaN(calculatedWW)
+    ) {
       throw new Error(
         `Missing calculated impact for ${INDICATOR_NAME_CODES.WW} when calculating ${this.indicatorCode}`,
       );

@@ -158,9 +158,9 @@ describe('Materials - Get the list of Materials uploaded by User with details', 
       responseWithDefaultPagination.body.data[0].attributes.purchases,
     ).toEqual(
       expect.arrayContaining([
-        { tonnage: '1000', year: 2000 },
-        { tonnage: '1000', year: 2001 },
-        { tonnage: '1000', year: 2002 },
+        { tonnage: 1000, year: 2000 },
+        { tonnage: 1000, year: 2001 },
+        { tonnage: 1000, year: 2002 },
       ]),
     );
     expect(responseWithDefaultPagination.body.meta.size).toEqual(25);

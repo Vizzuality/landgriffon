@@ -113,7 +113,11 @@ export class UnsustainableWaterUseStrategy extends IndicatorCalculationStrategy 
 
     // Grab the raw WU value from the calculated impacts so far
     const calculatedWU = calculatedImpacts.get(INDICATOR_NAME_CODES.WU);
-    if (!calculatedWU) {
+    if (
+      calculatedWU === undefined ||
+      calculatedWU === null ||
+      isNaN(calculatedWU)
+    ) {
       throw new Error(
         `Missing calculated impact for ${INDICATOR_NAME_CODES.WU} when calculating ${this.indicatorCode}`,
       );

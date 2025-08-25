@@ -30,7 +30,7 @@ export class SourcingRecord extends TimestampedBaseEntity {
   @ApiProperty()
   id!: string;
 
-  @Column({ type: 'decimal' })
+  @Column({ type: 'float' })
   @ApiProperty()
   tonnage!: number;
 

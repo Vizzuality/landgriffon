@@ -102,7 +102,11 @@ export class ExcessNutrientLoadStrategy extends IndicatorCalculationStrategy {
 
     // Grab the raw NL value from the calculated impacts so far
     const calculatedNL = calculatedImpacts.get(INDICATOR_NAME_CODES.NL);
-    if (!calculatedNL) {
+    if (
+      calculatedNL === undefined ||
+      calculatedNL === null ||
+      isNaN(calculatedNL)
+    ) {
       throw new Error(
         `Missing calculated impact for ${INDICATOR_NAME_CODES.NL} when calculating ${this.indicatorCode}`,
       );

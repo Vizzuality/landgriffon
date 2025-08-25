@@ -347,7 +347,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
       expect(canceledSourcingRecords.length).toBe(1);
-      expect(canceledSourcingRecords[0].tonnage).toEqual('250');
+      expect(canceledSourcingRecords[0].tonnage).toEqual(250);
 
       const canceledIndicatorRecords: IndicatorRecord[] =
         await indicatorRecordRepository.find({
@@ -378,7 +378,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
       expect(newSourcingRecords.length).toBe(1);
-      expect(newSourcingRecords[0].tonnage).toEqual('250');
+      expect(newSourcingRecords[0].tonnage).toEqual(250);
 
       const newIndicatorRecords: IndicatorRecord[] =
         await indicatorRecordRepository.find({
@@ -463,7 +463,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
       expect(canceledSourcingRecords.length).toBe(1);
-      expect(canceledSourcingRecords[0].tonnage).toEqual('250');
+      expect(canceledSourcingRecords[0].tonnage).toEqual(250);
 
       const canceledIndicatorRecords: IndicatorRecord[] =
         await indicatorRecordRepository.find({
@@ -498,7 +498,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
       expect(newSourcingRecords.length).toBe(1);
-      expect(newSourcingRecords[0].tonnage).toEqual('250');
+      expect(newSourcingRecords[0].tonnage).toEqual(250);
     });
 
     test(
@@ -672,7 +672,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
       expect(newSourcingRecords.length).toBe(2);
-      expect(newSourcingRecords[0].tonnage).toEqual('250');
+      expect(newSourcingRecords[0].tonnage).toEqual(250);
       expect(newSourcingRecords[0].year).toEqual(2018);
       expect(newSourcingRecords[1].year).toEqual(2019);
     });
@@ -787,7 +787,7 @@ describe('ScenarioInterventionsModule (e2e)', () => {
         });
 
       expect(newSourcingRecords.length).toBe(1);
-      expect(newSourcingRecords[0].tonnage).toEqual('250');
+      expect(newSourcingRecords[0].tonnage).toEqual(250);
     });
 
     test(

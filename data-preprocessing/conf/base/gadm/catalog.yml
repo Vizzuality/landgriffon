@@ -1,0 +1,86 @@
+gadm.adm0:
+  type: geopandas.GenericDataset
+  filepath: data/01_raw/gadm_410-levels.gpkg
+  load_args:
+    layer: "ADM_0"
+
+gadm.adm1:
+  type: geopandas.GenericDataset
+  filepath: data/01_raw/gadm_410-levels.gpkg
+  load_args:
+    layer: "ADM_1"
+    columns: [ "GID_0", "GID_1", "NAME_0", "NAME_1" ]
+
+gadm.adm2:
+  type: geopandas.GenericDataset
+  filepath: data/01_raw/gadm_410-levels.gpkg
+  load_args:
+    layer: "ADM_2"
+    columns: [ "GID_0", "GID_1", "GID_2", "NAME_0", "NAME_1", "NAME_2" ]
+
+gadm.adm0_h3:
+  type: polars.LazyPolarsDataset
+  file_format: parquet
+  filepath: data/02_intermediate/gadm_adm0_h3.parquet
+  save_args:
+    compression: "zstd"
+    compression_level: 10
+
+gadm.adm1_h3:
+  type: polars.LazyPolarsDataset
+  file_format: parquet
+  filepath: data/02_intermediate/gadm_adm1_h3.parquet
+  save_args:
+    compression: "zstd"
+    compression_level: 10
+
+gadm.adm2_h3:
+  type: polars.LazyPolarsDataset
+  file_format: parquet
+  filepath: data/02_intermediate/gadm_adm2_h3.parquet
+  save_args:
+    compression: "zstd"
+    compression_level: 10
+
+gadm.geo_region:
+  type: polars.EagerPolarsDataset
+  file_format: parquet
+  filepath: data/03_primary/geo_regions.parquet
+  save_args:
+    compression: "zstd"
+    compression_level: 10
+
+gadm.admin_region:
+  type: polars.EagerPolarsDataset
+  file_format: parquet
+  filepath: data/03_primary/admin_regions.parquet
+  save_args:
+    compression: "zstd"
+    compression_level: 10
+
+# -------------
+# SQL tables
+# -------------
+# Here we use transcoding:
+# https://docs.kedro.org/en/0.19.14/data/data_catalog_yaml_examples.html#how-to-use-transcoding
+# to write use pandas and read with Ibis because it is lazy and doesn't load all the table data.
+# Also don't use the namespace because this datasets must be used out of this pipeline.
+
+admin_region_db@pandas:
+  type: data_preprocessing.datasets.sql.SQLTableDataset
+  credentials: db_credentials
+  table_name: "admin_region"
+  save_args:
+    if_exists: "append"
+
+
+admin_region_db@ibis:
+  type: ibis.TableDataset
+  table_name: "material"
+  connection:
+    backend: postgres
+    user: ${oc.env:POSTGRES_USERNAME}
+    password: ${oc.env:POSTGRES_PASSWORD}
+    host: ${oc.env:POSTGRES_HOST}
+    port: ${oc.env:POSTGRES_PORT}
+    database: ${oc.env:POSTGRES_DATABASE}

@@ -1,0 +1,33 @@
+gadm.h3_resolution: "${globals:h3_resolution}"
+
+gadm.adm0:
+  tolerance: 0.005  # 500 m
+
+gadm.adm1:
+  tolerance: 0.0001 # 10 m
+
+gadm.adm2:
+  tolerance: null
+
+gadm.geo_region:
+  column_map:
+    geometry: geom
+    GID_0: iso3
+  columns:
+    - id
+    - h3_compact
+    - geom
+    - is_created_by_user
+
+gadm.admin_region:
+  column_map:
+    GID_0: iso3
+  columns:
+    - id
+    - gadm_id
+    - level
+    - name
+    - status
+    - iso3
+    - geo_region_id
+    - mpath

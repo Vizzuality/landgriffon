@@ -10,6 +10,8 @@ node_modules
 /data/datasets/**
 /data/**/data
 
+__pycache__/
+
 infrastructure/base/vars/*
 infrastructure/kubernetes/vars/*
 !infrastructure/base/vars/terraform.tfvars

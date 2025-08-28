@@ -1,0 +1,26 @@
+materials:
+  type: data_preprocessing.datasets.pydantic_json.PydanticJsonDataset
+  model: data_preprocessing.models.material.Materials
+  filepath: data/01_raw/materials.json
+
+materials_db@pandas:
+  type: pandas.SQLTableDataset
+  credentials: db_credentials
+  table_name: "material"
+  save_args:
+    if_exists: "replace"
+
+# Used to obtain the relationships that the final `indicator_coefficient` table needs
+# The use of ibis table is because we can query and serialize lazily loading only the
+# necessary portions of data.
+
+materials_db@ibis:
+  type: ibis.TableDataset
+  table_name: "material"
+  connection:
+    backend: postgres
+    user: ${oc.env:POSTGRES_USERNAME}
+    password: ${oc.env:POSTGRES_PASSWORD}
+    host: ${oc.env:POSTGRES_HOST}
+    port: ${oc.env:POSTGRES_PORT}
+    database: ${oc.env:POSTGRES_DATABASE}

@@ -1,0 +1,14 @@
+unsustainable_water_use.raw:
+  type: geopandas.GenericDataset
+  filepath: s3://landgriffon-raw-data/raw/Aqueduct40_waterrisk/Aq40_Y2023D07M05_annual.gpkg
+#  filepath: data/01_raw/aqueduct-4-0-water-risk-data/Aqueduct40_waterrisk_download_Y2023M07D05/GDB/Aq40_Y2023D07M05.gdb
+  credentials: s3_credentials
+
+unsustainable_water_use.h3_table:
+  type: polars.EagerPolarsDataset
+  filepath: s3://landgriffon-raw-data/processed/tables/unsustainable_water_use/excess_withdrawals.parquet
+  credentials: s3_credentials
+  file_format: parquet
+  save_args:
+    compression: "zstd"
+    compression_level: 10

@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Live animals",
+    "description": "Animals; live",
+    "name_code": "pasture",
+    "parent": null,
+    "production_dataset_path": "s3://path/to/animals.parquet",
+    "harvest_dataset_path": "s3://path/to/dataset.parquet",
+    "metadata": null
+  },
+  {
+    "name": "Live animals",
+    "description": "Animals; live",
+    "name_code": "green_grass",
+    "parent": "pasture",
+    "production_dataset_path": "s3://path/to/dataset.parquet",
+    "harvest_dataset_path": "s3://path/to/dataset.parquet",
+    "metadata": null
+  },
+  {
+    "name": "Dead animals",
+    "description": "Animals; dead",
+    "name_code": "black_grass",
+    "parent": "pasture",
+    "production_dataset_path": "s3://path/to/dataset.parquet",
+    "harvest_dataset_path": "s3://path/to/dataset.parquet",
+    "metadata": null
+  }
+]

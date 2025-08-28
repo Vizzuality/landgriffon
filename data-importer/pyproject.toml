@@ -1,0 +1,68 @@
+[project]
+name = "data-importer"
+version = "0.1.0"
+description = "Landgriffon Data Importer"
+readme = "README.md"
+requires-python = ">=3.12.5, <3.13"
+dependencies = [
+    "click>=8.1.8",
+    "fsspec>=2025.2.0",
+    "polars>=1.22.0",
+    "psycopg[binary]>=3.2.4",
+    "pydantic-settings>=2.7.1",
+    "typer>=0.15.1",
+]
+
+[project.scripts]
+lgimport = "data_importer.cli:cli"
+
+[dependency-groups]
+dev = [
+    "data-importer",
+    "mypy>=1.15.0",
+    "notebook>=7.3.2",
+    "pre-commit>=4.1.0",
+    "ruff>=0.9.6",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+src = ["src"]
+extend-include = ["*.ipynb"]
+
+[tool.ruff.lint]
+select = [
+    "UP",  # pyupgrade
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # flake8
+    "C",   # flake8-comprehensions
+    "B",   # flake8-bugbear
+    "N",   # Naming conventions
+    "I",   # isort
+    "SIM", # flake8-simplify
+    "ISC", # implicit concatentaion: "a" "b" = "ab"
+    "RUF",
+]
+
+[tool.ruff.lint.isort]
+force-single-line = true
+
+[tool.ruff.lint.per-file-ignores]
+"**/{tests}/*" = [
+    "D103", # Missing docstring in public function
+    "D100",
+]
+"*.ipynb" = [
+    "B018", # Useless expression. Found in cells with something like `df.head()`, used in notebooks to display data
+]
+
+[tool.uv.sources]
+data-importer = { workspace = true }

@@ -1,0 +1,19 @@
+indicator_coefficients.blue_water:
+  indicator_code: WU
+  year: 2005
+
+indicator_coefficients.grey_water:
+  indicator_code: NL
+  year: 2005
+
+indicator_coefficients.h20:
+  indicator_code: WC
+  year: 2025
+
+indicator_coefficients.wdl:
+  indicator_code: WW
+  year: 2025
+
+indicator_coefficients.yeld:
+  indicator_code: WGUWU
+  year: 2025

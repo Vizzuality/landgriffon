@@ -1,0 +1,95 @@
+_csv: &csv
+  type: polars.EagerPolarsDataset
+  file_format: csv
+  credentials: s3_credentials
+  load_args:
+    schema_overrides:
+      hs_2017_code: "${polars: String}"
+
+_parquet: &parquet
+  type: polars.EagerPolarsDataset
+  file_format: parquet
+  credentials: s3_credentials
+  save_args:
+    compression: "zstd"
+    compression_level: 10
+
+
+# ----------------
+# "Raw" csv tables
+# ----------------
+
+# Those tables are not original source and are already precomputed in a lost notebook.
+# TODO: put here (in kedro) the full pipeline for each of the tables so the transformation flow is fully
+#  integrated in the processing project.
+
+indicator_coefficients.blue_water#csv:
+  <<: *csv
+  filepath: s3://landgriffon-raw-data/raw/indicator_coefficients/bwfp_indicator_coefficients.csv
+
+indicator_coefficient.grey_water#csv:
+  <<: *csv
+  filepath: s3://landgriffon-raw-data/raw/indicator_coefficients/gwfp_indicator_coefficients.csv
+
+indicator_coefficients.h20#csv:
+  <<: *csv
+  filepath: s3://landgriffon-raw-data/raw/indicator_coefficients/impact_factors_water_commodities_H2O.csv
+
+indicator_coefficients.wdl#csv:
+  <<: *csv
+  filepath: s3://landgriffon-raw-data/raw/indicator_coefficients/impact_factors_water_commodities_WDL.csv
+
+indicator_coefficients.yeld#csv:
+  <<: *csv
+  filepath: s3://landgriffon-raw-data/raw/indicator_coefficients/impact_factors_water_commodities_Yield.csv
+
+# --------------
+# Parquet tables
+# --------------
+
+indicator_coefficients.blue_water#parquet:
+  <<: *parquet
+  filepath: s3://landgriffon-raw-data/processed/indicator_coefficients/bwfp_indicator_coefficients.parquet
+
+indicator_coefficient.grey_water#parquet:
+  <<: *parquet
+  filepath: s3://landgriffon-raw-data/processed/indicator_coefficients/gwfp_indicator_coefficients.parquet
+
+indicator_coefficients.h20#parquet:
+  <<: *parquet
+  filepath: s3://landgriffon-raw-data/processed/indicator_coefficients/impact_factors_water_commodities_H2O.parquet
+
+indicator_coefficients.wdl#parquet:
+  <<: *parquet
+  filepath: s3://landgriffon-raw-data/processed/indicator_coefficients/impact_factors_water_commodities_WDL.parquet
+
+indicator_coefficients.yeld#parquet:
+  <<: *parquet
+  filepath: s3://landgriffon-raw-data/processed/indicator_coefficients/impact_factors_water_commodities_Yield.parquet
+
+
+# ----------
+# SQL tables
+# ----------
+
+
+
+indicator_coefficients.admin_region:
+  type: ibis.TableDataset
+  table_name: "material"
+  connection:
+    backend: postgres
+    user: ${oc.env:POSTGRES_USERNAME}
+    password: ${oc.env:POSTGRES_PASSWORD}
+    host: ${oc.env:POSTGRES_HOST}
+    port: ${oc.env:POSTGRES_PORT}
+    database: ${oc.env:POSTGRES_DATABASE}
+
+
+indicator_coefficients.blue_water_table:
+  type: pandas.SQLTableDataset
+  credentials: db_credentials
+  table_name: indicator_coefficient
+  save_args:
+    if_exists: append
+    index: false

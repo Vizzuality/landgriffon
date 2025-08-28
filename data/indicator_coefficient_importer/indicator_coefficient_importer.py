@@ -9,24 +9,24 @@ Postgres connection params read from environment:
  - API_POSTGRES_PASSWORD
  - API_POSTGRES_DATABASE
 """
+
 import json
 import logging
 import os
 import time
 from io import StringIO
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any
 
-from dotenv import load_dotenv
 import boto3
-
 import pandas as pd
+from dotenv import load_dotenv
 from psycopg2.extensions import connection
 from psycopg2.pool import ThreadedConnectionPool
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("indicator_coefficient_importer")
-load_dotenv('../../.env')
+load_dotenv("../../.env")
 
 db_host = os.getenv("API_POSTGRES_HOST")
 db_port = os.getenv("API_POSTGRES_PORT")
@@ -36,7 +36,7 @@ db_password = os.getenv("API_POSTGRES_PASSWORD")
 aws_access_key_id = os.getenv("AWS_ACCESS_KEY_ID")
 aws_secret_access_key = os.getenv("AWS_SECRET_ACCESS_KEY")
 data_bucket_name = os.getenv("DATA_BUCKET_NAME")
-path = 'import/indicator_coefficients'
+path = "import/indicator_coefficients"
 
 postgres_thread_pool = ThreadedConnectionPool(
     1,
@@ -50,7 +50,7 @@ postgres_thread_pool = ThreadedConnectionPool(
 
 
 def load_data(filename: Path, year: int) -> pd.DataFrame:
-    "Load data from a CSV file and add a year column."
+    """Load data from a CSV file and add a year column."""
     dtype_mapping = {"hs_2017_code": str}
     df = pd.read_csv(filename, dtype=dtype_mapping)
     df["year"] = year
@@ -58,7 +58,7 @@ def load_data(filename: Path, year: int) -> pd.DataFrame:
 
 
 def get_admin_region_ids_from_countries(conn, countries: list) -> pd.DataFrame:
-    "Retrieve administrative region IDs from the database based on country names."
+    """Retrieve administrative region IDs from the database based on country names."""
     with conn.cursor() as cur:
         cur.execute(
             """select id, name from admin_region ar where ar.name = any(%s);""",
@@ -68,7 +68,7 @@ def get_admin_region_ids_from_countries(conn, countries: list) -> pd.DataFrame:
 
 
 def get_material_ids_from_hs_codes(conn, hs_codes: list) -> pd.DataFrame:
-    "Retrieve material IDs from the database based on hscodes."
+    """Retrieve material IDs from the database based on hscodes."""
     with conn.cursor() as cur:
         cur.execute(
             """select id, "hsCodeId" from material m where m."hsCodeId" = any(%s)""",
@@ -113,7 +113,7 @@ def copy_data_to_table(conn: connection, df: pd.DataFrame, indicator_id: str):
 
 def download_indicator_coefficient_files(files_to_download: list[str]) -> list[str]:
     log.info(f"Downloading files: {files_to_download}")
-    s3 = boto3.client('s3', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
+    s3 = boto3.client("s3", aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
     downloaded_files = []
     try:
         for file in files_to_download:
@@ -126,14 +126,14 @@ def download_indicator_coefficient_files(files_to_download: list[str]) -> list[s
         return downloaded_files
     except Exception as e:
         log.error(f"Error downloading files: {e}")
-        raise Exception('There was some error downloading the files. Aborting import process')
+        raise Exception("There was some error downloading the files. Aborting import process") from e
     finally:
         if len(downloaded_files) != len(files_to_download):
-            log.info('Cleaning up downloaded files...')
+            log.info("Cleaning up downloaded files...")
             for downloaded_file in downloaded_files:
                 os.remove(downloaded_file)
                 log.info(f"Deleted file: {downloaded_file}")
-        log.info('All files downloaded successfully')
+        log.info("All files downloaded successfully")
 
 
 def load_indicator_config() -> list[dict[str, Any]]:
@@ -153,7 +153,7 @@ def load_indicator_config() -> list[dict[str, Any]]:
 
     except json.JSONDecodeError:
         log.error("Invalid JSON format in 'INDICATOR_COEFFICIENT_CONFIG'.")
-        raise ValueError("Environment variable 'INDICATOR_COEFFICIENT_CONFIG' must be a valid JSON string.")
+        raise ValueError("Environment variable 'INDICATOR_COEFFICIENT_CONFIG' must be a valid JSON string.") from None
     except Exception as e:
         log.error(f"Error loading configuration: {e}")
         raise
@@ -162,16 +162,16 @@ def load_indicator_config() -> list[dict[str, Any]]:
 def main():
     """Process and ingest csv data with per country data into indicator_coefficient table."""
     indicator_config = load_indicator_config()
-    files_to_download = [file_config['file'] for file_config in indicator_config]
+    files_to_download = [file_config["file"] for file_config in indicator_config]
     ## TODO: We might want to cleanup downloaded stuff regardless the success of the import. But since IRL
     ##       this runs on a pod that will be wipeout after the job has run, we can skip this for now, we are in a rush
-    downloaded_files = download_indicator_coefficient_files(files_to_download)
+    _ = download_indicator_coefficient_files(files_to_download)
 
     conn = postgres_thread_pool.getconn()
     for indicator in indicator_config:
-        file = indicator['file']
-        year = indicator['year']
-        indicator_code = indicator['indicator_code']
+        file = indicator["file"]
+        year = indicator["year"]
+        indicator_code = indicator["indicator_code"]
         data = load_data(filename=file, year=year)
         with conn:
             with conn.cursor() as cursor:

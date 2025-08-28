@@ -1,0 +1,11 @@
+[
+  {
+    "name": "Deforestation footprint (sLUC)",
+    "name_code": "DF_SLUC",
+    "category": "Natural ecosystem conversion",
+    "description": "The deforestation footprint (sLUC) indicator quantifies the annual average area of deforestation within a 50km radius attributable to the raw material sourced.",
+    "unit": "ha/yr",
+    "metadata": null,
+    "dataset_path": "s3://whatever/slut.parquet"
+  }
+]

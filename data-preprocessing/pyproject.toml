@@ -1,0 +1,105 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+requires-python = ">=3.13"
+name = "data_preprocessing"
+readme = "README.md"
+dynamic = ["version"]
+dependencies = [
+    "duckdb>=1.2.1",
+    "gcsfs>=2025.5.0.post1",
+    "h3ronpy>=0.22.0",
+    "ibis-framework[postgres]>=10.6.0",
+    "kedro~=0.19.11",
+    "kedro-datasets[pandas-parquetdataset, geopandas-genericdataset]>=6.0",
+    "pandas>=2.2.3",
+    "polars>=1.25.2",
+    "psycopg2-binary>=2.9.10",
+    "pydantic>=2.11.3",
+    "rasterio>=1.4.3",
+    "rioxarray>=0.19.0",
+    "s3fs>=2025.3.2",
+    "xarray>=2025.3.1",
+]
+
+[project.scripts]
+"data-preprocessing" = "data_preprocessing.__main__:main"
+
+[project.entry-points."kedro.hooks"]
+
+[dependency-groups]
+docs = ["sphinx>=8.2.3"]
+dev = [
+    "ipython<9.0.0",
+    "kedro-viz>=11.0.0",
+    "marimo>=0.12.0",
+    "mypy>=1.15.0",
+    "pytest>=8.3.5",
+    "pytest-cov>=6.0.0",
+    "pytest-mock>=3.14.0",
+    "ruff>=0.1.15",
+]
+
+[tool.setuptools.dynamic]
+version = { attr = "data_preprocessing.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = false
+
+[tool.kedro]
+package_name = "data_preprocessing"
+project_name = "data-preprocessing"
+kedro_init_version = "0.19.11"
+tools = "['Linting', 'Testing', 'Custom Logging', 'Documentation', 'Data Structure']"
+source_dir = "src"
+
+[tool.pytest.ini_options]
+addopts = """
+--cov-report term-missing \
+--cov src/data_preprocessing -ra"""
+testpaths = ["tests"]
+
+[tool.coverage.report]
+fail_under = 0
+show_missing = true
+exclude_lines = ["pragma: no cover", "raise NotImplementedError"]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff]
+line-length = 100
+src = ["src"]
+
+[tool.ruff.lint]
+select = [
+    "UP",  # pyupgrade
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # flake8
+    "C",   # flake8-comprehensions
+    "B",   # flake8-bugbear
+    "N",   # Naming conventions
+    "I",   # isort
+    "SIM", # flake8-simplify
+    "RUF",
+]
+ignore = [
+    "E501",   # Ruff format takes care of line-too-long
+    "RUF052", # variables with "_" prefix are marked as unused. Not the pattern kedro follows
+]
+
+[tool.ruff.lint.per-file-ignores]
+# cookiecutter templated folder names are not valid python modules "{{ cookiecutter.something }}"
+"templates/*" = ["N999"]
+"notebooks/*" = ["B018", "N803"]
+
+[tool.kedro_telemetry]
+project_id = "e4f21d3f56424220baf54b4a1e4571a3"
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"

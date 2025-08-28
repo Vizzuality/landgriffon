@@ -1,0 +1,25 @@
+gaul.l2:
+  type: geopandas.GenericDataset
+  # https://storage.googleapis.com/fao-maps-catalog-data/boundaries/GAUL_2024_L2.zip
+  filepath: data/01_raw/GAUL_2024_L2.zip
+
+
+gaul.l2_h3:
+  type: polars.LazyPolarsDataset
+  file_format: parquet
+  filepath: data/02_intermediate/gaul_l2_h3.parquet
+  save_args:
+    compression: "zstd"
+    compression_level: 10
+
+
+gaul.admin_region:
+  type: polars.EagerPolarsDataset
+  file_format: parquet
+  filepath: data/03_primary/admin_region.parquet
+
+
+gaul.geo_region:
+  type: polars.EagerPolarsDataset
+  file_format: parquet
+  filepath: data/03_primary/geo_region.parquet

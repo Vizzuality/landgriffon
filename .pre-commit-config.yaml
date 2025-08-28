@@ -1,22 +1,21 @@
 repos:
-  - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.17.0
-    hooks:
-      - id: gitleaks-docker
-
   - repo: https://github.com/abravalheri/validate-pyproject
-    rev: v0.12.1
+    rev: v0.24.1
     hooks:
       - id: validate-pyproject
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.3.0
+    rev: v5.0.0
     hooks:
+      - id: check-yaml
+        exclude: data-preprocessing/templates/.*
       - id: end-of-file-fixer
       - id: trailing-whitespace
+      - id: debug-statements
+      - id: detect-private-key
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.4
+    rev: v0.11.9
     hooks:
       - id: ruff
         args: [--fix]
@@ -36,7 +35,7 @@ repos:
   #                - types-attrs
   #                - pydantic~=2.0
 
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.3
-    hooks:
-      - id: prettier
+  # - repo: https://github.com/pre-commit/mirrors-prettier
+  #   rev: v4.0.0-alpha.8
+  #   hooks:
+  #     - id: prettier
